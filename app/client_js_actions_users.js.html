@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>server/mongo/models/User.js - Documentation</title>
+    <title>client/js/actions/users.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,7 +29,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">server/mongo/models/User.js</h1>
+    <h1 class="page-title">client/js/actions/users.js</h1>
     
 
     
@@ -39,189 +39,160 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>/** Mongoose Schema for Users
- * @module     server/mongo/models/User
- * @requires   mongoose
+            <pre class="prettyprint source linenums"><code>/**
+ * Redux User Actions
+ * @module client/actions/users
+ * @see    module:client/reducers/users
  */
 
-import { Schema } from "mongoose";
+import * as api from "../api";
+import * as types from "../constants/ActionTypes";
+import { errorMessage } from "./errors";
 
 /**
- * A data object that defines a user of the system.
- * @typedef  {Object}                   UserData
- * @memberof module:server/mongo/models/User
- * @property {?string}                  [_id]
- * @property {string}                   HUID
- * @property {string}                   firstName
- * @property {string}                   lastName
- * @property {AccessLevel}   accessLevel
- * @property {Object}                   [settings]
+ * Generate an action to fill in a list of all users
+ * @method setAllUsers
+ * @memberof module:client/actions/users
+ * @param  {UserData[]}  users - An array of all users in the system
+ * @return {Object}              Action to populate the user list
  */
 
+export const setAllUsers = users => ({
+  type: types.SET_ALL_USERS,
+  users
+});
+
 /**
- * Enum for user access levels.
- * @inner
- * @enum          {string}
- * @memberof      module:server/mongo/models/User
+ * Generate an action to add a user to the list
+ * @method userAdded
+ * @memberof module:client/actions/users
+ * @param  {UserData}  user - User to be added
+ * @return {Object}           Action to add the user
  */
 
-const AccessLevel = {
-  READ_ONLY: "Read-Only",
-  PRIVILEGED: "Privileged",
-  ADMIN: "Admin"
-};
-let accessLevels = [];
-for (let key of Object.keys(AccessLevel)) {
-  accessLevels.push(AccessLevel[key]);
-}
+export const userAdded = user => ({
+  type: types.USER_ADDED,
+  user
+});
 
 /**
- * The Schema for a User.
- * @const
- * @memberof  module:server/mongo/models/User
+ * Generate an action to update a user in the list
+ * @method userUpdated
+ * @memberof module:client/actions/users
+ * @param  {UserData}    user - user to be replaced
+ * @return {Object}           Action to replace the updated user
  */
 
-export const UserSchema = new Schema(
-  {
-    HUID: { type: String, index: { unique: true } },
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
-    email: { type: String, required: true },
-    accessLevel: { type: String, enum: accessLevels, default: accessLevels[0] },
-    settings: {}
-  },
-  {
-    timestamps: true,
-    collection: "users"
-  }
-);
+export const userUpdated = user => ({
+  type: types.USER_UPDATED,
+  user
+});
 
 /**
- * Creates a new user with the given data and returns a Promise
- * @static
+ * Generates an action to delete a user from the list
+ * @method userDeleted
+ * @memberof module:client/actions/users
+ * @param  {UserData}    user - user to remove
+ * @return {Object}             Action to remove the user
+ */
+export const userDeleted = user => ({
+  type: types.USER_DELETED,
+  user
+});
+
+/**
+ * Generates an action to set the current user
+ * @method setCurrentUser
+ * @memberof module:client/actions/users
+ * @param  {UserData}    user - current user
+ * @return {Object}             Action to set the current user
+ */
+export const setCurrentUser = user => ({
+  type: types.SET_CURRENT_USER,
+  user
+});
+
+/**
+ * Push a new user to the server and dispatch an action
  * @async
- * @function  addNew
- * @memberof  module:server/mongo/models/User
- * @param     {UserData}   data   The user to be added to the database
- * @return    {Promise&lt;UserData>} The mongo object for the saved user
- * @throws    {ValidationError}   If Permission is invalid
- * @throws    {MongoError}        If HUID is already in use
- * @throws    {Error}             If anything else goes wrong
+ * @function saveNewUser
+ * @memberof module:client/actions/users
+ * @param  {UserData}    user - The userdata to send to the server
  */
 
-UserSchema.statics.addNew = async function(data) {
+export const saveNewUser = user => async dispatch => {
   try {
-    let user = new this(data);
-    return await user.save();
+    let result = await api.addNewUser(user);
+    dispatch(userAdded(result.data));
   } catch (err) {
-    if (err.code === 11000) {
-      throw new Error(`Error: That HUID is already in use.`);
-    } else if (err.name === "ValidationError") {
-      throw new Error(`Error: Invalid permission provided.`);
-    } else {
-      throw new Error(`Error: Could not create a new user\nError: ${err}`);
-    }
-  }
-};
-
-/**
- * Retrieves all of the users in the database
- * @static
- * @async
- * @function  getAll
- * @memberof  module:server/mongo/models/User
- * @return    {Promise&lt;UserData[]>}  An array containing all users in the system
- * @throws    {Error}             If data cannot be fetched
- */
-
-UserSchema.statics.getAll = async function getAll() {
-  try {
-    return await this.find().exec();
-  } catch (err) {
-    throw new Error(`Could not fetch all user records`);
+    dispatch(errorMessage(err));
   }
 };
 
 /**
- * Retrieves the user with the given mongo ID
- * @static
+ * Update a user on the server and dispatch an action
  * @async
- * @function  getOneById
- * @memberof  module:server/mongo/models/User
- * @param     {string}   userId  The mongoid for the user
- * @return    {Promise&lt;UserData>} The mongo data for the user
- * @throws    {Error}    If the person cannot be found
+ * @function updateUser
+ * @memberof module:client/actions/users
+ * @param  {UserData}    user - The userdata to send to the server
  */
 
-UserSchema.statics.getOneById = async function getOne(userId) {
+export const updateUser = user => async dispatch => {
   try {
-    return await this.findById(userId).exec();
+    let result = await api.updateUser(user.id, user);
+    dispatch(userUpdated(result.data));
   } catch (err) {
-    throw new Error(`No user record for ${userId}\nError: ${err}`);
+    dispatch(errorMessage(err));
   }
 };
 
 /**
- * Retrieves the user with the given HUID.
- * @static
+ * Get a complete list of users from the server and dispatch an action
  * @async
- * @function  getOneByHUID
- * @memberof  module:server/mongo/models/User
- * @param     {string}      HUID  The 8-digit HUID for the user
- * @returns   {Promise&lt;UserData>}    The MongoData for the user
- * @throws    {Error}       If the user cannot be found
+ * @function fetchAllUsers
+ * @memberof module:client/actions/users
  */
 
-UserSchema.statics.getOneByHUID = async function getOneByHUID(HUID) {
+export const fetchAllUsers = () => async dispatch => {
   try {
-    return await this.findOne({ HUID: HUID }).exec();
+    let result = await api.getAllUsers();
+    dispatch(setAllUsers(result.data));
   } catch (err) {
-    throw new Error(`No user record with HUID ${HUID}.\nError: ${err}`);
+    dispatch(errorMessage(err));
   }
 };
 
 /**
- * Updates the user instance with the given data. Only fields present
- * in the data object will be updated.
- * @instance
+ * Get the currently authenticated user from the server and dispatch an action
  * @async
- * @function  update
- * @memberof  module:server/mongo/models/User
- * @param     {UserData}  data  The new data for the user
- * @returns   {Promise&lt;UserData>} The updated user
- * @throws    {Error}     If the user cannot be updated
+ * @function fetchCurrentUser
+ * @memberof module:client/actions/users
  */
 
-UserSchema.methods.update = async function update(data) {
-  let user = this;
+export const fetchCurrentUser = () => async dispatch => {
   try {
-    UserSchema.eachPath(prop => {
-      if (prop in data &amp;&amp; user[prop] !== data[prop]) {
-        user.set(prop, data[prop]);
-      }
-    });
-    return await user.save();
+    let result = await api.getCurrentUser();
+    let user = result.data;
+    dispatch(setCurrentUser({ id: user.id, permission: user.accessLevel }));
   } catch (err) {
-    throw new Error(`Unable to update user with id ${user.id}\nError: ${err}`);
+    dispatch(errorMessage(err));
   }
 };
 
 /**
- * Deletes the user instance.
- * @instance
+ * Get the currently authenticated user from the server and dispatch an action
  * @async
- * @function  delete
- * @memberof  module:server/mongo/models/User
- * @returns   {Promise&lt;UserData>} The deleted user's data
- * @throws    {Error}     If the user cannot be deleted
+ * @function deleteUser
+ * @memberof module:client/actions/users
+ * @param   {String} userId - mongo Id for the user to be deleted
  */
 
-UserSchema.methods.delete = async function() {
-  let user = this;
+export const deleteUser = userId => async dispatch => {
   try {
-    return await user.remove();
+    let result = await api.deleteUser(userId);
+    dispatch(userDeleted(result.data));
   } catch (err) {
-    throw new Error(`Could not delete user with id ${user.id}.\nError: ${err}`);
+    dispatch(errorMessage(err));
   }
 };
 </code></pre>

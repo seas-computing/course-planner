@@ -70,6 +70,88 @@ define({ "api": [
     }
   },
   {
+    "type": "GET",
+    "url": "/app/authenticate",
+    "title": "",
+    "name": "HarvardKeyLogin",
+    "group": "App",
+    "success": {
+      "fields": {
+        "301 Redirect": [
+          {
+            "group": "301 Redirect",
+            "type": "301",
+            "optional": false,
+            "field": "Redirects",
+            "description": "<p>to Harvard Key Login</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "src/server/express/routes/app/app.js",
+    "groupTitle": "App"
+  },
+  {
+    "type": "GET",
+    "url": "/app/static/*",
+    "title": "",
+    "group": "App",
+    "name": "StaticAssets",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "path",
+            "description": "<p>requested asset</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "301 Redirect": [
+          {
+            "group": "301 Redirect",
+            "type": "301",
+            "optional": false,
+            "field": "Redirect",
+            "description": "<p>strips /app/ from the request to redirect to the top level</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "src/server/express/routes/app/app.js",
+    "groupTitle": "App"
+  },
+  {
+    "type": "GET",
+    "url": "app/logout",
+    "title": "",
+    "name": "UserLogout",
+    "group": "App",
+    "success": {
+      "fields": {
+        "301 Redirect": [
+          {
+            "group": "301 Redirect",
+            "type": "301",
+            "optional": false,
+            "field": "Redirects",
+            "description": "<p>to Harvard Key Logout</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "src/server/express/routes/app/app.js",
+    "groupTitle": "App"
+  },
+  {
     "type": "POST",
     "url": "/api/users/new",
     "title": "",
