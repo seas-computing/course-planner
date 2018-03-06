@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>server/lib/Logger.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Modules</li><li class="nav-heading"><span class="nav-item-type type-module">M</span><span class="nav-item-name"><a href="module-routes_app.html">routes/app</a></span></li><li class="nav-heading"><span class="nav-item-type type-module">M</span><span class="nav-item-name"><a href="module-UserSchema.html">UserSchema</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-UserSchema.html#.addNew">addNew</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-UserSchema.html#.getAll">getAll</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-UserSchema.html#.getOneByHUID">getOneByHUID</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-UserSchema.html#.getOneById">getOneById</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-UserSchema.html#delete">delete</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-UserSchema.html#update">update</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#LogColor">LogColor</a></span></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#LogLevel">LogLevel</a></span></li>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">server/lib/Logger.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import fs from "fs";
+import util from "util";
+import chalk from "chalk";
+import { SERVER } from "../config";
+
+let streamOpts = { flags: "a", encoding: "UTF-8" };
+// let accessLogger = fs.createWriteStream(SERVER.APP_LOG, streamOpts);
+// let errorLogger = fs.createWriteStream(SERVER.ERROR_LOG, streamOpts);
+
+/**
+ * Enum for log levels.
+ * @enum {number}
+ */
+const LogLevel = {
+  SUPPRESS: 0,
+  ERROR: 1,
+  WARN: 2,
+  INFO: 3,
+  DEBUG: 4
+};
+
+/**
+ * Enum for log colors.
+ * @enum {string}
+ */
+const LogColor = {
+  SUPPRESS: "white",
+  ERROR: "red",
+  WARN: "magenta",
+  INFO: "cyan",
+  DEBUG: "yellow"
+};
+
+let Logger = {
+  // ACCESS: accessLogger,
+  // ERROR: errorLogger
+  // LogLevel: function() {
+  //   return Levels;
+  // }
+};
+
+for (let level of Object.keys(LogLevel)) {
+  if (LogLevel[level] > 0) {
+    Logger[level.toLowerCase()] = function() {
+      // Write log only if logging level in the config is above the threshold for the current
+      // log level.
+      if (LogLevel[SERVER.LOG_LEVEL] >= LogLevel[level]) {
+        let logDate = new Date()
+          .toISOString()
+          .replace(/T/, " ")
+          .replace(/\..+/, "");
+        logDate = `[${logDate}]`;
+        let logMessage = util.format.apply(util.format, arguments);
+        // If the config is set up to log to a file, write all logs to file.
+        if (SERVER.LOG_OUTPUT_TO_FILE) {
+          let logTag = `[${level}]`;
+          let log = `${logTag} ${logDate} ${logMessage}\n`;
+          errorLogger.write(log);
+        } else {
+          // If the config log level is DEBUG, log directly to the console with colors.
+          let errStack = new Error().stack;
+          let stacklist = errStack.split("\n")[2].split("at ")[1];
+          let regEx = /\(([^)]+)\)/;
+          let parsedStack = regEx.exec(stacklist)
+            ? regEx.exec(stacklist)[1]
+            : stacklist;
+          let stackParts = parsedStack.split(":");
+          let file = stackParts[0];
+          let line = stackParts[1];
+
+          let logTag =
+            chalk.blue("[") +
+            chalk[LogColor[level]].bold(level) +
+            chalk.blue("]");
+          let log = "";
+          if (level !== "INFO") {
+            log = `${logTag}${logDate}[${file}:${line}] ${logMessage}`;
+          } else {
+            log = `${logTag}${logDate} ${logMessage}`;
+          }
+          console.log(log);
+        }
+      }
+    };
+  }
+}
+
+export default Logger;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Mar 06 2018 14:04:54 GMT-0500 (EST) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
