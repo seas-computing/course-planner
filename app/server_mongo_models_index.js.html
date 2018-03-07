@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>client/js/actions/errors.js - Documentation</title>
+    <title>server/mongo/models/index.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,7 +27,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">client/js/actions/errors.js</h1>
+    <h1 class="page-title">server/mongo/models/index.js</h1>
     
 
     
@@ -38,33 +38,17 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * Redux Error Messsages
- * @module client/actions/errors
+ * A data object that defines a user of the system.
+ * @typedef  {Object}  UserData
+ * @property {string}  [_id]
+ * @property {string}  HUID
+ * @property {string}  firstName
+ * @property {string}  lastName
+ * @property {AccessLevel}  accessLevel
+ * @property {Object}  [settings]
  */
 
-import * as types from "../constants/ActionTypes";
-
-/**
- * Generate a generic error message action
- * @method errorMessage
- * @param  {Error}     error  The Error object whose message should be displayed
- * @return {Action}           Sets the error message
- */
-
-export const errorMessage = error => ({
-  type: types.ERROR_MESSAGE,
-  message: error
-});
-
-/**
- * Clear the current message
- * @method clearMessage
- * @return {Action}           Clear the current message
- */
-
-export const clearMessage = () => ({
-  type: types.CLEAR_MESSAGE
-});
+export { UserSchema } from "./User";
 </code></pre>
         </article>
     </section>

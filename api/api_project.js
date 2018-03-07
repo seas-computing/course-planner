@@ -5,7 +5,7 @@ define({
   "template": {
     "withCompare": false
   },
-  "title": "REST API Documentation",
+  "title": "SEAS Boilerplate REST API",
   "header": {
     "content": "<h1>SEAS React Boilerplate</h1>\n<p><a href=\"https://code.harvard.edu/pages/SEAS/seas-react-boilerplate/app/\">Application Documentation</a></p>\n<p><a href=\"https://code.harvard.edu/pages/SEAS/seas-react-boilerplate/api/\">REST API Documentation</a></p>\n<p><a href=\"https://code.harvard.edu/SEAS/seas-react-boilerplate/wiki\">Developer Documentaiton</a></p>\n"
   },
@@ -14,7 +14,7 @@ define({
   "apidoc": "0.3.0",
   "generator": {
     "name": "apidoc",
-    "time": "2018-03-06T22:02:21.021Z",
+    "time": "2018-03-07T19:30:23.273Z",
     "url": "http://apidocjs.com",
     "version": "0.17.6"
   }

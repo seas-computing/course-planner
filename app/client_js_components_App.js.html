@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>client/js/actions/errors.js - Documentation</title>
+    <title>client/js/components/App.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,7 +27,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">client/js/actions/errors.js</h1>
+    <h1 class="page-title">client/js/components/App.js</h1>
     
 
     
@@ -38,33 +38,62 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * Redux Error Messsages
- * @module client/actions/errors
+ * Top Level App Component
+ * @module client/components/App
  */
 
-import * as types from "../constants/ActionTypes";
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { connect, Provider } from "react-redux";
+import { fetchCurrentUser } from "../actions";
 
-/**
- * Generate a generic error message action
- * @method errorMessage
- * @param  {Error}     error  The Error object whose message should be displayed
- * @return {Action}           Sets the error message
- */
+const mapStateToProps = state => ({
+  currentId: state.users.currentUser.id
+});
 
-export const errorMessage = error => ({
-  type: types.ERROR_MESSAGE,
-  message: error
+const matchDispatchToProps = dispatch => ({
+  dispatch
 });
 
 /**
- * Clear the current message
- * @method clearMessage
- * @return {Action}           Clear the current message
+ * The primary app component
+ * @type Component
+ * @function App
+ * @memberof  module:client/components/App
+ * @param  {Object}  props
+ * @param  {String}  props.currentID  Id of the current user from the redux state
+ * @param  {Object}  props.store  the redux store object
  */
 
-export const clearMessage = () => ({
-  type: types.CLEAR_MESSAGE
-});
+@connect(mapStateToProps, matchDispatchToProps)
+export default class App extends Component {
+  static PropTypes = {
+    currentId: PropTypes.string,
+    store: PropTypes.obj
+  };
+  render() {
+    const { currentId, store } = this.props;
+    return (
+      &lt;Provider store={store}>
+        &lt;div className="App">
+          &lt;content>
+            &lt;div>Your app is now loaded.&lt;/div>
+          &lt;/content>
+        &lt;/div>
+      &lt;/Provider>
+    );
+  }
+
+  /**
+   * Make asynchronous request after the state is loaded
+   * @inner componentDidMount
+   * @memberof  module:client/components/App
+   */
+  componentDidMount() {
+    require("../../css/main.css");
+    this.props.store.dispatch(fetchCurrentUser());
+  }
+}
 </code></pre>
         </article>
     </section>

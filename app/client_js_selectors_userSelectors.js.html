@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>client/js/actions/errors.js - Documentation</title>
+    <title>client/js/selectors/userSelectors.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,7 +27,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">client/js/actions/errors.js</h1>
+    <h1 class="page-title">client/js/selectors/userSelectors.js</h1>
     
 
     
@@ -38,33 +38,61 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * Redux Error Messsages
- * @module client/actions/errors
+ * User Selectors
+ * @module client/selectors/users
  */
 
-import * as types from "../constants/ActionTypes";
+import { createSelector } from "reselect";
+/**
+ * Returns the complete user list from the state
+ * @method getUserList
+ * @memberof module:client/selectors/users
+ * @private
+ * @param  {object}  state  Redux state
+ * @return  {UserData[]}  A list of all users
+ */
+const getUserList = state => state.admin.allUsers;
 
 /**
- * Generate a generic error message action
- * @method errorMessage
- * @param  {Error}     error  The Error object whose message should be displayed
- * @return {Action}           Sets the error message
+ * Returns the currently authenticated user's id
+ * @method getUserList
+ * @memberof module:client/selectors/users
+ * @private
+ * @param  {object}  state  Redux state
+ * @return  {string}  the id for the current user
  */
 
-export const errorMessage = error => ({
-  type: types.ERROR_MESSAGE,
-  message: error
-});
+const getCurrentUserId = state => state.admin.currentUser.id;
 
 /**
- * Clear the current message
- * @method clearMessage
- * @return {Action}           Clear the current message
+ * Selected that returns the current user data
+ * @memberof module:client/selectors/users
+ * @method getThisUsersData
+ * @param  {Object}  state  current redux state
+ * @returns  {UserData}  The current user's data
  */
 
-export const clearMessage = () => ({
-  type: types.CLEAR_MESSAGE
-});
+export const getThisUsersData = createSelector(
+  [getUserList, getCurrentUserId],
+  (all, one) => {
+    let list = [...all];
+    return list.find(e => e.id === one);
+  }
+);
+/**
+ * Selector that returns all users who are not the currently authenticated user
+ * @memberof module:client/selectors/users
+ * @method getAllOtherUsers
+ * @param  {Object}  state  current redux state
+ * @returns  {UserData[]}  A list of other users
+ */
+export const getAllOtherUsers = createSelector(
+  [getUserList, getCurrentUserId],
+  (all, one) => {
+    let list = [...all];
+    return list.filter(e => e.id !== one);
+  }
+);
 </code></pre>
         </article>
     </section>

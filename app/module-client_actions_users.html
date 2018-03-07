@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>client/actions/users - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
@@ -10,9 +9,8 @@
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
-    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
 </head>
 <body>
 
@@ -24,7 +22,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Modules</li><li class="nav-heading"><span class="nav-item-type type-module">M</span><span class="nav-item-name"><a href="module-client_actions_errors.html">client/actions/errors</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-client_actions_errors.html#~clearMessage">clearMessage</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-client_actions_errors.html#~errorMessage">errorMessage</a></span></li><li class="nav-heading"><span class="nav-item-type type-module">M</span><span class="nav-item-name"><a href="module-client_actions_users.html">client/actions/users</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-client_actions_users.html#.deleteUser">deleteUser</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-client_actions_users.html#.fetchAllUsers">fetchAllUsers</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-client_actions_users.html#.fetchCurrentUser">fetchCurrentUser</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-client_actions_users.html#.saveNewUser">saveNewUser</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-client_actions_users.html#.setAllUsers">setAllUsers</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-client_actions_users.html#.setCurrentUser">setCurrentUser</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-client_actions_users.html#.updateUser">updateUser</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-client_actions_users.html#.userAdded">userAdded</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-client_actions_users.html#.userDeleted">userDeleted</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-client_actions_users.html#.userUpdated">userUpdated</a></span></li><li class="nav-heading"><span class="nav-item-type type-module">M</span><span class="nav-item-name"><a href="module-client_api_users.html">client/api/users</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-client_api_users.html#.addNewUser">addNewUser</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-client_api_users.html#.deleteUser">deleteUser</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-client_api_users.html#.getAllUsers">getAllUsers</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-client_api_users.html#.getCurrentUser">getCurrentUser</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-client_api_users.html#~updateUser">updateUser</a></span></li><li class="nav-heading"><span class="nav-item-type type-module">M</span><span class="nav-item-name"><a href="module-client_reducers_users.html">client/reducers/users</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-client_reducers_users.html#.users">users</a></span></li><li class="nav-heading"><span class="nav-item-type type-module">M</span><span class="nav-item-name"><a href="module-Logger.html">Logger</a></span></li><li class="nav-heading"><span class="nav-item-type type-module">M</span><span class="nav-item-name"><a href="module-server_mongo_models_User.html">server/mongo/models/User</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-server_mongo_models_User.html#.addNew">addNew</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-server_mongo_models_User.html#.getAll">getAll</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-server_mongo_models_User.html#.getOneByHUID">getOneByHUID</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-server_mongo_models_User.html#.getOneById">getOneById</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-server_mongo_models_User.html#delete">delete</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-server_mongo_models_User.html#update">update</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-client_actions_errors.html">client/actions/errors</a><ul class='methods'><li data-type='method'><a href="module-client_actions_errors.html#~clearMessage">clearMessage</a></li><li data-type='method'><a href="module-client_actions_errors.html#~errorMessage">errorMessage</a></li></ul></li><li><a href="module-client_actions_users.html">client/actions/users</a><ul class='methods'><li data-type='method'><a href="module-client_actions_users.html#.deleteUser">deleteUser</a></li><li data-type='method'><a href="module-client_actions_users.html#.fetchAllUsers">fetchAllUsers</a></li><li data-type='method'><a href="module-client_actions_users.html#.fetchCurrentUser">fetchCurrentUser</a></li><li data-type='method'><a href="module-client_actions_users.html#.saveNewUser">saveNewUser</a></li><li data-type='method'><a href="module-client_actions_users.html#.setAllUsers">setAllUsers</a></li><li data-type='method'><a href="module-client_actions_users.html#.setCurrentUser">setCurrentUser</a></li><li data-type='method'><a href="module-client_actions_users.html#.updateUser">updateUser</a></li><li data-type='method'><a href="module-client_actions_users.html#.userAdded">userAdded</a></li><li data-type='method'><a href="module-client_actions_users.html#.userDeleted">userDeleted</a></li><li data-type='method'><a href="module-client_actions_users.html#.userUpdated">userUpdated</a></li></ul></li><li><a href="module-client_api_users.html">client/api/users</a><ul class='methods'><li data-type='method'><a href="module-client_api_users.html#.addNewUser">addNewUser</a></li><li data-type='method'><a href="module-client_api_users.html#.deleteUser">deleteUser</a></li><li data-type='method'><a href="module-client_api_users.html#.getAllUsers">getAllUsers</a></li><li data-type='method'><a href="module-client_api_users.html#.getCurrentUser">getCurrentUser</a></li><li data-type='method'><a href="module-client_api_users.html#~updateUser">updateUser</a></li></ul></li><li><a href="module-client_components_App.html">client/components/App</a><ul class='methods'><li data-type='method'><a href="module-client_components_App.html#.App">App</a></li></ul></li><li><a href="module-client_reducers_users.html">client/reducers/users</a><ul class='methods'><li data-type='method'><a href="module-client_reducers_users.html#.users">users</a></li></ul></li><li><a href="module-client_selectors_users.html">client/selectors/users</a><ul class='methods'><li data-type='method'><a href="module-client_selectors_users.html#.getAllOtherUsers">getAllOtherUsers</a></li><li data-type='method'><a href="module-client_selectors_users.html#.getThisUsersData">getThisUsersData</a></li></ul></li><li><a href="module-Logger.html">Logger</a></li><li><a href="module-server_mongo_models_User.html">server/mongo/models/User</a><ul class='methods'><li data-type='method'><a href="module-server_mongo_models_User.html#.addNew">addNew</a></li><li data-type='method'><a href="module-server_mongo_models_User.html#.getAll">getAll</a></li><li data-type='method'><a href="module-server_mongo_models_User.html#.getOneByHUID">getOneByHUID</a></li><li data-type='method'><a href="module-server_mongo_models_User.html#.getOneById">getOneById</a></li><li data-type='method'><a href="module-server_mongo_models_User.html#delete">delete</a></li><li data-type='method'><a href="module-server_mongo_models_User.html#update">update</a></li></ul></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <div id="main">
@@ -56,10 +54,6 @@
 
         
             
-<div class="section-method">
-
-
-
 
 
 
@@ -67,34 +61,34 @@
 <dl class="details">
 
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
         <a href="client_js_actions_users.js.html">client/js/actions/users.js</a>, <a href="client_js_actions_users.js.html#line1">line 1</a>
     </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -133,7 +127,12 @@
 
 
 
-</div>
+
+
+
+
+
+
         
     
     </div>
@@ -153,45 +152,13 @@
 
         
             
-<div class="section-members">
 <h4 class="name" id="~SET_ALL_USERS"><span class="type-signature">(inner, constant) </span>SET_ALL_USERS<span class="type-signature"> :<a href="global.html#ActionType">ActionType</a></span></h4>
-
-
-
-
-<div class="description">
-    Populate a List of users
-</div>
 
 
 
 
 
 <dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
 
     
     <dt class="tag-source">Source:</dt>
@@ -205,7 +172,39 @@
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
+
+
+
+
+
+<div class="description">
+    Populate a List of users
+</div>
 
 
 
@@ -213,7 +212,7 @@
     <ul>
         <li>
             
-<span class="param-type"><code><a href="global.html#ActionType">ActionType</a></code></span>
+<span class="param-type"><a href="global.html#ActionType">ActionType</a></span>
 
 
         </li>
@@ -223,49 +222,16 @@
 
 
 
-</div>
 
         
             
-<div class="section-members">
 <h4 class="name" id="~SET_CURRENT_USER"><span class="type-signature">(inner, constant) </span>SET_CURRENT_USER<span class="type-signature"> :<a href="global.html#ActionType">ActionType</a></span></h4>
-
-
-
-
-<div class="description">
-    Sets the data for the current users
-</div>
 
 
 
 
 
 <dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
 
     
     <dt class="tag-source">Source:</dt>
@@ -279,7 +245,39 @@
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
+
+
+
+
+
+<div class="description">
+    Sets the data for the current users
+</div>
 
 
 
@@ -287,7 +285,7 @@
     <ul>
         <li>
             
-<span class="param-type"><code><a href="global.html#ActionType">ActionType</a></code></span>
+<span class="param-type"><a href="global.html#ActionType">ActionType</a></span>
 
 
         </li>
@@ -297,49 +295,16 @@
 
 
 
-</div>
 
         
             
-<div class="section-members">
 <h4 class="name" id="~USER_ADDED"><span class="type-signature">(inner, constant) </span>USER_ADDED<span class="type-signature"> :<a href="global.html#ActionType">ActionType</a></span></h4>
-
-
-
-
-<div class="description">
-    Add a user to the list
-</div>
 
 
 
 
 
 <dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
 
     
     <dt class="tag-source">Source:</dt>
@@ -353,7 +318,39 @@
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
+
+
+
+
+
+<div class="description">
+    Add a user to the list
+</div>
 
 
 
@@ -361,7 +358,7 @@
     <ul>
         <li>
             
-<span class="param-type"><code><a href="global.html#ActionType">ActionType</a></code></span>
+<span class="param-type"><a href="global.html#ActionType">ActionType</a></span>
 
 
         </li>
@@ -371,49 +368,16 @@
 
 
 
-</div>
 
         
             
-<div class="section-members">
 <h4 class="name" id="~USER_DELETED"><span class="type-signature">(inner, constant) </span>USER_DELETED<span class="type-signature"> :<a href="global.html#ActionType">ActionType</a></span></h4>
-
-
-
-
-<div class="description">
-    Remove a user from the list
-</div>
 
 
 
 
 
 <dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
 
     
     <dt class="tag-source">Source:</dt>
@@ -427,7 +391,39 @@
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
+
+
+
+
+
+<div class="description">
+    Remove a user from the list
+</div>
 
 
 
@@ -435,7 +431,7 @@
     <ul>
         <li>
             
-<span class="param-type"><code><a href="global.html#ActionType">ActionType</a></code></span>
+<span class="param-type"><a href="global.html#ActionType">ActionType</a></span>
 
 
         </li>
@@ -445,49 +441,16 @@
 
 
 
-</div>
 
         
             
-<div class="section-members">
 <h4 class="name" id="~USER_UPDATED"><span class="type-signature">(inner, constant) </span>USER_UPDATED<span class="type-signature"> :<a href="global.html#ActionType">ActionType</a></span></h4>
-
-
-
-
-<div class="description">
-    Update a user in the list
-</div>
 
 
 
 
 
 <dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
 
     
     <dt class="tag-source">Source:</dt>
@@ -501,7 +464,39 @@
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
+
+
+
+
+
+<div class="description">
+    Update a user in the list
+</div>
 
 
 
@@ -509,7 +504,7 @@
     <ul>
         <li>
             
-<span class="param-type"><code><a href="global.html#ActionType">ActionType</a></code></span>
+<span class="param-type"><a href="global.html#ActionType">ActionType</a></span>
 
 
         </li>
@@ -519,7 +514,6 @@
 
 
 
-</div>
 
         
     
@@ -529,7 +523,6 @@
 
         
             
-<div class="section-method">
 
     
 
@@ -539,39 +532,8 @@
 
 
 
-<div class="description">
-    Get the currently authenticated user from the server and dispatch an action
-</div>
-
-
-
-
 
 <dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
 
     
     <dt class="tag-source">Source:</dt>
@@ -585,7 +547,41 @@
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
+
+
+
+
+
+<div class="description">
+    Get the currently authenticated user from the server and dispatch an action
+</div>
+
+
 
 
 
@@ -626,7 +622,7 @@
             <td class="type">
             
                 
-<span class="param-type"><code>String</code></span>
+<span class="param-type">String</span>
 
 
             
@@ -636,10 +632,7 @@
 
             
 
-            <td class="description last">
-                mongo Id for the user to be deleted
-                
-            </td>
+            <td class="description last">mongo Id for the user to be deleted</td>
         </tr>
 
     
@@ -661,10 +654,8 @@
 
 
 
-</div>
         
             
-<div class="section-method">
 
     
 
@@ -674,39 +665,8 @@
 
 
 
-<div class="description">
-    Get a complete list of users from the server and dispatch an action
-</div>
-
-
-
-
 
 <dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
 
     
     <dt class="tag-source">Source:</dt>
@@ -720,34 +680,66 @@
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<div class="description">
+    Get a complete list of users from the server and dispatch an action
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         
             
-<div class="section-method">
 
     
 
@@ -757,39 +749,8 @@
 
 
 
-<div class="description">
-    Get the currently authenticated user from the server and dispatch an action
-</div>
-
-
-
-
 
 <dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
 
     
     <dt class="tag-source">Source:</dt>
@@ -803,34 +764,66 @@
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<div class="description">
+    Get the currently authenticated user from the server and dispatch an action
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         
             
-<div class="section-method">
 
     
 
@@ -840,39 +833,8 @@
 
 
 
-<div class="description">
-    Push a new user to the server and dispatch an action
-</div>
-
-
-
-
 
 <dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
 
     
     <dt class="tag-source">Source:</dt>
@@ -886,7 +848,41 @@
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
+
+
+
+
+
+<div class="description">
+    Push a new user to the server and dispatch an action
+</div>
+
+
 
 
 
@@ -927,7 +923,7 @@
             <td class="type">
             
                 
-<span class="param-type"><code>UserData</code></span>
+<span class="param-type"><a href="global.html#UserData">UserData</a></span>
 
 
             
@@ -937,10 +933,7 @@
 
             
 
-            <td class="description last">
-                The userdata to send to the server
-                
-            </td>
+            <td class="description last">The userdata to send to the server</td>
         </tr>
 
     
@@ -962,10 +955,8 @@
 
 
 
-</div>
         
             
-<div class="section-method">
 
     
 
@@ -975,39 +966,8 @@
 
 
 
-<div class="description">
-    Generate an action to fill in a list of all users
-</div>
-
-
-
-
 
 <dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
 
     
     <dt class="tag-source">Source:</dt>
@@ -1021,7 +981,41 @@
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
+
+
+
+
+
+<div class="description">
+    Generate an action to fill in a list of all users
+</div>
+
+
 
 
 
@@ -1062,7 +1056,7 @@
             <td class="type">
             
                 
-<span class="param-type"><code>Array.&lt;UserData></code></span>
+<span class="param-type">Array.&lt;<a href="global.html#UserData">UserData</a>></span>
 
 
             
@@ -1072,10 +1066,7 @@
 
             
 
-            <td class="description last">
-                An array of all users in the system
-                
-            </td>
+            <td class="description last">An array of all users in the system</td>
         </tr>
 
     
@@ -1095,37 +1086,32 @@
 
 
 
-<div class="section-returns">
 <h5>Returns:</h5>
 
         
+<div class="param-desc">
+    Action to populate the user list
+</div>
+
+
 
 <dl class="param-type">
     <dt>
-        Type:
+        Type
     </dt>
     <dd>
         
-<span class="param-type"><code>Object</code></span>
+<span class="param-type">Object</span>
 
 
     </dd>
 </dl>
 
-
-<div class="param-desc">
-    Action to populate the user list
-</div>
-
     
-</div>
 
 
-
-</div>
         
             
-<div class="section-method">
 
     
 
@@ -1135,39 +1121,8 @@
 
 
 
-<div class="description">
-    Generates an action to set the current user
-</div>
-
-
-
-
 
 <dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
 
     
     <dt class="tag-source">Source:</dt>
@@ -1181,7 +1136,41 @@
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
+
+
+
+
+
+<div class="description">
+    Generates an action to set the current user
+</div>
+
+
 
 
 
@@ -1222,7 +1211,7 @@
             <td class="type">
             
                 
-<span class="param-type"><code>UserData</code></span>
+<span class="param-type"><a href="global.html#UserData">UserData</a></span>
 
 
             
@@ -1232,10 +1221,7 @@
 
             
 
-            <td class="description last">
-                current user
-                
-            </td>
+            <td class="description last">current user</td>
         </tr>
 
     
@@ -1255,37 +1241,32 @@
 
 
 
-<div class="section-returns">
 <h5>Returns:</h5>
 
         
+<div class="param-desc">
+    Action to set the current user
+</div>
+
+
 
 <dl class="param-type">
     <dt>
-        Type:
+        Type
     </dt>
     <dd>
         
-<span class="param-type"><code>Object</code></span>
+<span class="param-type">Object</span>
 
 
     </dd>
 </dl>
 
-
-<div class="param-desc">
-    Action to set the current user
-</div>
-
     
-</div>
 
 
-
-</div>
         
             
-<div class="section-method">
 
     
 
@@ -1295,39 +1276,8 @@
 
 
 
-<div class="description">
-    Update a user on the server and dispatch an action
-</div>
-
-
-
-
 
 <dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
 
     
     <dt class="tag-source">Source:</dt>
@@ -1341,7 +1291,41 @@
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
+
+
+
+
+
+<div class="description">
+    Update a user on the server and dispatch an action
+</div>
+
+
 
 
 
@@ -1382,7 +1366,7 @@
             <td class="type">
             
                 
-<span class="param-type"><code>UserData</code></span>
+<span class="param-type"><a href="global.html#UserData">UserData</a></span>
 
 
             
@@ -1392,10 +1376,7 @@
 
             
 
-            <td class="description last">
-                The userdata to send to the server
-                
-            </td>
+            <td class="description last">The userdata to send to the server</td>
         </tr>
 
     
@@ -1417,10 +1398,8 @@
 
 
 
-</div>
         
             
-<div class="section-method">
 
     
 
@@ -1430,39 +1409,8 @@
 
 
 
-<div class="description">
-    Generate an action to add a user to the list
-</div>
-
-
-
-
 
 <dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
 
     
     <dt class="tag-source">Source:</dt>
@@ -1476,7 +1424,41 @@
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
+
+
+
+
+
+<div class="description">
+    Generate an action to add a user to the list
+</div>
+
+
 
 
 
@@ -1517,7 +1499,7 @@
             <td class="type">
             
                 
-<span class="param-type"><code>UserData</code></span>
+<span class="param-type"><a href="global.html#UserData">UserData</a></span>
 
 
             
@@ -1527,10 +1509,7 @@
 
             
 
-            <td class="description last">
-                User to be added
-                
-            </td>
+            <td class="description last">User to be added</td>
         </tr>
 
     
@@ -1550,37 +1529,32 @@
 
 
 
-<div class="section-returns">
 <h5>Returns:</h5>
 
         
+<div class="param-desc">
+    Action to add the user
+</div>
+
+
 
 <dl class="param-type">
     <dt>
-        Type:
+        Type
     </dt>
     <dd>
         
-<span class="param-type"><code>Object</code></span>
+<span class="param-type">Object</span>
 
 
     </dd>
 </dl>
 
-
-<div class="param-desc">
-    Action to add the user
-</div>
-
     
-</div>
 
 
-
-</div>
         
             
-<div class="section-method">
 
     
 
@@ -1590,39 +1564,8 @@
 
 
 
-<div class="description">
-    Generates an action to delete a user from the list
-</div>
-
-
-
-
 
 <dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
 
     
     <dt class="tag-source">Source:</dt>
@@ -1636,7 +1579,41 @@
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
+
+
+
+
+
+<div class="description">
+    Generates an action to delete a user from the list
+</div>
+
+
 
 
 
@@ -1677,7 +1654,7 @@
             <td class="type">
             
                 
-<span class="param-type"><code>UserData</code></span>
+<span class="param-type"><a href="global.html#UserData">UserData</a></span>
 
 
             
@@ -1687,10 +1664,7 @@
 
             
 
-            <td class="description last">
-                user to remove
-                
-            </td>
+            <td class="description last">user to remove</td>
         </tr>
 
     
@@ -1710,37 +1684,32 @@
 
 
 
-<div class="section-returns">
 <h5>Returns:</h5>
 
         
+<div class="param-desc">
+    Action to remove the user
+</div>
+
+
 
 <dl class="param-type">
     <dt>
-        Type:
+        Type
     </dt>
     <dd>
         
-<span class="param-type"><code>Object</code></span>
+<span class="param-type">Object</span>
 
 
     </dd>
 </dl>
 
-
-<div class="param-desc">
-    Action to remove the user
-</div>
-
     
-</div>
 
 
-
-</div>
         
             
-<div class="section-method">
 
     
 
@@ -1750,39 +1719,8 @@
 
 
 
-<div class="description">
-    Generate an action to update a user in the list
-</div>
-
-
-
-
 
 <dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
 
     
     <dt class="tag-source">Source:</dt>
@@ -1796,7 +1734,41 @@
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
+
+
+
+
+
+<div class="description">
+    Generate an action to update a user in the list
+</div>
+
+
 
 
 
@@ -1837,7 +1809,7 @@
             <td class="type">
             
                 
-<span class="param-type"><code>UserData</code></span>
+<span class="param-type"><a href="global.html#UserData">UserData</a></span>
 
 
             
@@ -1847,10 +1819,7 @@
 
             
 
-            <td class="description last">
-                user to be replaced
-                
-            </td>
+            <td class="description last">user to be replaced</td>
         </tr>
 
     
@@ -1870,34 +1839,30 @@
 
 
 
-<div class="section-returns">
 <h5>Returns:</h5>
 
         
+<div class="param-desc">
+    Action to replace the updated user
+</div>
+
+
 
 <dl class="param-type">
     <dt>
-        Type:
+        Type
     </dt>
     <dd>
         
-<span class="param-type"><code>Object</code></span>
+<span class="param-type">Object</span>
 
 
     </dd>
 </dl>
 
-
-<div class="param-desc">
-    Action to replace the updated user
-</div>
-
     
-</div>
 
 
-
-</div>
         
     
 
@@ -1916,7 +1881,7 @@
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Mar 06 2018 17:02:20 GMT-0500 (EST) using the Minami theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Mar 07 2018 14:30:22 GMT-0500 (EST) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
