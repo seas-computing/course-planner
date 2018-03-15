@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>server/lib/Logger.js - Documentation</title>
+    <title>App - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,126 +27,343 @@
 
 <div id="main">
     
-    <h1 class="page-title">server/lib/Logger.js</h1>
+    <h1 class="page-title">App</h1>
     
 
     
 
 
 
+
+<section>
+
+<header>
     
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>/**
- * Handles application logging
- * @module Logger
- */
+        <h2>
+        App
+        </h2>
+        
+    
+</header>
 
-import fs from "fs";
-import util from "util";
-import chalk from "chalk";
-import { SERVER } from "../config";
+<article>
+    <div class="container-overview">
+    
+        
 
-//Options for logging write streams
-let streamOpts = { flags: "a", encoding: "UTF-8" };
+    
 
-//Create the actual write streams for access and errors
-let accessLogger = fs.createWriteStream(SERVER.APP_LOG, streamOpts);
-let errorLogger = fs.createWriteStream(SERVER.ERROR_LOG, streamOpts);
+    <h4 class="name" id="App"><span class="type-signature"></span>new App<span class="signature">()</span><span class="type-signature"></span></h4>
 
-/**
- * Enum for log levels.
- * @enum  {number}
- * @memberof  module:Logger
- */
-const LogLevel = {
-  SUPPRESS: 0,
-  ERROR: 1,
-  WARN: 2,
-  INFO: 3,
-  DEBUG: 4
-};
+    
 
-/**
- * Enum for log colors.
- * @enum  {string}
- * @memberof  module:Logger
- */
-const LogColor = {
-  SUPPRESS: "white",
-  ERROR: "red",
-  WARN: "magenta",
-  INFO: "cyan",
-  DEBUG: "yellow"
-};
 
-/**
- * Writes logs to streams
- * @memberof module.Logger
- * @prop  {Stream}  ACCESS  Stream for standard access logging
- * @prop  {Stream}  ERROR  Stream for error logging
- */
 
-let Logger = {
-  ACCESS: accessLogger,
-  ERROR: errorLogger
-};
 
-/*
-Loop through defined log levels, creating functions for each level that actually
-write the log data.
- */
+<dl class="details">
 
-for (let level of Object.keys(LogLevel)) {
-  if (LogLevel[level] > 0) {
-    Logger[level.toLowerCase()] = function() {
-      // Write log only if logging level in the config is above the threshold for the current
-      // log level.
-      if (LogLevel[SERVER.LOG_LEVEL] >= LogLevel[level]) {
-        let logDate = new Date()
-          .toISOString()
-          .replace(/T/, " ")
-          .replace(/\..+/, "");
-        logDate = `[${logDate}]`;
-        let logMessage = util.format.apply(util.format, arguments);
-        // If the config is set up to log to a file, write all logs to file.
-        if (SERVER.LOG_OUTPUT_TO_FILE) {
-          let logTag = `[${level}]`;
-          let log = `${logTag} ${logDate} ${logMessage}\n`;
-          errorLogger.write(log);
-        } else {
-          // If the config log level is DEBUG, log directly to the console with colors.
-          let errStack = new Error().stack;
-          let stacklist = errStack.split("\n")[2].split("at ")[1];
-          let regEx = /\(([^)]+)\)/;
-          let parsedStack = regEx.exec(stacklist)
-            ? regEx.exec(stacklist)[1]
-            : stacklist;
-          let stackParts = parsedStack.split(":");
-          let file = stackParts[0];
-          let line = stackParts[1];
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="client_js_components_App.js.html">client/js/components/App.js</a>, <a href="client_js_components_App.js.html#line23">line 23</a>
+    </li></ul></dd>
+    
 
-          let logTag =
-            chalk.blue("[") +
-            chalk[LogColor[level]].bold(level) +
-            chalk.blue("]");
-          let log = "";
-          if (level !== "INFO") {
-            log = `${logTag}${logDate}[${file}:${line}] ${logMessage}`;
-          } else {
-            log = `${logTag}${logDate} ${logMessage}`;
-          }
-          console.log(log);
-        }
-      }
-    };
-  }
-}
+    
 
-export default Logger;
-</code></pre>
-        </article>
-    </section>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>props</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <h6>Properties</h6>
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>currentID</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Id of the current user from the redux state</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>store</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the redux store object</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<div class="description">
+    The primary app component
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li>React.Component</li>
+    </ul>
+
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id=".componentDidMount"><span class="type-signature">(static) </span>componentDidMount<span class="type-signature"></span></h4>
+
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="client_js_components_App.js.html">client/js/components/App.js</a>, <a href="client_js_components_App.js.html#line46">line 46</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="module-client_actions_users.html#.fetchCurrentUser">module:client/actions/users.fetchCurrentUser</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    Require the css and send an asynchronous request for the current user data
+after the state is loaded
+</div>
+
+
+
+
+
+
+
+
+        
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 
