@@ -1,4 +1,4 @@
-import { MongooseModuleOptions } from '@nestjs/mongoose';
+import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 
 /**
  * Parses process.env to create a clean configuration interface
@@ -23,7 +23,7 @@ class ConfigService {
    * Return connection parameters for the Mongoose Module
    */
 
-  public get mongooseOptions(): MongooseModuleOptions {
+  public get dbOptions(): PostgresConnectionOptions {
     const {
       DB_HOSTNAME,
       DB_PORT,
@@ -32,10 +32,12 @@ class ConfigService {
       DB_PASSWORD,
     } = this.env;
     return {
-      uri: `mongodb://${DB_HOSTNAME}:${DB_PORT}/${DB_DATABASE}`,
-      useNewUrlParser: true,
-      user: DB_USERNAME,
-      pass: DB_PASSWORD,
+      type: 'postgres',
+      database: DB_DATABASE,
+      username: DB_USERNAME,
+      password: DB_PASSWORD,
+      host: DB_HOSTNAME,
+      port: parseInt(DB_PORT),
     };
   }
 

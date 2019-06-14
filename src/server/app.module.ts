@@ -1,5 +1,5 @@
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
-import { MongooseModule, MongooseModuleOptions } from '@nestjs/mongoose';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { AuthModule, ConfigModule } from './modules';
 import { AppController } from './controllers';
 import {
@@ -19,11 +19,11 @@ import {
 @Module({
   imports: [
     ConfigModule,
-    MongooseModule.forRootAsync({
+    TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (
         config: ConfigService
-      ): Promise<MongooseModuleOptions> => (config.mongooseOptions),
+      ): Promise<TypeOrmModuleOptions> => (config.dbOptions),
       inject: [ConfigService],
     }),
     AuthModule,
