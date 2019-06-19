@@ -1,11 +1,13 @@
 import {
   Entity,
   Column,
+  OneToMany,
   ManyToOne,
   ObjectType,
   Index,
 } from 'typeorm';
 import { BaseEntity } from './base.entity';
+import { CourseInstance } from './courseinstance.entity';
 import { Area } from './area.entity';
 
 export enum TERM_PATTERN {
@@ -125,8 +127,19 @@ export class Course extends BaseEntity {
   public termPattern: TERM_PATTERN;
 
   /**
-   * The subject [[Area]] this course belongs to
+   * An occurance of a [[Course]] that takes place in a [[Semester]]. Over time
+   * one course can have many scheduled [[CourseInstance]]s. This allows
+   * courses to be more easily re-used and repeated over time.
    */
+  @OneToMany(
+    (): ObjectType<CourseInstance> => CourseInstance,
+    ({ course }): Course => course
+  )
+  public instances: CourseInstance[];
+
+  /**
+  * The subject [[Area]] this course belongs to
+  */
   @ManyToOne(
     (): ObjectType<Area> => Area,
     ({ courses }): Course[] => courses
