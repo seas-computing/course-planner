@@ -3,9 +3,11 @@ import {
   Column,
   ManyToOne,
   ObjectType,
+  ManyToMany,
 } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { Course } from './course.entity';
+import { Faculty } from './faculty.entity';
 
 /**
  * Sets the offered status of a course instance for a given semester
@@ -77,4 +79,17 @@ export class CourseInstance extends BaseEntity {
     ({ instances }): CourseInstance[] => instances
   )
   public course: Course;
+
+  /**
+   * A collection of [[Faculty]] associated with this course instance. Several
+   * faculty members may be responsible for the delivery of one course instance.
+   *
+   * Usually, the first faculty member on the list is the primary faculty for
+   * this course instance
+   */
+  @ManyToMany(
+    (): ObjectType<Faculty> => Faculty,
+    ({ courseInstances }): CourseInstance[] => courseInstances
+  )
+  public faculty: Faculty[];
 }
