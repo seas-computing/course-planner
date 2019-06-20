@@ -4,10 +4,12 @@ import {
   ManyToOne,
   ObjectType,
   ManyToMany,
+  OneToMany,
 } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { Course } from './course.entity';
 import { Faculty } from './faculty.entity';
+import { Semester } from './semester.entity';
 
 /**
  * Sets the offered status of a course instance for a given semester
@@ -61,8 +63,8 @@ export class CourseInstance extends BaseEntity {
   public readonly name: string;
 
   /**
-   * Indicates whether the course is currently being offered this semester, and
-   * whether the course would normally be offered in other semesters
+   * Indicates whether the course is currently being offered this [[Semester]],
+   * and whether the course would normally be offered in other semesters
    */
   @Column({
     type: 'enum',
@@ -92,4 +94,13 @@ export class CourseInstance extends BaseEntity {
     ({ courseInstances }): CourseInstance[] => courseInstances
   )
   public faculty: Faculty[];
+
+  /**
+   * The [[Semester]] this course instance is scheduled to take place in
+   */
+  @OneToMany(
+    (): ObjectType<Semester> => Semester,
+    ({ courseInstances }): CourseInstance[] => courseInstances
+  )
+  public semester: Semester;
 }
