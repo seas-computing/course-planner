@@ -9,6 +9,7 @@ import {
 import { BaseEntity } from './base.entity';
 import { CourseInstance } from './courseinstance.entity';
 import { Area } from './area.entity';
+import { NonClassParent } from './nonclassparent.entity';
 
 export enum TERM_PATTERN {
 
@@ -136,6 +137,17 @@ export class Course extends BaseEntity {
     ({ course }): Course => course
   )
   public instances: CourseInstance[];
+
+  /**
+   * [[NonClassParent]]s are parent entities to [[NonClassevent]] and are
+   * designed to be analogous to Courses, except that [[NonClassParent]]s can be
+   * scheduled outside of and independently from a [[Course]].
+   */
+  @OneToMany(
+    (): ObjectType<NonClassParent> => NonClassParent,
+    ({ course }): Course => course
+  )
+  public nonClassParents: NonClassParent[];
 
   /**
   * The subject [[Area]] this course belongs to
