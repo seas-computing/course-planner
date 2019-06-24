@@ -2,10 +2,12 @@ import {
   Entity,
   Column,
   ObjectType,
+  OneToMany,
   ManyToOne,
 } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { CourseInstance } from './courseinstance.entity';
+import { NonClassEvent } from './nonclassevent.entity';
 
 export enum TERM {
   FALL = 'Fall',
@@ -39,4 +41,13 @@ export abstract class Semester extends BaseEntity {
     ({ semester }): Semester => semester
   )
   public courseInstances: CourseInstance[];
+
+  /**
+   * [[NonClassEvent]]s scheduled to occur within this semester.
+   */
+  @OneToMany(
+    (): ObjectType<NonClassEvent> => NonClassEvent,
+    ({ semester }): Semester => semester
+  )
+  public nonClassEvents: NonClassEvent[];
 }

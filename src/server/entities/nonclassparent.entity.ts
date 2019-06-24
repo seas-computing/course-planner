@@ -1,8 +1,9 @@
 import {
-  Entity, Column, ObjectType, ManyToOne,
+  Entity, Column, ObjectType, ManyToOne, OneToMany,
 } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { Course } from './course.entity';
+import { NonClassEvent } from './nonclassevent.entity';
 
 /**
  * Parent entity to non-class events. Designed to be analogous to {@link Course}
@@ -40,4 +41,15 @@ export class NonClassParent extends BaseEntity {
     ({ nonClassParents }): NonClassParent[] => nonClassParents
   )
   public course: Course;
+
+  /**
+   * Collection of scheduled events. These are typically events that occur
+   * outside the normal teaching of classes (for example, office hours or
+   * seminars)
+   */
+  @OneToMany(
+    (): ObjectType<NonClassEvent> => NonClassEvent,
+    ({ nonClassParent }): NonClassParent => nonClassParent
+  )
+  public nonClassEvents: NonClassEvent[];
 }
