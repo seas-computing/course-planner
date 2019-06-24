@@ -1,5 +1,12 @@
-import { Entity, Column, Index } from 'typeorm';
+import {
+  Entity,
+  Column,
+  ManyToOne,
+  ObjectType,
+  Index,
+} from 'typeorm';
 import { BaseEntity } from './base.entity';
+import { Area } from './area.entity';
 
 export enum TERM_PATTERN {
 
@@ -116,4 +123,13 @@ export class Course extends BaseEntity {
     enum: Object.values(TERM_PATTERN),
   })
   public termPattern: TERM_PATTERN;
+
+  /**
+   * The subject [[Area]] this course belongs to
+   */
+  @ManyToOne(
+    (): ObjectType<Area> => Area,
+    ({ courses }): Course[] => courses
+  )
+  public area: Area;
 }
