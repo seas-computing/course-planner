@@ -3,6 +3,7 @@ import {
 } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { Meeting } from './meeting.entity';
+import { Building } from './building.entity';
 
 /**
  * A [[Room]] within a [[Building]]
@@ -54,4 +55,13 @@ export class Room extends BaseEntity {
     ({ room }): Room => room
   )
   public meetings: Meeting[];
+
+  /**
+   * The [[Building]] this room is located in
+   */
+  @ManyToOne(
+    (): ObjectType<Building> => Building,
+    ({ rooms }): Room[] => rooms
+  )
+  public building: Building;
 }
