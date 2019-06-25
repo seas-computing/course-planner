@@ -3,10 +3,12 @@ import {
   Column,
   ManyToOne,
   ObjectType,
+  OneToMany,
 } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { NonClassEvent } from './nonclassevent.entity';
 import { CourseInstance } from './courseinstance.entity';
+import { Room } from './room.entity';
 
 /**
  * Set list of days on which a [[Meeting]] can be scheduled to occur
@@ -63,4 +65,10 @@ export class Meeting extends BaseEntity {
     ({ meeting }): Meeting => meeting
   )
   public courseInstance: CourseInstance;
+
+  @OneToMany(
+    (): ObjectType<Room> => Room,
+    ({ meetings }): Meeting[] => meetings
+  )
+  public room: Room;
 }

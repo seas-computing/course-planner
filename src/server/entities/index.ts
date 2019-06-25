@@ -6,5 +6,6 @@ export * from './faculty.entity';
 export * from './meeting.entity';
 export * from './nonclassevent.entity';
 export * from './nonclassparent.entity';
+export * from './room.entity';
 export * from './semester.entity';
 export * from './user.entity';
