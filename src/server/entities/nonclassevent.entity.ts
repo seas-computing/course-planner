@@ -3,10 +3,12 @@ import {
   Column,
   ManyToOne,
   ObjectType,
+  OneToMany,
 } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { NonClassParent } from './nonclassparent.entity';
 import { Semester } from './semester.entity';
+import { Meeting } from './meeting.entity';
 
 @Entity()
 export class NonClassEvent extends BaseEntity {
@@ -55,4 +57,10 @@ export class NonClassEvent extends BaseEntity {
     default: true,
   })
   public private: boolean = true;
+
+  @OneToMany(
+    (): ObjectType<Meeting> => Meeting,
+    ({ nonClassEvent }): NonClassEvent => nonClassEvent
+  )
+  public meetings: Meeting[];
 }

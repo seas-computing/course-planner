@@ -10,6 +10,7 @@ import { BaseEntity } from './base.entity';
 import { Course } from './course.entity';
 import { Faculty } from './faculty.entity';
 import { Semester } from './semester.entity';
+import { Meeting } from './meeting.entity';
 
 /**
  * Sets the offered status of a course instance for a given semester
@@ -98,6 +99,12 @@ export class CourseInstance extends BaseEntity {
   /**
    * The [[Semester]] this course instance is scheduled to take place in
    */
+  @OneToMany(
+    (): ObjectType<Meeting> => Meeting,
+    ({ courseInstance }): CourseInstance => courseInstance
+  )
+  public meeting: Meeting;
+
   @OneToMany(
     (): ObjectType<Semester> => Semester,
     ({ courseInstances }): CourseInstance[] => courseInstances
