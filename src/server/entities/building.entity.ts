@@ -1,8 +1,9 @@
 import {
-  Entity, Column, OneToMany, ObjectType,
+  Entity, Column, OneToMany, ObjectType, ManyToOne,
 } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { Room } from './room.entity';
+import { Campus } from './campus.entity';
 
 /**
  * Represents a physical building within a Harvard [[Campus]]. One [[Building]]
@@ -30,4 +31,13 @@ export class Building extends BaseEntity {
     ({ building }): Building => building
   )
   public rooms: Room[];
+
+  /**
+   * The [[Campus]] this building belongs to
+   */
+  @ManyToOne(
+    (): ObjectType<Campus> => Campus,
+    ({ buildings }): Building[] => buildings
+  )
+  public campus: Campus;
 }
