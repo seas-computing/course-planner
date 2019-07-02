@@ -1,8 +1,8 @@
 {
-  "name": "seas-react-boilerplate",
+  "name": "course-planner",
   "version": "2.0.0",
   "private": true,
-  "homepage": "https://code.harvard.edu/SEAS/seas-react-boilerplate/wiki",
+  "homepage": "https://github.com/seas-computing/course-planner",
   "main": "./src/server/index.ts",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.9.0",
