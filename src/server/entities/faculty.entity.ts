@@ -1,8 +1,9 @@
 import {
-  Entity, Column, ManyToMany, JoinTable, ObjectType,
+  Entity, Column, ManyToMany, JoinTable, ObjectType, OneToMany,
 } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { CourseInstance } from './courseinstance.entity';
+import { Absence } from './absence.entity';
 
 export enum FACULTY_TYPE {
   /**
@@ -60,4 +61,10 @@ export class Faculty extends BaseEntity {
   )
   @JoinTable()
   public courseInstances: CourseInstance[];
+
+  @OneToMany(
+    (): ObjectType<Absence> => Absence,
+    ({ faculty }): Faculty => faculty
+  )
+  public absence: Absence[];
 }

@@ -8,6 +8,7 @@ import {
 import { BaseEntity } from './base.entity';
 import { CourseInstance } from './courseinstance.entity';
 import { NonClassEvent } from './nonclassevent.entity';
+import { Absence } from './absence.entity';
 
 export enum TERM {
   FALL = 'Fall',
@@ -50,4 +51,10 @@ export abstract class Semester extends BaseEntity {
     ({ semester }): Semester => semester
   )
   public nonClassEvents: NonClassEvent[];
+
+  @ManyToOne(
+    (): ObjectType<Absence> => Absence,
+    ({ semester }): Semester => semester
+  )
+  public absences: Absence[];
 }
