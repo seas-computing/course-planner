@@ -1,15 +1,14 @@
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import session, { Store } from 'express-session';
+import ConnectRedis from 'connect-redis';
 import { AuthModule, ConfigModule } from './modules';
 import { AppController } from './controllers';
 import {
   AppService,
-  SessionService,
   ConfigService,
 } from './services';
-import {
-  SessionMiddleware,
-} from './middleware';
+import { SessionMiddleware } from './middleware';
 
 /**
  * Base application module that injects Mongoose and configures
@@ -31,7 +30,22 @@ import {
   controllers: [AppController],
   providers: [
     AppService,
-    SessionService,
+    {
+      inject: [ConfigService],
+      provide: Store,
+      useFactory: (config: ConfigService): Store => {
+        const RedisStore = ConnectRedis(session);
+
+        return new RedisStore({
+          host: config.get('REDIS_HOST'),
+          port: parseInt(config.get('REDIS_PORT')),
+          pass: config.get('REDIS_PASSWORD'),
+          logErrors: config.isDevelopment,
+          prefix: config.get('APP_NAME').replace(/\s|[^a-zA-Z0-9 -]/gi, '')
+            .toLowerCase() + '_',
+        });
+      },
+    },
   ],
 })
 class AppModule implements NestModule {

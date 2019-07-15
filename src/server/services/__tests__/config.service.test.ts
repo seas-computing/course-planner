@@ -1,5 +1,5 @@
 import { strictEqual } from 'assert';
-import { safeString, int } from 'testData';
+import { int, safeString } from 'testData';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { ConfigService } from '../config.service';
 

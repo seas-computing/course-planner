@@ -16,12 +16,16 @@ services:
       context: .
       target: base
     environment:
+      APP_NAME: ${APP_NAME}
       CAS_URL: ${CAS_URL}
       DB_HOSTNAME: ${DB_HOSTNAME}
       DB_PORT: ${DB_PORT}
       DB_DATABASE: ${DB_DATABASE}
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_PORT: ${REDIS_PORT}
       NODE_ENV: ${NODE_ENV}
       EXTERNAL_URL: ${EXTERNAL_URL}
       SERVER_PORT: ${SERVER_PORT}
@@ -32,8 +36,17 @@ services:
     volumes:
       - ".:/node:rw"
     command: ["npm", "run", "start"]
+    links:
+      - redis
+      - postgres
     depends_on:
       - "postgres"
-
+      - "redis"
+  redis:
+    image: bitnami/redis:latest
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    ports:
+      - "127.0.0.1:6379:6379"
 volumes:
   postgres_data:
