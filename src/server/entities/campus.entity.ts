@@ -14,7 +14,7 @@ export class Campus extends BaseEntity {
   @Column({
     type: 'varchar',
     nullable: false,
-    comment: 'Campus name (i.e - Alston)',
+    comment: 'Campus name (i.e - Allston)',
   })
   public name: string;
 
