@@ -1,5 +1,5 @@
 import {
-  Entity, Column, ManyToMany, JoinTable, ObjectType, OneToMany,
+  Entity, Column, ManyToMany, JoinTable, ObjectType, OneToMany, Index,
 } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { CourseInstance } from './courseinstance.entity';
@@ -31,15 +31,15 @@ export enum FACULTY_TYPE {
 export class Faculty extends BaseEntity {
   @Column({
     type: 'varchar',
-    nullable: true,
+    default: '',
   })
-  public firstname: string;
+  public firstName: string;
 
   @Column({
     type: 'varchar',
-    nullable: true,
+    default: '',
   })
-  public lastname: string;
+  public lastName: string;
 
   @Index()
   @Column({
