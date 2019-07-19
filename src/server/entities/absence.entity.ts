@@ -91,7 +91,7 @@ export class Absence extends BaseEntity {
    */
   @ManyToOne(
     (): ObjectType<Faculty> => Faculty,
-    ({ absence }): Absence[] => absence
+    ({ absences }): Absence[] => absences
   )
   public faculty: Faculty;
 }

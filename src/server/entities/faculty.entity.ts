@@ -49,7 +49,6 @@ export class Faculty extends BaseEntity {
   @Column({
     type: 'enum',
     enum: Object.values(FACULTY_TYPE),
-    nullable: false,
     default: FACULTY_TYPE.NON_LADDER,
   })
   public category: FACULTY_TYPE = FACULTY_TYPE.NON_LADDER;
@@ -65,5 +64,5 @@ export class Faculty extends BaseEntity {
     (): ObjectType<Absence> => Absence,
     ({ faculty }): Faculty => faculty
   )
-  public absence: Absence[];
+  public absences: Absence[];
 }
