@@ -43,7 +43,6 @@ export class Faculty extends BaseEntity {
 
   @Column({
     type: 'varchar',
-    nullable: true,
   })
   public email: string;
 
