@@ -41,10 +41,11 @@ export class Faculty extends BaseEntity {
   })
   public lastname: string;
 
+  @Index()
   @Column({
     type: 'varchar',
   })
-  public email: string;
+  public HUID: string;
 
   @Column({
     type: 'enum',
