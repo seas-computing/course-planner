@@ -118,6 +118,16 @@ export class Course extends BaseEntity {
   public private: boolean = true;
 
   /**
+   * A free text field for admin staff to record any other courses that this
+   * course is the same as
+   */
+  @Column({
+    type: 'text',
+    default: '',
+  })
+  public sameAs: string = '';
+
+  /**
    * The term this course is being delivered in. See [[TERM_PATTERN]] for
    * allowed values.
    */
