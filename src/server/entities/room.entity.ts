@@ -17,7 +17,6 @@ export class Room extends BaseEntity {
    */
   @Column({
     type: 'varchar',
-    nullable: false,
     comment: 'The room name (i.e - Lecture Theatre)',
   })
   public name: string;
@@ -29,7 +28,6 @@ export class Room extends BaseEntity {
    */
   @Column({
     type: 'varchar',
-    nullable: false,
     comment: 'The floor the room is located on (i.e - "Ground")',
   })
   public floor: string;
@@ -41,7 +39,6 @@ export class Room extends BaseEntity {
    */
   @Column({
     type: 'int',
-    nullable: false,
     comment: 'The number of people the room is able to accommodate',
   })
   public capacity: number;

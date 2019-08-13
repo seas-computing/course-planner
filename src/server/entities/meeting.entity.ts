@@ -30,14 +30,12 @@ export enum DAY {
 export class Meeting extends BaseEntity {
   @Column({
     type: 'time with time zone',
-    nullable: false,
     comment: 'The time of day this event (meeting) begins',
   })
   public start: string;
 
   @Column({
     type: 'time with time zone',
-    nullable: false,
     comment: 'The time of day this event (meeting) ends',
   })
   public end: string;

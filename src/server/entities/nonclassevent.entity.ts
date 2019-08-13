@@ -53,7 +53,6 @@ export class NonClassEvent extends BaseEntity {
    */
   @Column({
     type: 'boolean',
-    nullable: false,
     default: true,
   })
   public private: boolean = true;

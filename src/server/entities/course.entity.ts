@@ -46,7 +46,6 @@ export class Course extends BaseEntity {
    */
   @Column({
     type: 'varchar',
-    nullable: false,
     comment: 'The long title for the course (i.e - Introduction to computer'
       + ' science)',
   })
@@ -59,7 +58,6 @@ export class Course extends BaseEntity {
   @Index()
   @Column({
     type: 'varchar',
-    nullable: false,
     comment: 'The alphabetical part of the course code (i.e - The CS in CS 50)',
   })
   public prefix: string;
@@ -74,7 +72,6 @@ export class Course extends BaseEntity {
    */
   @Column({
     type: 'varchar',
-    nullable: false,
     comment: 'The numerical part of the course code (i.e - the CS in CS 50).'
       + ' May also include an alphabetical component (i.e - CS 109b)',
   })
@@ -85,7 +82,6 @@ export class Course extends BaseEntity {
    */
   @Column({
     type: 'boolean',
-    nullable: false,
     default: false,
   })
   public undergraduate: boolean = false;
@@ -108,7 +104,6 @@ export class Course extends BaseEntity {
   */
   @Column({
     type: 'boolean',
-    nullable: false,
     default: true,
     comment: 'Allows admin staff to hide courses and prevent their publication'
     + ' either because the courses are non-SEAS courses and should not be'

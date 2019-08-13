@@ -18,7 +18,6 @@ export class Building extends BaseEntity {
    */
   @Column({
     type: 'varchar',
-    nullable: false,
     comment: 'The building name (i.e - Maxwell Dworkin)',
   })
   public name: string;
