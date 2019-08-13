@@ -43,12 +43,7 @@ export class Meeting extends BaseEntity {
   @Column({
     type: 'enum',
     enum: Object.values(DAY),
-    comment: 'The day of the week this meeting occurs (i.e: Mon). Each record'
-      + ' indicates a seperate ocurrance of a class. This means that a courses'
-      + ' with sessions on Monday, Wednesday and Thursday should have 3 rows'
-      + ' in this table for each seperate session. This allows split'
-      + ' scheduling so that a class can occur at different times on different'
-      + ' days',
+    comment: 'The day of the week this meeting occurs (i.e: Mon). Each record indicates a seperate ocurrance of a class. This means that a courses with sessions on Monday, Wednesday and Thursday should have 3 rows in this table for each seperate session. This allows split scheduling so that a class can occur at different times on different days',
   })
   public day: DAY;
 

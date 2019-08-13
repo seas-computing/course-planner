@@ -18,8 +18,7 @@ export class NonClassEvent extends BaseEntity {
    */
   @Column({
     type: 'varchar',
-    comment: 'The title of the non-class event. This type of event is typically'
-      + ' used to schedule non-class meetings such as reading groups etc.',
+    comment: 'The title of the non-class event. This type of event is typically used to schedule non-class meetings such as reading groups etc.',
   })
   public title: string;
 

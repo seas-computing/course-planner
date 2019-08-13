@@ -28,8 +28,7 @@ export class NonClassParent extends BaseEntity {
    */
   @Column({
     type: 'varchar',
-    comment: 'The faculty member contact for a given event. This is recorded'
-      + ' here, as this information does not regularly change',
+    comment: 'The faculty member contact for a given event. This is recorded here, as this information does not regularly change',
   })
   public contact: string;
 
