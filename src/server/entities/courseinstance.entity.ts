@@ -3,12 +3,11 @@ import {
   Column,
   ManyToOne,
   ObjectType,
-  ManyToMany,
   OneToMany,
 } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { Course } from './course.entity';
-import { Faculty } from './faculty.entity';
+import { FacultyCourseInstance } from './facultycourseinstance.entity';
 import { Semester } from './semester.entity';
 import { Meeting } from './meeting.entity';
 
@@ -83,28 +82,21 @@ export class CourseInstance extends BaseEntity {
   )
   public course: Course;
 
-  /**
-   * A collection of [[Faculty]] associated with this course instance. Several
-   * faculty members may be responsible for the delivery of one course instance.
-   *
-   * Usually, the first faculty member on the list is the primary faculty for
-   * this course instance
-   */
-  @ManyToMany(
-    (): ObjectType<Faculty> => Faculty,
-    ({ courseInstances }): CourseInstance[] => courseInstances
+  @OneToMany(
+    (): ObjectType<FacultyCourseInstance> => FacultyCourseInstance,
+    ({ courseInstance }): CourseInstance => courseInstance
   )
-  public faculty: Faculty[];
+  public facultyCourseInstances: FacultyCourseInstance[];
 
-  /**
-   * The [[Semester]] this course instance is scheduled to take place in
-   */
   @OneToMany(
     (): ObjectType<Meeting> => Meeting,
     ({ courseInstance }): CourseInstance => courseInstance
   )
   public meeting: Meeting;
 
+  /**
+   * The [[Semester]] this course instance is scheduled to take place in
+   */
   @OneToMany(
     (): ObjectType<Semester> => Semester,
     ({ courseInstances }): CourseInstance[] => courseInstances

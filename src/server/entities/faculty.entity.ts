@@ -1,8 +1,8 @@
 import {
-  Entity, Column, ManyToMany, JoinTable, ObjectType, OneToMany, Index,
+  Entity, Column, ObjectType, OneToMany, Index,
 } from 'typeorm';
 import { BaseEntity } from './base.entity';
-import { CourseInstance } from './courseinstance.entity';
+import { FacultyCourseInstance } from './facultycourseinstance.entity';
 import { Absence } from './absence.entity';
 
 export enum FACULTY_TYPE {
@@ -54,12 +54,11 @@ export class Faculty extends BaseEntity {
   })
   public category: FACULTY_TYPE = FACULTY_TYPE.NON_LADDER;
 
-  @ManyToMany(
-    (): ObjectType<CourseInstance> => CourseInstance,
-    ({ faculty }): Faculty[] => faculty
+  @OneToMany(
+    (): ObjectType<FacultyCourseInstance> => FacultyCourseInstance,
+    ({ faculty }): Faculty => faculty
   )
-  @JoinTable()
-  public courseInstances: CourseInstance[];
+  public facultyCourseInstances: FacultyCourseInstance[];
 
   @OneToMany(
     (): ObjectType<Absence> => Absence,
