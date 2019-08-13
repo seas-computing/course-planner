@@ -41,8 +41,7 @@ import { SessionMiddleware } from './middleware';
           port: parseInt(config.get('REDIS_PORT')),
           pass: config.get('REDIS_PASSWORD'),
           logErrors: config.isDevelopment,
-          prefix: config.get('APP_NAME').replace(/\s|[^a-zA-Z0-9 -]/gi, '')
-            .toLowerCase() + '_',
+          prefix: config.get('REDIS_PREFIX') + '_',
         });
       },
     },
