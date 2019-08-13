@@ -18,7 +18,7 @@ export enum ABSENCE_TYPE {
    * A period of paid research leave granted for study or travel.
    * This is typically only available to ladder faculty
    */
-  SABBATICAL = 'sabbatical',
+  SABBATICAL = 'SABBATICAL',
 
   /**
    * Faculty member is not currently on sabbatical, but is eligible to take
@@ -27,38 +27,38 @@ export enum ABSENCE_TYPE {
    * and Professors of the Practice, are not eligible for either paid or unpaid
    * research leaves.
    */
-  SABBATICAL_ELIGIBLE = 'sabbatical_eligible',
+  SABBATICAL_ELIGIBLE = 'SABBATICAL_ELIGIBLE',
 
   /**
    * Faculty member is not eligble for sabbatical. Typically this would  be
    * non-faculty staff, or non-ladder faculty.
    */
-  SABBATICAL_INELIGIBLE = 'sabbatical_ineligible',
+  SABBATICAL_INELIGIBLE = 'SABBATICAL_INELIGIBLE',
 
   /**
    * Relief of some teaching responsibilites in order to perform administrative
    * work related to the faculty member's role
    */
-  TEACHING_RELIEF = 'teaching_relief',
+  TEACHING_RELIEF = 'TEACHING_RELIEF',
 
   /**
    * Similar to [[SABBATICAL]], but typically unpaid. Like sabbaticals -
    * only ladder faculty are eligible for research leave
    */
-  RESEARCH_LEAVE = 'research_leave',
+  RESEARCH_LEAVE = 'RESEARCH_LEAVE',
 
   /**
    * All staff are eligible for parental leave
    *
    * See: {@link https://hr.harvard.edu/leaves-absence}
    */
-  PARENTAL_LEAVE = 'parental_leave',
+  PARENTAL_LEAVE = 'PARENTAL_LEAVE',
 
   /**
    * Indicates that staff member is no longer active. They may have retired,
    * moved, or are no longer at Harvard
    */
-  NO_LONGER_ACTIVE = 'no_longer_active',
+  NO_LONGER_ACTIVE = 'NO_LONGER_ACTIVE',
 }
 
 /**

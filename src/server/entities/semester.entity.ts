@@ -11,8 +11,8 @@ import { NonClassEvent } from './nonclassevent.entity';
 import { Absence } from './absence.entity';
 
 export enum TERM {
-  FALL = 'Fall',
-  SPRING = 'Spring',
+  FALL = 'FALL',
+  SPRING = 'SPRING',
 }
 
 @Entity()
@@ -22,6 +22,7 @@ export abstract class Semester extends BaseEntity {
    */
   @Column({
     type: 'int',
+    comment: 'The academmic year (as a 4 digit integer)',
   })
   public acyr: number;
 

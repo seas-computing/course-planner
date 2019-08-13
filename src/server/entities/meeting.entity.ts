@@ -15,15 +15,15 @@ import { Room } from './room.entity';
  */
 export enum DAY {
   /** Monday */
-  MON = 'Mon',
+  MON = 'MON',
   /** Tuesday */
-  TUE = 'Tue',
+  TUE = 'TUE',
   /** Wednesday */
-  WED = 'Wed',
+  WED = 'WED',
   /** Thursday */
-  THU = 'Thu',
+  THU = 'THU',
   /** Friday */
-  FRI = 'Fri'
+  FRI = 'FRI'
 }
 
 @Entity()

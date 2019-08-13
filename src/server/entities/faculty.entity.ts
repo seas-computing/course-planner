@@ -13,7 +13,7 @@ export enum FACULTY_TYPE {
    * See {@link https://www.seas.harvard.edu/faculty-research/people/ladder}
    * for more information
    */
-  LADDER = 'ladder',
+  LADDER = 'LADDER',
 
   /**
    * The term non-ladder faculty refers to those holding term-limited
@@ -24,7 +24,7 @@ export enum FACULTY_TYPE {
    * See {@link https://www.seas.harvard.edu/faculty-research/people/nonladder}
    * for more information
    */
-  NON_LADDER = 'non_ladder',
+  NON_LADDER = 'NON_LADDER',
 }
 
 @Entity()
