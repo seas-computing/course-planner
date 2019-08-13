@@ -51,13 +51,14 @@ export class Course extends BaseEntity {
   public title: string;
 
   /**
-   * The alphabetical part of the course code (i.e - The CS in CS 50)
+   * The alphabetical part of the course code (i.e - The CS in CS 50) that
+   * denotes the subject. In this case "CS" refers to "Computer Science"
    * @example `"CS"`
    */
   @Index()
   @Column({
     type: 'varchar',
-    comment: 'The alphabetical part of the course code (i.e - The CS in CS 50)',
+    comment: 'The alphabetical part of the course code (i.e - The CS in CS 50) that denotes the subject. In this case "CS refers to "Computer Science"',
   })
   public prefix: string;
 
