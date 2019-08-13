@@ -28,17 +28,25 @@ export enum DAY {
 
 @Entity()
 export class Meeting extends BaseEntity {
+  /**
+   * The time of day this event (meeting) begins in 24 hour time with ISO8601 timezone
+   * @example `"19:15:40.328-04"`
+   */
   @Column({
     type: 'time with time zone',
-    comment: 'The time of day this event (meeting) begins',
+    comment: 'The time of day this event (meeting) begins in 24 hour time with ISO8601 timezone (e.g "19:15:40.328-04")',
   })
-  public start: string;
+  public startTime: string;
 
+  /**
+   * The time of day this event (meeting) ends in 24 hour time with ISO8601 timezone
+   * @example `"19:15:40.328-04"`
+   */
   @Column({
     type: 'time with time zone',
-    comment: 'The time of day this event (meeting) ends',
+    comment: 'The time of day this event (meeting) ends in 24 hour time with ISO8601 timezone (e.g "19:15:40.328-04")',
   })
-  public end: string;
+  public endTime: string;
 
   @Column({
     type: 'enum',
