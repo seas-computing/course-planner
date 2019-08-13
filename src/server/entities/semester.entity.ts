@@ -18,13 +18,14 @@ export enum TERM {
 @Entity()
 export abstract class Semester extends BaseEntity {
   /**
-   * The academic year (as a 4 digit integer)
+   * The academic year as a 4 digit integer
    */
   @Column({
     type: 'int',
-    comment: 'The academmic year (as a 4 digit integer)',
+    precision: 4,
+    comment: 'The academmic year as a 4 digit integer',
   })
-  public acyr: number;
+  public academicYear: number;
 
   /**
    * The term this semester occurs in. Can be either spring or fall.
