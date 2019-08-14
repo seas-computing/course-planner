@@ -22,17 +22,6 @@ export class Room extends BaseEntity {
   public name: string;
 
   /**
-   * The floor the room is located on
-   *
-   * @example `"Ground"`
-   */
-  @Column({
-    type: 'varchar',
-    comment: 'The floor the room is located on (i.e - "Ground")',
-  })
-  public floor: string;
-
-  /**
    * The number of people the room is able to accommodate
    *
    * @example `6`
