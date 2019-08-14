@@ -63,7 +63,7 @@ export class Meeting extends BaseEntity {
 
   @ManyToOne(
     (): ObjectType<CourseInstance> => CourseInstance,
-    ({ meeting }): Meeting => meeting
+    ({ meetings }): Meeting[] => meetings
   )
   public courseInstance: CourseInstance;
 
