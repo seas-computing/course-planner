@@ -1,4 +1,5 @@
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
+import { RedisStoreOptions } from 'connect-redis';
 
 /**
  * Parses process.env to create a clean configuration interface
@@ -38,6 +39,21 @@ class ConfigService {
       password: DB_PASSWORD,
       host: DB_HOSTNAME,
       port: parseInt(DB_PORT),
+    };
+  }
+
+  public get redisOptions(): RedisStoreOptions {
+    const {
+      REDIS_HOST,
+      REDIS_PORT,
+      REDIS_PASSWORD,
+      REDIS_PREFIX,
+    } = this.env;
+    return {
+      host: REDIS_HOST,
+      port: parseInt(REDIS_PORT),
+      pass: REDIS_PASSWORD,
+      prefix: REDIS_PREFIX + '_',
     };
   }
 

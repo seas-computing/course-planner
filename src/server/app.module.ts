@@ -37,11 +37,8 @@ import { SessionMiddleware } from './middleware';
         const RedisStore = ConnectRedis(session);
 
         return new RedisStore({
-          host: config.get('REDIS_HOST'),
-          port: parseInt(config.get('REDIS_PORT')),
-          pass: config.get('REDIS_PASSWORD'),
+          ...config.redisOptions,
           logErrors: config.isDevelopment,
-          prefix: config.get('REDIS_PREFIX') + '_',
         });
       },
     },

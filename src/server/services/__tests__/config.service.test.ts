@@ -1,6 +1,7 @@
 import { strictEqual } from 'assert';
 import { int, safeString } from 'testData';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
+import { RedisStoreOptions } from 'connect-redis';
 import { ConfigService } from '../config.service';
 
 describe('Configuration Service', function () {
@@ -65,9 +66,40 @@ describe('Configuration Service', function () {
     it('provides the database port', function () {
       strictEqual(dbOptions.port.toString(), DB_PORT);
     });
+  });
 
-    it('provides the database hostname', function () {
-      strictEqual(dbOptions.host, DB_HOSTNAME);
+  describe('redis options', function () {
+    const REDIS_HOST = 'hostname';
+    const REDIS_PORT = int.toString();
+    const REDIS_PASSWORD = 'password';
+    const REDIS_PREFIX = safeString;
+
+    let redisOptions: RedisStoreOptions;
+
+    beforeEach(function () {
+      const config = new ConfigService({
+        REDIS_HOST,
+        REDIS_PORT,
+        REDIS_PASSWORD,
+        REDIS_PREFIX,
+      });
+      ({ redisOptions } = config);
+    });
+
+    it('provides the redis hostname', function () {
+      strictEqual(redisOptions.host, REDIS_HOST);
+    });
+
+    it('provides the redis port', function () {
+      strictEqual(redisOptions.port.toString(), REDIS_PORT);
+    });
+
+    it('provides the redis password', function () {
+      strictEqual(redisOptions.pass, REDIS_PASSWORD);
+    });
+
+    it('provides the redis prefix', function () {
+      strictEqual(redisOptions.prefix, REDIS_PREFIX + '_');
     });
   });
 });
