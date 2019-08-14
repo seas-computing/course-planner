@@ -1,7 +1,10 @@
 {
   "mode": "file",
   "out": "docs",
-  "exclude": "**/__tests__/*",
+  "exclude": [
+    "**/__tests__/*",
+    "src/server/migrations/*"
+  ],
   "excludeExternals": true,
   "readme": "README.md"
 }

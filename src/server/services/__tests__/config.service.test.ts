@@ -1,6 +1,7 @@
 import { strictEqual } from 'assert';
-import { safeString, int } from 'testData';
-import { MongooseModuleOptions } from '@nestjs/mongoose';
+import { int, safeString } from 'testData';
+import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
+import { RedisStoreOptions } from 'connect-redis';
 import { ConfigService } from '../config.service';
 
 describe('Configuration Service', function () {
@@ -30,14 +31,14 @@ describe('Configuration Service', function () {
     strictEqual(config.get('DB_HOSTNAME'), safeString);
   });
 
-  describe('mongoose options', function () {
+  describe('database options', function () {
     const DB_HOSTNAME = 'hostname';
     const DB_PORT = int.toString();
     const DB_DATABASE = 'database';
     const DB_USERNAME = 'username';
     const DB_PASSWORD = 'password';
 
-    let mongooseOptions: MongooseModuleOptions;
+    let dbOptions: PostgresConnectionOptions;
 
     beforeEach(function () {
       const config = new ConfigService({
@@ -47,22 +48,58 @@ describe('Configuration Service', function () {
         DB_USERNAME,
         DB_PASSWORD,
       });
-      ({ mongooseOptions } = config);
+      ({ dbOptions } = config);
     });
 
-    it('creates a URI connection string from environment vars', function () {
-      strictEqual(
-        mongooseOptions.uri,
-        `mongodb://${DB_HOSTNAME}:${DB_PORT}/${DB_DATABASE}`
-      );
+    it('provides the database username', function () {
+      strictEqual(dbOptions.username, DB_USERNAME);
     });
 
-    it('provides the mongo username', function () {
-      strictEqual(mongooseOptions.user, DB_USERNAME);
+    it('provides the database password', function () {
+      strictEqual(dbOptions.password, DB_PASSWORD);
     });
 
-    it('provides the mongo password', function () {
-      strictEqual(mongooseOptions.pass, DB_PASSWORD);
+    it('provides the database name', function () {
+      strictEqual(dbOptions.database, DB_DATABASE);
+    });
+
+    it('provides the database port', function () {
+      strictEqual(dbOptions.port.toString(), DB_PORT);
+    });
+  });
+
+  describe('redis options', function () {
+    const REDIS_HOST = 'hostname';
+    const REDIS_PORT = int.toString();
+    const REDIS_PASSWORD = 'password';
+    const REDIS_PREFIX = safeString;
+
+    let redisOptions: RedisStoreOptions;
+
+    beforeEach(function () {
+      const config = new ConfigService({
+        REDIS_HOST,
+        REDIS_PORT,
+        REDIS_PASSWORD,
+        REDIS_PREFIX,
+      });
+      ({ redisOptions } = config);
+    });
+
+    it('provides the redis hostname', function () {
+      strictEqual(redisOptions.host, REDIS_HOST);
+    });
+
+    it('provides the redis port', function () {
+      strictEqual(redisOptions.port.toString(), REDIS_PORT);
+    });
+
+    it('provides the redis password', function () {
+      strictEqual(redisOptions.pass, REDIS_PASSWORD);
+    });
+
+    it('provides the redis prefix', function () {
+      strictEqual(redisOptions.prefix, REDIS_PREFIX + '_');
     });
   });
 });

@@ -1,42 +1,53 @@
 version: '3.7'
 
 services:
-  mongo:
-    image: "mongo:3.6"
+  postgres:
+    image: postgres:10.7
     ports:
-      - "127.0.0.1:27017:27017"
+      - "127.0.0.1:5432:5432"
     environment:
-      MONGO_INITDB_DATABASE:
-      DB_DATABASE:
-      DB_USERNAME:
-      DB_PASSWORD:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - "./mongoInit.sh:/docker-entrypoint-initdb.d/mongoInit.sh"
-      - "mongo_data:/data/db/"
-
+      - "postgres_data:/var/lib/postgresql/data"
   node:
-    build: 
+    build:
       context: .
-      target: base 
-    environment: 
-      CAS_URL:
-      DB_HOSTNAME: 
-      DB_PORT:
-      DB_DATABASE: 
-      DB_USERNAME:
-      DB_PASSWORD:
-      NODE_ENV:
-      EXTERNAL_URL:
-      SERVER_PORT:
-      SESSION_SECRET:
+      target: base
+    environment:
+      APP_NAME: ${APP_NAME}
+      CAS_URL: ${CAS_URL}
+      DB_HOSTNAME: ${DB_HOSTNAME}
+      DB_PORT: ${DB_PORT}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_PREFIX: ${REDIS_PREFIX}
+      NODE_ENV: ${NODE_ENV}
+      EXTERNAL_URL: ${EXTERNAL_URL}
+      SERVER_PORT: ${SERVER_PORT}
+      SESSION_SECRET: ${SESSION_SECRET}
     user: "1000:1000"
     ports:
       - "127.0.0.1:3000:3000"
     volumes:
       - ".:/node:rw"
     command: ["npm", "run", "start"]
+    links:
+      - redis
+      - postgres
     depends_on:
-      - "mongo"
-
+      - "postgres"
+      - "redis"
+  redis:
+    image: bitnami/redis:5.0.4
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    ports:
+      - "127.0.0.1:6379:6379"
 volumes:
-  mongo_data:
+  postgres_data:
