@@ -92,7 +92,7 @@ export class CourseInstance extends BaseEntity {
     (): ObjectType<Meeting> => Meeting,
     ({ courseInstance }): CourseInstance => courseInstance
   )
-  public meeting: Meeting;
+  public meetings: Meeting[];
 
   /**
    * The [[Semester]] this course instance is scheduled to take place in
