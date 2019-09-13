@@ -74,7 +74,7 @@ export class Course extends BaseEntity {
     type: 'varchar',
     comment: 'The numerical part of the course code (i.e - the CS in CS 50). May also include an alphabetical component (i.e - CS 109b)',
   })
-  public number: number;
+  public number: string;
 
   /**
    * Indicates whether or not this course is an undergraduate course.
