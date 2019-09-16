@@ -70,6 +70,7 @@ export class CourseInstance extends BaseEntity {
     type: 'enum',
     enum: Object.values(OFFERED),
     default: OFFERED.BLANK,
+    comment: 'Indicates wether the course is currently being offered this semester and whether the course would normally be offered in other semesters',
   })
   public offered: OFFERED = OFFERED.BLANK;
 
