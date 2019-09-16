@@ -75,6 +75,39 @@ export class CourseInstance extends BaseEntity {
   public offered: OFFERED = OFFERED.BLANK;
 
   /**
+   * Students enrolled in this course before shopping week
+   */
+  @Column({
+    type: 'integer',
+    nullable: true,
+    default: null,
+    comment: 'Students enrolled in this course before shopping week',
+  })
+  public pre?: number | null = null;
+
+  /**
+   * Students enrolled in this class during shopping week
+   */
+  @Column({
+    type: 'integer',
+    nullable: true,
+    default: null,
+    comment: 'Students enrolled in this course during shopping week',
+  })
+  public studyCard?: number | null = null;
+
+  /**
+   * Students enrolled in this course after shopping week is over
+   */
+  @Column({
+    type: 'integer',
+    nullable: true,
+    default: null,
+    comment: 'Students enrolled in this course after shopping week is over',
+  })
+  public actual?: number | null = null;
+
+  /**
    * The [[Course]] that is an instance of.
    */
   @ManyToOne(
