@@ -83,7 +83,7 @@ export class CourseInstance extends BaseEntity {
     default: null,
     comment: 'Students enrolled in this course before shopping week',
   })
-  public pre?: number | null = null;
+  public preEnrollment?: number | null = null;
 
   /**
    * Students enrolled in this class during shopping week
@@ -94,7 +94,7 @@ export class CourseInstance extends BaseEntity {
     default: null,
     comment: 'Students enrolled in this course during shopping week',
   })
-  public studyCard?: number | null = null;
+  public studyCardEnrollment?: number | null = null;
 
   /**
    * Students enrolled in this course after shopping week is over
@@ -105,7 +105,7 @@ export class CourseInstance extends BaseEntity {
     default: null,
     comment: 'Students enrolled in this course after shopping week is over',
   })
-  public actual?: number | null = null;
+  public actualEnrollment?: number | null = null;
 
   /**
    * The [[Course]] that is an instance of.
