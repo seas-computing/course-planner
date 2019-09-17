@@ -70,8 +70,42 @@ export class CourseInstance extends BaseEntity {
     type: 'enum',
     enum: Object.values(OFFERED),
     default: OFFERED.BLANK,
+    comment: 'Indicates wether the course is currently being offered this semester and whether the course would normally be offered in other semesters',
   })
   public offered: OFFERED = OFFERED.BLANK;
+
+  /**
+   * Students enrolled in this course before shopping week
+   */
+  @Column({
+    type: 'integer',
+    nullable: true,
+    default: null,
+    comment: 'Students enrolled in this course before shopping week',
+  })
+  public preEnrollment?: number | null = null;
+
+  /**
+   * Students enrolled in this class during shopping week
+   */
+  @Column({
+    type: 'integer',
+    nullable: true,
+    default: null,
+    comment: 'Students enrolled in this course during shopping week',
+  })
+  public studyCardEnrollment?: number | null = null;
+
+  /**
+   * Students enrolled in this course after shopping week is over
+   */
+  @Column({
+    type: 'integer',
+    nullable: true,
+    default: null,
+    comment: 'Students enrolled in this course after shopping week is over',
+  })
+  public actualEnrollment?: number | null = null;
 
   /**
    * The [[Course]] that is an instance of.
