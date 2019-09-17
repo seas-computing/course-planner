@@ -46,23 +46,6 @@ export enum OFFERED {
 @Entity()
 export class CourseInstance extends BaseEntity {
   /**
-   * The name of this course instance. This is usually the same as
-   * [[Course.name]], but it can change from year to year and this field is
-   * used to record those changes and provide historical data on course name
-   * changes and offered status.
-   *
-   * **Note:**
-   * Other details such as course catalog prefix, coure code or course number
-   * however will never change as changing these signifies the creation of a new
-   * course. That is to say that a course is defined by it's course code/catalog
-   * prefix. If those change, it is no longer the same course.
-   */
-  @Column({
-    type: 'varchar',
-  })
-  public readonly name: string;
-
-  /**
    * Indicates whether the course is currently being offered this [[Semester]],
    * and whether the course would normally be offered in other semesters
    */
