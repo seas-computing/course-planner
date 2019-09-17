@@ -93,7 +93,7 @@ export class Course extends BaseEntity {
     nullable: true,
     comment: 'Free text for administrators to record notes against a course',
   })
-  public readonly notes?: string;
+  public notes?: string;
 
   /**
    * Allows admin staff to hide courses and prevent their publication, either
