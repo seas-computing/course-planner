@@ -129,6 +129,19 @@ export class Course extends BaseEntity {
   public termPattern: TERM_PATTERN;
 
   /**
+   * Not all courses are delivered by SEAS, some are delivered by other
+   * divisions (for example, some courses may be science courses), therefore
+   * it may be desireable to denote such courses to differenciate them from
+   * courses offered by SEAS
+   */
+  @Column({
+    type: 'boolean',
+    comment: 'Not all courses are delivered by SEAS, some are delivered by other divisions (for example, some courses may be science courses), therefore it may be desireable to denote such courses to differenciate them from courses offered by SEAS',
+    default: true,
+  })
+  public isSEAS: boolean = true;
+
+  /**
    * An occurance of a [[Course]] that takes place in a [[Semester]]. Over time
    * one course can have many scheduled [[CourseInstance]]s. This allows
    * courses to be more easily re-used and repeated over time.
