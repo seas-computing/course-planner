@@ -63,7 +63,6 @@ export class CourseInstance extends BaseEntity {
   @Column({
     type: 'integer',
     nullable: true,
-    default: null,
     comment: 'Students enrolled in this course before shopping week',
   })
   public preEnrollment?: number | null = null;
@@ -74,7 +73,6 @@ export class CourseInstance extends BaseEntity {
   @Column({
     type: 'integer',
     nullable: true,
-    default: null,
     comment: 'Students enrolled in this course during shopping week',
   })
   public studyCardEnrollment?: number | null = null;
@@ -85,7 +83,6 @@ export class CourseInstance extends BaseEntity {
   @Column({
     type: 'integer',
     nullable: true,
-    default: null,
     comment: 'Students enrolled in this course after shopping week is over',
   })
   public actualEnrollment?: number | null = null;
