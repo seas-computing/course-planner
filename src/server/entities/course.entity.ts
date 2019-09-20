@@ -93,7 +93,7 @@ export class Course extends BaseEntity {
     nullable: true,
     comment: 'Free text for administrators to record notes against a course',
   })
-  public readonly notes?: string;
+  public notes?: string;
 
   /**
    * Allows admin staff to hide courses and prevent their publication, either
@@ -127,6 +127,19 @@ export class Course extends BaseEntity {
     enum: Object.values(TERM_PATTERN),
   })
   public termPattern: TERM_PATTERN;
+
+  /**
+   * Not all courses are delivered by SEAS, some are delivered by other
+   * divisions (for example, some courses may be science courses), therefore
+   * it may be desireable to denote such courses to differenciate them from
+   * courses offered by SEAS
+   */
+  @Column({
+    type: 'boolean',
+    comment: 'Not all courses are delivered by SEAS, some are delivered by other divisions (for example, some courses may be science courses), therefore it may be desireable to denote such courses to differenciate them from courses offered by SEAS',
+    default: true,
+  })
+  public isSEAS: boolean = true;
 
   /**
    * An occurance of a [[Course]] that takes place in a [[Semester]]. Over time

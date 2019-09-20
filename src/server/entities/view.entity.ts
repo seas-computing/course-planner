@@ -29,7 +29,6 @@ export class View extends BaseEntity {
   @Column({
     type: 'varchar',
     array: true,
-    default: '{}',
   })
   public columns: string[] = [];
 }
