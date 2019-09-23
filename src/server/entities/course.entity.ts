@@ -125,8 +125,9 @@ export class Course extends BaseEntity {
   @Column({
     type: 'enum',
     enum: Object.values(TERM_PATTERN),
+    nullable: true,
   })
-  public termPattern: TERM_PATTERN;
+  public termPattern?: TERM_PATTERN;
 
   /**
    * Not all courses are delivered by SEAS, some are delivered by other
