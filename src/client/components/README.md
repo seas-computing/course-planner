@@ -1,6 +1,10 @@
-#Component Hierarchy
+# Component Hierarchy
 
 This component hierarchy doesn't make an explicit distinction between presentational components and logical containers. That said, you can broadly assume that the components under `/pages` will maintain most of the state and will be used to compose the other components underneath them.
+
+This plan covers 10 directories and includes 66 files (for comparison, the EAF project ended with 16 directories and 89 files).
+
+[Associated GitHub Project](https://github.com/seas-computing/course-planner/projects/2)
 
 ```
 components
@@ -91,9 +95,3 @@ components
 ├── __tests__
 └── App.tsx
 ```
-
-This plan covers 10 directories and includes 66 files.
-
-For comparison, the EAF project ended with 16 directories and 89 files.
-
-[Associated GitHub Project](https://github.com/seas-computing/course-planner/projects/2)
