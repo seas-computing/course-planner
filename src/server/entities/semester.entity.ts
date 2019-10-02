@@ -16,7 +16,7 @@ export enum TERM {
 }
 
 @Entity()
-export abstract class Semester extends BaseEntity {
+export class Semester extends BaseEntity {
   /**
    * The academic year as a 4 digit integer
    */
