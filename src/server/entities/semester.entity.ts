@@ -3,7 +3,6 @@ import {
   Column,
   ObjectType,
   OneToMany,
-  ManyToOne,
 } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { CourseInstance } from './courseinstance.entity';
@@ -40,7 +39,7 @@ export class Semester extends BaseEntity {
   /**
    * Course instances scheduled to take place within this semester
    */
-  @ManyToOne(
+  @OneToMany(
     (): ObjectType<CourseInstance> => CourseInstance,
     ({ semester }): Semester => semester
   )
@@ -55,7 +54,7 @@ export class Semester extends BaseEntity {
   )
   public nonClassEvents: NonClassEvent[];
 
-  @ManyToOne(
+  @OneToMany(
     (): ObjectType<Absence> => Absence,
     ({ semester }): Semester => semester
   )

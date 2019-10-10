@@ -111,7 +111,7 @@ export class CourseInstance extends BaseEntity {
   /**
    * The [[Semester]] this course instance is scheduled to take place in
    */
-  @OneToMany(
+  @ManyToOne(
     (): ObjectType<Semester> => Semester,
     ({ courseInstances }): CourseInstance[] => courseInstances
   )

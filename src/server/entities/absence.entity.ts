@@ -1,5 +1,5 @@
 import {
-  Entity, OneToMany, ObjectType, Column, ManyToOne,
+  Entity, ObjectType, Column, ManyToOne,
 } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { Semester } from './semester.entity';
@@ -80,7 +80,7 @@ export class Absence extends BaseEntity {
   /**
    * The [[Semester]] this absence occurs in
    */
-  @OneToMany(
+  @ManyToOne(
     (): ObjectType<Semester> => Semester,
     ({ absences }): Absence[] => absences
   )
