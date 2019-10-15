@@ -3,7 +3,6 @@ import {
   Column,
   ManyToOne,
   ObjectType,
-  OneToMany,
 } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { NonClassEvent } from './nonclassevent.entity';
@@ -55,19 +54,28 @@ export class Meeting extends BaseEntity {
   })
   public day: DAY;
 
+  /**
+   * Many [[Meeting]]s have one [[NonClassEvent]]
+   */
   @ManyToOne(
     (): ObjectType<NonClassEvent> => NonClassEvent,
     ({ meetings }): Meeting[] => meetings
   )
   public nonClassEvent: NonClassEvent;
 
+  /**
+   * Many [[Meeting]]s have one [[CourseInstance]]
+   */
   @ManyToOne(
     (): ObjectType<CourseInstance> => CourseInstance,
     ({ meetings }): Meeting[] => meetings
   )
   public courseInstance: CourseInstance;
 
-  @OneToMany(
+  /**
+   * Many [[Meeting]]s have one [[Room]]
+   */
+  @ManyToOne(
     (): ObjectType<Room> => Room,
     ({ meetings }): Meeting[] => meetings
   )

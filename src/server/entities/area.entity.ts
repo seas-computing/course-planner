@@ -26,6 +26,9 @@ export class Area extends BaseEntity {
 
   /**
    * An array of [[Course]]s within this subject area
+   *
+   * ---
+   * One [[Area]] has many [[Course]]s
    */
   @OneToMany(
     (): ObjectType<Course> => Course,

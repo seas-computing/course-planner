@@ -19,6 +19,9 @@ export class Campus extends BaseEntity {
 
   /**
    * A collection of buildings at this campus
+   *
+   * ---
+   * One [[Campus]] has many [[Building]]s
    */
   @OneToMany(
     (): ObjectType<Building> => Building,

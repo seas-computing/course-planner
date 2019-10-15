@@ -1,5 +1,5 @@
 import {
-  Entity, Column, ManyToOne, ObjectType,
+  Entity, Column, ManyToOne, ObjectType, OneToMany,
 } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { Meeting } from './meeting.entity';
@@ -35,8 +35,11 @@ export class Room extends BaseEntity {
   /**
    * All the past and future [[Meeting]]s that have occurred or are scheduled to
    * occur in this [[Room]]
+   *
+   * ---
+   * One [[Room]] has many [[Meeting]]s
    */
-  @ManyToOne(
+  @OneToMany(
     (): ObjectType<Meeting> => Meeting,
     ({ room }): Room => room
   )
@@ -44,6 +47,9 @@ export class Room extends BaseEntity {
 
   /**
    * The [[Building]] this room is located in
+   *
+   * ---
+   * Many [[Room]]s have one [[Building]]
    */
   @ManyToOne(
     (): ObjectType<Building> => Building,

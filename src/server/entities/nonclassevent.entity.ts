@@ -26,6 +26,9 @@ export class NonClassEvent extends BaseEntity {
    * Parent entity to contain a group of related non-class events.
    * [[NonClassParent]] and [[NonClassEvent]] is analogous to [[Course]] and
    * [[CourseInstance]] (respectively)
+   *
+   * ---
+   * Many [[NonClassEvent]]s have one [[NonClassParent]]
    */
   @ManyToOne(
     (): ObjectType<NonClassParent> => NonClassParent,
@@ -35,6 +38,9 @@ export class NonClassEvent extends BaseEntity {
 
   /**
    * The [[Semester]] this event occurs in
+   *
+   * ---
+   * Many [[NonClassEvent]]s have one [[Semester]]
    */
   @ManyToOne(
     (): ObjectType<Semester> => Semester,
@@ -48,7 +54,7 @@ export class NonClassEvent extends BaseEntity {
    * the SEAS course schedule, or because they are still finalizing the course
    * details
    *
-   *  @see [[Course.private]]
+   * @see [[Course.private]]
    */
   @Column({
     type: 'boolean',
@@ -56,6 +62,9 @@ export class NonClassEvent extends BaseEntity {
   })
   public private: boolean = true;
 
+  /**
+   * One [[NonClassEvent]] has many [[Meeting]]s
+   */
   @OneToMany(
     (): ObjectType<Meeting> => Meeting,
     ({ nonClassEvent }): NonClassEvent => nonClassEvent

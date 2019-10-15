@@ -1,5 +1,5 @@
 import {
-  Entity, OneToMany, ObjectType, Column, ManyToOne,
+  Entity, ObjectType, Column, ManyToOne,
 } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { Semester } from './semester.entity';
@@ -61,9 +61,6 @@ export enum ABSENCE_TYPE {
   NO_LONGER_ACTIVE = 'NO_LONGER_ACTIVE',
 }
 
-/**
- *
- */
 @Entity()
 export class Absence extends BaseEntity {
   /**
@@ -78,9 +75,12 @@ export class Absence extends BaseEntity {
   public type: ABSENCE_TYPE;
 
   /**
-   * The [[Semester]] this absence occurs in
+   * The [[Semester]] this absence occurs in.
+   *
+   * ---
+   * Many [[Absence]]s have one [[Semester]]
    */
-  @OneToMany(
+  @ManyToOne(
     (): ObjectType<Semester> => Semester,
     ({ absences }): Absence[] => absences
   )
@@ -88,6 +88,9 @@ export class Absence extends BaseEntity {
 
   /**
    * The [[Faculty]] member who is absent
+   *
+   * ---
+   * One [[Faculty]] member has many [[Absence]]s
    */
   @ManyToOne(
     (): ObjectType<Faculty> => Faculty,
