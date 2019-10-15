@@ -54,12 +54,18 @@ export class Faculty extends BaseEntity {
   })
   public category: FACULTY_TYPE = FACULTY_TYPE.NON_LADDER;
 
+  /**
+   * One [[Faculty]] has many [[FacultyCourseInstance]]s
+   */
   @OneToMany(
     (): ObjectType<FacultyCourseInstance> => FacultyCourseInstance,
     ({ faculty }): Faculty => faculty
   )
   public facultyCourseInstances: FacultyCourseInstance[];
 
+  /**
+   * One [[Faculty]] has many [[Absence]]s
+   */
   @OneToMany(
     (): ObjectType<Absence> => Absence,
     ({ faculty }): Faculty => faculty

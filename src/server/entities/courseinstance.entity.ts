@@ -89,6 +89,9 @@ export class CourseInstance extends BaseEntity {
 
   /**
    * The [[Course]] that is an instance of.
+   *
+   * ---
+   * Many [[CourseInstance]]s have one [[Course]]
    */
   @ManyToOne(
     (): ObjectType<Course> => Course,
@@ -96,12 +99,18 @@ export class CourseInstance extends BaseEntity {
   )
   public course: Course;
 
+  /**
+   * One [[CourseInstance]] has many [[FacultyCourseInstance]]
+   */
   @OneToMany(
     (): ObjectType<FacultyCourseInstance> => FacultyCourseInstance,
     ({ courseInstance }): CourseInstance => courseInstance
   )
   public facultyCourseInstances: FacultyCourseInstance[];
 
+  /**
+   * One [[CourseInstance]] has many [[Meeting]]s
+   */
   @OneToMany(
     (): ObjectType<Meeting> => Meeting,
     ({ courseInstance }): CourseInstance => courseInstance
@@ -110,6 +119,9 @@ export class CourseInstance extends BaseEntity {
 
   /**
    * The [[Semester]] this course instance is scheduled to take place in
+   *
+   * ---
+   * Many [[Semester]]s have one [[CourseInstance]]
    */
   @ManyToOne(
     (): ObjectType<Semester> => Semester,

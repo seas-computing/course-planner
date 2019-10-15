@@ -61,9 +61,6 @@ export enum ABSENCE_TYPE {
   NO_LONGER_ACTIVE = 'NO_LONGER_ACTIVE',
 }
 
-/**
- *
- */
 @Entity()
 export class Absence extends BaseEntity {
   /**
@@ -78,7 +75,10 @@ export class Absence extends BaseEntity {
   public type: ABSENCE_TYPE;
 
   /**
-   * The [[Semester]] this absence occurs in
+   * The [[Semester]] this absence occurs in.
+   *
+   * ---
+   * Many [[Absence]]s have one [[Semester]]
    */
   @ManyToOne(
     (): ObjectType<Semester> => Semester,
@@ -88,6 +88,9 @@ export class Absence extends BaseEntity {
 
   /**
    * The [[Faculty]] member who is absent
+   *
+   * ---
+   * One [[Faculty]] member has many [[Absence]]s
    */
   @ManyToOne(
     (): ObjectType<Faculty> => Faculty,

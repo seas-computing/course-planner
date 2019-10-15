@@ -54,18 +54,27 @@ export class Meeting extends BaseEntity {
   })
   public day: DAY;
 
+  /**
+   * Many [[Meeting]]s have one [[NonClassEvent]]
+   */
   @ManyToOne(
     (): ObjectType<NonClassEvent> => NonClassEvent,
     ({ meetings }): Meeting[] => meetings
   )
   public nonClassEvent: NonClassEvent;
 
+  /**
+   * Many [[Meeting]]s have one [[CourseInstance]]
+   */
   @ManyToOne(
     (): ObjectType<CourseInstance> => CourseInstance,
     ({ meetings }): Meeting[] => meetings
   )
   public courseInstance: CourseInstance;
 
+  /**
+   * Many [[Meeting]]s have one [[Room]]
+   */
   @ManyToOne(
     (): ObjectType<Room> => Room,
     ({ meetings }): Meeting[] => meetings

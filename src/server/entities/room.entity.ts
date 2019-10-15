@@ -35,6 +35,9 @@ export class Room extends BaseEntity {
   /**
    * All the past and future [[Meeting]]s that have occurred or are scheduled to
    * occur in this [[Room]]
+   *
+   * ---
+   * One [[Room]] has many [[Meeting]]s
    */
   @OneToMany(
     (): ObjectType<Meeting> => Meeting,
@@ -44,6 +47,9 @@ export class Room extends BaseEntity {
 
   /**
    * The [[Building]] this room is located in
+   *
+   * ---
+   * Many [[Room]]s have one [[Building]]
    */
   @ManyToOne(
     (): ObjectType<Building> => Building,

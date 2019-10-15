@@ -12,6 +12,9 @@ export class FacultyCourseInstance extends BaseEntity {
   })
   public order: string;
 
+  /**
+   * Many [[FacultyCourseInstance]]s have one [[CourseInstance]]
+   */
   @Index()
   @ManyToOne(
     (): ObjectType<CourseInstance> => CourseInstance,
@@ -20,6 +23,9 @@ export class FacultyCourseInstance extends BaseEntity {
   )
   public courseInstance: CourseInstance;
 
+  /**
+   * Many [[FacultyCourseInstance]]s have one [[Faculty]]
+   */
   @Index()
   @ManyToOne(
     (): ObjectType<Faculty> => Faculty,

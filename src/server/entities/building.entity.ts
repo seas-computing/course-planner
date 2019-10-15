@@ -24,6 +24,9 @@ export class Building extends BaseEntity {
 
   /**
    * The [[Room]]s within this [[Building]]
+   *
+   * ---
+   * One [[Building]] has many [[Room]]s
    */
   @OneToMany(
     (): ObjectType<Room> => Room,
@@ -33,6 +36,9 @@ export class Building extends BaseEntity {
 
   /**
    * The [[Campus]] this building belongs to
+   *
+   * ---
+   * One [[Campus]] has many [[Building]]s
    */
   @ManyToOne(
     (): ObjectType<Campus> => Campus,

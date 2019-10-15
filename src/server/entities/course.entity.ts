@@ -146,6 +146,9 @@ export class Course extends BaseEntity {
    * An occurance of a [[Course]] that takes place in a [[Semester]]. Over time
    * one course can have many scheduled [[CourseInstance]]s. This allows
    * courses to be more easily re-used and repeated over time.
+   *
+   * ---
+   * One [[Course]] has many [[CourseInstance]]s
    */
   @OneToMany(
     (): ObjectType<CourseInstance> => CourseInstance,
@@ -157,6 +160,9 @@ export class Course extends BaseEntity {
    * [[NonClassParent]]s are parent entities to [[NonClassevent]] and are
    * designed to be analogous to Courses, except that [[NonClassParent]]s can be
    * scheduled outside of and independently from a [[Course]].
+   *
+   * ---
+   * Many [[NonClassParent]]s have one [[Course]]
    */
   @OneToMany(
     (): ObjectType<NonClassParent> => NonClassParent,
@@ -166,6 +172,9 @@ export class Course extends BaseEntity {
 
   /**
   * The subject [[Area]] this course belongs to
+  *
+  * ---
+  * Many [[Course]]s have one [[Area]]
   */
   @ManyToOne(
     (): ObjectType<Area> => Area,

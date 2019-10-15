@@ -38,6 +38,9 @@ export class Semester extends BaseEntity {
 
   /**
    * Course instances scheduled to take place within this semester
+   *
+   * ---
+   * One [[Semester]] has many [[CourseInstance]]s
    */
   @OneToMany(
     (): ObjectType<CourseInstance> => CourseInstance,
@@ -47,6 +50,9 @@ export class Semester extends BaseEntity {
 
   /**
    * [[NonClassEvent]]s scheduled to occur within this semester.
+   *
+   * ---
+   * One [[Semester]] has many [[NonClassEvent]]s
    */
   @OneToMany(
     (): ObjectType<NonClassEvent> => NonClassEvent,
@@ -54,6 +60,9 @@ export class Semester extends BaseEntity {
   )
   public nonClassEvents: NonClassEvent[];
 
+  /**
+   * One [[Semester]] has many [[Absence]]s
+   */
   @OneToMany(
     (): ObjectType<Absence> => Absence,
     ({ semester }): Semester => semester
