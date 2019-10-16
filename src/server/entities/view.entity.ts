@@ -31,4 +31,12 @@ export class View extends BaseEntity {
     array: true,
   })
   public columns: string[] = [];
+
+  /**
+   * The name of the view that identifies its purpose to the user.
+   */
+  @Column({
+    type: 'varchar',
+  })
+  public name: string;
 }
