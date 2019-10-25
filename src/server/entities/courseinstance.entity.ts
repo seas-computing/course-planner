@@ -16,17 +16,17 @@ import { Meeting } from './meeting.entity';
  */
 export enum OFFERED {
   /**
-   * The course **IS** being offered this semester, but usually isn't
+   * The course **IS** being offered this semester, and normally would be
    */
   Y = 'Y',
 
   /**
-   * The course is **NOT** being offered this semester, but usually is
+   * The course is **NOT** being offered this semester, but usually would be
    */
   N = 'N',
 
   /**
-   * No changes made to course offering
+   * The course is **NOT** being offered this semester and normally wouldn't be
    */
   BLANK = '',
 
