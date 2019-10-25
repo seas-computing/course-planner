@@ -9,6 +9,9 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * [[FACULTY_TYPE.NON_SEAS_LADDER]]. Non-SEAS ladder faculty, are faculty
  * members who are ladder faculty but who work outside of SEAS(for example
  * a professor from FAS)
+ *
+ * This migration also drops the default value in order to force the selection
+ * of a value
  */
 export class AddFacultyStatus1572018363202 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
