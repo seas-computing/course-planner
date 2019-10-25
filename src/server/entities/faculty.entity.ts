@@ -25,6 +25,12 @@ export enum FACULTY_TYPE {
    * for more information
    */
   NON_LADDER = 'NON_LADDER',
+
+  /**
+   * A member of [[LADDER]] faculty, whose primary job area is outside SEAS
+   * (for example a member of ladder faculty who works for FAS).
+   */
+  NON_SEAS_LADDER = 'NON_SEAS_LADDER',
 }
 
 @Entity()
@@ -50,9 +56,8 @@ export class Faculty extends BaseEntity {
   @Column({
     type: 'enum',
     enum: Object.values(FACULTY_TYPE),
-    default: FACULTY_TYPE.NON_LADDER,
   })
-  public category: FACULTY_TYPE = FACULTY_TYPE.NON_LADDER;
+  public category: FACULTY_TYPE;
 
   /**
    * One [[Faculty]] has many [[FacultyCourseInstance]]s
