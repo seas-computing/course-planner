@@ -22,6 +22,7 @@ export class AddFacultyStatus1572018363202 implements MigrationInterface {
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query('CREATE TYPE "faculty_category_enum_old" AS ENUM(\'LADDER\', \'NON_LADDER\')');
     await queryRunner.query('ALTER TABLE "faculty" ALTER COLUMN "category" DROP DEFAULT');
+    await queryRunner.query('UPDATE "faculty" SET "category" = \'LADDER\' WHERE "category" = \'NON_SEAS_LADDER\'');
     await queryRunner.query('ALTER TABLE "faculty" ALTER COLUMN "category" TYPE "faculty_category_enum_old" USING "category"::"text"::"faculty_category_enum_old"');
     await queryRunner.query('ALTER TABLE "faculty" ALTER COLUMN "category" SET DEFAULT \'NON_LADDER\'');
     await queryRunner.query('DROP TYPE "faculty_category_enum"');
