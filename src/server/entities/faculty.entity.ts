@@ -53,6 +53,16 @@ export class Faculty extends BaseEntity {
   })
   public HUID: string;
 
+  /**
+   * Affiliations to other schools this faculty member may have outside of SEAS
+   */
+  @Column({
+    type: 'varchar',
+    comment: 'Affiliations to other schools this faculty member may have outside of SEAS',
+    nullable: true,
+  })
+  public jointWith: string;
+
   @Column({
     type: 'enum',
     enum: Object.values(FACULTY_TYPE),
