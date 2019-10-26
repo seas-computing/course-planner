@@ -10,7 +10,7 @@ export class FacultyCourseInstance extends BaseEntity {
   @Column({
     type: 'int',
   })
-  public order: string;
+  public order: number;
 
   /**
    * Many [[FacultyCourseInstance]]s have one [[CourseInstance]]
