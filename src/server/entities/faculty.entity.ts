@@ -83,7 +83,8 @@ export class Faculty extends BaseEntity {
    */
   @OneToMany(
     (): ObjectType<Absence> => Absence,
-    ({ faculty }): Faculty => faculty
+    ({ faculty }): Faculty => faculty,
+    { cascade: ['insert'] }
   )
   public absences: Absence[];
 }
