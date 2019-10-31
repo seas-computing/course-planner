@@ -59,6 +59,12 @@ export enum ABSENCE_TYPE {
    * moved, or are no longer at Harvard
    */
   NO_LONGER_ACTIVE = 'NO_LONGER_ACTIVE',
+
+  /**
+   * The staff member is present. They aren't on sabbatical, teaching relief,
+   * parental leave etc. etc. This is the default value of [[Absence.type]]
+   */
+  PRESENT = 'PRESENT'
 }
 
 @Entity()
@@ -66,13 +72,17 @@ export class Absence extends BaseEntity {
   /**
    * The type of absence (i.e: Parental Leave, Research Leave etc.) Permitted
    * values can be found in [[ABSENCE_TYPE]].
+   *
+   * This defaults to [[ABSENCE_TYPE.PRESENT]] to indicate that the faculty
+   * member is not absent
    */
   @Column({
     type: 'enum',
     enum: Object.values(ABSENCE_TYPE),
     comment: 'The type of absence (i.e: Parental Leave, Research Leave etc.)',
+    default: ABSENCE_TYPE.PRESENT,
   })
-  public type: ABSENCE_TYPE;
+  public type: ABSENCE_TYPE = ABSENCE_TYPE.PRESENT;
 
   /**
    * The [[Semester]] this absence occurs in.
