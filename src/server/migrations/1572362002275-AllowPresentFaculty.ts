@@ -1,5 +1,14 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
+/**
+ * The absence table (as implemented in [[AbsenceTable1561553827060]])
+ * originally was previously designed to only support absences instead of being
+ * used to record presence status.
+ *
+ * An additional value has now been added - [[ABSENCE_TYPE.PRESENT]] to indicate
+ * that a faculty member is **present** in a semester, and a record is created
+ * in this table per faculty member, per semester.
+ */
 export class AllowPresentFaculty1572362002275 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query('ALTER TYPE "public"."absence_type_enum" RENAME TO "absence_type_enum_old"');
