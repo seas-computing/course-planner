@@ -12,11 +12,24 @@
       },
       "weekday": "TUE",
       "location": {
-        "campus": "Cambridge",
-        "building": "MD",
-        "room": "203"
+        "campus": {
+          "id": "ma12e1in",
+          "name": "Cambridge"
+        },
+        "building": {
+          "id": "asdajna",
+          "name": "MD"
+        },
+        "room": {
+          "id": "121mkasda",
+          "name": "203"
+        }
       },
       "course": {
+        "area": {
+          "id": "sadf2fa3f-c5b0-478d-a29c-7f85a4dasd",
+          "name": "ACS"
+        },
         "prefix": "AC",
         "number": "209"
       }
