@@ -11,7 +11,11 @@
         "minute": 0
       },
       "weekday": "TUE",
-      "room": "MD 203",
+      "location": {
+        "campus": "Cambridge",
+        "building": "MD",
+        "room": "203"
+      },
       "course": {
         "prefix": "AC",
         "number": "209"
