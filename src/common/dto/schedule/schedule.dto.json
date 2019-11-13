@@ -2,10 +2,14 @@
   "meetings": [
     {
       "id": "c7b1fa3f-c5b0-478d-a29c-7f85a4d80109",
-      "begin_hour": 14,
-      "begin_minute": 30,
-      "end_hour": 16,
-      "end_minute": 0,
+      "begin": {
+        "hour": 14,
+        "min": 30
+      },
+      "end": {
+        "hour": 16,
+        "min": 0
+      },
       "weekday": "TUE",
       "room": "MD 203",
       "course": {
