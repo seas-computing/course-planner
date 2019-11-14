@@ -6,51 +6,51 @@ import { DAY } from 'server/entities';
 *   "meetings": [
 *     {
 *       "id": "c7b1fa3f-c5b0-478d-a29c-7f85a4d80109",
-*       "begin": {
+*       "startTime": {
 *         "hour": 14,
 *         "minute": 30
-*      },
-*      "end": {
-*        "hour": 16,
-*        "minute": 0
-*      },
-*      "weekday": "TUE",
-*      "location": {
-*        "campus": {
-*          "id": "ma12e1in",
-*          "name": "Cambridge"
-*        },
-*        "building": {
-*          "id": "asdajna",
-*          "name": "MD"
-*        },
-*        "room": {
-*          "id": "121mkasda",
-*          "name": "203"
-*        }
-*      },
-*      "course": {
-*        "area": {
-*          "id": "sadf2fa3f-c5b0-478d-a29c-7f85a4dasd",
-*          "name": "ACS"
-*        },
-*        "prefix": "AC",
-*        "number": "209"
-*      }
-*    }
-*  ]
-*}
+*       },
+*       "endTime": {
+*         "hour": 16,
+*         "minute": 0
+*       },
+*       "weekday": "TUE",
+*       "location": {
+*         "campus": {
+*           "id": "ma12e1in",
+*           "name": "Cambridge"
+*         },
+*         "building": {
+*           "id": "asdajna",
+*           "name": "MD"
+*         },
+*         "room": {
+*           "id": "121mkasda",
+*           "name": "203"
+*         }
+*       },
+*       "course": {
+*         "area": {
+*           "id": "sadf2fa3f-c5b0-478d-a29c-7f85a4dasd",
+*           "name": "ACS"
+*         },
+*         "prefix": "AC",
+*         "number": "209"
+*       }
+*     }
+*   ]
+* }
 */
 
 export abstract class ScheduleViewResponseDTO {
   public id: string;
 
-  public begin: {
+  public startTime: {
     hour: number;
     minute: number;
   };
 
-  public end: {
+  public endTime: {
     hour: number;
     minute: number;
   };
