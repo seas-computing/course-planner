@@ -22,7 +22,7 @@ import { DAY } from 'server/entities';
 *         },
 *         "building": {
 *           "id": "asdajna",
-*           "name": "MD"
+*           "name": "Maxwell Dworkin"
 *         },
 *         "room": {
 *           "id": "121mkasda",
