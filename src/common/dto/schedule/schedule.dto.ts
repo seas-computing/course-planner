@@ -8,7 +8,7 @@ import { DAY } from 'server/entities';
 *       "id": "c7b1fa3f-c5b0-478d-a29c-7f85a4d80109",
 *       "begin": {
 *         "hour": 14,
-*        "minute": 30
+*         "minute": 30
 *      },
 *      "end": {
 *        "hour": 16,
