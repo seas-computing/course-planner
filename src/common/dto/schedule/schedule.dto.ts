@@ -53,6 +53,8 @@ export abstract class ScheduleViewResponseDTO {
     minute: number;
   };
 
+  public duration: number;
+
   public weekday: DAY;
 
   public location: {
