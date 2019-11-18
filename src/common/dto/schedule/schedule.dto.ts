@@ -5,7 +5,6 @@ import { DAY } from 'server/entities';
 * {
 *   "meetings": [
 *     {
-*       "id": "c7b1fa3f-c5b0-478d-a29c-7f85a4d80109",
 *       "startTime": {
 *         "hour": 14,
 *         "minute": 30
@@ -14,29 +13,18 @@ import { DAY } from 'server/entities';
 *         "hour": 16,
 *         "minute": 0
 *       },
+*       "duration": 90,
 *       "weekday": "TUE",
-*       "location": {
-*         "campus": {
-*           "id": "ma12e1in",
-*           "name": "Cambridge"
-*         },
-*         "building": {
-*           "id": "asdajna",
-*           "name": "Maxwell Dworkin"
-*         },
-*         "room": {
-*           "id": "121mkasda",
-*           "name": "203"
+*       "coursePrefix": "CS",
+*       "courses": [
+*         {
+*           id: "c7b1fa3f-c5b0-478d-a29c-7f85a4d80109",
+*           courseNumber: "209r",
+*           campus: "Cambridge",
+*           room: "Maxwell Dworkin 119",
+*           isUndergraduate: true,
 *         }
-*       },
-*       "course": {
-*         "area": {
-*           "id": "sadf2fa3f-c5b0-478d-a29c-7f85a4dasd",
-*           "name": "ACS"
-*         },
-*         "prefix": "AC",
-*         "number": "209"
-*       }
+*       ]
 *     }
 *   ]
 * }
@@ -59,27 +47,13 @@ export abstract class ScheduleViewResponseDTO {
 
   public coursePrefix: string;
 
-  public location: {
-    campus: {
+  public courses: [
+    {
       id: string;
-      name: string;
-    };
-    building: {
-      id: string;
-      name: string;
-    };
-    room: {
-      id: string;
-      name: string;
-    };
-  }
-
-  public course: {
-    area: {
-      id: string;
-      name: string;
-    };
-    prefix: string;
-    number: string;
-  };
+      courseNumber: string;
+      campus: string;
+      room: string;
+      isUndergraduate: boolean;
+    }
+  ]
 }
