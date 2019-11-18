@@ -43,8 +43,6 @@ import { DAY } from 'server/entities';
 */
 
 export abstract class ScheduleViewResponseDTO {
-  public id: string;
-
   public startTime: {
     hour: number;
     minute: number;
