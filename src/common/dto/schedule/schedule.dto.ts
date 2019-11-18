@@ -57,6 +57,8 @@ export abstract class ScheduleViewResponseDTO {
 
   public weekday: DAY;
 
+  public coursePrefix: string;
+
   public location: {
     campus: {
       id: string;
