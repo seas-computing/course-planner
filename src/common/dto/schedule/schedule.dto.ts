@@ -1,4 +1,4 @@
-import { DAY } from 'server/entities';
+import { DAY } from '../../constants/constants';
 
 /**
  * The following is an example of a response that may be returned from the server:
