@@ -16,7 +16,8 @@
     "paths": {
       "testData": ["common/__tests__/data/index.ts"],
       "client/*": ["client/*"],
-      "server/*": ["server/*"]
+      "server/*": ["server/*"],
+      "mark-one": ["../../mark-one/src/index.ts"]
     }
   },
   "include": ["src"],
