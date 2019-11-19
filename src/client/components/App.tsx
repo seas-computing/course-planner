@@ -18,6 +18,7 @@ import {
 import { getCurrentUser } from 'client/api';
 import { UserResponse } from 'common/dto/users/userResponse.dto';
 import { Message } from './layout';
+import NoMatch from './pages/NoMatch';
 
 /**
  * The primary app component. Fetches the current user from the server when it
