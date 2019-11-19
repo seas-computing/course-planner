@@ -1,3 +1,4 @@
+import { ApiModelProperty } from '@nestjs/swagger';
 import { DAY } from '../../constants/constants';
 
 /**
@@ -31,22 +32,28 @@ import { DAY } from '../../constants/constants';
 */
 
 export abstract class ScheduleViewResponseDTO {
+  @ApiModelProperty()
   public startTime: {
     hour: number;
     minute: number;
   };
 
+  @ApiModelProperty()
   public endTime: {
     hour: number;
     minute: number;
   };
 
+  @ApiModelProperty()
   public duration: number;
 
+  @ApiModelProperty()
   public weekday: DAY;
 
+  @ApiModelProperty()
   public coursePrefix: string;
 
+  @ApiModelProperty()
   public courses: [
     {
       id: string;
