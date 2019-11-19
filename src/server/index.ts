@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
 const { SERVER_PORT } = process.env;
@@ -9,6 +10,12 @@ const { SERVER_PORT } = process.env;
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
+  const options = new DocumentBuilder()
+    .setTitle('DTO Documentation')
+    .setDescription('Documentation that provides DTO descriptions and examples')
+    .build();
+  const document = SwaggerModule.createDocument(app, options);
+  SwaggerModule.setup('dtodocs', app, document);
   await app.listen(SERVER_PORT);
 }
 
