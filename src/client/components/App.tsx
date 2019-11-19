@@ -5,6 +5,9 @@ import React, {
   ReactElement,
   SFC,
 } from 'react';
+import {
+  BrowserRouter, Switch, Route,
+} from 'react-router-dom';
 import { hot } from 'react-hot-loader/root';
 import { MESSAGE_TYPE, MESSAGE_ACTION, AppMessage } from 'client/classes';
 import {
@@ -74,11 +77,12 @@ const ColdApp: SFC = (): ReactElement => {
     <div className="app">
       <UserContext.Provider value={currentUser}>
         <MessageContext.Provider value={dispatchMessage}>
-          <div className="app-content">
-            <div>
-              Your app is now loaded.
-            </div>
-            {currentMessage
+          <BrowserRouter>
+            <div className="app-content">
+              <Switch>
+                <Route component={NoMatch} />
+              </Switch>
+              {currentMessage
               && (
                 <Message
                   messageCount={queue.length}
@@ -86,7 +90,8 @@ const ColdApp: SFC = (): ReactElement => {
                   messageType={currentMessage.variant}
                 />
               )}
-          </div>
+            </div>
+          </BrowserRouter>
         </MessageContext.Provider>
       </UserContext.Provider>
     </div>
