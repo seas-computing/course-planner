@@ -54,7 +54,7 @@ class AppModule implements NestModule {
     consumer.apply(SessionMiddleware).forRoutes('*');
     if (this.config.isDevelopment) {
       // eslint-disable-next-line
-      const { devServer, hotServer } = require('./middleware/dev.middleware');
+      const { devServer, hotServer } = require('./config/dev.middleware');
       consumer.apply(devServer, hotServer).forRoutes('/');
     }
   }
