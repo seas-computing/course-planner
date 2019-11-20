@@ -12,8 +12,8 @@ async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
   if (process.env.NODE_ENV === 'development') {
     const options = new DocumentBuilder()
-      .setTitle('DTO Documentation')
-      .setDescription('Documentation that provides DTO descriptions and examples')
+      .setTitle('API Documentation')
+      .setDescription('Documentation that provides API descriptions and examples')
       .build();
     const document = SwaggerModule.createDocument(app, options);
     SwaggerModule.setup('dtodocs', app, document);
