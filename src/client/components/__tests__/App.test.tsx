@@ -50,4 +50,13 @@ describe('App', function () {
       });
     });
   });
+  describe('routing', function () {
+    it('renders the NoMatch component when URL path is not defined', function () {
+      const url = '/foobar';
+      const { getByText } = render(<App />);
+      return waitForElement(() => (
+        getByText('404', { exact: false })
+      ));
+    });
+  });
 });
