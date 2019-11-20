@@ -8,7 +8,7 @@ import { BaseEntity } from './base.entity';
 import { NonClassEvent } from './nonclassevent.entity';
 import { CourseInstance } from './courseinstance.entity';
 import { Room } from './room.entity';
-import { DAY } from '../../common/constants/constants';
+import { DAY } from '../../common/constants';
 
 @Entity()
 export class Meeting extends BaseEntity {

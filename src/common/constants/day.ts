@@ -1,7 +1,7 @@
 /**
  * Set list of days on which a [[Meeting]] can be scheduled to occur
  */
-export enum DAY {
+enum DAY {
   /** Monday */
   MON = 'MON',
   /** Tuesday */
@@ -13,3 +13,5 @@ export enum DAY {
   /** Friday */
   FRI = 'FRI'
 }
+
+export default DAY;
