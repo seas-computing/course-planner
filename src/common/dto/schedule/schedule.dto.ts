@@ -41,7 +41,7 @@ export abstract class ScheduleViewResponseDTO {
 
   @ApiModelProperty({
     example: {
-      id: '1252maefgjariejoqf',
+      id: 'c7b1fa3f-c5b0-478d-a29c-7f85a4d80109',
       courseNumber: '051',
       campus: 'Cambridge',
       room: 'Maxwell Dworkin 119',
