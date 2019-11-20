@@ -78,21 +78,19 @@ const ColdApp: SFC = (): ReactElement => {
     <div className="app">
       <UserContext.Provider value={currentUser}>
         <MessageContext.Provider value={dispatchMessage}>
-          <BrowserRouter>
-            <div className="app-content">
-              <Switch>
-                <Route component={NoMatch} />
-              </Switch>
-              {currentMessage
-              && (
-                <Message
-                  messageCount={queue.length}
-                  messageText={currentMessage.text}
-                  messageType={currentMessage.variant}
-                />
-              )}
-            </div>
-          </BrowserRouter>
+          <div className="app-content">
+            <Switch>
+              <Route component={NoMatch} />
+            </Switch>
+            {currentMessage
+            && (
+              <Message
+                messageCount={queue.length}
+                messageText={currentMessage.text}
+                messageType={currentMessage.variant}
+              />
+            )}
+          </div>
         </MessageContext.Provider>
       </UserContext.Provider>
     </div>
