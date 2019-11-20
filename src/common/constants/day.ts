@@ -1,7 +1,7 @@
 /**
  * Set list of days on which a [[Meeting]] can be scheduled to occur
  */
-enum DAY {
+export enum DAY {
   /** Monday */
   MON = 'MON',
   /** Tuesday */
