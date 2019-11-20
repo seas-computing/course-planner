@@ -55,6 +55,7 @@
     "@types/passport-saml": "^1.1.0",
     "@types/react": "^16.8.22",
     "@types/react-dom": "^16.8.4",
+    "@types/react-router-dom": "^5.1.2",
     "@types/sinon": "^7.0.13",
     "@types/webpack": "^4.4.33",
     "@types/webpack-dev-middleware": "^2.0.2",
