@@ -16,7 +16,7 @@ async function bootstrap(): Promise<void> {
       .setDescription('Documentation that provides API descriptions and examples')
       .build();
     const document = SwaggerModule.createDocument(app, options);
-    SwaggerModule.setup('dtodocs', app, document);
+    SwaggerModule.setup('docs/api', app, document);
   }
   await app.listen(SERVER_PORT);
 }
