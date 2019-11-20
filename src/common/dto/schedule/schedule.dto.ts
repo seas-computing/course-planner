@@ -1,5 +1,5 @@
 import { ApiModelProperty } from '@nestjs/swagger';
-import { DAY } from '../../constants/day';
+import { DAY } from '../../constants';
 
 export abstract class ScheduleViewResponseDTO {
   @ApiModelProperty({
