@@ -6,7 +6,7 @@ import React, {
   SFC,
 } from 'react';
 import {
-  BrowserRouter, Switch, Route,
+  Switch, Route,
 } from 'react-router-dom';
 import { hot } from 'react-hot-loader/root';
 import { MESSAGE_TYPE, MESSAGE_ACTION, AppMessage } from 'client/classes';
