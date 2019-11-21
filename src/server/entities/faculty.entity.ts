@@ -4,7 +4,7 @@ import {
 import { BaseEntity } from './base.entity';
 import { FacultyCourseInstance } from './facultycourseinstance.entity';
 import { Absence } from './absence.entity';
-import FACULTY_TYPE from '../../common/constants/facultyType';
+import { FACULTY_TYPE } from '../../common/constants';
 
 @Entity()
 export class Faculty extends BaseEntity {
