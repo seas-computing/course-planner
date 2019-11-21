@@ -64,7 +64,7 @@ describe('App', function () {
     });
   });
   describe('routing', function () {
-    it('renders the NoMatch component when URL path is not defined', function () {
+    it('renders the NoMatch component when URL does not match any pages', function () {
       const url = '/foobar';
       const { getByText } = render(
         <MemoryRouter initialEntries={[url]}>
