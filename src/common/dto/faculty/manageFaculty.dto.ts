@@ -1,5 +1,5 @@
-import { FACULTY_TYPE } from 'server/entities';
 import { ApiModelProperty } from '@nestjs/swagger';
+import FACULTY_TYPE from '../../constants/facultyType';
 
 export abstract class ManageFacultyDTO {
   @ApiModelProperty({
