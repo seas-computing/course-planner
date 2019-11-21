@@ -26,4 +26,9 @@ export abstract class ManageFacultyDTO {
     example: FACULTY_TYPE.NON_SEAS_LADDER,
   })
   public facultyType: FACULTY_TYPE;
+
+  @ApiModelProperty({
+    example: 'Harvard Medical School',
+  })
+  public jointWith: string;
 }
