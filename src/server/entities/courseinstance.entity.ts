@@ -10,31 +10,7 @@ import { Course } from './course.entity';
 import { FacultyCourseInstance } from './facultycourseinstance.entity';
 import { Semester } from './semester.entity';
 import { Meeting } from './meeting.entity';
-
-/**
- * Sets the offered status of a course instance for a given semester
- */
-export enum OFFERED {
-  /**
-   * The course **IS** being offered this semester, and normally would be
-   */
-  Y = 'Y',
-
-  /**
-   * The course is **NOT** being offered this semester, but usually would be
-   */
-  N = 'N',
-
-  /**
-   * The course is **NOT** being offered this semester and normally wouldn't be
-   */
-  BLANK = '',
-
-  /**
-   * The course is permanently retired and will not be offered going foward
-   */
-  RETIRED = 'RETIRED',
-}
+import { OFFERED } from '../../common/constants';
 
 
 /**
