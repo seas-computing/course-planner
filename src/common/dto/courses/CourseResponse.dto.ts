@@ -13,6 +13,19 @@ abstract class Instance {
     lastName: string;
   }[];
 
+  public times: {
+    id: string;
+    day: string;
+    startTime: {
+      hour: number;
+      minute: number;
+    };
+    endTime: {
+      hour: number;
+      minute: number;
+    };
+  }[];
+
   public preEnrollment: number;
 
   public studyCardEnrollment: number;
