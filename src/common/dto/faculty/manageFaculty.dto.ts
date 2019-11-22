@@ -25,7 +25,7 @@ export abstract class ManageFacultyDTO {
   @ApiModelProperty({
     example: 'CS',
   })
-  public coursePrefix: string;
+  public area: string;
 
   @ApiModelProperty({
     example: 'EPS (0.5 FTE SEAS)',
