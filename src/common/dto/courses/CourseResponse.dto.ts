@@ -1,3 +1,5 @@
+import { DAY, OFFERED } from 'common/constants';
+
 /**
  * @module Server.DTOS.Courses
  */
@@ -5,7 +7,7 @@
 abstract class Instance {
   public id: string;
 
-  public offered: string;
+  public offered: OFFERED;
 
   public instructors: {
     id: string;
@@ -15,7 +17,7 @@ abstract class Instance {
 
   public times: {
     id: string;
-    day: string;
+    day: DAY;
     startTime: {
       hour: number;
       minute: number;
