@@ -30,6 +30,7 @@ export abstract class ScheduleViewResponseDTO {
   public duration: number;
 
   @ApiModelProperty({
+    enum: DAY,
     example: DAY.TUE,
   })
   public weekday: DAY;
