@@ -13,7 +13,7 @@ async function bootstrap(): Promise<void> {
   if (NODE_ENV === 'development') {
     const options = new DocumentBuilder()
       .setTitle('API Documentation')
-      .setDescription('Documentation that provides API descriptions and examples')
+      .setDescription('API documentation for the course planning API')
       .build();
     const document = SwaggerModule.createDocument(app, options);
     SwaggerModule.setup('docs/api', app, document);
