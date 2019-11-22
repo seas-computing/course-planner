@@ -26,6 +26,11 @@ abstract class Instance {
     };
   }[];
 
+  public room: {
+    id: string;
+    name: string;
+  };
+
   public preEnrollment: number;
 
   public studyCardEnrollment: number;
