@@ -3,12 +3,7 @@ import { FACULTY_TYPE } from '../../constants';
 
 export abstract class ManageFacultyDTO {
   @ApiModelProperty({
-    example: 'CS',
-  })
-  public coursePrefix: string;
-
-  @ApiModelProperty({
-    example: '80881118',
+    example: '049bfcb0',
   })
   public HUID: string;
 
@@ -23,12 +18,17 @@ export abstract class ManageFacultyDTO {
   public lastName: string;
 
   @ApiModelProperty({
-    example: FACULTY_TYPE.NON_SEAS_LADDER,
+    example: FACULTY_TYPE.LADDER,
   })
   public facultyType: FACULTY_TYPE;
 
   @ApiModelProperty({
-    example: 'Harvard Medical School',
+    example: 'CS',
   })
-  public jointWith: string;
+  public coursePrefix: string;
+
+  @ApiModelProperty({
+    example: 'EPS (0.5 FTE SEAS)',
+  })
+  public jointWith: string | null;
 }
