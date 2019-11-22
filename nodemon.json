@@ -3,5 +3,5 @@
     "ts": "ts-node -r tsconfig-paths/register"
   },
   "ignore": ["*.test.ts"],
-  "watch":  ["src/server"]
+  "watch":  ["src/server", "src/common"]
 }
