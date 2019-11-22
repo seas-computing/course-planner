@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
-const { SERVER_PORT } = process.env;
+const { SERVER_PORT, NODE_ENV } = process.env;
 
 /**
  * initializes and runs the nestjs app
@@ -10,7 +10,7 @@ const { SERVER_PORT } = process.env;
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
-  if (process.env.NODE_ENV === 'development') {
+  if (NODE_ENV === 'development') {
     const options = new DocumentBuilder()
       .setTitle('API Documentation')
       .setDescription('Documentation that provides API descriptions and examples')
