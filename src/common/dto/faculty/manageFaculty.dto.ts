@@ -3,7 +3,7 @@ import { FACULTY_TYPE } from '../../constants';
 
 export abstract class ManageFacultyDTO {
   @ApiModelProperty({
-    example: '049bfcb0',
+    example: '12345678',
   })
   public HUID: string;
 
