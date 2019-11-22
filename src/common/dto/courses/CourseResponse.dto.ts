@@ -7,6 +7,12 @@ abstract class Instance {
 
   public offered: string;
 
+  public instructors: {
+    id: string;
+    firstName: string;
+    lastName: string;
+  }[];
+
   public preEnrollment: number;
 
   public studyCardEnrollment: number;
