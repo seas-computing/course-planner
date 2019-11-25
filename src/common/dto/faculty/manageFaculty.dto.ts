@@ -1,7 +1,7 @@
 import { ApiModelProperty } from '@nestjs/swagger';
 import { FACULTY_TYPE } from '../../constants';
 
-export abstract class ManageFacultyDTO {
+export abstract class ManageFacultyResponseDTO {
   @ApiModelProperty({
     example: '4c15c2bf-7823-47e0-9954-2ce914b73595',
   })
@@ -35,5 +35,5 @@ export abstract class ManageFacultyDTO {
   @ApiModelProperty({
     example: 'EPS (0.5 FTE SEAS)',
   })
-  public jointWith: string | null;
+  public jointWith?: string;
 }
