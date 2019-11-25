@@ -4,34 +4,7 @@ import {
 import { BaseEntity } from './base.entity';
 import { FacultyCourseInstance } from './facultycourseinstance.entity';
 import { Absence } from './absence.entity';
-
-export enum FACULTY_TYPE {
-  /**
-   * The term ladder faculty refers to tenured full professors as well as
-   * tenure-track professorial faculty (assistant and associate professors).
-   *
-   * See {@link https://www.seas.harvard.edu/faculty-research/people/ladder}
-   * for more information
-   */
-  LADDER = 'LADDER',
-
-  /**
-   * The term non-ladder faculty refers to those holding term-limited
-   * instructional and teaching appointments. These include professors of the
-   * practice, preceptors, senior preceptors, lecturers, senior lecturers, as
-   * well as visiting faculty.
-   *
-   * See {@link https://www.seas.harvard.edu/faculty-research/people/nonladder}
-   * for more information
-   */
-  NON_LADDER = 'NON_LADDER',
-
-  /**
-   * A member of [[LADDER]] faculty, whose primary job area is outside SEAS
-   * (for example a member of ladder faculty who works for FAS).
-   */
-  NON_SEAS_LADDER = 'NON_SEAS_LADDER',
-}
+import { FACULTY_TYPE } from '../../common/constants';
 
 @Entity()
 export class Faculty extends BaseEntity {
