@@ -35,5 +35,5 @@ export abstract class ManageFacultyDTO {
   @ApiModelProperty({
     example: 'EPS (0.5 FTE SEAS)',
   })
-  public jointWith: string | null;
+  public jointWith?: string;
 }
