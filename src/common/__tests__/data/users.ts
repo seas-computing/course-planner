@@ -1,4 +1,4 @@
-import { User } from 'server/entities';
+import { User } from 'server/user/user.entity';
 
 export const regularUser = new User({
   firstName: 'Regular',
