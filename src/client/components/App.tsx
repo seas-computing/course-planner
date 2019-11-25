@@ -5,6 +5,9 @@ import React, {
   ReactElement,
   SFC,
 } from 'react';
+import {
+  Switch, Route,
+} from 'react-router-dom';
 import { hot } from 'react-hot-loader/root';
 import { MESSAGE_TYPE, MESSAGE_ACTION, AppMessage } from 'client/classes';
 import {
@@ -15,6 +18,7 @@ import {
 import { getCurrentUser } from 'client/api';
 import { UserResponse } from 'common/dto/users/userResponse.dto';
 import { Message } from './layout';
+import NoMatch from './pages/NoMatch';
 
 /**
  * The primary app component. Fetches the current user from the server when it
@@ -75,17 +79,17 @@ const ColdApp: SFC = (): ReactElement => {
       <UserContext.Provider value={currentUser}>
         <MessageContext.Provider value={dispatchMessage}>
           <div className="app-content">
-            <div>
-              Your app is now loaded.
-            </div>
+            <Switch>
+              <Route component={NoMatch} />
+            </Switch>
             {currentMessage
-              && (
-                <Message
-                  messageCount={queue.length}
-                  messageText={currentMessage.text}
-                  messageType={currentMessage.variant}
-                />
-              )}
+            && (
+              <Message
+                messageCount={queue.length}
+                messageText={currentMessage.text}
+                messageType={currentMessage.variant}
+              />
+            )}
           </div>
         </MessageContext.Provider>
       </UserContext.Provider>

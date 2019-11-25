@@ -2,13 +2,12 @@ import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import session, { Store } from 'express-session';
 import ConnectRedis from 'connect-redis';
-import { AuthModule, ConfigModule } from './modules';
-import { AppController } from './controllers';
-import {
-  AppService,
-  ConfigService,
-} from './services';
-import { SessionMiddleware } from './middleware';
+import { ConfigModule } from './config/config.module';
+import { ConfigService } from './config/config.service';
+import { AuthModule } from './auth/auth.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { SessionMiddleware } from './auth/session.middleware';
 
 /**
  * Base application module that injects Mongoose and configures
@@ -55,7 +54,7 @@ class AppModule implements NestModule {
     consumer.apply(SessionMiddleware).forRoutes('*');
     if (this.config.isDevelopment) {
       // eslint-disable-next-line
-      const { devServer, hotServer } = require('./middleware/dev.middleware');
+      const { devServer, hotServer } = require('./config/dev.middleware');
       consumer.apply(devServer, hotServer).forRoutes('/');
     }
   }
