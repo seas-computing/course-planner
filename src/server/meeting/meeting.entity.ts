@@ -8,22 +8,7 @@ import { BaseEntity } from '../base/base.entity';
 import { NonClassEvent } from '../nonClassEvent/nonclassevent.entity';
 import { CourseInstance } from '../courseInstance/courseinstance.entity';
 import { Room } from '../location/room.entity';
-
-/**
- * Set list of days on which a [[Meeting]] can be scheduled to occur
- */
-export enum DAY {
-  /** Monday */
-  MON = 'MON',
-  /** Tuesday */
-  TUE = 'TUE',
-  /** Wednesday */
-  WED = 'WED',
-  /** Thursday */
-  THU = 'THU',
-  /** Friday */
-  FRI = 'FRI'
-}
+import { DAY } from '../../common/constants';
 
 @Entity()
 export class Meeting extends BaseEntity {
