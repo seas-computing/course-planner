@@ -9,12 +9,21 @@
 
 This setup uses `docker` and `docker-compose` for local development, as defined in `docker-compose.yml`. Installation instructions for various platforms can be found [here][docker].
 
-You'll also need to copy `.env-example` to `.env` and fill in the appropriate values.
+You'll also need to:
 
-Then to start the project, run:
+1. Copy `.env-example` to `.env` (`cp .env-example .env`) and fill in the appropriate values.
+1. Clone [mark-one](https://github.com/seas-computing/mark-one) to a folder beside this project - e.g:
 
-```sh
-docker-compose up
-```
+       .
+       ├── course-planner
+       ├── course-planner-etl
+       ├── mark-one
+
+       3 directories, 0 files
+
+1. To start the project, run:
+   ```sh
+   docker-compose up
+   ```
 
 [docker]: https://docs.docker.com/install/
