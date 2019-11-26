@@ -115,6 +115,12 @@ export default abstract class CourseResponseDTO {
   public area: string;
 
   @ApiModelProperty({
+    type: 'boolean',
+    example: false,
+  })
+  public undergraduate: boolean;
+
+  @ApiModelProperty({
     type: 'string',
     example: 'AM 10',
   })
