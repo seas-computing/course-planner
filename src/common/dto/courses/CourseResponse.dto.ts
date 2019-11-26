@@ -30,13 +30,11 @@ abstract class Instance {
     example: [
       {
         id: '5c8e015f-eae6-4586-9eb0-fc7d243403bf',
-        firstName: 'Chris',
-        lastName: 'Rogers',
+        displayName: 'Rogers, Chris',
       },
       {
         id: 'effb8b1f-0525-42d0-bcbe-29206121d8ac',
-        firstName: 'James',
-        lastName: 'Waldo',
+        displayName: 'Waldo, James',
       },
     ],
     default: [],
