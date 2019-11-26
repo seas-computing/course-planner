@@ -13,6 +13,12 @@ abstract class Instance {
   public id: string;
 
   @ApiModelProperty({
+    type: 'number',
+    example: 2016,
+  })
+  public academicYear: number;
+
+  @ApiModelProperty({
     type: 'string',
     example: OFFERED.Y,
     enum: OFFERED,
