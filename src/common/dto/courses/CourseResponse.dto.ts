@@ -159,11 +159,4 @@ export default abstract class CourseResponseDTO {
     default: '',
   })
   public notes?: string;
-
-  @ApiModelProperty({
-    type: 'string',
-    example: 'Some example details',
-    default: '',
-  })
-  public detail?: string;
 }
