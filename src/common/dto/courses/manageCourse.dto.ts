@@ -18,14 +18,9 @@ export abstract class ManageCourseResponseDTO {
   public area: string;
 
   @ApiModelProperty({
-    example: 'AP',
+    example: 'AP 227',
   })
-  public prefix: string;
-
-  @ApiModelProperty({
-    example: '274',
-  })
-  public number: string;
+  public catalogNumber: string;
 
   @ApiModelProperty({
     example: TERM_PATTERN.FALL,
