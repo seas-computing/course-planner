@@ -5,8 +5,6 @@ import ConnectRedis from 'connect-redis';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
 import { AuthModule } from './auth/auth.module';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { SessionMiddleware } from './auth/session.middleware';
 
 /**
@@ -26,9 +24,8 @@ import { SessionMiddleware } from './auth/session.middleware';
     }),
     AuthModule,
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [
-    AppService,
     {
       inject: [ConfigService],
       provide: Store,
