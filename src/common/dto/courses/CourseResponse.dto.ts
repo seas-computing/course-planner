@@ -37,8 +37,7 @@ abstract class Instance {
   })
   public instructors: {
     id: string;
-    firstName: string;
-    lastName: string;
+    displayName: string;
   }[] = [];
 
   @ApiModelProperty({
