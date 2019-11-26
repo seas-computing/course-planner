@@ -145,15 +145,13 @@ export default abstract class CourseResponseDTO {
 
   @ApiModelProperty({
     type: Instance,
-    isArray: true,
   })
-  public fall: Instance[] = [];
+  public spring: Instance;
 
   @ApiModelProperty({
     type: Instance,
-    isArray: true,
   })
-  public spring: Instance[] = [];
+  public fall: Instance;
 
   @ApiModelProperty({
     type: 'string',
