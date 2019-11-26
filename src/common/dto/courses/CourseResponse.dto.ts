@@ -1,5 +1,5 @@
 import { ApiModelProperty } from '@nestjs/swagger';
-import { DAY, OFFERED } from 'common/constants';
+import { DAY, OFFERED, TERM_PATTERN } from 'common/constants';
 
 /**
  * @module Server.DTOS.Courses
@@ -159,4 +159,10 @@ export default abstract class CourseResponseDTO {
     default: '',
   })
   public notes?: string;
+
+  @ApiModelProperty({
+    type: 'string',
+    enum: TERM_PATTERN,
+  })
+  public termPattern: TERM_PATTERN;
 }

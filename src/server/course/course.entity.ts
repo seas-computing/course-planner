@@ -11,25 +11,6 @@ import { CourseInstance } from '../courseInstance/courseinstance.entity';
 import { Area } from '../area/area.entity';
 import { NonClassParent } from '../nonClassParent/nonclassparent.entity';
 
-export enum TERM_PATTERN {
-
-  /**
-   * This course is offered in the fall semester only
-   */
-  FALL = 'FALL',
-
-  /**
-   * This course is offered in the spring semester only
-   */
-  SPRING = 'SPRING',
-
-  /**
-   * This course is offered in both the spring and the fall semester
-   */
-  BOTH = 'BOTH',
-}
-
-
 /**
  * The parent of many [[CourseInstance]] entities. The course entity is responsibile
  * for managing area, title and course code information. This informaion does
