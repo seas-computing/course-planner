@@ -57,11 +57,15 @@ abstract class Instance {
           hour: 13,
           minute: 0,
         },
+        room: {
+          id: 'c7b1fa3f-c5b0-478d-a29c-7f85a4d80109',
+          name: 'Maxwell Dworkin 119',
+        },
       },
     ],
     isArray: true,
   })
-  public times: {
+  public meetings: {
     id: string;
     day: DAY;
     startTime: {
@@ -72,18 +76,11 @@ abstract class Instance {
       hour: number;
       minute: number;
     };
+    room: {
+      id: string;
+      name: string;
+    };
   }[];
-
-  @ApiModelProperty({
-    example: {
-      id: 'c7b1fa3f-c5b0-478d-a29c-7f85a4d80109',
-      name: 'Maxwell Dworkin 119',
-    },
-  })
-  public room: {
-    id: string;
-    name: string;
-  };
 
   @ApiModelProperty({
     type: 'number',
