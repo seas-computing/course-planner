@@ -117,7 +117,7 @@ export default abstract class CourseResponseDTO {
     type: 'string',
     example: 'AM 10',
   })
-  public ccn: string;
+  public catalogNumber: string;
 
   @ApiModelProperty({
     type: 'string',
