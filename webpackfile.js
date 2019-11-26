@@ -82,7 +82,7 @@ const tsLoader = {
 const client = {
   name: 'client',
   mode,
-  entry: ['./src/client/index.ts'],
+  entry: ['./src/client/index.tsx'],
   output: {
     path: resolve(__dirname, 'build/static'),
     filename: 'app.js',

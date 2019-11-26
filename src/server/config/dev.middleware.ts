@@ -20,7 +20,7 @@ const compiler = webpack([{
   entry: [
     'webpack-hot-middleware/client',
     'react-hot-loader/patch',
-    './src/client/index.ts',
+    './src/client/index.tsx',
   ],
   output: {
     path: resolve(__dirname, 'build/static'),
