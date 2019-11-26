@@ -73,7 +73,7 @@ abstract class Instance {
   @ApiModelProperty({
     example: {
       id: 'c7b1fa3f-c5b0-478d-a29c-7f85a4d80109',
-      room: 'Maxwell Dworkin 119',
+      name: 'Maxwell Dworkin 119',
     },
   })
   public room: {
