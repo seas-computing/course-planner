@@ -29,6 +29,7 @@ export abstract class ManageCourseResponseDTO {
 
   @ApiModelProperty({
     example: TERM_PATTERN.FALL,
+    enum: TERM_PATTERN,
   })
   public termPattern?: TERM_PATTERN;
 
