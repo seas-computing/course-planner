@@ -49,14 +49,8 @@ abstract class Instance {
       {
         id: '7187d276-f6cf-4323-af7d-dd70f4a08e3d',
         day: DAY.TUE,
-        startTime: {
-          hour: 12,
-          minute: 0,
-        },
-        endTime: {
-          hour: 13,
-          minute: 0,
-        },
+        startTime: '12:00:00-5',
+        endTime: '13:00:00-5',
         room: {
           id: 'c7b1fa3f-c5b0-478d-a29c-7f85a4d80109',
           name: 'Maxwell Dworkin 119',
@@ -68,14 +62,8 @@ abstract class Instance {
   public meetings: {
     id: string;
     day: DAY;
-    startTime: {
-      hour: number;
-      minute: number;
-    };
-    endTime: {
-      hour: number;
-      minute: number;
-    };
+    startTime: string;
+    endTime: string;
     room: {
       id: string;
       name: string;
