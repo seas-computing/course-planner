@@ -36,7 +36,7 @@ export abstract class ManageCourseResponseDTO {
   @ApiModelProperty({
     example: true,
   })
-  public isSeas: boolean;
+  public isSEAS: boolean;
 
   @ApiModelProperty({
     example: 'AC 227',
