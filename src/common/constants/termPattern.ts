@@ -1,3 +1,8 @@
+/**
+ * Specifies which semesters courses are offered in: Fall semester, Spring
+ * semester, or both semesters
+ */
+
 enum TERM_PATTERN {
 
   /**
