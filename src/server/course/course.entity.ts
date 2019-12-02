@@ -6,11 +6,11 @@ import {
   ObjectType,
   Index,
 } from 'typeorm';
+import { TERM_PATTERN } from 'common/constants';
 import { BaseEntity } from '../base/base.entity';
 import { CourseInstance } from '../courseInstance/courseinstance.entity';
 import { Area } from '../area/area.entity';
 import { NonClassParent } from '../nonClassParent/nonclassparent.entity';
-import { TERM_PATTERN } from '../../common/constants';
 
 /**
  * The parent of many [[CourseInstance]] entities. The course entity is responsibile
