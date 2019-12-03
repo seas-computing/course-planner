@@ -13,9 +13,15 @@ export abstract class ManageCourseResponseDTO {
   public title: string;
 
   @ApiModelProperty({
-    example: 'ACS',
+    example: {
+      id: 'cd823f34-a4dc-4485-a310-7f9b885df770',
+      name: 'ACS',
+    },
   })
-  public area: string;
+  public area: {
+    id: string;
+    name: string;
+  };
 
   @ApiModelProperty({
     example: 'AP 227',
