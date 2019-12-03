@@ -2,6 +2,7 @@ import {
   PrimaryColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  BaseEntity as ActiveRecordBaseEntity,
 } from 'typeorm';
 
 /**
@@ -11,7 +12,7 @@ import {
  * classes. This enables common table metadata configuration for columns like
  * `id`, `updatedAt`, `createdAt` etc. to be shared consistently across entities
  */
-export abstract class BaseEntity {
+export abstract class BaseEntity extends ActiveRecordBaseEntity {
   /**
    * The primary key record identifier. Used for uniquiely identifying records
    * and for cross-table joins. UUID is used to enable records from different
