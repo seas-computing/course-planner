@@ -6,6 +6,7 @@ import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
 import { AuthModule } from './auth/auth.module';
 import { SessionMiddleware } from './auth/session.middleware';
+import { CourseModule } from './course/course.module';
 
 /**
  * Base application module that injects Mongoose and configures
@@ -23,6 +24,7 @@ import { SessionMiddleware } from './auth/session.middleware';
       inject: [ConfigService],
     }),
     AuthModule,
+    CourseModule,
   ],
   controllers: [],
   providers: [
