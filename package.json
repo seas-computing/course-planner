@@ -39,7 +39,7 @@
     "test:watch": "TS_NODE_TRANSPILE_ONLY=true mocha --watch",
     "typecheck": "tsc --noEmit",
     "start": "nodemon",
-    "orm": "ts-node node_modules/typeorm/cli.js"
+    "orm": "ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm"
   },
   "devDependencies": {
     "@babel/core": "^7.4.5",
