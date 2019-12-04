@@ -1,5 +1,5 @@
 import { ApiModelProperty } from '@nestjs/swagger';
-import { TERM_PATTERN } from '../../constants';
+import { TERM_PATTERN } from 'common/constants';
 
 export abstract class ManageCourseResponseDTO {
   @ApiModelProperty({

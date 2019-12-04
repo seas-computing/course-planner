@@ -5,12 +5,12 @@ import {
   ObjectType,
   OneToMany,
 } from 'typeorm';
+import { OFFERED } from 'common/constants';
 import { BaseEntity } from '../base/base.entity';
 import { Course } from '../course/course.entity';
 import { FacultyCourseInstance } from './facultycourseinstance.entity';
 import { Semester } from '../semester/semester.entity';
 import { Meeting } from '../meeting/meeting.entity';
-import { OFFERED } from '../../common/constants';
 
 
 /**

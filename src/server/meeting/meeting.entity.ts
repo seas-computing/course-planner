@@ -4,11 +4,11 @@ import {
   ManyToOne,
   ObjectType,
 } from 'typeorm';
+import { DAY } from 'common/constants';
 import { BaseEntity } from '../base/base.entity';
 import { NonClassEvent } from '../nonClassEvent/nonclassevent.entity';
 import { CourseInstance } from '../courseInstance/courseinstance.entity';
 import { Room } from '../location/room.entity';
-import { DAY } from '../../common/constants';
 
 @Entity()
 export class Meeting extends BaseEntity {
