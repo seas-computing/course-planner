@@ -65,7 +65,7 @@ export class Course extends BaseEntity {
     type: 'boolean',
     default: false,
   })
-  public undergraduate: boolean = false;
+  public isUndergraduate: boolean = false;
 
   /**
    * Free text for administrators to record notes against a course
