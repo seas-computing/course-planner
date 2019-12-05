@@ -14,6 +14,7 @@ async function bootstrap(): Promise<void> {
     const options = new DocumentBuilder()
       .setTitle('API Documentation')
       .setDescription('API documentation for the course planning API')
+      .setBasePath('/api')
       .build();
     const document = SwaggerModule.createDocument(app, options);
     SwaggerModule.setup('docs/api', app, document);
