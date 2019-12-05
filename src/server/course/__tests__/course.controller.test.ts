@@ -43,7 +43,7 @@ describe('Course controller', function () {
 
       mockCourseRepository.find.resolves(databaseCourses);
 
-      const courses = await controller.index();
+      const courses = await controller.getAll();
 
       strictEqual(courses.length, databaseCourses.length);
     });

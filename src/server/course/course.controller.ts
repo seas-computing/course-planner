@@ -17,7 +17,7 @@ export class CourseController {
     description: 'An array of all the courses along with their area',
     isArray: true,
   })
-  public async index(): Promise<ManageCourseResponseDTO[]> {
+  public async getAll(): Promise<ManageCourseResponseDTO[]> {
     const courses = await this.courseRepository.find({
       relations: ['area'],
     });
