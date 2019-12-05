@@ -22,16 +22,8 @@ export class CourseController {
       relations: ['area'],
     });
 
-    return courses.map(({
-      updatedAt, // eslint-disable-line  @typescript-eslint/no-unused-vars
-      createdAt, // eslint-disable-line  @typescript-eslint/no-unused-vars
-      ...course
-    }: Course): ManageCourseResponseDTO => ({
+    return courses.map((course: Course): ManageCourseResponseDTO => ({
       ...course,
-      area: {
-        id: course.area.id,
-        name: course.area.name,
-      },
       catalogNumber: `${course.prefix} ${course.number}`,
     }));
   }
