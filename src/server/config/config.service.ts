@@ -1,6 +1,5 @@
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { RedisStoreOptions } from 'connect-redis';
-import { entities } from '../../../ormconfig';
 
 /**
  * Parses process.env to create a clean configuration interface
@@ -40,7 +39,7 @@ class ConfigService {
       password: DB_PASSWORD,
       host: DB_HOSTNAME,
       port: parseInt(DB_PORT),
-      entities,
+      entities: ['src/server/**/*.entity.ts'],
     };
   }
 
