@@ -89,7 +89,7 @@ abstract class Instance {
   public actualEnrollment: number;
 }
 
-export default abstract class CourseResponseDTO {
+export default abstract class CourseInstanceResponseDTO {
   @ApiModelProperty({
     type: 'string',
     example: 'c7b1fa3f-c5b0-478d-a29c-7f85a4d80109',
