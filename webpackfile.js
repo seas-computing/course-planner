@@ -1,10 +1,9 @@
-const {resolve, join} = require('path');
+const { resolve } = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const HtmlWebpackRootPlugin = require('html-webpack-root-plugin');
 const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
-const CopyPlugin = require('copy-webpack-plugin');
 const nodeExternals = require('webpack-node-externals');
 /**
  * NestJs uses a custom wrapper around require() that allows it to show a
@@ -83,7 +82,7 @@ const tsLoader = {
 const client = {
   name: 'client',
   mode,
-  entry: ['./src/client/index.ts'],
+  entry: ['./src/client/index.tsx'],
   output: {
     path: resolve(__dirname, 'build/static'),
     filename: 'app.js',
@@ -94,7 +93,7 @@ const client = {
   module: {
     rules: [tsLoader],
   },
-  optimization: {...optimization, splitChunks},
+  optimization: { ...optimization, splitChunks },
   plugins: [
     new HtmlWebpackPlugin({
       title: process.env.APP_NAME,

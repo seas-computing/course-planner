@@ -1,10 +1,10 @@
 import {
   Entity, Column, ObjectType, OneToMany, Index,
 } from 'typeorm';
+import { FACULTY_TYPE } from 'common/constants';
 import { BaseEntity } from '../base/base.entity';
 import { FacultyCourseInstance } from '../courseInstance/facultycourseinstance.entity';
 import { Absence } from '../absence/absence.entity';
-import { FACULTY_TYPE } from '../../common/constants';
 
 @Entity()
 export class Faculty extends BaseEntity {

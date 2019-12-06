@@ -26,12 +26,16 @@ export abstract class BaseEntity {
   /**
    * Metadata column used for signifying the date the record was created
    */
-  @CreateDateColumn()
+  @CreateDateColumn({
+    select: false,
+  })
   public createdAt: Date;
 
   /**
    * Metadata column used for signifying the date the record was last updated
    */
-  @UpdateDateColumn()
+  @UpdateDateColumn({
+    select: false,
+  })
   public updatedAt: Date;
 }

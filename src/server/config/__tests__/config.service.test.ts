@@ -1,4 +1,4 @@
-import { strictEqual } from 'assert';
+import { strictEqual, deepStrictEqual } from 'assert';
 import { int, safeString } from 'testData';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { RedisStoreOptions } from 'connect-redis';
@@ -65,6 +65,10 @@ describe('Configuration Service', function () {
 
     it('provides the database port', function () {
       strictEqual(dbOptions.port.toString(), DB_PORT);
+    });
+
+    it('provides a glob to import entity classes', function () {
+      deepStrictEqual(dbOptions.entities, ['src/server/**/*.entity.ts']);
     });
   });
 
