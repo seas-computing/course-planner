@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { ManageCourseResponseDTO } from 'common/dto/courses/manageCourse.dto';
+import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
