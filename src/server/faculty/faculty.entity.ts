@@ -1,10 +1,11 @@
 import {
-  Entity, Column, ObjectType, OneToMany, Index,
+  Entity, Column, ObjectType, OneToMany, Index, ManyToOne,
 } from 'typeorm';
 import { FACULTY_TYPE } from 'common/constants';
 import { BaseEntity } from '../base/base.entity';
 import { FacultyCourseInstance } from '../courseInstance/facultycourseinstance.entity';
 import { Absence } from '../absence/absence.entity';
+import { Area } from '../area/area.entity';
 
 @Entity()
 export class Faculty extends BaseEntity {
@@ -60,4 +61,16 @@ export class Faculty extends BaseEntity {
     { cascade: ['insert'] }
   )
   public absences: Absence[];
+
+  /**
+   * The [[Area]] to which this [[Faculty]] belongs
+   *
+   * ---
+   * Many [[Faculty]] members have one [[Area]]
+   */
+  @ManyToOne(
+    (): ObjectType<Area> => Area,
+    ({ faculty }): Faculty[] => faculty
+  )
+  public area: Area;
 }

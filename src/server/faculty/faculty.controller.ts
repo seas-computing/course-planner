@@ -22,8 +22,6 @@ export class ManageFacultyController {
       relations: ['area'],
     });
     return facultyMembers.map(({
-      updatedAt,
-      createdAt,
       category: facultyType,
       ...faculty
     }: Faculty): ManageFacultyResponseDTO => ({

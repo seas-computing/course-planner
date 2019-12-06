@@ -3,6 +3,7 @@ import {
 } from 'typeorm';
 import { BaseEntity } from '../base/base.entity';
 import { Course } from '../course/course.entity';
+import { Faculty } from '../faculty/faculty.entity';
 
 /**
  * A subject area is a categorization of coures that all fall within a similar
@@ -35,4 +36,16 @@ export class Area extends BaseEntity {
     ({ area }): Area => area
   )
   public courses: Course[];
+
+  /**
+   * An array of [[Faculty]] members
+   *
+   * ---
+   * One [[Area]] has many [[Faculty]] members
+   */
+  @OneToMany(
+    (): ObjectType<Faculty> => Faculty,
+    ({ area }): Area => area
+  )
+  public faculty: Faculty[];
 }
