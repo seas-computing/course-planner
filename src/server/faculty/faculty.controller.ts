@@ -27,10 +27,8 @@ export class ManageFacultyController {
     }: Faculty): ManageFacultyResponseDTO => ({
       ...faculty,
       area: {
-        // id: faculty.area.id,
-        // name: faculty.area.name,
-        id: 'fake id',
-        name: 'fake name',
+        id: faculty.area.id,
+        name: faculty.area.name,
       },
       facultyType,
     }));
