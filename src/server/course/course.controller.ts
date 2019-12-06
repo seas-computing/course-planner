@@ -8,7 +8,7 @@ import { Course } from './course.entity';
 @Controller('api/courses')
 export class CourseController {
   @InjectRepository(Course)
-  private courseRepository: Repository<Course>
+  private readonly courseRepository: Repository<Course>;
 
   @Get('/')
   @ApiOperation({ title: 'Retrieve all courses in the database' })
