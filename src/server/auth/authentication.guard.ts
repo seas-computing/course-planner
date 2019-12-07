@@ -3,7 +3,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { AuthGuard as PassportAuthGuard } from '@nestjs/passport';
+import { AuthGuard } from '@nestjs/passport';
 import { ConfigService } from '../config/config.service';
 
 /**
@@ -12,7 +12,7 @@ import { ConfigService } from '../config/config.service';
  */
 
 @Injectable()
-class AuthGuard extends PassportAuthGuard('saml') {
+class Authentication extends AuthGuard('saml') {
   private readonly isProduction: boolean;
 
   public constructor(config: ConfigService) {
@@ -30,4 +30,4 @@ class AuthGuard extends PassportAuthGuard('saml') {
   }
 }
 
-export { AuthGuard };
+export { Authentication };

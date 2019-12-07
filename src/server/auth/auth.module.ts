@@ -1,6 +1,7 @@
 import { Module, Global } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { SAMLStrategy } from './saml.strategy';
+import { Authentication } from './authentication.guard';
 
 /**
  * Exposes the PassportModule with SAMLStrategy for injection
@@ -9,8 +10,11 @@ import { SAMLStrategy } from './saml.strategy';
 @Global()
 @Module({
   imports: [PassportModule.register({ defaultStrategy: 'saml' })],
-  providers: [SAMLStrategy],
-  exports: [PassportModule],
+  providers: [
+    SAMLStrategy,
+    Authentication,
+  ],
+  exports: [],
 })
 class AuthModule { }
 
