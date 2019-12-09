@@ -1,11 +1,14 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { Course } from './course.entity';
+import { Authentication } from '../auth/authentication.guard';
 
 @Controller('api/courses')
+@ApiUnauthorizedResponse({ description: 'Thrown if the user is not authenticated' })
+@UseGuards(Authentication)
 export class CourseController {
   @InjectRepository(Course)
   private readonly courseRepository: Repository<Course>;
