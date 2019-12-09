@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { ApiOperation, ApiOkResponse } from '@nestjs/swagger';
 import { Faculty } from './faculty.entity';
 
-@Controller('faculty')
+@Controller('api/faculty')
 export class ManageFacultyController {
   @InjectRepository(Faculty)
   private facultyRepository: Repository<Faculty>
