@@ -132,7 +132,8 @@
   "overrides": [
     {
       "files": [
-        "**/__tests__/**/*"
+        "**/__tests__/**/*",
+        "tests/**/*"
       ],
       "rules": {
         "func-names": 0,
