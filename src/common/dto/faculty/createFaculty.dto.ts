@@ -5,6 +5,8 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  ValidateIf,
+  IsNotEmptyObject,
 } from 'class-validator';
 import { FACULTY_TYPE } from '../../constants';
 
@@ -35,11 +37,15 @@ export abstract class CreateFacultyDTO {
   @ApiModelProperty({
     example: 'Samantha',
   })
+  @ValidateIf(({ lastName }): boolean => lastName.length === 0)
+  @IsNotEmpty()
   public firstName?: string;
 
   @ApiModelProperty({
     example: 'Johnston',
   })
+  @ValidateIf(({ firstName }): boolean => firstName.length === 0)
+  @IsNotEmpty()
   public lastName?: string;
 
   @ApiModelProperty({
@@ -52,6 +58,7 @@ export abstract class CreateFacultyDTO {
   @ApiModelProperty({
     type: FacultyArea,
   })
+  @IsNotEmptyObject()
   public area: FacultyArea;
 
   @ApiModelProperty({
