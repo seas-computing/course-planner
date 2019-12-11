@@ -2,10 +2,10 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
 import { stub, SinonStub } from 'sinon';
 import { strictEqual, deepStrictEqual } from 'assert';
+import { FACULTY_TYPE } from 'common/constants';
 import { ManageFacultyController } from '../faculty.controller';
 import { Faculty } from '../faculty.entity';
 import { Area } from '../../area/area.entity';
-import { FACULTY_TYPE } from 'common/constants';
 
 const mockFacultyRepository = {
   find: stub(),
@@ -72,14 +72,14 @@ describe('Faculty controller', function () {
       };
       mockFacultyRepository.save.resolves({
         ...facultyMember,
-        id: 'asdfnjaisdf12',
+        id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
       });
       const {
         id,
         ...newlyCreatedFaculty
       } = await controller.create(facultyMember);
 
-      strictEqual(id, 'asdfnjaisdf12');
+      strictEqual(id, 'a49edd11-0f2d-4d8f-9096-a4062955a11a');
       deepStrictEqual(newlyCreatedFaculty, facultyMember);
     });
   });
