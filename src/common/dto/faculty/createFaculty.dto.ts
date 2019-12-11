@@ -37,14 +37,14 @@ export abstract class CreateFacultyDTO {
   @ApiModelProperty({
     example: 'Samantha',
   })
-  @ValidateIf(({ lastName = '' }): boolean => lastName.length === 0)
+  @ValidateIf(({ lastName }): boolean => lastName === undefined)
   @IsNotEmpty()
   public firstName?: string;
 
   @ApiModelProperty({
     example: 'Johnston',
   })
-  @ValidateIf(({ firstName = '' }): boolean => firstName.length === 0)
+  @ValidateIf(({ firstName }): boolean => firstName === undefined)
   @IsNotEmpty()
   public lastName?: string;
 
