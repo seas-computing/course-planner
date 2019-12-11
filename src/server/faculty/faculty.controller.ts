@@ -1,5 +1,11 @@
-import { Controller, Get } from '@nestjs/common';
-import { ManageFacultyResponseDTO } from 'common/dto/faculty/manageFaculty.dto';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  BadRequestException,
+} from '@nestjs/common';
+import { ManageFacultyResponseDTO } from 'common/dto/faculty/manageFacultyResponse.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ApiOperation, ApiOkResponse } from '@nestjs/swagger';
@@ -17,7 +23,7 @@ export class ManageFacultyController {
     description: 'An array of all the faculty along with their area',
     isArray: true,
   })
-  public async index(): Promise<ManageFacultyResponseDTO[]> {
+  public async getAll(): Promise<ManageFacultyResponseDTO[]> {
     const facultyMembers = await this.facultyRepository.find({
       relations: ['area'],
     });
