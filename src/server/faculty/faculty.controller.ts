@@ -3,15 +3,13 @@ import {
   Get,
   Post,
   Body,
-  BadRequestException,
 } from '@nestjs/common';
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/manageFacultyResponse.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ApiOperation, ApiOkResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiOkResponse, ApiBadRequestResponse } from '@nestjs/swagger';
 import { CreateFacultyResponseDTO } from 'common/dto/faculty/createFacultyResponse.dto';
 import { CreateFacultyDTO } from 'common/dto/faculty/createFaculty.dto';
-import { Area } from 'server/area/area.entity';
 import { Faculty } from './faculty.entity';
 
 @Controller('api/faculty')
@@ -49,6 +47,9 @@ export class ManageFacultyController {
     type: CreateFacultyResponseDTO,
     description: 'An object with the newly created faculty member\'s information.',
     isArray: false,
+  })
+  @ApiBadRequestResponse({
+    description: 'A bad request response will be returned when the request is not in accordance with the createFaculty DTO',
   })
   public async create(@Body() faculty: CreateFacultyDTO):
   Promise<CreateFacultyResponseDTO> {
