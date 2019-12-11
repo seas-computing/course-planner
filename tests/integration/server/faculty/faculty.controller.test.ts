@@ -74,4 +74,3 @@ describe('Faculty API', function () {
     });
   });
 });
-
