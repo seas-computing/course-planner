@@ -1,7 +1,7 @@
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
 import { stub, SinonStub } from 'sinon';
-import { strictEqual } from 'assert';
+import { strictEqual, deepStrictEqual } from 'assert';
 import { ManageFacultyController } from '../faculty.controller';
 import { Faculty } from '../faculty.entity';
 import { Area } from '../../area/area.entity';
@@ -61,6 +61,26 @@ describe('Faculty controller', function () {
       });
 
       strictEqual(mockFacultyRepository.save.callCount, 1);
+    });
+    it('returns the newly created faculty member', async function () {
+      const facultyMember = {
+        HUID: '12345678',
+        firstName: 'Sam',
+        lastName: 'Johnston',
+        facultyType: FACULTY_TYPE.LADDER,
+        area: new Area(),
+      };
+      mockFacultyRepository.save.resolves({
+        ...facultyMember,
+        id: 'asdfnjaisdf12',
+      });
+      const {
+        id,
+        ...newlyCreatedFaculty
+      } = await controller.create(facultyMember);
+
+      strictEqual(id, 'asdfnjaisdf12');
+      deepStrictEqual(newlyCreatedFaculty, facultyMember);
     });
   });
 });
