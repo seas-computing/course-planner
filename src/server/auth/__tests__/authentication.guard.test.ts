@@ -5,6 +5,13 @@ import { AuthGuard } from '@nestjs/passport';
 import { Authentication } from '../../auth/authentication.guard';
 
 describe('Authentication guard', function () {
+  beforeEach(function () {
+    AuthGuard('saml').prototype.canActivate = stub();
+  });
+  afterEach(function () {
+    AuthGuard('saml').prototype.canActivate.reset();
+  });
+
   it('allows access in development mode', async function () {
     const guard = new Authentication({ isProduction: false } as never);
 
@@ -12,8 +19,6 @@ describe('Authentication guard', function () {
   });
 
   it('requries authentication in production mode', function () {
-    AuthGuard('saml').prototype.canActivate = stub();
-
     new Authentication({ isProduction: true } as never)
       .canActivate({} as ExecutionContext);
 
