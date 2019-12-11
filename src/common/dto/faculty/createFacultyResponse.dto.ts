@@ -1,11 +1,4 @@
 import { ApiModelProperty } from '@nestjs/swagger';
-import {
-  IsNotEmpty,
-  IsEnum,
-  IsOptional,
-  IsString,
-  IsUUID,
-} from 'class-validator';
 import { FACULTY_TYPE } from '../../constants';
 
 export abstract class FacultyArea {
@@ -13,23 +6,24 @@ export abstract class FacultyArea {
     type: 'string',
     example: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
   })
-  @IsUUID()
   public id: string;
 
   @ApiModelProperty({
     type: 'string',
     example: 'ACS',
   })
-  @IsString()
-  @IsNotEmpty()
   public name: string;
 }
 
-export abstract class CreateFacultyDTO {
+export abstract class CreateFacultyResponseDTO {
+  @ApiModelProperty({
+    example: '4c15c2bf-7823-47e0-9954-2ce914b73595',
+  })
+  public id: string;
+
   @ApiModelProperty({
     example: '12345678',
   })
-  @IsNotEmpty()
   public HUID: string;
 
   @ApiModelProperty({
@@ -46,7 +40,6 @@ export abstract class CreateFacultyDTO {
     example: FACULTY_TYPE.LADDER,
     enum: FACULTY_TYPE,
   })
-  @IsEnum(FACULTY_TYPE)
   public facultyType: FACULTY_TYPE;
 
   @ApiModelProperty({
@@ -57,7 +50,5 @@ export abstract class CreateFacultyDTO {
   @ApiModelProperty({
     example: 'EPS (0.5 FTE SEAS)',
   })
-  @IsOptional()
-  @IsString()
   public jointWith?: string;
 }
