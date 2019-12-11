@@ -72,5 +72,52 @@ describe('Faculty API', function () {
       strictEqual(response.ok, false);
       strictEqual(response.status, HttpStatus.BAD_REQUEST);
     });
+    it('allows you to create a faculty member with a last name and no first name', async function () {
+      const response = await request(facultyAPI.getHttpServer())
+        .post('/api/faculty')
+        .send({
+          HUID: '12345678',
+          lastName: 'Chen',
+          facultyType: FACULTY_TYPE.LADDER,
+          area: {
+            id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
+            name: 'ACS',
+          },
+        });
+
+      strictEqual(response.ok, true);
+      strictEqual(response.status, HttpStatus.CREATED);
+    });
+    it('allows you to create a faculty member with a first name and no last name', async function () {
+      const response = await request(facultyAPI.getHttpServer())
+        .post('/api/faculty')
+        .send({
+          HUID: '12345678',
+          firstName: 'Ada',
+          facultyType: FACULTY_TYPE.LADDER,
+          area: {
+            id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
+            name: 'ACS',
+          },
+        });
+
+      strictEqual(response.ok, true);
+      strictEqual(response.status, HttpStatus.CREATED);
+    });
+    it('does not allow you to create a faculty member with both no first name and no last name', async function () {
+      const response = await request(facultyAPI.getHttpServer())
+        .post('/api/faculty')
+        .send({
+          HUID: '12345678',
+          facultyType: FACULTY_TYPE.LADDER,
+          area: {
+            id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
+            name: 'ACS',
+          },
+        });
+
+      strictEqual(response.ok, false);
+      strictEqual(response.status, HttpStatus.BAD_REQUEST);
+    });
   });
 });
