@@ -14,13 +14,17 @@ describe('Authentication guard', function () {
   });
 
   it('allows access in development mode', function () {
-    const guard = new Authentication(new ConfigService({ NODE_ENV: 'development' }));
+    const guard = new Authentication(new ConfigService({
+      NODE_ENV: 'development',
+    }));
 
     strictEqual(guard.canActivate({} as ExecutionContext), true);
   });
 
   it('requries authentication in production mode', function () {
-    new Authentication(new ConfigService({ NODE_ENV: 'production' }))
+    new Authentication(new ConfigService({
+      NODE_ENV: 'production',
+    }))
       .canActivate({} as ExecutionContext);
 
     strictEqual(AuthGuard('saml').prototype.canActivate.callCount, 1);
