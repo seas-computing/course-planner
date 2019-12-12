@@ -11,6 +11,7 @@ import { Repository } from 'typeorm';
 import { ApiOperation, ApiOkResponse, ApiBadRequestResponse } from '@nestjs/swagger';
 import { FacultyResponseDTO } from 'common/dto/faculty/facultyResponse.dto';
 import { CreateFacultyDTO } from 'common/dto/faculty/createFaculty.dto';
+import { UpdateFacultyDTO } from 'common/dto/faculty/updateFaculty.dto';
 import { Faculty } from './faculty.entity';
 
 @Controller('api/faculty')
@@ -70,7 +71,7 @@ export class ManageFacultyController {
   @ApiBadRequestResponse({
     description: 'Bad Request: The request is not in accordance with the updateFaculty DTO',
   })
-  public async update(@Param('id') id: string, @Body() faculty: FacultyResponseDTO):
+  public async update(@Param('id') id: string, @Body() faculty: UpdateFacultyDTO):
   Promise<FacultyResponseDTO> {
     return this.facultyRepository.save({
       id,
