@@ -84,4 +84,25 @@ describe('Faculty controller', function () {
       deepStrictEqual(newlyCreatedFaculty, facultyMember);
     });
   });
+
+  describe('update', function () {
+    it('returns the updated faculty member', async function () {
+      const facultyMember = {
+        HUID: '87654321',
+        firstName: 'Ada',
+        lastName: 'Lovelace',
+        facultyType: FACULTY_TYPE.LADDER,
+        area: new Area(),
+      };
+      mockFacultyRepository.save.resolves({
+        ...facultyMember,
+        facultyType: FACULTY_TYPE.NON_SEAS_LADDER,
+      });
+      const {
+        facultyType,
+      } = await controller.update('a49edd11-0f2d-4d8f-9096-a4062955a11a', facultyMember);
+
+      strictEqual(facultyType, FACULTY_TYPE.NON_SEAS_LADDER);
+    });
+  });
 });
