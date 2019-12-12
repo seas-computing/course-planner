@@ -3,6 +3,8 @@ import {
   Get,
   Post,
   Body,
+  Put,
+  Param,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -55,6 +57,24 @@ export class ManageFacultyController {
       category: faculty.category,
       area: faculty.area,
       jointWith: faculty.jointWith,
+    });
+  }
+
+  @Put(':id')
+  @ApiOperation({ title: 'Edit an existing faculty entry in the database' })
+  @ApiOkResponse({
+    type: FacultyResponseDTO,
+    description: 'An object with the edited faculty member\'s information.',
+    isArray: false,
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad Request: The request is not in accordance with the updateFaculty DTO',
+  })
+  public async update(@Param('id') id: string, @Body() faculty: FacultyResponseDTO):
+  Promise<FacultyResponseDTO> {
+    return this.facultyRepository.save({
+      id,
+      ...faculty,
     });
   }
 }
