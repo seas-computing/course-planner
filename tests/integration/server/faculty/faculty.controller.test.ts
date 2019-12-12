@@ -72,6 +72,7 @@ describe('Faculty API', function () {
 
       strictEqual(response.ok, false);
       strictEqual(response.status, HttpStatus.BAD_REQUEST);
+      strictEqual(response.body.message.includes('HUID'), true);
     });
     it('allows you to create a faculty member with a last name and no first name', async function () {
       const response = await request(facultyAPI.getHttpServer())
