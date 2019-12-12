@@ -7,10 +7,10 @@ import { Authentication } from '../../auth/authentication.guard';
 
 describe('Authentication guard', function () {
   beforeEach(function () {
-    AuthGuard('saml').prototype.canActivate = stub();
+    stub(AuthGuard('saml').prototype, 'canActivate');
   });
   afterEach(function () {
-    AuthGuard('saml').prototype.canActivate.reset();
+    AuthGuard('saml').prototype.canActivate.restore();
   });
 
   it('allows access in development mode', function () {
