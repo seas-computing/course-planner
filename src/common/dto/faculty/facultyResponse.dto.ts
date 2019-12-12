@@ -1,5 +1,5 @@
 import { ApiModelProperty } from '@nestjs/swagger';
-import { FACULTY_TYPE } from 'common/constants';
+import { FACULTY_TYPE } from '../../constants';
 
 export abstract class FacultyArea {
   @ApiModelProperty({
@@ -15,7 +15,7 @@ export abstract class FacultyArea {
   public name: string;
 }
 
-export abstract class ManageFacultyResponseDTO {
+export abstract class FacultyResponseDTO {
   @ApiModelProperty({
     example: '4c15c2bf-7823-47e0-9954-2ce914b73595',
   })
@@ -29,15 +29,16 @@ export abstract class ManageFacultyResponseDTO {
   @ApiModelProperty({
     example: 'Samantha',
   })
-  public firstName: string;
+  public firstName?: string;
 
   @ApiModelProperty({
     example: 'Johnston',
   })
-  public lastName: string;
+  public lastName?: string;
 
   @ApiModelProperty({
     example: FACULTY_TYPE.LADDER,
+    enum: FACULTY_TYPE,
   })
   public facultyType: FACULTY_TYPE;
 
