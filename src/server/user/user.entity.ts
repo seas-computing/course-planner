@@ -1,3 +1,5 @@
+import { GROUP } from 'common/constants';
+
 /**
  * Basic user representing the format of user data within this application.
  *
@@ -29,6 +31,12 @@ export class User {
   public email: string;
 
   /**
+   * A list of grouper group names that the user belongs to
+   * @example ['authorized-admins-seas-course-planning']
+   */
+  public groups?: GROUP[] = [];
+
+  /**
    * Instanciates a new [[User]] and (optionally) hydrates with data
    *
    * @param {ObjectLiteral} data
@@ -42,16 +50,19 @@ export class User {
     firstName: string;
     lastName: string;
     email: string;
+    groups?: GROUP[];
   } = {
     eppn: '',
     firstName: '',
     lastName: '',
     email: '',
+    groups: [],
   }) {
     this.eppn = data.eppn;
     this.firstName = data.firstName;
     this.lastName = data.lastName;
     this.email = data.email;
+    this.groups = data.groups;
   }
 
   /**

@@ -1,5 +1,6 @@
-import { strictEqual } from 'assert';
+import { strictEqual, deepStrictEqual } from 'assert';
 import { regularUser } from 'testData';
+import { GROUP } from 'common/constants';
 import { User } from '../user.entity';
 
 describe('User', function () {
@@ -10,6 +11,7 @@ describe('User', function () {
         firstName: 'Jim',
         lastName: 'Waldo',
         email: 'waldo@harvard.edu',
+        groups: [GROUP.ADMIN],
       };
 
       const user = new User(userData);
@@ -18,13 +20,15 @@ describe('User', function () {
       strictEqual(user.email, userData.email);
       strictEqual(user.firstName, userData.firstName);
       strictEqual(user.lastName, userData.lastName);
+      strictEqual(user.groups, userData.groups);
     });
-    it('sets all properties to empty strings if not provided', function () {
+    it('sets all properties to their default values if not provided', function () {
       const user = new User();
       strictEqual(user.eppn, '');
       strictEqual(user.email, '');
       strictEqual(user.firstName, '');
       strictEqual(user.lastName, '');
+      deepStrictEqual(user.groups, []);
     });
   });
   describe('fullName', function () {
