@@ -10,6 +10,7 @@ import { Area } from '../../area/area.entity';
 const mockFacultyRepository = {
   find: stub(),
   save: stub(),
+  create: stub(),
 };
 
 describe('Faculty controller', function () {
@@ -56,21 +57,21 @@ describe('Faculty controller', function () {
         HUID: '12345678',
         firstName: 'Sam',
         lastName: 'Johnston',
-        facultyType: FACULTY_TYPE.LADDER,
+        category: FACULTY_TYPE.LADDER,
         area: new Area(),
       });
 
-      strictEqual(mockFacultyRepository.save.callCount, 1);
+      strictEqual(mockFacultyRepository.create.callCount, 1);
     });
     it('returns the newly created faculty member', async function () {
       const facultyMember = {
         HUID: '12345678',
         firstName: 'Sam',
         lastName: 'Johnston',
-        facultyType: FACULTY_TYPE.LADDER,
+        category: FACULTY_TYPE.LADDER,
         area: new Area(),
       };
-      mockFacultyRepository.save.resolves({
+      mockFacultyRepository.create.resolves({
         ...facultyMember,
         id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
       });

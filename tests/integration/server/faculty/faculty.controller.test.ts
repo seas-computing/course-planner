@@ -17,6 +17,7 @@ import { Faculty } from '../../../../src/server/faculty/faculty.entity';
 const mockFacultyRepository = {
   find: stub(),
   save: stub(),
+  create: stub(),
 };
 
 describe('Faculty API', function () {
@@ -49,7 +50,7 @@ describe('Faculty API', function () {
           HUID: '12345678',
           firstName: 'Sam',
           lastName: 'Johnston',
-          facultyType: FACULTY_TYPE.LADDER,
+          category: FACULTY_TYPE.LADDER,
           area: {
             id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
             name: 'ACS',
@@ -65,7 +66,7 @@ describe('Faculty API', function () {
         .send({
           firstName: 'Sam',
           lastName: 'Johnston',
-          facultyType: FACULTY_TYPE.LADDER,
+          category: FACULTY_TYPE.LADDER,
           area: new Area(),
         });
 
@@ -78,7 +79,7 @@ describe('Faculty API', function () {
         .send({
           HUID: '12345678',
           lastName: 'Chen',
-          facultyType: FACULTY_TYPE.LADDER,
+          category: FACULTY_TYPE.LADDER,
           area: {
             id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
             name: 'ACS',
@@ -94,7 +95,7 @@ describe('Faculty API', function () {
         .send({
           HUID: '12345678',
           firstName: 'Ada',
-          facultyType: FACULTY_TYPE.LADDER,
+          category: FACULTY_TYPE.LADDER,
           area: {
             id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
             name: 'ACS',
@@ -109,7 +110,7 @@ describe('Faculty API', function () {
         .post('/api/faculty')
         .send({
           HUID: '12345678',
-          facultyType: FACULTY_TYPE.LADDER,
+          category: FACULTY_TYPE.LADDER,
           area: {
             id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
             name: 'ACS',

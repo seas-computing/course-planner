@@ -27,16 +27,12 @@ export class ManageFacultyController {
     const facultyMembers = await this.facultyRepository.find({
       relations: ['area'],
     });
-    return facultyMembers.map(({
-      category: facultyType,
-      ...faculty
-    }: Faculty): FacultyResponseDTO => ({
+    return facultyMembers.map((faculty: Faculty): FacultyResponseDTO => ({
       ...faculty,
       area: {
         id: faculty.area.id,
         name: faculty.area.name,
       },
-      facultyType,
     }));
   }
 
@@ -52,11 +48,11 @@ export class ManageFacultyController {
   })
   public async create(@Body() faculty: CreateFacultyDTO):
   Promise<FacultyResponseDTO> {
-    return this.facultyRepository.save({
+    return this.facultyRepository.create({
       HUID: faculty.HUID,
       firstName: faculty.firstName,
       lastName: faculty.lastName,
-      facultyType: faculty.facultyType,
+      category: faculty.category,
       area: faculty.area,
       jointWith: faculty.jointWith,
     });
