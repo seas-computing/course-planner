@@ -5,6 +5,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Area } from '../../area/area.entity';
 import { CourseController } from '../course.controller';
 import { Course } from '../course.entity';
+import { Authentication } from '../../auth/authentication.guard';
 
 const mockCourseRepository = {
   find: stub(),
@@ -22,7 +23,10 @@ describe('Course controller', function () {
         },
       ],
       controllers: [CourseController],
-    }).compile();
+    })
+      .overrideGuard(Authentication)
+      .useValue(true)
+      .compile();
 
     controller = module.get<CourseController>(CourseController);
   });
