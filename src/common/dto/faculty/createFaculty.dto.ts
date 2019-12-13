@@ -8,7 +8,6 @@ import {
   ValidateIf,
   IsNotEmptyObject,
   IsNumberString,
-  IsByteLength,
   Length,
 } from 'class-validator';
 import { FACULTY_TYPE } from '../../constants';
