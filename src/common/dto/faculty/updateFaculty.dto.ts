@@ -7,6 +7,8 @@ import {
   IsUUID,
   ValidateIf,
   IsNotEmptyObject,
+  IsNumberString,
+  Length,
 } from 'class-validator';
 import { FACULTY_TYPE } from '../../constants';
 
@@ -32,6 +34,8 @@ export abstract class UpdateFacultyDTO {
     example: '87654321',
   })
   @IsNotEmpty()
+  @IsNumberString()
+  @Length(8, 8)
   public HUID: string;
 
   @ApiModelProperty({
