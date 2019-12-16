@@ -151,7 +151,7 @@ describe('Faculty API', function () {
           HUID: '87654321',
           firstName: 'Grace',
           lastName: 'Hopper',
-          facultyType: FACULTY_TYPE.NON_SEAS_LADDER,
+          category: FACULTY_TYPE.NON_SEAS_LADDER,
           area: {
             id: 'c16ehj34-1gge-5d3j-1251-ah153144b22w',
             name: 'AP',
@@ -167,7 +167,7 @@ describe('Faculty API', function () {
         .send({
           firstName: 'Ada',
           lastName: 'Lovelace',
-          facultyType: FACULTY_TYPE.LADDER,
+          category: FACULTY_TYPE.LADDER,
           area: new Area(),
         });
 
@@ -180,7 +180,7 @@ describe('Faculty API', function () {
         .send({
           HUID: '12345678',
           lastName: 'Chen',
-          facultyType: FACULTY_TYPE.NON_LADDER,
+          category: FACULTY_TYPE.NON_LADDER,
           area: {
             id: 'j41edd11-0g34-4h4a-1112-a4062955g62k',
             name: 'AP',
@@ -196,7 +196,7 @@ describe('Faculty API', function () {
         .send({
           HUID: '12345678',
           firstName: 'James',
-          facultyType: FACULTY_TYPE.NON_SEAS_LADDER,
+          category: FACULTY_TYPE.NON_SEAS_LADDER,
           area: {
             id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
             name: 'ACS',
@@ -211,7 +211,7 @@ describe('Faculty API', function () {
         .put('/api/faculty/g12gaa52-1gj5-ha21-1123-hn625632n123')
         .send({
           HUID: '24681012',
-          facultyType: FACULTY_TYPE.NON_LADDER,
+          category: FACULTY_TYPE.NON_LADDER,
           area: {
             id: 'n01dt301-1f3n-3yag-3232-ty12345jr16h',
             name: 'Mat & ME',

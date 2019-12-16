@@ -57,7 +57,7 @@ export abstract class UpdateFacultyDTO {
     enum: FACULTY_TYPE,
   })
   @IsEnum(FACULTY_TYPE)
-  public facultyType: FACULTY_TYPE;
+  public category: FACULTY_TYPE;
 
   @ApiModelProperty({
     type: FacultyArea,

@@ -87,22 +87,17 @@ describe('Faculty controller', function () {
 
   describe('update', function () {
     it('returns the updated faculty member', async function () {
-      const facultyMember = {
+      const newFacultyMemberInfo = {
         HUID: '87654321',
         firstName: 'Ada',
         lastName: 'Lovelace',
-        facultyType: FACULTY_TYPE.LADDER,
+        category: FACULTY_TYPE.LADDER,
         area: new Area(),
       };
-      mockFacultyRepository.save.resolves({
-        ...facultyMember,
-        facultyType: FACULTY_TYPE.NON_SEAS_LADDER,
-      });
-      const {
-        facultyType,
-      } = await controller.update('a49edd11-0f2d-4d8f-9096-a4062955a11a', facultyMember);
+      mockFacultyRepository.save.resolves(newFacultyMemberInfo);
+      const updatedFacultyMember = await controller.update('a49edd11-0f2d-4d8f-9096-a4062955a11a', newFacultyMemberInfo);
 
-      strictEqual(facultyType, FACULTY_TYPE.NON_SEAS_LADDER);
+      deepStrictEqual(updatedFacultyMember, newFacultyMemberInfo);
     });
   });
 });
