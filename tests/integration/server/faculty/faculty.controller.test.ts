@@ -165,14 +165,15 @@ describe('Faculty API', function () {
       const response = await request(facultyAPI.getHttpServer())
         .put('/api/faculty/g12gaa52-1gj5-ha21-1123-hn625632n123')
         .send({
+          HUID: '01234567',
           firstName: 'Ada',
           lastName: 'Lovelace',
-          category: FACULTY_TYPE.LADDER,
           area: new Area(),
         });
 
       strictEqual(response.ok, false);
       strictEqual(response.status, HttpStatus.BAD_REQUEST);
+      strictEqual(response.body.message.includes('category'), true);
     });
     it('allows you to update a faculty member so that the entry has a last name but no first name', async function () {
       const response = await request(facultyAPI.getHttpServer())
