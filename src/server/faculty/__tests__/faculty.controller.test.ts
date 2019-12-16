@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { stub, SinonStub } from 'sinon';
 import { strictEqual, deepStrictEqual } from 'assert';
 import { FACULTY_TYPE } from 'common/constants';
+import { Authentication } from 'server/auth/authentication.guard';
 import { ManageFacultyController } from '../faculty.controller';
 import { Faculty } from '../faculty.entity';
 import { Area } from '../../area/area.entity';
@@ -25,7 +26,7 @@ describe('Faculty controller', function () {
         },
       ],
       controllers: [ManageFacultyController],
-    }).compile();
+    }).overrideGuard(Authentication).useValue(true).compile();
 
     controller = module.get<ManageFacultyController>(ManageFacultyController);
   });

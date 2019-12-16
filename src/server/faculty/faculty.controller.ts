@@ -5,6 +5,7 @@ import {
   Body,
   Put,
   Param,
+  UseGuards,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -12,8 +13,10 @@ import { ApiOperation, ApiOkResponse, ApiBadRequestResponse } from '@nestjs/swag
 import { FacultyResponseDTO } from 'common/dto/faculty/facultyResponse.dto';
 import { CreateFacultyDTO } from 'common/dto/faculty/createFaculty.dto';
 import { UpdateFacultyDTO } from 'common/dto/faculty/updateFaculty.dto';
+import { Authentication } from 'server/auth/authentication.guard';
 import { Faculty } from './faculty.entity';
 
+@UseGuards(Authentication)
 @Controller('api/faculty')
 export class ManageFacultyController {
   @InjectRepository(Faculty)

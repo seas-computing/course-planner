@@ -13,6 +13,9 @@ import { FACULTY_TYPE } from '../../../../src/common/constants';
 import { Area } from '../../../../src/server/area/area.entity';
 import { FacultyModule } from '../../../../src/server/faculty/faculty.module';
 import { Faculty } from '../../../../src/server/faculty/faculty.entity';
+import { AuthModule } from '../../../../src/server/auth/auth.module';
+import { ConfigModule } from '../../../../src/server/config/config.module';
+import { Authentication } from '../../../../src/server/auth/authentication.guard';
 
 const mockFacultyRepository = {
   find: stub(),
@@ -25,10 +28,12 @@ describe('Faculty API', function () {
     let facultyAPI: INestApplication;
     beforeEach(async function () {
       const module: TestingModule = await Test.createTestingModule({
-        imports: [FacultyModule],
+        imports: [ConfigModule, AuthModule, FacultyModule],
       })
         .overrideProvider(getRepositoryToken(Faculty))
         .useValue(mockFacultyRepository)
+        .overrideGuard(Authentication)
+        .useValue(true)
         .compile();
       facultyAPI = module.createNestApplication();
       facultyAPI.useGlobalPipes(new ValidationPipe({
@@ -126,10 +131,12 @@ describe('Faculty API', function () {
     let facultyAPI: INestApplication;
     beforeEach(async function () {
       const module: TestingModule = await Test.createTestingModule({
-        imports: [FacultyModule],
+        imports: [FacultyModule, AuthModule, ConfigModule],
       })
         .overrideProvider(getRepositoryToken(Faculty))
         .useValue(mockFacultyRepository)
+        .overrideGuard(Authentication)
+        .useValue(true)
         .compile();
       facultyAPI = module.createNestApplication();
       facultyAPI.useGlobalPipes(new ValidationPipe({
