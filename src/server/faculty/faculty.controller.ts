@@ -6,11 +6,17 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ApiOperation, ApiOkResponse, ApiBadRequestResponse } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiOkResponse,
+  ApiBadRequestResponse,
+  ApiUseTags
+} from '@nestjs/swagger';
 import { FacultyResponseDTO } from 'common/dto/faculty/facultyResponse.dto';
 import { CreateFacultyDTO } from 'common/dto/faculty/createFaculty.dto';
 import { Faculty } from './faculty.entity';
 
+@ApiUseTags('Faculty')
 @Controller('api/faculty')
 export class ManageFacultyController {
   @InjectRepository(Faculty)
