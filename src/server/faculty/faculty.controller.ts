@@ -10,7 +10,7 @@ import {
   ApiOperation,
   ApiOkResponse,
   ApiBadRequestResponse,
-  ApiUseTags
+  ApiUseTags,
 } from '@nestjs/swagger';
 import { FacultyResponseDTO } from 'common/dto/faculty/facultyResponse.dto';
 import { CreateFacultyDTO } from 'common/dto/faculty/createFaculty.dto';
