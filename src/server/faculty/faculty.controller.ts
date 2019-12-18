@@ -7,6 +7,7 @@ import {
   Param,
   UseGuards,
   BadRequestException,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -16,6 +17,7 @@ import { CreateFacultyDTO } from 'common/dto/faculty/createFaculty.dto';
 import { UpdateFacultyDTO } from 'common/dto/faculty/updateFaculty.dto';
 import { Authentication } from 'server/auth/authentication.guard';
 import { Area } from 'server/area/area.entity';
+import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { Faculty } from './faculty.entity';
 
 @UseGuards(Authentication)
@@ -81,13 +83,16 @@ export class ManageFacultyController {
   })
   public async update(@Param('id') id: string, @Body() faculty: UpdateFacultyDTO):
   Promise<FacultyResponseDTO> {
-    const existingFaculty = await this.facultyRepository.findOne(id);
-    if (!existingFaculty) {
-      throw new BadRequestException('Faculty with the supplied ID does not exist');
+    try {
+      await this.facultyRepository.findOneOrFail(id);
+    } catch (e) {
+      if (e instanceof EntityNotFoundError) {
+        throw new NotFoundException('Could not find any entity of type Faculty with the supplied ID');
+      }
     }
-    const existingArea = await this.areaRepository.findOne(faculty.area);
+    const existingArea = await this.areaRepository.findOneOrFail(faculty.area);
     if (!existingArea) {
-      throw new BadRequestException('Area does not exist');
+      throw new BadRequestException('The entered Area does not exist');
     }
     const validFaculty = {
       ...faculty,
