@@ -6,6 +6,7 @@ import {
   Put,
   Param,
   UseGuards,
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -76,6 +77,10 @@ export class ManageFacultyController {
   })
   public async update(@Param('id') id: string, @Body() faculty: UpdateFacultyDTO):
   Promise<FacultyResponseDTO> {
+    const existingFaculty = await this.facultyRepository.findOne(id);
+    if (!existingFaculty) {
+      throw new BadRequestException('Faculty with the supplied ID does not exist');
+    }
     this.facultyRepository.update(id, faculty);
     return {
       id,
