@@ -10,8 +10,13 @@ import { Area } from '../../area/area.entity';
 
 const mockFacultyRepository = {
   find: stub(),
-  save: stub(),
+  update: stub(),
   create: stub(),
+  findOne: stub(),
+};
+
+const mockAreaRepository = {
+  findOne: stub(),
 };
 
 describe('Faculty controller', function () {
@@ -24,6 +29,10 @@ describe('Faculty controller', function () {
           provide: getRepositoryToken(Faculty),
           useValue: mockFacultyRepository,
         },
+        {
+          provide: getRepositoryToken(Area),
+          useValue: mockAreaRepository,
+        },
       ],
       controllers: [ManageFacultyController],
     }).overrideGuard(Authentication).useValue(true).compile();
@@ -31,7 +40,10 @@ describe('Faculty controller', function () {
     controller = module.get<ManageFacultyController>(ManageFacultyController);
   });
   afterEach(function () {
-    Object.values(mockFacultyRepository)
+    Object.values({
+      ...mockFacultyRepository,
+      ...mockAreaRepository,
+    })
       .forEach((sinonStub: SinonStub): void => {
         sinonStub.reset();
       });
@@ -88,17 +100,23 @@ describe('Faculty controller', function () {
 
   describe('update', function () {
     it('returns the updated faculty member', async function () {
+      const newArea = new Area();
       const newFacultyMemberInfo = {
         HUID: '87654321',
         firstName: 'Ada',
         lastName: 'Lovelace',
         category: FACULTY_TYPE.LADDER,
-        area: new Area(),
+        area: newArea,
       };
-      mockFacultyRepository.save.resolves(newFacultyMemberInfo);
+      mockFacultyRepository.update.resolves(newFacultyMemberInfo);
+      mockFacultyRepository.findOne.resolves(newFacultyMemberInfo);
+      mockAreaRepository.findOne.resolves(newArea);
       const updatedFacultyMember = await controller.update('a49edd11-0f2d-4d8f-9096-a4062955a11a', newFacultyMemberInfo);
 
-      deepStrictEqual(updatedFacultyMember, newFacultyMemberInfo);
+      deepStrictEqual(updatedFacultyMember, {
+        ...newFacultyMemberInfo,
+        id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
+      });
     });
   });
 });
