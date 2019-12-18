@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { BadRequestExceptionPipe } from '../common/utils/BadRequestExceptionPipe';
+import { BadRequestExceptionPipe } from './utils/BadRequestExceptionPipe';
 import { AppModule } from './app.module';
 
 const { SERVER_PORT, NODE_ENV } = process.env;
