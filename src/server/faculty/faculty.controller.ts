@@ -76,9 +76,10 @@ export class ManageFacultyController {
   })
   public async update(@Param('id') id: string, @Body() faculty: UpdateFacultyDTO):
   Promise<FacultyResponseDTO> {
-    return this.facultyRepository.save({
+    this.facultyRepository.update(id, faculty);
+    return {
       id,
       ...faculty,
-    });
+    };
   }
 }
