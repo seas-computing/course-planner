@@ -12,7 +12,7 @@ import {
 } from 'class-validator';
 import { FACULTY_TYPE } from '../../constants';
 
-export abstract class FacultyArea {
+abstract class FacultyArea {
   @ApiModelProperty({
     type: 'string',
     example: 'b38dcc00-0f2d-4d8f-9096-b5173067b22b',
