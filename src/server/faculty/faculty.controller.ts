@@ -15,6 +15,7 @@ import { FacultyResponseDTO } from 'common/dto/faculty/facultyResponse.dto';
 import { CreateFacultyDTO } from 'common/dto/faculty/createFaculty.dto';
 import { UpdateFacultyDTO } from 'common/dto/faculty/updateFaculty.dto';
 import { Authentication } from 'server/auth/authentication.guard';
+import { Area } from 'server/area/area.entity';
 import { Faculty } from './faculty.entity';
 
 @UseGuards(Authentication)
@@ -22,6 +23,9 @@ import { Faculty } from './faculty.entity';
 export class ManageFacultyController {
   @InjectRepository(Faculty)
   private facultyRepository: Repository<Faculty>
+
+  @InjectRepository(Area)
+  private areaRepository: Repository<Area>
 
   @Get('/')
   @ApiOperation({ title: 'Retrieve all faculty in the database' })
@@ -81,10 +85,18 @@ export class ManageFacultyController {
     if (!existingFaculty) {
       throw new BadRequestException('Faculty with the supplied ID does not exist');
     }
-    this.facultyRepository.update(id, faculty);
+    const existingArea = await this.areaRepository.findOne(faculty.area);
+    if (!existingArea) {
+      throw new BadRequestException('Area does not exist');
+    }
+    const validFaculty = {
+      ...faculty,
+      area: existingArea,
+    };
+    this.facultyRepository.update(id, validFaculty);
     return {
       id,
-      ...faculty,
+      ...validFaculty,
     };
   }
 }
