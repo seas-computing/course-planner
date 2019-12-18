@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { strictEqual } from 'assert';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { FACULTY_TYPE } from '../../../../src/common/constants';
 import { Area } from '../../../../src/server/area/area.entity';
 import { FacultyModule } from '../../../../src/server/faculty/faculty.module';
@@ -14,16 +15,16 @@ import { Faculty } from '../../../../src/server/faculty/faculty.entity';
 import { AuthModule } from '../../../../src/server/auth/auth.module';
 import { ConfigModule } from '../../../../src/server/config/config.module';
 import { Authentication } from '../../../../src/server/auth/authentication.guard';
-import { BadRequestExceptionPipe } from '../../../../src/common/utils/BadRequestExceptionPipe';
+import { BadRequestExceptionPipe } from '../../../../src/server/utils/BadRequestExceptionPipe';
 
 const mockFacultyRepository = {
   create: stub(),
-  findOne: stub(),
   update: stub(),
+  findOneOrFail: stub(),
 };
 
 const mockAreaRepository = {
-  findOne: stub(),
+  findOneOrFail: stub(),
 };
 
 describe('Faculty API', function () {
@@ -215,9 +216,9 @@ describe('Faculty API', function () {
           category: FACULTY_TYPE.NON_SEAS_LADDER,
           area: newArea,
         };
+        mockAreaRepository.findOneOrFail.resolves(newArea);
+        mockFacultyRepository.findOneOrFail.resolves(newFacultyMemberInfo);
         mockFacultyRepository.update.resolves(newFacultyMemberInfo);
-        mockAreaRepository.findOne.resolves(newArea);
-        mockFacultyRepository.findOne.resolves(newFacultyMemberInfo);
         const response = await request(facultyAPI.getHttpServer())
           .put('/api/faculty/a49edd11-0f2d-4d8f-9096-a4062955a11a')
           .send(newFacultyMemberInfo);
@@ -239,7 +240,7 @@ describe('Faculty API', function () {
       });
       it('allows you to update a faculty member so that the entry has a last name but no first name', async function () {
         const newArea = {
-          id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
+          id: 'i20bae22-0f2d-4d8g-9096-h12gbc4b72k',
           name: 'AP',
         };
         const newFacultyMemberInfo = {
@@ -248,9 +249,9 @@ describe('Faculty API', function () {
           category: FACULTY_TYPE.NON_SEAS_LADDER,
           area: newArea,
         };
+        mockAreaRepository.findOneOrFail.resolves(newArea);
+        mockFacultyRepository.findOneOrFail.resolves(newFacultyMemberInfo);
         mockFacultyRepository.update.resolves(newFacultyMemberInfo);
-        mockAreaRepository.findOne.resolves(newArea);
-        mockFacultyRepository.findOne.resolves(newFacultyMemberInfo);
         const response = await request(facultyAPI.getHttpServer())
           .put('/api/faculty/g12gaa52-1gj5-ha21-1123-hn625632n123')
           .send(newFacultyMemberInfo);
@@ -259,7 +260,7 @@ describe('Faculty API', function () {
       });
       it('allows you to update a faculty member so that the entry has a first name but no last name', async function () {
         const newArea = {
-          id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
+          id: 'i20bae22-0f2d-4d8g-9096-h12gbc4b72k',
           name: 'AP',
         };
         const newFacultyMemberInfo = {
@@ -268,9 +269,9 @@ describe('Faculty API', function () {
           category: FACULTY_TYPE.NON_SEAS_LADDER,
           area: newArea,
         };
+        mockAreaRepository.findOneOrFail.resolves(newArea);
+        mockFacultyRepository.findOneOrFail.resolves(newFacultyMemberInfo);
         mockFacultyRepository.update.resolves(newFacultyMemberInfo);
-        mockAreaRepository.findOne.resolves(newArea);
-        mockFacultyRepository.findOne.resolves(newFacultyMemberInfo);
         const response = await request(facultyAPI.getHttpServer())
           .put('/api/faculty/g12gaa52-1gj5-ha21-1123-hn625632n123')
           .send(newFacultyMemberInfo);
@@ -278,18 +279,65 @@ describe('Faculty API', function () {
         strictEqual(response.status, HttpStatus.OK);
       });
       it('does not allow you to update faculty member so that the entry has neither first nor last name', async function () {
+        const newArea = {
+          id: 'i20bae22-0f2d-4d8g-9096-h12gbc4b72k',
+          name: 'AP',
+        };
+        const newFacultyMemberInfo = {
+          HUID: '87654321',
+          category: FACULTY_TYPE.NON_SEAS_LADDER,
+          area: newArea,
+        };
+        mockAreaRepository.findOneOrFail.resolves(newArea);
+        mockFacultyRepository.findOneOrFail.resolves(newFacultyMemberInfo);
+        mockFacultyRepository.update.resolves(newFacultyMemberInfo);
         const response = await request(facultyAPI.getHttpServer())
           .put('/api/faculty/g12gaa52-1gj5-ha21-1123-hn625632n123')
-          .send({
-            HUID: '24681012',
-            category: FACULTY_TYPE.NON_LADDER,
-            area: {
-              id: 'n01dt301-1f3n-3yag-3232-ty12345jr16h',
-              name: 'Mat & ME',
-            },
-          });
+          .send(newFacultyMemberInfo);
         strictEqual(response.ok, false);
         strictEqual(response.status, HttpStatus.BAD_REQUEST);
+      });
+      it('throws a Not Found exception if faculty does not exist', async function () {
+        const newArea = {
+          id: 'i20bae22-0f2d-4d8g-9096-h12gbc4b72k',
+          name: 'AP',
+        };
+        const newFacultyMemberInfo = {
+          HUID: '87654321',
+          lastName: 'Huntington',
+          category: FACULTY_TYPE.NON_SEAS_LADDER,
+          area: newArea,
+        };
+        mockAreaRepository.findOneOrFail.resolves(newArea);
+        mockFacultyRepository.findOneOrFail.rejects(new EntityNotFoundError(Faculty, 'g12gaa52-1gj5-ha21-1123-hn625632n123'));
+        mockFacultyRepository.update.resolves(false);
+        const response = await request(facultyAPI.getHttpServer())
+          .put('/api/faculty/g12gaa52-1gj')
+          .send(newFacultyMemberInfo);
+        strictEqual(response.ok, false);
+        strictEqual(response.status, HttpStatus.NOT_FOUND);
+        strictEqual(response.body.message.includes('Faculty', 'ID'), true);
+      });
+      it('throws a Bad Request exception if area does not exist', async function () {
+        const newArea = {
+          id: 'abc32sdf-84923-fm32-1111-72jshckddiws',
+          name: 'Juggling',
+        };
+        const newFacultyMemberInfo = {
+          HUID: '87654321',
+          lastName: 'Brown',
+          category: FACULTY_TYPE.NON_LADDER,
+          area: newArea,
+        };
+        mockFacultyRepository.update.resolves(newFacultyMemberInfo);
+        mockAreaRepository.findOneOrFail.resolves(false);
+        mockFacultyRepository.findOneOrFail.resolves(newFacultyMemberInfo);
+        const response = await request(facultyAPI.getHttpServer())
+          .put('/api/faculty/qa821aa52-1gj5-ha21-abw1-328n823ksala')
+          .send(newFacultyMemberInfo);
+        strictEqual(response.ok, false);
+        strictEqual(response.status, HttpStatus.BAD_REQUEST);
+        strictEqual(response.body.message.includes('Area'), true);
       });
     });
   });

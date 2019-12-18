@@ -12,11 +12,11 @@ const mockFacultyRepository = {
   find: stub(),
   update: stub(),
   create: stub(),
-  findOne: stub(),
+  findOneOrFail: stub(),
 };
 
 const mockAreaRepository = {
-  findOne: stub(),
+  findOneOrFail: stub(),
 };
 
 describe('Faculty controller', function () {
@@ -109,8 +109,8 @@ describe('Faculty controller', function () {
         area: newArea,
       };
       mockFacultyRepository.update.resolves(newFacultyMemberInfo);
-      mockFacultyRepository.findOne.resolves(newFacultyMemberInfo);
-      mockAreaRepository.findOne.resolves(newArea);
+      mockFacultyRepository.findOneOrFail.resolves(newFacultyMemberInfo);
+      mockAreaRepository.findOneOrFail.resolves(newArea);
       const updatedFacultyMember = await controller.update('a49edd11-0f2d-4d8f-9096-a4062955a11a', newFacultyMemberInfo);
 
       deepStrictEqual(updatedFacultyMember, {
