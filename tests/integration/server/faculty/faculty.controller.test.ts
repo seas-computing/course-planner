@@ -17,7 +17,6 @@ import { Authentication } from '../../../../src/server/auth/authentication.guard
 import { BadRequestExceptionPipe } from '../../../../src/common/utils/BadRequestExceptionPipe';
 
 const mockFacultyRepository = {
-  find: stub(),
   create: stub(),
   findOne: stub(),
   update: stub(),
