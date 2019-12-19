@@ -11,7 +11,12 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ApiOperation, ApiOkResponse, ApiBadRequestResponse, ApiNotFoundResponse } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiOkResponse,
+  ApiBadRequestResponse,
+  ApiNotFoundResponse,
+} from '@nestjs/swagger';
 import { FacultyResponseDTO } from 'common/dto/faculty/facultyResponse.dto';
 import { CreateFacultyDTO } from 'common/dto/faculty/createFaculty.dto';
 import { UpdateFacultyDTO } from 'common/dto/faculty/updateFaculty.dto';
@@ -101,10 +106,6 @@ export class ManageFacultyController {
       ...faculty,
       area: existingArea,
     };
-    this.facultyRepository.update(id, validFaculty);
-    return {
-      id,
-      ...validFaculty,
-    };
+    return this.facultyRepository.update(id, validFaculty);
   }
 }
