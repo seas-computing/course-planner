@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ApiOperation, ApiOkResponse, ApiBadRequestResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiOkResponse, ApiBadRequestResponse, ApiNotFoundResponse } from '@nestjs/swagger';
 import { FacultyResponseDTO } from 'common/dto/faculty/facultyResponse.dto';
 import { CreateFacultyDTO } from 'common/dto/faculty/createFaculty.dto';
 import { UpdateFacultyDTO } from 'common/dto/faculty/updateFaculty.dto';
@@ -80,6 +80,9 @@ export class ManageFacultyController {
   })
   @ApiBadRequestResponse({
     description: 'Bad Request: The request is not in accordance with the updateFaculty DTO',
+  })
+  @ApiNotFoundResponse({
+    description: 'Not Found: The requested entity with the ID supplied could not be found',
   })
   public async update(@Param('id') id: string, @Body() faculty: UpdateFacultyDTO):
   Promise<FacultyResponseDTO> {
