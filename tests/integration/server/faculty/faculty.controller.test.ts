@@ -247,7 +247,7 @@ describe('Faculty API', function () {
           name: 'AP',
         };
         const newFacultyMemberInfo = {
-          id: 'g12gaa52-1gj5-ha21-1123-hn625632n123',
+          id: '69694326-4d12-4c32-8a26-b2c28352ba31',
           HUID: '87654321',
           lastName: 'Hopper',
           category: FACULTY_TYPE.NON_SEAS_LADDER,
@@ -257,7 +257,7 @@ describe('Faculty API', function () {
         mockFacultyRepository.findOneOrFail.resolves(newFacultyMemberInfo);
         mockFacultyRepository.save.resolves(newFacultyMemberInfo);
         const response = await request(facultyAPI.getHttpServer())
-          .put('/api/faculty/g12gaa52-1gj5-ha21-1123-hn625632n123')
+          .put('/api/faculty/69694326-4d12-4c32-8a26-b2c28352ba31')
           .send(newFacultyMemberInfo);
         strictEqual(response.ok, true);
         strictEqual(response.status, HttpStatus.OK);
@@ -268,7 +268,7 @@ describe('Faculty API', function () {
           name: 'AP',
         };
         const newFacultyMemberInfo = {
-          id: 'g12gaa52-1gj5-ha21-1123-hn625632n123',
+          id: '69694326-4d12-4c32-8a26-b2c28352ba31',
           HUID: '87654321',
           firstName: 'Grace',
           category: FACULTY_TYPE.NON_SEAS_LADDER,
@@ -278,7 +278,7 @@ describe('Faculty API', function () {
         mockFacultyRepository.findOneOrFail.resolves(newFacultyMemberInfo);
         mockFacultyRepository.save.resolves(newFacultyMemberInfo);
         const response = await request(facultyAPI.getHttpServer())
-          .put('/api/faculty/g12gaa52-1gj5-ha21-1123-hn625632n123')
+          .put('/api/faculty/69694326-4d12-4c32-8a26-b2c28352ba31')
           .send(newFacultyMemberInfo);
         strictEqual(response.ok, true);
         strictEqual(response.status, HttpStatus.OK);
@@ -309,17 +309,17 @@ describe('Faculty API', function () {
           name: 'AP',
         };
         const newFacultyMemberInfo = {
-          id: 'g12gaa52-1gj',
+          id: '69694326-4d12-4c32-8a26-b2c28352ba31',
           HUID: '87654321',
           lastName: 'Huntington',
           category: FACULTY_TYPE.NON_SEAS_LADDER,
           area: newArea,
         };
         mockAreaRepository.findOneOrFail.resolves(newArea);
-        mockFacultyRepository.findOneOrFail.rejects(new EntityNotFoundError(Faculty, 'g12gaa52-1gj'));
+        mockFacultyRepository.findOneOrFail.rejects(new EntityNotFoundError(Faculty, '69694326-4d12-4c32-8a26-b2c28352ba31'));
         mockFacultyRepository.save.resolves(false);
         const response = await request(facultyAPI.getHttpServer())
-          .put('/api/faculty/g12gaa52-1gj')
+          .put('/api/faculty/69694326-4d12-4c32-8a26-b2c28352ba31')
           .send(newFacultyMemberInfo);
         strictEqual(response.ok, false);
         strictEqual(response.status, HttpStatus.NOT_FOUND);
