@@ -180,6 +180,7 @@ describe('Faculty API', function () {
         const response = await request(facultyAPI.getHttpServer())
           .put('/api/faculty/a49edd11-0f2d-4d8f-9096-a4062955a11a')
           .send({
+            id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
             HUID: '87654321',
             firstName: 'Grace',
             lastName: 'Hopper',
@@ -210,6 +211,7 @@ describe('Faculty API', function () {
           name: 'AP',
         };
         const newFacultyMemberInfo = {
+          id: 'df15cfff-0f6f-4769-8841-1ab8a9c335d9',
           HUID: '87654321',
           firstName: 'Grace',
           lastName: 'Hopper',
@@ -220,7 +222,7 @@ describe('Faculty API', function () {
         mockFacultyRepository.findOneOrFail.resolves(newFacultyMemberInfo);
         mockFacultyRepository.save.resolves(newFacultyMemberInfo);
         const response = await request(facultyAPI.getHttpServer())
-          .put('/api/faculty/a49edd11-0f2d-4d8f-9096-a4062955a11a')
+          .put('/api/faculty/df15cfff-0f6f-4769-8841-1ab8a9c335d9')
           .send(newFacultyMemberInfo);
         strictEqual(response.ok, true);
         strictEqual(response.status, HttpStatus.OK);
@@ -229,6 +231,7 @@ describe('Faculty API', function () {
         const response = await request(facultyAPI.getHttpServer())
           .put('/api/faculty/g12gaa52-1gj5-ha21-1123-hn625632n123')
           .send({
+            id: 'g12gaa52-1gj5-ha21-1123-hn625632n123',
             HUID: '01234567',
             firstName: 'Ada',
             lastName: 'Lovelace',
@@ -244,6 +247,7 @@ describe('Faculty API', function () {
           name: 'AP',
         };
         const newFacultyMemberInfo = {
+          id: 'g12gaa52-1gj5-ha21-1123-hn625632n123',
           HUID: '87654321',
           lastName: 'Hopper',
           category: FACULTY_TYPE.NON_SEAS_LADDER,
@@ -264,6 +268,7 @@ describe('Faculty API', function () {
           name: 'AP',
         };
         const newFacultyMemberInfo = {
+          id: 'g12gaa52-1gj5-ha21-1123-hn625632n123',
           HUID: '87654321',
           firstName: 'Grace',
           category: FACULTY_TYPE.NON_SEAS_LADDER,
@@ -284,6 +289,7 @@ describe('Faculty API', function () {
           name: 'AP',
         };
         const newFacultyMemberInfo = {
+          id: 'g12gaa52-1gj5-ha21-1123-hn625632n123',
           HUID: '87654321',
           category: FACULTY_TYPE.NON_SEAS_LADDER,
           area: newArea,
@@ -303,13 +309,14 @@ describe('Faculty API', function () {
           name: 'AP',
         };
         const newFacultyMemberInfo = {
+          id: 'g12gaa52-1gj',
           HUID: '87654321',
           lastName: 'Huntington',
           category: FACULTY_TYPE.NON_SEAS_LADDER,
           area: newArea,
         };
         mockAreaRepository.findOneOrFail.resolves(newArea);
-        mockFacultyRepository.findOneOrFail.rejects(new EntityNotFoundError(Faculty, 'g12gaa52-1gj5-ha21-1123-hn625632n123'));
+        mockFacultyRepository.findOneOrFail.rejects(new EntityNotFoundError(Faculty, 'g12gaa52-1gj'));
         mockFacultyRepository.save.resolves(false);
         const response = await request(facultyAPI.getHttpServer())
           .put('/api/faculty/g12gaa52-1gj')
@@ -324,6 +331,7 @@ describe('Faculty API', function () {
           name: 'Juggling',
         };
         const newFacultyMemberInfo = {
+          id: '69694326-4d12-4c32-8a26-b2c28352ba31',
           HUID: '87654321',
           lastName: 'Brown',
           category: FACULTY_TYPE.NON_LADDER,
