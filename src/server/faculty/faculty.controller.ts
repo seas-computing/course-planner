@@ -106,6 +106,6 @@ export class ManageFacultyController {
       ...faculty,
       area: existingArea,
     };
-    return this.facultyRepository.update(id, validFaculty);
+    return this.facultyRepository.save(validFaculty);
   }
 }

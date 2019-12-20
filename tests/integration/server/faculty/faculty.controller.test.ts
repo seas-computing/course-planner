@@ -19,7 +19,7 @@ import { BadRequestExceptionPipe } from '../../../../src/server/utils/BadRequest
 
 const mockFacultyRepository = {
   create: stub(),
-  update: stub(),
+  save: stub(),
   findOneOrFail: stub(),
 };
 
@@ -191,7 +191,7 @@ describe('Faculty API', function () {
           });
         strictEqual(response.ok, false);
         strictEqual(response.status, HttpStatus.FORBIDDEN);
-        strictEqual(mockFacultyRepository.update.callCount, 0);
+        strictEqual(mockFacultyRepository.save.callCount, 0);
       });
     });
     describe('User is authenticated', function () {
@@ -218,7 +218,7 @@ describe('Faculty API', function () {
         };
         mockAreaRepository.findOneOrFail.resolves(newArea);
         mockFacultyRepository.findOneOrFail.resolves(newFacultyMemberInfo);
-        mockFacultyRepository.update.resolves(newFacultyMemberInfo);
+        mockFacultyRepository.save.resolves(newFacultyMemberInfo);
         const response = await request(facultyAPI.getHttpServer())
           .put('/api/faculty/a49edd11-0f2d-4d8f-9096-a4062955a11a')
           .send(newFacultyMemberInfo);
@@ -251,7 +251,7 @@ describe('Faculty API', function () {
         };
         mockAreaRepository.findOneOrFail.resolves(newArea);
         mockFacultyRepository.findOneOrFail.resolves(newFacultyMemberInfo);
-        mockFacultyRepository.update.resolves(newFacultyMemberInfo);
+        mockFacultyRepository.save.resolves(newFacultyMemberInfo);
         const response = await request(facultyAPI.getHttpServer())
           .put('/api/faculty/g12gaa52-1gj5-ha21-1123-hn625632n123')
           .send(newFacultyMemberInfo);
@@ -271,7 +271,7 @@ describe('Faculty API', function () {
         };
         mockAreaRepository.findOneOrFail.resolves(newArea);
         mockFacultyRepository.findOneOrFail.resolves(newFacultyMemberInfo);
-        mockFacultyRepository.update.resolves(newFacultyMemberInfo);
+        mockFacultyRepository.save.resolves(newFacultyMemberInfo);
         const response = await request(facultyAPI.getHttpServer())
           .put('/api/faculty/g12gaa52-1gj5-ha21-1123-hn625632n123')
           .send(newFacultyMemberInfo);
@@ -290,7 +290,7 @@ describe('Faculty API', function () {
         };
         mockAreaRepository.findOneOrFail.resolves(newArea);
         mockFacultyRepository.findOneOrFail.resolves(newFacultyMemberInfo);
-        mockFacultyRepository.update.resolves(newFacultyMemberInfo);
+        mockFacultyRepository.save.resolves(newFacultyMemberInfo);
         const response = await request(facultyAPI.getHttpServer())
           .put('/api/faculty/g12gaa52-1gj5-ha21-1123-hn625632n123')
           .send(newFacultyMemberInfo);
@@ -310,7 +310,7 @@ describe('Faculty API', function () {
         };
         mockAreaRepository.findOneOrFail.resolves(newArea);
         mockFacultyRepository.findOneOrFail.rejects(new EntityNotFoundError(Faculty, 'g12gaa52-1gj5-ha21-1123-hn625632n123'));
-        mockFacultyRepository.update.resolves(false);
+        mockFacultyRepository.save.resolves(false);
         const response = await request(facultyAPI.getHttpServer())
           .put('/api/faculty/g12gaa52-1gj')
           .send(newFacultyMemberInfo);
@@ -329,7 +329,7 @@ describe('Faculty API', function () {
           category: FACULTY_TYPE.NON_LADDER,
           area: newArea,
         };
-        mockFacultyRepository.update.resolves(newFacultyMemberInfo);
+        mockFacultyRepository.save.resolves(newFacultyMemberInfo);
         mockAreaRepository.findOneOrFail.resolves(false);
         mockFacultyRepository.findOneOrFail.resolves(newFacultyMemberInfo);
         const response = await request(facultyAPI.getHttpServer())

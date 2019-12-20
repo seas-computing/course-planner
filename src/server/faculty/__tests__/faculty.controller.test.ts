@@ -10,7 +10,7 @@ import { Area } from '../../area/area.entity';
 
 const mockFacultyRepository = {
   find: stub(),
-  update: stub(),
+  save: stub(),
   create: stub(),
   findOneOrFail: stub(),
 };
@@ -102,21 +102,19 @@ describe('Faculty controller', function () {
     it('returns the updated faculty member', async function () {
       const newArea = new Area();
       const newFacultyMemberInfo = {
+        id: '8636efc3-6b3e-4c44-ba38-4e0e788dba43',
         HUID: '87654321',
         firstName: 'Ada',
         lastName: 'Lovelace',
         category: FACULTY_TYPE.LADDER,
         area: newArea,
       };
-      mockFacultyRepository.update.resolves(newFacultyMemberInfo);
+      mockFacultyRepository.save.resolves(newFacultyMemberInfo);
       mockFacultyRepository.findOneOrFail.resolves(newFacultyMemberInfo);
       mockAreaRepository.findOneOrFail.resolves(newArea);
-      const updatedFacultyMember = await controller.update('a49edd11-0f2d-4d8f-9096-a4062955a11a', newFacultyMemberInfo);
+      const updatedFacultyMember = await controller.update('8636efc3-6b3e-4c44-ba38-4e0e788dba43', newFacultyMemberInfo);
 
-      deepStrictEqual(updatedFacultyMember, {
-        ...newFacultyMemberInfo,
-        id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
-      });
+      deepStrictEqual(updatedFacultyMember, newFacultyMemberInfo);
     });
   });
 });
