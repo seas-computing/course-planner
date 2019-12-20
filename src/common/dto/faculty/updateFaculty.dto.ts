@@ -33,7 +33,7 @@ export abstract class UpdateFacultyDTO {
   @ApiModelProperty({
     example: 'df15cfff-0f6f-4769-8841-1ab8a9c335d9',
   })
-  @IsString()
+  @IsUUID()
   @IsNotEmpty()
   public id: string;
 
