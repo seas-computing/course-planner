@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { stub, SinonStub } from 'sinon';
 import { strictEqual, deepStrictEqual } from 'assert';
 import { FACULTY_TYPE } from 'common/constants';
+import { Authentication } from 'server/auth/authentication.guard';
 import { ManageFacultyController } from '../faculty.controller';
 import { Faculty } from '../faculty.entity';
 import { Area } from '../../area/area.entity';
@@ -11,6 +12,11 @@ const mockFacultyRepository = {
   find: stub(),
   save: stub(),
   create: stub(),
+  findOneOrFail: stub(),
+};
+
+const mockAreaRepository = {
+  findOneOrFail: stub(),
 };
 
 describe('Faculty controller', function () {
@@ -23,14 +29,21 @@ describe('Faculty controller', function () {
           provide: getRepositoryToken(Faculty),
           useValue: mockFacultyRepository,
         },
+        {
+          provide: getRepositoryToken(Area),
+          useValue: mockAreaRepository,
+        },
       ],
       controllers: [ManageFacultyController],
-    }).compile();
+    }).overrideGuard(Authentication).useValue(true).compile();
 
     controller = module.get<ManageFacultyController>(ManageFacultyController);
   });
   afterEach(function () {
-    Object.values(mockFacultyRepository)
+    Object.values({
+      ...mockFacultyRepository,
+      ...mockAreaRepository,
+    })
       .forEach((sinonStub: SinonStub): void => {
         sinonStub.reset();
       });
@@ -82,6 +95,26 @@ describe('Faculty controller', function () {
 
       strictEqual(id, 'a49edd11-0f2d-4d8f-9096-a4062955a11a');
       deepStrictEqual(newlyCreatedFaculty, facultyMember);
+    });
+  });
+
+  describe('update', function () {
+    it('returns the updated faculty member', async function () {
+      const newArea = new Area();
+      const newFacultyMemberInfo = {
+        id: '8636efc3-6b3e-4c44-ba38-4e0e788dba43',
+        HUID: '87654321',
+        firstName: 'Ada',
+        lastName: 'Lovelace',
+        category: FACULTY_TYPE.LADDER,
+        area: newArea,
+      };
+      mockFacultyRepository.save.resolves(newFacultyMemberInfo);
+      mockFacultyRepository.findOneOrFail.resolves(newFacultyMemberInfo);
+      mockAreaRepository.findOneOrFail.resolves(newArea);
+      const updatedFacultyMember = await controller.update('8636efc3-6b3e-4c44-ba38-4e0e788dba43', newFacultyMemberInfo);
+
+      deepStrictEqual(updatedFacultyMember, newFacultyMemberInfo);
     });
   });
 });
