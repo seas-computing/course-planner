@@ -3,7 +3,7 @@ import { ExecutionContext } from '@nestjs/common';
 import { stub } from 'sinon';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { GROUP } from 'common/constants';
-import { regularUser } from 'testData';
+import { regularUser, adminUser } from 'testData';
 import { RequireGroup } from '../group.guard';
 
 describe('Group guard', function () {
@@ -18,10 +18,7 @@ describe('Group guard', function () {
       switchToHttp: stub().returns({
         getRequest: () => ({
           session: {
-            user: {
-              ...regularUser,
-              groups: [GROUP.ADMIN],
-            },
+            user: adminUser,
           },
         }),
         getResponse: stub(),
@@ -37,10 +34,7 @@ describe('Group guard', function () {
       switchToHttp: stub().returns({
         getRequest: () => ({
           session: {
-            user: {
-              ...regularUser,
-              groups: [],
-            },
+            user: regularUser,
           },
         }),
         getResponse: stub(),
