@@ -2,13 +2,21 @@ import { Controller, Get, UseGuards } from '@nestjs/common';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ApiOkResponse, ApiOperation, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiUnauthorizedResponse,
+  ApiUseTags,
+} from '@nestjs/swagger';
+import { RequireGroup } from 'server/auth/group.guard';
+import { GROUP } from 'common/constants';
 import { Course } from './course.entity';
 import { Authentication } from '../auth/authentication.guard';
 
+@ApiUseTags('Course')
 @Controller('api/courses')
 @ApiUnauthorizedResponse({ description: 'Thrown if the user is not authenticated' })
-@UseGuards(Authentication)
+@UseGuards(Authentication, new RequireGroup(GROUP.ADMIN))
 export class CourseController {
   @InjectRepository(Course)
   private readonly courseRepository: Repository<Course>;

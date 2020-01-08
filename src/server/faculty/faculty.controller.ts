@@ -15,6 +15,7 @@ import {
   ApiOperation,
   ApiOkResponse,
   ApiBadRequestResponse,
+  ApiUseTags,
   ApiNotFoundResponse,
 } from '@nestjs/swagger';
 import { FacultyResponseDTO } from 'common/dto/faculty/facultyResponse.dto';
@@ -25,6 +26,7 @@ import { Area } from 'server/area/area.entity';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { Faculty } from './faculty.entity';
 
+@ApiUseTags('Faculty')
 @UseGuards(Authentication)
 @Controller('api/faculty')
 export class ManageFacultyController {
