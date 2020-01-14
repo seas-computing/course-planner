@@ -17,6 +17,7 @@ import {
   ApiBadRequestResponse,
   ApiUseTags,
   ApiNotFoundResponse,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { RequireGroup } from 'server/auth/group.guard';
 import { GROUP } from 'common/constants';
@@ -31,6 +32,7 @@ import { Faculty } from './faculty.entity';
 @ApiUseTags('Faculty')
 @UseGuards(Authentication, new RequireGroup(GROUP.ADMIN))
 @Controller('api/faculty')
+@ApiUnauthorizedResponse({ description: 'Thrown if the user is not authenticated' })
 export class ManageFacultyController {
   @InjectRepository(Faculty)
   private facultyRepository: Repository<Faculty>
