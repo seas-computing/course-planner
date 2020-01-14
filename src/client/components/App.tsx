@@ -15,7 +15,10 @@ import {
   messageReducer,
   UserContext,
 } from 'client/context';
-import { MarkOneWrapper } from 'mark-one';
+import {
+  MarkOneWrapper,
+  Header,
+} from 'mark-one';
 import { getCurrentUser } from 'client/api';
 import { UserResponse } from 'common/dto/users/userResponse.dto';
 import { Message } from './layout';
@@ -81,10 +84,9 @@ const ColdApp: SFC = (): ReactElement => {
         <UserContext.Provider value={currentUser}>
           <MessageContext.Provider value={dispatchMessage}>
             <div className="app-content">
-              <Switch>
-                <Route component={NoMatch} />
-              </Switch>
-              {currentMessage
+              <Header>
+                Course Planner
+                {currentMessage
               && (
                 <Message
                   messageCount={queue.length}
@@ -92,6 +94,10 @@ const ColdApp: SFC = (): ReactElement => {
                   messageType={currentMessage.variant}
                 />
               )}
+              </Header>
+              <Switch>
+                <Route component={NoMatch} />
+              </Switch>
             </div>
           </MessageContext.Provider>
         </UserContext.Provider>
