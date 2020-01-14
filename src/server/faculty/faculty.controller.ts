@@ -18,6 +18,8 @@ import {
   ApiUseTags,
   ApiNotFoundResponse,
 } from '@nestjs/swagger';
+import { RequireGroup } from 'server/auth/group.guard';
+import { GROUP } from 'common/constants';
 import { FacultyResponseDTO } from 'common/dto/faculty/facultyResponse.dto';
 import { CreateFacultyDTO } from 'common/dto/faculty/createFaculty.dto';
 import { UpdateFacultyDTO } from 'common/dto/faculty/updateFaculty.dto';
@@ -27,7 +29,7 @@ import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { Faculty } from './faculty.entity';
 
 @ApiUseTags('Faculty')
-@UseGuards(Authentication)
+@UseGuards(Authentication, new RequireGroup(GROUP.ADMIN))
 @Controller('api/faculty')
 export class ManageFacultyController {
   @InjectRepository(Faculty)
