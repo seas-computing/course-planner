@@ -4,8 +4,6 @@ import request from 'supertest';
 import {
   HttpStatus,
   HttpServer,
-  BadRequestException,
-  INestApplication,
 } from '@nestjs/common';
 import { strictEqual } from 'assert';
 import { getRepositoryToken } from '@nestjs/typeorm';
