@@ -86,6 +86,48 @@ describe('Faculty API', function () {
         sinonStub.reset();
       });
   });
+  describe('GET /', function () {
+    describe('User is not authenticated', function () {
+      it('is inaccessible to unauthenticated users', async function () {
+        authStub.returns(false);
+
+        const response = await request(api).get('/api/faculty');
+
+        strictEqual(response.ok, false);
+        strictEqual(response.status, HttpStatus.FORBIDDEN);
+        strictEqual(mockFacultyRepository.find.callCount, 0);
+      });
+    });
+    describe('User is authenticated', function () {
+      describe('User is a member of the admin group', function () {
+        it('returns all faculty in the database', async function () {
+          authStub.returns(true);
+          userStub.returns(adminUser);
+          const mockFaculty = Array(10).fill({
+            ...new Faculty(),
+            area: new Area(),
+          });
+          mockFacultyRepository.find.resolves(mockFaculty);
+
+          const response = await request(api).get('/api/faculty');
+
+          strictEqual(response.ok, true);
+          strictEqual(response.body.length, mockFaculty.length);
+          strictEqual(mockFacultyRepository.find.callCount, 1);
+        });
+      });
+      describe('User is not a member of the admin group', async function () {
+        authStub.returns(true);
+        userStub.returns(regularUser);
+
+        const response = await request(api).get('/api/faculty');
+
+        strictEqual(response.ok, false);
+        strictEqual(response.status, HttpStatus.FORBIDDEN);
+        strictEqual(mockFacultyRepository.find.callCount, 0);
+      });
+    });
+  });
   describe('POST /', function () {
     describe('User is not authenticated', function () {
       beforeEach(function () {
