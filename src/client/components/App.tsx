@@ -18,6 +18,8 @@ import {
 import {
   MarkOneWrapper,
   Header,
+  TabList,
+  TabListItem,
 } from 'mark-one';
 import { getCurrentUser } from 'client/api';
 import { UserResponse } from 'common/dto/users/userResponse.dto';
@@ -85,7 +87,14 @@ const ColdApp: SFC = (): ReactElement => {
           <MessageContext.Provider value={dispatchMessage}>
             <div className="app-content">
               <Header>
-                Course Planner
+                Course Planning
+                <TabList>
+                  <TabListItem>Courses</TabListItem>
+                  <TabListItem>Non class meetings</TabListItem>
+                  <TabListItem>Faculty</TabListItem>
+                  <TabListItem>Schedule</TabListItem>
+                  <TabListItem>4 Year Plan</TabListItem>
+                </TabList>
                 {currentMessage
               && (
                 <Message
