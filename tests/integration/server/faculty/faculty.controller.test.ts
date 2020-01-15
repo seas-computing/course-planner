@@ -25,6 +25,7 @@ const mockFacultyRepository = {
   create: stub(),
   save: stub(),
   findOneOrFail: stub(),
+  find: stub(),
 };
 
 const mockAreaRepository = {
@@ -187,6 +188,18 @@ describe('Faculty API', function () {
             });
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.BAD_REQUEST);
+        });
+      });
+      describe('User is not a member of the admin group', function () {
+        it('is inaccessible to unauthorized users', async function () {
+          authStub.returns(true);
+          userStub.returns(regularUser);
+
+          const response = await request(api).get('/api/faculty');
+
+          strictEqual(response.ok, false);
+          strictEqual(response.status, HttpStatus.FORBIDDEN);
+          strictEqual(mockFacultyRepository.find.callCount, 0);
         });
       });
     });
@@ -362,6 +375,18 @@ describe('Faculty API', function () {
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.BAD_REQUEST);
           strictEqual(response.body.message.includes('Area'), true);
+        });
+      });
+      describe('User is not a member of the admin group', function () {
+        it('is inaccessible to unauthorized users', async function () {
+          authStub.returns(true);
+          userStub.returns(regularUser);
+
+          const response = await request(api).get('/api/faculty');
+
+          strictEqual(response.ok, false);
+          strictEqual(response.status, HttpStatus.FORBIDDEN);
+          strictEqual(mockFacultyRepository.find.callCount, 0);
         });
       });
     });
