@@ -6,7 +6,7 @@ import React, {
   SFC,
 } from 'react';
 import {
-  Switch, Route,
+  Switch, Route, BrowserRouter, Link,
 } from 'react-router-dom';
 import { hot } from 'react-hot-loader/root';
 import { MESSAGE_TYPE, MESSAGE_ACTION, AppMessage } from 'client/classes';
@@ -88,25 +88,27 @@ const ColdApp: SFC = (): ReactElement => {
             <div className="app-content">
               <Header>
                 Course Planning
-                <TabList>
-                  <TabListItem>Courses</TabListItem>
-                  <TabListItem>Non class meetings</TabListItem>
-                  <TabListItem>Faculty</TabListItem>
-                  <TabListItem>Schedule</TabListItem>
-                  <TabListItem>4 Year Plan</TabListItem>
-                </TabList>
-                {currentMessage
-              && (
-                <Message
-                  messageCount={queue.length}
-                  messageText={currentMessage.text}
-                  messageType={currentMessage.variant}
-                />
-              )}
+                <BrowserRouter>
+                  <TabList>
+                    <TabListItem><Link to="/courses">Courses</Link></TabListItem>
+                    <TabListItem><Link to="/courses-ncm">Non class meetings</Link></TabListItem>
+                    <TabListItem><Link to="/faculty">Faculty</Link></TabListItem>
+                    <TabListItem><Link to="/schedule">Schedule</Link></TabListItem>
+                    <TabListItem><Link to="/fourYearPlan">4 Year Plan</Link></TabListItem>
+                  </TabList>
+                  {currentMessage
+                && (
+                  <Message
+                    messageCount={queue.length}
+                    messageText={currentMessage.text}
+                    messageType={currentMessage.variant}
+                  />
+                )}
+                  <Switch>
+                    <Route component={NoMatch} />
+                  </Switch>
+                </BrowserRouter>
               </Header>
-              <Switch>
-                <Route component={NoMatch} />
-              </Switch>
             </div>
           </MessageContext.Provider>
         </UserContext.Provider>
