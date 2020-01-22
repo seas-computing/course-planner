@@ -18,6 +18,7 @@ module.exports = {
   file: '.mochainit.ts',
   recursive: true,
   require: [
+    'ignore-styles',
     'ts-node/register/type-check',
     'raf/polyfill',
     'tsconfig-paths/register',
