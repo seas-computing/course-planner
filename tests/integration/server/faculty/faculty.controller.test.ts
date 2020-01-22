@@ -369,7 +369,7 @@ describe('Faculty API', function () {
           mockFacultyRepository.findOneOrFail.resolves(newFacultyMemberInfo);
           mockFacultyRepository.save.resolves(newFacultyMemberInfo);
           const response = await request(api)
-            .put('/api/faculty/g12gaa52-1gj5-ha21-1123-hn625632n123')
+            .put(`/api/faculty/${newFacultyMemberInfo.id}`)
             .send(newFacultyMemberInfo);
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.BAD_REQUEST);
