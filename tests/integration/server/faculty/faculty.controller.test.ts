@@ -390,7 +390,7 @@ describe('Faculty API', function () {
           mockFacultyRepository.findOneOrFail.rejects(new EntityNotFoundError(Faculty, '69694326-4d12-4c32-8a26-b2c28352ba31'));
           mockFacultyRepository.save.resolves(false);
           const response = await request(api)
-            .put('/api/faculty/69694326-4d12-4c32-8a26-b2c28352ba31')
+            .put(`/api/faculty/${newFacultyMemberInfo.id}`)
             .send(newFacultyMemberInfo);
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.NOT_FOUND);
