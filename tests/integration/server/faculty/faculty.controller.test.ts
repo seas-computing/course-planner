@@ -412,7 +412,7 @@ describe('Faculty API', function () {
           mockAreaRepository.findOneOrFail.resolves(false);
           mockFacultyRepository.findOneOrFail.resolves(newFacultyMemberInfo);
           const response = await request(api)
-            .put('/api/faculty/qa821aa52-1gj5-ha21-abw1-328n823ksala')
+            .put(`/api/faculty/${newArea.id}`)
             .send(newFacultyMemberInfo);
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.BAD_REQUEST);
