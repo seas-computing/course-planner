@@ -97,17 +97,17 @@ export class ManageFacultyController {
   public async update(@Param('id') id: string, @Body() faculty: UpdateFacultyDTO):
   Promise<FacultyResponseDTO> {
     try {
-      await this.facultyRepository.findOneOrFail(id);
-    } catch (e) {
-      if (e instanceof EntityNotFoundError) {
-        throw new NotFoundException('Could not find any entity of type Faculty in any Area with the supplied ID');
-      }
-    }
-    try {
       await this.areaRepository.findOneOrFail(faculty.area);
     } catch (e) {
       if (e instanceof EntityNotFoundError) {
         throw new NotFoundException('The entered Area does not exist');
+      }
+    }
+    try {
+      await this.facultyRepository.findOneOrFail(id);
+    } catch (e) {
+      if (e instanceof EntityNotFoundError) {
+        throw new NotFoundException('Could not find any entity of type Faculty in any Area with the supplied ID');
       }
     }
     const existingArea = await this.areaRepository.findOneOrFail(faculty.area);
