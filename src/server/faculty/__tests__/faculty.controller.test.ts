@@ -6,10 +6,10 @@ import { FACULTY_TYPE } from 'common/constants';
 import { Authentication } from 'server/auth/authentication.guard';
 import { NotFoundException } from '@nestjs/common';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
+import { TimeoutError } from 'rxjs';
 import { ManageFacultyController } from '../faculty.controller';
 import { Faculty } from '../faculty.entity';
 import { Area } from '../../area/area.entity';
-import { TimeoutError } from 'rxjs';
 
 const mockFacultyRepository = {
   find: stub(),
