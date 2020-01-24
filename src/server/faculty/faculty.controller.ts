@@ -103,10 +103,14 @@ export class ManageFacultyController {
         throw new NotFoundException('Could not find any entity of type Faculty in any Area with the supplied ID');
       }
     }
-    const existingArea = await this.areaRepository.findOneOrFail(faculty.area);
-    if (!existingArea) {
-      throw new NotFoundException('The entered Area does not exist');
+    try {
+      await this.areaRepository.findOneOrFail(faculty.area);
+    } catch (e) {
+      if (e instanceof EntityNotFoundError) {
+        throw new NotFoundException('The entered Area does not exist');
+      }
     }
+    const existingArea = await this.areaRepository.findOneOrFail(faculty.area);
     const validFaculty = {
       ...faculty,
       area: existingArea,
