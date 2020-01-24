@@ -388,7 +388,6 @@ describe('Faculty API', function () {
           };
           mockAreaRepository.findOneOrFail.resolves(newArea);
           mockFacultyRepository.findOneOrFail.rejects(new EntityNotFoundError(Faculty, `${newFacultyMemberInfo.id}`));
-          mockFacultyRepository.save.resolves(false);
           const response = await request(api)
             .put(`/api/faculty/${newFacultyMemberInfo.id}`)
             .send(newFacultyMemberInfo);
@@ -396,7 +395,7 @@ describe('Faculty API', function () {
           strictEqual(response.status, HttpStatus.NOT_FOUND);
           strictEqual(response.body.message.includes('Faculty', 'ID'), true);
         });
-        it('throws a Bad Request exception if area does not exist', async function () {
+        it('throws a Not Found exception if area does not exist', async function () {
           const newArea = {
             id: 'abc32sdf-84923-fm32-1111-72jshckddiws',
             name: 'Juggling',
@@ -409,14 +408,13 @@ describe('Faculty API', function () {
             area: newArea,
           };
           mockFacultyRepository.save.resolves(newFacultyMemberInfo);
-          mockAreaRepository.findOneOrFail.resolves(false);
-          mockFacultyRepository.findOneOrFail.resolves(newFacultyMemberInfo);
+          mockAreaRepository.findOneOrFail.rejects(new EntityNotFoundError(Area, `${newArea.id}`));
           const response = await request(api)
             .put(`/api/faculty/${newArea.id}`)
             .send(newFacultyMemberInfo);
           strictEqual(response.ok, false);
-          strictEqual(response.status, HttpStatus.BAD_REQUEST);
-          strictEqual(response.body.message.includes('Area'), true);
+          strictEqual(response.status, HttpStatus.NOT_FOUND);
+          strictEqual(response.body.message.includes('Area', 'ID'), true);
         });
       });
       describe('User is not a member of the admin group', function () {

@@ -6,7 +6,6 @@ import {
   Put,
   Param,
   UseGuards,
-  BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -89,8 +88,8 @@ export class ManageFacultyController {
     description: 'An object with the edited faculty member\'s information.',
     isArray: false,
   })
-  @ApiBadRequestResponse({
-    description: 'Bad Request: The request is not in accordance with the updateFaculty DTO',
+  @ApiNotFoundResponse({
+    description: 'Not Found: The requested entity could not be found',
   })
   @ApiNotFoundResponse({
     description: 'Not Found: The requested entity with the ID supplied could not be found',
@@ -101,12 +100,12 @@ export class ManageFacultyController {
       await this.facultyRepository.findOneOrFail(id);
     } catch (e) {
       if (e instanceof EntityNotFoundError) {
-        throw new NotFoundException('Could not find any entity of type Faculty with the supplied ID');
+        throw new NotFoundException('Could not find any entity of type Faculty in any Area with the supplied ID');
       }
     }
     const existingArea = await this.areaRepository.findOneOrFail(faculty.area);
     if (!existingArea) {
-      throw new BadRequestException('The entered Area does not exist');
+      throw new NotFoundException('The entered Area does not exist');
     }
     const validFaculty = {
       ...faculty,
