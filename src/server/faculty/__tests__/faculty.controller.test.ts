@@ -9,6 +9,7 @@ import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { ManageFacultyController } from '../faculty.controller';
 import { Faculty } from '../faculty.entity';
 import { Area } from '../../area/area.entity';
+import { TimeoutError } from 'rxjs';
 
 const mockFacultyRepository = {
   find: stub(),
@@ -131,14 +132,58 @@ describe('Faculty controller', function () {
         category: FACULTY_TYPE.LADDER,
         area: newArea,
       };
-      mockAreaRepository.findOneOrFail.rejects(new EntityNotFoundError(Area, {
-        where: { id: newArea.id },
-      }));
+      mockAreaRepository
+        .findOneOrFail
+        .rejects(new EntityNotFoundError(Area, {
+          where: { id: newArea.id },
+        }));
       try {
         await controller.update('8636efc3-6b3e-4c44-ba38-4e0e788dba43', newFacultyMemberInfo);
       } catch (e) {
         strictEqual(e instanceof NotFoundException, true);
         strictEqual(e.message.message.includes('entered Area'), true);
+      }
+    });
+    it('throws a Not Found Error if the faculty does not exist', async function () {
+      const newArea = new Area();
+      const newFacultyMemberInfo = {
+        id: '1636efd9-6b3e-4c44-ba38-4e0e788dba54',
+        HUID: '87654321',
+        firstName: 'Bob',
+        lastName: 'Lovelace',
+        category: FACULTY_TYPE.LADDER,
+        area: newArea,
+      };
+      mockFacultyRepository
+        .findOneOrFail
+        .rejects(new EntityNotFoundError(Faculty, {
+          where: { id: newFacultyMemberInfo.id },
+        }));
+      try {
+        await controller.update('1636efd9-6b3e-4c44-ba38-4e0e788dba54', newFacultyMemberInfo);
+      } catch (e) {
+        strictEqual(e instanceof NotFoundException, true);
+        strictEqual(e.message.message.includes('Faculty'), true);
+      }
+    });
+    it('does not throw a Not Found Error for other errors', async function () {
+      const newArea = new Area();
+      const newFacultyMemberInfo = {
+        id: '1636efd9-6b3e-4c44-ba38-4e0e788dba54',
+        HUID: '87654321',
+        firstName: 'Bob',
+        lastName: 'Lovelace',
+        category: FACULTY_TYPE.LADDER,
+        area: newArea,
+      };
+      mockFacultyRepository
+        .findOneOrFail
+        .rejects(new TimeoutError());
+      try {
+        await controller.update('1636efd9-6b3e-4c44-ba38-4e0e788dba54', newFacultyMemberInfo);
+      } catch (e) {
+        strictEqual(e instanceof Error, true);
+        strictEqual(e instanceof NotFoundException, false);
       }
     });
   });
