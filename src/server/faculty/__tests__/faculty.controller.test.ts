@@ -166,17 +166,35 @@ describe('Faculty controller', function () {
         strictEqual(e.message.message.includes('Faculty'), true);
       }
     });
-    it('does not throw a Not Found Error for other errors', async function () {
-      const newArea = new Area();
+    it('allows other error types to bubble when finding faculty', async function () {
       const newFacultyMemberInfo = {
         id: '1636efd9-6b3e-4c44-ba38-4e0e788dba54',
         HUID: '87654321',
         firstName: 'Bob',
         lastName: 'Lovelace',
         category: FACULTY_TYPE.LADDER,
-        area: newArea,
+        area: new Area(),
       };
       mockFacultyRepository
+        .findOneOrFail
+        .rejects(new TimeoutError());
+      try {
+        await controller.update('1636efd9-6b3e-4c44-ba38-4e0e788dba54', newFacultyMemberInfo);
+      } catch (e) {
+        strictEqual(e instanceof Error, true);
+        strictEqual(e instanceof NotFoundException, false);
+      }
+    });
+    it('allows other error types to bubble when finding area', async function () {
+      const newFacultyMemberInfo = {
+        id: '1636efd9-6b3e-4c44-ba38-4e0e788dba54',
+        HUID: '87654321',
+        firstName: 'Bob',
+        lastName: 'Lovelace',
+        category: FACULTY_TYPE.LADDER,
+        area: new Area(),
+      };
+      mockAreaRepository
         .findOneOrFail
         .rejects(new TimeoutError());
       try {
