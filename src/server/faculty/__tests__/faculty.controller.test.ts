@@ -4,6 +4,9 @@ import { stub, SinonStub } from 'sinon';
 import { strictEqual, deepStrictEqual } from 'assert';
 import { FACULTY_TYPE } from 'common/constants';
 import { Authentication } from 'server/auth/authentication.guard';
+import { NotFoundException } from '@nestjs/common';
+import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
+import { TimeoutError } from 'rxjs';
 import { ManageFacultyController } from '../faculty.controller';
 import { Faculty } from '../faculty.entity';
 import { Area } from '../../area/area.entity';
@@ -115,6 +118,91 @@ describe('Faculty controller', function () {
       const updatedFacultyMember = await controller.update('8636efc3-6b3e-4c44-ba38-4e0e788dba43', newFacultyMemberInfo);
 
       deepStrictEqual(updatedFacultyMember, newFacultyMemberInfo);
+    });
+    it('throws a Not Found Error if the area does not exist', async function () {
+      const newArea = {
+        id: 'abc32sdf-84923-fm32-1111-72jshckddiws',
+        name: 'Juggling',
+      };
+      const newFacultyMemberInfo = {
+        id: '8636efc3-6b3e-4c44-ba38-4e0e788dba43',
+        HUID: '87654321',
+        firstName: 'Ada',
+        lastName: 'Lovelace',
+        category: FACULTY_TYPE.LADDER,
+        area: newArea,
+      };
+      mockAreaRepository
+        .findOneOrFail
+        .rejects(new EntityNotFoundError(Area, {
+          where: { id: newArea.id },
+        }));
+      try {
+        await controller.update('8636efc3-6b3e-4c44-ba38-4e0e788dba43', newFacultyMemberInfo);
+      } catch (e) {
+        strictEqual(e instanceof NotFoundException, true);
+        strictEqual(e.message.message.includes('entered Area'), true);
+      }
+    });
+    it('throws a Not Found Error if the faculty does not exist', async function () {
+      const newArea = new Area();
+      const newFacultyMemberInfo = {
+        id: '1636efd9-6b3e-4c44-ba38-4e0e788dba54',
+        HUID: '87654321',
+        firstName: 'Bob',
+        lastName: 'Lovelace',
+        category: FACULTY_TYPE.LADDER,
+        area: newArea,
+      };
+      mockFacultyRepository
+        .findOneOrFail
+        .rejects(new EntityNotFoundError(Faculty, {
+          where: { id: newFacultyMemberInfo.id },
+        }));
+      try {
+        await controller.update('1636efd9-6b3e-4c44-ba38-4e0e788dba54', newFacultyMemberInfo);
+      } catch (e) {
+        strictEqual(e instanceof NotFoundException, true);
+        strictEqual(e.message.message.includes('Faculty'), true);
+      }
+    });
+    it('allows other error types to bubble when finding faculty', async function () {
+      const newFacultyMemberInfo = {
+        id: '1636efd9-6b3e-4c44-ba38-4e0e788dba54',
+        HUID: '87654321',
+        firstName: 'Bob',
+        lastName: 'Lovelace',
+        category: FACULTY_TYPE.LADDER,
+        area: new Area(),
+      };
+      mockFacultyRepository
+        .findOneOrFail
+        .rejects(new TimeoutError());
+      try {
+        await controller.update('1636efd9-6b3e-4c44-ba38-4e0e788dba54', newFacultyMemberInfo);
+      } catch (e) {
+        strictEqual(e instanceof Error, true);
+        strictEqual(e instanceof NotFoundException, false);
+      }
+    });
+    it('allows other error types to bubble when finding area', async function () {
+      const newFacultyMemberInfo = {
+        id: '1636efd9-6b3e-4c44-ba38-4e0e788dba54',
+        HUID: '87654321',
+        firstName: 'Bob',
+        lastName: 'Lovelace',
+        category: FACULTY_TYPE.LADDER,
+        area: new Area(),
+      };
+      mockAreaRepository
+        .findOneOrFail
+        .rejects(new TimeoutError());
+      try {
+        await controller.update('1636efd9-6b3e-4c44-ba38-4e0e788dba54', newFacultyMemberInfo);
+      } catch (e) {
+        strictEqual(e instanceof Error, true);
+        strictEqual(e instanceof NotFoundException, false);
+      }
     });
   });
 });
