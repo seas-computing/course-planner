@@ -32,6 +32,7 @@
     "react-dom": "^16.8.6",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.5.2",
+    "styled-components": "^5.0.0",
     "typeorm": "^0.2.18"
   },
   "scripts": {
@@ -62,6 +63,7 @@
     "@types/react-dom": "^16.8.4",
     "@types/react-router-dom": "^5.1.2",
     "@types/sinon": "^7.0.13",
+    "@types/styled-components": "^4.4.2",
     "@types/supertest": "^2.0.8",
     "@types/webpack": "^4.4.33",
     "@types/webpack-dev-middleware": "^2.0.2",
