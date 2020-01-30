@@ -91,7 +91,30 @@ const client = {
   resolve: wpResolve,
   target: 'web',
   module: {
-    rules: [tsLoader],
+    rules: [
+      {
+        ...tsLoader,
+        test: /\.(t|j)sx?$/,
+        exclude: [],
+        include: [tsLoader.include, resolve(__dirname, 'node_modules')],
+      },
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader'],
+      },
+      {
+        test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[name].[ext]',
+              outputPath: 'fonts/',
+            },
+          },
+        ],
+      },
+    ],
   },
   optimization: { ...optimization, splitChunks },
   plugins: [

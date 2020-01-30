@@ -30,7 +30,7 @@ const compiler = webpack([{
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
+        test: /\.(t|j)sx?$/,
         exclude: /node_modules/,
         use: [
           {
@@ -40,6 +40,22 @@ const compiler = webpack([{
             },
           },
           'ts-loader',
+        ],
+      },
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader'],
+      },
+      {
+        test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[name].[ext]',
+              outputPath: 'fonts/',
+            },
+          },
         ],
       },
     ],
