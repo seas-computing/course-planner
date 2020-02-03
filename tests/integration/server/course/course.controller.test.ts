@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { stub, SinonStub } from 'sinon';
 import request from 'supertest';
-import { HttpStatus, HttpServer, CanActivate } from '@nestjs/common';
+import { HttpStatus, HttpServer } from '@nestjs/common';
 import { strictEqual } from 'assert';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { AuthGuard } from '@nestjs/passport';
