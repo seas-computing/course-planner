@@ -116,15 +116,17 @@ describe('Faculty API', function () {
           strictEqual(mockFacultyRepository.find.callCount, 1);
         });
       });
-      describe('User is not a member of the admin group', async function () {
-        authStub.returns(true);
-        userStub.returns(regularUser);
+      describe('User is not a member of the admin group', function () {
+        it('is inaccessible to unauthorized users', async function () {
+          authStub.returns(true);
+          userStub.returns(regularUser);
 
-        const response = await request(api).get('/api/faculty');
+          const response = await request(api).get('/api/faculty');
 
-        strictEqual(response.ok, false);
-        strictEqual(response.status, HttpStatus.FORBIDDEN);
-        strictEqual(mockFacultyRepository.find.callCount, 0);
+          strictEqual(response.ok, false);
+          strictEqual(response.status, HttpStatus.FORBIDDEN);
+          strictEqual(mockFacultyRepository.find.callCount, 0);
+        });
       });
     });
   });
