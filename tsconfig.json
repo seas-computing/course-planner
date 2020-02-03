@@ -17,7 +17,11 @@
       "testData": ["common/__tests__/data/index.ts"],
       "client/*": ["client/*"],
       "server/*": ["server/*"]
-    }
+    },
+    "types": [
+      "mocha",
+      "node",
+    ]
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]
