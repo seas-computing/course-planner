@@ -16,9 +16,12 @@
     "paths": {
       "testData": ["common/__tests__/data/index.ts"],
       "client/*": ["client/*"],
-      "server/*": ["server/*"],
-      "mark-one": ["../../mark-one/src/index.ts"]
-    }
+      "server/*": ["server/*"]
+    },
+    "types": [
+      "mocha",
+      "node"
+    ]
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

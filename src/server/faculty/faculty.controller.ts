@@ -6,7 +6,6 @@ import {
   Put,
   Param,
   UseGuards,
-  BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -17,7 +16,10 @@ import {
   ApiBadRequestResponse,
   ApiUseTags,
   ApiNotFoundResponse,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { RequireGroup } from 'server/auth/group.guard';
+import { GROUP } from 'common/constants';
 import { FacultyResponseDTO } from 'common/dto/faculty/facultyResponse.dto';
 import { CreateFacultyDTO } from 'common/dto/faculty/createFaculty.dto';
 import { UpdateFacultyDTO } from 'common/dto/faculty/updateFaculty.dto';
@@ -27,8 +29,9 @@ import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { Faculty } from './faculty.entity';
 
 @ApiUseTags('Faculty')
-@UseGuards(Authentication)
+@UseGuards(Authentication, new RequireGroup(GROUP.ADMIN))
 @Controller('api/faculty')
+@ApiUnauthorizedResponse({ description: 'Thrown if the user is not authenticated' })
 export class ManageFacultyController {
   @InjectRepository(Faculty)
   private facultyRepository: Repository<Faculty>
@@ -85,8 +88,8 @@ export class ManageFacultyController {
     description: 'An object with the edited faculty member\'s information.',
     isArray: false,
   })
-  @ApiBadRequestResponse({
-    description: 'Bad Request: The request is not in accordance with the updateFaculty DTO',
+  @ApiNotFoundResponse({
+    description: 'Not Found: The requested entity could not be found',
   })
   @ApiNotFoundResponse({
     description: 'Not Found: The requested entity with the ID supplied could not be found',
@@ -94,16 +97,20 @@ export class ManageFacultyController {
   public async update(@Param('id') id: string, @Body() faculty: UpdateFacultyDTO):
   Promise<FacultyResponseDTO> {
     try {
+      await this.areaRepository.findOneOrFail(faculty.area);
+    } catch (e) {
+      if (e instanceof EntityNotFoundError) {
+        throw new NotFoundException('The entered Area does not exist');
+      }
+    }
+    try {
       await this.facultyRepository.findOneOrFail(id);
     } catch (e) {
       if (e instanceof EntityNotFoundError) {
-        throw new NotFoundException('Could not find any entity of type Faculty with the supplied ID');
+        throw new NotFoundException('Could not find any entity of type Faculty in any Area with the supplied ID');
       }
     }
     const existingArea = await this.areaRepository.findOneOrFail(faculty.area);
-    if (!existingArea) {
-      throw new BadRequestException('The entered Area does not exist');
-    }
     const validFaculty = {
       ...faculty,
       area: existingArea,

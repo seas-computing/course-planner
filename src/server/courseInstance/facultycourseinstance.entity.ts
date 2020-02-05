@@ -1,7 +1,7 @@
 import {
   Entity, Column, ManyToOne, ObjectType, Index,
 } from 'typeorm';
-import { CourseInstance } from '../courseInstance/courseinstance.entity';
+import { CourseInstance } from './courseinstance.entity';
 import { Faculty } from '../faculty/faculty.entity';
 import { BaseEntity } from '../base/base.entity';
 

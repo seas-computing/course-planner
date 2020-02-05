@@ -92,30 +92,28 @@ const client = {
   target: 'web',
   module: {
     rules: [
-            {
-              ...tsLoader,
-              include: [
-                tsLoader.include,
-                resolve(__dirname, '../mark-one/src'),
-              ],
+      {
+        ...tsLoader,
+        test: /\.(t|j)sx?$/,
+        exclude: [],
+      },
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader'],
+      },
+      {
+        test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[name].[ext]',
+              outputPath: 'assets/',
             },
-            {
-              test: /\.css$/i,
-              use: ['style-loader', 'css-loader'],
-            },
-            {
-              test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
-              use: [
-                {
-                  loader: 'file-loader',
-                  options: {
-                    name: '[name].[ext]',
-                    outputPath: 'fonts/',
-                  },
-                },
-              ],
-            },
-          ],
+          },
+        ],
+      },
+    ],
   },
   optimization: { ...optimization, splitChunks },
   plugins: [
