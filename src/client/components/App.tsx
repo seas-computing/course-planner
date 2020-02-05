@@ -20,6 +20,7 @@ import {
   Header,
   TabList,
   TabListItem,
+  PageBody,
 } from 'mark-one';
 import { getCurrentUser } from 'client/api';
 import { UserResponse } from 'common/dto/users/userResponse.dto';
@@ -95,6 +96,8 @@ const ColdApp: SFC = (): ReactElement => {
                   <TabListItem><Link to="/schedule">Schedule</Link></TabListItem>
                   <TabListItem><Link to="/fourYearPlan">4 Year Plan</Link></TabListItem>
                 </TabList>
+              </Header>
+              <PageBody>
                 {currentMessage
               && (
                 <Message
@@ -106,7 +109,7 @@ const ColdApp: SFC = (): ReactElement => {
                 <Switch>
                   <Route component={NoMatch} />
                 </Switch>
-              </Header>
+              </PageBody>
             </div>
           </MessageContext.Provider>
         </UserContext.Provider>
