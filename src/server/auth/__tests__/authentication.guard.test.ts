@@ -3,7 +3,7 @@ import { ExecutionContext } from '@nestjs/common';
 import { stub } from 'sinon';
 import { AuthGuard } from '@nestjs/passport';
 import { ConfigService } from 'server/config/config.service';
-import { Authentication } from '../../auth/authentication.guard';
+import { Authentication } from '../authentication.guard';
 
 describe('Authentication guard', function () {
   beforeEach(function () {
