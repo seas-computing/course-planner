@@ -96,7 +96,6 @@ const client = {
         ...tsLoader,
         test: /\.(t|j)sx?$/,
         exclude: [],
-        include: [tsLoader.include, resolve(__dirname, 'node_modules')],
       },
       {
         test: /\.css$/i,
