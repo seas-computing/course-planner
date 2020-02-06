@@ -13,6 +13,7 @@ jobs:
   include:
     - stage: test
       script:
+      - npm install typescript -g
       - npm run typecheck
       - npm run lint
       - npm run test
