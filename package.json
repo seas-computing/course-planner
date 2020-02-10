@@ -23,7 +23,7 @@
     "connect-redis": "^3.4.1",
     "express": "^4.17.1",
     "express-session": "^1.16.2",
-    "mark-one": "git+https://github.com/seas-computing/mark-one.git#develop",
+    "mark-one": "0.0.1",
     "nestjs-redis": "^1.2.1",
     "passport": "^0.4.0",
     "passport-saml": "^1.1.0",
