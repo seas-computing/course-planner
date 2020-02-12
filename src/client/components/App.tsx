@@ -6,7 +6,7 @@ import React, {
   SFC,
 } from 'react';
 import {
-  Switch, Route,
+  Switch, Route, Link,
 } from 'react-router-dom';
 import { hot } from 'react-hot-loader/root';
 import { MESSAGE_TYPE, MESSAGE_ACTION, AppMessage } from 'client/classes';
@@ -15,6 +15,13 @@ import {
   messageReducer,
   UserContext,
 } from 'client/context';
+import {
+  MarkOneWrapper,
+  Header,
+  TabList,
+  TabListItem,
+  PageBody,
+} from 'mark-one';
 import { getCurrentUser } from 'client/api';
 import { UserResponse } from 'common/dto/users/userResponse.dto';
 import { Message } from './layout';
@@ -76,23 +83,51 @@ const ColdApp: SFC = (): ReactElement => {
 
   return (
     <div className="app">
-      <UserContext.Provider value={currentUser}>
-        <MessageContext.Provider value={dispatchMessage}>
-          <div className="app-content">
-            <Switch>
-              <Route component={NoMatch} />
-            </Switch>
-            {currentMessage
-            && (
-              <Message
-                messageCount={queue.length}
-                messageText={currentMessage.text}
-                messageType={currentMessage.variant}
-              />
-            )}
-          </div>
-        </MessageContext.Provider>
-      </UserContext.Provider>
+      <MarkOneWrapper>
+        <UserContext.Provider value={currentUser}>
+          <MessageContext.Provider value={dispatchMessage}>
+            <div className="app-content">
+              <Header>
+                Course Planning
+                <TabList>
+                  <TabListItem>
+                    <Link to="/courses">Courses</Link>
+                  </TabListItem>
+
+                  <TabListItem>
+                    <Link to="/non-class-meetings">Non class meetings</Link>
+                  </TabListItem>
+
+                  <TabListItem>
+                    <Link to="/faculty">Faculty</Link>
+                  </TabListItem>
+
+                  <TabListItem>
+                    <Link to="/schedule">Schedule</Link>
+                  </TabListItem>
+
+                  <TabListItem>
+                    <Link to="/four-year-plan">4 Year Plan</Link>
+                  </TabListItem>
+                </TabList>
+              </Header>
+              <PageBody>
+                {currentMessage
+              && (
+                <Message
+                  messageCount={queue.length}
+                  messageText={currentMessage.text}
+                  messageType={currentMessage.variant}
+                />
+              )}
+                <Switch>
+                  <Route component={NoMatch} />
+                </Switch>
+              </PageBody>
+            </div>
+          </MessageContext.Provider>
+        </UserContext.Provider>
+      </MarkOneWrapper>
     </div>
   );
 };
