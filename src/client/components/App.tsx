@@ -95,7 +95,7 @@ const ColdApp: SFC = (): ReactElement => {
                   </TabListItem>
 
                   <TabListItem>
-                    <Link to="/courses-ncm">Non class meetings</Link>
+                    <Link to="/non-class-meetings">Non class meetings</Link>
                   </TabListItem>
 
                   <TabListItem>
@@ -107,7 +107,7 @@ const ColdApp: SFC = (): ReactElement => {
                   </TabListItem>
 
                   <TabListItem>
-                    <Link to="/fourYearPlan">4 Year Plan</Link>
+                    <Link to="/four-year-plan">4 Year Plan</Link>
                   </TabListItem>
                 </TabList>
               </Header>
