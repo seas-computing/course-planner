@@ -90,11 +90,25 @@ const ColdApp: SFC = (): ReactElement => {
               <Header>
                 Course Planning
                 <TabList>
-                  <TabListItem><Link to="/courses">Courses</Link></TabListItem>
-                  <TabListItem><Link to="/courses-ncm">Non class meetings</Link></TabListItem>
-                  <TabListItem><Link to="/faculty">Faculty</Link></TabListItem>
-                  <TabListItem><Link to="/schedule">Schedule</Link></TabListItem>
-                  <TabListItem><Link to="/fourYearPlan">4 Year Plan</Link></TabListItem>
+                  <TabListItem>
+                    <Link to="/courses">Courses</Link>
+                  </TabListItem>
+
+                  <TabListItem>
+                    <Link to="/courses-ncm">Non class meetings</Link>
+                  </TabListItem>
+
+                  <TabListItem>
+                    <Link to="/faculty">Faculty</Link>
+                  </TabListItem>
+
+                  <TabListItem>
+                    <Link to="/schedule">Schedule</Link>
+                  </TabListItem>
+
+                  <TabListItem>
+                    <Link to="/fourYearPlan">4 Year Plan</Link>
+                  </TabListItem>
                 </TabList>
               </Header>
               <PageBody>
