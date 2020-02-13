@@ -4,22 +4,22 @@ import request from 'supertest';
 import {
   HttpStatus,
   HttpServer,
+  ForbiddenException,
 } from '@nestjs/common';
 import { strictEqual } from 'assert';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { AuthGuard } from '@nestjs/passport';
-import session from 'express-session';
-import { Request, Response, NextFunction } from 'express';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
-import { FACULTY_TYPE } from '../../../../src/common/constants';
-import { Area } from '../../../../src/server/area/area.entity';
-import { FacultyModule } from '../../../../src/server/faculty/faculty.module';
-import { Faculty } from '../../../../src/server/faculty/faculty.entity';
-import { AuthModule } from '../../../../src/server/auth/auth.module';
-import { ConfigModule } from '../../../../src/server/config/config.module';
-import { ConfigService } from '../../../../src/server/config/config.service';
-import { BadRequestExceptionPipe } from '../../../../src/server/utils/BadRequestExceptionPipe';
-import { regularUser, string, adminUser } from '../../../../src/common/__tests__/data';
+import { FACULTY_TYPE, AUTH_MODE } from 'common/constants';
+import { Area } from 'server/area/area.entity';
+import { FacultyModule } from 'server/faculty/faculty.module';
+import { Faculty } from 'server/faculty/faculty.entity';
+import { AuthModule } from 'server/auth/auth.module';
+import { ConfigModule } from 'server/config/config.module';
+import { ConfigService } from 'server/config/config.service';
+import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
+import { regularUser, string, adminUser } from 'common/__tests__/data';
+import { SessionModule } from 'nestjs-session';
+import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 const mockFacultyRepository = {
   create: stub(),
@@ -35,41 +35,36 @@ const mockAreaRepository = {
 describe('Faculty API', function () {
   let authStub: SinonStub;
   let api: HttpServer;
-  let userStub: SinonStub;
 
   beforeEach(async function () {
-    userStub = stub();
-    authStub = stub(AuthGuard('saml').prototype, 'canActivate');
-    userStub.returns(regularUser);
+    authStub = stub(TestingStrategy.prototype, 'login');
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        FacultyModule,
-        AuthModule,
+        SessionModule.forRoot({
+          session: {
+            secret: string,
+            resave: true,
+            saveUninitialized: true,
+          },
+        }),
         ConfigModule,
+        AuthModule.register({
+          strategies: [TestingStrategy],
+          defaultStrategy: AUTH_MODE.TEST,
+        }),
+        FacultyModule,
       ],
     })
       .overrideProvider(ConfigService)
       .useValue(new ConfigService({ NODE_ENV: 'production' }))
-
       .overrideProvider(getRepositoryToken(Faculty))
       .useValue(mockFacultyRepository)
-
       .overrideProvider(getRepositoryToken(Area))
       .useValue(mockAreaRepository)
-
       .compile();
 
     const nestApp = await module.createNestApplication()
-      .use(session({
-        secret: string,
-        resave: true,
-        saveUninitialized: true,
-      }))
-      .use((req: Request, _: Response, next: NextFunction) => {
-        req.session.user = userStub();
-        next();
-      })
       .useGlobalPipes(new BadRequestExceptionPipe())
       .init();
 
@@ -77,7 +72,6 @@ describe('Faculty API', function () {
   });
   afterEach(function () {
     authStub.restore();
-    userStub.reset();
     Object.values({
       ...mockFacultyRepository,
       ...mockAreaRepository,
@@ -89,7 +83,7 @@ describe('Faculty API', function () {
   describe('GET /', function () {
     describe('User is not authenticated', function () {
       it('is inaccessible to unauthenticated users', async function () {
-        authStub.returns(false);
+        authStub.rejects(new ForbiddenException());
 
         const response = await request(api).get('/api/faculty');
 
@@ -101,8 +95,7 @@ describe('Faculty API', function () {
     describe('User is authenticated', function () {
       describe('User is a member of the admin group', function () {
         it('returns all faculty in the database', async function () {
-          authStub.returns(true);
-          userStub.returns(adminUser);
+          authStub.resolves(adminUser);
           const mockFaculty = Array(10).fill({
             ...new Faculty(),
             area: new Area(),
@@ -118,8 +111,7 @@ describe('Faculty API', function () {
       });
       describe('User is not a member of the admin group', function () {
         it('is inaccessible to unauthorized users', async function () {
-          authStub.returns(true);
-          userStub.returns(regularUser);
+          authStub.resolves(regularUser);
 
           const response = await request(api).get('/api/faculty');
 
@@ -133,7 +125,7 @@ describe('Faculty API', function () {
   describe('POST /', function () {
     describe('User is not authenticated', function () {
       beforeEach(function () {
-        authStub.returns(false);
+        authStub.rejects(new ForbiddenException());
       });
       it('cannot create a faculty entry', async function () {
         const response = await request(api)
@@ -157,8 +149,7 @@ describe('Faculty API', function () {
     describe('User is authenticated', function () {
       describe('User is a member of the admin group', function () {
         beforeEach(async function () {
-          authStub.returns(true);
-          userStub.returns(adminUser);
+          authStub.returns(adminUser);
         });
         it('creates a new faculty member in the database', async function () {
           const response = await request(api)
@@ -236,8 +227,7 @@ describe('Faculty API', function () {
       });
       describe('User is not a member of the admin group', function () {
         it('is inaccessible to unauthorized users', async function () {
-          authStub.returns(true);
-          userStub.returns(regularUser);
+          authStub.returns(regularUser);
 
           const response = await request(api).get('/api/faculty');
 
@@ -251,7 +241,7 @@ describe('Faculty API', function () {
   describe('PUT /:id', function () {
     describe('User is not authenticated', function () {
       beforeEach(async function () {
-        authStub.returns(false);
+        authStub.rejects(new ForbiddenException());
       });
       it('cannot update a faculty entry', async function () {
         const response = await request(api)
@@ -275,8 +265,7 @@ describe('Faculty API', function () {
     describe('User is authenticated', function () {
       describe('User is a member of the admin group', function () {
         beforeEach(async function () {
-          authStub.returns(true);
-          userStub.returns(adminUser);
+          authStub.returns(adminUser);
         });
         it('updates a faculty member entry in the database', async function () {
           const newArea = {
@@ -422,8 +411,7 @@ describe('Faculty API', function () {
       });
       describe('User is not a member of the admin group', function () {
         it('is inaccessible to unauthorized users', async function () {
-          authStub.returns(true);
-          userStub.returns(regularUser);
+          authStub.rejects(new ForbiddenException());
 
           const response = await request(api).get('/api/faculty');
 
