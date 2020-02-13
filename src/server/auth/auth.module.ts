@@ -1,6 +1,6 @@
 import { Module, DynamicModule, Global } from '@nestjs/common';
 import {
-  AuthGuard, PassportModule, Type, IAuthGuard,
+  AuthGuard, PassportModule, Type, IAuthGuard, IAuthModuleOptions,
 } from '@nestjs/passport';
 import { Authentication } from 'server/auth/authentication.guard';
 import { Strategy } from 'passport';
@@ -23,17 +23,21 @@ class AuthModule {
     defaultStrategy,
   }: {
     strategies: Type<Strategy>[];
-    defaultStrategy: AUTH_MODE;
+    defaultStrategy?: AUTH_MODE;
   }): DynamicModule {
     return {
       module: AuthModule,
       imports: [
         ...strategies,
         ConfigModule,
-        PassportModule.register({
-          session: true,
-          property: 'user',
-          defaultStrategy,
+        PassportModule.registerAsync({
+          imports: [ConfigModule],
+          inject: [ConfigService],
+          useFactory: (config: ConfigService): IAuthModuleOptions => ({
+            session: true,
+            property: 'user',
+            defaultStrategy: defaultStrategy || config.authMode,
+          }),
         }),
       ],
       providers: [

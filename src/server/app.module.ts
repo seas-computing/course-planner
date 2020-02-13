@@ -5,7 +5,6 @@ import ConnectRedis from 'connect-redis';
 import { SAMLStrategy } from 'server/auth/saml.strategy';
 import { DevStrategy } from 'server/auth/dev.strategy';
 import { SessionModule, NestSessionOptions } from 'nestjs-session';
-import { AUTH_MODE } from 'common/constants';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
 import { AuthModule } from './auth/auth.module';
@@ -53,7 +52,6 @@ import { FacultyModule } from './faculty/faculty.module';
     }),
     AuthModule.register({
       strategies: [SAMLStrategy, DevStrategy],
-      defaultStrategy: AUTH_MODE.HKEY,
     }),
     CourseModule,
     FacultyModule,
