@@ -67,6 +67,7 @@ const wpResolve = {
 
 const tsLoader = {
   test: /\.tsx?$/,
+  config: './tsconfig.production.json',
   include: resolve(__dirname, 'src'),
   exclude: /node_modules/,
   use: [
