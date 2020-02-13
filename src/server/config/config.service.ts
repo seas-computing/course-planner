@@ -1,5 +1,6 @@
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { RedisStoreOptions } from 'connect-redis';
+import { AUTH_MODE } from 'common/constants';
 
 /**
  * Parses process.env to create a clean configuration interface
@@ -8,7 +9,7 @@ import { RedisStoreOptions } from 'connect-redis';
 class ConfigService {
   private readonly env: { [key: string]: string };
 
-  public constructor(config: { [key: string]: string} = {}) {
+  public constructor(config: { [key: string]: string } = {}) {
     this.env = config;
   }
 
@@ -21,7 +22,7 @@ class ConfigService {
   }
 
   /**
-   * Return connection parameters for the Mongoose Module
+   * Return connection parameters for the TypeORM module
    */
 
   public get dbOptions(): PostgresConnectionOptions {
@@ -42,6 +43,10 @@ class ConfigService {
       entities: ['src/server/**/*.entity.ts'],
     };
   }
+
+  /**
+   * Return connection parameters for the Redis Module
+   */
 
   public get redisOptions(): RedisStoreOptions {
     const {
@@ -72,6 +77,19 @@ class ConfigService {
 
   public get isDevelopment(): boolean {
     return this.env.NODE_ENV === 'development';
+  }
+
+  /**
+   * Determine what kind of authentication should be used
+   */
+  public get authMode(): AUTH_MODE {
+    if (this.isProduction) {
+      return AUTH_MODE.HKEY;
+    }
+    if (this.isDevelopment) {
+      return AUTH_MODE.DEV;
+    }
+    return AUTH_MODE.TEST;
   }
 }
 
