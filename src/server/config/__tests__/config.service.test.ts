@@ -2,6 +2,7 @@ import { strictEqual, deepStrictEqual } from 'assert';
 import { int, safeString } from 'testData';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { RedisStoreOptions } from 'connect-redis';
+import { AUTH_MODE } from 'common/constants';
 import { ConfigService } from '../config.service';
 
 describe('Configuration Service', function () {
@@ -104,6 +105,46 @@ describe('Configuration Service', function () {
 
     it('provides the redis prefix', function () {
       strictEqual(redisOptions.prefix, REDIS_PREFIX + '_');
+    });
+  });
+  describe('Authentication Mode', function () {
+    context('NODE_ENV === production', function () {
+      it('Should return Harvard Key mode', function () {
+        const config = new ConfigService({
+          NODE_ENV: 'production',
+        });
+        strictEqual(config.authMode, AUTH_MODE.HKEY);
+      });
+    });
+    context('NODE_ENV === development', function () {
+      it('Should return development mode', function () {
+        const config = new ConfigService({
+          NODE_ENV: 'development',
+        });
+        strictEqual(config.authMode, AUTH_MODE.DEV);
+      });
+    });
+    context('NODE_ENV === testing', function () {
+      it('Should return testing mode', function () {
+        const config = new ConfigService({
+          NODE_ENV: 'testing',
+        });
+        strictEqual(config.authMode, AUTH_MODE.TEST);
+      });
+    });
+    context('with other NODE_ENV values', function () {
+      it('Should return testing mode', function () {
+        const config = new ConfigService({
+          NODE_ENV: 'travis-ci',
+        });
+        strictEqual(config.authMode, AUTH_MODE.TEST);
+      });
+    });
+    context('with no NODE_ENV value', function () {
+      it('Should return testing mode', function () {
+        const config = new ConfigService();
+        strictEqual(config.authMode, AUTH_MODE.TEST);
+      });
     });
   });
 });
