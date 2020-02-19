@@ -7,7 +7,7 @@ import { CourseService } from '../course.service';
 import { Course } from '../course.entity';
 
 const mockCourseRespository = {
-  insert: stub(),
+  save: stub(),
 };
 
 const mockSemesterRepository = {
@@ -43,7 +43,7 @@ describe('Course service', function () {
     });
   });
 
-  describe('insert', function () {
+  describe('save', function () {
     beforeEach(function () {
       mockSemesterRepository.find.resolves([]);
     });
@@ -54,10 +54,10 @@ describe('Course service', function () {
         new Course(),
       ];
 
-      await courseService.insert(coursesToCreate);
+      await courseService.save(coursesToCreate);
 
       strictEqual(
-        mockCourseRespository.insert.args[0][0].length,
+        mockCourseRespository.save.args[0][0].length,
         coursesToCreate.length
       );
     });
@@ -76,10 +76,10 @@ describe('Course service', function () {
 
       mockSemesterRepository.find.resolves(semesters);
 
-      await courseService.insert([new Course()]);
+      await courseService.save([new Course()]);
 
       strictEqual(
-        mockCourseRespository.insert.args[0][0][0].instances.length,
+        mockCourseRespository.save.args[0][0][0].instances.length,
         2
       );
     });

@@ -13,7 +13,7 @@ export class CourseService {
   @InjectRepository(Course)
   private courseRepository: Repository<Course>;
 
-  public async insert(courses: DeepPartial<Course>[]): Promise<void> {
+  public async save(courses: DeepPartial<Course>[]): Promise<void> {
     const semesters = await this.semesterRepository.find({});
 
     const scheduledCourses = courses.map((course: Course): Course => ({
@@ -24,6 +24,6 @@ export class CourseService {
       })),
     }));
 
-    await this.courseRepository.insert(scheduledCourses);
+    this.courseRepository.save(scheduledCourses);
   }
 }
