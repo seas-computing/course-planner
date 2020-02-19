@@ -83,5 +83,15 @@ describe('Course service', function () {
         2
       );
     });
+
+    it('returns the newly created courses', async function () {
+      const newCourses = [new Course()];
+
+      mockCourseRespository.save.resolves(newCourses);
+
+      const createdCourses = await courseService.save(newCourses);
+
+      strictEqual(newCourses.length, createdCourses.length);
+    });
   });
 });
