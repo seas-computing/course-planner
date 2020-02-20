@@ -14,15 +14,27 @@
     "baseUrl": "./src",
     "incremental": true,
     "paths": {
-      "testData": ["common/__tests__/data/index.ts"],
-      "client/*": ["client/*"],
-      "server/*": ["server/*"]
+      "testData": [
+        "common/__tests__/data/index.ts"
+      ],
+      "client/*": [
+        "client/*"
+      ],
+      "server/*": [
+        "server/*"
+      ]
     },
     "types": [
       "mocha",
       "node"
     ]
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src",
+    "tests"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

@@ -1,18 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { SessionModule } from 'nestjs-session';
 import { stub, SinonStub } from 'sinon';
 import request from 'supertest';
-import { HttpStatus, HttpServer } from '@nestjs/common';
+import { HttpStatus, HttpServer, ForbiddenException } from '@nestjs/common';
 import { strictEqual } from 'assert';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { AuthGuard } from '@nestjs/passport';
-import session from 'express-session';
-import { Response, Request, NextFunction } from 'express';
-import { ConfigModule } from '../../../../src/server/config/config.module';
-import { AuthModule } from '../../../../src/server/auth/auth.module';
-import { Course } from '../../../../src/server/course/course.entity';
-import { CourseModule } from '../../../../src/server/course/course.module';
-import { ConfigService } from '../../../../src/server/config/config.service';
-import { regularUser, string, adminUser } from '../../../../src/common/__tests__/data';
+import { AUTH_MODE } from 'common/constants';
+import { ConfigModule } from 'server/config/config.module';
+import { AuthModule } from 'server/auth/auth.module';
+import { Course } from 'server/course/course.entity';
+import { CourseModule } from 'server/course/course.module';
+import { ConfigService } from 'server/config/config.service';
+import { regularUser, string, adminUser } from 'common/__tests__/data';
+import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 const mockCourseRepository = {
   find: stub(),
@@ -21,45 +21,39 @@ const mockCourseRepository = {
 describe('Course API', function () {
   let authStub: SinonStub;
   let api: HttpServer;
-  let userStub: SinonStub;
 
   beforeEach(async function () {
-    userStub = stub();
-    authStub = stub(AuthGuard('saml').prototype, 'canActivate');
-    userStub.returns(regularUser);
+    authStub = stub(TestingStrategy.prototype, 'login');
 
-    const module: TestingModule = await Test.createTestingModule({
+    const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
+        SessionModule.forRoot({
+          session: {
+            secret: string,
+            resave: true,
+            saveUninitialized: true,
+          },
+        }),
         ConfigModule,
-        AuthModule,
+        AuthModule.register({
+          strategies: [TestingStrategy],
+          defaultStrategy: AUTH_MODE.TEST,
+        }),
         CourseModule,
       ],
     })
       .overrideProvider(ConfigService)
-      .useValue(new ConfigService({ NODE_ENV: 'production' }))
-
+      .useValue(new ConfigService({ NODE_ENV: 'development' }))
       .overrideProvider(getRepositoryToken(Course))
       .useValue(mockCourseRepository)
-
       .compile();
-
-    const nestApp = await module.createNestApplication()
-      .use(session({
-        secret: string,
-        resave: true,
-        saveUninitialized: true,
-      }))
-      .use((req: Request, _: Response, next: NextFunction) => {
-        req.session.user = userStub();
-        next();
-      })
+    const nestApp = await moduleRef.createNestApplication()
       .init();
 
     api = nestApp.getHttpServer();
   });
   afterEach(function () {
     authStub.restore();
-    userStub.reset();
     Object.values(mockCourseRepository)
       .forEach((sinonStub: SinonStub): void => {
         sinonStub.reset();
@@ -68,7 +62,7 @@ describe('Course API', function () {
   describe('GET /', function () {
     describe('User is not authenticated', function () {
       it('is inaccessible to unauthenticated users', async function () {
-        authStub.returns(false);
+        authStub.rejects(new ForbiddenException());
 
         const response = await request(api).get('/api/courses');
 
@@ -80,8 +74,7 @@ describe('Course API', function () {
     describe('User is authenticated', function () {
       describe('User is a member of the admin group', function () {
         it('returns all the courses in the database', async function () {
-          authStub.returns(true);
-          userStub.returns(adminUser);
+          authStub.resolves(adminUser);
           const mockCourses = Array(10).fill(new Course());
           mockCourseRepository.find.resolves(mockCourses);
 
@@ -94,8 +87,7 @@ describe('Course API', function () {
       });
       describe('User is not a member of the admin group', function () {
         it('is inaccessible to unauthorized users', async function () {
-          authStub.returns(true);
-          userStub.returns(regularUser);
+          authStub.resolves(regularUser);
 
           const response = await request(api).get('/api/courses');
 

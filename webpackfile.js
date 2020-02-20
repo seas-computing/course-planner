@@ -73,6 +73,7 @@ const tsLoader = {
     {
       loader: 'ts-loader',
       options: {
+        configFile: 'tsconfig.production.json',
         happyPackMode: true,
       },
     },

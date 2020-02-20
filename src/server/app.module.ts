@@ -1,11 +1,13 @@
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import session, { Store } from 'express-session';
+import session from 'express-session';
 import ConnectRedis from 'connect-redis';
+import { SAMLStrategy } from 'server/auth/saml.strategy';
+import { DevStrategy } from 'server/auth/dev.strategy';
+import { SessionModule, NestSessionOptions } from 'nestjs-session';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
 import { AuthModule } from './auth/auth.module';
-import { SessionMiddleware } from './auth/session.middleware';
 import { CourseModule } from './course/course.module';
 import { FacultyModule } from './faculty/faculty.module';
 
@@ -24,25 +26,38 @@ import { FacultyModule } from './faculty/faculty.module';
       ): Promise<TypeOrmModuleOptions> => (config.dbOptions),
       inject: [ConfigService],
     }),
-    AuthModule,
+    SessionModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (
+        config: ConfigService
+      ): Promise<NestSessionOptions> => {
+        const RedisStore = ConnectRedis(session);
+        const store = new RedisStore({
+          ...config.redisOptions,
+          logErrors: config.isDevelopment,
+        });
+        return {
+          session: {
+            secret: config.get('SESSION_SECRET'),
+            cookie: {
+              maxAge: 1000 * 60 * 60 * 24 * 7,
+            },
+            store,
+            resave: true,
+            saveUninitialized: false,
+          },
+        };
+      },
+    }),
+    AuthModule.register({
+      strategies: [SAMLStrategy, DevStrategy],
+    }),
     CourseModule,
     FacultyModule,
   ],
   controllers: [],
-  providers: [
-    {
-      inject: [ConfigService],
-      provide: Store,
-      useFactory: (config: ConfigService): Store => {
-        const RedisStore = ConnectRedis(session);
-
-        return new RedisStore({
-          ...config.redisOptions,
-          logErrors: config.isDevelopment,
-        });
-      },
-    },
-  ],
+  providers: [],
 })
 class AppModule implements NestModule {
   private readonly config: ConfigService;
@@ -52,7 +67,6 @@ class AppModule implements NestModule {
   }
 
   public configure(consumer: MiddlewareConsumer): void {
-    consumer.apply(SessionMiddleware).forRoutes('*');
     if (this.config.isDevelopment) {
       // eslint-disable-next-line
       const { devServer, hotServer } = require('./config/dev.middleware');
