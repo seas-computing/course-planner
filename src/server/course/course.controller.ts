@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards, Body, Inject } from '@nestjs/common';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -10,14 +10,19 @@ import {
 } from '@nestjs/swagger';
 import { RequireGroup } from 'server/auth/group.guard';
 import { GROUP } from 'common/constants';
+import { CreateCourse } from 'common/dto/courses/CreateCourse.dto';
+import { Authentication } from 'server/auth/authentication.guard';
 import { Course } from './course.entity';
-import { Authentication } from '../auth/authentication.guard';
+import { CourseService } from './course.service';
 
 @ApiUseTags('Course')
 @Controller('api/courses')
 @ApiUnauthorizedResponse({ description: 'Thrown if the user is not authenticated' })
 @UseGuards(Authentication, new RequireGroup(GROUP.ADMIN))
 export class CourseController {
+  @Inject(CourseService)
+  private readonly courseService: CourseService;
+
   @InjectRepository(Course)
   private readonly courseRepository: Repository<Course>;
 
@@ -32,5 +37,13 @@ export class CourseController {
     return this.courseRepository.find({
       relations: ['area'],
     });
+  }
+
+  public async create(
+    @Body() course: CreateCourse
+  ): Promise<ManageCourseResponseDTO> {
+    const [newCourse] = await this.courseService.save([course]);
+
+    return newCourse;
   }
 }

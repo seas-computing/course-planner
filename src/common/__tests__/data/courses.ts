@@ -1,5 +1,6 @@
 import { Course } from 'server/course/course.entity';
 import { TERM_PATTERN } from 'common/constants';
+import { CreateCourse } from 'common/dto/courses/CreateCourse.dto';
 
 /**
  * Empty instance of a [[Course]] entity with no properties set. Useful for
@@ -16,4 +17,8 @@ export const computerScienceCourse: Course = {
   prefix: 'CS',
   number: '050',
   termPattern: TERM_PATTERN.BOTH,
+};
+
+export const createCourseDtoExample: CreateCourse = {
+  ...computerScienceCourse as CreateCourse,
 };

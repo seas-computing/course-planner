@@ -16,13 +16,14 @@ export class CourseService {
   public async save(courses: DeepPartial<Course>[]): Promise<Course[]> {
     const semesters = await this.semesterRepository.find({});
 
-    const scheduledCourses = courses.map((course: Course): Course => ({
-      ...course,
-      instances: semesters.map((semester: Semester): CourseInstance => ({
-        ...new CourseInstance(),
-        semester,
-      })),
-    }));
+    const scheduledCourses = courses
+      .map((course: Course): DeepPartial<Course> => ({
+        ...course,
+        instances: semesters.map((semester: Semester): CourseInstance => ({
+          ...new CourseInstance(),
+          semester,
+        })),
+      }));
 
     return this.courseRepository.save(scheduledCourses);
   }

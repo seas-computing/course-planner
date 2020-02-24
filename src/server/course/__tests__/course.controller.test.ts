@@ -1,14 +1,19 @@
-import { strictEqual } from 'assert';
+import { strictEqual, deepStrictEqual } from 'assert';
 import { TestingModule, Test } from '@nestjs/testing';
 import { stub, SinonStub } from 'sinon';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Area } from '../../area/area.entity';
+import { emptyCourse, computerScienceCourse, createCourseDtoExample } from 'testData';
+import { Authentication } from 'server/auth/authentication.guard';
 import { CourseController } from '../course.controller';
 import { Course } from '../course.entity';
-import { Authentication } from '../../auth/authentication.guard';
+import { CourseService } from '../course.service';
 
 const mockCourseRepository = {
   find: stub(),
+};
+
+const mockCourseService = {
+  save: stub(),
 };
 
 describe('Course controller', function () {
@@ -20,6 +25,10 @@ describe('Course controller', function () {
         {
           provide: getRepositoryToken(Course),
           useValue: mockCourseRepository,
+        },
+        {
+          provide: CourseService,
+          useValue: mockCourseService,
         },
       ],
       controllers: [CourseController],
@@ -40,16 +49,36 @@ describe('Course controller', function () {
 
   describe('getAll', function () {
     it('returns all courses in the database', async function () {
-      const databaseCourses = Array(10).fill({
-        ...new Course(),
-        area: new Area(),
-      });
+      const databaseCourses = Array(10).fill(emptyCourse);
 
       mockCourseRepository.find.resolves(databaseCourses);
 
       const courses = await controller.getAll();
 
       strictEqual(courses.length, databaseCourses.length);
+    });
+  });
+
+  describe('create', function () {
+    it('creates a course', async function () {
+      mockCourseService.save.resolves([computerScienceCourse]);
+
+      await controller.create(createCourseDtoExample);
+
+      strictEqual(mockCourseService.save.callCount, 1);
+      strictEqual(mockCourseService.save.args[0].length, 1);
+      deepStrictEqual(
+        mockCourseService.save.args[0][0],
+        [computerScienceCourse]
+      );
+    });
+
+    it('returns the newly created course', async function () {
+      mockCourseService.save.resolves([computerScienceCourse]);
+
+      const createdCourse = await controller.create(createCourseDtoExample);
+
+      deepStrictEqual(createdCourse, computerScienceCourse);
     });
   });
 });
