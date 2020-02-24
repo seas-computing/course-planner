@@ -125,6 +125,14 @@ export class Course extends BaseEntity {
   public isSEAS: boolean = true;
 
   /**
+   * A concatenation of [[Course.prefix]] and [[Course.number]]
+   * @example `"CS 50"`
+   */
+  public get catalogNumber(): string {
+    return `${this.prefix} ${this.number}`;
+  }
+
+  /**
    * An occurance of a [[Course]] that takes place in a [[Semester]]. Over time
    * one course can have many scheduled [[CourseInstance]]s. This allows
    * courses to be more easily re-used and repeated over time.
