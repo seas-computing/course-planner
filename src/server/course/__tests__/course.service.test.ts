@@ -2,7 +2,8 @@ import { TestingModule, Test } from '@nestjs/testing';
 import { stub, SinonStub } from 'sinon';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { strictEqual } from 'assert';
-import { Semester, TERM } from 'server/semester/semester.entity';
+import { Semester } from 'server/semester/semester.entity';
+import { emptyCourse, spring, fall } from 'testData';
 import { CourseService } from '../course.service';
 import { Course } from '../course.entity';
 
@@ -49,10 +50,7 @@ describe('Course service', function () {
     });
 
     it('creates one new course for every object provided', async function () {
-      const coursesToCreate: Course[] = [
-        new Course(),
-        new Course(),
-      ];
+      const coursesToCreate = [emptyCourse, emptyCourse];
 
       await courseService.save(coursesToCreate);
 
@@ -63,20 +61,11 @@ describe('Course service', function () {
     });
 
     it('schedules one CourseInstance per semester in the database', async function () {
-      const semesters: Semester[] = [
-        {
-          term: TERM.SPRING,
-          academicYear: 2020,
-        } as Semester,
-        {
-          term: TERM.FALL,
-          academicYear: 2020,
-        } as Semester,
-      ];
+      const semesters = [fall, spring];
 
       mockSemesterRepository.find.resolves(semesters);
 
-      await courseService.save([new Course()]);
+      await courseService.save([emptyCourse]);
 
       strictEqual(
         mockCourseRespository.save.args[0][0][0].instances.length,
@@ -85,7 +74,7 @@ describe('Course service', function () {
     });
 
     it('returns the newly created courses', async function () {
-      const newCourses = [new Course()];
+      const newCourses = [emptyCourse];
 
       mockCourseRespository.save.resolves(newCourses);
 
