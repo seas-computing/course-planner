@@ -12,9 +12,14 @@ import { Course } from 'server/course/course.entity';
 import { CourseModule } from 'server/course/course.module';
 import { ConfigService } from 'server/config/config.service';
 import { regularUser, string, adminUser } from 'common/__tests__/data';
+import { Semester } from 'server/semester/semester.entity';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 const mockCourseRepository = {
+  find: stub(),
+};
+
+const mockSemesterRepository = {
   find: stub(),
 };
 
@@ -44,9 +49,15 @@ describe('Course API', function () {
     })
       .overrideProvider(ConfigService)
       .useValue(new ConfigService({ NODE_ENV: 'development' }))
+
       .overrideProvider(getRepositoryToken(Course))
       .useValue(mockCourseRepository)
+
+      .overrideProvider(getRepositoryToken(Semester))
+      .useValue(mockSemesterRepository)
+
       .compile();
+
     const nestApp = await moduleRef.createNestApplication()
       .init();
 
