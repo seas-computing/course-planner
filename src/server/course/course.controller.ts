@@ -1,4 +1,6 @@
-import { Controller, Get, UseGuards, Body, Inject } from '@nestjs/common';
+import {
+  Controller, Get, UseGuards, Body, Inject,
+} from '@nestjs/common';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
