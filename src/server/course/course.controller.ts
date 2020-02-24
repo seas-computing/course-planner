@@ -7,6 +7,7 @@ import {
   ApiOperation,
   ApiUnauthorizedResponse,
   ApiUseTags,
+  ApiForbiddenResponse,
 } from '@nestjs/swagger';
 import { RequireGroup } from 'server/auth/group.guard';
 import { GROUP } from 'common/constants';
@@ -17,7 +18,12 @@ import { CourseService } from './course.service';
 
 @ApiUseTags('Course')
 @Controller('api/courses')
-@ApiUnauthorizedResponse({ description: 'Thrown if the user is not authenticated' })
+@ApiForbiddenResponse({
+  description: 'The user is not authenticated',
+})
+@ApiUnauthorizedResponse({
+  description: 'The user is authenticated lacks the permissions to access this endpoint',
+})
 @UseGuards(Authentication, new RequireGroup(GROUP.ADMIN))
 export class CourseController {
   @Inject(CourseService)
