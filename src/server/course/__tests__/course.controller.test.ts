@@ -38,7 +38,7 @@ describe('Course controller', function () {
       });
   });
 
-  describe('index', function () {
+  describe('getAll', function () {
     it('returns all courses in the database', async function () {
       const databaseCourses = Array(10).fill({
         ...new Course(),
