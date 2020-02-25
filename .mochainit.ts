@@ -1,4 +1,4 @@
-import {restore} from 'sinon';
+import { restore } from 'sinon';
 
 before(function () {
   process.env.NODE_ENV = "testing";
