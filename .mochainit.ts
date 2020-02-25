@@ -1,3 +1,5 @@
+import {restore} from 'sinon';
+
 before(function () {
   process.env.NODE_ENV = "testing";
 });
@@ -7,3 +9,5 @@ after(function () {
     delete require.cache[key];
   })
 });
+
+afterEach(restore);
