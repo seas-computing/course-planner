@@ -42,8 +42,8 @@
     "codecov": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
     "docs": "typedoc",
     "lint": "eslint --ext=ts,tsx,js ./src",
-    "test": "TS_NODE_TRANSPILE_ONLY=true nyc mocha",
-    "test:watch": "TS_NODE_TRANSPILE_ONLY=true mocha --watch",
+    "test": "nyc mocha",
+    "test:watch": "mocha --watch",
     "typecheck": "tsc --noEmit",
     "start": "nodemon",
     "orm": "ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm"
