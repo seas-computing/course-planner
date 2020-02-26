@@ -169,7 +169,10 @@ export class Course extends BaseEntity {
   */
   @ManyToOne(
     (): ObjectType<Area> => Area,
-    ({ courses }): Course[] => courses
+    ({ courses }): Course[] => courses,
+    {
+      nullable: false,
+    }
   )
   public area: Area;
 }
