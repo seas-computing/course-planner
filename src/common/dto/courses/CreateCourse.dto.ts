@@ -1,6 +1,6 @@
 import { ApiModelProperty } from '@nestjs/swagger';
 import { TERM_PATTERN } from 'common/constants';
-import { CourseArea } from './ManageCourseResponse.dto';
+import { CourseArea } from './CourseArea.dto';
 
 /**
  * @module Server.DTOS.Courses
