@@ -143,6 +143,17 @@ describe('Course API', function () {
             ]
           );
         });
+        it('returns the newly created course', async function () {
+          authStub.resolves(adminUser);
+          mockSemesterRepository.find.resolves([]);
+          mockCourseRepository.save.resolves([computerScienceCourse]);
+
+          const response = await request(api)
+            .post('/api/courses')
+            .send(createCourseDtoExample);
+
+          deepStrictEqual(response.body, { ...createCourseDtoExample });
+        });
       });
       describe('User is not a member of the admin group', function () {
         it('is inaccessible to unauthorized users', async function () {
