@@ -69,7 +69,7 @@ describe('Course controller', function () {
       strictEqual(mockCourseService.save.args[0].length, 1);
       deepStrictEqual(
         mockCourseService.save.args[0][0],
-        [computerScienceCourse]
+        [createCourseDtoExample]
       );
     });
 

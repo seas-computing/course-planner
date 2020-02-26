@@ -3,7 +3,7 @@ import { SessionModule } from 'nestjs-session';
 import { stub, SinonStub } from 'sinon';
 import request from 'supertest';
 import { HttpStatus, HttpServer, ForbiddenException } from '@nestjs/common';
-import { strictEqual } from 'assert';
+import { strictEqual, deepStrictEqual } from 'assert';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { AUTH_MODE } from 'common/constants';
 import { ConfigModule } from 'server/config/config.module';
@@ -11,12 +11,13 @@ import { AuthModule } from 'server/auth/auth.module';
 import { Course } from 'server/course/course.entity';
 import { CourseModule } from 'server/course/course.module';
 import { ConfigService } from 'server/config/config.service';
-import { regularUser, string, adminUser } from 'common/__tests__/data';
+import { regularUser, string, adminUser, computerScienceCourse, createCourseDtoExample } from 'common/__tests__/data';
 import { Semester } from 'server/semester/semester.entity';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 const mockCourseRepository = {
   find: stub(),
+  save: stub(),
 };
 
 const mockSemesterRepository = {
@@ -70,7 +71,7 @@ describe('Course API', function () {
         sinonStub.reset();
       });
   });
-  describe('GET /', function () {
+  describe('GET /courses', function () {
     describe('User is not authenticated', function () {
       it('is inaccessible to unauthenticated users', async function () {
         authStub.rejects(new ForbiddenException());
@@ -105,6 +106,42 @@ describe('Course API', function () {
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.FORBIDDEN);
           strictEqual(mockCourseRepository.find.callCount, 0);
+        });
+      });
+    });
+  });
+
+  describe('POST /courses', function () {
+    describe('User is not authenticated', function () {
+      it('is inaccessible to unauthenticated users', async function () {
+        authStub.rejects(new ForbiddenException());
+
+        const response = await request(api).get('/api/courses');
+
+        strictEqual(response.ok, false);
+        strictEqual(response.status, HttpStatus.FORBIDDEN);
+        strictEqual(mockCourseRepository.find.callCount, 0);
+      });
+    });
+    describe('User is authenticated', function () {
+      describe('User is a member of the admin group', function () {
+        it('creates a single course', async function () {
+          authStub.resolves(adminUser);
+          mockSemesterRepository.find.resolves([]);
+          mockCourseRepository.save.resolves([computerScienceCourse]);
+
+          const response = await request(api)
+            .post('/api/courses')
+            .send(createCourseDtoExample);
+
+          strictEqual(response.status, HttpStatus.CREATED);
+          strictEqual(mockCourseRepository.save.callCount, 1);
+          deepStrictEqual(
+            mockCourseRepository.save.args[0][0],
+            [
+              { ...createCourseDtoExample, instances: [] },
+            ]
+          );
         });
       });
     });

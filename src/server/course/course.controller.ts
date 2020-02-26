@@ -1,5 +1,5 @@
 import {
-  Controller, Get, UseGuards, Body, Inject,
+  Controller, Get, UseGuards, Body, Inject, Post,
 } from '@nestjs/common';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -47,6 +47,9 @@ export class CourseController {
     });
   }
 
+  @Post('/')
+  @ApiOperation({ title: 'Create a new course' })
+  @ApiOkResponse({ type: ManageCourseResponseDTO })
   public async create(
     @Body() course: CreateCourse
   ): Promise<ManageCourseResponseDTO> {
