@@ -13,6 +13,10 @@ export const emptyCourse = new Course();
  * An example [[Course]] representing CS 50.
  */
 export const computerScienceCourse = Object.assign(new Course(), {
+  area: {
+    id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
+    name: 'CS',
+  },
   title: 'Introduction to Computer Science',
   prefix: 'CS',
   number: '050',
@@ -23,6 +27,10 @@ export const computerScienceCourse = Object.assign(new Course(), {
 export const createCourseDtoExample: CreateCourse = Object.assign(
   new Course(),
   {
+    area: {
+      id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
+      name: 'CS',
+    },
     title: 'Introduction to Computer Science',
     isSEAS: true,
     isUndergraduate: true,
@@ -30,5 +38,6 @@ export const createCourseDtoExample: CreateCourse = Object.assign(
     number: '050',
     termPattern: TERM_PATTERN.FALL,
     sameAs: '',
+    private: true,
   }
 );

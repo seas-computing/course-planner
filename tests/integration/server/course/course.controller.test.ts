@@ -3,9 +3,9 @@ import { SessionModule } from 'nestjs-session';
 import { stub, SinonStub } from 'sinon';
 import request from 'supertest';
 import { HttpStatus, HttpServer, ForbiddenException, UnauthorizedException } from '@nestjs/common';
-import { strictEqual, deepStrictEqual } from 'assert';
+import { strictEqual, deepStrictEqual, strict } from 'assert';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { AUTH_MODE } from 'common/constants';
+import { AUTH_MODE, TERM_PATTERN } from 'common/constants';
 import { ConfigModule } from 'server/config/config.module';
 import { AuthModule } from 'server/auth/auth.module';
 import { Course } from 'server/course/course.entity';
@@ -14,6 +14,8 @@ import { ConfigService } from 'server/config/config.service';
 import { regularUser, string, adminUser, computerScienceCourse, createCourseDtoExample } from 'common/__tests__/data';
 import { Semester } from 'server/semester/semester.entity';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
+import { CreateCourse } from 'common/dto/courses/CreateCourse.dto';
+import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 
 const mockCourseRepository = {
   find: stub(),
@@ -60,6 +62,7 @@ describe('Course API', function () {
       .compile();
 
     const nestApp = await moduleRef.createNestApplication()
+      .useGlobalPipes(new BadRequestExceptionPipe())
       .init();
 
     api = nestApp.getHttpServer();
@@ -153,6 +156,17 @@ describe('Course API', function () {
             .send(createCourseDtoExample);
 
           deepStrictEqual(response.body, { ...createCourseDtoExample });
+        });
+        it('reports validation errors', async function () {
+          authStub.resolves(adminUser);
+
+          const response = await request(api)
+            .post('/api/courses')
+            .send({ title: computerScienceCourse.title });
+
+          deepStrictEqual(response.ok, false);
+          deepStrictEqual(response.status, HttpStatus.BAD_REQUEST);
+          strictEqual(response.body.message.includes('prefix'), true);
         });
       });
       describe('User is not a member of the admin group', function () {
