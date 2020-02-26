@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SessionModule } from 'nestjs-session';
 import { stub, SinonStub } from 'sinon';
 import request from 'supertest';
-import { HttpStatus, HttpServer, ForbiddenException } from '@nestjs/common';
+import { HttpStatus, HttpServer, ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { strictEqual, deepStrictEqual } from 'assert';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { AUTH_MODE } from 'common/constants';
@@ -142,6 +142,19 @@ describe('Course API', function () {
               { ...createCourseDtoExample, instances: [] },
             ]
           );
+        });
+      });
+      describe('User is not a member of the admin group', function () {
+        it('is inaccessible to unauthorized users', async function () {
+          authStub.rejects(new UnauthorizedException());
+
+          const response = await request(api)
+            .post('/api/courses')
+            .send(createCourseDtoExample);
+
+          strictEqual(response.ok, false);
+          strictEqual(response.status, HttpStatus.UNAUTHORIZED);
+          strictEqual(mockCourseRepository.find.callCount, 0);
         });
       });
     });
