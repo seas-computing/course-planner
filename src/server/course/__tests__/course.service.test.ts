@@ -1,16 +1,21 @@
 import { TestingModule, Test } from '@nestjs/testing';
 import { stub, SinonStub } from 'sinon';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { strictEqual, fail, deepStrictEqual } from 'assert';
+import { strictEqual, fail, deepStrictEqual, strict } from 'assert';
 import { Semester } from 'server/semester/semester.entity';
 import {
-  emptyCourse,
   spring,
   fall,
   computerScienceCourse,
 } from 'testData';
+import { Area } from 'server/area/area.entity';
+import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { CourseService } from '../course.service';
 import { Course } from '../course.entity';
+
+const mockAreaRepository = {
+  findOneOrFail: stub(),
+};
 
 const mockCourseRespository = {
   save: stub(),
@@ -26,6 +31,10 @@ describe('Course service', function () {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CourseService,
+        {
+          provide: getRepositoryToken(Area),
+          useValue: mockAreaRepository,
+        },
         {
           provide: getRepositoryToken(Course),
           useValue: mockCourseRespository,
@@ -55,7 +64,7 @@ describe('Course service', function () {
     });
 
     it('creates a new course in the database', async function () {
-      await courseService.save(emptyCourse);
+      await courseService.save(computerScienceCourse);
 
       strictEqual(mockCourseRespository.save.callCount, 1);
     });
@@ -65,7 +74,7 @@ describe('Course service', function () {
 
       mockSemesterRepository.find.resolves(semesters);
 
-      await courseService.save(emptyCourse);
+      await courseService.save(computerScienceCourse);
 
       strictEqual(
         mockCourseRespository.save.args[0][0].instances.length,
@@ -74,11 +83,27 @@ describe('Course service', function () {
     });
 
     it('returns the newly created course', async function () {
-      mockCourseRespository.save.resolves(emptyCourse);
+      mockCourseRespository.save.resolves(computerScienceCourse);
 
-      const createdCourses = await courseService.save(emptyCourse);
+      const createdCourse = await courseService.save(computerScienceCourse);
 
-      deepStrictEqual(createdCourses, emptyCourse);
+      deepStrictEqual(createdCourse, computerScienceCourse);
+    });
+
+    it('requires that courses be created within valid areas', async function () {
+      mockAreaRepository.findOneOrFail.rejects(new EntityNotFoundError(Area, ''));
+
+      try {
+        await courseService.save(computerScienceCourse);
+        fail('No error thrown');
+      } catch (e) {
+        strictEqual(e instanceof EntityNotFoundError, true);
+        strictEqual(e.message.includes('Area'), true);
+        deepStrictEqual(
+          mockAreaRepository.findOneOrFail.args[0][0],
+          computerScienceCourse.area.id
+        );
+      }
     });
   });
 });

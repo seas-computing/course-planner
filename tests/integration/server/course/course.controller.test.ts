@@ -25,7 +25,12 @@ import {
 } from 'common/__tests__/data';
 import { Semester } from 'server/semester/semester.entity';
 import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
+import { Area } from 'server/area/area.entity';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
+
+const mockAreaRepository = {
+  findOneOrFail: stub(),
+};
 
 const mockCourseRepository = {
   find: stub(),
@@ -62,6 +67,9 @@ describe('Course API', function () {
     })
       .overrideProvider(ConfigService)
       .useValue(new ConfigService({ NODE_ENV: 'development' }))
+
+      .overrideProvider(getRepositoryToken(Area))
+      .useValue(mockAreaRepository)
 
       .overrideProvider(getRepositoryToken(Course))
       .useValue(mockCourseRepository)
