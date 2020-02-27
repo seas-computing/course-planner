@@ -1,8 +1,6 @@
 import { Course } from 'server/course/course.entity';
 import { TERM_PATTERN } from 'common/constants';
 import { CreateCourse } from 'common/dto/courses/CreateCourse.dto';
-import { Area } from 'server/area/area.entity';
-
 /**
  * Empty instance of a [[Course]] entity with no properties set. Useful for
  * testing that something of type `Course` was returned, or passed to a method

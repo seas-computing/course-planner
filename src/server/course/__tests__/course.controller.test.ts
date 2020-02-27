@@ -4,12 +4,12 @@ import { stub, SinonStub } from 'sinon';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { emptyCourse, computerScienceCourse, createCourseDtoExample } from 'testData';
 import { Authentication } from 'server/auth/authentication.guard';
-import { CourseController } from '../course.controller';
-import { Course } from '../course.entity';
-import { CourseService } from '../course.service';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { Area } from 'server/area/area.entity';
 import { NotFoundException } from '@nestjs/common';
+import { CourseController } from '../course.controller';
+import { Course } from '../course.entity';
+import { CourseService } from '../course.service';
 
 const mockCourseRepository = {
   find: stub(),

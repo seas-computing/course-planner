@@ -1,7 +1,11 @@
 import { TestingModule, Test } from '@nestjs/testing';
 import { stub, SinonStub } from 'sinon';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { strictEqual, fail, deepStrictEqual, strict } from 'assert';
+import {
+  strictEqual,
+  fail,
+  deepStrictEqual,
+} from 'assert';
 import { Semester } from 'server/semester/semester.entity';
 import {
   spring,

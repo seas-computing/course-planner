@@ -159,7 +159,7 @@ describe('Course API', function () {
           strictEqual(mockCourseRepository.save.callCount, 1);
           deepStrictEqual(
             mockCourseRepository.save.args[0][0],
-            { ...createCourseDtoExample, instances: [] },
+            { ...createCourseDtoExample, instances: [] }
           );
         });
         it('returns the newly created course', async function () {

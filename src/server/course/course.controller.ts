@@ -15,9 +15,9 @@ import { RequireGroup } from 'server/auth/group.guard';
 import { GROUP } from 'common/constants';
 import { CreateCourse } from 'common/dto/courses/CreateCourse.dto';
 import { Authentication } from 'server/auth/authentication.guard';
+import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { Course } from './course.entity';
 import { CourseService } from './course.service';
-import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 
 @ApiUseTags('Course')
 @Controller('api/courses')
