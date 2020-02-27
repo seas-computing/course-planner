@@ -1,10 +1,13 @@
 import { createContext, Context, Reducer } from 'react';
 import { AppMessage, MESSAGE_ACTION } from '../classes';
+
+type DispatchMessage = React.Dispatch<MessageReducerAction>;
+
 /**
  * Global message provider
  */
 
-export const MessageContext: Context<Function> = createContext(null);
+export const MessageContext: Context<DispatchMessage> = createContext(null);
 
 /**
  * handles queueing logic for the top-level app component
