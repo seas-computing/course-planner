@@ -1,5 +1,5 @@
 import {
-  Controller, Get, UseGuards, Body, Inject, Post,
+  Controller, Get, UseGuards, Body, Inject, Post, NotFoundException,
 } from '@nestjs/common';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -17,6 +17,7 @@ import { CreateCourse } from 'common/dto/courses/CreateCourse.dto';
 import { Authentication } from 'server/auth/authentication.guard';
 import { Course } from './course.entity';
 import { CourseService } from './course.service';
+import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 
 @ApiUseTags('Course')
 @Controller('api/courses')
@@ -53,6 +54,14 @@ export class CourseController {
   public async create(
     @Body() course: CreateCourse
   ): Promise<ManageCourseResponseDTO> {
-    return this.courseService.save(course);
+    try {
+      const newCourse = await this.courseService.save(course);
+
+      return newCourse;
+    } catch (e) {
+      if (e instanceof EntityNotFoundError) {
+        throw new NotFoundException('Unable to find course area in database');
+      }
+    }
   }
 }

@@ -1,4 +1,4 @@
-import { strictEqual, deepStrictEqual } from 'assert';
+import { strictEqual, deepStrictEqual, fail } from 'assert';
 import { TestingModule, Test } from '@nestjs/testing';
 import { stub, SinonStub } from 'sinon';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -7,6 +7,9 @@ import { Authentication } from 'server/auth/authentication.guard';
 import { CourseController } from '../course.controller';
 import { Course } from '../course.entity';
 import { CourseService } from '../course.service';
+import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
+import { Area } from 'server/area/area.entity';
+import { NotFoundException } from '@nestjs/common';
 
 const mockCourseRepository = {
   find: stub(),
@@ -79,6 +82,17 @@ describe('Course controller', function () {
       const createdCourse = await controller.create(createCourseDtoExample);
 
       deepStrictEqual(createdCourse, computerScienceCourse);
+    });
+    it('throws a NotFoundException if the course area does not exist', async function () {
+      mockCourseService.save.rejects(new EntityNotFoundError(Area, ''));
+
+      try {
+        await controller.create(createCourseDtoExample);
+        fail('No error thrown');
+      } catch (e) {
+        strictEqual(e instanceof NotFoundException, true);
+        strictEqual(e.response.message.includes('area'), true);
+      }
     });
   });
 });
