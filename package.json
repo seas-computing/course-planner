@@ -41,7 +41,7 @@
     "build": "webpack",
     "codecov": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
     "docs": "typedoc",
-    "lint": "eslint --ext=ts,tsx,js ./src",
+    "lint": "eslint --ext=ts,tsx,js ./src ./tests",
     "test": "nyc mocha",
     "test:watch": "mocha --watch",
     "typecheck": "tsc --noEmit",
