@@ -2,20 +2,30 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SessionModule } from 'nestjs-session';
 import { stub, SinonStub } from 'sinon';
 import request from 'supertest';
-import { HttpStatus, HttpServer, ForbiddenException, UnauthorizedException } from '@nestjs/common';
-import { strictEqual, deepStrictEqual, strict } from 'assert';
+import {
+  HttpStatus,
+  HttpServer,
+  ForbiddenException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { strictEqual, deepStrictEqual } from 'assert';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { AUTH_MODE, TERM_PATTERN } from 'common/constants';
+import { AUTH_MODE } from 'common/constants';
 import { ConfigModule } from 'server/config/config.module';
 import { AuthModule } from 'server/auth/auth.module';
 import { Course } from 'server/course/course.entity';
 import { CourseModule } from 'server/course/course.module';
 import { ConfigService } from 'server/config/config.service';
-import { regularUser, string, adminUser, computerScienceCourse, createCourseDtoExample } from 'common/__tests__/data';
+import {
+  regularUser,
+  string,
+  adminUser,
+  computerScienceCourse,
+  createCourseDtoExample,
+} from 'common/__tests__/data';
 import { Semester } from 'server/semester/semester.entity';
-import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
-import { CreateCourse } from 'common/dto/courses/CreateCourse.dto';
 import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
+import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 const mockCourseRepository = {
   find: stub(),
@@ -131,7 +141,7 @@ describe('Course API', function () {
         it('creates a single course', async function () {
           authStub.resolves(adminUser);
           mockSemesterRepository.find.resolves([]);
-          mockCourseRepository.save.resolves([computerScienceCourse]);
+          mockCourseRepository.save.resolves(computerScienceCourse);
 
           const response = await request(api)
             .post('/api/courses')
@@ -141,15 +151,13 @@ describe('Course API', function () {
           strictEqual(mockCourseRepository.save.callCount, 1);
           deepStrictEqual(
             mockCourseRepository.save.args[0][0],
-            [
-              { ...createCourseDtoExample, instances: [] },
-            ]
+            { ...createCourseDtoExample, instances: [] },
           );
         });
         it('returns the newly created course', async function () {
           authStub.resolves(adminUser);
           mockSemesterRepository.find.resolves([]);
-          mockCourseRepository.save.resolves([computerScienceCourse]);
+          mockCourseRepository.save.resolves(computerScienceCourse);
 
           const response = await request(api)
             .post('/api/courses')

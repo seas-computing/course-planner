@@ -1,9 +1,14 @@
 import { TestingModule, Test } from '@nestjs/testing';
 import { stub, SinonStub } from 'sinon';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { strictEqual } from 'assert';
+import { strictEqual, fail, deepStrictEqual } from 'assert';
 import { Semester } from 'server/semester/semester.entity';
-import { emptyCourse, spring, fall } from 'testData';
+import {
+  emptyCourse,
+  spring,
+  fall,
+  computerScienceCourse,
+} from 'testData';
 import { CourseService } from '../course.service';
 import { Course } from '../course.entity';
 
@@ -49,15 +54,10 @@ describe('Course service', function () {
       mockSemesterRepository.find.resolves([]);
     });
 
-    it('creates one new course for every object provided', async function () {
-      const coursesToCreate = [emptyCourse, emptyCourse];
+    it('creates a new course in the database', async function () {
+      await courseService.save(emptyCourse);
 
-      await courseService.save(coursesToCreate);
-
-      strictEqual(
-        mockCourseRespository.save.args[0][0].length,
-        coursesToCreate.length
-      );
+      strictEqual(mockCourseRespository.save.callCount, 1);
     });
 
     it('schedules one CourseInstance per semester in the database', async function () {
@@ -65,22 +65,20 @@ describe('Course service', function () {
 
       mockSemesterRepository.find.resolves(semesters);
 
-      await courseService.save([emptyCourse]);
+      await courseService.save(emptyCourse);
 
       strictEqual(
-        mockCourseRespository.save.args[0][0][0].instances.length,
-        2
+        mockCourseRespository.save.args[0][0].instances.length,
+        semesters.length
       );
     });
 
-    it('returns the newly created courses', async function () {
-      const newCourses = [emptyCourse];
+    it('returns the newly created course', async function () {
+      mockCourseRespository.save.resolves(emptyCourse);
 
-      mockCourseRespository.save.resolves(newCourses);
+      const createdCourses = await courseService.save(emptyCourse);
 
-      const createdCourses = await courseService.save(newCourses);
-
-      strictEqual(newCourses.length, createdCourses.length);
+      deepStrictEqual(createdCourses, emptyCourse);
     });
   });
 });

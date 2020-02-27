@@ -61,7 +61,7 @@ describe('Course controller', function () {
 
   describe('create', function () {
     it('creates a course', async function () {
-      mockCourseService.save.resolves([computerScienceCourse]);
+      mockCourseService.save.resolves(computerScienceCourse);
 
       await controller.create(createCourseDtoExample);
 
@@ -69,12 +69,12 @@ describe('Course controller', function () {
       strictEqual(mockCourseService.save.args[0].length, 1);
       deepStrictEqual(
         mockCourseService.save.args[0][0],
-        [createCourseDtoExample]
+        createCourseDtoExample
       );
     });
 
     it('returns the newly created course', async function () {
-      mockCourseService.save.resolves([computerScienceCourse]);
+      mockCourseService.save.resolves(computerScienceCourse);
 
       const createdCourse = await controller.create(createCourseDtoExample);
 

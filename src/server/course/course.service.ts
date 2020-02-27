@@ -1,9 +1,9 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeepPartial } from 'typeorm';
 import { Injectable } from '@nestjs/common';
+import { Semester } from 'server/semester/semester.entity';
 import { Course } from './course.entity';
 import { CourseInstance } from '../courseInstance/courseinstance.entity';
-import { Semester } from '../semester/semester.entity';
 
 @Injectable()
 export class CourseService {
@@ -13,18 +13,15 @@ export class CourseService {
   @InjectRepository(Course)
   private courseRepository: Repository<Course>;
 
-  public async save(courses: DeepPartial<Course>[]): Promise<Course[]> {
+  public async save(course: DeepPartial<Course>): Promise<Course> {
     const semesters = await this.semesterRepository.find({});
 
-    const scheduledCourses = courses
-      .map((course: Course): DeepPartial<Course> => ({
-        ...course,
-        instances: semesters.map((semester: Semester): CourseInstance => ({
-          ...new CourseInstance(),
-          semester,
-        })),
-      }));
-
-    return this.courseRepository.save(scheduledCourses);
+    return this.courseRepository.save({
+      ...course,
+      instances: semesters.map((semester: Semester): CourseInstance => ({
+        ...new CourseInstance(),
+        semester,
+      })),
+    });
   }
 }

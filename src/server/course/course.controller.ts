@@ -53,8 +53,6 @@ export class CourseController {
   public async create(
     @Body() course: CreateCourse
   ): Promise<ManageCourseResponseDTO> {
-    const [newCourse] = await this.courseService.save([course]);
-
-    return newCourse;
+    return this.courseService.save(course);
   }
 }
