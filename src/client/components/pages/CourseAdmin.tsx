@@ -1,5 +1,9 @@
 import React, {
-  FunctionComponent, ReactElement,
+  FunctionComponent,
+  ReactElement,
+  useContext,
+  useState,
+  useEffect,
 } from 'react';
 import {
   Table,
@@ -9,44 +13,75 @@ import {
   TableBody,
   TableCell,
 } from 'mark-one';
+import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
+import request, { AxiosPromise } from 'axios';
+import { MESSAGE_TYPE, AppMessage, MESSAGE_ACTION } from 'client/classes';
+import { MessageContext } from 'client/context';
+import { TableRowProps } from 'mark-one/lib/Tables/TableRow';
 
 /**
  * The component represents the Course Admin page, which will be rendered at
  * route '/course-admin'
  */
-const CourseAdmin: FunctionComponent = (): ReactElement => (
-  <div>
-    <Table>
-      <TableHead>
-        <TableRow isStriped>
-          <TableHeadingCell scope="col">Course Prefix</TableHeadingCell>
-          <TableHeadingCell scope="col">Course</TableHeadingCell>
-          <TableHeadingCell scope="col">Title</TableHeadingCell>
-          <TableHeadingCell scope="col">Edit</TableHeadingCell>
-        </TableRow>
-      </TableHead>
-      <TableBody isScrollable>
-        <TableRow>
-          <TableCell>ACS</TableCell>
-          <TableCell>AC207</TableCell>
-          <TableCell>Computational Foundations of Data Science</TableCell>
-          <TableCell>Edit</TableCell>
-        </TableRow>
-        <TableRow isStriped>
-          <TableCell>ACS</TableCell>
-          <TableCell>AC209</TableCell>
-          <TableCell>Data Science</TableCell>
-          <TableCell>Edit</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>ACS</TableCell>
-          <TableCell>AC209a</TableCell>
-          <TableCell>Data Science 1: Intro to Data Science</TableCell>
-          <TableCell>Edit</TableCell>
-        </TableRow>
-      </TableBody>
-    </Table>
-  </div>
-);
+
+export function getAllCourses(): AxiosPromise<ManageCourseResponseDTO[]> {
+  return request.get('/api/courses/');
+}
+
+// async function getAllCourses(): Promise<ManageCourseResponseDTO[]> {
+//   const response = await fetch('api/courses/');
+//   const courses = await response.json() as ManageCourseResponseDTO[];
+//   return courses;
+// }
+
+const CourseAdmin: FunctionComponent = function (): ReactElement {
+  const [currentCourses, setCourses] = useState(
+    [] as ManageCourseResponseDTO[]
+  );
+
+  const dispatchMessage = useContext(MessageContext);
+
+  useEffect((): void => {
+    getAllCourses()
+      .then(({ data: courses }): ManageCourseResponseDTO[] => {
+        setCourses(courses);
+        return courses;
+      })
+      .catch((): void => {
+        dispatchMessage({
+          message: new AppMessage(
+            'Unable to get course data from server. If the problem persists, contact SEAS Computing',
+            MESSAGE_TYPE.ERROR
+          ),
+          type: MESSAGE_ACTION.PUSH,
+        });
+      });
+  }, []);
+
+  return (
+    <div>
+      <Table>
+        <TableHead>
+          <TableRow isStriped>
+            <TableHeadingCell scope="col">Course Prefix</TableHeadingCell>
+            <TableHeadingCell scope="col">Course</TableHeadingCell>
+            <TableHeadingCell scope="col">Title</TableHeadingCell>
+            <TableHeadingCell scope="col">Edit</TableHeadingCell>
+          </TableRow>
+        </TableHead>
+        <TableBody isScrollable>
+          {currentCourses.map((course, i): ReactElement<TableRowProps> => (
+            <TableRow isStriped={i % 2 === 1}>
+              <TableCell>{course.area.name}</TableCell>
+              <TableCell>{course.catalogNumber}</TableCell>
+              <TableCell>{course.title}</TableCell>
+              <TableCell>Edit</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+};
 
 export default CourseAdmin;
