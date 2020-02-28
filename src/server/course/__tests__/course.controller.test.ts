@@ -2,7 +2,7 @@ import { strictEqual, deepStrictEqual, fail } from 'assert';
 import { TestingModule, Test } from '@nestjs/testing';
 import { stub, SinonStub } from 'sinon';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { emptyCourse, computerScienceCourse, createCourseDtoExample } from 'testData';
+import { emptyCourse, computerScienceCourse, createCourseDtoExample, string } from 'testData';
 import { Authentication } from 'server/auth/authentication.guard';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { Area } from 'server/area/area.entity';
@@ -92,6 +92,17 @@ describe('Course controller', function () {
       } catch (e) {
         strictEqual(e instanceof NotFoundException, true);
         strictEqual(e.response.message.includes('area'), true);
+      }
+    });
+    it('re-throws any exceptions other than NotFoundException ', async function () {
+      mockCourseService.save.rejects(new Error(string));
+
+      try {
+        await controller.create(createCourseDtoExample);
+        fail('No error thrown');
+      } catch (e) {
+        strictEqual(e instanceof NotFoundException, false);
+        strictEqual(e.message.includes('area'), false);
       }
     });
   });

@@ -64,6 +64,8 @@ export class CourseController {
     } catch (e) {
       if (e instanceof EntityNotFoundError) {
         throw new NotFoundException('Unable to find course area in database');
+      } else {
+        throw e;
       }
     }
   }
