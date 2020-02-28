@@ -25,7 +25,7 @@ import { CourseService } from './course.service';
   description: 'The user is not authenticated',
 })
 @ApiUnauthorizedResponse({
-  description: 'The user is authenticated lacks the permissions to access this endpoint',
+  description: 'The user is authenticated, but lacks the permissions to access this endpoint',
 })
 @UseGuards(Authentication, new RequireGroup(GROUP.ADMIN))
 export class CourseController {
