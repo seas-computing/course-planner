@@ -87,6 +87,9 @@ describe('AuthModule', function () {
           .useValue(new ConfigService({ NODE_ENV: 'testing' }))
           .compile();
       });
+      afterEach(function () {
+        ppspy.restore();
+      });
       it('Should default to config.authMode', function () {
         const {
           defaultStrategy: passedStrategy,
