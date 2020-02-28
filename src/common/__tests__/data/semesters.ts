@@ -1,12 +1,12 @@
 import { Semester, TERM } from 'server/semester/semester.entity';
 
 /**
- * The first [[Semester]] of academic year 2019. This [[Semester]] is part of
+ * The first [[Semester]] of academic year 2020. This [[Semester]] is part of
  * the same academic year as [[spring]]
  */
 export const fall: Semester = {
   id: '',
-  academicYear: 2019,
+  academicYear: 2020,
   term: TERM.FALL,
   absences: [],
   courseInstances: [],
@@ -16,7 +16,7 @@ export const fall: Semester = {
 };
 
 /**
- * The second [[Semester]] of academic year 2019. This [[Semester]] is part of
+ * The second [[Semester]] of academic year 2020. This [[Semester]] is part of
  * the same academic year as [[spring]]
  */
 export const spring: Semester = {
