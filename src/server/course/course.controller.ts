@@ -50,7 +50,10 @@ export class CourseController {
 
   @Post('/')
   @ApiOperation({ title: 'Create a new course' })
-  @ApiOkResponse({ type: ManageCourseResponseDTO })
+  @ApiOkResponse({
+    type: ManageCourseResponseDTO,
+    description: 'The newly created course',
+  })
   public async create(
     @Body() course: CreateCourse
   ): Promise<ManageCourseResponseDTO> {
