@@ -2,7 +2,12 @@ import { strictEqual, deepStrictEqual, fail } from 'assert';
 import { TestingModule, Test } from '@nestjs/testing';
 import { stub, SinonStub } from 'sinon';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { emptyCourse, computerScienceCourse, createCourseDtoExample, string } from 'testData';
+import {
+  emptyCourse,
+  computerScienceCourse,
+  createCourseDtoExample,
+  string,
+} from 'testData';
 import { Authentication } from 'server/auth/authentication.guard';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { Area } from 'server/area/area.entity';
