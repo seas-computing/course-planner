@@ -44,7 +44,7 @@ const ColdApp: SFC = (): ReactElement => {
    * Hook for maintaining the currently selected user
    * */
 
-  const [currentUser, setUser] = useState();
+  const [currentUser, setUser] = useState<UserResponse | null>(null);
 
   /**
    * Set up the local reducer for maintaining the current app-wide message
