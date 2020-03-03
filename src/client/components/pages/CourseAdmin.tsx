@@ -12,12 +12,16 @@ import {
   TableHeadingCell,
   TableBody,
   TableCell,
+  BorderlessButton,
+  VARIANT,
 } from 'mark-one';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import request, { AxiosPromise } from 'axios';
 import { MESSAGE_TYPE, AppMessage, MESSAGE_ACTION } from 'client/classes';
 import { MessageContext } from 'client/context';
 import { TableRowProps } from 'mark-one/lib/Tables/TableRow';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit } from '@fortawesome/free-solid-svg-icons';
 
 /**
  * The component represents the Course Admin page, which will be rendered at
@@ -27,12 +31,6 @@ import { TableRowProps } from 'mark-one/lib/Tables/TableRow';
 export function getAllCourses(): AxiosPromise<ManageCourseResponseDTO[]> {
   return request.get('/api/courses/');
 }
-
-// async function getAllCourses(): Promise<ManageCourseResponseDTO[]> {
-//   const response = await fetch('api/courses/');
-//   const courses = await response.json() as ManageCourseResponseDTO[];
-//   return courses;
-// }
 
 const CourseAdmin: FunctionComponent = function (): ReactElement {
   const [currentCourses, setCourses] = useState(
@@ -75,7 +73,16 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
               <TableCell>{course.area.name}</TableCell>
               <TableCell>{course.catalogNumber}</TableCell>
               <TableCell>{course.title}</TableCell>
-              <TableCell>Edit</TableCell>
+              <TableCell>
+                <BorderlessButton
+                  variant={VARIANT.INFO}
+                  // Edit button functionality will be added in separate ticket
+                  // Set onClick property to an empty function as a placeholder
+                  onClick={(): void => {}}
+                >
+                  <FontAwesomeIcon icon={faEdit} />
+                </BorderlessButton>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
