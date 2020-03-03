@@ -21,11 +21,13 @@ import {
   TabList,
   TabListItem,
   PageBody,
+  Logo,
 } from 'mark-one';
 import { getCurrentUser } from 'client/api';
 import { UserResponse } from 'common/dto/users/userResponse.dto';
 import { Message } from './layout';
 import NoMatch from './pages/NoMatch';
+import logo from '../img/seas-logo.svg';
 
 /**
  * The primary app component. Fetches the current user from the server when it
@@ -87,7 +89,8 @@ const ColdApp: SFC = (): ReactElement => {
         <UserContext.Provider value={currentUser}>
           <MessageContext.Provider value={dispatchMessage}>
             <div className="app-content">
-              <Header>
+              <Header justify="left">
+                <Logo href="/" image={logo}>SEAS Logo</Logo>
                 Course Planning
                 <TabList>
                   <TabListItem>
