@@ -1,19 +1,6 @@
 import { ApiModelProperty } from '@nestjs/swagger';
 import { TERM_PATTERN } from 'common/constants';
-
-export abstract class CourseArea {
-  @ApiModelProperty({
-    type: 'string',
-    example: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
-  })
-  public id: string;
-
-  @ApiModelProperty({
-    type: 'string',
-    example: 'ACS',
-  })
-  public name: string;
-}
+import { CourseArea } from './CourseArea.dto';
 
 export abstract class ManageCourseResponseDTO {
   @ApiModelProperty({

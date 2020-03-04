@@ -11,5 +11,5 @@
   "clean": true,
   "instrument": true,
   "sourceMap": true,
-  "reporter": "text"
+  "reporter": ["text", "lcov"]
 }
