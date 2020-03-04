@@ -102,6 +102,8 @@ const ColdApp: SFC = (): ReactElement => {
               <Header justify="left">
                 <Logo href="/" image={logo}>SEAS Logo</Logo>
                 <Title>Course Planning</Title>
+              </Header>
+              <nav>
                 <TabList>
                   <TabListItem>
                     <Link to="/courses">Courses</Link>
@@ -123,7 +125,7 @@ const ColdApp: SFC = (): ReactElement => {
                     <Link to="/four-year-plan">4 Year Plan</Link>
                   </TabListItem>
                 </TabList>
-              </Header>
+              </nav>
               <PageBody>
                 {currentMessage
               && (
