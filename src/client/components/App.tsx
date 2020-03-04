@@ -25,6 +25,7 @@ import {
 } from 'mark-one';
 import { getCurrentUser } from 'client/api';
 import { UserResponse } from 'common/dto/users/userResponse.dto';
+import styled from 'styled-components';
 import { Message } from './layout';
 import NoMatch from './pages/NoMatch';
 import logo from '../img/seas-logo.svg';
@@ -83,6 +84,15 @@ const ColdApp: SFC = (): ReactElement => {
       });
   }, []);
 
+  const Title = styled.h1`
+  font-size: ${({ theme }): string => theme.font.title.size};
+  font-family: ${({ theme }): string => theme.font.title.family};
+  font-weight: ${({ theme }): string => theme.font.title.weight};
+  color: ${({ theme }): string => theme.color.text.medium};
+  line-height: 2;
+  margin-left: ${({ theme }): string => theme.ws.large};
+  `;
+
   return (
     <div className="app">
       <MarkOneWrapper>
@@ -91,7 +101,7 @@ const ColdApp: SFC = (): ReactElement => {
             <div className="app-content">
               <Header justify="left">
                 <Logo href="/" image={logo}>SEAS Logo</Logo>
-                Course Planning
+                <Title>Course Planning</Title>
                 <TabList>
                   <TabListItem>
                     <Link to="/courses">Courses</Link>
