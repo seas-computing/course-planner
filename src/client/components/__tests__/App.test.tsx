@@ -75,5 +75,16 @@ describe('App', function () {
         getByText('404', { exact: false })
       ));
     });
+    it('renders the CourseAdmin component when URL matches the course admin URL', function () {
+      const url = '/course-admin';
+      const { getByText } = render(
+        <MemoryRouter initialEntries={[url]}>
+          <App />
+        </MemoryRouter>
+      );
+      return waitForElement(() => (
+        getByText('Course Prefix', { exact: false })
+      ));
+    });
   });
 });
