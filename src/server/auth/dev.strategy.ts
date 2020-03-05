@@ -1,7 +1,7 @@
 import { Strategy } from 'passport-custom';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
-import { AUTH_MODE } from 'common/constants';
+import { AUTH_MODE, GROUP } from 'common/constants';
 import { Request } from 'express';
 import { User } from '../user/user.entity';
 
@@ -17,6 +17,7 @@ class DevStrategy extends PassportStrategy(Strategy, AUTH_MODE.DEV) {
       firstName: 'Test',
       lastName: 'User',
       email: 'noreply@seas.harvard.edu',
+      groups: [GROUP.ADMIN],
     });
     return req;
   }
