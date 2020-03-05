@@ -18,10 +18,11 @@ module.exports = {
   file: '.mochainit.ts',
   recursive: true,
   require: [
-    'ignore-styles',
-    'ts-node/register/type-check',
+    'ts-node/register',
     'raf/polyfill',
     'tsconfig-paths/register',
+    'jsdom-global/register',
+    'ignore-styles',
   ],
   extension: ['ts', 'tsx', 'js'],
   spec: specGlobs.length > 0
