@@ -76,7 +76,6 @@ export default class MockDB {
     if (this.state === CONTAINER_STATE.RUNNING) {
       throw new Error(`Container "${this.name}" is already running.`);
     }
-    console.log('Creating database container');
     this.container = spawn(
       'docker',
       [
@@ -119,7 +118,6 @@ export default class MockDB {
   }
 
   public async stop(): Promise<void> {
-    console.log('stop called');
     if (this.state === CONTAINER_STATE.DEAD) {
       return;
     }
@@ -133,7 +131,6 @@ export default class MockDB {
           this.name,
         ].join(' ')
       );
-      console.log('destroyed');
       this.state = CONTAINER_STATE.DEAD;
       return;
     } catch ({ stderr }) {
