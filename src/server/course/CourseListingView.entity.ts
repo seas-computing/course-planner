@@ -14,7 +14,7 @@ import { CourseInstanceListingView } from 'server/courseInstance/courseInstanceL
   SelectQueryBuilder<Course> => connection.createQueryBuilder()
     .select('c.id', 'id')
     .addSelect('a.name', 'area')
-    .addSelect('c."isUndergraduate"', 'undergraduate')
+    .addSelect('c."isUndergraduate"', 'isUndergraduate')
     .addSelect("CONCAT_WS(' ', c.prefix, c.number)", 'catalogNumber')
     .addSelect('c."sameAs"', 'sameAs')
     .addSelect('c."isSEAS"', 'isSEAS')
@@ -31,7 +31,7 @@ export class CourseListingView {
   public area: string;
 
   @ViewColumn()
-  public undergraduate: boolean;
+  public isUndergraduate: boolean;
 
   @ViewColumn()
   public catalogNumber: string;

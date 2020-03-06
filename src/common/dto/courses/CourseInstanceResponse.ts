@@ -106,7 +106,7 @@ export default abstract class CourseInstanceResponseDTO {
     type: 'boolean',
     example: false,
   })
-  public undergraduate: boolean;
+  public isUndergraduate: boolean;
 
   @ApiModelProperty({
     type: 'string',
