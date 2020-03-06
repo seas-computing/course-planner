@@ -23,7 +23,7 @@ import { OFFERED } from '../../common/constants';
     .addSelect('ci."preEnrollment"', 'preEnrollment')
     .addSelect('ci."studyCardEnrollment"', 'studyCardEnrollment')
     .addSelect('ci."actualEnrollment"', 'actualEnrollment')
-    .addSelect('s."academicYear"', 'academicYear')
+    .addSelect('s."academicYear"', 'calendarYear')
     .addSelect('s.term', 'term')
     .leftJoin(Semester, 's', 's.id = ci."semesterId"')
     .from(CourseInstance, 'ci'),
@@ -33,7 +33,7 @@ export class CourseInstanceListingView {
   public id: string;
 
   @ViewColumn()
-  public academicYear: number;
+  public calendarYear: number;
 
   @ViewColumn()
   public offered: OFFERED;
