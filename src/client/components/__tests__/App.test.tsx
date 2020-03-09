@@ -83,7 +83,7 @@ describe('App', function () {
         </MemoryRouter>
       );
       return waitForElement(() => (
-        getByText('Course Prefix', { exact: false })
+        getByText('Course Prefix')
       ));
     });
   });
