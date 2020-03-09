@@ -207,6 +207,17 @@ describe('Course API', function () {
   });
 
   describe('PUT /courses/:id', function () {
+    describe('User is not authenticated', function () {
+      it('is inaccessible to unauthenticated users', async function () {
+        authStub.rejects(new ForbiddenException());
+
+        const response = await request(api).get('/api/courses');
+
+        strictEqual(response.ok, false);
+        strictEqual(response.status, HttpStatus.FORBIDDEN);
+        strictEqual(mockCourseRepository.find.callCount, 0);
+      });
+    });
     describe('User is authenticated', function () {
       describe('User is not a member of the admin group', function () {
         it('is inaccessible to unauthorized users', async function () {
