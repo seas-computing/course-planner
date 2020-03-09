@@ -56,3 +56,18 @@ export const manageCourseResponseExample: ManageCourseResponseDTO = {
   sameAs: '',
   private: true,
 };
+
+export const anotherManageCourseResponseExample: ManageCourseResponseDTO = {
+  id: 'q2je1111-21fd-23ht-z924-h25990671iw6',
+  area: {
+    id: 'b51adw12-4g10-2z0a-7871-k2041052g42x',
+    name: 'AP',
+  },
+  title: 'Introduction to Physics',
+  isSEAS: true,
+  isUndergraduate: true,
+  catalogNumber: 'AP 101',
+  termPattern: TERM_PATTERN.SPRING,
+  sameAs: '',
+  private: true,
+};
