@@ -1,5 +1,5 @@
 import {
-  Controller, Get, UseGuards, Body, Inject, Post, NotFoundException,
+  Controller, Get, UseGuards, Body, Inject, Post, NotFoundException, Put,
 } from '@nestjs/common';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -79,5 +79,9 @@ export class CourseController {
         throw e;
       }
     }
+  }
+
+  @Put(':id')
+  public async update(): Promise<void> {
   }
 }

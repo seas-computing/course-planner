@@ -205,4 +205,21 @@ describe('Course API', function () {
       });
     });
   });
+
+  describe('PUT /courses/:id', function () {
+    describe('User is authenticated', function () {
+      describe('User is not a member of the admin group', function () {
+        it('is inaccessible to unauthorized users', async function () {
+          authStub.rejects(new UnauthorizedException());
+
+          const response = await request(api)
+            .put(`/api/courses/${computerScienceCourse.id}`);
+
+          strictEqual(response.ok, false);
+          strictEqual(response.status, HttpStatus.UNAUTHORIZED);
+          strictEqual(mockCourseRepository.find.callCount, 0);
+        });
+      });
+    });
+  });
 });
