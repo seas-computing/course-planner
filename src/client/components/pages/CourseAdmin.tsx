@@ -6,6 +6,7 @@ import React, {
   useEffect,
 } from 'react';
 import {
+  BaseTheme,
   Table,
   TableHead,
   TableRow,
@@ -15,6 +16,7 @@ import {
   BorderlessButton,
   VARIANT,
 } from 'mark-one';
+import { ThemeContext } from 'styled-components';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import request, { AxiosPromise } from 'axios';
 import { MESSAGE_TYPE, AppMessage, MESSAGE_ACTION } from 'client/classes';
@@ -56,6 +58,8 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
       });
   }, []);
 
+  const theme: BaseTheme = useContext(ThemeContext);
+
   return (
     <div>
       <Table>
@@ -70,7 +74,14 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
         <TableBody isScrollable>
           {currentCourses.map((course, i): ReactElement<TableRowProps> => (
             <TableRow isStriped={i % 2 === 1}>
-              <TableCell>{course.area.name}</TableCell>
+              <TableCell
+                backgroundColor={
+                  theme
+                    .color
+                    .area[course.area.name.toLowerCase()]}
+              >
+                {course.area.name}
+              </TableCell>
               <TableCell>{course.catalogNumber}</TableCell>
               <TableCell>{course.title}</TableCell>
               <TableCell>
