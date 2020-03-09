@@ -18,21 +18,17 @@ import {
 } from 'mark-one';
 import { ThemeContext } from 'styled-components';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
-import request, { AxiosPromise } from 'axios';
 import { MESSAGE_TYPE, AppMessage, MESSAGE_ACTION } from 'client/classes';
 import { MessageContext } from 'client/context';
 import { TableRowProps } from 'mark-one/lib/Tables/TableRow';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
+import { getAllCourses } from '../../api/courses';
 
 /**
  * The component represents the Course Admin page, which will be rendered at
  * route '/course-admin'
  */
-
-export function getAllCourses(): AxiosPromise<ManageCourseResponseDTO[]> {
-  return request.get('/api/courses/');
-}
 
 const CourseAdmin: FunctionComponent = function (): ReactElement {
   const [currentCourses, setCourses] = useState(
@@ -61,7 +57,7 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
   const theme: BaseTheme = useContext(ThemeContext);
 
   return (
-    <div>
+    <div className="course-admin-table">
       <Table>
         <TableHead>
           <TableRow isStriped>
