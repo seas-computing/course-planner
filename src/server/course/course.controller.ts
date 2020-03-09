@@ -64,8 +64,10 @@ export class CourseController {
   ): Promise<ManageCourseResponseDTO> {
     try {
       const newCourse = await this.courseService.save(course);
-
-      return newCourse;
+      return {
+        ...newCourse,
+        catalogNumber: `${newCourse.prefix} ${newCourse.number}`,
+      };
     } catch (e) {
       if (e instanceof EntityNotFoundError) {
         throw new NotFoundException('Unable to find course area in database');

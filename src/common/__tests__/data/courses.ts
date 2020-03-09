@@ -18,9 +18,10 @@ export const computerScienceCourse = Object.assign(new Course(), {
   title: 'Introduction to Computer Science',
   prefix: 'CS',
   number: '050',
+  catalogNumber: 'CS 050',
   termPattern: TERM_PATTERN.FALL,
   isUndergraduate: true,
-} as Course);
+});
 
 export const createCourseDtoExample: CreateCourse = Object.assign(
   new Course(),
@@ -34,6 +35,7 @@ export const createCourseDtoExample: CreateCourse = Object.assign(
     isUndergraduate: true,
     prefix: 'CS',
     number: '050',
+    catalogNumber: 'CS 050',
     termPattern: TERM_PATTERN.FALL,
     sameAs: '',
     private: true,
