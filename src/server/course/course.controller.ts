@@ -63,10 +63,14 @@ export class CourseController {
     @Body() course: CreateCourse
   ): Promise<ManageCourseResponseDTO> {
     try {
-      const newCourse = await this.courseService.save(course);
+      const {
+        number,
+        prefix,
+        ...newCourse
+      } = await this.courseService.save(course);
       return {
         ...newCourse,
-        catalogNumber: `${newCourse.prefix} ${newCourse.number}`,
+        catalogNumber: `${prefix} ${number}`,
       };
     } catch (e) {
       if (e instanceof EntityNotFoundError) {

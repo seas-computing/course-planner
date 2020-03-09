@@ -43,4 +43,10 @@ export abstract class ManageCourseResponseDTO {
     example: 'AC 227',
   })
   public sameAs?: string;
+
+  @ApiModelProperty({
+    type: 'boolean',
+    example: false,
+  })
+  public private: boolean;
 }
