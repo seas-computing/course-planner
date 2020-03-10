@@ -39,7 +39,7 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
 
   useEffect((): void => {
     getAllCourses()
-      .then(({ data: courses }): ManageCourseResponseDTO[] => {
+      .then((courses): ManageCourseResponseDTO[] => {
         setCourses(courses);
         return courses;
       })
