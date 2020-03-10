@@ -7,11 +7,10 @@ import request, {
 } from 'axios';
 import {
   manageCourseResponseExample,
-  anotherManageCourseResponseExample,
 } from 'testData';
 import * as api from 'client/api';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
-import { strictEqual } from 'assert';
+import { strictEqual, deepStrictEqual } from 'assert';
 
 describe('Course Admin API', function () {
   let result: ManageCourseResponseDTO[];
@@ -19,24 +18,29 @@ describe('Course Admin API', function () {
   describe('GET', function () {
     beforeEach(async function () {
       getStub = stub(request, 'get');
-      result = await api.getAllCourses();
     });
     afterEach(function () {
       getStub.restore();
     });
     describe('gets all courses', function () {
       context('when data fetch succeeds', function () {
-        beforeEach(function () {
+        beforeEach(async function () {
           getStub.resolves({
             data: [
               manageCourseResponseExample,
-              anotherManageCourseResponseExample,
             ],
           } as AxiosResponse<ManageCourseResponseDTO[]>);
+          result = await api.getAllCourses();
         });
         it('should call getAllCourses', function () {
-          getStub();
           strictEqual(getStub.callCount, 1);
+        });
+        it('should request /api/courses/', function () {
+          const [[path]] = getStub.args;
+          strictEqual(path, '/api/courses/');
+        });
+        it('should return all courses', function () {
+          deepStrictEqual(result, manageCourseResponseExample);
         });
       });
     });
