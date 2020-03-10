@@ -1,10 +1,22 @@
-export const cambridgeBuildings = [
-  'Maxwell Dworkin',
-  'Pierce',
-  'Northwest',
-];
-
-export const allstonBuilding = [
-  'SEC',
-  '114 Western Avenue',
+export const buildings = [
+  {
+    campus: 'Cambridge',
+    name: 'Maxwell Dworkin',
+  },
+  {
+    campus: 'Cambridge',
+    name: 'Pierce Hall',
+  },
+  {
+    campus: 'Cambridge',
+    name: 'Northwest Building',
+  },
+  {
+    campus: 'Allston',
+    name: 'SEC',
+  },
+  {
+    campus: 'Allston',
+    name: '114 Western Avenue',
+  },
 ];
