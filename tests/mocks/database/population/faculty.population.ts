@@ -21,51 +21,6 @@ export class FacultyPopulationService extends BasePopulationService<Faculty> {
       }
     );
 
-    const firstNames = [
-      'James',
-      'Yiling',
-      'David',
-      'Joanna',
-      'Finale',
-      'Demba',
-      'Na',
-    ];
-
-    const lastNames = [
-      'Waldo',
-      'Parkes',
-      'Chen',
-      'Aizenberg',
-      'Ba',
-      'Li',
-      'Doshi-Velez',
-    ];
-
-
-    const randomHUID = (): string => (
-      Array(8).map((): number => Math.floor(Math.random() * 10)).join('')
-    );
-    return this.repository.save(
-      areas.reduce(
-        (list: Faculty[], area: Area): Faculty[] => list.concat(
-          Array(2).map((): Faculty => {
-            const faculty = new Faculty();
-            faculty.firstName = firstNames[
-              Math.floor(Math.random() * firstNames.length)
-            ];
-            faculty.lastName = lastNames[
-              Math.floor(Math.random() * lastNames.length)
-            ];
-            faculty.HUID = randomHUID();
-            faculty.category = Object.values(FACULTY_TYPE)[
-              Math.floor(Math.random() * Object.values(FACULTY_TYPE).length)
-            ];
-            faculty.jointWith = '';
-            faculty.area = area;
-            return faculty;
-          })
-        ), [] as Faculty[]
-      )
-    );
+    return this.repository.save();
   }
 }
