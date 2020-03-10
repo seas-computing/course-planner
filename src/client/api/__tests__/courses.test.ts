@@ -5,14 +5,13 @@ import {
 import request, {
   AxiosResponse,
 } from 'axios';
-import {
-  manageCourseResponseExample, anotherManageCourseResponseExample,
-} from 'testData';
+import * as dummy from 'testData';
 import * as api from 'client/api';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import {
   strictEqual,
   deepStrictEqual,
+  fail,
 } from 'assert';
 
 describe('Course Admin API', function () {
@@ -30,8 +29,8 @@ describe('Course Admin API', function () {
         beforeEach(async function () {
           getStub.resolves({
             data: [
-              manageCourseResponseExample,
-              anotherManageCourseResponseExample,
+              dummy.manageCourseResponseExample,
+              dummy.anotherManageCourseResponseExample,
             ],
           } as AxiosResponse<ManageCourseResponseDTO[]>);
           result = await api.getAllCourses();
@@ -45,7 +44,23 @@ describe('Course Admin API', function () {
         });
         it('should return the courses', function () {
           deepStrictEqual(result,
-            [manageCourseResponseExample, anotherManageCourseResponseExample]);
+            [
+              dummy.manageCourseResponseExample,
+              dummy.anotherManageCourseResponseExample,
+            ]);
+        });
+      });
+      context('when data fetch fails', function () {
+        beforeEach(async function () {
+          getStub.rejects();
+        });
+        it('should throw an error', async function () {
+          try {
+            await api.getAllCourses();
+            fail('Did not throw an error');
+          } catch (err) {
+            deepStrictEqual(err, dummy.error);
+          }
         });
       });
     });
