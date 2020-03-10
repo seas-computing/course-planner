@@ -22,7 +22,7 @@ import {
   TabListItem,
   PageBody,
   Logo,
-  HeadingOne,
+  PageTitle,
 } from 'mark-one';
 import { getCurrentUser } from 'client/api';
 import { UserResponse } from 'common/dto/users/userResponse.dto';
@@ -92,7 +92,7 @@ const ColdApp: SFC = (): ReactElement => {
             <div className="app-content">
               <Header justify="left">
                 <Logo href="/" image={logo}>SEAS Logo</Logo>
-                <HeadingOne>Course Planning</HeadingOne>
+                <PageTitle>Course Planning</PageTitle>
               </Header>
               <nav>
                 <TabList>
