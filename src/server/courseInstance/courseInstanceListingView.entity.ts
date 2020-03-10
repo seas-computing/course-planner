@@ -107,11 +107,11 @@ export class CourseInstanceListingView {
   @JoinColumn()
   @ManyToOne(
     (): ObjectType<CourseListingView> => CourseListingView,
-    ({ spring }): CourseInstanceListingView[] => spring
+    ({ spring }): CourseInstanceListingView => spring
   )
   @ManyToOne(
     (): ObjectType<CourseListingView> => CourseListingView,
-    ({ fall }): CourseInstanceListingView[] => fall
+    ({ fall }): CourseInstanceListingView => fall
   )
   public courseId: string;
 }
