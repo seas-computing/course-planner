@@ -48,7 +48,7 @@ export class CourseListingView {
   @ViewColumn()
   public termPattern: TERM_PATTERN;
 
-  public spring: CourseInstanceListingView[];
+  public spring: CourseInstanceListingView;
 
-  public fall: CourseInstanceListingView[];
+  public fall: CourseInstanceListingView;
 }
