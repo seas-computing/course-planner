@@ -12,6 +12,11 @@ import { CourseInstanceListingView } from 'server/courseInstance/courseInstanceL
 import { RoomListingView } from 'server/location/roomListingView.entity';
 import { Meeting } from './meeting.entity';
 
+/**
+ * Consolidates data about a [[CourseInstances]] associated [[Meeting]]s to
+ * associate with a [[CourseInstanceListingView]].
+ */
+
 @ViewEntity('MeetingListingView', {
   expression: (connection: Connection):
   SelectQueryBuilder<Meeting> => connection.createQueryBuilder()
@@ -24,20 +29,41 @@ import { Meeting } from './meeting.entity';
     .from(Meeting, 'm'),
 })
 export class MeetingListingView {
+  /**
+   * From [[Meeting]]
+   */
   @ViewColumn()
   public id: string;
 
+  /**
+   * From [[Meeting]]
+   * The day of the week on which the meeting occurs
+   */
   @ViewColumn()
   public day: DAY;
 
+  /**
+   * From [[Meeting]]
+   * The time at which the meeting starts, in the format 01:30 PM
+   */
   @ViewColumn()
   public startTime: string;
 
+  /**
+   * From [[Meeting]]
+   * The time at which the meeting ends, in the format 02:15 PM
+   */
   @ViewColumn()
   public endTime: string;
 
+  /**
+   * The [[RoomListingView]] representing where this meeting will take place
+   */
   public room: RoomListingView;
 
+  /**
+   * Many [[MeetingListingView]]s can have one [[RoomListingView]]
+   */
   @JoinColumn()
   @ManyToOne(
     (): ObjectType<RoomListingView> => RoomListingView,
@@ -45,6 +71,9 @@ export class MeetingListingView {
   )
   public roomId: string;
 
+  /**
+   * Many [[MeetingListingView]]s can have one [[CourseInstanceListingView]]
+   */
   @JoinColumn()
   @ManyToOne(
     (): ObjectType<CourseInstanceListingView> => CourseInstanceListingView,
