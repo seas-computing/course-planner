@@ -10,12 +10,12 @@ export class SemesterPopulationService extends BasePopulationService<Semester> {
 
   public async populate() {
     return this.repository.save(
-      semesters.map(({ year, term }) => {
+      semesters.map(({ academicYear, term }) => {
         const semester = new Semester();
         semester.term = term;
-        semester.academicYear = year;
+        semester.academicYear = academicYear;
         return semester;
-      }), [] as Semester[]
+      })
     );
   }
 }
