@@ -8,7 +8,7 @@ export const faculty = [
     HUID: '11111111',
     jointWith: null,
     category: FACULTY_TYPE.NON_LADDER,
-    area: 'Computer Science',
+    area: 'CS',
   },
   {
     firstName: 'Christopher',
@@ -17,7 +17,7 @@ export const faculty = [
     HUID: '12121212',
     jointWith: null,
     category: FACULTY_TYPE.LADDER,
-    area: 'Applied Mathematics',
+    area: 'AM',
   },
   {
     firstName: 'James',
@@ -26,7 +26,7 @@ export const faculty = [
     HUID: '13131313',
     jointWith: null,
     category: FACULTY_TYPE.NON_LADDER,
-    area: 'Computer Science',
+    area: 'CS',
   },
   {
     firstName: 'Michael',
@@ -35,7 +35,7 @@ export const faculty = [
     HUID: '14141414',
     jointWith: null,
     category: FACULTY_TYPE.LADDER,
-    area: 'Computer Science',
+    area: 'CS',
   },
   {
     firstName: 'Pavlos',
@@ -44,7 +44,7 @@ export const faculty = [
     HUID: '15151515',
     jointWith: null,
     category: FACULTY_TYPE.NON_LADDER,
-    area: 'Applied Computation',
+    area: 'ACS',
   },
   {
     firstName: 'Kevin',
@@ -53,7 +53,7 @@ export const faculty = [
     HUID: '16161616',
     jointWith: null,
     category: FACULTY_TYPE.NON_LADDER,
-    area: 'Applied Computation',
+    area: 'ACS',
   },
   {
     firstName: 'Christopher',
@@ -62,7 +62,7 @@ export const faculty = [
     HUID: '17171717',
     jointWith: null,
     category: FACULTY_TYPE.NON_LADDER,
-    area: 'Applied Computation',
+    area: 'ACS',
   },
   {
     firstName: 'Prineha',
@@ -71,7 +71,7 @@ export const faculty = [
     HUID: '18181818',
     jointWith: null,
     category: FACULTY_TYPE.LADDER,
-    area: 'Materials Science & Mechanical Engineering',
+    area: 'Mat & ME',
   },
   {
     firstName: 'Linsey',
@@ -80,7 +80,7 @@ export const faculty = [
     HUID: '19191919',
     jointWith: null,
     category: FACULTY_TYPE.NON_LADDER,
-    area: 'Bioengineering',
+    area: 'BE',
   },
   {
     firstName: 'Julia',
@@ -89,7 +89,7 @@ export const faculty = [
     HUID: '20202020',
     jointWith: null,
     category: FACULTY_TYPE.NON_SEAS_LADDER,
-    area: 'Applied Physics',
+    area: 'AP',
   },
   {
     firstName: 'Michelle',
@@ -98,7 +98,7 @@ export const faculty = [
     HUID: '21212121',
     jointWith: null,
     category: FACULTY_TYPE.NON_LADDER,
-    area: 'Materials Science & Mechanical Engineering',
+    area: 'Mat & ME',
   },
   {
     firstName: 'Robert',
@@ -107,6 +107,15 @@ export const faculty = [
     HUID: '22222222',
     jointWith: null,
     category: FACULTY_TYPE.LADDER,
-    area: 'Materials Science & Mechanical Engineering',
+    area: 'Mat & ME',
+  },
+  {
+    firstName: 'Mark',
+    lastName: 'Glickman',
+    email: 'mglickman@stats.harvard.edu',
+    HUID: '23232323',
+    jointWith: null,
+    category: FACULTY_TYPE.NON_LADDER,
+    area: 'ACS',
   },
 ];
