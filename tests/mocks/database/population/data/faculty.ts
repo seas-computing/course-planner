@@ -118,4 +118,13 @@ export const faculty = [
     category: FACULTY_TYPE.NON_LADDER,
     area: 'ACS',
   },
+  {
+    firstName: 'Mark',
+    lastName: 'Glickman',
+    email: 'mglickman@stats.harvard.edu',
+    HUID: '23232323',
+    jointWith: null,
+    category: FACULTY_TYPE.NON_LADDER,
+    area: 'Applied Computation',
+  },
 ];
