@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { Room } from 'server/location/room.entity';
 import { Building } from 'server/location/building.entity';
-import { MeetingListingView } from 'server/meeting/meetingListingView.entity';
+import { MeetingListingView } from 'server/meeting/MeetingListingView.entity';
 
 /**
  * Combines the building and room number into a single field to be associated

@@ -8,8 +8,8 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { Semester, TERM } from 'server/semester/semester.entity';
-import { FacultyListingView } from 'server/faculty/facultyListingView.entity';
-import { MeetingListingView } from 'server/meeting/meetingListingView.entity';
+import { FacultyListingView } from 'server/faculty/FacultyListingView.entity';
+import { MeetingListingView } from 'server/meeting/MeetingListingView.entity';
 import { CourseListingView } from 'server/course/CourseListingView.entity';
 import { CourseInstance } from './courseinstance.entity';
 import { OFFERED } from '../../common/constants';

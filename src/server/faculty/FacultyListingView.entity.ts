@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { Faculty } from 'server/faculty/faculty.entity';
 import { FacultyCourseInstance } from 'server/courseInstance/facultycourseinstance.entity';
-import { CourseInstanceListingView } from 'server/courseInstance/courseInstanceListingView.entity';
+import { CourseInstanceListingView } from 'server/courseInstance/CourseInstanceListingView.entity';
 
 /**
  * Lists faculty by "lastName, firstName", and also disaggregates the

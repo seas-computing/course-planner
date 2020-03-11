@@ -8,8 +8,8 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { DAY } from 'common/constants';
-import { CourseInstanceListingView } from 'server/courseInstance/courseInstanceListingView.entity';
-import { RoomListingView } from 'server/location/roomListingView.entity';
+import { CourseInstanceListingView } from 'server/courseInstance/CourseInstanceListingView.entity';
+import { RoomListingView } from 'server/location/RoomListingView.entity';
 import { Meeting } from './meeting.entity';
 
 /**
