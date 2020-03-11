@@ -1,4 +1,4 @@
-import { TERM_PATTERN } from 'common/constants';
+import { TERM_PATTERN, DAY } from 'common/constants';
 
 export const courses = [
   {
@@ -12,6 +12,15 @@ export const courses = [
     sameAs: '',
     termPattern: TERM_PATTERN.FALL,
     isSEAS: true,
+    instances: {
+      facultyHUIDs: ['11111111'],
+      meetings: [{
+        day: DAY.MON,
+        startTime: '15:00:00-05',
+        endTime: '17:00:00-05',
+        room: 'Maxwell Dworkin G115',
+      }],
+    },
   },
   {
     title: 'Advanced Scientific Computing: Numerical Methods',
@@ -24,6 +33,21 @@ export const courses = [
     sameAs: '',
     termPattern: TERM_PATTERN.FALL,
     isSEAS: true,
+    instances: {
+      facultyHUIDs: ['12121212'],
+      meetings: [{
+        day: DAY.TUE,
+        startTime: '10:30:00-05',
+        endTime: '11:45:00-05',
+        room: 'Maxwell Dworkin 220',
+      },
+      {
+        day: DAY.THU,
+        startTime: '10:30:00-05',
+        endTime: '11:45:00-05',
+        room: 'Maxwell Dworkin 220',
+      }],
+    },
   },
   {
     title: 'Critical Thinking in Data Science',
@@ -36,6 +60,21 @@ export const courses = [
     sameAs: '',
     termPattern: TERM_PATTERN.SPRING,
     isSEAS: true,
+    instances: {
+      facultyHUIDs: ['13131313', '14141414'],
+      meetings: [{
+        day: DAY.TUE,
+        startTime: '12:00:00-05',
+        endTime: '13:15:00-05',
+        room: 'SEC 2112',
+      },
+      {
+        day: DAY.THU,
+        startTime: '12:00:00-05',
+        endTime: '13:15:00-05',
+        room: 'SEC 2112',
+      }],
+    },
   },
   {
     title: 'Data Science 1: Introduction to Data Science',
@@ -48,6 +87,25 @@ export const courses = [
     sameAs: 'AC 209A, Stats 121A',
     termPattern: TERM_PATTERN.FALL,
     isSEAS: true,
+    instances: {
+      facultyHUIDs: [
+        '15151515',
+        '16161616',
+        '17171717',
+      ],
+      meetings: [{
+        day: DAY.MON,
+        startTime: '13:30:00-05',
+        endTime: '14:45:00-05',
+        room: 'Northwest Building B101',
+      },
+      {
+        day: DAY.WED,
+        startTime: '13:30:00-05',
+        endTime: '14:45:00-05',
+        room: 'Northwest Building B101',
+      }],
+    },
   },
   {
     title: 'Data Science 2: Advanced Topics in Data Science',
@@ -60,6 +118,25 @@ export const courses = [
     sameAs: 'AC 209B, Stats 121B',
     termPattern: TERM_PATTERN.SPRING,
     isSEAS: true,
+    instances: {
+      facultyHUIDs: [
+        '15151515',
+        '23232323',
+        '17171717',
+      ],
+      meetings: [{
+        day: DAY.MON,
+        startTime: '13:30:00-05',
+        endTime: '14:45:00-05',
+        room: 'Northwest Building B101',
+      },
+      {
+        day: DAY.WED,
+        startTime: '13:30:00-05',
+        endTime: '14:45:00-05',
+        room: 'Northwest Building B101',
+      }],
+    },
   },
   {
     title: 'Computational Physics of Solids and Fields',
@@ -72,6 +149,21 @@ export const courses = [
     sameAs: '',
     termPattern: TERM_PATTERN.FALL,
     isSEAS: true,
+    instances: {
+      facultyHUIDs: ['18181818'],
+      meetings: [{
+        day: DAY.TUE,
+        startTime: '13:30:00-05',
+        endTime: '14:45:00-05',
+        room: 'Pierce Hall 301',
+      },
+      {
+        day: DAY.THU,
+        startTime: '13:30:00-05',
+        endTime: '14:45:00-05',
+        room: 'Pierce Hall 301',
+      }],
+    },
   },
   {
     title: 'Introduction to Biomedical Imaging and Systems',
@@ -84,6 +176,21 @@ export const courses = [
     sameAs: '',
     termPattern: TERM_PATTERN.SPRING,
     isSEAS: true,
+    instances: {
+      facultyHUIDs: ['19191919'],
+      meetings: [{
+        day: DAY.TUE,
+        startTime: '15:00:00-05',
+        endTime: '16:15:00-05',
+        room: '114 Western Avenue 200',
+      },
+      {
+        day: DAY.THU,
+        startTime: '15:00:00-05',
+        endTime: '16:15:00-05',
+        room: '114 Western Avenue 200',
+      }],
+    },
   },
   {
     title: 'Introduction to Solid State Physics',
@@ -96,6 +203,21 @@ export const courses = [
     sameAs: 'AP 195',
     termPattern: TERM_PATTERN.FALL,
     isSEAS: false,
+    instances: {
+      facultyHUIDs: ['20202020'],
+      meetings: [{
+        day: DAY.MON,
+        startTime: '15:00:00-05',
+        endTime: '16:15:00-05',
+        room: 'Northwest Building 201',
+      },
+      {
+        day: DAY.WED,
+        startTime: '15:00:00-05',
+        endTime: '16:15:00-05',
+        room: 'Northwest Building 201',
+      }],
+    },
   },
   {
     title: 'Materials Selection',
@@ -108,6 +230,10 @@ export const courses = [
     sameAs: '',
     termPattern: TERM_PATTERN.BOTH,
     isSEAS: true,
+    instances: {
+      facultyHUIDs: [],
+      meetings: [],
+    },
   },
   {
     title: 'Computer-Aided Machine Design',
@@ -120,6 +246,27 @@ export const courses = [
     sameAs: '',
     termPattern: TERM_PATTERN.BOTH,
     isSEAS: true,
+    instances: {
+      facultyHUIDs: ['21212121'],
+      meetings: [{
+        day: DAY.MON,
+        startTime: '10:30:00-05',
+        endTime: '11:45:00-05',
+        room: 'Maxwell Dworkin B151',
+      },
+      {
+        day: DAY.WED,
+        startTime: '10:30:00-05',
+        endTime: '11:45:00-05',
+        room: 'Maxwell Dworkin B151',
+      },
+      {
+        day: DAY.FRI,
+        startTime: '10:30:00-05',
+        endTime: '11:45:00-05',
+        room: 'Maxwell Dworkin B151',
+      }],
+    },
   },
   {
     title: 'IACS Seminar',
@@ -128,22 +275,19 @@ export const courses = [
     number: 'IACS',
     isUndergraduate: false,
     notes: '',
-    private: '',
+    private: false,
     sameAs: '',
     termPattern: TERM_PATTERN.BOTH,
     isSEAS: true,
-  },
-  {
-    title: 'Integrative Frameworks for Technology, Environment, and Society',
-    area: 'Master in Design Engineering',
-    prefix: 'PRO',
-    number: '7231',
-    isUndergraduate: false,
-    notes: '',
-    private: '',
-    sameAs: '',
-    termPattern: TERM_PATTERN.FALL,
-    isSEAS: false,
+    instances: {
+      facultyHUIDs: [],
+      meetings: [{
+        day: DAY.FRI,
+        startTime: '13:30:00-05',
+        endTime: '14:45:00-05',
+        room: 'Maxwell Dworkin G125',
+      }],
+    },
   },
   {
     title: 'Engineering the Acoustical World',
@@ -152,9 +296,30 @@ export const courses = [
     number: '25',
     isUndergraduate: true,
     notes: '',
-    private: '',
+    private: false,
     sameAs: 'Gen Ed 1080',
     termPattern: TERM_PATTERN.FALL,
     isSEAS: true,
+    instances: {
+      facultyHUIDs: ['22222222'],
+      meetings: [{
+        day: DAY.MON,
+        startTime: '13:30:00-05',
+        endTime: '14:45:00-05',
+        room: 'SEC G500',
+      },
+      {
+        day: DAY.WED,
+        startTime: '13:30:00-05',
+        endTime: '14:45:00-05',
+        room: 'SEC G500',
+      },
+      {
+        day: DAY.FRI,
+        startTime: '13:30:00-05',
+        endTime: '14:45:00-05',
+        room: 'SEC G500',
+      }],
+    },
   },
 ];
