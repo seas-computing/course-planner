@@ -10,6 +10,7 @@ import {
   Switch,
   Route,
   Link,
+  BrowserRouter,
 } from 'react-router-dom';
 import {
   MESSAGE_TYPE,
@@ -124,13 +125,13 @@ const ColdApp: SFC = (): ReactElement => {
               </Header>
               <PageBody>
                 {currentMessage
-              && (
-                <Message
-                  messageCount={queue.length}
-                  messageText={currentMessage.text}
-                  messageType={currentMessage.variant}
-                />
-              )}
+            && (
+              <Message
+                messageCount={queue.length}
+                messageText={currentMessage.text}
+                messageType={currentMessage.variant}
+              />
+            )}
                 <Switch>
                   <Route path="/course-admin" component={CourseAdmin} />
                   <Route component={NoMatch} />
