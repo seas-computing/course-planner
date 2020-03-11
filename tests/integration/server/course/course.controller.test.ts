@@ -157,7 +157,6 @@ describe('Course API', function () {
             .post('/api/courses')
             .send(createCourseDtoExample);
 
-          console.log(response);
           strictEqual(response.status, HttpStatus.CREATED);
           strictEqual(mockCourseRepository.save.callCount, 1);
           deepStrictEqual(
