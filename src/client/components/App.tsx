@@ -10,7 +10,6 @@ import {
   Switch,
   Route,
   Link,
-  BrowserRouter,
 } from 'react-router-dom';
 import {
   MESSAGE_TYPE,
