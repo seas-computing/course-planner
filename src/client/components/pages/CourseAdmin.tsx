@@ -69,7 +69,7 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
         </TableHead>
         <TableBody isScrollable>
           {currentCourses.map((course, i): ReactElement<TableRowProps> => (
-            <TableRow isStriped={i % 2 === 1}>
+            <TableRow isStriped={i % 2 === 1} key={course.id}>
               <TableCell
                 backgroundColor={
                   theme
