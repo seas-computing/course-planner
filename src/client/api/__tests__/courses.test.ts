@@ -5,7 +5,11 @@ import {
 import request, {
   AxiosResponse,
 } from 'axios';
-import * as dummy from 'testData';
+import {
+  computerScienceCourseResponse,
+  physicsCourseResponse,
+  error,
+} from 'testData';
 import * as api from 'client/api';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import {
@@ -29,8 +33,8 @@ describe('Course Admin API', function () {
         beforeEach(async function () {
           getStub.resolves({
             data: [
-              dummy.computerScienceCourseResponse,
-              dummy.physicsCourseResponse,
+              computerScienceCourseResponse,
+              physicsCourseResponse,
             ],
           } as AxiosResponse<ManageCourseResponseDTO[]>);
           result = await api.getAllCourses();
@@ -45,8 +49,8 @@ describe('Course Admin API', function () {
         it('should return the courses', function () {
           deepStrictEqual(result,
             [
-              dummy.computerScienceCourseResponse,
-              dummy.physicsCourseResponse,
+              computerScienceCourseResponse,
+              physicsCourseResponse,
             ]);
         });
       });
@@ -59,7 +63,7 @@ describe('Course Admin API', function () {
             await api.getAllCourses();
             fail('Did not throw an error');
           } catch (err) {
-            deepStrictEqual(err, dummy.error);
+            deepStrictEqual(err, error);
           }
         });
       });
