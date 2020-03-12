@@ -83,8 +83,6 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
               <TableCell>
                 <BorderlessButton
                   variant={VARIANT.INFO}
-                  // Edit button functionality will be added in separate ticket
-                  // Set onClick property to an empty function as a placeholder
                   onClick={(): void => {}}
                 >
                   <FontAwesomeIcon icon={faEdit} />
