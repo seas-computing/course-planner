@@ -22,7 +22,7 @@ import {
   adminUser,
   computerScienceCourse,
   createCourseDtoExample,
-  manageCourseResponseExample,
+  computerScienceCourseResponse,
 } from 'common/__tests__/data';
 import { Semester } from 'server/semester/semester.entity';
 import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
@@ -175,7 +175,7 @@ describe('Course API', function () {
 
           deepStrictEqual(
             response.body as ManageCourseResponseDTO,
-            manageCourseResponseExample
+            computerScienceCourseResponse
           );
         });
         it('reports validation errors', async function () {

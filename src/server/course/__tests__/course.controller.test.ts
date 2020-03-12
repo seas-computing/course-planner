@@ -7,7 +7,7 @@ import {
   computerScienceCourse,
   createCourseDtoExample,
   string,
-  manageCourseResponseExample,
+  computerScienceCourseResponse,
 } from 'testData';
 import { Authentication } from 'server/auth/authentication.guard';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
@@ -87,7 +87,7 @@ describe('Course controller', function () {
 
       const createdCourse = await controller.create(createCourseDtoExample);
 
-      deepStrictEqual(createdCourse, manageCourseResponseExample);
+      deepStrictEqual(createdCourse, computerScienceCourseResponse);
     });
     it('throws a NotFoundException if the course area does not exist', async function () {
       mockCourseService.save.rejects(new EntityNotFoundError(Area, ''));

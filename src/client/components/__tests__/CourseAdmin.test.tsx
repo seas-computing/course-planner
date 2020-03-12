@@ -36,8 +36,8 @@ describe('Course Admin', function () {
     getStub = stub(request, 'get');
     getStub.resolves({
       data: [
-        dummy.manageCourseResponseExample,
-        dummy.anotherManageCourseResponseExample,
+        dummy.computerScienceCourseResponse,
+        dummy.physicsCourseResponse,
       ],
     } as AxiosResponse<ManageCourseResponseDTO[]>);
   });
@@ -81,7 +81,7 @@ describe('Course Admin', function () {
           </AppStub>
         );
         strictEqual(getStub.callCount, 1);
-        const { title } = dummy.manageCourseResponseExample;
+        const { title } = dummy.computerScienceCourseResponse;
         return waitForElement(() => getByText(title));
       });
       it('displays the correct number of rows in the table', function () {

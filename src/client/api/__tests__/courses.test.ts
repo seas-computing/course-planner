@@ -29,8 +29,8 @@ describe('Course Admin API', function () {
         beforeEach(async function () {
           getStub.resolves({
             data: [
-              dummy.manageCourseResponseExample,
-              dummy.anotherManageCourseResponseExample,
+              dummy.computerScienceCourseResponse,
+              dummy.physicsCourseResponse,
             ],
           } as AxiosResponse<ManageCourseResponseDTO[]>);
           result = await api.getAllCourses();
@@ -45,8 +45,8 @@ describe('Course Admin API', function () {
         it('should return the courses', function () {
           deepStrictEqual(result,
             [
-              dummy.manageCourseResponseExample,
-              dummy.anotherManageCourseResponseExample,
+              dummy.computerScienceCourseResponse,
+              dummy.physicsCourseResponse,
             ]);
         });
       });

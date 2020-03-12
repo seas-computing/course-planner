@@ -42,7 +42,10 @@ export const createCourseDtoExample: CreateCourse = Object.assign(
   }
 );
 
-export const manageCourseResponseExample: ManageCourseResponseDTO = {
+/**
+ * An example [[Course]] response representing CS 50.
+ */
+export const computerScienceCourseResponse: ManageCourseResponseDTO = {
   id: 'b8bc8456-51fd-48ef-b111-5a5990671cd1',
   area: {
     id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
@@ -57,16 +60,19 @@ export const manageCourseResponseExample: ManageCourseResponseDTO = {
   private: true,
 };
 
-export const anotherManageCourseResponseExample: ManageCourseResponseDTO = {
-  id: 'q2je1111-21fd-23ht-z924-h25990671iw6',
+/**
+ * An example [[Course]] response representing AP 295a.
+ */
+export const physicsCourseResponse: ManageCourseResponseDTO = {
+  id: 'a1a13689-a925-4d0b-a4fc-21c93263c6d2',
   area: {
-    id: 'b51adw12-4g10-2z0a-7871-k2041052g42x',
+    id: '2213e1f8-31be-4e67-be06-a1eabd32ee0a',
     name: 'AP',
   },
-  title: 'Introduction to Physics',
+  title: 'Introduction to Quantum Theory of Solids',
   isSEAS: true,
   isUndergraduate: true,
-  catalogNumber: 'AP 101',
+  catalogNumber: 'AP 295a',
   termPattern: TERM_PATTERN.SPRING,
   sameAs: '',
   private: true,
