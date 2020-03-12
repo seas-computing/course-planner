@@ -1,6 +1,9 @@
 import { createContext, Context, Reducer } from 'react';
 import { AppMessage, MESSAGE_ACTION } from '../classes';
 
+/**
+ * A function that passes down a message to the queue
+ */
 type DispatchMessage = React.Dispatch<MessageReducerAction>;
 
 /**
