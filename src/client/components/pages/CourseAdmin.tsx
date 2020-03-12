@@ -35,8 +35,15 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
     [] as ManageCourseResponseDTO[]
   );
 
+  /**
+   * The current value for the message context
+   */
   const dispatchMessage = useContext(MessageContext);
 
+  /**
+   * Gets the course data from the server
+   * If it fails, display a message for the user
+   */
   useEffect((): void => {
     getAllCourses()
       .then((courses): ManageCourseResponseDTO[] => {
