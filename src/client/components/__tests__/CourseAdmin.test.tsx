@@ -1,12 +1,9 @@
 import React, {
-  useReducer,
   FunctionComponent,
   ReactElement,
 } from 'react';
 import {
   strictEqual,
-  deepStrictEqual,
-  fail,
 } from 'assert';
 import {
   render,
@@ -25,24 +22,23 @@ import {
   physicsCourseResponse,
   error,
 } from 'testData';
-import * as api from 'client/api';
 import {
   MessageContext,
-  messageReducer,
 } from 'client/context';
 import { ThemeProvider } from 'styled-components';
 import { MarkOneTheme } from 'mark-one';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
+import { DispatchMessage } from '../../context/MessageContext';
 import CourseAdmin from '../pages/CourseAdmin';
 
-const AppStub: FunctionComponent = function ({ children }): ReactElement {
-  const [, dispatchMessage] = useReducer(
-    messageReducer,
-    {
-      queue: [],
-      currentMessage: undefined,
-    }
-  );
+interface AppStubProps {
+  /** A function that passes down the message, if any */
+  dispatchMessage: DispatchMessage;
+}
+
+const AppStub: FunctionComponent<AppStubProps> = function (
+  { dispatchMessage, children }
+): ReactElement {
   return (
     <MemoryRouter>
       <ThemeProvider theme={MarkOneTheme}>
@@ -56,12 +52,14 @@ const AppStub: FunctionComponent = function ({ children }): ReactElement {
 
 describe('Course Admin', function () {
   let getStub: SinonStub;
+  let dispatchMessage: SinonStub;
   const testData = [
     computerScienceCourseResponse,
     physicsCourseResponse,
   ];
   beforeEach(function () {
     getStub = stub(request, 'get');
+    dispatchMessage = stub();
     getStub.resolves({
       data: testData,
     } as AxiosResponse<ManageCourseResponseDTO[]>);
@@ -83,7 +81,7 @@ describe('Course Admin', function () {
     context('when course data fetch succeeds', function () {
       it('displays the correct course information', async function () {
         const { getByText } = render(
-          <AppStub>
+          <AppStub dispatchMessage={dispatchMessage}>
             <CourseAdmin />
           </AppStub>
         );
@@ -93,7 +91,7 @@ describe('Course Admin', function () {
       });
       it('displays the correct number of rows in the table', async function () {
         const { getAllByRole } = render(
-          <AppStub>
+          <AppStub dispatchMessage={dispatchMessage}>
             <CourseAdmin />
           </AppStub>
         );
@@ -103,7 +101,7 @@ describe('Course Admin', function () {
       });
       it('displays the correct content in the table cells', async function () {
         const { getAllByRole } = render(
-          <AppStub>
+          <AppStub dispatchMessage={dispatchMessage}>
             <CourseAdmin />
           </AppStub>
         );
@@ -136,7 +134,7 @@ describe('Course Admin', function () {
         it('displays the correct number of rows in the table (only the header row)',
           async function () {
             const { getAllByRole } = render(
-              <AppStub>
+              <AppStub dispatchMessage={dispatchMessage}>
                 <CourseAdmin />
               </AppStub>
             );
@@ -154,12 +152,13 @@ describe('Course Admin', function () {
         getStub.restore();
       });
       it('should throw an error', async function () {
-        try {
-          await api.getAllCourses();
-          fail('Did not throw an error');
-        } catch (err) {
-          deepStrictEqual(err, error);
-        }
+        const { getAllByRole } = render(
+          <AppStub dispatchMessage={dispatchMessage}>
+            <CourseAdmin />
+          </AppStub>
+        );
+        await wait(() => getAllByRole('row').length > 0);
+        strictEqual(dispatchMessage.callCount, 1);
       });
     });
   });

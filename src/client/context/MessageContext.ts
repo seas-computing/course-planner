@@ -4,7 +4,7 @@ import { AppMessage, MESSAGE_ACTION } from '../classes';
 /**
  * A function that passes down a message to the queue
  */
-type DispatchMessage = React.Dispatch<MessageReducerAction>;
+export type DispatchMessage = React.Dispatch<MessageReducerAction>;
 
 /**
  * Global message provider
