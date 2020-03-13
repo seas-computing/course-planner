@@ -20,21 +20,18 @@ import * as testData from '../data';
 
 const entityPathGlob = path.resolve(__dirname, '../../../../../src/server/**/*.entity.ts');
 
-describe.only('Population Service', function () {
+describe('Population Service', function () {
   let testModule: TestingModule;
   let db: MockDB;
 
-  before(function (done) {
+  before(async function () {
+    // Our test database needs to be set up before any of our tests run
     db = new MockDB();
-    db.init();
-    const waiter = setInterval(() => {
-      if (db.readyToConnect) {
-        done();
-        clearInterval(waiter);
-      }
-    }, 1000);
+    await db.init();
   });
   after(async function () {
+    // we need to stop the container after test suite finishes, in case any
+    // other suites will be using the back end.
     return db.stop();
   });
 
@@ -160,13 +157,16 @@ describe.only('Population Service', function () {
       testData.courses.forEach((testCourse) => {
         testData.semesters.forEach((testSemester) => {
           const instanceIndex = dbInstances
-            .findIndex(({ course, semester }) => (
-              course.title === testCourse.title
-              && course.prefix === testCourse.prefix
-              && course.number === testCourse.number
-              && semester.term === testSemester.term
-              && semester.academicYear === testSemester.academicYear.toString()
-            ));
+            .findIndex(
+              ({ course, semester }) => (
+                course.title === testCourse.title
+                && course.prefix === testCourse.prefix
+                && course.number === testCourse.number
+                && semester.term === testSemester.term
+                && (semester.academicYear
+                  === testSemester.academicYear.toString())
+              )
+            );
           notStrictEqual(instanceIndex, -1);
         });
       });
