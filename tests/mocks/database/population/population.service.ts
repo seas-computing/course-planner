@@ -5,6 +5,7 @@ import { SemesterPopulationService } from './semester.population';
 import { AreaPopulationService } from './area.population';
 import { RoomPopulationService } from './room.population';
 import { CoursePopulationService } from './course.population';
+import { FacultyPopulationService } from './faculty.population';
 
 
 @Injectable()
@@ -20,20 +21,32 @@ export class PopulationService implements
   @Inject(RoomPopulationService)
   protected roomService: RoomPopulationService;
 
+  @Inject(FacultyPopulationService)
+  protected facultyService: FacultyPopulationService;
+
   @Inject(CoursePopulationService)
   protected courseService: CoursePopulationService;
 
+
   public async onApplicationBootstrap(): Promise<void> {
-    await this.areaService.populate();
-    await this.semesterService.populate();
-    await this.roomService.populate();
+    // Area, semester and room can be added in parallel
+    await Promise.all([
+      this.areaService.populate(),
+      this.semesterService.populate(),
+      this.roomService.populate(),
+    ]);
+    // faculty and courses need to be added in series
+    await this.facultyService.populate();
     await this.courseService.populate();
   }
 
   public async beforeApplicationShutdown(): Promise<void> {
     await this.courseService.drop();
-    await this.roomService.drop();
-    await this.semesterService.drop();
-    await this.areaService.drop();
+    await this.facultyService.drop();
+    await Promise.all([
+      this.roomService.drop(),
+      this.semesterService.drop(),
+      this.areaService.drop(),
+    ]);
   }
 }
