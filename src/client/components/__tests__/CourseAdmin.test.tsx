@@ -116,13 +116,22 @@ describe('Course Admin', function () {
         const computerScienceCourseTitle = rowsContent[1][2];
         const physicsCourseCatalogNumber = rowsContent[2][1];
         const physicsCourseTitle = rowsContent[2][2];
-        strictEqual(computerScienceCourseCatalogNumber,
-          computerScienceCourseResponse.catalogNumber);
-        strictEqual(computerScienceCourseTitle,
-          computerScienceCourseResponse.title);
-        strictEqual(physicsCourseCatalogNumber,
-          physicsCourseResponse.catalogNumber);
-        strictEqual(physicsCourseTitle, physicsCourseResponse.title);
+        strictEqual(
+          computerScienceCourseCatalogNumber,
+          computerScienceCourseResponse.catalogNumber
+        );
+        strictEqual(
+          computerScienceCourseTitle,
+          computerScienceCourseResponse.title
+        );
+        strictEqual(
+          physicsCourseCatalogNumber,
+          physicsCourseResponse.catalogNumber
+        );
+        strictEqual(
+          physicsCourseTitle,
+          physicsCourseResponse.title
+        );
       });
       it('passes the backgroundColor prop only when area exists', async function () {
         const { getAllByRole, getByText } = render(
@@ -146,17 +155,16 @@ describe('Course Admin', function () {
         afterEach(function () {
           getStub.restore();
         });
-        it('displays the correct number of rows in the table (only the header row)',
-          async function () {
-            const { getAllByRole } = render(
-              <AppStub dispatchMessage={dispatchMessage}>
-                <CourseAdmin />
-              </AppStub>
-            );
-            await wait(() => getAllByRole('row').length > 0);
-            const rows = getAllByRole('row');
-            strictEqual(rows.length, emptyTestData.length + 1);
-          });
+        it('displays the correct number of rows in the table (only the header row)', async function () {
+          const { getAllByRole } = render(
+            <AppStub dispatchMessage={dispatchMessage}>
+              <CourseAdmin />
+            </AppStub>
+          );
+          await wait(() => getAllByRole('row').length > 0);
+          const rows = getAllByRole('row');
+          strictEqual(rows.length, emptyTestData.length + 1);
+        });
       });
     });
     context('when course data fetch fails', function () {
