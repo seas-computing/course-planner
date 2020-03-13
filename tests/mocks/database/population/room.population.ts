@@ -49,7 +49,7 @@ export class RoomPopulationService extends BasePopulationService<Room> {
       rooms.map(({ name, building, capacity }): Room => {
         const room = new Room();
         room.name = name;
-        room.capacity = 42;
+        room.capacity = capacity;
         room.building = buildingList.find(
           ({ name: bname }) => bname === building
         );

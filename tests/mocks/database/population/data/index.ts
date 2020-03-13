@@ -54,6 +54,7 @@ export interface FacultyData {
 export interface RoomData {
   building: string;
   name: string;
+  capacity: number;
 }
 
 export interface SemesterData {
