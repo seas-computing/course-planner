@@ -10,6 +10,7 @@ import { ConfigService } from './config/config.service';
 import { AuthModule } from './auth/auth.module';
 import { CourseModule } from './course/course.module';
 import { FacultyModule } from './faculty/faculty.module';
+import { CourseInstanceModule } from './courseInstance/courseInstance.module';
 
 /**
  * Base application module that injects Mongoose and configures
@@ -55,6 +56,7 @@ import { FacultyModule } from './faculty/faculty.module';
     }),
     CourseModule,
     FacultyModule,
+    CourseInstanceModule,
   ],
   controllers: [],
   providers: [],
