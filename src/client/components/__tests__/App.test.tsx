@@ -1,6 +1,9 @@
 import React from 'react';
 import { strictEqual } from 'assert';
-import { render, waitForElement } from '@testing-library/react';
+import {
+  render,
+  waitForElement,
+} from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { stub, SinonStub } from 'sinon';
 import { AxiosResponse } from 'axios';

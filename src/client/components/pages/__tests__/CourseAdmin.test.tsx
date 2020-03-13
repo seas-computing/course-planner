@@ -30,8 +30,8 @@ import {
 import { ThemeProvider } from 'styled-components';
 import { MarkOneTheme } from 'mark-one';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
-import { DispatchMessage } from '../../context/MessageContext';
-import CourseAdmin from '../pages/CourseAdmin';
+import { DispatchMessage } from '../../../context/MessageContext';
+import CourseAdmin from '../CourseAdmin';
 
 interface AppStubProps {
   /** A function that passes down the message, if any */
