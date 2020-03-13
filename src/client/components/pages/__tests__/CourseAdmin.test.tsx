@@ -73,11 +73,9 @@ describe('Course Admin', function () {
   describe('rendering', function () {
     it('creates a table', async function () {
       const { container } = render(
-        <MemoryRouter>
-          <ThemeProvider theme={MarkOneTheme}>
-            <CourseAdmin />
-          </ThemeProvider>
-        </MemoryRouter>
+        <AppStub dispatchMessage={dispatchMessage}>
+          <CourseAdmin />
+        </AppStub>
       );
       return waitForElement(() => container.querySelector('.course-admin-table'));
     });
