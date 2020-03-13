@@ -1,3 +1,4 @@
+import { hot } from 'react-hot-loader/root';
 import React, {
   useState,
   useEffect,
@@ -6,10 +7,15 @@ import React, {
   SFC,
 } from 'react';
 import {
-  Switch, Route, Link,
+  Switch,
+  Route,
+  Link,
 } from 'react-router-dom';
-import { hot } from 'react-hot-loader/root';
-import { MESSAGE_TYPE, MESSAGE_ACTION, AppMessage } from 'client/classes';
+import {
+  MESSAGE_TYPE,
+  MESSAGE_ACTION,
+  AppMessage,
+} from 'client/classes';
 import {
   MessageContext,
   messageReducer,
@@ -26,6 +32,7 @@ import { getCurrentUser } from 'client/api';
 import { UserResponse } from 'common/dto/users/userResponse.dto';
 import { Message } from './layout';
 import NoMatch from './pages/NoMatch';
+import CourseAdmin from './pages/CourseAdmin';
 
 /**
  * The primary app component. Fetches the current user from the server when it
@@ -37,7 +44,7 @@ const ColdApp: SFC = (): ReactElement => {
    * Hook for maintaining the currently selected user
    * */
 
-  const [currentUser, setUser] = useState();
+  const [currentUser, setUser] = useState<UserResponse | null>(null);
 
   /**
    * Set up the local reducer for maintaining the current app-wide message
@@ -109,18 +116,23 @@ const ColdApp: SFC = (): ReactElement => {
                   <TabListItem>
                     <Link to="/four-year-plan">4 Year Plan</Link>
                   </TabListItem>
+
+                  <TabListItem>
+                    <Link to="/course-admin">Course Admin</Link>
+                  </TabListItem>
                 </TabList>
               </Header>
               <PageBody>
                 {currentMessage
-              && (
-                <Message
-                  messageCount={queue.length}
-                  messageText={currentMessage.text}
-                  messageType={currentMessage.variant}
-                />
-              )}
+            && (
+              <Message
+                messageCount={queue.length}
+                messageText={currentMessage.text}
+                messageType={currentMessage.variant}
+              />
+            )}
                 <Switch>
+                  <Route path="/course-admin" component={CourseAdmin} />
                   <Route component={NoMatch} />
                 </Switch>
               </PageBody>
