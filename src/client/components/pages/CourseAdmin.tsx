@@ -79,9 +79,11 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
             <TableRow isStriped={i % 2 === 1} key={course.id}>
               <TableCell
                 backgroundColor={
-                  theme
-                    .color
-                    .area[course.area.name.toLowerCase()]}
+                  theme.color.area[course.area.name.toLowerCase()]
+                    ? theme
+                      .color
+                      .area[course.area.name.toLowerCase()]
+                    : ''}
               >
                 {course.area.name}
               </TableCell>
