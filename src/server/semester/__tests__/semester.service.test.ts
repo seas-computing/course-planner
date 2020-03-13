@@ -11,7 +11,7 @@ import { Semester } from 'server/semester/semester.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { SemesterService } from '../semester.service';
 
-describe.only('Semester Service', function () {
+describe('Semester Service', function () {
   let semesterService: SemesterService;
   let mockSemesterRepository: Record<string, SinonStub>;
   let mockSemesterQueryBuilder: SinonStubbedInstance<

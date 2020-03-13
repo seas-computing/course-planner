@@ -9,7 +9,7 @@ import { Semester } from 'server/semester/semester.entity';
 import { CourseInstanceService } from '../courseInstance.service';
 import { CourseInstanceController } from '../courseInstance.controller';
 
-describe.only('Course Instance Controller', function () {
+describe('Course Instance Controller', function () {
   let ciController: CourseInstanceController;
   let ciService: CourseInstanceService;
   let semesterService: SemesterService;
