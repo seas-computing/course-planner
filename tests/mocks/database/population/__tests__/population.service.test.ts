@@ -62,7 +62,7 @@ describe.only('Population Service', function () {
       const areaRepository = testModule.get(getRepositoryToken(Area));
       const dbAreas = await areaRepository.find();
       strictEqual(dbAreas.length, testData.areas.length);
-      testData.areas.forEach((area) => {
+      testData.areas.forEach(({ name: area }) => {
         const areaIndex = dbAreas.findIndex(({ name }) => name === area);
         notStrictEqual(areaIndex, -1);
       });
@@ -114,7 +114,7 @@ describe.only('Population Service', function () {
       const campusRepository = testModule.get(getRepositoryToken(Campus));
       const dbCampuses = await campusRepository.find();
       strictEqual(dbCampuses.length, testData.campuses.length);
-      testData.campuses.forEach((campus) => {
+      testData.campuses.forEach(({ name: campus }) => {
         const campusIndex = dbCampuses.findIndex(({ name }) => name === campus);
         notStrictEqual(campusIndex, -1);
       });

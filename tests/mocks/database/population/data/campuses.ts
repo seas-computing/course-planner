@@ -1,4 +1,4 @@
 export const campuses = [
-  'Allston',
-  'Cambridge',
+  { name: 'Allston' },
+  { name: 'Cambridge' },
 ];
