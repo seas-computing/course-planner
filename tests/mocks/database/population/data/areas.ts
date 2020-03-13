@@ -1,3 +1,6 @@
+/**
+ * A list of Area names that can be used to populate the database
+ */
 export const areas = [
   { name: 'ACS' },
   { name: 'AM' },

@@ -1,3 +1,7 @@
+/**
+ * A list of room name and building associations that can be used to populate
+ * the database
+ */
 export const rooms = [
   {
     building: 'Maxwell Dworkin',

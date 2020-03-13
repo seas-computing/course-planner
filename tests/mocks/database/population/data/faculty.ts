@@ -1,5 +1,9 @@
 import { FACULTY_TYPE } from 'common/constants';
 
+/**
+ * A list of faculty with associated Areas that can be used to populate the
+ * database
+ */
 export const faculty = [
   {
     firstName: 'David',

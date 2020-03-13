@@ -1,3 +1,7 @@
+/**
+ * A list of building/campus associations that can be used to populate the
+ * database
+ */
 export const buildings = [
   {
     campus: 'Cambridge',

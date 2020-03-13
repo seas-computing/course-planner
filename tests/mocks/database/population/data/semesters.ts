@@ -1,5 +1,8 @@
 import { TERM } from 'server/semester/semester.entity';
 
+/**
+ * A list of semesters that can be used to populate the database
+ */
 export const semesters = [
   { academicYear: 2017, term: TERM.FALL },
   { academicYear: 2018, term: TERM.SPRING },

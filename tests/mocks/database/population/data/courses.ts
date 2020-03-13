@@ -1,5 +1,9 @@
 import { TERM_PATTERN, DAY } from 'common/constants';
 
+/**
+ * A list of courses, with associated faculty, meetings, and rooms, which can
+ * used to populate the database
+ */
 export const courses = [
   {
     title: 'Introduction to CS',
