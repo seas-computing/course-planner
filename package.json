@@ -23,6 +23,7 @@
     "connect-redis": "^3.4.1",
     "express": "^4.17.1",
     "express-session": "^1.16.2",
+    "history": "^4.10.1",
     "mark-one": "develop",
     "nestjs-redis": "^1.2.1",
     "nestjs-session": "^1.0.0",

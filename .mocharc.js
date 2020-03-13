@@ -27,5 +27,10 @@ module.exports = {
   extension: ['ts', 'tsx', 'js'],
   spec: specGlobs.length > 0
     ? specGlobs
-    : ['src/**/*.test.ts', 'src/**/*/*.test.tsx', 'tests/integration/**/*.test.ts'],
+    : [
+        'src/**/*.test.ts',
+        'src/**/*/*.test.tsx',
+        'tests/integration/**/*.test.ts',
+        'tests/integration/**/*.test.tsx',
+      ],
 }

@@ -16,7 +16,7 @@ abstract class Instance {
     type: 'number',
     example: 2016,
   })
-  public academicYear: number;
+  public calendarYear: number;
 
   @ApiModelProperty({
     type: 'string',
@@ -106,7 +106,7 @@ export default abstract class CourseInstanceResponseDTO {
     type: 'boolean',
     example: false,
   })
-  public undergraduate: boolean;
+  public isUndergraduate: boolean;
 
   @ApiModelProperty({
     type: 'string',

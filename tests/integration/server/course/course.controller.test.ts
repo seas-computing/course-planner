@@ -22,10 +22,12 @@ import {
   adminUser,
   computerScienceCourse,
   createCourseDtoExample,
+  computerScienceCourseResponse,
 } from 'common/__tests__/data';
 import { Semester } from 'server/semester/semester.entity';
 import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 import { Area } from 'server/area/area.entity';
+import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 const mockAreaRepository = {
@@ -171,7 +173,10 @@ describe('Course API', function () {
             .post('/api/courses')
             .send(createCourseDtoExample);
 
-          deepStrictEqual(response.body, { ...createCourseDtoExample });
+          deepStrictEqual(
+            response.body as ManageCourseResponseDTO,
+            computerScienceCourseResponse
+          );
         });
         it('reports validation errors', async function () {
           authStub.resolves(adminUser);
