@@ -54,7 +54,7 @@ export class CourseInstanceService {
         'fall',
         'fall."courseId" = c.id AND fall.term = \'FALL\''
       )
-      .leftJoinAndMapOne(
+      .leftJoinAndMapMany(
         'fall.instructors',
         'FacultyListingView',
         'fall_instructors',
