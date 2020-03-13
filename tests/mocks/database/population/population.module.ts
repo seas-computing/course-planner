@@ -17,6 +17,9 @@ import { CoursePopulationService } from './course.population';
 import { FacultyPopulationService } from './faculty.population';
 import { RoomPopulationService } from './room.population';
 
+/**
+ * Injects the repositories and services necessary for populating the database
+ */
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -41,11 +44,6 @@ import { RoomPopulationService } from './room.population';
     PopulationService,
   ],
   exports: [
-    AreaPopulationService,
-    CoursePopulationService,
-    FacultyPopulationService,
-    RoomPopulationService,
-    SemesterPopulationService,
     PopulationService,
   ],
 })
