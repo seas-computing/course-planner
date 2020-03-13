@@ -11,12 +11,12 @@ import {
 } from './data';
 
 /**
- * Imlements the nestjs lifecycle hooks to automatically populate and 
+ * Imlements the nestjs lifecycle hooks to automatically populate and
  * depopulate the database whenever the service is injected into a module.
  *
- * WARNING: THIS SERVICE WILL TRUNCATE ALL TABLES AUTOMATICALLY WHEN THE NEST 
+ * WARNING: THIS SERVICE WILL TRUNCATE ALL TABLES AUTOMATICALLY WHEN THE NEST
  * APP STOPS. IT SHOULD ONLY BE INJECTED IN TESTING ENVIRONMENTS.
- **/
+ */
 
 @Injectable()
 export class PopulationService implements
@@ -53,10 +53,10 @@ export class PopulationService implements
     await this.courseService.populate({ courses });
   }
 
-  /** 
+  /**
    * Calls the necessary drop functions to empty the tables, while maintaining
    * the schemas, after the nest app closes.
-   **/
+   */
   public async beforeApplicationShutdown(): Promise<void> {
     await this.courseService.drop();
     await this.facultyService.drop();
