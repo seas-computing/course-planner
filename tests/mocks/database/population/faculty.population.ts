@@ -3,10 +3,10 @@ import { Area } from 'server/area/area.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BasePopulationService } from './base.population';
-import { faculty } from './data';
+import { FacultyData } from './data';
 
 /**
- * Service for populating/depopulating the faculty table
+ * Populates the faculty table in the database
  */
 
 export class FacultyPopulationService extends BasePopulationService<Faculty> {
@@ -17,10 +17,7 @@ export class FacultyPopulationService extends BasePopulationService<Faculty> {
   protected areaRepository: Repository<Area>;
 
 
-  /**
-   * Load the test data for faculty into the database
-   */
-  public async populate() {
+  public async populate({ faculty }: { faculty: FacultyData[] }) {
     const allAreas = await this.areaRepository.find(
       {
         order: {
@@ -43,9 +40,6 @@ export class FacultyPopulationService extends BasePopulationService<Faculty> {
     }));
   }
 
-  /**
-   * remove all the faculty entries from the table
-   */
   public async drop() {
     return this.repository.query('TRUNCATE TABLE faculty CASCADE;');
   }

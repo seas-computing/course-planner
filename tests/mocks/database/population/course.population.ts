@@ -10,8 +10,11 @@ import { FacultyCourseInstance } from 'server/courseInstance/facultycourseinstan
 import { TERM_PATTERN, OFFERED } from 'common/constants';
 import { Meeting } from 'server/meeting/meeting.entity';
 import { BasePopulationService } from './base.population';
-import { courses } from './data';
+import { CourseData } from './data';
 
+/**
+ * Populates the Courses, Course Intances, and Meetings tables in the database
+ */
 export class CoursePopulationService
   extends BasePopulationService<Course> {
   @InjectRepository(Course)
@@ -29,7 +32,7 @@ export class CoursePopulationService
   @InjectRepository(Faculty)
   protected facultyRepository: Repository<Faculty>;
 
-  public async populate() {
+  public async populate({ courses }: { courses: CourseData[] }) {
     const allAreas = await this.areaRepository.find(
       {
         order: {
