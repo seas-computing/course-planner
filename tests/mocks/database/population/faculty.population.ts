@@ -5,13 +5,21 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BasePopulationService } from './base.population';
 import { faculty } from './data';
 
+/**
+ * Service for populating/depopulating the faculty table
+ */
+
 export class FacultyPopulationService extends BasePopulationService<Faculty> {
   @InjectRepository(Faculty)
-  protected Repository: Repository<Faculty>;
+  protected repository: Repository<Faculty>;
 
   @InjectRepository(Area)
   protected areaRepository: Repository<Area>;
 
+
+  /**
+   * Load the test data for faculty into the database
+   */
   public async populate() {
     const allAreas = await this.areaRepository.find(
       {
@@ -33,5 +41,12 @@ export class FacultyPopulationService extends BasePopulationService<Faculty> {
       );
       return instructor;
     }));
+  }
+
+  /**
+   * remove all the faculty entries from the table
+   */
+  public async drop() {
+    return this.repository.query('TRUNCATE TABLE faculty CASCADE;');
   }
 }

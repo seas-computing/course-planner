@@ -16,4 +16,8 @@ export class AreaPopulationService extends BasePopulationService<Area> {
         return area;
       }));
   }
+
+  public async drop() {
+    return this.repository.query('TRUNCATE TABLE area CASCADE;');
+  }
 }

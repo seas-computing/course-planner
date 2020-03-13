@@ -18,4 +18,8 @@ export class SemesterPopulationService extends BasePopulationService<Semester> {
       })
     );
   }
+
+  public async drop() {
+    return this.repository.query('TRUNCATE TABLE semester CASCADE;');
+  }
 }

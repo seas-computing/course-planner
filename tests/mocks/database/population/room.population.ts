@@ -42,6 +42,7 @@ export class RoomPopulationService extends BasePopulationService<Room> {
       rooms.map(({ name, building }): Room => {
         const room = new Room();
         room.name = name;
+        room.capacity = 42;
         room.building = buildingList.find(
           ({ name: bname }) => bname === building
         );
@@ -50,9 +51,9 @@ export class RoomPopulationService extends BasePopulationService<Room> {
     );
   }
 
-  public async drop(): Promise<void> {
-    this.repository.clear();
-    this.buildingRepository.clear();
-    this.campusRepository.clear();
+  public async drop() {
+    await this.repository.query('TRUNCATE TABLE room CASCADE;');
+    await this.repository.query('TRUNCATE TABLE building CASCADE;');
+    return this.repository.query('TRUNCATE TABLE campus CASCADE;');
   }
 }
