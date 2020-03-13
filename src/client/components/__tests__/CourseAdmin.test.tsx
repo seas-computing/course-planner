@@ -124,7 +124,7 @@ describe('Course Admin', function () {
           physicsCourseResponse.catalogNumber);
         strictEqual(physicsCourseTitle, physicsCourseResponse.title);
       });
-      it.only('passes the backgroundColor prop only when area exists', async function () {
+      it('passes the backgroundColor prop only when area exists', async function () {
         const { getAllByRole, getByText } = render(
           <AppStub dispatchMessage={dispatchMessage}>
             <CourseAdmin />
