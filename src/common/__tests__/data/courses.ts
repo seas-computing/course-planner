@@ -77,3 +77,21 @@ export const physicsCourseResponse: ManageCourseResponseDTO = {
   sameAs: '',
   private: true,
 };
+
+/**
+ * An example [[Course]] response representing a course with a non-existing area
+ */
+export const newAreaCourseResponse: ManageCourseResponseDTO = {
+  id: 'a1a13689-a925-4d0b-a4fc-21c93263c6d3',
+  area: {
+    id: '2213e1f8-31be-4e67-be06-a1eabd32ee0b',
+    name: 'NA',
+  },
+  title: 'Introduction to New Area',
+  isSEAS: true,
+  isUndergraduate: true,
+  catalogNumber: 'NA 100',
+  termPattern: TERM_PATTERN.SPRING,
+  sameAs: '',
+  private: true,
+};

@@ -3,6 +3,7 @@ import React, {
   ReactElement,
 } from 'react';
 import {
+  ok,
   strictEqual,
 } from 'assert';
 import {
@@ -20,6 +21,7 @@ import request,
 import {
   computerScienceCourseResponse,
   physicsCourseResponse,
+  newAreaCourseResponse,
   error,
 } from 'testData';
 import {
@@ -56,6 +58,7 @@ describe('Course Admin', function () {
   const testData = [
     computerScienceCourseResponse,
     physicsCourseResponse,
+    newAreaCourseResponse,
   ];
   beforeEach(function () {
     getStub = stub(request, 'get');
@@ -120,6 +123,18 @@ describe('Course Admin', function () {
         strictEqual(physicsCourseCatalogNumber,
           physicsCourseResponse.catalogNumber);
         strictEqual(physicsCourseTitle, physicsCourseResponse.title);
+      });
+      it.only('passes the backgroundColor prop only when area exists', async function () {
+        const { getAllByRole, getByText } = render(
+          <AppStub dispatchMessage={dispatchMessage}>
+            <CourseAdmin />
+          </AppStub>
+        );
+        await wait(() => getAllByRole('row').length > 1);
+        const physicsCourseStyle = window.getComputedStyle(getByText('AP'));
+        const newAreaCourseStyle = window.getComputedStyle(getByText('NA'));
+        ok(physicsCourseStyle.backgroundColor);
+        ok(!newAreaCourseStyle.backgroundColor);
       });
       context('when there are no course records', function () {
         const emptyTestData = [];

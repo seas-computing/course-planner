@@ -83,7 +83,7 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
                     ? theme
                       .color
                       .area[course.area.name.toLowerCase()]
-                    : ''}
+                    : undefined}
               >
                 {course.area.name}
               </TableCell>
