@@ -21,7 +21,7 @@ import {
 describe('Course Admin API', function () {
   let result: ManageCourseResponseDTO[];
   let getStub: SinonStub;
-  describe('GET', function () {
+  describe('GET /courses', function () {
     beforeEach(async function () {
       getStub = stub(request, 'get');
     });

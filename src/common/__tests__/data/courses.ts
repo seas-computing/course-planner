@@ -43,7 +43,7 @@ export const createCourseDtoExample: CreateCourse = Object.assign(
 );
 
 /**
- * An example [[Course]] response representing CS 50.
+ * An example [[ManageCourseResponseDTO]] response representing CS 50.
  */
 export const computerScienceCourseResponse: ManageCourseResponseDTO = {
   id: 'b8bc8456-51fd-48ef-b111-5a5990671cd1',
@@ -61,7 +61,7 @@ export const computerScienceCourseResponse: ManageCourseResponseDTO = {
 };
 
 /**
- * An example [[Course]] response representing AP 295a.
+ * An example [[ManageCourseResponseDTO]] response representing AP 295a.
  */
 export const physicsCourseResponse: ManageCourseResponseDTO = {
   id: 'a1a13689-a925-4d0b-a4fc-21c93263c6d2',
@@ -79,7 +79,7 @@ export const physicsCourseResponse: ManageCourseResponseDTO = {
 };
 
 /**
- * An example [[Course]] response representing a course with a non-existing area
+ * An example [[ManageCourseResponseDTO]] response representing a course with a non-existing area
  */
 export const newAreaCourseResponse: ManageCourseResponseDTO = {
   id: 'a1a13689-a925-4d0b-a4fc-21c93263c6d3',
