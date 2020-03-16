@@ -45,7 +45,7 @@
     "lint": "eslint --ext=ts,tsx,js ./src ./tests",
     "test": "TS_NODE_FILES=true nyc mocha",
     "test:watch": "TS_NODE_FILES=true mocha --watch",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --incremental false --noEmit",
     "start": "nodemon",
     "orm": "ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm"
   },
