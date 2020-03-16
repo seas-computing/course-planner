@@ -27,11 +27,14 @@ import {
   TabList,
   TabListItem,
   PageBody,
+  Logo,
+  PageTitle,
 } from 'mark-one';
 import { getCurrentUser } from 'client/api';
 import { UserResponse } from 'common/dto/users/userResponse.dto';
 import { Message } from './layout';
 import NoMatch from './pages/NoMatch';
+import logo from '../img/seas-logo.svg';
 import CourseAdmin from './pages/CourseAdmin';
 
 /**
@@ -94,8 +97,11 @@ const ColdApp: SFC = (): ReactElement => {
         <UserContext.Provider value={currentUser}>
           <MessageContext.Provider value={dispatchMessage}>
             <div className="app-content">
-              <Header>
-                Course Planning
+              <Header justify="left">
+                <Logo href="/" image={logo}>SEAS Logo</Logo>
+                <PageTitle>Course Planning</PageTitle>
+              </Header>
+              <nav>
                 <TabList>
                   <TabListItem>
                     <Link to="/courses">Courses</Link>
@@ -121,7 +127,7 @@ const ColdApp: SFC = (): ReactElement => {
                     <Link to="/course-admin">Course Admin</Link>
                   </TabListItem>
                 </TabList>
-              </Header>
+              </nav>
               <PageBody>
                 {currentMessage
             && (

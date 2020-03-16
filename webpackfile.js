@@ -59,7 +59,7 @@ const splitChunks = {
 const mode = 'none';
 
 const wpResolve = {
-  extensions: ['.ts', '.tsx', '.js', '.jsx'],
+  extensions: ['.ts', '.tsx', '.js', '.jsx', '.svg'],
   plugins: [
     new TSConfigPathsPlugin(),
   ],
