@@ -3,6 +3,12 @@ import { FACULTY_TYPE } from 'common/constants';
 import { FacultyResponseDTO } from 'common/dto/faculty/facultyResponse.dto';
 
 /**
+ * Empty instance of a [[Faculty]] entity with no properties set. Useful for
+ * testing that something of type `Faculty` was returned, or passed to a method
+ */
+export const emptyFaculty = new Faculty();
+
+/**
  * An example [[Faculty]] entry representing an applied math faculty member
  */
 
@@ -20,7 +26,8 @@ export const appliedMathFacultyMember = Object.assign(new Faculty(), {
 });
 
 /**
- * An example [[FacultyResponseDTO]] response representing a physics faculty member
+ * An example [[FacultyResponseDTO]] response representing a physics faculty
+ * member
  */
 export const physicsFacultyMemberResponse: FacultyResponseDTO = {
   id: '4a13c3b7-45ed-4aa9-94b7-29e70c9cd6b0',
@@ -35,7 +42,8 @@ export const physicsFacultyMemberResponse: FacultyResponseDTO = {
 };
 
 /**
- * An example [[FacultyResponseDTO]] response representing a bioengineering faculty member
+ * An example [[FacultyResponseDTO]] response representing a bioengineering
+ * faculty member
  */
 export const bioengineeringFacultyMemberResponse: FacultyResponseDTO = {
   id: '38ae66ec-7589-4948-8e21-41d142db4d3b',
@@ -47,4 +55,20 @@ export const bioengineeringFacultyMemberResponse: FacultyResponseDTO = {
   lastName: 'Su',
   HUID: '50602117',
   category: FACULTY_TYPE.LADDER,
+};
+
+/**
+ * An example [[FacultyResponseDTO]] response representing a faculty member
+ * categorized under a new area
+ */
+export const newAreaFacultyMemberResponse: FacultyResponseDTO = {
+  id: 'f696d531-aef2-413f-9922-f480aa9d6039',
+  area: {
+    id: '26526d71-2c22-4943-a012-bb5dba7cf2a5',
+    name: 'NA',
+  },
+  firstName: 'Jessie',
+  lastName: 'Lawson',
+  HUID: '80598351',
+  category: FACULTY_TYPE.NON_SEAS_LADDER,
 };
