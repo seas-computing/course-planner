@@ -85,13 +85,14 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
               <TableRow isStriped={i % 2 === 1} key={faculty.id}>
                 <TableCell
                   backgroundColor={
-                    theme.color.area[faculty.area.name.toLowerCase()]
+                    (faculty.area
+                      && theme.color.area[faculty.area.name.toLowerCase()])
                       ? theme
                         .color
                         .area[faculty.area.name.toLowerCase()]
                       : undefined}
                 >
-                  {faculty.area.name}
+                  {faculty.area?.name}
                 </TableCell>
                 <TableCell>{faculty.HUID}</TableCell>
                 <TableCell>{faculty.lastName}</TableCell>
