@@ -93,7 +93,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
                       : undefined
                   }
                 >
-                  {faculty.area?.name}
+                  {faculty.area && faculty.area.name}
                 </TableCell>
                 <TableCell>{faculty.HUID}</TableCell>
                 <TableCell>{faculty.lastName}</TableCell>
