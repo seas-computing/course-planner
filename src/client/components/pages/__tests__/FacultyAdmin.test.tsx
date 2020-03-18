@@ -1,17 +1,12 @@
-import React, {
-  FunctionComponent,
-  ReactElement,
-} from 'react';
+import React from 'react';
 import {
   strictEqual,
   ok,
 } from 'assert';
 import {
-  render,
   waitForElement,
   wait,
 } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
 import {
   stub,
   SinonStub,
@@ -24,33 +19,9 @@ import {
   newAreaFacultyMemberResponse,
   error,
 } from 'testData';
-import {
-  MessageContext,
-} from 'client/context';
-import { ThemeProvider } from 'styled-components';
-import { MarkOneTheme } from 'mark-one';
 import { FacultyResponseDTO } from 'common/dto/faculty/facultyResponse.dto';
-import { DispatchMessage } from '../../../context/MessageContext';
 import FacultyAdmin from '../FacultyAdmin';
-
-interface AppStubProps {
-  /** A function that passes down the message, if any */
-  dispatchMessage: DispatchMessage;
-}
-
-const AppStub: FunctionComponent<AppStubProps> = function (
-  { dispatchMessage, children }
-): ReactElement {
-  return (
-    <MemoryRouter>
-      <ThemeProvider theme={MarkOneTheme}>
-        <MessageContext.Provider value={dispatchMessage}>
-          {children}
-        </MessageContext.Provider>
-      </ThemeProvider>
-    </MemoryRouter>
-  );
-};
+import { render } from '../../../../common/__tests__/utils/customRender';
 
 describe('Faculty Admin', function () {
   let getStub: SinonStub;
@@ -73,18 +44,16 @@ describe('Faculty Admin', function () {
   describe('rendering', function () {
     it('creates a table', async function () {
       const { container } = render(
-        <AppStub dispatchMessage={dispatchMessage}>
-          <FacultyAdmin />
-        </AppStub>
+        <FacultyAdmin />,
+        dispatchMessage
       );
       return waitForElement(() => container.querySelector('.faculty-admin-table'));
     });
     context('when course data fetch succeeds', function () {
       it('displays the correct faculty information', async function () {
         const { getByText } = render(
-          <AppStub dispatchMessage={dispatchMessage}>
-            <FacultyAdmin />
-          </AppStub>
+          <FacultyAdmin />,
+          dispatchMessage
         );
         strictEqual(getStub.callCount, 1);
         const { lastName } = bioengineeringFacultyMemberResponse;
@@ -92,9 +61,8 @@ describe('Faculty Admin', function () {
       });
       it('displays the correct number of rows in the table', async function () {
         const { getAllByRole } = render(
-          <AppStub dispatchMessage={dispatchMessage}>
-            <FacultyAdmin />
-          </AppStub>
+          <FacultyAdmin />,
+          dispatchMessage
         );
         await wait(() => getAllByRole('row').length > 1);
         const rows = getAllByRole('row');
@@ -102,9 +70,8 @@ describe('Faculty Admin', function () {
       });
       it('displays the correct content in the table cells', async function () {
         const { getAllByRole } = render(
-          <AppStub dispatchMessage={dispatchMessage}>
-            <FacultyAdmin />
-          </AppStub>
+          <FacultyAdmin />,
+          dispatchMessage
         );
         await wait(() => getAllByRole('row').length > 1);
         const rows = Array.from(getAllByRole('row')) as HTMLTableRowElement[];
@@ -145,9 +112,8 @@ describe('Faculty Admin', function () {
       });
       it('passes the backgroundColor prop only when area exists', async function () {
         const { getAllByRole, getByText } = render(
-          <AppStub dispatchMessage={dispatchMessage}>
-            <FacultyAdmin />
-          </AppStub>
+          <FacultyAdmin />,
+          dispatchMessage
         );
         await wait(() => getAllByRole('row').length > 1);
         const physicsStyle = window.getComputedStyle(getByText('AP'));
@@ -168,9 +134,8 @@ describe('Faculty Admin', function () {
       });
       it('displays the correct number of rows in the table (only the header row', async function () {
         const { getAllByRole } = render(
-          <AppStub dispatchMessage={dispatchMessage}>
-            <FacultyAdmin />
-          </AppStub>
+          <FacultyAdmin />,
+          dispatchMessage
         );
         await wait(() => getAllByRole('row').length > 0);
         const rows = getAllByRole('row');
@@ -186,9 +151,8 @@ describe('Faculty Admin', function () {
       });
       it('should throw an error', async function () {
         const { getAllByRole } = render(
-          <AppStub dispatchMessage={dispatchMessage}>
-            <FacultyAdmin />
-          </AppStub>
+          <FacultyAdmin />,
+          dispatchMessage
         );
         await wait(() => getAllByRole('row').length > 0);
         strictEqual(dispatchMessage.callCount, 1);
