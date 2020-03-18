@@ -90,7 +90,8 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
                       ? theme
                         .color
                         .area[faculty.area.name.toLowerCase()]
-                      : undefined}
+                      : undefined
+                  }
                 >
                   {faculty.area?.name}
                 </TableCell>
