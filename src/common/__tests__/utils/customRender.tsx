@@ -7,9 +7,11 @@ import {
 } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { MarkOneTheme } from 'mark-one';
-import { MessageContext } from 'client/context';
+import {
+  MessageContext,
+  DispatchMessage,
+} from 'client/context';
 import { ThemeProvider } from 'styled-components';
-import { DispatchMessage } from '../../../client/context/MessageContext';
 
 /**
  * In order to streamline our tests, we are redefining the `render` function to
