@@ -137,12 +137,13 @@ describe('Faculty Admin', function () {
           <FacultyAdmin />,
           dispatchMessage
         );
-        await wait(() => getAllByRole('row').length > 0);
+        await wait(() => getAllByRole('row').length === emptyTestData.length + 1);
         const rows = getAllByRole('row');
         strictEqual(rows.length, emptyTestData.length + 1);
       });
     });
     context('when course data fetch fails', function () {
+      const emptyTestData = [];
       beforeEach(function () {
         getStub.rejects(error);
       });
@@ -154,7 +155,7 @@ describe('Faculty Admin', function () {
           <FacultyAdmin />,
           dispatchMessage
         );
-        await wait(() => getAllByRole('row').length > 0);
+        await wait(() => getAllByRole('row').length === emptyTestData.length + 1);
         strictEqual(dispatchMessage.callCount, 1);
       });
     });
