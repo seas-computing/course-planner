@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   strictEqual,
-  ok,
 } from 'assert';
 import {
   waitForElement,
@@ -110,16 +109,14 @@ describe('Faculty Admin', function () {
           bioengineeringFacultyMemberResponse.lastName
         );
       });
-      it('passes the backgroundColor prop only when area exists', async function () {
+      it('does not pass the backgroundColor prop when area does not exist', async function () {
         const { getAllByRole, getByText } = render(
           <FacultyAdmin />,
           dispatchMessage
         );
         await wait(() => getAllByRole('row').length > 1);
-        const physicsStyle = window.getComputedStyle(getByText('AP'));
         const newAreaStyle = window.getComputedStyle(getByText('NA'));
-        ok(physicsStyle.backgroundColor);
-        ok(!newAreaStyle.backgroundColor);
+        strictEqual(newAreaStyle.backgroundColor, '');
       });
     });
     context('when there are no faculty records', function () {
