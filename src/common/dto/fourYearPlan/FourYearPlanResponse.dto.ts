@@ -70,30 +70,6 @@ abstract class Semester {
 
 export abstract class FourYearPlanResponseDTO {
   @ApiModelProperty({
-    example: [
-      {
-        academicYear: 2011,
-        term: TERM_PATTERN.FALL,
-        courseInstances: [
-          {
-            id: 'fc772fd6-651e-40c3-97e6-b815818120ce',
-            area: 'AP',
-            catalogNumber: 'AP 291',
-            title: 'Electron Microscopy Laboratory',
-            faculty: [
-              {
-                lastName: 'Wilson',
-                firstName: 'Kendra',
-              },
-              {
-                lastName: 'Michaelson',
-                firstName: 'John',
-              },
-            ],
-          },
-        ],
-      },
-    ],
     type: Semester,
     isArray: true,
   })
