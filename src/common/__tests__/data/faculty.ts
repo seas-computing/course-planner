@@ -3,12 +3,6 @@ import { FACULTY_TYPE } from 'common/constants';
 import { FacultyResponseDTO } from 'common/dto/faculty/facultyResponse.dto';
 
 /**
- * Empty instance of a [[Faculty]] entity with no properties set. Useful for
- * testing that something of type `Faculty` was returned, or passed to a method
- */
-export const emptyFaculty = new Faculty();
-
-/**
  * An example [[Faculty]] entry representing an applied math faculty member
  */
 
