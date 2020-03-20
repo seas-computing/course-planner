@@ -64,8 +64,8 @@ describe('Faculty Admin', function () {
           <FacultyAdmin />,
           dispatchMessage
         );
-        await wait(() => getAllByRole('row').length > 1);
         const rows = getAllByRole('row');
+        await wait(() => rows.length > 1);
         strictEqual(rows.length, testData.length + 1);
       });
       it('displays the correct content in the table cells', async function () {
@@ -73,8 +73,8 @@ describe('Faculty Admin', function () {
           <FacultyAdmin />,
           dispatchMessage
         );
-        await wait(() => getAllByRole('row').length > 1);
         const rows = Array.from(getAllByRole('row')) as HTMLTableRowElement[];
+        await wait(() => rows.length > 1);
         const rowsContent = rows
           .map(
             (row) => (Array.from(row.cells).map((cell) => cell.textContent))
@@ -137,8 +137,8 @@ describe('Faculty Admin', function () {
           <FacultyAdmin />,
           dispatchMessage
         );
-        await wait(() => getAllByRole('row').length > 0);
         const rows = getAllByRole('row');
+        await wait(() => rows.length > 0);
         strictEqual(rows.length, emptyTestData.length + 1);
       });
     });
