@@ -82,8 +82,8 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
         </TableHead>
         <TableBody isScrollable>
           {currentFacultyMembers
-            .map((faculty, i): ReactElement<TableRowProps> => (
-              <TableRow isStriped={i % 2 === 1} key={faculty.id}>
+            .map((faculty, facultyIndex): ReactElement<TableRowProps> => (
+              <TableRow isStriped={facultyIndex % 2 === 1} key={faculty.id}>
                 <TableCell
                   alignment={ALIGN.CENTER}
                   backgroundColor={
