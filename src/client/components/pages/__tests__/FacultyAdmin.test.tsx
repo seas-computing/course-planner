@@ -137,8 +137,8 @@ describe('Faculty Admin', function () {
           <FacultyAdmin />,
           dispatchMessage
         );
+        await wait(() => getAllByRole('row').length > 0);
         const rows = getAllByRole('row');
-        await wait(() => rows.length > 0);
         strictEqual(rows.length, emptyTestData.length + 1);
       });
     });
