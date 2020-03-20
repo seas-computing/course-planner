@@ -15,6 +15,7 @@ abstract class Faculty {
   })
   public firstName: string;
 }
+
 abstract class CourseInstance {
   @ApiModelProperty({
     type: 'string',
@@ -46,6 +47,7 @@ abstract class CourseInstance {
   })
   public faculty: Faculty[];
 }
+
 abstract class Semester {
   @ApiModelProperty({
     type: 'number',
