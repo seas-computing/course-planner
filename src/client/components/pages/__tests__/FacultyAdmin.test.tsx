@@ -20,8 +20,8 @@ import {
   error,
 } from 'testData';
 import { FacultyResponseDTO } from 'common/dto/faculty/facultyResponse.dto';
+import { render } from 'test-utils';
 import FacultyAdmin from '../FacultyAdmin';
-import { render } from '../../../../common/__tests__/utils/customRender';
 
 describe('Faculty Admin', function () {
   let getStub: SinonStub;

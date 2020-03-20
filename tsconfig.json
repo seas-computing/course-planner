@@ -17,6 +17,9 @@
       "testData": [
         "common/__tests__/data/index.ts"
       ],
+      "test-utils": [
+        "./common/__tests__/utils/index.ts"
+      ],
       "client/*": [
         "client/*"
       ],
