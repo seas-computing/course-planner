@@ -15,6 +15,7 @@ import {
   TableCell,
   BorderlessButton,
   VARIANT,
+  ALIGN,
 } from 'mark-one';
 import { ThemeContext } from 'styled-components';
 import {
@@ -84,6 +85,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
             .map((faculty, i): ReactElement<TableRowProps> => (
               <TableRow isStriped={i % 2 === 1} key={faculty.id}>
                 <TableCell
+                  alignment={ALIGN.CENTER}
                   backgroundColor={
                     (faculty.area
                       && theme.color.area[faculty.area.name.toLowerCase()])
@@ -95,10 +97,10 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
                 >
                   {faculty.area && faculty.area.name}
                 </TableCell>
-                <TableCell>{faculty.HUID}</TableCell>
+                <TableCell alignment={ALIGN.CENTER}>{faculty.HUID}</TableCell>
                 <TableCell>{faculty.lastName}</TableCell>
                 <TableCell>{faculty.firstName}</TableCell>
-                <TableCell>
+                <TableCell alignment={ALIGN.CENTER}>
                   <BorderlessButton
                     variant={VARIANT.INFO}
                     onClick={(): void => {}}
