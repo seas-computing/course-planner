@@ -120,8 +120,9 @@ describe('Faculty Admin', function () {
       });
     });
     context('when there are no faculty records', function () {
-      const emptyTestData = [];
+      let emptyTestData;
       beforeEach(function () {
+        emptyTestData = [];
         getStub.resolves({
           data: emptyTestData,
         } as AxiosResponse<FacultyResponseDTO[]>);
