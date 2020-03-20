@@ -89,5 +89,16 @@ describe('App', function () {
         getByText('Course Prefix')
       ));
     });
+    it('renders the FacultyAdmin component when URL matches the faculty admin URL', function () {
+      const url = '/faculty-admin';
+      const { getByText } = render(
+        <MemoryRouter initialEntries={[url]}>
+          <App />
+        </MemoryRouter>
+      );
+      return waitForElement(() => (
+        getByText('HUID')
+      ));
+    });
   });
 });
