@@ -66,6 +66,9 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
       });
   }, []);
 
+  /**
+   * Provides the Mark-One theme using styled component's ThemeContext
+   */
   const theme: BaseTheme = useContext(ThemeContext);
 
   return (
