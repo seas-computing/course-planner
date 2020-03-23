@@ -43,9 +43,14 @@ export class CourseController {
     isArray: true,
   })
   public async getAll(): Promise<ManageCourseResponseDTO[]> {
-    return this.courseRepository.find({
+    const courses = await this.courseRepository.find({
       relations: ['area'],
     });
+
+    return courses.map((course: Course): ManageCourseResponseDTO => ({
+      ...course,
+      catalogNumber: `${course.prefix} ${course.number}`,
+    }));
   }
 
   @Post('/')
@@ -58,9 +63,15 @@ export class CourseController {
     @Body() course: CreateCourse
   ): Promise<ManageCourseResponseDTO> {
     try {
-      const newCourse = await this.courseService.save(course);
-
-      return newCourse;
+      const {
+        number,
+        prefix,
+        ...newCourse
+      } = await this.courseService.save(course);
+      return {
+        ...newCourse,
+        catalogNumber: `${prefix} ${number}`,
+      };
     } catch (e) {
       if (e instanceof EntityNotFoundError) {
         throw new NotFoundException('Unable to find course area in database');

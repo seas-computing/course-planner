@@ -61,7 +61,7 @@ const compiler = webpack([{
     ],
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.jsx'],
+    extensions: ['.ts', '.tsx', '.js', '.jsx', '.svg'],
     alias: {
       'react-dom': '@hot-loader/react-dom',
     },

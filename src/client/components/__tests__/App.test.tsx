@@ -1,6 +1,9 @@
 import React from 'react';
 import { strictEqual } from 'assert';
-import { render, waitForElement } from '@testing-library/react';
+import {
+  render,
+  waitForElement,
+} from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { stub, SinonStub } from 'sinon';
 import { AxiosResponse } from 'axios';
@@ -73,6 +76,17 @@ describe('App', function () {
       );
       return waitForElement(() => (
         getByText('404', { exact: false })
+      ));
+    });
+    it('renders the CourseAdmin component when URL matches the course admin URL', function () {
+      const url = '/course-admin';
+      const { getByText } = render(
+        <MemoryRouter initialEntries={[url]}>
+          <App />
+        </MemoryRouter>
+      );
+      return waitForElement(() => (
+        getByText('Course Prefix')
       ));
     });
   });

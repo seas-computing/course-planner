@@ -9,6 +9,7 @@ if (process.argv.includes('--server')) {
 }
 if (process.argv.includes('--integration')) {
   specGlobs.push('tests/**/*.test.ts');
+  specGlobs.push('tests/**/*.test.tsx');
 }
 module.exports = {
   exit: true,
@@ -31,5 +32,6 @@ module.exports = {
       'src/**/__tests__/*.test.ts',
       'src/**/__tests__/*.test.tsx',
       'tests/**/*.test.ts'
+      'tests/**/*.test.tsx',
     ],
 }
