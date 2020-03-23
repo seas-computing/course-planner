@@ -8,7 +8,8 @@ if (process.argv.includes('--server')) {
   specGlobs.push('src/server/**/__tests__/*.test.tsx');
 }
 if (process.argv.includes('--integration')) {
-  specGlobs.push('tests/integration/**/*.test.ts');
+  specGlobs.push('tests/**/*.test.ts');
+  specGlobs.push('tests/**/*.test.tsx');
 }
 module.exports = {
   exit: true,
@@ -28,9 +29,9 @@ module.exports = {
   spec: specGlobs.length > 0
     ? specGlobs
     : [
-        'src/**/*.test.ts',
-        'src/**/*/*.test.tsx',
-        'tests/integration/**/*.test.ts',
-        'tests/integration/**/*.test.tsx',
-      ],
+      'src/**/__tests__/*.test.ts',
+      'src/**/__tests__/*.test.tsx',
+      'tests/**/*.test.ts',
+      'tests/**/*.test.tsx',
+    ],
 }
