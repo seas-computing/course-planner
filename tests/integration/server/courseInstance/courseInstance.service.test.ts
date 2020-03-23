@@ -1,7 +1,6 @@
-import path from 'path';
 import { strictEqual } from 'assert';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
+import { TypeOrmModule, getRepositoryToken, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { CourseInstanceModule } from 'server/courseInstance/courseInstance.module';
 import { SemesterModule } from 'server/semester/semester.module';
 import { CourseInstanceService } from 'server/courseInstance/courseInstance.service';
@@ -11,10 +10,10 @@ import { CourseInstance } from 'server/courseInstance/courseinstance.entity';
 import { OFFERED } from 'common/constants';
 import { parse, format } from 'date-fns';
 import { Meeting } from 'server/meeting/meeting.entity';
+import { ConfigService } from 'server/config/config.service';
+import { ConfigModule } from 'server/config/config.module';
 import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
-
-const entityPathGlob = path.resolve(__dirname, '../../../../src/server/**/*.entity.ts');
 
 describe('Course Instance Service', function () {
   let testModule: TestingModule;
@@ -30,21 +29,28 @@ describe('Course Instance Service', function () {
   beforeEach(async function () {
     testModule = await Test.createTestingModule({
       imports: [
-        TypeOrmModule.forRoot({
-          ...db.connectionOptions,
-          synchronize: true,
-          autoLoadEntities: true,
-          retryAttempts: 10,
-          retryDelay: 10000,
-          entities: [
-            entityPathGlob,
-          ],
+        ConfigModule,
+        TypeOrmModule.forRootAsync({
+          imports: [ConfigModule],
+          useFactory: async (
+            config: ConfigService
+          ): Promise<TypeOrmModuleOptions> => ({
+            ...config.dbOptions,
+            synchronize: true,
+            autoLoadEntities: true,
+            retryAttempts: 10,
+            retryDelay: 10000,
+          }),
+          inject: [ConfigService],
         }),
         PopulationModule,
         SemesterModule,
         CourseInstanceModule,
       ],
-    }).compile();
+    })
+      .overrideProvider(ConfigService)
+      .useValue(new ConfigService(db.connectionEnv))
+      .compile();
     ciService = testModule.get(CourseInstanceService);
     await testModule.createNestApplication().init();
   });
