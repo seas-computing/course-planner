@@ -1,6 +1,5 @@
-import path from 'path';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
+import { TypeOrmModule, getRepositoryToken, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { createConnection, getRepository } from 'typeorm';
 import { Area } from 'server/area/area.entity';
 import { strictEqual, notStrictEqual } from 'assert';
@@ -14,11 +13,11 @@ import { FacultyCourseInstance } from 'server/courseInstance/facultycourseinstan
 import { Meeting } from 'server/meeting/meeting.entity';
 import { Course } from 'server/course/course.entity';
 import { OFFERED } from 'common/constants';
+import { ConfigModule } from 'server/config/config.module';
+import { ConfigService } from 'server/config/config.service';
 import { PopulationModule } from '../population.module';
 import MockDB from '../../MockDB';
 import * as testData from '../data';
-
-const entityPathGlob = path.resolve(__dirname, '../../../../../src/server/**/*.entity.ts');
 
 describe('Population Service', function () {
   let testModule: TestingModule;
@@ -39,19 +38,26 @@ describe('Population Service', function () {
     before(async function () {
       testModule = await Test.createTestingModule({
         imports: [
-          TypeOrmModule.forRoot({
-            ...db.connectionOptions,
-            synchronize: true,
-            autoLoadEntities: true,
-            retryAttempts: 10,
-            retryDelay: 10000,
-            entities: [
-              entityPathGlob,
-            ],
+          ConfigModule,
+          TypeOrmModule.forRootAsync({
+            imports: [ConfigModule],
+            useFactory: async (
+              config: ConfigService
+            ): Promise<TypeOrmModuleOptions> => ({
+              ...config.dbOptions,
+              synchronize: true,
+              autoLoadEntities: true,
+              retryAttempts: 10,
+              retryDelay: 10000,
+            }),
+            inject: [ConfigService],
           }),
           PopulationModule,
         ],
-      }).compile();
+      })
+        .overrideProvider(ConfigService)
+        .useValue(new ConfigService(db.connectionEnv))
+        .compile();
       // calling init triggers the onApplicationBootstrap hook
       await testModule.createNestApplication().init();
     });
@@ -232,12 +238,10 @@ describe('Population Service', function () {
       // close the module, triggering beforeApplicationShutdown hook
       await testModule.close();
       // Open a direct connection to the db with TypeORM
+      const config = new ConfigService(db.connectionEnv);
       return createConnection({
-        ...db.connectionOptions,
+        ...config.dbOptions,
         synchronize: true,
-        entities: [
-          entityPathGlob,
-        ],
       });
     });
     it('Should truncate the area table', async function () {

@@ -1,6 +1,5 @@
 import child, { spawn, ChildProcess } from 'child_process';
 import { promisify } from 'util';
-import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 
 /**
  * Wraps Node's exec function for a promise interface
@@ -88,17 +87,17 @@ export default class MockDB {
 
   /**
    * Outputs the basic connection parameters needed to connect to the database
-   * from TypeORM. Notably does not include the list of entities.
+   * from TypeORM. Formatted to be passed into the contstructor of the
+   * [[ConfigService]]
    */
-  public get connectionOptions(): PostgresConnectionOptions {
+  public get connectionEnv(): { [key: string]: string } {
     if (this.state === CONTAINER_STATE.RUNNING) {
       return {
-        type: 'postgres',
-        database: this.databaseName,
-        username: this.user,
-        password: this.password,
-        host: 'localhost',
-        port: this.port,
+        DB_DATABASE: this.databaseName,
+        DB_USERNAME: this.user,
+        DB_PASSWORD: this.password,
+        DB_HOSTNAME: 'localhost',
+        DB_PORT: this.port.toString(),
       };
     }
     return null;
