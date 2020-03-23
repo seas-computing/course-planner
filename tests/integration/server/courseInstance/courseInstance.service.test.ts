@@ -1,22 +1,22 @@
 import path from 'path';
 import { strictEqual } from 'assert';
-import { stub, SinonStub } from 'sinon';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
 import { CourseInstanceModule } from 'server/courseInstance/courseInstance.module';
 import { SemesterModule } from 'server/semester/semester.module';
 import { CourseInstanceService } from 'server/courseInstance/courseInstance.service';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
-import { TERM } from 'server/semester/semester.entity';
 import { Course } from 'server/course/course.entity';
 import { CourseInstance } from 'server/courseInstance/courseinstance.entity';
 import { OFFERED } from 'common/constants';
+import { parse, format } from 'date-fns';
+import { Meeting } from 'server/meeting/meeting.entity';
 import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 
 const entityPathGlob = path.resolve(__dirname, '../../../../src/server/**/*.entity.ts');
 
-describe.only('Course Instance Service', function () {
+describe('Course Instance Service', function () {
   let testModule: TestingModule;
   let db: MockDB;
   let ciService: CourseInstanceService;
@@ -104,8 +104,53 @@ describe.only('Course Instance Service', function () {
         });
       });
     });
-    it('Should format the startTimes as HH:MM AM');
-    it('Should format the endTimes as HH:MM AM');
-    it('Should concatenate the room and building name');
+    describe('Meetings', function () {
+      let dbMeetings: Meeting[];
+      beforeEach(async function () {
+        const meetingRepository = testModule
+          .get(getRepositoryToken(Meeting));
+        dbMeetings = await meetingRepository.find({
+          relations: ['room', 'room.building'],
+        });
+      });
+      it('Should format the startTimes and endTimes as HH:MM AM', function () {
+        result.forEach(({ spring, fall }) => {
+          [spring, fall].forEach(({ meetings }) => {
+            meetings.forEach(({ id, startTime, endTime }) => {
+              if (id) {
+                const {
+                  startTime: dbStartTime,
+                  endTime: dbEndTime,
+                } = dbMeetings
+                  .find(
+                    ({ id: dbID }) => dbID === id
+                  );
+                // our dates in the db are always UTC-5, so need to create a
+                // date object set to EST, not EDT
+                const fmtDBStartTime = format(parse(dbStartTime, 'HH:mm:ssx', new Date(2020, 0, 1)), 'hh:mm aa');
+                const fmtDBEndTime = format(parse(dbEndTime, 'HH:mm:ssx', new Date(2020, 0, 1)), 'hh:mm aa');
+
+                strictEqual(startTime, fmtDBStartTime);
+                strictEqual(endTime, fmtDBEndTime);
+              }
+            });
+          });
+        });
+      });
+      it('Should concatenate the room and building name', function () {
+        result.forEach(({ spring, fall }) => {
+          [spring, fall].forEach(({ meetings }) => {
+            meetings.forEach(({ id, room }) => {
+              if (id) {
+                const { room: dbRoom } = dbMeetings
+                  .find(({ id: dbID }) => dbID === id);
+                const catName = `${dbRoom.building.name} ${dbRoom.name}`;
+                strictEqual(room.name, catName);
+              }
+            });
+          });
+        });
+      });
+    });
   });
 });
