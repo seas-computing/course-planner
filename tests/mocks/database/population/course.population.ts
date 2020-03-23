@@ -125,9 +125,6 @@ export class CoursePopulationService
   }
 
   public async drop() {
-    await this.repository.query('TRUNCATE TABLE course CASCADE;');
-    await this.repository.query('TRUNCATE TABLE course_instance CASCADE;');
-    await this.repository.query('TRUNCATE TABLE meeting CASCADE;');
-    return this.repository.query('TRUNCATE TABLE faculty_course_instances_course_instance CASCADE;');
+    return this.repository.query('TRUNCATE TABLE course, course_instance, meeting, faculty_course_instances_course_instance CASCADE;');
   }
 }

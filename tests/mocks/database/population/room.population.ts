@@ -59,8 +59,6 @@ export class RoomPopulationService extends BasePopulationService<Room> {
   }
 
   public async drop() {
-    await this.repository.query('TRUNCATE TABLE room CASCADE;');
-    await this.repository.query('TRUNCATE TABLE building CASCADE;');
-    return this.repository.query('TRUNCATE TABLE campus CASCADE;');
+    return this.repository.query('TRUNCATE TABLE room, building, campus CASCADE;');
   }
 }
