@@ -1,5 +1,5 @@
 import {
-  Controller, Get, UseGuards, Body, Inject, Post, NotFoundException, Put,
+  Controller, Get, UseGuards, Body, Inject, Post, NotFoundException, Put, Param,
 } from '@nestjs/common';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -10,12 +10,15 @@ import {
   ApiUnauthorizedResponse,
   ApiUseTags,
   ApiForbiddenResponse,
+  ApiBadRequestResponse,
+  ApiNotFoundResponse,
 } from '@nestjs/swagger';
 import { RequireGroup } from 'server/auth/group.guard';
 import { GROUP } from 'common/constants';
 import { CreateCourse } from 'common/dto/courses/CreateCourse.dto';
 import { Authentication } from 'server/auth/authentication.guard';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
+import { UpdateCourseDTO } from 'common/dto/courses/UpdateCourse.dto';
 import { Course } from './course.entity';
 import { CourseService } from './course.service';
 
@@ -82,6 +85,39 @@ export class CourseController {
   }
 
   @Put(':id')
-  public async update(): Promise<void> {
+  @ApiOperation({ title: 'Update an existing course' })
+  @ApiOkResponse({
+    type: ManageCourseResponseDTO,
+    description: 'The updated course information',
+  })
+  @ApiNotFoundResponse({
+    description: 'The course you attempted to be update could not be found',
+  })
+  @ApiBadRequestResponse({
+    description: 'The supplied data did not meet validation requirements',
+  })
+  public async update(
+    @Param('id') id: string,
+    @Body() course: UpdateCourseDTO
+  ): Promise<ManageCourseResponseDTO> {
+    try {
+      await this.courseRepository.findOneOrFail(id);
+    } catch (e) {
+      throw new NotFoundException(`Unable to find course ${id}`);
+    }
+
+    const {
+      prefix,
+      number,
+      ...updatedCourse
+    } = await this.courseRepository.save({
+      id,
+      ...course,
+    });
+
+    return {
+      ...updatedCourse,
+      catalogNumber: `${prefix} ${number}`,
+    };
   }
 }

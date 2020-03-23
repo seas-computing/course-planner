@@ -2,6 +2,7 @@ import { Course } from 'server/course/course.entity';
 import { TERM_PATTERN } from 'common/constants';
 import { CreateCourse } from 'common/dto/courses/CreateCourse.dto';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
+import { UpdateCourseDTO } from 'common/dto/courses/UpdateCourse.dto';
 /**
  * Empty instance of a [[Course]] entity with no properties set. Useful for
  * testing that something of type `Course` was returned, or passed to a method
@@ -24,6 +25,9 @@ export const computerScienceCourse = Object.assign(new Course(), {
   isUndergraduate: true,
 });
 
+/**
+ * An example of [[CreateCourse]] representing CS 50
+ */
 export const createCourseDtoExample: CreateCourse = Object.assign(
   new Course(),
   {
@@ -93,5 +97,22 @@ export const newAreaCourseResponse: ManageCourseResponseDTO = {
   catalogNumber: 'NA 100',
   termPattern: TERM_PATTERN.SPRING,
   sameAs: '',
+  private: true,
+};
+
+/**
+ * An example [[UpdateCourseDTO]] response representing CS 50
+ */
+export const updateCourseExample: UpdateCourseDTO = {
+  area: {
+    id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
+    name: 'CS',
+  },
+  title: 'Introduction to Computer Science',
+  prefix: 'CS',
+  number: '050',
+  termPattern: TERM_PATTERN.FALL,
+  isUndergraduate: true,
+  isSEAS: true,
   private: true,
 };

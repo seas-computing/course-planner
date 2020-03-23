@@ -1,4 +1,8 @@
-import { strictEqual, deepStrictEqual, fail } from 'assert';
+import {
+  strictEqual,
+  deepStrictEqual,
+  fail,
+} from 'assert';
 import { TestingModule, Test } from '@nestjs/testing';
 import { stub, SinonStub } from 'sinon';
 import { getRepositoryToken } from '@nestjs/typeorm';
