@@ -31,7 +31,7 @@ module.exports = {
     : [
       'src/**/__tests__/*.test.ts',
       'src/**/__tests__/*.test.tsx',
-      'tests/**/*.test.ts'
+      'tests/**/*.test.ts',
       'tests/**/*.test.tsx',
     ],
 }
