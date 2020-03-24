@@ -3,6 +3,7 @@ import { strictEqual } from 'assert';
 import {
   render,
   waitForElement,
+  fireEvent,
 } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { stub, SinonStub } from 'sinon';
@@ -40,6 +41,19 @@ describe('App', function () {
       );
       await waitForElement(() => getByText('Courses'));
       const tab = getByText('Courses').parentNode as HTMLElement;
+      const style = window.getComputedStyle(tab);
+      strictEqual(style['border-bottom'], '1px solid transparent');
+    });
+    it('displays a different tab with active styling when clicked', async function () {
+      const { getByText } = render(
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>
+      );
+      await waitForElement(() => getByText('Courses'));
+      const link = getByText('Non class meetings') as HTMLElement;
+      fireEvent.click(link);
+      const tab = link.parentNode as HTMLElement;
       const style = window.getComputedStyle(tab);
       strictEqual(style['border-bottom'], '1px solid transparent');
     });
