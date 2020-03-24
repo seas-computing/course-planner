@@ -91,6 +91,21 @@ const ColdApp: SFC = (): ReactElement => {
       });
   }, []);
 
+  /**
+   * Manages which tab is currently selected
+   */
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const tabs = [
+    { link: '/courses', text: 'Courses' },
+    { link: '/non-class-meetings', text: 'Non class meetings' },
+    { link: '/faculty', text: 'Faculty' },
+    { link: '/schedule', text: 'Schedule' },
+    { link: '/four-year-plan', text: '4 Year Plan' },
+    { link: '/course-admin', text: 'Course Admin' },
+    { link: '/faculty-admin', text: 'Faculty Admin' },
+  ];
+
   return (
     <div className="app">
       <MarkOneWrapper>
@@ -103,29 +118,19 @@ const ColdApp: SFC = (): ReactElement => {
               </Header>
               <nav>
                 <TabList>
-                  <TabListItem>
-                    <Link to="/courses">Courses</Link>
-                  </TabListItem>
-
-                  <TabListItem>
-                    <Link to="/non-class-meetings">Non class meetings</Link>
-                  </TabListItem>
-
-                  <TabListItem>
-                    <Link to="/faculty">Faculty</Link>
-                  </TabListItem>
-
-                  <TabListItem>
-                    <Link to="/schedule">Schedule</Link>
-                  </TabListItem>
-
-                  <TabListItem>
-                    <Link to="/four-year-plan">4 Year Plan</Link>
-                  </TabListItem>
-
-                  <TabListItem>
-                    <Link to="/course-admin">Course Admin</Link>
-                  </TabListItem>
+                  {tabs.map((tab, index): ReactElement => (
+                    <TabListItem
+                      isActive={currentIndex === index}
+                      key={tab.text}
+                    >
+                      <Link
+                        to={tab.link}
+                        onClick={(): void => setCurrentIndex(index)}
+                      >
+                        {tab.text}
+                      </Link>
+                    </TabListItem>
+                  ))}
                 </TabList>
               </nav>
               <PageBody>
