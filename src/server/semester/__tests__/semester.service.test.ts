@@ -71,4 +71,3 @@ describe('Semester Service', function () {
     });
   });
 });
-
