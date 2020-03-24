@@ -32,6 +32,17 @@ describe('App', function () {
       );
       return waitForElement(() => container.querySelector('.app-content'));
     });
+    it('initially loads the Courses tab with correct border styling', async function () {
+      const { getByText } = render(
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>
+      );
+      await waitForElement(() => getByText('Courses'));
+      const tab = getByText('Courses').parentNode as HTMLElement;
+      const style = window.getComputedStyle(tab);
+      strictEqual(style['border-bottom'], '1px solid transparent');
+    });
     context('When userFetch succeeds', function () {
       beforeEach(function () {
         apiStub.resolves({
