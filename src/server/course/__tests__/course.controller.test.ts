@@ -14,6 +14,7 @@ import {
   string,
   computerScienceCourseResponse,
   updateCourseExample,
+  safeString,
 } from 'testData';
 import { Authentication } from 'server/auth/authentication.guard';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
@@ -22,6 +23,7 @@ import { NotFoundException } from '@nestjs/common';
 import { CourseController } from '../course.controller';
 import { Course } from '../course.entity';
 import { CourseService } from '../course.service';
+import { UpdateDateColumn } from 'typeorm';
 
 const mockCourseRepository = {
   find: stub(),
@@ -152,6 +154,17 @@ describe('Course controller', function () {
         controller.update(computerScienceCourse.id, updateCourseExample),
         NotFoundException
       );
+    });
+    it('returns the updated course', async function () {
+      mockCourseRepository.findOneOrFail.resolves();
+      mockCourseRepository.save.resolves(computerScienceCourse);
+
+      const course = await controller.update(
+        computerScienceCourse.id,
+        updateCourseExample
+      );
+
+      deepStrictEqual(course, computerScienceCourseResponse);
     });
   });
 });
