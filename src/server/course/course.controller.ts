@@ -103,7 +103,9 @@ export class CourseController {
     try {
       await this.courseRepository.findOneOrFail(id);
     } catch (e) {
-      throw new NotFoundException(`Unable to find course ${id}`);
+      if (e instanceof EntityNotFoundError) {
+        throw new NotFoundException(`Unable to find course ${id}`);
+      }
     }
 
     const {

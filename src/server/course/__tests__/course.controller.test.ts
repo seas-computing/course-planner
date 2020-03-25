@@ -2,6 +2,7 @@ import {
   strictEqual,
   deepStrictEqual,
   fail,
+  rejects,
 } from 'assert';
 import { TestingModule, Test } from '@nestjs/testing';
 import { stub, SinonStub } from 'sinon';
@@ -141,6 +142,15 @@ describe('Course controller', function () {
       deepStrictEqual(
         mockCourseRepository.save.args[0][0].id,
         computerScienceCourse.id
+      );
+    });
+    it('throws a NotFoundException if the course being udpated doesn\'t exist', async function () {
+      mockCourseRepository.findOneOrFail.rejects(new EntityNotFoundError(Course, ''));
+      mockCourseRepository.save.resolves(computerScienceCourse);
+
+      await rejects(
+        controller.update(computerScienceCourse.id, updateCourseExample),
+        NotFoundException
       );
     });
   });
