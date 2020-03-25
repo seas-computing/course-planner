@@ -166,5 +166,19 @@ describe('Course controller', function () {
 
       deepStrictEqual(course, computerScienceCourseResponse);
     });
+    it('allows a partial record update', async function () {
+      mockCourseRepository.findOneOrFail.resolves();
+      mockCourseRepository.save.resolves({
+        ...computerScienceCourse,
+        title: safeString,
+      });
+
+      const { title } = await controller.update(
+        computerScienceCourse.id,
+        { title: safeString }
+      );
+
+      deepStrictEqual(title, safeString);
+    });
   });
 });
