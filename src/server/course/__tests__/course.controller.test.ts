@@ -132,5 +132,16 @@ describe('Course controller', function () {
         { ...computerScienceCourse }
       );
     });
+    it('updates the course specified', async function () {
+      mockCourseRepository.findOneOrFail.resolves();
+      mockCourseRepository.save.resolves(computerScienceCourse);
+
+      await controller.update(computerScienceCourse.id, updateCourseExample);
+
+      deepStrictEqual(
+        mockCourseRepository.save.args[0][0].id,
+        computerScienceCourse.id
+      );
+    });
   });
 });
