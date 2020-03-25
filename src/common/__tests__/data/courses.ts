@@ -112,6 +112,7 @@ export const updateCourseExample: UpdateCourseDTO = {
   prefix: 'CS',
   number: '050',
   termPattern: TERM_PATTERN.FALL,
+  sameAs: '',
   isUndergraduate: true,
   isSEAS: true,
   private: true,

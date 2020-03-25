@@ -12,6 +12,7 @@ import {
   createCourseDtoExample,
   string,
   computerScienceCourseResponse,
+  updateCourseExample,
 } from 'testData';
 import { Authentication } from 'server/auth/authentication.guard';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
@@ -23,6 +24,8 @@ import { CourseService } from '../course.service';
 
 const mockCourseRepository = {
   find: stub(),
+  findOneOrFail: stub(),
+  save: stub(),
 };
 
 const mockCourseService = {
@@ -85,7 +88,6 @@ describe('Course controller', function () {
         createCourseDtoExample
       );
     });
-
     it('returns the newly created course', async function () {
       mockCourseService.save.resolves(computerScienceCourse);
 
@@ -114,6 +116,21 @@ describe('Course controller', function () {
         strictEqual(e instanceof NotFoundException, false);
         strictEqual(e.message.includes('area'), false);
       }
+    });
+  });
+
+  describe('update', function () {
+    it('updates a course in the database', async function () {
+      mockCourseRepository.findOneOrFail.resolves();
+      mockCourseRepository.save.resolves(computerScienceCourse);
+
+      await controller.update(computerScienceCourse.id, updateCourseExample);
+
+      strictEqual(mockCourseRepository.save.callCount, 1);
+      deepStrictEqual(
+        mockCourseRepository.save.args[0][0],
+        { ...computerScienceCourse }
+      );
     });
   });
 });
