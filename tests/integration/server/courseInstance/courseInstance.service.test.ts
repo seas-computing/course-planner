@@ -1,4 +1,6 @@
 import { strictEqual } from 'assert';
+import { parse } from 'date-fns';
+import { format, utcToZonedTime } from 'date-fns-tz';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule, getRepositoryToken, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { CourseInstanceModule } from 'server/courseInstance/courseInstance.module';
@@ -8,7 +10,6 @@ import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse
 import { Course } from 'server/course/course.entity';
 import { CourseInstance } from 'server/courseInstance/courseinstance.entity';
 import { OFFERED } from 'common/constants';
-import { parse, format } from 'date-fns';
 import { Meeting } from 'server/meeting/meeting.entity';
 import { ConfigService } from 'server/config/config.service';
 import { ConfigModule } from 'server/config/config.module';
@@ -131,10 +132,36 @@ describe('Course Instance Service', function () {
                   .find(
                     ({ id: dbID }) => dbID === id
                   );
-                // our dates in the db are always UTC-5, so need to create a
-                // date object set to EST, not EDT
-                const fmtDBStartTime = format(parse(dbStartTime, 'HH:mm:ssx', new Date(2020, 0, 1)), 'hh:mm aa');
-                const fmtDBEndTime = format(parse(dbEndTime, 'HH:mm:ssx', new Date(2020, 0, 1)), 'hh:mm aa');
+                // We're using Jan 1 as the date because JS is being too clever
+                // and always trying to componsate for DST for us.
+                const fmtDBStartTime = format(
+                  parse(
+                    dbStartTime,
+                    'HH:mm:ssx',
+                    utcToZonedTime(
+                      new Date(2020, 1, 1),
+                      '-5'
+                    )
+                  ),
+                  'hh:mm aa',
+                  {
+                    timeZone: '-5',
+                  }
+                );
+                const fmtDBEndTime = format(
+                  parse(
+                    dbEndTime,
+                    'HH:mm:ssx',
+                    utcToZonedTime(
+                      new Date(2020, 1, 1),
+                      '-5'
+                    )
+                  ),
+                  'hh:mm aa',
+                  {
+                    timeZone: '-5',
+                  }
+                );
 
                 strictEqual(startTime, fmtDBStartTime);
                 strictEqual(endTime, fmtDBEndTime);
