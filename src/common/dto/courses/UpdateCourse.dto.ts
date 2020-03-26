@@ -3,10 +3,8 @@ import { TERM_PATTERN } from 'common/constants';
 import {
   IsBoolean,
   IsString,
-  IsNotEmpty,
   IsEnum,
   IsOptional,
-  IsUUID,
 } from 'class-validator';
 import { CourseArea } from './CourseArea.dto';
 

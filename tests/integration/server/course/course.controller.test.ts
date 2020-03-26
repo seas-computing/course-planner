@@ -8,7 +8,7 @@ import {
   ForbiddenException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { strictEqual, deepStrictEqual, fail } from 'assert';
+import { strictEqual, deepStrictEqual } from 'assert';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { AUTH_MODE } from 'common/constants';
 import { ConfigModule } from 'server/config/config.module';
@@ -30,8 +30,8 @@ import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 import { Area } from 'server/area/area.entity';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
-import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import { UpdateCourseDTO } from 'common/dto/courses/UpdateCourse.dto';
+import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 const mockAreaRepository = {
   findOneOrFail: stub(),

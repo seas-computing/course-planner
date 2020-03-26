@@ -23,7 +23,6 @@ import { NotFoundException } from '@nestjs/common';
 import { CourseController } from '../course.controller';
 import { Course } from '../course.entity';
 import { CourseService } from '../course.service';
-import { UpdateDateColumn } from 'typeorm';
 
 const mockCourseRepository = {
   find: stub(),
