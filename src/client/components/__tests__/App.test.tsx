@@ -33,7 +33,7 @@ describe('App', function () {
       );
       return waitForElement(() => container.querySelector('.app-content'));
     });
-    it('initially loads the Courses tab with no bottom border', async function () {
+    it('initially loads the Courses tab with a transparent bottom border', async function () {
       const { getByText } = render(
         <MemoryRouter>
           <App />
