@@ -105,6 +105,8 @@ export class CourseController {
     } catch (e) {
       if (e instanceof EntityNotFoundError) {
         throw new NotFoundException(`Unable to find course ${id}`);
+      } else {
+        throw e;
       }
     }
 

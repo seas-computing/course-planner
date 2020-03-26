@@ -15,6 +15,7 @@ import {
   computerScienceCourseResponse,
   updateCourseExample,
   safeString,
+  error,
 } from 'testData';
 import { Authentication } from 'server/auth/authentication.guard';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
@@ -147,11 +148,18 @@ describe('Course controller', function () {
     });
     it('throws a NotFoundException if the course being udpated doesn\'t exist', async function () {
       mockCourseRepository.findOneOrFail.rejects(new EntityNotFoundError(Course, ''));
-      mockCourseRepository.save.resolves(computerScienceCourse);
 
       await rejects(
         controller.update(computerScienceCourse.id, updateCourseExample),
         NotFoundException
+      );
+    });
+    it('only catches EntityNotFoundError exceptions', async function () {
+      mockCourseRepository.findOneOrFail.rejects(error);
+
+      await rejects(
+        controller.update(computerScienceCourse.id, updateCourseExample),
+        Error
       );
     });
     it('returns the updated course', async function () {
