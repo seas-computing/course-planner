@@ -135,32 +135,26 @@ describe('Course Instance Service', function () {
                 // We're using Jan 1 as the date because JS is being too clever
                 // and always trying to componsate for DST for us.
                 const fmtDBStartTime = format(
-                  parse(
-                    dbStartTime,
-                    'HH:mm:ssx',
-                    utcToZonedTime(
-                      new Date(2020, 1, 1),
-                      '-5'
-                    )
+                  utcToZonedTime(
+                    parse(
+                      dbStartTime,
+                      'HH:mm:ssx',
+                      new Date(2020, 0, 1)
+                    ),
+                    'America/New_York'
                   ),
-                  'hh:mm aa',
-                  {
-                    timeZone: '-5',
-                  }
+                  'hh:mm aa'
                 );
                 const fmtDBEndTime = format(
-                  parse(
-                    dbEndTime,
-                    'HH:mm:ssx',
-                    utcToZonedTime(
-                      new Date(2020, 1, 1),
-                      '-5'
-                    )
+                  utcToZonedTime(
+                    parse(
+                      dbEndTime,
+                      'HH:mm:ssx',
+                      new Date(2020, 0, 1)
+                    ),
+                    'America/New_York'
                   ),
-                  'hh:mm aa',
-                  {
-                    timeZone: '-5',
-                  }
+                  'hh:mm aa'
                 );
 
                 strictEqual(startTime, fmtDBStartTime);
