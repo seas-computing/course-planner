@@ -109,7 +109,7 @@ describe('Course controller', function () {
         strictEqual(e.response.message.includes('area'), true);
       }
     });
-    it('re-throws any exceptions other than NotFoundException ', async function () {
+    it('re-throws any exceptions other than EntityNotFoundError ', async function () {
       mockCourseService.save.rejects(new Error(string));
 
       try {
@@ -154,7 +154,7 @@ describe('Course controller', function () {
         NotFoundException
       );
     });
-    it('only catches EntityNotFoundError exceptions', async function () {
+    it('re-throws any exceptions other than EntityNotFoundError', async function () {
       mockCourseRepository.findOneOrFail.rejects(error);
 
       await rejects(
