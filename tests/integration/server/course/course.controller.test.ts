@@ -23,11 +23,14 @@ import {
   computerScienceCourse,
   createCourseDtoExample,
   computerScienceCourseResponse,
+  updateCourseExample,
 } from 'common/__tests__/data';
 import { Semester } from 'server/semester/semester.entity';
 import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 import { Area } from 'server/area/area.entity';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
+import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
+import { UpdateCourseDTO } from 'common/dto/courses/UpdateCourse.dto';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 const mockAreaRepository = {
@@ -36,6 +39,7 @@ const mockAreaRepository = {
 
 const mockCourseRepository = {
   find: stub(),
+  findOneOrFail: stub(),
   save: stub(),
 };
 
@@ -197,6 +201,64 @@ describe('Course API', function () {
           const response = await request(api)
             .post('/api/courses')
             .send(createCourseDtoExample);
+
+          strictEqual(response.ok, false);
+          strictEqual(response.status, HttpStatus.UNAUTHORIZED);
+          strictEqual(mockCourseRepository.find.callCount, 0);
+        });
+      });
+    });
+  });
+
+  describe('PUT /courses/:id', function () {
+    describe('User is not authenticated', function () {
+      it('is inaccessible to unauthenticated users', async function () {
+        authStub.rejects(new ForbiddenException());
+
+        const response = await request(api).get('/api/courses');
+
+        strictEqual(response.ok, false);
+        strictEqual(response.status, HttpStatus.FORBIDDEN);
+        strictEqual(mockCourseRepository.find.callCount, 0);
+      });
+    });
+    describe('User is authenticated', function () {
+      describe('User is a member of the admin group', function () {
+        beforeEach(async function () {
+          authStub.returns(adminUser);
+        });
+        it('returns a 404 if the specified course does not exist', async function () {
+          mockCourseRepository.findOneOrFail.rejects(new EntityNotFoundError(Course, ''));
+
+          const response = await request(api)
+            .put(`/api/courses/${computerScienceCourse.id}`)
+            .send(updateCourseExample);
+
+          strictEqual(response.ok, false);
+          strictEqual(response.status, HttpStatus.NOT_FOUND);
+          strictEqual(mockCourseRepository.find.callCount, 0);
+        });
+        it('updates the specified course', async function () {
+          mockCourseRepository.findOneOrFail.resolves(computerScienceCourse);
+          mockCourseRepository.save.resolves(computerScienceCourse);
+
+          const response = await request(api)
+            .put(`/api/courses/${computerScienceCourse.id}`)
+            .send({
+              title: 'Some other course name',
+            } as UpdateCourseDTO);
+
+          strictEqual(response.ok, true);
+          strictEqual(response.status, HttpStatus.OK);
+          strictEqual(mockCourseRepository.save.callCount, 1);
+        });
+      });
+      describe('User is not a member of the admin group', function () {
+        it('is inaccessible to unauthorized users', async function () {
+          authStub.rejects(new UnauthorizedException());
+
+          const response = await request(api)
+            .put(`/api/courses/${computerScienceCourse.id}`);
 
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.UNAUTHORIZED);
