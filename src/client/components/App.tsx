@@ -10,6 +10,8 @@ import {
   Switch,
   Route,
   Link,
+  useRouteMatch,
+  Redirect,
 } from 'react-router-dom';
 import {
   MESSAGE_TYPE,
@@ -91,12 +93,7 @@ const ColdApp: SFC = (): ReactElement => {
       });
   }, []);
 
-  /**
-   * Manages which tab is currently selected
-   */
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  const tabs = [
+  const tabs: {link: string; text: string}[] = [
     { link: '/courses', text: 'Courses' },
     { link: '/non-class-meetings', text: 'Non class meetings' },
     { link: '/faculty', text: 'Faculty' },
@@ -118,15 +115,12 @@ const ColdApp: SFC = (): ReactElement => {
               </Header>
               <nav>
                 <TabList>
-                  {tabs.map((tab, index): ReactElement => (
+                  {tabs.map((tab): ReactElement => (
                     <TabListItem
-                      isActive={currentIndex === index}
+                      isActive={Boolean(useRouteMatch({ path: tab.link }))}
                       key={tab.text}
                     >
-                      <Link
-                        to={tab.link}
-                        onClick={(): void => setCurrentIndex(index)}
-                      >
+                      <Link to={tab.link}>
                         {tab.text}
                       </Link>
                     </TabListItem>
@@ -143,6 +137,7 @@ const ColdApp: SFC = (): ReactElement => {
               />
             )}
                 <Switch>
+                  <Redirect from="/" exact to="/courses" />
                   <Route path="/course-admin" component={CourseAdmin} />
                   <Route component={NoMatch} />
                 </Switch>
