@@ -1,4 +1,9 @@
-import { strictEqual, deepStrictEqual, fail } from 'assert';
+import {
+  strictEqual,
+  deepStrictEqual,
+  fail,
+  rejects,
+} from 'assert';
 import { TestingModule, Test } from '@nestjs/testing';
 import { stub, SinonStub } from 'sinon';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -8,6 +13,9 @@ import {
   createCourseDtoExample,
   string,
   computerScienceCourseResponse,
+  updateCourseExample,
+  safeString,
+  error,
 } from 'testData';
 import { Authentication } from 'server/auth/authentication.guard';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
@@ -19,6 +27,8 @@ import { CourseService } from '../course.service';
 
 const mockCourseRepository = {
   find: stub(),
+  findOneOrFail: stub(),
+  save: stub(),
 };
 
 const mockCourseService = {
@@ -81,7 +91,6 @@ describe('Course controller', function () {
         createCourseDtoExample
       );
     });
-
     it('returns the newly created course', async function () {
       mockCourseService.save.resolves(computerScienceCourse);
 
@@ -100,7 +109,7 @@ describe('Course controller', function () {
         strictEqual(e.response.message.includes('area'), true);
       }
     });
-    it('re-throws any exceptions other than NotFoundException ', async function () {
+    it('re-throws any exceptions other than EntityNotFoundError ', async function () {
       mockCourseService.save.rejects(new Error(string));
 
       try {
@@ -110,6 +119,73 @@ describe('Course controller', function () {
         strictEqual(e instanceof NotFoundException, false);
         strictEqual(e.message.includes('area'), false);
       }
+    });
+  });
+
+  describe('update', function () {
+    it('updates a course in the database', async function () {
+      mockCourseRepository.findOneOrFail.resolves();
+      mockCourseRepository.save.resolves(computerScienceCourse);
+
+      await controller.update(computerScienceCourse.id, updateCourseExample);
+
+      strictEqual(mockCourseRepository.save.callCount, 1);
+      deepStrictEqual(
+        mockCourseRepository.save.args[0][0],
+        { ...computerScienceCourse }
+      );
+    });
+    it('updates the course specified', async function () {
+      mockCourseRepository.findOneOrFail.resolves();
+      mockCourseRepository.save.resolves(computerScienceCourse);
+
+      await controller.update(computerScienceCourse.id, updateCourseExample);
+
+      deepStrictEqual(
+        mockCourseRepository.save.args[0][0].id,
+        computerScienceCourse.id
+      );
+    });
+    it('throws a NotFoundException if the course being udpated doesn\'t exist', async function () {
+      mockCourseRepository.findOneOrFail.rejects(new EntityNotFoundError(Course, ''));
+
+      await rejects(
+        controller.update(computerScienceCourse.id, updateCourseExample),
+        NotFoundException
+      );
+    });
+    it('re-throws any exceptions other than EntityNotFoundError', async function () {
+      mockCourseRepository.findOneOrFail.rejects(error);
+
+      await rejects(
+        controller.update(computerScienceCourse.id, updateCourseExample),
+        Error
+      );
+    });
+    it('returns the updated course', async function () {
+      mockCourseRepository.findOneOrFail.resolves();
+      mockCourseRepository.save.resolves(computerScienceCourse);
+
+      const course = await controller.update(
+        computerScienceCourse.id,
+        updateCourseExample
+      );
+
+      deepStrictEqual(course, computerScienceCourseResponse);
+    });
+    it('allows a partial record update', async function () {
+      mockCourseRepository.findOneOrFail.resolves();
+      mockCourseRepository.save.resolves({
+        ...computerScienceCourse,
+        title: safeString,
+      });
+
+      const { title } = await controller.update(
+        computerScienceCourse.id,
+        { title: safeString }
+      );
+
+      deepStrictEqual(title, safeString);
     });
   });
 });
