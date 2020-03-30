@@ -36,12 +36,86 @@ describe('App', function () {
     });
     it('initially loads the Courses tab with visible top, left, right borders and a transparent bottom border', async function () {
       const { getByText } = render(
-        <MemoryRouter>
+        <MemoryRouter initialEntries={['/']}>
           <App />
         </MemoryRouter>
       );
       await waitForElement(() => getByText('Courses'));
       const tab = getByText('Courses').parentNode as HTMLElement;
+      const style = window.getComputedStyle(tab);
+      const actual = [
+        style['border-bottom'],
+        style['border-top'],
+        style['border-left'],
+        style['border-right'],
+      ];
+      const expected = [
+        '1px solid transparent',
+        `${MarkOneTheme.border.hairline}`,
+        `${MarkOneTheme.border.hairline}`,
+        `${MarkOneTheme.border.hairline}`,
+      ];
+      deepStrictEqual(actual, expected);
+    });
+    it('displays corresponding tab with visible top, left, right borders and transparent bottom border when navigating directly to that section', async function () {
+      const { getByText } = render(
+        <MemoryRouter initialEntries={['/course-admin']}>
+          <App />
+        </MemoryRouter>
+      );
+      await waitForElement(() => getByText('Courses'));
+      const link = getByText('Course Admin') as HTMLElement;
+      const tab = link.parentNode as HTMLElement;
+      const style = window.getComputedStyle(tab);
+      const actual = [
+        style['border-bottom'],
+        style['border-top'],
+        style['border-left'],
+        style['border-right'],
+      ];
+      const expected = [
+        '1px solid transparent',
+        `${MarkOneTheme.border.hairline}`,
+        `${MarkOneTheme.border.hairline}`,
+        `${MarkOneTheme.border.hairline}`,
+      ];
+      deepStrictEqual(actual, expected);
+    });
+    it('displays tab with visible top, left, right borders and transparent bottom border when clicked', async function () {
+      const { getByText } = render(
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>
+      );
+      await waitForElement(() => getByText('Courses'));
+      const link = getByText('Non class meetings') as HTMLElement;
+      fireEvent.click(link);
+      const tab = link.parentNode as HTMLElement;
+      const style = window.getComputedStyle(tab);
+      const actual = [
+        style['border-bottom'],
+        style['border-top'],
+        style['border-left'],
+        style['border-right'],
+      ];
+      const expected = [
+        '1px solid transparent',
+        `${MarkOneTheme.border.hairline}`,
+        `${MarkOneTheme.border.hairline}`,
+        `${MarkOneTheme.border.hairline}`,
+      ];
+      deepStrictEqual(actual, expected);
+    });
+    it('displays the correct active tab with visible top, left, right borders and transparent bottom border when clicking the back button', async function () {
+      const { getByText } = render(
+        <MemoryRouter initialEntries={['/course-admin', '/']}>
+          <App />
+        </MemoryRouter>
+      );
+      await waitForElement(() => getByText('Courses'));
+      window.history.back();
+      await waitForElement(() => getByText('Course Admin'));
+      const tab = getByText('Course Admin').parentNode as HTMLElement;
       const style = window.getComputedStyle(tab);
       const actual = [
         style['border-bottom'],
@@ -67,31 +141,6 @@ describe('App', function () {
       const tabs = getAllByRole('listitem').map((listItem) => listItem.getElementsByTagName('div')[0]);
       const activeTabs = tabs.filter((tabItem) => window.getComputedStyle(tabItem)['border-bottom'] === '1px solid transparent');
       strictEqual(activeTabs.length, 1);
-    });
-    it('displays tab styling correctly when clicked', async function () {
-      const { getByText } = render(
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
-      );
-      await waitForElement(() => getByText('Courses'));
-      const link = getByText('Non class meetings') as HTMLElement;
-      fireEvent.click(link);
-      const tab = link.parentNode as HTMLElement;
-      const style = window.getComputedStyle(tab);
-      const actual = [
-        style['border-bottom'],
-        style['border-top'],
-        style['border-left'],
-        style['border-right'],
-      ];
-      const expected = [
-        '1px solid transparent',
-        `${MarkOneTheme.border.hairline}`,
-        `${MarkOneTheme.border.hairline}`,
-        `${MarkOneTheme.border.hairline}`,
-      ];
-      deepStrictEqual(actual, expected);
     });
     context('When userFetch succeeds', function () {
       beforeEach(function () {
