@@ -1,5 +1,5 @@
 import React from 'react';
-import { strictEqual } from 'assert';
+import { strictEqual, deepStrictEqual } from 'assert';
 import {
   render,
   waitForElement,
@@ -11,6 +11,7 @@ import { AxiosResponse } from 'axios';
 import { UserResponse } from 'common/dto/users/userResponse.dto';
 import * as dummy from 'testData';
 import * as api from 'client/api';
+import { MarkOneTheme } from 'mark-one';
 import { App } from '../App';
 
 describe('App', function () {
@@ -33,7 +34,7 @@ describe('App', function () {
       );
       return waitForElement(() => container.querySelector('.app-content'));
     });
-    it('initially loads the Courses tab with a transparent bottom border', async function () {
+    it('initially loads the Courses tab with visible top, left, right borders and a transparent bottom border', async function () {
       const { getByText } = render(
         <MemoryRouter>
           <App />
@@ -42,7 +43,30 @@ describe('App', function () {
       await waitForElement(() => getByText('Courses'));
       const tab = getByText('Courses').parentNode as HTMLElement;
       const style = window.getComputedStyle(tab);
-      strictEqual(style['border-bottom'], '1px solid transparent');
+      const actual = [
+        style['border-bottom'],
+        style['border-top'],
+        style['border-left'],
+        style['border-right'],
+      ];
+      const expected = [
+        '1px solid transparent',
+        `${MarkOneTheme.border.hairline}`,
+        `${MarkOneTheme.border.hairline}`,
+        `${MarkOneTheme.border.hairline}`,
+      ];
+      deepStrictEqual(actual, expected);
+    });
+    it('only renders one active tab at a time', async function () {
+      const { getByText, getAllByRole } = render(
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>
+      );
+      await waitForElement(() => getByText('Courses'));
+      const tabs = getAllByRole('listitem').map((listItem) => listItem.getElementsByTagName('div')[0]);
+      const activeTabs = tabs.filter((tabItem) => window.getComputedStyle(tabItem)['border-bottom'] === '1px solid transparent');
+      strictEqual(activeTabs.length, 1);
     });
     it('displays tab styling correctly when clicked', async function () {
       const { getByText } = render(
@@ -55,7 +79,19 @@ describe('App', function () {
       fireEvent.click(link);
       const tab = link.parentNode as HTMLElement;
       const style = window.getComputedStyle(tab);
-      strictEqual(style['border-bottom'], '1px solid transparent');
+      const actual = [
+        style['border-bottom'],
+        style['border-top'],
+        style['border-left'],
+        style['border-right'],
+      ];
+      const expected = [
+        '1px solid transparent',
+        `${MarkOneTheme.border.hairline}`,
+        `${MarkOneTheme.border.hairline}`,
+        `${MarkOneTheme.border.hairline}`,
+      ];
+      deepStrictEqual(actual, expected);
     });
     context('When userFetch succeeds', function () {
       beforeEach(function () {
