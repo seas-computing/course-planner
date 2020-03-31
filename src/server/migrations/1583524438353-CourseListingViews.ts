@@ -4,6 +4,7 @@ export class CourseListingViews1583524438353 implements MigrationInterface {
   public name = 'CourseListingViews1583524438353'
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query('CREATE TABLE "typeorm_metadata" ("type" varchar NOT NULL, "database" varchar, "schema" varchar, "table" varchar, "name" varchar, "value" text)', undefined);
     await queryRunner.query('CREATE VIEW "CourseListingView" AS SELECT "c"."id" AS "id", "c"."notes" AS "notes", "a"."name" AS "area", c."isUndergraduate" AS "isUndergraduate", CONCAT_WS(\' \', "c"."prefix", "c"."number") AS "catalogNumber", c."sameAs" AS "sameAs", c."isSEAS" AS "isSEAS", c."termPattern" AS "termPattern" FROM "course" "c" LEFT JOIN "area" "a" ON c."areaId" = "a"."id"', undefined);
     await queryRunner.query('INSERT INTO "typeorm_metadata"("type", "schema", "name", "value") VALUES ($1, $2, $3, $4)', ['VIEW', 'public', 'CourseListingView', "SELECT \"c\".\"id\" AS \"id\", \"c\".\"notes\" AS \"notes\", \"a\".\"name\" AS \"area\", c.\"isUndergraduate\" AS \"isUndergraduate\", CONCAT_WS(' ', \"c\".\"prefix\", \"c\".\"number\") AS \"catalogNumber\", c.\"sameAs\" AS \"sameAs\", c.\"isSEAS\" AS \"isSEAS\", c.\"termPattern\" AS \"termPattern\" FROM \"course\" \"c\" LEFT JOIN \"area\" \"a\" ON c.\"areaId\" = \"a\".\"id\""]);
     await queryRunner.query('CREATE VIEW "CourseInstanceListingView" AS SELECT "ci"."id" AS "id", "ci"."offered" AS "offered", "s"."term" AS "term", ci."courseId" AS "courseId", ci."preEnrollment" AS "preEnrollment", ci."studyCardEnrollment" AS "studyCardEnrollment", ci."actualEnrollment" AS "actualEnrollment", s."academicYear" AS "calendarYear" FROM "course_instance" "ci" LEFT JOIN "semester" "s" ON "s"."id" = ci."semesterId"', undefined);
@@ -27,5 +28,6 @@ export class CourseListingViews1583524438353 implements MigrationInterface {
     await queryRunner.query('DROP VIEW "CourseInstanceListingView"', undefined);
     await queryRunner.query('DELETE FROM "typeorm_metadata" WHERE "type" = \'VIEW\' AND "schema" = $1 AND "name" = $2', ['public', 'CourseListingView']);
     await queryRunner.query('DROP VIEW "CourseListingView"', undefined);
+    await queryRunner.query('DROP TABLE "typeorm_metadata"', undefined);
   }
 }
