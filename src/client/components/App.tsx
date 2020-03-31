@@ -10,6 +10,8 @@ import {
   Switch,
   Route,
   Link,
+  useRouteMatch,
+  Redirect,
 } from 'react-router-dom';
 import {
   MESSAGE_TYPE,
@@ -92,6 +94,16 @@ const ColdApp: SFC = (): ReactElement => {
       });
   }, []);
 
+  const tabs: {link: string; text: string}[] = [
+    { link: '/courses', text: 'Courses' },
+    { link: '/non-class-meetings', text: 'Non class meetings' },
+    { link: '/faculty', text: 'Faculty' },
+    { link: '/schedule', text: 'Schedule' },
+    { link: '/four-year-plan', text: '4 Year Plan' },
+    { link: '/course-admin', text: 'Course Admin' },
+    { link: '/faculty-admin', text: 'Faculty Admin' },
+  ];
+
   return (
     <div className="app">
       <MarkOneWrapper>
@@ -104,33 +116,16 @@ const ColdApp: SFC = (): ReactElement => {
               </Header>
               <nav>
                 <TabList>
-                  <TabListItem>
-                    <Link to="/courses">Courses</Link>
-                  </TabListItem>
-
-                  <TabListItem>
-                    <Link to="/non-class-meetings">Non class meetings</Link>
-                  </TabListItem>
-
-                  <TabListItem>
-                    <Link to="/faculty">Faculty</Link>
-                  </TabListItem>
-
-                  <TabListItem>
-                    <Link to="/schedule">Schedule</Link>
-                  </TabListItem>
-
-                  <TabListItem>
-                    <Link to="/four-year-plan">4 Year Plan</Link>
-                  </TabListItem>
-
-                  <TabListItem>
-                    <Link to="/course-admin">Course Admin</Link>
-                  </TabListItem>
-
-                  <TabListItem>
-                    <Link to="/faculty-admin">Faculty Admin</Link>
-                  </TabListItem>
+                  {tabs.map((tab): ReactElement => (
+                    <TabListItem
+                      isActive={Boolean(useRouteMatch({ path: tab.link }))}
+                      key={tab.text}
+                    >
+                      <Link to={tab.link}>
+                        {tab.text}
+                      </Link>
+                    </TabListItem>
+                  ))}
                 </TabList>
               </nav>
               <PageBody>
@@ -143,6 +138,7 @@ const ColdApp: SFC = (): ReactElement => {
               />
             )}
                 <Switch>
+                  <Redirect from="/" exact to="/courses" />
                   <Route path="/course-admin" component={CourseAdmin} />
                   <Route path="/faculty-admin" component={FacultyAdmin} />
                   <Route component={NoMatch} />
