@@ -9,7 +9,6 @@ import React, {
 import {
   Switch,
   Route,
-  Link,
   useRouteMatch,
   Redirect,
 } from 'react-router-dom';
@@ -31,6 +30,7 @@ import {
   PageBody,
   Logo,
   PageTitle,
+  Link,
 } from 'mark-one';
 import { getCurrentUser } from 'client/api';
 import { UserResponse } from 'common/dto/users/userResponse.dto';
