@@ -91,7 +91,7 @@ describe('Course Instance Controller', function () {
         });
       });
       context('With only an invalid acadYear parameter', function () {
-        it('It should not call the function for that year', async function () {
+        it('Should not call the function for that year', async function () {
           await ciController.getInstances('1999');
           strictEqual(getStub.callCount, 0);
           strictEqual(getStub.calledWith(1999), false);
