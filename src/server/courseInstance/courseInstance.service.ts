@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CourseListingView } from 'server/course/CourseListingView.entity';
-import CourseInstanceResponseDTO from '../../common/dto/courses/CourseInstanceResponse';
+import { TERM } from 'server/semester/semester.entity';
+import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 
 
 @Injectable()
@@ -28,7 +29,7 @@ export class CourseInstanceService {
         'c.spring',
         'CourseInstanceListingView',
         'spring',
-        'spring."courseId" = c.id AND spring.term = \'SPRING\''
+        `spring."courseId" = c.id AND spring.term = '${TERM.SPRING}'`
       )
       .leftJoinAndMapMany(
         'spring.instructors',
@@ -52,7 +53,7 @@ export class CourseInstanceService {
         'c.fall',
         'CourseInstanceListingView',
         'fall',
-        'fall."courseId" = c.id AND fall.term = \'FALL\''
+        `fall."courseId" = c.id AND fall.term = '${TERM.FALL}'`
       )
       .leftJoinAndMapMany(
         'fall.instructors',
