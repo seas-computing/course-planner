@@ -1,16 +1,15 @@
 import { ApiModelProperty } from '@nestjs/swagger';
 import { TERM_PATTERN } from 'common/constants';
-import { string } from 'testData';
 
 abstract class Faculty {
   @ApiModelProperty({
-    type: string,
+    type: 'string',
     example: 'f696d531-aef2-413f-9922-f480aa9d6039',
   })
   public id: string;
 
   @ApiModelProperty({
-    type: string,
+    type: 'string',
     example: 'Waldo, James',
   })
   public displayName: string;
@@ -56,6 +55,7 @@ abstract class Courses {
   public area: string;
 
   @ApiModelProperty({
+    type: 'string',
     example: 'AP 227',
   })
   public catalogNumber: string;
