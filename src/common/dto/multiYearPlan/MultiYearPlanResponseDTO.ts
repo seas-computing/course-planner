@@ -41,7 +41,7 @@ abstract class Instance {
   public faculty: Faculty[];
 }
 
-abstract class Courses {
+export abstract class MultiYearPlanResponseDTO {
   @ApiModelProperty({
     type: 'string',
     example: '37b66373-5000-43f2-9c14-8c2426273785',
@@ -71,12 +71,4 @@ abstract class Courses {
     type: Instance,
   })
   public instances: Instance[];
-}
-
-export abstract class MultiYearPlanResponseDTO {
-  @ApiModelProperty({
-    type: Courses,
-    isArray: true,
-  })
-  public semesters: Courses[];
 }
