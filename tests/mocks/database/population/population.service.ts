@@ -42,13 +42,9 @@ export class PopulationService implements
    * resolving when all have finished.
    */
   public async onApplicationBootstrap(): Promise<void> {
-    // Area, semester and room can be added in parallel
-    await Promise.all([
-      this.areaService.populate({ areas }),
-      this.semesterService.populate({ semesters }),
-      this.roomService.populate({ buildings, campuses, rooms }),
-    ]);
-    // faculty and courses need to be added in series
+    await this.areaService.populate({ areas });
+    await this.semesterService.populate({ semesters });
+    await this.roomService.populate({ buildings, campuses, rooms });
     await this.facultyService.populate({ faculty });
     await this.courseService.populate({ courses });
   }
@@ -60,10 +56,8 @@ export class PopulationService implements
   public async beforeApplicationShutdown(): Promise<void> {
     await this.courseService.drop();
     await this.facultyService.drop();
-    await Promise.all([
-      this.roomService.drop(),
-      this.semesterService.drop(),
-      this.areaService.drop(),
-    ]);
+    await this.roomService.drop();
+    await this.semesterService.drop();
+    await this.areaService.drop();
   }
 }
