@@ -15,7 +15,7 @@ abstract class Faculty {
   public displayName: string;
 }
 
-abstract class Instances {
+abstract class Instance {
   @ApiModelProperty({
     type: 'string',
     example: 'fc772fd6-651e-40c3-97e6-b815818120ce',
@@ -68,9 +68,9 @@ abstract class Courses {
 
   @ApiModelProperty({
     isArray: true,
-    type: Instances,
+    type: Instance,
   })
-  public instances: Instances[];
+  public instances: Instance[];
 }
 
 export abstract class MultiYearPlanResponseDTO {
