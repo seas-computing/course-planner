@@ -1,4 +1,4 @@
-import { strictEqual } from 'assert';
+import { strictEqual, notStrictEqual } from 'assert';
 import { parse } from 'date-fns';
 import { format, utcToZonedTime } from 'date-fns-tz';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -65,11 +65,13 @@ describe('Course Instance Service', function () {
       result = await ciService.getAllByYear(testYear);
     });
     it('should return instances from spring of that year', async function () {
+      notStrictEqual(result.length, 0);
       result.forEach(({ spring }) => {
         strictEqual(spring.calendarYear, testYear.toString());
       });
     });
     it('Should return instances from fall of the previous year', async function () {
+      notStrictEqual(result.length, 0);
       result.forEach(({ fall }) => {
         strictEqual(fall.calendarYear, (testYear - 1).toString());
       });
@@ -77,6 +79,7 @@ describe('Course Instance Service', function () {
     it('Should provide a concatenated catalog number', async function () {
       const courseRepository = testModule.get(getRepositoryToken(Course));
       const dbCourses = await courseRepository.find();
+      notStrictEqual(result.length, 0);
       result.forEach(({ id, catalogNumber }) => {
         const { prefix, number } = dbCourses.find(
           ({ id: dbID }) => dbID === id
@@ -90,6 +93,7 @@ describe('Course Instance Service', function () {
       const dbInstances = await instanceRepository.find({
         relations: ['facultyCourseInstances', 'facultyCourseInstances.faculty'],
       });
+      notStrictEqual(result.length, 0);
       result.forEach(({ spring, fall }) => {
         [spring, fall].forEach(({ id, instructors, offered }) => {
           strictEqual(Array.isArray(instructors), true);
@@ -121,6 +125,7 @@ describe('Course Instance Service', function () {
         });
       });
       it('Should format the startTimes and endTimes as HH:MM AM', function () {
+        notStrictEqual(result.length, 0);
         result.forEach(({ spring, fall }) => {
           [spring, fall].forEach(({ meetings }) => {
             meetings.forEach(({ id, startTime, endTime }) => {
@@ -165,6 +170,7 @@ describe('Course Instance Service', function () {
         });
       });
       it('Should concatenate the room and building name', function () {
+        notStrictEqual(result.length, 0);
         result.forEach(({ spring, fall }) => {
           [spring, fall].forEach(({ meetings }) => {
             meetings.forEach(({ id, room }) => {
