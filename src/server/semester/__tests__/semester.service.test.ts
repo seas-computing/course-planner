@@ -9,6 +9,7 @@ import { Test } from '@nestjs/testing';
 import { SelectQueryBuilder } from 'typeorm';
 import { Semester } from 'server/semester/semester.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { rawYearList } from 'testData';
 import { SemesterService } from '../semester.service';
 
 describe('Semester Service', function () {
@@ -37,12 +38,6 @@ describe('Semester Service', function () {
   });
   describe('getYearList', function () {
     context('When there are records in the database', function () {
-      const rawYearList = [
-        { year: '2018' },
-        { year: '2019' },
-        { year: '2020' },
-        { year: '2021' },
-      ];
       beforeEach(function () {
         mockSemesterQueryBuilder.select.returnsThis();
         mockSemesterQueryBuilder.distinct.returnsThis();
@@ -56,16 +51,15 @@ describe('Semester Service', function () {
       });
     });
     context('When there are no records in the database', function () {
-      const rawYearList = [];
       beforeEach(function () {
         mockSemesterQueryBuilder.select.returnsThis();
         mockSemesterQueryBuilder.distinct.returnsThis();
         mockSemesterQueryBuilder.orderBy.returnsThis();
-        mockSemesterQueryBuilder.getRawMany.resolves(rawYearList);
+        mockSemesterQueryBuilder.getRawMany.resolves([]);
       });
       it('returns an empty array', async function () {
         const result = await semesterService.getYearList();
-        strictEqual(result.length, rawYearList.length);
+        strictEqual(result.length, 0);
         deepStrictEqual(result, []);
       });
     });
