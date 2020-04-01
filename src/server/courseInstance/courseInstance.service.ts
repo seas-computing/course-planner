@@ -5,6 +5,11 @@ import { CourseListingView } from 'server/course/CourseListingView.entity';
 import { TERM } from 'server/semester/semester.entity';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 
+/**
+ * @class CourseInstanceService
+ * Injectable service that provides additional methods for querying the
+ * database and handling CRUD operations on Course Instances.
+ */
 
 @Injectable()
 export class CourseInstanceService {
