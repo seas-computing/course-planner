@@ -44,7 +44,7 @@ describe('Semester Service', function () {
         mockSemesterQueryBuilder.orderBy.returnsThis();
         mockSemesterQueryBuilder.getRawMany.resolves(rawYearList);
       });
-      it('returns a list of years as string[]', async function () {
+      it('returns a list of just the years', async function () {
         const result = await semesterService.getYearList();
         strictEqual(result.length, rawYearList.length);
         deepStrictEqual(result, ['2018', '2019', '2020', '2021']);
