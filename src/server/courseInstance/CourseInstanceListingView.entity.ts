@@ -83,7 +83,6 @@ export class CourseInstanceListingView {
    * From [[Semester]]
    * Whether this instance is in the spring or fall
    */
-  @ViewColumn()
   public term: TERM;
 
   /**

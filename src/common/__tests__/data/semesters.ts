@@ -29,3 +29,14 @@ export const spring: Semester = {
   createdAt: new Date(),
   updatedAt: new Date(),
 };
+
+/**
+ * A collection of year data, as returned by the database query in
+ * [[SemesterService#getYearList]]
+ */
+export const rawYearList = [
+  { year: '2018' },
+  { year: '2019' },
+  { year: '2020' },
+  { year: '2021' },
+];
