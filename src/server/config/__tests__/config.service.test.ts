@@ -3,9 +3,7 @@ import { int, safeString } from 'testData';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { RedisStoreOptions } from 'connect-redis';
 import { AUTH_MODE } from 'common/constants';
-import sinon, {
-  SinonFakeTimers,
-} from 'sinon';
+import FakeTimers from '@sinonjs/fake-timers';
 import { ConfigService } from '../config.service';
 
 /**
@@ -170,14 +168,14 @@ describe('Configuration Service', function () {
     });
   });
   describe('Academic Year Calculation', function () {
-    let clock: SinonFakeTimers;
+    let clock: FakeTimers.InstalledClock;
     let config: ConfigService;
-    beforeEach(function () {
-      clock = sinon.useFakeTimers(Date.now());
+    before(function () {
+      clock = FakeTimers.install();
       config = new ConfigService();
     });
-    afterEach(function () {
-      clock.reset();
+    after(function () {
+      clock.uninstall();
     });
     context('on January 1st', function () {
       it('should return the current calendar year as the academic year', function () {
