@@ -91,6 +91,24 @@ class ConfigService {
     }
     return AUTH_MODE.TEST;
   }
+
+  /**
+   * Determine the current academic year based on server time
+   *
+   * If the date is between Jan 1st and Jun 30th (inclusive),
+   * then the academic year is the current calendar year.
+   * If the date is between Jul 1st and Dec 31st (inclusive),
+   * then the academic year is the next calendar year.
+   */
+  public get academicYear(): string {
+    const now = new Date();
+    const calendarYear = now.getFullYear();
+    const JUNE = 5;
+    const academicYear = now.getMonth() <= JUNE
+      ? calendarYear
+      : calendarYear + 1;
+    return academicYear.toString();
+  }
 }
 
 export { ConfigService };
