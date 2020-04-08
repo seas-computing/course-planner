@@ -1,5 +1,5 @@
 import { ApiModelProperty } from '@nestjs/swagger';
-import { TERM_PATTERN } from 'common/constants';
+import { TERM } from 'server/semester/semester.entity';
 
 abstract class Faculty {
   @ApiModelProperty({
@@ -30,9 +30,9 @@ abstract class Instance {
 
   @ApiModelProperty({
     type: 'string',
-    example: TERM_PATTERN.FALL,
+    example: TERM.FALL,
   })
-  public term: TERM_PATTERN;
+  public term: TERM;
 
   @ApiModelProperty({
     isArray: true,
