@@ -27,7 +27,7 @@ import { CourseInstance } from '../courseInstance/courseinstance.entity';
       'ci.instructors',
       'FacultyListingView',
       'instructors',
-      'instructors.courseInstanceId = ci.id'
+      'instructors."courseInstanceId" = ci.id'
     )
     .from(CourseInstance, 'ci'),
 })
