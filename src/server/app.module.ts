@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module';
 import { CourseModule } from './course/course.module';
 import { FacultyModule } from './faculty/faculty.module';
 import { CourseInstanceModule } from './courseInstance/courseInstance.module';
+import { MultiYearPlanModule } from './multiYearPlan/multiYearPlan.module';
 
 /**
  * Base application module that injects Mongoose and configures
@@ -57,6 +58,7 @@ import { CourseInstanceModule } from './courseInstance/courseInstance.module';
     CourseModule,
     FacultyModule,
     CourseInstanceModule,
+    MultiYearPlanModule,
   ],
   controllers: [],
   providers: [],
