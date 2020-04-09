@@ -76,7 +76,7 @@ export class MultiYearPlanInstanceView {
     .addSelect('a.name', 'area')
     .addSelect("CONCAT_WS(' ', c.prefix, c.number)", 'catalogNumber')
     .addSelect('c.title', 'title')
-    .addSelect('instances.calendarYear', 'calendarYear')
+    .addSelect('instances."calendarYear"', 'calendarYear')
     // add a select for the faculty name
     .from(Course, 'c')
     .leftJoin(Area, 'a', 'c."areaId" = a.id')
@@ -84,7 +84,7 @@ export class MultiYearPlanInstanceView {
       'c.instances',
       'MultiYearPlanInstanceView',
       'instances',
-      'c.id = instances.courseId'
+      'c.id = instances."courseId"'
     ),
 })
 export class MultiYearPlanView {
