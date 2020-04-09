@@ -17,14 +17,14 @@ import { CourseInstance } from '../courseInstance/courseinstance.entity';
   expression: (connection: Connection):
   SelectQueryBuilder<CourseInstance> => connection.createQueryBuilder()
     .select('ci.id', 'id')
-    .addSelect('ci.courseId', 'courseId')
+    .addSelect('ci."courseId"', 'courseId')
     .addSelect('s."academicYear"', 'calendarYear')
     .addSelect('s.term', 'term')
     .leftJoin(Semester, 's', 's.id = ci."semesterId"')
     // left join to FacultyInstance
     // then left join to Faculty
     .leftJoinAndMapMany(
-      'ci.instructors',
+      'ci.faculty',
       'FacultyListingView',
       'instructors',
       'instructors."courseInstanceId" = ci.id'
@@ -62,7 +62,6 @@ export class MultiYearPlanInstanceView {
   /**
    * One [[MultiYearPlanInstanceView]] has many [[FacultyListingView]]
    */
-  @ViewColumn()
   public faculty: FacultyListingView[];
 }
 
@@ -121,6 +120,5 @@ export class MultiYearPlanView {
   /**
    * One [[MultiYearPlanView]] has many [[MultiYearPlanInstanceView]]
    */
-  @ViewColumn()
   public instances: MultiYearPlanInstanceView[];
 }
