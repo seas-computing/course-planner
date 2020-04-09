@@ -13,6 +13,59 @@ import { FacultyListingView } from 'server/faculty/FacultyListingView.entity';
 import { Area } from 'server/area/area.entity';
 import { CourseInstance } from '../courseInstance/courseinstance.entity';
 
+@ViewEntity('MultiYearPlanInstanceView', {
+  expression: (connection: Connection):
+  SelectQueryBuilder<CourseInstance> => connection.createQueryBuilder()
+    .select('ci.id', 'id')
+    .addSelect('ci.courseId', 'courseId')
+    .addSelect('s."academicYear"', 'calendarYear')
+    .addSelect('s.term', 'term')
+    .leftJoin(Semester, 's', 's.id = ci."semesterId"')
+    // left join to FacultyInstance
+    // then left join to Faculty
+    .leftJoinAndMapMany(
+      'ci.instructors',
+      'FacultyListingView',
+      'instructors',
+      'instructors.courseInstanceId = ci.id'
+    )
+    .from(CourseInstance, 'ci'),
+})
+export class MultiYearPlanInstanceView {
+  /**
+   * From [[CourseInstance]]
+   */
+  @ViewColumn()
+  public id: string;
+
+  /**
+   * From [[CourseInstance]]
+   * The id of the parent course
+   */
+  @ViewColumn()
+  public courseId: string;
+
+  /**
+   * From [[Semester]]
+   * The calendar year in which the course instances takes place
+   */
+  @ViewColumn()
+  public calendarYear: number;
+
+  /**
+   * From [[Semester]]
+   * The term (Spring or Fall) in which the course instance takes place
+   */
+  @ViewColumn()
+  public term: TERM;
+
+  /**
+   * One [[MultiYearPlanInstanceView]] has many [[FacultyListingView]]
+   */
+  @ViewColumn()
+  public faculty: FacultyListingView[];
+}
+
 /**
  * A subset of fields from the [[Course]]
  */
@@ -24,13 +77,15 @@ import { CourseInstance } from '../courseInstance/courseinstance.entity';
     .addSelect('a.name', 'area')
     .addSelect("CONCAT_WS(' ', c.prefix, c.number)", 'catalogNumber')
     .addSelect('c.title', 'title')
-    .leftJoin(Area, 'a', 'c."areaId" = a.id')
+    .addSelect('instances.calendarYear', 'calendarYear')
+    // add a select for the faculty name
     .from(Course, 'c')
+    .leftJoin(Area, 'a', 'c."areaId" = a.id')
     .leftJoinAndMapMany(
       'c.instances',
       'MultiYearPlanInstanceView',
-      'instance',
-      'instance."courseInstanceId" = instance.id'
+      'instances',
+      'c.id = instances.courseId'
     ),
 })
 export class MultiYearPlanView {
@@ -66,40 +121,6 @@ export class MultiYearPlanView {
   /**
    * One [[MultiYearPlanView]] has many [[MultiYearPlanInstanceView]]
    */
+  @ViewColumn()
   public instances: MultiYearPlanInstanceView[];
-}
-
-@ViewEntity('MultiYearPlanInstanceView', {
-  expression: (connection: Connection):
-  SelectQueryBuilder<CourseInstance> => connection.createQueryBuilder()
-    .select('ci.id', 'id')
-    .addSelect('s."academicYear"', 'calendarYear')
-    .addSelect('s.term', 'term')
-    .leftJoin(Semester, 's', 's.id = ci."semesterId"')
-    .from(CourseInstance, 'ci'),
-})
-export class MultiYearPlanInstanceView {
-  /**
-   * From [[CourseInstance]]
-   */
-  @ViewColumn()
-  public id: string;
-
-  /**
-   * From [[Semester]]
-   * The calendar year in which the course instances takes place
-   */
-  @ViewColumn()
-  public calendarYear: number;
-
-  /**
-   * From [[Semester]]
-   * The term (Spring or Fall) in which the course instance takes place
-   */
-  public term: TERM;
-
-  /**
-   * One [[MultiYearPlanInstanceView]] has many [[FacultyListingView]]
-   */
-  public instructors: FacultyListingView[];
 }
