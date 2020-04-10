@@ -34,7 +34,7 @@ export class MultiYearPlanService {
       .map((offset): number => offset + academicYear);
     return this.multiYearPlanViewRepository
       .createQueryBuilder('c')
-      .where('c.calendarYear IN (:...years)', { years: fourYearList })
+      .where('c.academicYear IN (:...years)', { years: fourYearList })
       .getMany();
   }
 }
