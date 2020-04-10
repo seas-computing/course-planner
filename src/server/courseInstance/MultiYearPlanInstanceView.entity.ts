@@ -9,7 +9,7 @@ import {
   TERM,
 } from 'server/semester/semester.entity';
 import { FacultyListingView } from 'server/faculty/FacultyListingView.entity';
-import { CourseInstance } from '../courseInstance/courseinstance.entity';
+import { CourseInstance } from './courseinstance.entity';
 
 @ViewEntity('MultiYearPlanInstanceView', {
   expression: (connection: Connection):

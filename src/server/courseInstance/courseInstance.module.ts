@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CourseListingView } from 'server/course/CourseListingView.entity';
-import { MultiYearPlanView } from 'server/multiYearPlan/MultiYearPlanView.entity';
-import { MultiYearPlanInstanceView } from 'server/multiYearPlan/MultiYearPlanInstanceView.entity';
+import { MultiYearPlanView } from 'server/courseInstance/MultiYearPlanView.entity';
+import { MultiYearPlanInstanceView } from 'server/courseInstance/MultiYearPlanInstanceView.entity';
 import { SemesterModule } from 'server/semester/semester.module';
 import { SemesterService } from 'server/semester/semester.service';
 import { CourseInstanceService } from './courseInstance.service';

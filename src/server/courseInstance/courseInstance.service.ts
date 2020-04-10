@@ -7,7 +7,7 @@ import { Repository } from 'typeorm';
 import { CourseListingView } from 'server/course/CourseListingView.entity';
 import { TERM } from 'server/semester/semester.entity';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
-import { MultiYearPlanView } from 'server/multiYearPlan/MultiYearPlanView.entity';
+import { MultiYearPlanView } from 'server/courseInstance/MultiYearPlanView.entity';
 import { ConfigService } from 'server/config/config.service';
 import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 
