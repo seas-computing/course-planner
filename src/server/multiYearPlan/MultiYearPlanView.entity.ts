@@ -18,8 +18,11 @@ import { CourseInstance } from '../courseInstance/courseinstance.entity';
   SelectQueryBuilder<CourseInstance> => connection.createQueryBuilder()
     .select('ci.id', 'id')
     .addSelect('ci."courseId"', 'courseId')
-    .addSelect('s."academicYear"', 'calendarYear')
     .addSelect('s.term', 'term')
+    .addSelect(`CASE
+        WHEN term == '${TERM.FALL}' THEN CAST((CAST(s.academicYear AS INTEGER) - 1) AS VARCHAR
+        ELSE s.academicYear
+      END`, 'calendarYear')
     .leftJoin(Semester, 's', 's.id = ci."semesterId"')
     // left join to FacultyInstance
     // then left join to Faculty
@@ -31,6 +34,9 @@ import { CourseInstance } from '../courseInstance/courseinstance.entity';
     )
     .from(CourseInstance, 'ci'),
 })
+/**
+ * Represents a course instance within [[MultiYearPlanView]]
+ */
 export class MultiYearPlanInstanceView {
   /**
    * From [[CourseInstance]]
@@ -44,6 +50,13 @@ export class MultiYearPlanInstanceView {
    */
   @ViewColumn()
   public courseId: string;
+
+  /**
+   * From [[Semester]]
+   * The academic year in which the course instances takes place
+   */
+  @ViewColumn()
+  public academicYear: number;
 
   /**
    * From [[Semester]]
@@ -76,7 +89,6 @@ export class MultiYearPlanInstanceView {
     .addSelect('a.name', 'area')
     .addSelect("CONCAT_WS(' ', c.prefix, c.number)", 'catalogNumber')
     .addSelect('c.title', 'title')
-    .addSelect('instances."calendarYear"', 'calendarYear')
     // add a select for the faculty name
     .from(Course, 'c')
     .leftJoin(Area, 'a', 'c."areaId" = a.id')
