@@ -1,6 +1,21 @@
 import {
-  Controller, Get, Query, Inject,
+  Controller,
+  Get,
+  Query,
+  Inject,
+  UseGuards,
 } from '@nestjs/common';
+import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiUseTags,
+  ApiForbiddenResponse,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import { Authentication } from 'server/auth/authentication.guard';
+import { RequireGroup } from 'server/auth/group.guard';
+import { GROUP } from 'common/constants';
 import CourseResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { CourseInstanceService } from './courseInstance.service';
 import { SemesterService } from '../semester/semester.service';
@@ -52,5 +67,29 @@ export class CourseInstanceController {
         }
       )
     );
+  }
+
+  /**
+   * Responds with a list of multiyear plan records
+   */
+  @ApiUseTags('Multi Year Plan')
+  @Controller('api/course-instances/multi-year-plan')
+  @ApiForbiddenResponse({
+    description: 'The user is not authenticated',
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The user is authenticated, but lacks the permissions to access this endpoint',
+  })
+  @UseGuards(Authentication, new RequireGroup(GROUP.ADMIN))
+
+  @Get('/multi-year-plan')
+  @ApiOperation({ title: 'Retrieve the multi-year plan' })
+  @ApiOkResponse({
+    type: MultiYearPlanResponseDTO,
+    description: 'An array of all the multi-year plan records',
+    isArray: true,
+  })
+  public async getMultiYearInstances(): Promise<MultiYearPlanResponseDTO[]> {
+    return this.ciService.getAllForMultiYearPlan();
   }
 }

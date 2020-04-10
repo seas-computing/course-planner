@@ -1,9 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CourseListingView } from 'server/course/CourseListingView.entity';
 import { TERM } from 'server/semester/semester.entity';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
+import { MultiYearPlanView } from 'server/multiYearPlan/MultiYearPlanView.entity';
+import { ConfigService } from 'server/config/config.service';
+import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 
 /**
  * @class CourseInstanceService
@@ -15,6 +21,12 @@ import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse
 export class CourseInstanceService {
   @InjectRepository(CourseListingView)
   private readonly courseRepository: Repository<CourseListingView>
+
+  @InjectRepository(MultiYearPlanView)
+  private readonly multiYearPlanViewRepository: Repository<MultiYearPlanView>;
+
+  @Inject(ConfigService)
+  private readonly configService: ConfigService;
 
   /**
    * Resolves a list of courses, which in turn contain sub-lists of instances
@@ -84,5 +96,20 @@ export class CourseInstanceService {
       .addOrderBy('spring_instructors."instructorOrder"', 'ASC');
 
     return courseQuery.getMany() as unknown as CourseInstanceResponseDTO[];
+  }
+  /**
+   * Resolves a list of course instances for the Multi Year Plan
+   */
+
+  public async getAllForMultiYearPlan(): Promise<MultiYearPlanResponseDTO[]> {
+    // Fetch the current academic year and convert each year to a number
+    // so that we can calculate the four year period.
+    const academicYear = parseInt(this.configService.academicYear, 10);
+    const fourYearList = [0, 1, 2, 3]
+      .map((offset): number => offset + academicYear);
+    return this.multiYearPlanViewRepository
+      .createQueryBuilder('c')
+      .where('c.academicYear IN (:...years)', { years: fourYearList })
+      .getMany();
   }
 }
