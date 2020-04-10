@@ -73,7 +73,6 @@ export class CourseInstanceController {
    * Responds with a list of multiyear plan records
    */
   @ApiUseTags('Multi Year Plan')
-  @Controller('api/course-instances/multi-year-plan')
   @ApiForbiddenResponse({
     description: 'The user is not authenticated',
   })
