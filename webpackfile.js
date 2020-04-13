@@ -155,7 +155,10 @@ const server = {
       tsLoader,
     ],
   },
-  optimization,
+  optimization: {
+    ...optimization,
+    minimize: false,
+  },
   plugins: [
     new webpack.IgnorePlugin({
       contextRegExp: /@nestjs/,
