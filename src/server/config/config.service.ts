@@ -100,14 +100,14 @@ class ConfigService {
    * If the date is between Jul 1st and Dec 31st (inclusive),
    * then the academic year is the next calendar year.
    */
-  public get academicYear(): string {
+  public get academicYear(): number {
     const now = new Date();
     const calendarYear = now.getFullYear();
     const JUNE = 5;
     const academicYear = now.getMonth() <= JUNE
       ? calendarYear
       : calendarYear + 1;
-    return academicYear.toString();
+    return academicYear;
   }
 }
 
