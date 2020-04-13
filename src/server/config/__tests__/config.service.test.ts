@@ -181,42 +181,42 @@ describe('Configuration Service', function () {
       it('should return the current calendar year as the academic year', function () {
         const testYear = 2020;
         clock.setSystemTime(new Date(testYear, MONTH.JAN, 1, 0, 0, 0));
-        strictEqual(config.academicYear, testYear.toString());
+        strictEqual(config.academicYear, testYear);
       });
     });
     context('between Jan 1st and June 30th', function () {
       it('should return the current calendar year as the academic year', function () {
         const testYear = 2021;
         clock.setSystemTime(new Date(testYear, MONTH.MAY, 13, 6, 29, 19));
-        strictEqual(config.academicYear, testYear.toString());
+        strictEqual(config.academicYear, testYear);
       });
     });
     context('on June 30th', function () {
       it('should return the current calendar year as the academic year', function () {
         const testYear = 2030;
         clock.setSystemTime(new Date(testYear, MONTH.JUN, 30, 23, 59, 59));
-        strictEqual(config.academicYear, testYear.toString());
+        strictEqual(config.academicYear, testYear);
       });
     });
     context('on July 1st', function () {
       it('should return the next calendar year as the academic year', function () {
         const testYear = 2035;
         clock.setSystemTime(new Date(testYear, MONTH.JUL, 1, 0, 0, 0));
-        strictEqual(config.academicYear, (testYear + 1).toString());
+        strictEqual(config.academicYear, (testYear + 1));
       });
     });
     context('between July 1st and December 31st', function () {
       it('should return the next calendar year as the academic year', function () {
         const testYear = 2040;
         clock.setSystemTime(new Date(testYear, MONTH.OCT, 12, 21, 13, 49));
-        strictEqual(config.academicYear, (testYear + 1).toString());
+        strictEqual(config.academicYear, (testYear + 1));
       });
     });
     context('on December 31st', function () {
       it('should return the next calendar year as the academic year', function () {
         const testYear = 2050;
         clock.setSystemTime(new Date(testYear, MONTH.DEC, 31, 23, 59, 59));
-        strictEqual(config.academicYear, (testYear + 1).toString());
+        strictEqual(config.academicYear, (testYear + 1));
       });
     });
   });
