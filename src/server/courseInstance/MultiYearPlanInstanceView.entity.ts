@@ -16,13 +16,14 @@ import { CourseInstance } from './courseinstance.entity';
   SelectQueryBuilder<CourseInstance> => connection.createQueryBuilder()
     .select('ci.id', 'id')
     .addSelect('ci."courseId"', 'courseId')
-    .addSelect('s.term', 'term')
     // Note that academicYear in the semester table is actually calendar year
     .addSelect(`CASE
         WHEN term = '${TERM.FALL}' THEN s.academicYear + 1
         ELSE s.academicYear
       END`, 'academicYear')
     .addSelect('s.academicYear', 'calendarYear')
+    .addSelect('s.term', 'term')
+    .addSelect('instructors."instructorOrder"', 'instructorOrder')
     .leftJoin(Semester, 's', 's.id = ci."semesterId"')
     // left join to FacultyInstance
     // then left join to Faculty
