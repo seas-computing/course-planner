@@ -19,7 +19,6 @@ import { MultiYearPlanInstanceView } from './MultiYearPlanInstanceView.entity';
     .addSelect('a.name', 'area')
     .addSelect("CONCAT_WS(' ', c.prefix, c.number)", 'catalogNumber')
     .addSelect('c.title', 'title')
-    // add a select for the faculty name
     .from(Course, 'c')
     .leftJoin(Area, 'a', 'c."areaId" = a.id')
     .leftJoinAndMapMany(
@@ -27,7 +26,10 @@ import { MultiYearPlanInstanceView } from './MultiYearPlanInstanceView.entity';
       'MultiYearPlanInstanceView',
       'instances',
       'c.id = instances."courseId"'
-    ),
+    )
+    .orderBy('c.area', 'ASC')
+    .addOrderBy('c."catalogNumber"', 'ASC')
+    .addOrderBy('instances.instructorOrder', 'ASC'),
 })
 export class MultiYearPlanView {
   /**
