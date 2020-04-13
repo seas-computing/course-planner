@@ -17,10 +17,12 @@ import { CourseInstance } from './courseinstance.entity';
     .select('ci.id', 'id')
     .addSelect('ci."courseId"', 'courseId')
     .addSelect('s.term', 'term')
+    // Note that academicYear in the semester table is actually calendar year
     .addSelect(`CASE
-        WHEN term == '${TERM.FALL}' THEN CAST((CAST(s.academicYear AS INTEGER) - 1) AS VARCHAR
+        WHEN term = '${TERM.FALL}' THEN s.academicYear + 1
         ELSE s.academicYear
-      END`, 'calendarYear')
+      END`, 'academicYear')
+    .addSelect('s.academicYear', 'calendarYear')
     .leftJoin(Semester, 's', 's.id = ci."semesterId"')
     // left join to FacultyInstance
     // then left join to Faculty
