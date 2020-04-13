@@ -87,7 +87,7 @@ const client = {
   output: {
     path: resolve(__dirname, 'build/static'),
     filename: 'app.js',
-    publicPath: '/static/',
+    publicPath: '/',
   },
   resolve: wpResolve,
   target: 'web',
