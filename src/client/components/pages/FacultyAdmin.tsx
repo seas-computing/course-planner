@@ -27,7 +27,7 @@ import { MessageContext } from 'client/context';
 import { TableRowProps } from 'mark-one/lib/Tables/TableRow';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
-import { FacultyResponseDTO } from 'common/dto/faculty/facultyResponse.dto';
+import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
 import { getAllFacultyMembers } from '../../api/faculty';
 
 /**
@@ -37,7 +37,7 @@ import { getAllFacultyMembers } from '../../api/faculty';
 
 const FacultyAdmin: FunctionComponent = function (): ReactElement {
   const [currentFacultyMembers, setFacultyMembers] = useState(
-    [] as FacultyResponseDTO[]
+    [] as ManageFacultyResponseDTO[]
   );
 
   /**
@@ -51,7 +51,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
    */
   useEffect((): void => {
     getAllFacultyMembers()
-      .then((facultyMembers): FacultyResponseDTO[] => {
+      .then((facultyMembers): ManageFacultyResponseDTO[] => {
         setFacultyMembers(facultyMembers);
         return facultyMembers;
       })
