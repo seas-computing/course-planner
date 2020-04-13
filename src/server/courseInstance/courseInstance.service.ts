@@ -101,15 +101,20 @@ export class CourseInstanceService {
    * Resolves a list of course instances for the Multi Year Plan
    */
 
-  public async getAllForMultiYearPlan(): Promise<MultiYearPlanResponseDTO[]> {
+  public async getAllForMultiYearPlan(numYears: number):
+  Promise<MultiYearPlanResponseDTO[]> {
     // Fetch the current academic year and convert each year to a number
     // so that we can calculate the four year period.
-    const academicYear = parseInt(this.configService.academicYear, 10);
-    const fourYearList = [0, 1, 2, 3]
-      .map((offset): number => offset + academicYear);
+    const { academicYear } = this.configService;
+    const academicYears = Array.from({ length: numYears })
+      .map((value, index): number => index)
+      .map((offset): number => academicYear + offset);
     return this.multiYearPlanViewRepository
       .createQueryBuilder('c')
-      .where('c.academicYear IN (:...years)', { years: fourYearList })
+      // Note that although the academic year in the semester entity is actually
+      // the calendar year, c.academicYear is truly the academic year and has
+      // been calculated by the MultiYearPlanInstanceView
+      .where('c.academicYear IN (:...academicYears)', { academicYears })
       .getMany();
   }
 }

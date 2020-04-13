@@ -71,6 +71,9 @@ export class CourseInstanceController {
 
   /**
    * Responds with a list of multiyear plan records
+   *
+   * @param numYears represents the number of years that the Multi Year Plan
+   * will show. Its value defaults to 4 years.
    */
   @ApiUseTags('Multi Year Plan')
   @ApiForbiddenResponse({
@@ -80,7 +83,6 @@ export class CourseInstanceController {
     description: 'The user is authenticated, but lacks the permissions to access this endpoint',
   })
   @UseGuards(Authentication, new RequireGroup(GROUP.ADMIN))
-
   @Get('/multi-year-plan')
   @ApiOperation({ title: 'Retrieve the multi-year plan' })
   @ApiOkResponse({
@@ -88,7 +90,9 @@ export class CourseInstanceController {
     description: 'An array of all the multi-year plan records',
     isArray: true,
   })
-  public async getMultiYearInstances(): Promise<MultiYearPlanResponseDTO[]> {
-    return this.ciService.getAllForMultiYearPlan();
+  public async getMultiYearInstances(
+    @Query('numYears') numYears: number = 4
+  ): Promise<MultiYearPlanResponseDTO[]> {
+    return this.ciService.getAllForMultiYearPlan(numYears);
   }
 }
