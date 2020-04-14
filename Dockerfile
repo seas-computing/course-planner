@@ -22,6 +22,7 @@ ARG APP_DIR=/node
 EXPOSE 3000
 WORKDIR ${APP_DIR}
 COPY --from=builder --chown=node:node $APP_DIR/build ./
+COPY --from=builder --chown=node:node $APP_DIR/tsconfig.production.json ./tsconfig.json
 COPY --from=builder --chown=node:node $APP_DIR/node_modules ./node_modules
 USER node 
-CMD ["node", "./server"]
+CMD ["node", "--require", "tsconfig-paths/register", "./server"]

@@ -40,7 +40,9 @@ class ConfigService {
       password: DB_PASSWORD,
       host: DB_HOSTNAME,
       port: parseInt(DB_PORT),
-      entities: ['src/server/**/*.entity.ts'],
+      entities: this.isProduction
+        ? ['server/**/*.entity.js']
+        : ['src/server/**/*.entity.ts'],
     };
   }
 
