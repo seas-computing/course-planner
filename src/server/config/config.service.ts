@@ -1,25 +1,6 @@
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { RedisStoreOptions } from 'connect-redis';
 import { AUTH_MODE } from 'common/constants';
-import { Absence } from 'server/absence/absence.entity';
-import { Area } from 'server/area/area.entity';
-import { Building } from 'server/location/building.entity';
-import { Campus } from 'server/location/campus.entity';
-import { Course } from 'server/course/course.entity';
-import { CourseInstance } from 'server/courseInstance/courseinstance.entity';
-import { CourseInstanceListingView } from 'server/courseInstance/CourseInstanceListingView.entity';
-import { CourseListingView } from 'server/course/CourseListingView.entity';
-import { Faculty } from 'server/faculty/faculty.entity';
-import { FacultyCourseInstance } from 'server/courseInstance/facultycourseinstance.entity';
-import { FacultyListingView } from 'server/faculty/FacultyListingView.entity';
-import { Meeting } from 'server/meeting/meeting.entity';
-import { MeetingListingView } from 'server/meeting/MeetingListingView.entity';
-import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
-import { NonClassParent } from 'server/nonClassParent/nonclassparent.entity';
-import { Room } from 'server/location/room.entity';
-import { RoomListingView } from 'server/location/RoomListingView.entity';
-import { Semester } from 'server/semester/semester.entity';
-import { View } from 'server/view/view.entity';
 
 /**
  * Parses process.env to create a clean configuration interface
@@ -59,27 +40,7 @@ class ConfigService {
       password: DB_PASSWORD,
       host: DB_HOSTNAME,
       port: parseInt(DB_PORT),
-      entities: [
-        Absence,
-        Area,
-        Building,
-        Campus,
-        Course,
-        CourseInstance,
-        CourseInstanceListingView,
-        CourseListingView,
-        Faculty,
-        FacultyCourseInstance,
-        FacultyListingView,
-        Meeting,
-        MeetingListingView,
-        NonClassEvent,
-        NonClassParent,
-        Room,
-        RoomListingView,
-        Semester,
-        View,
-      ],
+      entities: ['src/server/**/*.entity.ts'],
     };
   }
 
