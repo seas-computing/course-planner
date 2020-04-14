@@ -1,6 +1,6 @@
 import { Faculty } from 'server/faculty/faculty.entity';
 import { FACULTY_TYPE } from 'common/constants';
-import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
+import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse2.dto';
 
 /**
  * An example [[Faculty]] entry representing an applied math faculty member

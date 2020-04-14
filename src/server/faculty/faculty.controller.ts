@@ -20,9 +20,9 @@ import {
 } from '@nestjs/swagger';
 import { RequireGroup } from 'server/auth/group.guard';
 import { GROUP } from 'common/constants';
-import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
-import { CreateFacultyDTO } from 'common/dto/faculty/CreateFaculty.dto';
-import { UpdateFacultyDTO } from 'common/dto/faculty/UpdateFaculty.dto';
+import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse2.dto';
+import { CreateFacultyDTO } from 'common/dto/faculty/CreateFaculty2.dto';
+import { UpdateFacultyDTO } from 'common/dto/faculty/UpdateFaculty2.dto';
 import { Authentication } from 'server/auth/authentication.guard';
 import { Area } from 'server/area/area.entity';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';

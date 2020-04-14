@@ -1,5 +1,5 @@
 import request from 'axios';
-import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
+import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse2.dto';
 
 /**
  * Retrieves all faculty

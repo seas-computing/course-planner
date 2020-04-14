@@ -11,7 +11,7 @@ import {
   error,
 } from 'testData';
 import * as api from 'client/api';
-import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
+import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse2.dto';
 import {
   strictEqual,
   deepStrictEqual,
