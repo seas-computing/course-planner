@@ -3,8 +3,7 @@ import { stub } from 'sinon';
 import { regularUser } from 'testData';
 import { deepStrictEqual, strictEqual } from 'assert';
 import { UnauthorizedException } from '@nestjs/common';
-import { HarvardKeyProfile } from '../harvardKey.interface';
-import { SAMLStrategy } from '../saml.strategy';
+import { SAMLStrategy, HarvardKeyProfile } from '../saml.strategy';
 import { ConfigService } from '../../config/config.service';
 
 describe('SAML Strategy', function () {
