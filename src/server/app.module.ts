@@ -15,8 +15,8 @@ import { FacultyModule } from './faculty/faculty.module';
 import { CourseInstanceModule } from './courseInstance/courseInstance.module';
 
 /**
- * Base application module that injects Mongoose and configures
- * all necessary middleware.
+ * Base application module that configures the database connections and other
+ * resources used by the application.
  */
 
 @Module({
@@ -74,6 +74,10 @@ class AppModule implements NestModule {
     this.config = config;
   }
 
+  /**
+     * Sets up middleware for consumption by the app. In development, the
+     * dev-middleware will override the ServerStaticModule injected above.
+     */
   public configure(consumer: MiddlewareConsumer): void {
     if (this.config.isDevelopment) {
       // eslint-disable-next-line

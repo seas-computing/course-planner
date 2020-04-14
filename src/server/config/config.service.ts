@@ -23,6 +23,10 @@ class ConfigService {
 
   /**
    * Return connection parameters for the TypeORM module
+   *
+   * The entities property uses a file glob to final all declared entities.
+   * Because we're transpiling our code and copying into docker for production,
+   * we need to slightly modify the path and extension for our entities.
    */
 
   public get dbOptions(): PostgresConnectionOptions {
@@ -84,6 +88,7 @@ class ConfigService {
   /**
    * Determine what kind of authentication should be used
    */
+
   public get authMode(): AUTH_MODE {
     if (this.isProduction) {
       return AUTH_MODE.HKEY;
@@ -102,6 +107,7 @@ class ConfigService {
    * If the date is between Jul 1st and Dec 31st (inclusive),
    * then the academic year is the next calendar year.
    */
+
   public get academicYear(): string {
     const now = new Date();
     const calendarYear = now.getFullYear();

@@ -5,6 +5,13 @@ const HtmlWebpackRootPlugin = require('html-webpack-root-plugin');
 const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 
+/**
+ * This Webpack configuration only handles bunding the client code in
+ * production. To make changes to the development configuration, see:
+ *
+ *   src/server/config/dev.middleware.ts
+ */
+
 module.exports = {
   name: 'client',
   mode: 'production',
