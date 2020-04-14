@@ -1,13 +1,9 @@
-import { Strategy } from 'passport-saml';
+import { Strategy, Profile } from 'passport-saml';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AUTH_MODE } from 'common/constants';
 import { User } from '../user/user.entity';
 import { ConfigService } from '../config/config.service';
-
-
-
-import { Profile } from 'passport-saml';
 
 /**
  * Representation of user data as returned by HarvardKey. For more information
