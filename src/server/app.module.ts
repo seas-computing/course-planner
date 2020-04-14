@@ -60,7 +60,7 @@ import { CourseInstanceModule } from './courseInstance/courseInstance.module';
     FacultyModule,
     CourseInstanceModule,
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, 'static'),
+      rootPath: join(__dirname, '..', 'client'),
       exclude: ['/api*'],
     }),
   ],
