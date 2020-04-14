@@ -27,7 +27,7 @@ import { MessageContext } from 'client/context';
 import { TableRowProps } from 'mark-one/lib/Tables/TableRow';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
-import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse2.dto';
+import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
 import { getAllFacultyMembers } from '../../api/faculty';
 
 /**

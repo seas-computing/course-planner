@@ -18,7 +18,7 @@ import {
   newAreaFacultyMemberResponse,
   error,
 } from 'testData';
-import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse2.dto';
+import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
 import { render } from 'test-utils';
 import FacultyAdmin from '../FacultyAdmin';
 
