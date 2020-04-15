@@ -17,11 +17,13 @@ export abstract class FacultySemester {
 }
 export abstract class FacultyResponseDTO {
   @ApiModelProperty({
+    type: 'string',
     example: 'Chris',
   })
   public firstName?: string;
 
   @ApiModelProperty({
+    type: 'string',
     example: 'Rogers',
   })
   public lastName?: string;
@@ -33,6 +35,7 @@ export abstract class FacultyResponseDTO {
   public category: FACULTY_TYPE;
 
   @ApiModelProperty({
+    type: 'string',
     example: 'EPS (0.5 FTE SEAS)',
   })
   public jointWith?: string;
