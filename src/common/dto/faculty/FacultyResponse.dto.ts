@@ -2,6 +2,20 @@ import { ApiModelProperty } from '@nestjs/swagger';
 import { ABSENCE_TYPE } from 'server/absence/absence.entity';
 import { FACULTY_TYPE } from '../../constants';
 
+export abstract class FacultyAbsence {
+  @ApiModelProperty({
+    type: 'string',
+    example: 'f696d531-aef2-413f-9922-f480aa9d6039',
+  })
+  public id: string;
+
+  @ApiModelProperty({
+    example: ABSENCE_TYPE.SABBATICAL,
+    enum: ABSENCE_TYPE,
+  })
+  public type: ABSENCE_TYPE;
+}
+
 export abstract class FacultySemester {
   @ApiModelProperty({
     type: 'number',
@@ -16,11 +30,11 @@ export abstract class FacultySemester {
   public catalogNumbers: string[];
 
   @ApiModelProperty({
-    type: 'string',
-    enum: ABSENCE_TYPE,
+    type: FacultyAbsence,
   })
-  public absence: ABSENCE_TYPE;
+  public absence: FacultyAbsence;
 }
+
 export abstract class FacultyResponseDTO {
   @ApiModelProperty({
     type: 'string',
