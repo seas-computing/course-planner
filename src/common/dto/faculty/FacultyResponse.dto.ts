@@ -4,6 +4,12 @@ import { FACULTY_TYPE } from '../../constants';
 
 export abstract class FacultySemester {
   @ApiModelProperty({
+    type: 'number',
+    example: 2021,
+  })
+  public academicYear: number;
+
+  @ApiModelProperty({
     isArray: true,
     example: ['AM 10', 'CS 50', 'ES 121'],
   })
