@@ -18,7 +18,7 @@ import {
   newAreaFacultyMemberResponse,
   error,
 } from 'testData';
-import { FacultyResponseDTO } from 'common/dto/faculty/facultyResponse.dto';
+import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
 import { render } from 'test-utils';
 import FacultyAdmin from '../FacultyAdmin';
 
@@ -35,7 +35,7 @@ describe('Faculty Admin', function () {
     dispatchMessage = stub();
     getStub.resolves({
       data: testData,
-    } as AxiosResponse<FacultyResponseDTO[]>);
+    } as AxiosResponse<ManageFacultyResponseDTO[]>);
   });
   afterEach(function () {
     getStub.restore();
@@ -125,7 +125,7 @@ describe('Faculty Admin', function () {
         emptyTestData = [];
         getStub.resolves({
           data: emptyTestData,
-        } as AxiosResponse<FacultyResponseDTO[]>);
+        } as AxiosResponse<ManageFacultyResponseDTO[]>);
       });
       afterEach(function () {
         getStub.restore();

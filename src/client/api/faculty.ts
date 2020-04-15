@@ -1,10 +1,11 @@
 import request from 'axios';
-import { FacultyResponseDTO } from '../../common/dto/faculty/facultyResponse.dto';
+import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
 
 /**
  * Retrieves all faculty
  */
-export const getAllFacultyMembers = async (): Promise<FacultyResponseDTO[]> => {
+export const getAllFacultyMembers = async ():
+Promise<ManageFacultyResponseDTO[]> => {
   const response = await request.get('/api/faculty/');
   return response.data;
 };

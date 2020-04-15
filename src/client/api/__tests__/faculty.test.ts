@@ -11,7 +11,7 @@ import {
   error,
 } from 'testData';
 import * as api from 'client/api';
-import { FacultyResponseDTO } from 'common/dto/faculty/facultyResponse.dto';
+import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
 import {
   strictEqual,
   deepStrictEqual,
@@ -19,7 +19,7 @@ import {
 } from 'assert';
 
 describe('Faculty Admin API', function () {
-  let result: FacultyResponseDTO[];
+  let result: ManageFacultyResponseDTO[];
   let getStub: SinonStub;
   describe('GET /faculty', function () {
     beforeEach(async function () {
@@ -36,7 +36,7 @@ describe('Faculty Admin API', function () {
               physicsFacultyMemberResponse,
               bioengineeringFacultyMemberResponse,
             ],
-          } as AxiosResponse<FacultyResponseDTO[]>);
+          } as AxiosResponse<ManageFacultyResponseDTO[]>);
           result = await api.getAllFacultyMembers();
         });
         it('should call getAllFacultyMembers', function () {
