@@ -101,7 +101,7 @@ export class CourseInstanceService {
    * Resolves a list of course instances for the Multi Year Plan
    */
 
-  public async getAllForMultiYearPlan(numYears: number):
+  public async getMultiYearPlan(numYears: number):
   Promise<MultiYearPlanResponseDTO[]> {
     // Fetch the current academic year and convert each year to a number
     // so that we can calculate the four year period.
