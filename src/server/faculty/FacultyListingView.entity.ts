@@ -10,6 +10,7 @@ import {
 import { Faculty } from 'server/faculty/faculty.entity';
 import { FacultyCourseInstance } from 'server/courseInstance/facultycourseinstance.entity';
 import { CourseInstanceListingView } from 'server/courseInstance/CourseInstanceListingView.entity';
+import { MultiYearPlanInstanceView } from 'server/courseInstance/MultiYearPlanInstanceView.entity';
 
 /**
  * Lists faculty by "lastName, firstName", and also disaggregates the
@@ -57,6 +58,11 @@ export class FacultyListingView {
     (): ObjectType<CourseInstanceListingView> => CourseInstanceListingView,
     ({ instructors }): FacultyListingView[] => instructors
   )
-  @JoinColumn()
   public courseInstanceId: CourseInstanceListingView;
+
+  @ManyToOne(
+    (): ObjectType<MultiYearPlanInstanceView> => MultiYearPlanInstanceView,
+    ({ faculty }): FacultyListingView[] => faculty
+  )
+  public multiYearPlanInstanceView: MultiYearPlanInstanceView;
 }
