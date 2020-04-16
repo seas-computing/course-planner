@@ -90,9 +90,17 @@ export class CourseInstanceController {
     description: 'An array of all the multi-year plan records',
     isArray: true,
   })
-  public async getMultiYearInstances(
+  public async getMultiYearPlan(
     @Query('numYears') numYears: number = 4
   ): Promise<MultiYearPlanResponseDTO[]> {
-    return this.ciService.getAllForMultiYearPlan(numYears);
+    // If an invalid number of years is provided, use the default number of years
+    const defaultNumYears = 4;
+    let validatedNumYears: number;
+    if (numYears > 0 && Number.isInteger(numYears)) {
+      validatedNumYears = numYears;
+    } else {
+      validatedNumYears = defaultNumYears;
+    }
+    return this.ciService.getMultiYearPlan(validatedNumYears);
   }
 }
