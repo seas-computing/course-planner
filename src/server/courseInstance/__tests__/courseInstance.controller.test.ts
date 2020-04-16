@@ -6,13 +6,16 @@ import { Authentication } from 'server/auth/authentication.guard';
 import { CourseListingView } from 'server/course/CourseListingView.entity';
 import { SemesterService } from 'server/semester/semester.service';
 import { Semester } from 'server/semester/semester.entity';
+import { ConfigService } from 'server/config/config.service';
 import { CourseInstanceService } from '../courseInstance.service';
 import { CourseInstanceController } from '../courseInstance.controller';
+import { MultiYearPlanView } from '../MultiYearPlanView.entity';
 
 describe('Course Instance Controller', function () {
   let ciController: CourseInstanceController;
   let ciService: CourseInstanceService;
   let semesterService: SemesterService;
+  let configService: ConfigService;
   const mockRepository: Record<string, SinonStub> = {};
   const fakeYearList = [
     '2018',
@@ -32,6 +35,11 @@ describe('Course Instance Controller', function () {
           provide: getRepositoryToken(CourseListingView),
           useValue: mockRepository,
         },
+        {
+          provide: getRepositoryToken(MultiYearPlanView),
+          useValue: mockRepository,
+        },
+        ConfigService,
         CourseInstanceService,
         SemesterService,
       ],
@@ -44,6 +52,8 @@ describe('Course Instance Controller', function () {
       .get<SemesterService>(SemesterService);
     ciService = testModule
       .get<CourseInstanceService>(CourseInstanceService);
+    configService = testModule
+      .get<ConfigService>(ConfigService);
     ciController = testModule
       .get<CourseInstanceController>(CourseInstanceController);
   });
@@ -107,6 +117,57 @@ describe('Course Instance Controller', function () {
             const yearArg = parseInt(year, 10);
             strictEqual(getStub.calledWith(yearArg), false);
           });
+        });
+      });
+    });
+  });
+  describe('/multi-year-plan', function () {
+    describe('Get all plans', function () {
+      let getStub: SinonStub;
+      beforeEach(function () {
+        getStub = stub(ciService, 'getMultiYearPlan').resolves();
+        stub(configService, 'academicYear').resolves(2020);
+      });
+      context('with no argument specified for number of years parameter', function () {
+        it('should fetch the multi year plan with the default number of years', async function () {
+          await ciController.getMultiYearPlan();
+          deepStrictEqual(getStub.args, [[4]]);
+        });
+      });
+      context('with number of years parameter set to 0', function () {
+        it('should fetch the multi year plan with the default number of years', async function () {
+          await ciController.getMultiYearPlan(0);
+          deepStrictEqual(getStub.args, [[4]]);
+        });
+      });
+      context('with number of years parameter set to a negative number', function () {
+        it('should fetch the multi year plan with the default number of years', async function () {
+          await ciController.getMultiYearPlan(-3);
+          deepStrictEqual(getStub.args, [[4]]);
+        });
+      });
+      context('with number of years parameter set to null', function () {
+        it('should fetch the multi year plan with the default number of years', async function () {
+          await ciController.getMultiYearPlan(null);
+          deepStrictEqual(getStub.args, [[4]]);
+        });
+      });
+      context('with number of years parameter set to undefined', function () {
+        it('should fetch the multi year plan with the default number of years', async function () {
+          await ciController.getMultiYearPlan(undefined);
+          deepStrictEqual(getStub.args, [[4]]);
+        });
+      });
+      context('with number of years parameter set to a float', function () {
+        it('should fetch the multi year plan with the default number of years', async function () {
+          await ciController.getMultiYearPlan(2.3);
+          deepStrictEqual(getStub.args, [[4]]);
+        });
+      });
+      context('with a valid argument for number of years parameter', function () {
+        it('should fetch the multi year plan for the given number of years', async function () {
+          await ciController.getMultiYearPlan(5);
+          deepStrictEqual(getStub.args, [[5]]);
         });
       });
     });
