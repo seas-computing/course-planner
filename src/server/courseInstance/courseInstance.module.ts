@@ -12,8 +12,8 @@ import { CourseInstanceController } from './courseInstance.controller';
   imports: [
     TypeOrmModule.forFeature([
       CourseListingView,
-      MultiYearPlanView,
       MultiYearPlanInstanceView,
+      MultiYearPlanView,
     ]),
     SemesterModule,
   ],
