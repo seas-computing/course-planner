@@ -3,6 +3,8 @@ import {
   Connection,
   ViewColumn,
   SelectQueryBuilder,
+  OneToMany,
+  ObjectType,
 } from 'typeorm';
 import { Course } from 'server/course/course.entity';
 import { Area } from 'server/area/area.entity';
@@ -19,10 +21,10 @@ import { MultiYearPlanInstanceView } from './MultiYearPlanInstanceView.entity';
     .addSelect('a.name', 'area')
     .addSelect("CONCAT_WS(' ', c.prefix, c.number)", 'catalogNumber')
     .addSelect('c.title', 'title')
+    .addSelect('instances."academicYear"', 'instances_academicYear')
     .from(Course, 'c')
     .leftJoin(Area, 'a', 'c."areaId" = a.id')
-    .leftJoinAndMapMany(
-      'c.instances',
+    .leftJoin(
       MultiYearPlanInstanceView,
       'instances',
       'c.id = instances."courseId"'
@@ -64,5 +66,9 @@ export class MultiYearPlanView {
   /**
    * One [[MultiYearPlanView]] has many [[MultiYearPlanInstanceView]]
    */
+  @OneToMany(
+    (): ObjectType<MultiYearPlanInstanceView> => MultiYearPlanInstanceView,
+    ({ courseId }): MultiYearPlanView => courseId
+  )
   public instances: MultiYearPlanInstanceView[];
 }

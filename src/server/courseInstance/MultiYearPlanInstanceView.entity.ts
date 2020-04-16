@@ -3,6 +3,10 @@ import {
   Connection,
   ViewColumn,
   SelectQueryBuilder,
+  JoinColumn,
+  ManyToOne,
+  ObjectType,
+  OneToMany,
 } from 'typeorm';
 import {
   Semester,
@@ -10,6 +14,7 @@ import {
 } from 'server/semester/semester.entity';
 import { FacultyListingView } from 'server/faculty/FacultyListingView.entity';
 import { CourseInstance } from './courseinstance.entity';
+import { MultiYearPlanView } from './MultiYearPlanView.entity';
 
 @ViewEntity('MultiYearPlanInstanceView', {
   expression: (connection: Connection):
@@ -25,10 +30,7 @@ import { CourseInstance } from './courseinstance.entity';
     .addSelect('s.term', 'term')
     .addSelect('instructors."instructorOrder"', 'instructorOrder')
     .leftJoin(Semester, 's', 's.id = ci."semesterId"')
-    // left join to FacultyInstance
-    // then left join to Faculty
-    .leftJoinAndMapMany(
-      'ci.faculty',
+    .leftJoin(
       FacultyListingView,
       'instructors',
       'instructors."courseInstanceId" = ci.id'
@@ -47,9 +49,16 @@ export class MultiYearPlanInstanceView {
 
   /**
    * From [[CourseInstance]]
+   * The [[MultiYearPlanView]] this instance view belongs to
    */
-  @ViewColumn()
-  public courseId: string;
+  @ManyToOne(
+    (): ObjectType<MultiYearPlanView> => MultiYearPlanView,
+    ({ instances }): MultiYearPlanInstanceView[] => instances,
+    {
+      nullable: false,
+    }
+  )
+  public courseId: MultiYearPlanView;
 
   /**
    * From [[Semester]]
@@ -75,5 +84,11 @@ export class MultiYearPlanInstanceView {
   /**
    * One [[MultiYearPlanInstanceView]] has many [[FacultyListingView]]
    */
+  @OneToMany(
+    (): ObjectType<FacultyListingView> => FacultyListingView,
+    ({ multiYearPlanInstanceView }): MultiYearPlanInstanceView => (
+      multiYearPlanInstanceView
+    )
+  )
   public faculty: FacultyListingView[];
 }

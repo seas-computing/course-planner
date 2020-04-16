@@ -10,6 +10,8 @@ import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse
 import { MultiYearPlanView } from 'server/courseInstance/MultiYearPlanView.entity';
 import { ConfigService } from 'server/config/config.service';
 import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
+import { FacultyListingView } from 'server/faculty/FacultyListingView.entity';
+import { MultiYearPlanInstanceView } from './MultiYearPlanInstanceView.entity';
 
 /**
  * @class CourseInstanceService
@@ -111,10 +113,24 @@ export class CourseInstanceService {
       .map((offset): number => academicYear + offset);
     return this.multiYearPlanViewRepository
       .createQueryBuilder('c')
+      .leftJoinAndMapMany(
+        'c.instances',
+        MultiYearPlanInstanceView,
+        'instances',
+        'c.id = instances."courseId"'
+      )
+      // left join to FacultyInstance
+      // then left join to Faculty
+      .leftJoinAndMapMany(
+        'instances.faculty',
+        FacultyListingView,
+        'instructors',
+        'instructors."courseInstanceId" = instructors.id'
+      )
       // Note that although the academic year in the semester entity is actually
       // the calendar year, c.academicYear is truly the academic year and has
       // been calculated by the MultiYearPlanInstanceView
-      .where('c.academicYear IN (:...academicYears)', { academicYears })
+      .where('c."instances_academicYear" IN (:...academicYears)', { academicYears })
       .getMany();
   }
 }
