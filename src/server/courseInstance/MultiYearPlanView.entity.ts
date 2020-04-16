@@ -23,7 +23,7 @@ import { MultiYearPlanInstanceView } from './MultiYearPlanInstanceView.entity';
     .leftJoin(Area, 'a', 'c."areaId" = a.id')
     .leftJoinAndMapMany(
       'c.instances',
-      'MultiYearPlanInstanceView',
+      MultiYearPlanInstanceView,
       'instances',
       'c.id = instances."courseId"'
     )
