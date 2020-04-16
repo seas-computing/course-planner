@@ -13,6 +13,7 @@ import { OFFERED } from 'common/constants';
 import { Meeting } from 'server/meeting/meeting.entity';
 import { ConfigService } from 'server/config/config.service';
 import { ConfigModule } from 'server/config/config.module';
+import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 
@@ -185,5 +186,8 @@ describe('Course Instance Service', function () {
         });
       });
     });
+  });
+  describe('getAllForMultiYearPlan', function () {
+    let result: MultiYearPlanResponseDTO[];
   });
 });
