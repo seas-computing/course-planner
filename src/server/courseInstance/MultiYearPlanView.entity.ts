@@ -21,10 +21,15 @@ import { MultiYearPlanInstanceView } from './MultiYearPlanInstanceView.entity';
     .addSelect('a.name', 'area')
     .addSelect("CONCAT_WS(' ', c.prefix, c.number)", 'catalogNumber')
     .addSelect('c.title', 'title')
-    .addSelect('instances."academicYear"', 'instances_academicYear')
     .from(Course, 'c')
     .leftJoin(Area, 'a', 'c."areaId" = a.id')
-    .leftJoin(
+    // NOTE: The leftJoinAndMapMany does the left join,
+    // but does not appear to do the mapping,
+    // which is required for the instances property below.
+    // The workaround for now is to duplicate this leftJoinAndMapMany in the
+    // place where the repository is queried.
+    .leftJoinAndMapMany(
+      'instances',
       MultiYearPlanInstanceView,
       'instances',
       'c.id = instances."courseId"'
