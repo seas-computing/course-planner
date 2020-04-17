@@ -91,16 +91,8 @@ export class CourseInstanceController {
     isArray: true,
   })
   public async getMultiYearPlan(
-    @Query('numYears') numYears: number = 4
+    @Query('numYears') numYears?: number
   ): Promise<MultiYearPlanResponseDTO[]> {
-    // If an invalid number of years is provided, use the default number of years
-    const defaultNumYears = 4;
-    let validatedNumYears: number;
-    if (numYears > 0 && Number.isInteger(numYears)) {
-      validatedNumYears = numYears;
-    } else {
-      validatedNumYears = defaultNumYears;
-    }
-    return this.ciService.getMultiYearPlan(validatedNumYears);
+    return this.ciService.getMultiYearPlan(numYears);
   }
 }
