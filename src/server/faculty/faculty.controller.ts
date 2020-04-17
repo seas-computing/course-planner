@@ -52,9 +52,7 @@ export class ManageFacultyController {
     isArray: true,
   })
   public async getAll(): Promise<ManageFacultyResponseDTO[]> {
-    return this.facultyService.find({
-      relations: ['area'],
-    });
+    return this.facultyService.find();
   }
 
   @Post('/')
