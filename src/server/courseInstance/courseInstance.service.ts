@@ -103,7 +103,7 @@ export class CourseInstanceService {
    * Resolves a list of course instances for the Multi Year Plan
    */
 
-  public async getMultiYearPlan(numYears: number):
+  public async getMultiYearPlan(numYears?: number):
   Promise<MultiYearPlanResponseDTO[]> {
     // If an invalid number of years is provided, use the default number of years
     const defaultNumYears = 4;
