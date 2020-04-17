@@ -133,7 +133,7 @@ export class CourseInstanceService {
         'instances.faculty',
         FacultyListingView,
         'instructors',
-        'instructors."courseInstanceId" = instructors.id'
+        'instructors."courseInstanceId" = instances.id'
       )
       // Note that although the academic year in the semester entity is actually
       // the calendar year, c.academicYear is truly the academic year and has
