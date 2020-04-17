@@ -1,7 +1,7 @@
 import { ApiModelProperty } from '@nestjs/swagger';
 import { TERM } from 'server/semester/semester.entity';
 
-abstract class Faculty {
+abstract class MultiYearPlanInstanceFaculty {
   @ApiModelProperty({
     type: 'string',
     example: 'f696d531-aef2-413f-9922-f480aa9d6039',
@@ -13,6 +13,12 @@ abstract class Faculty {
     example: 'Waldo, James',
   })
   public displayName: string;
+
+  @ApiModelProperty({
+    type: 'number',
+    example: 0,
+  })
+  public instructorOrder: number;
 }
 
 export abstract class MultiYearPlanInstance {
@@ -21,6 +27,12 @@ export abstract class MultiYearPlanInstance {
     example: 'fc772fd6-651e-40c3-97e6-b815818120ce',
   })
   public id: string;
+
+  @ApiModelProperty({
+    type: 'number',
+    example: 2012,
+  })
+  public academicYear: number;
 
   @ApiModelProperty({
     type: 'number',
@@ -36,9 +48,9 @@ export abstract class MultiYearPlanInstance {
 
   @ApiModelProperty({
     isArray: true,
-    type: Faculty,
+    type: MultiYearPlanInstanceFaculty,
   })
-  public faculty: Faculty[];
+  public faculty: MultiYearPlanInstanceFaculty[];
 }
 
 export abstract class MultiYearPlanResponseDTO {
