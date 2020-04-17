@@ -49,6 +49,7 @@ export class FacultyListingView {
    * [[FacultyListingView]] directly with the [[CourseInstanceView]], we don't
    * need to maintain the separate join column
    */
+  @ViewColumn()
   public instructorOrder: number;
 
   /**
