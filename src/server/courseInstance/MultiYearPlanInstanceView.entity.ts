@@ -3,7 +3,6 @@ import {
   Connection,
   ViewColumn,
   SelectQueryBuilder,
-  JoinColumn,
   ManyToOne,
   ObjectType,
   OneToMany,
