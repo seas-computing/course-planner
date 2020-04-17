@@ -129,7 +129,9 @@ export class CourseInstanceService {
         'c.instances',
         MultiYearPlanInstanceView,
         'instances',
-        'c.id = instances."courseId"'
+        // Note that the second part of this join clause is needed
+        // so that the where clause applies to both joins
+        'c.id = instances."courseId" AND c."instances_academicYear" = instances."academicYear"'
       )
       // left join to FacultyInstance
       // then left join to Faculty
