@@ -29,7 +29,13 @@ import { MultiYearPlanView } from './MultiYearPlanView.entity';
     .addSelect('s.term', 'term')
     .addSelect('instructors."instructorOrder"', 'instructorOrder')
     .leftJoin(Semester, 's', 's.id = ci."semesterId"')
-    .leftJoin(
+    // NOTE: The leftJoinAndMapMany does the left join,
+    // but does not appear to do the mapping,
+    // which is required for the instances property below.
+    // The workaround for now is to duplicate this leftJoinAndMapMany in the
+    // place where the repository is queried.
+    .leftJoinAndMapMany(
+      'faculty',
       FacultyListingView,
       'instructors',
       'instructors."courseInstanceId" = ci.id'
