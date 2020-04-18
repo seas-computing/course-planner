@@ -17,7 +17,43 @@ import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlan
 import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 
-describe('Course Instance Service', function () {
+// debugging
+if (!Array.prototype.flatMap) {
+  // eslint-disable-next-line no-extend-native
+  Object.defineProperty(Array.prototype, 'flatMap', {
+    value: (callback, thisArg) => {
+      const self = thisArg || this;
+      if (self === null) {
+        throw new TypeError('Array.prototype.flatMap '
+              + 'called on null or undefined');
+      }
+      if (typeof callback !== 'function') {
+        throw new TypeError(callback
+              + ' is not a function');
+      }
+
+      let list = [];
+
+      // 1. Let O be ? ToObject(this value).
+      const o = Object(self);
+
+      // 2. Let len be ? ToLength(? Get(O, "length")).
+      // eslint-disable-next-line no-bitwise
+      const len = o.length >>> 0;
+
+      for (let k = 0; k < len; ++k) {
+        if (k in o) {
+          const partList = callback.call(self, o[k], k, o);
+          list = list.concat(partList);
+        }
+      }
+
+      return list;
+    },
+  });
+}
+
+describe.only('Course Instance Service', function () {
   let testModule: TestingModule;
   let db: MockDB;
   let ciService: CourseInstanceService;
@@ -187,7 +223,23 @@ describe('Course Instance Service', function () {
       });
     });
   });
-  describe('getAllForMultiYearPlan', function () {
+  describe('getMultiYearPlan', function () {
     let result: MultiYearPlanResponseDTO[];
+    const numYears = 4;
+    beforeEach(async function () {
+      result = await ciService.getMultiYearPlan(numYears);
+    });
+    it('should return the multi year plan for the requested academic years', function () {
+      const academicYears = ciService.computeAcademicYears(numYears)
+        .map((year) => year.toString());
+      // Verify that the course instances' academic years are included in the
+      // academic year period calculated by the course instance service method
+      // computeAcademicYears
+      const isCorrectYears = result
+        .every((course) => course.instances
+          .every((instance) => academicYears
+            .includes(instance.academicYear.toString())));
+      strictEqual(isCorrectYears, true);
+    });
   });
 });
