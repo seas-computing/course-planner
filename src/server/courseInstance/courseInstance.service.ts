@@ -103,12 +103,11 @@ export class CourseInstanceService {
 
     return courseQuery.getMany() as unknown as CourseInstanceResponseDTO[];
   }
-  /**
-   * Resolves a list of course instances for the Multi Year Plan
-   */
 
-  public async getMultiYearPlan(numYears?: number):
-  Promise<MultiYearPlanResponseDTO[]> {
+  /**
+   * Calculates an array of academic years based on the current year
+   */
+  public computeAcademicYears(numYears?: number): number[] {
     // If an invalid number of years is provided, use the default number of years
     const defaultNumYears = 4;
     let validatedNumYears: number;
@@ -123,6 +122,15 @@ export class CourseInstanceService {
     const academicYears = Array.from({ length: validatedNumYears })
       .map((value, index): number => index)
       .map((offset): number => academicYear + offset);
+    return academicYears;
+  }
+
+  /**
+   * Resolves a list of course instances for the Multi Year Plan
+   */
+  public async getMultiYearPlan(numYears?: number):
+  Promise<MultiYearPlanResponseDTO[]> {
+    const academicYears = this.computeAcademicYears(numYears);
     return this.multiYearPlanViewRepository
       .createQueryBuilder('c')
       .leftJoinAndMapMany(
@@ -145,34 +153,6 @@ export class CourseInstanceService {
       // the calendar year, c.academicYear is truly the academic year and has
       // been calculated by the MultiYearPlanInstanceView
       .where('c."instances_academicYear" IN (:...academicYears)', { academicYears })
-      .getMany();
-  }
-
-  public async getMultiYearPlanInstances(numYears?: number):
-  Promise<MultiYearPlanInstance[]> {
-  // If an invalid number of years is provided, use the default number of years
-    const defaultNumYears = 4;
-    let validatedNumYears: number;
-    if (numYears > 0 && Number.isInteger(numYears)) {
-      validatedNumYears = numYears;
-    } else {
-      validatedNumYears = defaultNumYears;
-    }
-    const { academicYear } = this.configService;
-    const academicYears = Array.from({ length: validatedNumYears })
-      .map((value, index): number => index)
-      .map((offset): number => academicYear + offset);
-    return this.multiYearPlanInstanceViewRepository
-      .createQueryBuilder('ci')
-      .where('ci."academicYear" IN (:...academicYears)', { academicYears })
-      // left join to FacultyInstance
-      // then left join to Faculty
-      .leftJoinAndMapMany(
-        'ci.faculty',
-        FacultyListingView,
-        'instructors',
-        'instructors."courseInstanceId" = ci.id'
-      )
       .getMany();
   }
 }
