@@ -7,6 +7,7 @@ import { CourseListingView } from 'server/course/CourseListingView.entity';
 import { SemesterService } from 'server/semester/semester.service';
 import { Semester } from 'server/semester/semester.entity';
 import { ConfigService } from 'server/config/config.service';
+import { Course } from 'server/course/course.entity';
 import { CourseInstanceService } from '../courseInstance.service';
 import { CourseInstanceController } from '../courseInstance.controller';
 import { MultiYearPlanView } from '../MultiYearPlanView.entity';
@@ -42,6 +43,10 @@ describe('Course Instance Controller', function () {
         },
         {
           provide: getRepositoryToken(MultiYearPlanInstanceView),
+          useValue: mockRepository,
+        },
+        {
+          provide: getRepositoryToken(Course),
           useValue: mockRepository,
         },
         ConfigService,
