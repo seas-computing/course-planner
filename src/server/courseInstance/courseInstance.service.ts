@@ -9,7 +9,7 @@ import { TERM } from 'server/semester/semester.entity';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { MultiYearPlanView } from 'server/courseInstance/MultiYearPlanView.entity';
 import { ConfigService } from 'server/config/config.service';
-import { MultiYearPlanResponseDTO, MultiYearPlanInstance } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
+import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import { FacultyListingView } from 'server/faculty/FacultyListingView.entity';
 import { MultiYearPlanInstanceView } from './MultiYearPlanInstanceView.entity';
 

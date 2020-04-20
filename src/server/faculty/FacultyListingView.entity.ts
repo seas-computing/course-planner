@@ -5,7 +5,6 @@ import {
   ViewColumn,
   ManyToOne,
   ObjectType,
-  JoinColumn,
 } from 'typeorm';
 import { Faculty } from 'server/faculty/faculty.entity';
 import { FacultyCourseInstance } from 'server/courseInstance/facultycourseinstance.entity';
