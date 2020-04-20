@@ -17,43 +17,7 @@ import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlan
 import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 
-// debugging
-if (!Array.prototype.flatMap) {
-  // eslint-disable-next-line no-extend-native
-  Object.defineProperty(Array.prototype, 'flatMap', {
-    value: (callback, thisArg) => {
-      const self = thisArg || this;
-      if (self === null) {
-        throw new TypeError('Array.prototype.flatMap '
-              + 'called on null or undefined');
-      }
-      if (typeof callback !== 'function') {
-        throw new TypeError(callback
-              + ' is not a function');
-      }
-
-      let list = [];
-
-      // 1. Let O be ? ToObject(this value).
-      const o = Object(self);
-
-      // 2. Let len be ? ToLength(? Get(O, "length")).
-      // eslint-disable-next-line no-bitwise
-      const len = o.length >>> 0;
-
-      for (let k = 0; k < len; ++k) {
-        if (k in o) {
-          const partList = callback.call(self, o[k], k, o);
-          list = list.concat(partList);
-        }
-      }
-
-      return list;
-    },
-  });
-}
-
-describe.only('Course Instance Service', function () {
+describe('Course Instance Service', function () {
   let testModule: TestingModule;
   let db: MockDB;
   let ciService: CourseInstanceService;

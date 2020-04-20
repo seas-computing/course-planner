@@ -153,6 +153,10 @@ export class CourseInstanceService {
       // the calendar year, c.academicYear is truly the academic year and has
       // been calculated by the MultiYearPlanInstanceView
       .where('c."instances_academicYear" IN (:...academicYears)', { academicYears })
+      .orderBy('area', 'ASC')
+      .addOrderBy('"catalogNumber"', 'ASC')
+      .addOrderBy('instances."instructorOrder"', 'ASC')
+      .addOrderBy('instances."displayName"', 'ASC')
       .getMany();
   }
 }

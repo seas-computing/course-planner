@@ -33,10 +33,7 @@ import { MultiYearPlanInstanceView } from './MultiYearPlanInstanceView.entity';
       MultiYearPlanInstanceView,
       'instances',
       'c.id = instances."courseId"'
-    )
-    .orderBy('area', 'ASC')
-    .addOrderBy('"catalogNumber"', 'ASC')
-    .addOrderBy('instances."instructorOrder"', 'ASC'),
+    ),
 })
 export class MultiYearPlanView {
   /**
