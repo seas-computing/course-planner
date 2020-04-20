@@ -207,7 +207,7 @@ describe('Course Instance Service', function () {
             .includes(instance.academicYear.toString())));
       strictEqual(isCorrectYears, true);
     });
-    it('should return the instructors in the correct order', function () {
+    it('should return the instructors for each course instance in the correct order', function () {
       result.forEach((course): void => {
         course.instances.forEach((instance): void => {
           const sorted = instance.faculty.slice().sort((a, b): number => {
