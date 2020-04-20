@@ -53,43 +53,81 @@ describe('Configuration Service', function () {
   });
 
   describe('database options', function () {
+    let dbOptions: PostgresConnectionOptions;
     const DB_HOSTNAME = 'hostname';
     const DB_PORT = int.toString();
     const DB_DATABASE = 'database';
     const DB_USERNAME = 'username';
     const DB_PASSWORD = 'password';
+    context('In production mode', function () {
+      const NODE_ENV = 'production';
 
-    let dbOptions: PostgresConnectionOptions;
-
-    beforeEach(function () {
-      const config = new ConfigService({
-        DB_HOSTNAME,
-        DB_PORT,
-        DB_DATABASE,
-        DB_USERNAME,
-        DB_PASSWORD,
+      beforeEach(function () {
+        const config = new ConfigService({
+          DB_HOSTNAME,
+          DB_PORT,
+          DB_DATABASE,
+          DB_USERNAME,
+          DB_PASSWORD,
+          NODE_ENV,
+        });
+        ({ dbOptions } = config);
       });
-      ({ dbOptions } = config);
-    });
 
-    it('provides the database username', function () {
-      strictEqual(dbOptions.username, DB_USERNAME);
-    });
+      it('provides the database username', function () {
+        strictEqual(dbOptions.username, DB_USERNAME);
+      });
 
-    it('provides the database password', function () {
-      strictEqual(dbOptions.password, DB_PASSWORD);
-    });
+      it('provides the database password', function () {
+        strictEqual(dbOptions.password, DB_PASSWORD);
+      });
 
-    it('provides the database name', function () {
-      strictEqual(dbOptions.database, DB_DATABASE);
-    });
+      it('provides the database name', function () {
+        strictEqual(dbOptions.database, DB_DATABASE);
+      });
 
-    it('provides the database port', function () {
-      strictEqual(dbOptions.port.toString(), DB_PORT);
-    });
+      it('provides the database port', function () {
+        strictEqual(dbOptions.port.toString(), DB_PORT);
+      });
 
-    it('provides a glob to import entity classes', function () {
-      deepStrictEqual(dbOptions.entities, ['src/server/**/*.entity.ts']);
+      it('provides a glob to import entity classes', function () {
+        deepStrictEqual(dbOptions.entities, ['server/**/*.entity.js']);
+      });
+    });
+    context('In development mode', function () {
+      const NODE_ENV = 'development';
+
+      beforeEach(function () {
+        const config = new ConfigService({
+          DB_HOSTNAME,
+          DB_PORT,
+          DB_DATABASE,
+          DB_USERNAME,
+          DB_PASSWORD,
+          NODE_ENV,
+        });
+        ({ dbOptions } = config);
+      });
+
+      it('provides the database username', function () {
+        strictEqual(dbOptions.username, DB_USERNAME);
+      });
+
+      it('provides the database password', function () {
+        strictEqual(dbOptions.password, DB_PASSWORD);
+      });
+
+      it('provides the database name', function () {
+        strictEqual(dbOptions.database, DB_DATABASE);
+      });
+
+      it('provides the database port', function () {
+        strictEqual(dbOptions.port.toString(), DB_PORT);
+      });
+
+      it('provides a glob to import entity classes', function () {
+        deepStrictEqual(dbOptions.entities, ['src/server/**/*.entity.ts']);
+      });
     });
   });
 
