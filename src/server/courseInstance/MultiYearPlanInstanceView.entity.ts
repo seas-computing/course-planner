@@ -28,6 +28,7 @@ import { MultiYearPlanView } from './MultiYearPlanView.entity';
     .addSelect('s.academicYear', 'calendarYear')
     .addSelect('s.term', 'term')
     .addSelect('instructors."instructorOrder"', 'instructorOrder')
+    .addSelect('instructors."displayName"', 'displayName')
     .leftJoin(Semester, 's', 's.id = ci."semesterId"')
     // NOTE: The leftJoinAndMapMany does the left join,
     // but does not appear to do the mapping,
