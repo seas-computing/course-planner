@@ -8,7 +8,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  */
 
 export class AddTitleToCourseListingView1587139047837
-  implements MigrationInterface {
+implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query('DELETE FROM "typeorm_metadata" WHERE "type" = \'VIEW\' AND "schema" = $1 AND "name" = $2', ['public', 'CourseListingView']);
     await queryRunner.query('DROP VIEW "CourseListingView"', undefined);

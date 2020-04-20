@@ -15,18 +15,18 @@ import { CourseInstanceListingView } from 'server/courseInstance/CourseInstanceL
 
 @ViewEntity('CourseListingView', {
   expression: (connection: Connection):
-    SelectQueryBuilder<Course> => connection.createQueryBuilder()
-      .select('c.id', 'id')
-      .addSelect('a.name', 'area')
-      .addSelect('c.title', 'title')
-      .addSelect('c."isUndergraduate"', 'isUndergraduate')
-      .addSelect("CONCAT_WS(' ', c.prefix, c.number)", 'catalogNumber')
-      .addSelect('c."sameAs"', 'sameAs')
-      .addSelect('c."isSEAS"', 'isSEAS')
-      .addSelect('c.notes', 'notes')
-      .addSelect('c."termPattern"', 'termPattern')
-      .leftJoin(Area, 'a', 'c."areaId" = a.id')
-      .from(Course, 'c'),
+  SelectQueryBuilder<Course> => connection.createQueryBuilder()
+    .select('c.id', 'id')
+    .addSelect('a.name', 'area')
+    .addSelect('c.title', 'title')
+    .addSelect('c."isUndergraduate"', 'isUndergraduate')
+    .addSelect("CONCAT_WS(' ', c.prefix, c.number)", 'catalogNumber')
+    .addSelect('c."sameAs"', 'sameAs')
+    .addSelect('c."isSEAS"', 'isSEAS')
+    .addSelect('c.notes', 'notes')
+    .addSelect('c."termPattern"', 'termPattern')
+    .leftJoin(Area, 'a', 'c."areaId" = a.id')
+    .from(Course, 'c'),
 })
 export class CourseListingView {
   /**
