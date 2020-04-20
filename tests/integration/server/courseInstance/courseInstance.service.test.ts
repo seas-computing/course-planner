@@ -215,7 +215,7 @@ describe('Course Instance Service', function () {
             if (a.displayName > b.displayName) return 1;
             return 0;
           });
-          deepStrictEqual(sorted, instance.faculty);
+          deepStrictEqual(instance.faculty, sorted);
         });
       });
     });
@@ -227,7 +227,7 @@ describe('Course Instance Service', function () {
         if (course1.catalogNumber > course2.catalogNumber) return 1;
         return 0;
       });
-      deepStrictEqual(sorted, result);
+      deepStrictEqual(result, sorted);
     });
   });
 });
