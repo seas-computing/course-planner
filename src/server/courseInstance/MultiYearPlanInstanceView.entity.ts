@@ -71,14 +71,14 @@ export class MultiYearPlanInstanceView {
    * The academic year in which the course instances takes place
    */
   @ViewColumn()
-  public academicYear: number;
+  public academicYear: string;
 
   /**
    * From [[Semester]]
    * The calendar year in which the course instances takes place
    */
   @ViewColumn()
-  public calendarYear: number;
+  public calendarYear: string;
 
   /**
    * From [[Semester]]

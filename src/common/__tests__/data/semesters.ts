@@ -6,7 +6,7 @@ import { Semester, TERM } from 'server/semester/semester.entity';
  */
 export const fall: Semester = {
   id: '',
-  academicYear: 2020,
+  academicYear: '2020',
   term: TERM.FALL,
   absences: [],
   courseInstances: [],
@@ -21,7 +21,7 @@ export const fall: Semester = {
  */
 export const spring: Semester = {
   id: '',
-  academicYear: 2020,
+  academicYear: '2020',
   term: TERM.SPRING,
   absences: [],
   courseInstances: [],

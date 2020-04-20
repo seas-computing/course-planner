@@ -13,7 +13,7 @@ export class SemesterPopulationService extends BasePopulationService<Semester> {
       semesters.map(({ academicYear, term }) => {
         const semester = new Semester();
         semester.term = term;
-        semester.academicYear = academicYear;
+        semester.academicYear = academicYear.toString();
         return semester;
       })
     );

@@ -49,7 +49,7 @@ export class CourseInstanceListingView {
    * of the academic year.
    */
   @ViewColumn()
-  public calendarYear: number;
+  public calendarYear: string;
 
   /**
    * From [[CourseInstance]]

@@ -29,16 +29,16 @@ export abstract class MultiYearPlanInstance {
   public id: string;
 
   @ApiModelProperty({
-    type: 'number',
-    example: 2012,
+    type: 'string',
+    example: '2012',
   })
-  public academicYear: number;
+  public academicYear: string;
 
   @ApiModelProperty({
-    type: 'number',
-    example: 2011,
+    type: 'string',
+    example: '2011',
   })
-  public calendarYear: number;
+  public calendarYear: string;
 
   @ApiModelProperty({
     type: 'string',

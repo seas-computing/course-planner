@@ -13,10 +13,10 @@ abstract class Instance {
   public id: string;
 
   @ApiModelProperty({
-    type: 'number',
-    example: 2016,
+    type: 'string',
+    example: '2016',
   })
-  public calendarYear: number;
+  public calendarYear: string;
 
   @ApiModelProperty({
     type: 'string',
