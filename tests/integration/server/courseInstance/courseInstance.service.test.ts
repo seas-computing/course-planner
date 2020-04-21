@@ -260,4 +260,28 @@ describe('Course Instance Service', function () {
       strictEqual(typeof faculty.instructorOrder, 'number');
     });
   });
+  describe('computeAcademicYears', function () {
+    let numYears: number;
+    let result: number[];
+    const defaultMultiYearPlanYears = 4;
+    it('should return an array of 4 years if numYears is not specified', async function () {
+      result = await ciService.computeAcademicYears();
+      strictEqual(result.length, defaultMultiYearPlanYears);
+    });
+    it('should return an array of 4 years if numYears is negative', async function () {
+      numYears = -3;
+      result = await ciService.computeAcademicYears(numYears);
+      strictEqual(result.length, defaultMultiYearPlanYears);
+    });
+    it('should return an array of 4 years if numYears is a decimal', async function () {
+      numYears = 2.3;
+      result = await ciService.computeAcademicYears(numYears);
+      strictEqual(result.length, defaultMultiYearPlanYears);
+    });
+    it('should return an array of specified years when numYears is positive', async function () {
+      numYears = 5;
+      result = await ciService.computeAcademicYears(numYears);
+      strictEqual(result.length, numYears);
+    });
+  });
 });
