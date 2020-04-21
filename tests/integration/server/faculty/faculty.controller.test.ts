@@ -20,11 +20,16 @@ import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 import { regularUser, string, adminUser } from 'common/__tests__/data';
 import { SessionModule } from 'nestjs-session';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
+import { FacultyService } from 'server/faculty/faculty.service';
 
 const mockFacultyRepository = {
   create: stub(),
   save: stub(),
   findOneOrFail: stub(),
+  find: stub(),
+};
+
+const mockFacultyService = {
   find: stub(),
 };
 
@@ -58,10 +63,16 @@ describe('Faculty API', function () {
     })
       .overrideProvider(ConfigService)
       .useValue(new ConfigService({ NODE_ENV: 'production' }))
+
       .overrideProvider(getRepositoryToken(Faculty))
       .useValue(mockFacultyRepository)
+
+      .overrideProvider(FacultyService)
+      .useValue(mockFacultyService)
+
       .overrideProvider(getRepositoryToken(Area))
       .useValue(mockAreaRepository)
+
       .compile();
 
     const nestApp = await module.createNestApplication()
@@ -75,6 +86,7 @@ describe('Faculty API', function () {
     Object.values({
       ...mockFacultyRepository,
       ...mockAreaRepository,
+      ...mockFacultyService,
     })
       .forEach((sinonStub: SinonStub): void => {
         sinonStub.reset();
@@ -89,7 +101,7 @@ describe('Faculty API', function () {
 
         strictEqual(response.ok, false);
         strictEqual(response.status, HttpStatus.FORBIDDEN);
-        strictEqual(mockFacultyRepository.find.callCount, 0);
+        strictEqual(mockFacultyService.find.callCount, 0);
       });
     });
     describe('User is authenticated', function () {
@@ -100,13 +112,13 @@ describe('Faculty API', function () {
             ...new Faculty(),
             area: new Area(),
           });
-          mockFacultyRepository.find.resolves(mockFaculty);
+          mockFacultyService.find.resolves(mockFaculty);
 
           const response = await request(api).get('/api/faculty');
 
           strictEqual(response.ok, true);
           strictEqual(response.body.length, mockFaculty.length);
-          strictEqual(mockFacultyRepository.find.callCount, 1);
+          strictEqual(mockFacultyService.find.callCount, 1);
         });
       });
       describe('User is not a member of the admin group', function () {
@@ -117,7 +129,7 @@ describe('Faculty API', function () {
 
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.FORBIDDEN);
-          strictEqual(mockFacultyRepository.find.callCount, 0);
+          strictEqual(mockFacultyService.find.callCount, 0);
         });
       });
     });
