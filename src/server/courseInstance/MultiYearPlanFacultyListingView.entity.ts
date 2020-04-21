@@ -5,10 +5,11 @@ import {
   ViewColumn,
   ManyToOne,
   ObjectType,
+  JoinColumn,
 } from 'typeorm';
 import { Faculty } from 'server/faculty/faculty.entity';
 import { FacultyCourseInstance } from 'server/courseInstance/facultycourseinstance.entity';
-import { CourseInstanceListingView } from 'server/courseInstance/CourseInstanceListingView.entity';
+import { MultiYearPlanInstanceView } from 'server/courseInstance/MultiYearPlanInstanceView.entity';
 
 /**
  * Lists faculty by "lastName, firstName", and also disaggregates the
@@ -26,7 +27,7 @@ import { CourseInstanceListingView } from 'server/courseInstance/CourseInstanceL
     .leftJoin(FacultyCourseInstance, 'fci', 'fci."facultyId" = f.id')
     .from(Faculty, 'f'),
 })
-export class FacultyListingView {
+export class MultiYearPlanFacultyListingView {
   /**
    * From [[Faculty]]
    */
@@ -50,12 +51,11 @@ export class FacultyListingView {
   @ViewColumn()
   public instructorOrder: number;
 
-  /**
-   * Many [[FacultyListingViews]] have one [[CourseInstanceView]]s
-   */
+  @ViewColumn()
+  @JoinColumn()
   @ManyToOne(
-    (): ObjectType<CourseInstanceListingView> => CourseInstanceListingView,
-    ({ instructors }): FacultyListingView[] => instructors
+    (): ObjectType<MultiYearPlanInstanceView> => MultiYearPlanInstanceView,
+    ({ faculty }): MultiYearPlanFacultyListingView[] => faculty
   )
-  public courseInstanceId: CourseInstanceListingView;
+  public courseInstanceId: MultiYearPlanInstanceView;
 }
