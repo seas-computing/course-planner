@@ -1,7 +1,7 @@
 import { ApiModelProperty } from '@nestjs/swagger';
 import { TERM } from 'server/semester/semester.entity';
 
-abstract class MultiYearPlanInstanceFaculty {
+export abstract class MultiYearPlanInstanceFaculty {
   @ApiModelProperty({
     type: 'string',
     example: 'f696d531-aef2-413f-9922-f480aa9d6039',
