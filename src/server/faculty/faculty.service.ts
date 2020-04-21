@@ -11,6 +11,7 @@ export class FacultyService {
    * sorted by:
    * - area.name ASC
    *   - lastName ASC
+   *   - firstName ASC
    * order
    */
   public async find(): Promise<Faculty[]> {
@@ -18,6 +19,7 @@ export class FacultyService {
       .leftJoinAndSelect('faculty.area', 'area')
       .orderBy('area.name', 'ASC')
       .addOrderBy('faculty.lastName', 'ASC')
+      .addOrderBy('faculty.firstName', 'ASC')
       .getMany();
   }
 }

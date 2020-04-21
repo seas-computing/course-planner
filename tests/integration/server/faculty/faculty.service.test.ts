@@ -139,4 +139,47 @@ describe('Faculty service', function () {
       faculty1.lastName,
     ]);
   });
+
+  it('sorts faculty members by first name in ascending order', async function () {
+    await facultyRepository.query(`TRUNCATE ${Faculty.name} CASCADE`);
+    // Save two example faculty members in the database, deliberately not
+    // in alphabetical order
+    const [
+      faculty1,
+      faculty2,
+    ] = await facultyRepository.save([
+      {
+        ...appliedMathFacultyMember,
+        // Slightly weird first and last names to force the sorting and prove
+        // that it's working
+        firstName: 'zzzzzzzzz',
+        lastName: 'zzzzzzzzz',
+        area: {
+          name: 'AM',
+        },
+      },
+      {
+        ...bioengineeringFacultyMember,
+        // Slightly weird first and last names to force the sorting and prove
+        // that it's working
+        firstName: 'zaaaazzzz',
+        lastName: 'zzzzzzzzz',
+        area: {
+          name: 'BE',
+        },
+      },
+    ]);
+
+    const actualFaculty = await facultyService.find();
+    const actualLastNames = [
+      ...new Set(actualFaculty.map(({ firstName }) => firstName)),
+    ];
+
+    // Faculty 2 should come before faculty 1 because we're sorting by
+    // lastname ASC (aaa comes before zzz)
+    deepStrictEqual(actualLastNames, [
+      faculty2.firstName,
+      faculty1.firstName,
+    ]);
+  });
 });
