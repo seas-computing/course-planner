@@ -19,8 +19,8 @@ import { ConfigService } from 'server/config/config.service';
 import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 import { regularUser, string, adminUser } from 'common/__tests__/data';
 import { SessionModule } from 'nestjs-session';
-import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import { FacultyService } from 'server/faculty/faculty.service';
+import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 const mockFacultyRepository = {
   create: stub(),
