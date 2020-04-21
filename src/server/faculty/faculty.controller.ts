@@ -20,9 +20,9 @@ import {
 } from '@nestjs/swagger';
 import { RequireGroup } from 'server/auth/group.guard';
 import { GROUP } from 'common/constants';
-import { FacultyResponseDTO } from 'common/dto/faculty/facultyResponse.dto';
-import { CreateFacultyDTO } from 'common/dto/faculty/createFaculty.dto';
-import { UpdateFacultyDTO } from 'common/dto/faculty/updateFaculty.dto';
+import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
+import { CreateFacultyDTO } from 'common/dto/faculty/CreateFaculty.dto';
+import { UpdateFacultyDTO } from 'common/dto/faculty/UpdateFaculty.dto';
 import { Authentication } from 'server/auth/authentication.guard';
 import { Area } from 'server/area/area.entity';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
@@ -42,15 +42,15 @@ export class ManageFacultyController {
   @Get('/')
   @ApiOperation({ title: 'Retrieve all faculty in the database' })
   @ApiOkResponse({
-    type: FacultyResponseDTO,
+    type: ManageFacultyResponseDTO,
     description: 'An array of all the faculty along with their area',
     isArray: true,
   })
-  public async getAll(): Promise<FacultyResponseDTO[]> {
+  public async getAll(): Promise<ManageFacultyResponseDTO[]> {
     const facultyMembers = await this.facultyRepository.find({
       relations: ['area'],
     });
-    return facultyMembers.map((faculty: Faculty): FacultyResponseDTO => ({
+    return facultyMembers.map((faculty: Faculty): ManageFacultyResponseDTO => ({
       ...faculty,
       area: {
         id: faculty.area.id,
@@ -62,7 +62,7 @@ export class ManageFacultyController {
   @Post('/')
   @ApiOperation({ title: 'Create a new faculty entry in the database' })
   @ApiOkResponse({
-    type: FacultyResponseDTO,
+    type: ManageFacultyResponseDTO,
     description: 'An object with the newly created faculty member\'s information.',
     isArray: false,
   })
@@ -70,7 +70,7 @@ export class ManageFacultyController {
     description: 'Bad Request: the request is not in accordance with the createFaculty DTO',
   })
   public async create(@Body() faculty: CreateFacultyDTO):
-  Promise<FacultyResponseDTO> {
+  Promise<ManageFacultyResponseDTO> {
     return this.facultyRepository.create({
       HUID: faculty.HUID,
       firstName: faculty.firstName,
@@ -84,7 +84,7 @@ export class ManageFacultyController {
   @Put(':id')
   @ApiOperation({ title: 'Edit an existing faculty entry in the database' })
   @ApiOkResponse({
-    type: FacultyResponseDTO,
+    type: ManageFacultyResponseDTO,
     description: 'An object with the edited faculty member\'s information.',
     isArray: false,
   })
@@ -95,7 +95,7 @@ export class ManageFacultyController {
     description: 'Not Found: The requested entity with the ID supplied could not be found',
   })
   public async update(@Param('id') id: string, @Body() faculty: UpdateFacultyDTO):
-  Promise<FacultyResponseDTO> {
+  Promise<ManageFacultyResponseDTO> {
     try {
       await this.areaRepository.findOneOrFail(faculty.area);
     } catch (e) {

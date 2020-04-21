@@ -9,7 +9,9 @@ import TSConfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 const publicPath = '/';
 
 /**
- * Configures react development for the client.
+ * This webpack configuration handles live-reloading of our code in development
+ * through the webpack-dev-middleware. To change the production configuration
+ * for webpack, see the webpackfile.js in the project root.
  */
 
 const compiler = webpack([{
@@ -79,8 +81,8 @@ const compiler = webpack([{
 }]);
 
 /**
- * Implements the webpack development server middleware to server
- * Compiled client code from memory. The Hot Server also allows for
+ * Implements the webpack development server middleware to serve
+ * compiled client code from memory. The Hot Server also allows for
  * live module replacement.
  */
 

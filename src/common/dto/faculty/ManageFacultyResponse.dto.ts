@@ -15,7 +15,7 @@ export abstract class FacultyArea {
   public name: string;
 }
 
-export abstract class FacultyResponseDTO {
+export abstract class ManageFacultyResponseDTO {
   @ApiModelProperty({
     example: '4c15c2bf-7823-47e0-9954-2ce914b73595',
   })
