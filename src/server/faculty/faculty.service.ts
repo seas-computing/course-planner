@@ -8,13 +8,16 @@ export class FacultyService {
 
   /**
    * Retrieve all faculty members in the database with their associated area,
-   * sorted by area name in ascending order, then by last name in ascending
+   * sorted by:
+   * - area.name ASC
+   *   - lastName ASC
    * order
    */
   public async find(): Promise<Faculty[]> {
     return this.facultyRepository.createQueryBuilder(Faculty.name.toLowerCase())
       .leftJoinAndSelect('faculty.area', 'area')
       .orderBy('area.name', 'ASC')
+      .addOrderBy('faculty.lastName', 'ASC')
       .getMany();
   }
 }

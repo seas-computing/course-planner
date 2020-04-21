@@ -7,6 +7,7 @@ import { FacultyModule } from 'server/faculty/faculty.module';
 import { deepStrictEqual, strictEqual } from 'assert';
 import { Repository } from 'typeorm';
 import { Faculty } from 'server/faculty/faculty.entity';
+import { appliedMathFacultyMember, bioengineeringFacultyMember } from 'testData';
 import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 
@@ -96,5 +97,46 @@ describe('Faculty service', function () {
       ),
     ];
     deepStrictEqual(actualAreas, expectedAreas);
+  });
+  it('sorts faculty members by last name in ascending order', async function () {
+    await facultyRepository.query(`TRUNCATE ${Faculty.name} CASCADE`);
+    // Save two example faculty members in the database, deliberately not
+    // in alphabetical order
+    const [
+      faculty1,
+      faculty2,
+    ] = await facultyRepository.save([
+      {
+        ...appliedMathFacultyMember,
+        // Slightly weird lastName to force the sorting and prove that it's
+        // working
+        lastName: 'zzzzzzzzz',
+        area: {
+          name: 'AM',
+        },
+      },
+
+      {
+        ...bioengineeringFacultyMember,
+        // Slightly weird lastName to force the sorting and prove that it's
+        // working
+        lastName: 'aaaaaaaaa',
+        area: {
+          name: 'BE',
+        },
+      },
+    ]);
+
+    const actualFaculty = await facultyService.find();
+    const actualLastNames = [
+      ...new Set(actualFaculty.map(({ lastName }) => lastName)),
+    ];
+
+    // Faculty 2 should come before faculty 1 because we're sorting by
+    // lastname ASC (aaa comes before zzz)
+    deepStrictEqual(actualLastNames, [
+      faculty2.lastName,
+      faculty1.lastName,
+    ]);
   });
 });
