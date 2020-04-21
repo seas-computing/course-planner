@@ -10,11 +10,9 @@ import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse
 import { MultiYearPlanView } from 'server/courseInstance/MultiYearPlanView.entity';
 import { ConfigService } from 'server/config/config.service';
 import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
-import { FacultyListingView } from 'server/faculty/FacultyListingView.entity';
 import { Course } from 'server/course/course.entity';
-import { Area } from 'server/area/area.entity';
+import { MultiYearPlanFacultyListingView } from 'server/courseInstance/MultiYearPlanFacultyListingView.entity';
 import { MultiYearPlanInstanceView } from './MultiYearPlanInstanceView.entity';
-import { CourseInstance } from './courseinstance.entity';
 
 /**
  * @class CourseInstanceService
@@ -29,10 +27,6 @@ export class CourseInstanceService {
 
   @InjectRepository(MultiYearPlanView)
   private readonly multiYearPlanViewRepository: Repository<MultiYearPlanView>;
-
-  @InjectRepository(MultiYearPlanInstanceView)
-  private readonly multiYearPlanInstanceViewRepository:
-  Repository<MultiYearPlanInstanceView>;
 
   @InjectRepository(Course)
   protected courseEntityRepository: Repository<Course>;
@@ -137,25 +131,11 @@ export class CourseInstanceService {
   public async getMultiYearPlan(numYears?: number):
   Promise<MultiYearPlanResponseDTO[]> {
     const academicYears = this.computeAcademicYears(numYears);
-    return this.courseEntityRepository
+    return await this.multiYearPlanViewRepository
       .createQueryBuilder('c')
-      .select('c.id', 'id')
-      .addSelect('a.name', 'area')
-      .addSelect("CONCAT_WS(' ', c.prefix, c.number)", 'catalogNumber')
-      .addSelect('c.title', 'title')
-    // Note that academicYear in the semester table is actually calendar year
-      .addSelect(`CASE
-        WHEN term = '${TERM.FALL}' THEN s.academicYear + 1
-        ELSE s.academicYear
-      END`, 'academicYear')
-      .addSelect('s.academicYear', 'calendarYear')
-      .addSelect('s.term', 'term')
-      .addSelect('instructors."instructorOrder"', 'instructorOrder')
-      .addSelect('instructors."displayName"', 'displayName')
-      .leftJoin(Area, 'a', 'c."areaId" = a.id')
       .leftJoinAndMapMany(
-        'instances',
-        CourseInstance,
+        'c.instances',
+        MultiYearPlanInstanceView,
         'ci',
         // Note that the second part of this join clause is needed
         // so that the where clause applies to both joins
@@ -163,8 +143,8 @@ export class CourseInstanceService {
       )
       .leftJoin(Semester, 's', 's.id = ci."semesterId"')
       .leftJoinAndMapMany(
-        'faculty',
-        FacultyListingView,
+        'ci.faculty',
+        MultiYearPlanFacultyListingView,
         'instructors',
         'instructors."courseInstanceId" = ci.id'
       )
@@ -176,6 +156,6 @@ export class CourseInstanceService {
       .addOrderBy('"catalogNumber"', 'ASC')
       .addOrderBy('instructors."instructorOrder"', 'ASC')
       .addOrderBy('instructors."displayName"', 'ASC')
-      .getMany() as unknown as MultiYearPlanResponseDTO[];
+      .getMany() as MultiYearPlanResponseDTO[];
   }
 }

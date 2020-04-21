@@ -5,13 +5,13 @@ import {
   SelectQueryBuilder,
   ManyToOne,
   ObjectType,
-  OneToMany,
+  JoinColumn,
 } from 'typeorm';
 import {
   Semester,
   TERM,
 } from 'server/semester/semester.entity';
-import { FacultyListingView } from 'server/faculty/FacultyListingView.entity';
+import { MultiYearPlanFacultyListingView } from 'server/courseInstance/MultiYearPlanFacultyListingView.entity';
 import { CourseInstance } from './courseinstance.entity';
 import { MultiYearPlanView } from './MultiYearPlanView.entity';
 
@@ -27,20 +27,8 @@ import { MultiYearPlanView } from './MultiYearPlanView.entity';
       END`, 'academicYear')
     .addSelect('s.academicYear', 'calendarYear')
     .addSelect('s.term', 'term')
-    .addSelect('instructors."instructorOrder"', 'instructorOrder')
-    .addSelect('instructors."displayName"', 'displayName')
+    .addSelect('ci."semesterId"', 'semesterId')
     .leftJoin(Semester, 's', 's.id = ci."semesterId"')
-    // NOTE: The leftJoinAndMapMany does the left join,
-    // but does not appear to do the mapping,
-    // which is required for the instances property below.
-    // The workaround for now is to duplicate this leftJoinAndMapMany in the
-    // place where the repository is queried.
-    .leftJoinAndMapMany(
-      'faculty',
-      FacultyListingView,
-      'instructors',
-      'instructors."courseInstanceId" = ci.id'
-    )
     .from(CourseInstance, 'ci'),
 })
 /**
@@ -57,14 +45,13 @@ export class MultiYearPlanInstanceView {
    * From [[CourseInstance]]
    * The [[MultiYearPlanView]] this instance view belongs to
    */
+  @ViewColumn()
+  @JoinColumn()
   @ManyToOne(
     (): ObjectType<MultiYearPlanView> => MultiYearPlanView,
-    ({ instances }): MultiYearPlanInstanceView[] => instances,
-    {
-      nullable: false,
-    }
+    ({ instances }): MultiYearPlanInstanceView[] => instances
   )
-  public courseId: MultiYearPlanView;
+  public courseId: string;
 
   /**
    * From [[Semester]]
@@ -88,13 +75,8 @@ export class MultiYearPlanInstanceView {
   public term: TERM;
 
   /**
-   * One [[MultiYearPlanInstanceView]] has many [[FacultyListingView]]
+   * From [[Faculty]]
+   * The faculty for the course instance
    */
-  @OneToMany(
-    (): ObjectType<FacultyListingView> => FacultyListingView,
-    ({ multiYearPlanInstanceView }): MultiYearPlanInstanceView => (
-      multiYearPlanInstanceView
-    )
-  )
-  public faculty: FacultyListingView[];
+  public faculty: MultiYearPlanFacultyListingView[];
 }
