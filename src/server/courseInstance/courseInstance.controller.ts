@@ -82,7 +82,6 @@ export class CourseInstanceController {
   @ApiUnauthorizedResponse({
     description: 'The user is authenticated, but lacks the permissions to access this endpoint',
   })
-  @UseGuards(Authentication, new RequireGroup(GROUP.ADMIN))
   @Get('/multi-year-plan')
   @ApiOperation({ title: 'Retrieve the multi-year plan' })
   @ApiOkResponse({
