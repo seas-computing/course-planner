@@ -12,6 +12,7 @@ import {
   ApiUseTags,
   ApiForbiddenResponse,
   ApiUnauthorizedResponse,
+  ApiImplicitQuery,
 } from '@nestjs/swagger';
 import { Authentication } from 'server/auth/authentication.guard';
 import { RequireGroup } from 'server/auth/group.guard';
@@ -88,6 +89,10 @@ export class CourseInstanceController {
     type: MultiYearPlanResponseDTO,
     description: 'An array of all the multi-year plan records',
     isArray: true,
+  })
+  @ApiImplicitQuery({
+    name: 'numYears',
+    description: 'Represents the number of years that the Multi Year Plan will show',
   })
   public async getMultiYearPlan(
     @Query('numYears') numYears?: number
