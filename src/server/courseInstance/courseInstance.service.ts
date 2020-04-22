@@ -107,14 +107,13 @@ export class CourseInstanceService {
   /**
    * Calculates an array of academic years based on the current year
    */
-  public computeAcademicYears(numYears?: number): number[] {
+  public computeAcademicYears(numYears: number = 4): number[] {
     // If an invalid number of years is provided, use the default number of years
-    const defaultNumYears = 4;
     let validatedNumYears: number;
     if (numYears > 0 && Number.isInteger(numYears)) {
       validatedNumYears = numYears;
     } else {
-      validatedNumYears = defaultNumYears;
+      validatedNumYears = 4;
     }
     // Fetch the current academic year and convert each year to a number
     // so that we can calculate the plans for specified or default number of years
