@@ -198,18 +198,6 @@ describe('Course Instance Service', function () {
     it('should return a nonempty array of data', function () {
       notStrictEqual(result.length, 0);
     });
-    it('should return the multi year plan for the requested academic years', function () {
-      const academicYears = ciService.computeAcademicYears(numYears)
-        .map((year) => year.toString());
-      // Verify that the course instances' academic years are included in the
-      // academic year period calculated by the course instance service method
-      // computeAcademicYears
-      const isCorrectYears = result
-        .every((course) => course.instances
-          .every((instance) => academicYears
-            .includes(instance.academicYear.toString())));
-      strictEqual(isCorrectYears, true);
-    });
     it('should return the instructors for each course instance in the correct order', function () {
       result.forEach((course): void => {
         course.instances.forEach((instance): void => {
@@ -233,30 +221,6 @@ describe('Course Instance Service', function () {
         return 0;
       });
       deepStrictEqual(result, sorted);
-    });
-  });
-  describe('computeAcademicYears', function () {
-    let numYears: number;
-    let result: number[];
-    const defaultMultiYearPlanYears = 4;
-    it('should return an array of 4 years if numYears is not specified', async function () {
-      result = await ciService.computeAcademicYears();
-      strictEqual(result.length, defaultMultiYearPlanYears);
-    });
-    it('should return an array of 4 years if numYears is negative', async function () {
-      numYears = -3;
-      result = await ciService.computeAcademicYears(numYears);
-      strictEqual(result.length, defaultMultiYearPlanYears);
-    });
-    it('should return an array of 4 years if numYears is a decimal', async function () {
-      numYears = 2.3;
-      result = await ciService.computeAcademicYears(numYears);
-      strictEqual(result.length, Math.floor(numYears));
-    });
-    it('should return an array of specified years when numYears is positive', async function () {
-      numYears = 5;
-      result = await ciService.computeAcademicYears(numYears);
-      strictEqual(result.length, numYears);
     });
   });
 });

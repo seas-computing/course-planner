@@ -107,7 +107,7 @@ export class CourseInstanceService {
   /**
    * Calculates an array of academic years based on the current year
    */
-  public computeAcademicYears(numYears: number = 4): number[] {
+  private computeAcademicYears(numYears: number = 4): number[] {
     // If an invalid number of years is provided, use the default number of years
     let validatedNumYears: number;
     if (numYears > 0 && Number.isInteger(numYears)) {
