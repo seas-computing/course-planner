@@ -9,7 +9,6 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "target": "ES6",
-    "lib": ["ES2019"],
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./src",
