@@ -115,7 +115,6 @@ describe('Faculty service', function () {
           name: 'AM',
         },
       },
-
       {
         ...bioengineeringFacultyMember,
         // Slightly weird lastName to force the sorting and prove that it's
