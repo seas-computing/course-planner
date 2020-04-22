@@ -234,31 +234,6 @@ describe('Course Instance Service', function () {
       });
       deepStrictEqual(result, sorted);
     });
-    it('should return the expected types for the course', function () {
-      const course = result[0];
-      strictEqual(typeof course.id, 'string');
-      strictEqual(typeof course.area, 'string');
-      strictEqual(typeof course.catalogNumber, 'string');
-      strictEqual(typeof course.title, 'string');
-    });
-    it('should return the expected types for the course instance', function () {
-      const instance = result.filter((course) => course.instances.length > 0)[0]
-        .instances[0];
-      strictEqual(typeof instance.academicYear, 'string');
-      strictEqual(typeof instance.calendarYear, 'string');
-      strictEqual(Array.isArray(instance.faculty), true);
-      strictEqual(typeof instance.id, 'string');
-      strictEqual(typeof instance.term, 'string');
-      // and then separate test to check results of result[0]
-      // and separate test to check properties of faculty
-    });
-    it('should return the expected types for faculty within a course instance', function () {
-      const faculty = result.filter((course) => course.instances.length > 0)[0]
-        .instances[0].faculty[0];
-      strictEqual(typeof faculty.displayName, 'string');
-      strictEqual(typeof faculty.id, 'string');
-      strictEqual(typeof faculty.instructorOrder, 'number');
-    });
   });
   describe('computeAcademicYears', function () {
     let numYears: number;
