@@ -135,7 +135,7 @@ describe('Course Instance Controller', function () {
     let getStub: SinonStub;
     beforeEach(function () {
       getStub = stub(ciService, 'getMultiYearPlan').resolves(null);
-      stub(configService, 'academicYear').resolves(2020);
+      stub(configService, 'academicYear').get(() => 2020);
     });
     context('When number of years parameter is not set', function () {
       it('should call the service with the undefined argument', async function () {
