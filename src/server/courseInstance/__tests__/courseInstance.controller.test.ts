@@ -132,47 +132,45 @@ describe('Course Instance Controller', function () {
     });
   });
   describe('/multi-year-plan', function () {
-    describe('Get all plans', function () {
-      let getStub: SinonStub;
-      beforeEach(function () {
-        getStub = stub(ciService, 'getMultiYearPlan').resolves(null);
-        stub(configService, 'academicYear').resolves(2020);
+    let getStub: SinonStub;
+    beforeEach(function () {
+      getStub = stub(ciService, 'getMultiYearPlan').resolves(null);
+      stub(configService, 'academicYear').resolves(2020);
+    });
+    context('with no argument specified for number of years parameter', function () {
+      it('should call the service with the provided argument', async function () {
+        await ciController.getMultiYearPlan();
+        deepStrictEqual(getStub.args, [[undefined]]);
       });
-      context('with no argument specified for number of years parameter', function () {
-        it('should call the service with the provided argument', async function () {
-          await ciController.getMultiYearPlan();
-          deepStrictEqual(getStub.args, [[undefined]]);
-        });
+    });
+    context('with number of years parameter set to 0', function () {
+      it('should call the service with the provided argument', async function () {
+        await ciController.getMultiYearPlan(0);
+        deepStrictEqual(getStub.args, [[0]]);
       });
-      context('with number of years parameter set to 0', function () {
-        it('should call the service with the provided argument', async function () {
-          await ciController.getMultiYearPlan(0);
-          deepStrictEqual(getStub.args, [[0]]);
-        });
+    });
+    context('with number of years parameter set to a negative number', function () {
+      it('should call the service with the provided argument', async function () {
+        await ciController.getMultiYearPlan(-3);
+        deepStrictEqual(getStub.args, [[-3]]);
       });
-      context('with number of years parameter set to a negative number', function () {
-        it('should call the service with the provided argument', async function () {
-          await ciController.getMultiYearPlan(-3);
-          deepStrictEqual(getStub.args, [[-3]]);
-        });
+    });
+    context('with number of years parameter set to null', function () {
+      it('should call the service with the provided argument', async function () {
+        await ciController.getMultiYearPlan(null);
+        deepStrictEqual(getStub.args, [[null]]);
       });
-      context('with number of years parameter set to null', function () {
-        it('should call the service with the provided argument', async function () {
-          await ciController.getMultiYearPlan(null);
-          deepStrictEqual(getStub.args, [[null]]);
-        });
+    });
+    context('with number of years parameter set to a float', function () {
+      it('should call the service with the provided argument', async function () {
+        await ciController.getMultiYearPlan(2.3);
+        deepStrictEqual(getStub.args, [[2.3]]);
       });
-      context('with number of years parameter set to a float', function () {
-        it('should call the service with the provided argument', async function () {
-          await ciController.getMultiYearPlan(2.3);
-          deepStrictEqual(getStub.args, [[2.3]]);
-        });
-      });
-      context('with a valid argument for number of years parameter', function () {
-        it('should fetch the multi year plan for the given number of years', async function () {
-          await ciController.getMultiYearPlan(5);
-          deepStrictEqual(getStub.args, [[5]]);
-        });
+    });
+    context('with a valid argument for number of years parameter', function () {
+      it('should fetch the multi year plan for the given number of years', async function () {
+        await ciController.getMultiYearPlan(5);
+        deepStrictEqual(getStub.args, [[5]]);
       });
     });
   });
