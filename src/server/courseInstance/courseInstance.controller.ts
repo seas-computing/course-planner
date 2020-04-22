@@ -75,7 +75,7 @@ export class CourseInstanceController {
    * @param numYears represents the number of years that the Multi Year Plan
    * will show. Its value defaults to 4 years.
    */
-  @ApiUseTags('Multi Year Plan')
+  @ApiUseTags('Course Instance')
   @ApiForbiddenResponse({
     description: 'The user is not authenticated',
   })
