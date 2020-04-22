@@ -251,7 +251,7 @@ describe('Course Instance Service', function () {
     it('should return an array of 4 years if numYears is a decimal', async function () {
       numYears = 2.3;
       result = await ciService.computeAcademicYears(numYears);
-      strictEqual(result.length, defaultMultiYearPlanYears);
+      strictEqual(result.length, Math.floor(numYears));
     });
     it('should return an array of specified years when numYears is positive', async function () {
       numYears = 5;

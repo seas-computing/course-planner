@@ -112,6 +112,8 @@ export class CourseInstanceService {
     let validatedNumYears: number;
     if (numYears > 0 && Number.isInteger(numYears)) {
       validatedNumYears = numYears;
+    } else if (Number.isInteger(numYears)) {
+      validatedNumYears = Math.floor(numYears);
     } else {
       validatedNumYears = 4;
     }
