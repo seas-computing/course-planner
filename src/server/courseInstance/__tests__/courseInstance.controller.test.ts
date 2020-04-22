@@ -137,38 +137,30 @@ describe('Course Instance Controller', function () {
       getStub = stub(ciService, 'getMultiYearPlan').resolves(null);
       stub(configService, 'academicYear').resolves(2020);
     });
-    context('with no argument specified for number of years parameter', function () {
-      it('should call the service with the provided argument', async function () {
+    context('When number of years parameter is not set', function () {
+      it('should call the service with the undefined argument', async function () {
         await ciController.getMultiYearPlan();
         deepStrictEqual(getStub.args, [[undefined]]);
       });
     });
-    context('with number of years parameter set to 0', function () {
-      it('should call the service with the provided argument', async function () {
+    context('When number of years parameter is set', function () {
+      it('should call the service with the argument 0 when numYears is equal to 0', async function () {
         await ciController.getMultiYearPlan(0);
         deepStrictEqual(getStub.args, [[0]]);
       });
-    });
-    context('with number of years parameter set to a negative number', function () {
-      it('should call the service with the provided argument', async function () {
+      it('should call the service with the negative value of numYears when numYears is negative', async function () {
         await ciController.getMultiYearPlan(-3);
         deepStrictEqual(getStub.args, [[-3]]);
       });
-    });
-    context('with number of years parameter set to null', function () {
-      it('should call the service with the provided argument', async function () {
+      it('should call the service with null if numYears is null', async function () {
         await ciController.getMultiYearPlan(null);
         deepStrictEqual(getStub.args, [[null]]);
       });
-    });
-    context('with number of years parameter set to a float', function () {
-      it('should call the service with the provided argument', async function () {
+      it('should call the service with the float value of numYears when numYears is equal to a float', async function () {
         await ciController.getMultiYearPlan(2.3);
         deepStrictEqual(getStub.args, [[2.3]]);
       });
-    });
-    context('with a valid argument for number of years parameter', function () {
-      it('should fetch the multi year plan for the given number of years', async function () {
+      it('should fetch the multi year plan for the given number of years when numYears is a positive integer', async function () {
         await ciController.getMultiYearPlan(5);
         deepStrictEqual(getStub.args, [[5]]);
       });
