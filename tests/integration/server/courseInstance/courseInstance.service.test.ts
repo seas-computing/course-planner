@@ -13,7 +13,8 @@ import { OFFERED } from 'common/constants';
 import { Meeting } from 'server/meeting/meeting.entity';
 import { ConfigService } from 'server/config/config.service';
 import { ConfigModule } from 'server/config/config.module';
-import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
+import { MultiYearPlanResponseDTO, MultiYearPlanInstanceFaculty } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
+import { flatMap } from 'lodash';
 import { AuthModule } from 'server/auth/auth.module';
 import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
@@ -199,9 +200,24 @@ describe('Course Instance Service', function () {
       notStrictEqual(result.length, 0);
     });
     it('should return the instructors for each course instance in the correct order', function () {
-      result.forEach((course): void => {
-        course.instances.forEach((instance): void => {
-          const sorted = instance.faculty.slice().sort((a, b): number => {
+      const minFacultyToSort = 3;
+      const multipleFacultyArrays: MultiYearPlanInstanceFaculty[][] = flatMap(
+        result,
+        // get all the instances
+        (course) => course.instances
+      )
+        // discard instances with less than 3 faculty
+        .filter((instance) => instance.faculty.length >= minFacultyToSort)
+        // get the faculty
+        .map((instance) => instance.faculty);
+      const facultyArraysToCheck = 2;
+      // confirm that we have at least 2 to check
+      strictEqual(multipleFacultyArrays.length >= facultyArraysToCheck, true);
+      // sort the first two with more than 2 faculty
+      multipleFacultyArrays
+        .slice(0, facultyArraysToCheck)
+        .forEach((faculty) => {
+          const sorted = faculty.slice().sort((a, b): number => {
             if (a.instructorOrder < b.instructorOrder) {
               return -1;
             }
@@ -216,9 +232,8 @@ describe('Course Instance Service', function () {
             }
             return 0;
           });
-          deepStrictEqual(instance.faculty, sorted);
+          deepStrictEqual(faculty, sorted);
         });
-      });
     });
     it('should return the courses ordered by area and catalog number', function () {
       const sorted = result.slice().sort((course1, course2): number => {
