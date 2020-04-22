@@ -23,6 +23,10 @@ class ConfigService {
 
   /**
    * Return connection parameters for the TypeORM module
+   *
+   * The entities property uses a file glob to final all declared entities.
+   * Because we're transpiling our code and copying into docker for production,
+   * we need to slightly modify the path and extension for our entities.
    */
 
   public get dbOptions(): PostgresConnectionOptions {
@@ -40,7 +44,9 @@ class ConfigService {
       password: DB_PASSWORD,
       host: DB_HOSTNAME,
       port: parseInt(DB_PORT),
-      entities: ['src/server/**/*.entity.ts'],
+      entities: this.isProduction
+        ? ['server/**/*.entity.js']
+        : ['src/server/**/*.entity.ts'],
     };
   }
 
@@ -82,6 +88,7 @@ class ConfigService {
   /**
    * Determine what kind of authentication should be used
    */
+
   public get authMode(): AUTH_MODE {
     if (this.isProduction) {
       return AUTH_MODE.HKEY;
