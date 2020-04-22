@@ -202,10 +202,18 @@ describe('Course Instance Service', function () {
       result.forEach((course): void => {
         course.instances.forEach((instance): void => {
           const sorted = instance.faculty.slice().sort((a, b): number => {
-            if (a.instructorOrder < b.instructorOrder) return -1;
-            if (a.instructorOrder > b.instructorOrder) return 1;
-            if (a.displayName < b.displayName) return -1;
-            if (a.displayName > b.displayName) return 1;
+            if (a.instructorOrder < b.instructorOrder) {
+              return -1;
+            }
+            if (a.instructorOrder > b.instructorOrder) {
+              return 1;
+            }
+            if (a.displayName < b.displayName) {
+              return -1;
+            }
+            if (a.displayName > b.displayName) {
+              return 1;
+            }
             return 0;
           });
           deepStrictEqual(instance.faculty, sorted);
@@ -214,10 +222,18 @@ describe('Course Instance Service', function () {
     });
     it('should return the courses ordered by area and catalog number', function () {
       const sorted = result.slice().sort((course1, course2): number => {
-        if (course1.area < course2.area) return -1;
-        if (course1.area > course2.area) return 1;
-        if (course1.catalogNumber < course2.catalogNumber) return -1;
-        if (course1.catalogNumber > course2.catalogNumber) return 1;
+        if (course1.area < course2.area) {
+          return -1;
+        }
+        if (course1.area > course2.area) {
+          return 1;
+        }
+        if (course1.catalogNumber < course2.catalogNumber) {
+          return -1;
+        }
+        if (course1.catalogNumber > course2.catalogNumber) {
+          return 1;
+        }
         return 0;
       });
       deepStrictEqual(result, sorted);
