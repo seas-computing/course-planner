@@ -26,7 +26,7 @@ import { FacultyScheduleAbsenceView } from './FacultyScheduleAbsenceView.entity'
 /**
  * Represents a semester instance within [[FacultyScheduleView]]
  */
-export class FacultyScheduleInstanceView {
+export class FacultyScheduleSemesterView {
   /**
    * From [[Semester]]
    * The academic year in which the course instances takes place

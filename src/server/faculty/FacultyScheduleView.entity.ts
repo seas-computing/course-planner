@@ -7,7 +7,7 @@ import {
 import { Area } from 'server/area/area.entity';
 import { FACULTY_TYPE } from 'common/constants';
 import { Faculty } from './faculty.entity';
-import { FacultyScheduleInstanceView } from './FacultyScheduleSemesterView.entity';
+import { FacultyScheduleSemesterView } from './FacultyScheduleSemesterView.entity';
 
 /**
  * A subset of fields from [[Faculty]]
@@ -68,7 +68,7 @@ export class FacultyScheduleView {
   @ViewColumn()
   public jointWith: string;
 
-  public fall: FacultyScheduleInstanceView;
+  public fall: FacultyScheduleSemesterView;
 
-  public spring: FacultyScheduleInstanceView;
+  public spring: FacultyScheduleSemesterView;
 }
