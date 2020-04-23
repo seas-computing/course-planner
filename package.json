@@ -30,6 +30,7 @@
     "express": "^4.17.1",
     "express-session": "^1.16.2",
     "history": "^4.10.1",
+    "lodash.flatmap": "^4.5.0",
     "loglevel": "^1.6.8",
     "mark-one": "develop",
     "nestjs-redis": "^1.2.1",
