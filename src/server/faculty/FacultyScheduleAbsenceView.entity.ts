@@ -6,14 +6,14 @@ import {
 } from 'typeorm';
 import { Absence, ABSENCE_TYPE } from 'server/absence/absence.entity';
 
-@ViewEntity('FacultyScheduleCourseView', {
+@ViewEntity('FacultyScheduleAbsenceView', {
   expression: (connection: Connection):
   SelectQueryBuilder<Absence> => connection.createQueryBuilder()
     .select('absence.id', 'id')
     .addSelect('absence.type', 'type')
     .from(Absence, 'absence'),
 })
-export class FacultyScheduleCourseView {
+export class FacultyScheduleAbsenceView {
   /**
    * From [[Absence]]
    */
