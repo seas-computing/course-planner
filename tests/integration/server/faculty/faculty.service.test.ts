@@ -75,37 +75,41 @@ describe('Faculty service', function () {
     strictEqual(returnedFaculty.length, facultyCount);
   });
   it('sorts faculty members by area', async function () {
-    const expectedFaculty = await facultyRepository.find({
-      relations: ['area'],
-    });
-    const expectedAreas = [
-      ...new Set(
-        expectedFaculty
-          .filter(({ area }) => area !== null)
-          .map(({ area }) => area.name)
-          .sort((a, b) => {
-            let position: number;
-            if (a === b) {
-              position = 0;
-            } else if (a > b) {
-              position = 1;
-            } else if (b > a) {
-              position = -1;
-            }
-            return position;
-          })
-      ),
-    ];
+    await facultyRepository.query(`TRUNCATE ${Faculty.name} CASCADE`);
+    const [
+      appliedMath,
+      bioengineering,
+    ] = await areaRepository.save([
+      {
+        name: appliedMathFacultyMember.area.name,
+      },
+      {
+        name: bioengineeringFacultyMember.area.name,
+      },
+    ]);
 
-    const actualFaculty = await facultyService.find();
-    const actualAreas = [
-      ...new Set(
-        actualFaculty
-          .filter(({ area }) => area !== null)
-          .map(({ area }) => area.name)
-      ),
-    ];
-    deepStrictEqual(actualAreas, expectedAreas);
+    // Save two faculty members in the database with their faculty areas
+    // deliberately not in alphabetical order
+    await facultyRepository.save([
+      {
+        ...bioengineeringFacultyMember,
+        area: bioengineering,
+      },
+      {
+        ...appliedMathFacultyMember,
+        area: appliedMath,
+      },
+    ]);
+
+    const faculty = await facultyService.find();
+
+    deepStrictEqual(
+      faculty.map(({ area }) => area.name),
+      [
+        appliedMath.name,
+        bioengineering.name,
+      ]
+    );
   });
   it('sorts faculty members by last name in ascending order', async function () {
     await facultyRepository.query(`TRUNCATE ${Faculty.name} CASCADE`);
