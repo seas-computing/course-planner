@@ -39,7 +39,7 @@ import NoMatch from './pages/NoMatch';
 import logo from '../img/seas-logo.svg';
 import CourseAdmin from './pages/CourseAdmin';
 import FacultyAdmin from './pages/FacultyAdmin';
-import CourseInstanceList from './pages/CourseInstanceList';
+import CourseInstanceList from './pages/Courses/CoursesPage';
 
 /**
  * The primary app component. Fetches the current user from the server when it
@@ -95,7 +95,7 @@ const ColdApp: SFC = (): ReactElement => {
       });
   }, []);
 
-  const tabs: {link: string; text: string}[] = [
+  const tabs: { link: string; text: string }[] = [
     { link: '/courses', text: 'Courses' },
     { link: '/non-class-meetings', text: 'Non class meetings' },
     { link: '/faculty', text: 'Faculty' },
@@ -131,13 +131,13 @@ const ColdApp: SFC = (): ReactElement => {
               </nav>
               <PageBody>
                 {currentMessage
-            && (
-              <Message
-                messageCount={queue.length}
-                messageText={currentMessage.text}
-                messageType={currentMessage.variant}
-              />
-            )}
+                  && (
+                    <Message
+                      messageCount={queue.length}
+                      messageText={currentMessage.text}
+                      messageType={currentMessage.variant}
+                    />
+                  )}
                 <Switch>
                   <Redirect from="/" exact to="/courses" />
                   <Route path="/courses" component={CourseInstanceList} />

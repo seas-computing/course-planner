@@ -7,7 +7,7 @@ import {
 import * as courseAPI from 'client/api';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { AppMessage, MESSAGE_TYPE, MESSAGE_ACTION } from 'client/classes';
-import CourseInstanceList from '../CourseInstanceList';
+import CourseInstanceList from '../CoursesPage';
 
 
 describe('Course Instances List', function () {
