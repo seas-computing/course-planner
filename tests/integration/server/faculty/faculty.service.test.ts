@@ -8,12 +8,14 @@ import { deepStrictEqual, strictEqual } from 'assert';
 import { Repository } from 'typeorm';
 import { Faculty } from 'server/faculty/faculty.entity';
 import { appliedMathFacultyMember, bioengineeringFacultyMember } from 'testData';
+import { Area } from 'server/area/area.entity';
 import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 
 describe('Faculty service', function () {
   let facultyService: FacultyService;
   let facultyRepository: Repository<Faculty>;
+  let areaRepository: Repository<Area>;
   let db: MockDB;
   let testModule: TestingModule;
 
@@ -44,6 +46,12 @@ describe('Faculty service', function () {
         PopulationModule,
         FacultyModule,
       ],
+      providers: [
+        {
+          provide: getRepositoryToken(Area),
+          useValue: new Repository<Area>(),
+        },
+      ],
     })
       .overrideProvider(ConfigService)
       .useValue(new ConfigService(db.connectionEnv))
@@ -51,6 +59,7 @@ describe('Faculty service', function () {
 
     facultyService = testModule.get<FacultyService>(FacultyService);
     facultyRepository = testModule.get(getRepositoryToken(Faculty));
+    areaRepository = testModule.get(getRepositoryToken(Area));
     await testModule.createNestApplication().init();
   });
   afterEach(async function () {
@@ -100,6 +109,11 @@ describe('Faculty service', function () {
   });
   it('sorts faculty members by last name in ascending order', async function () {
     await facultyRepository.query(`TRUNCATE ${Faculty.name} CASCADE`);
+    const [appliedMath] = await areaRepository.save([
+      {
+        name: appliedMathFacultyMember.area.name,
+      },
+    ]);
     // Save two example faculty members in the database, deliberately not
     // in alphabetical order
     const [
@@ -111,18 +125,14 @@ describe('Faculty service', function () {
         // Slightly weird lastName to force the sorting and prove that it's
         // working
         lastName: 'zzzzzzzzz',
-        area: {
-          name: 'AM',
-        },
+        area: appliedMath,
       },
       {
         ...bioengineeringFacultyMember,
         // Slightly weird lastName to force the sorting and prove that it's
         // working
         lastName: 'aaaaaaaaa',
-        area: {
-          name: 'BE',
-        },
+        area: appliedMath,
       },
     ]);
 
@@ -141,6 +151,11 @@ describe('Faculty service', function () {
 
   it('sorts faculty members by first name in ascending order', async function () {
     await facultyRepository.query(`TRUNCATE ${Faculty.name} CASCADE`);
+    const [appliedMath] = await areaRepository.save([
+      {
+        name: appliedMathFacultyMember.area.name,
+      },
+    ]);
     // Save two example faculty members in the database, deliberately not
     // in alphabetical order
     const [
@@ -153,9 +168,7 @@ describe('Faculty service', function () {
         // that it's working
         firstName: 'zzzzzzzzz',
         lastName: 'zzzzzzzzz',
-        area: {
-          name: 'AM',
-        },
+        area: appliedMath,
       },
       {
         ...bioengineeringFacultyMember,
@@ -163,9 +176,7 @@ describe('Faculty service', function () {
         // that it's working
         firstName: 'zaaaazzzz',
         lastName: 'zzzzzzzzz',
-        area: {
-          name: 'BE',
-        },
+        area: appliedMath,
       },
     ]);
 
