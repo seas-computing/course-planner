@@ -7,9 +7,15 @@ import { Authentication } from 'server/auth/authentication.guard';
 import { NotFoundException } from '@nestjs/common';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { TimeoutError } from 'rxjs';
+import { appliedMathFacultyMember } from 'testData';
 import { ManageFacultyController } from '../faculty.controller';
 import { Faculty } from '../faculty.entity';
 import { Area } from '../../area/area.entity';
+import { FacultyService } from '../faculty.service';
+
+const mockFacultyService = {
+  find: stub(),
+};
 
 const mockFacultyRepository = {
   find: stub(),
@@ -28,6 +34,10 @@ describe('Faculty controller', function () {
   beforeEach(async function () {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
+        {
+          provide: FacultyService,
+          useValue: mockFacultyService,
+        },
         {
           provide: getRepositoryToken(Faculty),
           useValue: mockFacultyRepository,
@@ -54,12 +64,9 @@ describe('Faculty controller', function () {
 
   describe('getAll', function () {
     it('returns all faculty in the database', async function () {
-      const databaseFaculty = Array(10).fill({
-        ...new Faculty(),
-        area: new Area(),
-      });
+      const databaseFaculty = Array(10).fill(appliedMathFacultyMember);
 
-      mockFacultyRepository.find.resolves(databaseFaculty);
+      mockFacultyService.find.resolves(databaseFaculty);
 
       const faculty = await controller.getAll();
 

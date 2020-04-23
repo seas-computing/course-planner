@@ -4,6 +4,7 @@ import { ManageFacultyController } from './faculty.controller';
 import { Faculty } from './faculty.entity';
 import { Area } from '../area/area.entity';
 import { MultiYearPlanFacultyListingView } from '../courseInstance/MultiYearPlanFacultyListingView.entity';
+import { FacultyService } from './faculty.service';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { MultiYearPlanFacultyListingView } from '../courseInstance/MultiYearPlan
   controllers: [ManageFacultyController],
   providers: [
     MultiYearPlanFacultyListingView,
+    FacultyService,
   ],
 })
 export class FacultyModule { }
