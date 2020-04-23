@@ -9,6 +9,7 @@ import {
   TERM,
 } from 'server/semester/semester.entity';
 import { FacultyScheduleCourseView } from './FacultyScheduleCourseView.entity';
+import { FacultyScheduleAbsenceView } from './FacultyScheduleAbsenceView.entity';
 
 @ViewEntity('FacultyScheduleInstanceView', {
   expression: (connection: Connection):
@@ -48,4 +49,6 @@ export class FacultyScheduleInstanceView {
   public term: TERM;
 
   public courses: FacultyScheduleCourseView[];
+
+  public absence: FacultyScheduleAbsenceView;
 }
