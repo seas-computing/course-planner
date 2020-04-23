@@ -7,6 +7,7 @@ import {
   Param,
   UseGuards,
   NotFoundException,
+  Inject,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -27,6 +28,7 @@ import { Authentication } from 'server/auth/authentication.guard';
 import { Area } from 'server/area/area.entity';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { Faculty } from './faculty.entity';
+import { FacultyService } from './faculty.service';
 
 @ApiUseTags('Faculty')
 @UseGuards(Authentication, new RequireGroup(GROUP.ADMIN))
@@ -39,6 +41,9 @@ export class ManageFacultyController {
   @InjectRepository(Area)
   private areaRepository: Repository<Area>
 
+  @Inject(FacultyService)
+  private facultyService: FacultyService;
+
   @Get('/')
   @ApiOperation({ title: 'Retrieve all faculty in the database' })
   @ApiOkResponse({
@@ -47,16 +52,7 @@ export class ManageFacultyController {
     isArray: true,
   })
   public async getAll(): Promise<ManageFacultyResponseDTO[]> {
-    const facultyMembers = await this.facultyRepository.find({
-      relations: ['area'],
-    });
-    return facultyMembers.map((faculty: Faculty): ManageFacultyResponseDTO => ({
-      ...faculty,
-      area: {
-        id: faculty.area.id,
-        name: faculty.area.name,
-      },
-    }));
+    return this.facultyService.find();
   }
 
   @Post('/')
