@@ -3,20 +3,14 @@ import {
   Get,
   Query,
   Inject,
-  UseGuards,
 } from '@nestjs/common';
 import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import {
   ApiOkResponse,
   ApiOperation,
   ApiUseTags,
-  ApiForbiddenResponse,
-  ApiUnauthorizedResponse,
   ApiImplicitQuery,
 } from '@nestjs/swagger';
-import { Authentication } from 'server/auth/authentication.guard';
-import { RequireGroup } from 'server/auth/group.guard';
-import { GROUP } from 'common/constants';
 import CourseResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { CourseInstanceService } from './courseInstance.service';
 import { SemesterService } from '../semester/semester.service';
@@ -77,12 +71,6 @@ export class CourseInstanceController {
    * will show. Its value defaults to 4 years.
    */
   @ApiUseTags('Course Instance')
-  @ApiForbiddenResponse({
-    description: 'The user is not authenticated',
-  })
-  @ApiUnauthorizedResponse({
-    description: 'The user is authenticated, but lacks the permissions to access this endpoint',
-  })
   @Get('/multi-year-plan')
   @ApiOperation({ title: 'Retrieve the multi-year plan' })
   @ApiOkResponse({
