@@ -14,7 +14,7 @@ import { Meeting } from 'server/meeting/meeting.entity';
 import { ConfigService } from 'server/config/config.service';
 import { ConfigModule } from 'server/config/config.module';
 import { MultiYearPlanResponseDTO, MultiYearPlanInstanceFaculty } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
-import { flatMap } from 'lodash';
+import flatMap from 'lodash.flatmap';
 import { AuthModule } from 'server/auth/auth.module';
 import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
