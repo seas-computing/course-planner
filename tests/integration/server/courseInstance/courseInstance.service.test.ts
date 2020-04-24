@@ -199,7 +199,7 @@ describe('Course Instance Service', function () {
     it('should return a nonempty array of data', function () {
       notStrictEqual(result.length, 0);
     });
-    it('should return the instructors for each course instance in the correct order', function () {
+    it('should return the instructors for each course instance ordered by instructorOrder and displayName', function () {
       const minFacultyToSort = 3;
       const multipleFacultyArrays: MultiYearPlanInstanceFaculty[][] = flatMap(
         result,
