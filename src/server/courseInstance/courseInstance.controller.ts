@@ -71,7 +71,6 @@ export class CourseInstanceController {
    * will show. Its value defaults to 4 years.
    */
   @ApiUseTags('Course Instance')
-  @Get('/multi-year-plan')
   @ApiOperation({ title: 'Retrieve the multi-year plan' })
   @ApiOkResponse({
     type: MultiYearPlanResponseDTO,
@@ -82,6 +81,7 @@ export class CourseInstanceController {
     name: 'numYears',
     description: 'Represents the number of years that the Multi Year Plan will show',
   })
+  @Get('/multi-year-plan')
   public async getMultiYearPlan(
     @Query('numYears') numYears?: number
   ): Promise<MultiYearPlanResponseDTO[]> {
