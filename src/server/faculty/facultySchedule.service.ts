@@ -80,6 +80,9 @@ export class FacultyScheduleService {
       )
       .where('fall.academicYear IN (:...acadYears)', { acadYears })
       .andWhere('spring.academicYear IN (:...acadYears)', { acadYears })
+      .orderBy('f.area', 'ASC')
+      .addOrderBy('f."lastName"', 'ASC')
+      .addOrderBy('f."firstName"', 'ASC')
       .getMany() as FacultyResponseDTO[];
     return groupBy(results, (result): number => result.fall.academicYear);
   }
