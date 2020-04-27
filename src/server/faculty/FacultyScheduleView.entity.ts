@@ -7,7 +7,6 @@ import {
 import { Area } from 'server/area/area.entity';
 import { FACULTY_TYPE } from 'common/constants';
 import { Faculty } from './faculty.entity';
-import { FacultyScheduleSemesterView } from './FacultyScheduleSemesterView.entity';
 
 /**
  * A subset of fields from [[Faculty]]
@@ -22,7 +21,7 @@ import { FacultyScheduleSemesterView } from './FacultyScheduleSemesterView.entit
     .addSelect('faculty.category', 'category')
     .addSelect('faculty."jointWith"', 'jointWith')
     .from(Faculty, 'faculty')
-    .leftJoin(Area, 'area', 'faculty.areaId = area.id'),
+    .leftJoin(Area, 'area', 'faculty."areaId" = area.id'),
 })
 
 export class FacultyScheduleView {
@@ -67,8 +66,4 @@ export class FacultyScheduleView {
    */
   @ViewColumn()
   public jointWith: string;
-
-  public fall: FacultyScheduleSemesterView;
-
-  public spring: FacultyScheduleSemesterView;
 }
