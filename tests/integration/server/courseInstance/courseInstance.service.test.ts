@@ -13,7 +13,7 @@ import { OFFERED } from 'common/constants';
 import { Meeting } from 'server/meeting/meeting.entity';
 import { ConfigService } from 'server/config/config.service';
 import { ConfigModule } from 'server/config/config.module';
-import { MultiYearPlanResponseDTO, MultiYearPlanInstanceFaculty } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
+import { MultiYearPlanResponseDTO, MultiYearPlanInstanceFaculty, MultiYearPlanInstance } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import flatMap from 'lodash.flatmap';
 import { AuthModule } from 'server/auth/auth.module';
 import MockDB from '../../../mocks/database/MockDB';
@@ -204,12 +204,14 @@ describe('Course Instance Service', function () {
       const multipleFacultyArrays: MultiYearPlanInstanceFaculty[][] = flatMap(
         result,
         // get all the instances
-        (course) => course.instances
+        (course: MultiYearPlanResponseDTO) => course.instances
       )
         // discard instances with less than 3 faculty
-        .filter((instance) => instance.faculty.length >= minFacultyToSort)
+        .filter((instance: MultiYearPlanInstance) => (
+          instance.faculty.length >= minFacultyToSort
+        ))
         // get the faculty
-        .map((instance) => instance.faculty);
+        .map((instance: MultiYearPlanInstance) => instance.faculty);
       const facultyArraysToCheck = 2;
       // confirm that we have at least 2 to check
       strictEqual(multipleFacultyArrays.length >= facultyArraysToCheck, true);
