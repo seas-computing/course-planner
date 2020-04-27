@@ -3,6 +3,7 @@ import {
   Get,
   UseGuards,
   Inject,
+  Param,
 } from '@nestjs/common';
 import {
   ApiOperation,
@@ -31,7 +32,11 @@ export class FacultyScheduleController {
     description: 'An array of all the faculty along with their area, course instances, and absences',
     isArray: true,
   })
-  public async getAll(): Promise<FacultyResponseDTO[]> {
-    return this.facultyScheduleService.getAll();
+  public async getAll(
+    @Param('acadYears') acadYears: string
+  ): Promise<{ [key: string]: FacultyResponseDTO[] }> {
+    const acadYearsArray = acadYears.split(',')
+      .map((year): number => parseInt(year.trim(), 10));
+    return this.facultyScheduleService.getAllFaculty(acadYearsArray);
   }
 }
