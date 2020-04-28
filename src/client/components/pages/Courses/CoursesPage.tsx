@@ -11,7 +11,7 @@ import { getCourseInstancesForYear } from 'client/api';
 import { MESSAGE_TYPE, MESSAGE_ACTION, AppMessage } from 'client/classes';
 import { OFFERED } from 'common/constants';
 import CourseInstanceTable from './CourseInstanceTable';
-
+import { tableFields } from './tableFields';
 /**
  * TODO
  * Until the functionality for defining a retrieving custom view is implemented
@@ -86,9 +86,13 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
                 : currentCourses.filter(
                   ({ spring, fall }): boolean => (
                     fall.offered !== OFFERED.RETIRED
-                    || spring.offered !== OFFERED.RETIRED)
+                    && spring.offered !== OFFERED.RETIRED)
                 )}
-            columns={currentView}
+            tableData={tableFields.filter(
+              ({ viewColumn }): boolean => (
+                currentView.includes(viewColumn) || viewColumn === 'details'
+              )
+            )}
           />
         )
 
