@@ -3,7 +3,6 @@ import { Repository } from 'typeorm';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { TERM } from 'server/semester/semester.entity';
 import groupBy from 'lodash.groupby';
-import { Faculty } from './faculty.entity';
 import { FacultyScheduleView } from './FacultyScheduleView.entity';
 import { FacultyScheduleSemesterView } from './FacultyScheduleSemesterView.entity';
 import { FacultyScheduleCourseView } from './FacultyScheduleCourseView.entity';
