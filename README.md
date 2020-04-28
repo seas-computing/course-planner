@@ -22,4 +22,33 @@ This setup uses `docker` and `docker-compose` for local development, as defined 
    docker-compose up
    ```
 
+1. Run the database migration:
+   ```sh
+   docker-compose exec node npm run orm -- migration:run
+   ```
+
+1. switch to course-planner-etl and migrate the data: 
+   ```sh
+   npm run start
+   ```
+
+Note:
+Docker volume path should be removed 
+
+
+Docker is not natively compatible with macOS, so Hyperkit is used to run a virtual image. Its virtual image data is located in:  
+
+~/Library/Containers/com.docker.docker/Data/vms/0
+
+Within the virtual image, the path is the default Docker path /var/lib/docker.
+
+You can investigate your Docker root directory by creating a shell in the virtual environment:
+
+$ screen ~/Library/Containers/com.docker.docker/Data/vms/0/tty 
+You can kill this session by pressing Ctrl+a, followed by pressing k and y.
+
+
+
+
+
 [docker]: https://docs.docker.com/install/
