@@ -33,21 +33,13 @@ This setup uses `docker` and `docker-compose` for local development, as defined 
    ```
 
 Note:
-Docker volume path should be removed 
+For Mac user, virtual image data 9for docker) is located on ~/Library/Containers/com.docker.docker/Data/vms/0 .
+Need to remove the old data from docker volume inorder to migrate new data with new schema, otherwise old data and schema might cause issues. 
 
-
-Docker is not natively compatible with macOS, so Hyperkit is used to run a virtual image. Its virtual image data is located in:  
-
-~/Library/Containers/com.docker.docker/Data/vms/0
-
-Within the virtual image, the path is the default Docker path /var/lib/docker.
-
-You can investigate your Docker root directory by creating a shell in the virtual environment:
-
+```sh
 $ screen ~/Library/Containers/com.docker.docker/Data/vms/0/tty 
-You can kill this session by pressing Ctrl+a, followed by pressing k and y.
-
-
+```
+press Ctrl+a, followed by pressing k and y to kill the session.
 
 
 
