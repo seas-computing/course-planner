@@ -6,13 +6,18 @@ import { Authentication } from 'server/auth/authentication.guard';
 import { CourseListingView } from 'server/course/CourseListingView.entity';
 import { SemesterService } from 'server/semester/semester.service';
 import { Semester } from 'server/semester/semester.entity';
+import { ConfigService } from 'server/config/config.service';
+import { Course } from 'server/course/course.entity';
 import { CourseInstanceService } from '../courseInstance.service';
 import { CourseInstanceController } from '../courseInstance.controller';
+import { MultiYearPlanView } from '../MultiYearPlanView.entity';
+import { MultiYearPlanInstanceView } from '../MultiYearPlanInstanceView.entity';
 
 describe('Course Instance Controller', function () {
   let ciController: CourseInstanceController;
   let ciService: CourseInstanceService;
   let semesterService: SemesterService;
+  let configService: ConfigService;
   const mockRepository: Record<string, SinonStub> = {};
   const fakeYearList = [
     '2018',
@@ -32,6 +37,19 @@ describe('Course Instance Controller', function () {
           provide: getRepositoryToken(CourseListingView),
           useValue: mockRepository,
         },
+        {
+          provide: getRepositoryToken(MultiYearPlanView),
+          useValue: mockRepository,
+        },
+        {
+          provide: getRepositoryToken(MultiYearPlanInstanceView),
+          useValue: mockRepository,
+        },
+        {
+          provide: getRepositoryToken(Course),
+          useValue: mockRepository,
+        },
+        ConfigService,
         CourseInstanceService,
         SemesterService,
       ],
@@ -44,6 +62,8 @@ describe('Course Instance Controller', function () {
       .get<SemesterService>(SemesterService);
     ciService = testModule
       .get<CourseInstanceService>(CourseInstanceService);
+    configService = testModule
+      .get<ConfigService>(ConfigService);
     ciController = testModule
       .get<CourseInstanceController>(CourseInstanceController);
   });
@@ -108,6 +128,41 @@ describe('Course Instance Controller', function () {
             strictEqual(getStub.calledWith(yearArg), false);
           });
         });
+      });
+    });
+  });
+  describe('/multi-year-plan', function () {
+    let getStub: SinonStub;
+    beforeEach(function () {
+      getStub = stub(ciService, 'getMultiYearPlan').resolves(null);
+      stub(configService, 'academicYear').get(() => 2020);
+    });
+    context('When number of years parameter is not set', function () {
+      it('should call the service with the undefined argument', async function () {
+        await ciController.getMultiYearPlan();
+        deepStrictEqual(getStub.args, [[undefined]]);
+      });
+    });
+    context('When number of years parameter is set', function () {
+      it('should call the service with the argument 0 when numYears is equal to 0', async function () {
+        await ciController.getMultiYearPlan(0);
+        deepStrictEqual(getStub.args, [[0]]);
+      });
+      it('should call the service with the negative value of numYears when numYears is negative', async function () {
+        await ciController.getMultiYearPlan(-3);
+        deepStrictEqual(getStub.args, [[-3]]);
+      });
+      it('should call the service with null if numYears is null', async function () {
+        await ciController.getMultiYearPlan(null);
+        deepStrictEqual(getStub.args, [[null]]);
+      });
+      it('should call the service with the float value of numYears when numYears is equal to a float', async function () {
+        await ciController.getMultiYearPlan(2.3);
+        deepStrictEqual(getStub.args, [[2.3]]);
+      });
+      it('should fetch the multi year plan for the given number of years when numYears is a positive integer', async function () {
+        await ciController.getMultiYearPlan(5);
+        deepStrictEqual(getStub.args, [[5]]);
       });
     });
   });

@@ -1,6 +1,16 @@
 import {
-  Controller, Get, Query, Inject,
+  Controller,
+  Get,
+  Query,
+  Inject,
 } from '@nestjs/common';
+import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiUseTags,
+  ApiImplicitQuery,
+} from '@nestjs/swagger';
 import CourseResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { CourseInstanceService } from './courseInstance.service';
 import { SemesterService } from '../semester/semester.service';
@@ -52,5 +62,29 @@ export class CourseInstanceController {
         }
       )
     );
+  }
+
+  /**
+   * Responds with a list of multiyear plan records
+   *
+   * @param numYears represents the number of years that the Multi Year Plan
+   * will show. Its value defaults to 4 years.
+   */
+  @ApiUseTags('Course Instance')
+  @ApiOperation({ title: 'Retrieve the multi-year plan' })
+  @ApiOkResponse({
+    type: MultiYearPlanResponseDTO,
+    description: 'An array of all the multi-year plan records',
+    isArray: true,
+  })
+  @ApiImplicitQuery({
+    name: 'numYears',
+    description: 'Represents the number of years that the Multi Year Plan will show',
+  })
+  @Get('/multi-year-plan')
+  public async getMultiYearPlan(
+    @Query('numYears') numYears?: number
+  ): Promise<MultiYearPlanResponseDTO[]> {
+    return this.ciService.getMultiYearPlan(numYears);
   }
 }

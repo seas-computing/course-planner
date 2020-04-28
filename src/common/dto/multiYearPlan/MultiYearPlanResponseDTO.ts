@@ -1,7 +1,7 @@
 import { ApiModelProperty } from '@nestjs/swagger';
-import { TERM_PATTERN } from 'common/constants';
+import { TERM } from 'server/semester/semester.entity';
 
-abstract class Faculty {
+export abstract class MultiYearPlanInstanceFaculty {
   @ApiModelProperty({
     type: 'string',
     example: 'f696d531-aef2-413f-9922-f480aa9d6039',
@@ -13,9 +13,15 @@ abstract class Faculty {
     example: 'Waldo, James',
   })
   public displayName: string;
+
+  @ApiModelProperty({
+    type: 'number',
+    example: 0,
+  })
+  public instructorOrder: number;
 }
 
-abstract class Instance {
+export abstract class MultiYearPlanInstance {
   @ApiModelProperty({
     type: 'string',
     example: 'fc772fd6-651e-40c3-97e6-b815818120ce',
@@ -23,22 +29,28 @@ abstract class Instance {
   public id: string;
 
   @ApiModelProperty({
-    type: 'number',
-    example: 2011,
+    type: 'string',
+    example: '2012',
   })
-  public calendarYear: number;
+  public academicYear: string;
 
   @ApiModelProperty({
     type: 'string',
-    example: TERM_PATTERN.FALL,
+    example: '2011',
   })
-  public term: TERM_PATTERN;
+  public calendarYear: string;
+
+  @ApiModelProperty({
+    type: 'string',
+    example: TERM.FALL,
+  })
+  public term: TERM;
 
   @ApiModelProperty({
     isArray: true,
-    type: Faculty,
+    type: MultiYearPlanInstanceFaculty,
   })
-  public faculty: Faculty[];
+  public faculty: MultiYearPlanInstanceFaculty[];
 }
 
 export abstract class MultiYearPlanResponseDTO {
@@ -68,7 +80,7 @@ export abstract class MultiYearPlanResponseDTO {
 
   @ApiModelProperty({
     isArray: true,
-    type: Instance,
+    type: MultiYearPlanInstance,
   })
-  public instances: Instance[];
+  public instances: MultiYearPlanInstance[];
 }

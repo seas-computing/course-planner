@@ -23,9 +23,9 @@ export class Semester extends BaseEntity {
     type: 'numeric',
     precision: 4,
     scale: 0,
-    comment: 'The academmic year as a 4 digit integer',
+    comment: 'The academic year as a 4 digit integer',
   })
-  public academicYear: number;
+  public academicYear: string;
 
   /**
    * The term this semester occurs in. Can be either spring or fall.

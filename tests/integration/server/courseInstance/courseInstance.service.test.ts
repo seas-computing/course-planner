@@ -1,4 +1,4 @@
-import { strictEqual, notStrictEqual } from 'assert';
+import { strictEqual, notStrictEqual, deepStrictEqual } from 'assert';
 import { parse } from 'date-fns';
 import { format, utcToZonedTime } from 'date-fns-tz';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -13,6 +13,9 @@ import { OFFERED } from 'common/constants';
 import { Meeting } from 'server/meeting/meeting.entity';
 import { ConfigService } from 'server/config/config.service';
 import { ConfigModule } from 'server/config/config.module';
+import { MultiYearPlanResponseDTO, MultiYearPlanInstanceFaculty, MultiYearPlanInstance } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
+import flatMap from 'lodash.flatmap';
+import { AuthModule } from 'server/auth/auth.module';
 import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 
@@ -44,6 +47,7 @@ describe('Course Instance Service', function () {
           }),
           inject: [ConfigService],
         }),
+        AuthModule,
         PopulationModule,
         SemesterModule,
         CourseInstanceModule,
@@ -184,6 +188,72 @@ describe('Course Instance Service', function () {
           });
         });
       });
+    });
+  });
+  describe('getMultiYearPlan', function () {
+    let result: MultiYearPlanResponseDTO[];
+    const numYears = 4;
+    beforeEach(async function () {
+      result = await ciService.getMultiYearPlan(numYears);
+    });
+    it('should return a nonempty array of data', function () {
+      notStrictEqual(result.length, 0);
+    });
+    it('should return the instructors for each course instance ordered by instructorOrder and displayName', function () {
+      const minFacultyToSort = 3;
+      const multipleFacultyArrays: MultiYearPlanInstanceFaculty[][] = flatMap(
+        result,
+        // get all the instances
+        (course: MultiYearPlanResponseDTO) => course.instances
+      )
+        // discard instances with less than 3 faculty
+        .filter((instance: MultiYearPlanInstance) => (
+          instance.faculty.length >= minFacultyToSort
+        ))
+        // get the faculty
+        .map((instance: MultiYearPlanInstance) => instance.faculty);
+      const facultyArraysToCheck = 2;
+      // confirm that we have at least 2 to check
+      strictEqual(multipleFacultyArrays.length >= facultyArraysToCheck, true);
+      // sort the first two with more than 2 faculty
+      multipleFacultyArrays
+        .slice(0, facultyArraysToCheck)
+        .forEach((faculty) => {
+          const sorted = faculty.slice().sort((a, b): number => {
+            if (a.instructorOrder < b.instructorOrder) {
+              return -1;
+            }
+            if (a.instructorOrder > b.instructorOrder) {
+              return 1;
+            }
+            if (a.displayName < b.displayName) {
+              return -1;
+            }
+            if (a.displayName > b.displayName) {
+              return 1;
+            }
+            return 0;
+          });
+          deepStrictEqual(faculty, sorted);
+        });
+    });
+    it('should return the courses ordered by area and catalog number', function () {
+      const sorted = result.slice().sort((course1, course2): number => {
+        if (course1.area < course2.area) {
+          return -1;
+        }
+        if (course1.area > course2.area) {
+          return 1;
+        }
+        if (course1.catalogNumber < course2.catalogNumber) {
+          return -1;
+        }
+        if (course1.catalogNumber > course2.catalogNumber) {
+          return 1;
+        }
+        return 0;
+      });
+      deepStrictEqual(result, sorted);
     });
   });
 });
