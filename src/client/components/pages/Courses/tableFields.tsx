@@ -15,10 +15,20 @@ const retrieveValue = (
   sem?: string
 ): (arg0: CourseInstanceResponseDTO
   ) => ReactNode => (
-    course: CourseInstanceResponseDTO
-  ): string => (sem
-    ? course[sem][prop]
-    : course[prop]);
+  course: CourseInstanceResponseDTO
+): string => (sem
+  ? course[sem][prop]
+  : course[prop]);
+
+/**
+ * Constants by which to group columns
+ */
+export enum COLUMN_GROUP {
+  SPRING,
+  FALL,
+  COURSE,
+  META
+}
 
 /**
  * Describes the columns in the CourseInstanceList
@@ -38,6 +48,10 @@ export interface CourseInstanceListColumn {
    */
   viewColumn: string;
   /**
+   * For grouping columns
+   */
+  columnGroup: COLUMN_GROUP;
+  /**
    * A function that will retrieve the appropriate data to appear in the cell
    */
   getValue: (arg0: CourseInstanceResponseDTO) => ReactNode;
@@ -52,48 +66,56 @@ export const tableFields: CourseInstanceListColumn[] = [
   {
     name: 'Area',
     key: 'area',
+    columnGroup: COLUMN_GROUP.COURSE,
     viewColumn: 'area',
     getValue: retrieveValue('area'),
   },
   {
     name: 'Course',
     key: 'catalog-number',
+    columnGroup: COLUMN_GROUP.COURSE,
     viewColumn: 'catalogNumber',
     getValue: retrieveValue('catalogNumber'),
   },
   {
     name: 'Title',
     key: 'title',
+    columnGroup: COLUMN_GROUP.COURSE,
     viewColumn: 'title',
     getValue: retrieveValue('title'),
   },
   {
     name: 'Same As',
     key: 'same-as',
+    columnGroup: COLUMN_GROUP.COURSE,
     viewColumn: 'sameAs',
     getValue: retrieveValue('sameAs'),
   },
   {
     name: 'Is SEAS?',
     key: 'is-seas',
+    columnGroup: COLUMN_GROUP.COURSE,
     viewColumn: 'isSEAS',
     getValue: retrieveValue('isSEAS'),
   },
   {
     name: 'Is Undergraduate?',
     key: 'is-undergraduate',
+    columnGroup: COLUMN_GROUP.COURSE,
     viewColumn: 'isUndergraduate',
     getValue: retrieveValue('isUndergraduate'),
   },
   {
     name: 'Offered',
     key: 'offered-fall',
+    columnGroup: COLUMN_GROUP.FALL,
     viewColumn: 'offered',
     getValue: retrieveValue('offered', 'fall'),
   },
   {
     name: 'Instructors',
     key: 'instructors-fall',
+    columnGroup: COLUMN_GROUP.FALL,
     viewColumn: 'instructors',
     getValue: ({ fall: { instructors } }): ReactElement => (
       instructors.length === 0
@@ -114,6 +136,7 @@ export const tableFields: CourseInstanceListColumn[] = [
   {
     name: 'Times',
     key: 'times-fall',
+    columnGroup: COLUMN_GROUP.FALL,
     viewColumn: 'times',
     getValue: ({ fall: { meetings } }): ReactElement => (
       meetings[0].day === null
@@ -132,6 +155,7 @@ export const tableFields: CourseInstanceListColumn[] = [
   {
     name: 'Room',
     key: 'rooms-fall',
+    columnGroup: COLUMN_GROUP.FALL,
     viewColumn: 'rooms',
     getValue: ({ fall: { meetings } }): ReactElement => (
       meetings[0].day === null
@@ -153,30 +177,35 @@ export const tableFields: CourseInstanceListColumn[] = [
   {
     name: 'Pre',
     key: 'pre-enrollment-fall',
-    viewColumn: 'preEnrollment',
+    columnGroup: COLUMN_GROUP.FALL,
+    viewColumn: 'enrollment',
     getValue: retrieveValue('preEnrollment', 'fall'),
   },
   {
     name: 'Study',
     key: 'study-card-enrollment-fall',
-    viewColumn: 'studyCardEnrollment',
+    columnGroup: COLUMN_GROUP.FALL,
+    viewColumn: 'enrollment',
     getValue: retrieveValue('studyCardEnrollment', 'fall'),
   },
   {
     name: 'Actual',
     key: 'actual-enrollment-fall',
-    viewColumn: 'actualEnrollment',
+    columnGroup: COLUMN_GROUP.FALL,
+    viewColumn: 'enrollment',
     getValue: retrieveValue('actualEnrollment', 'fall'),
   },
   {
     name: 'Offered',
     key: 'offered-spring',
+    columnGroup: COLUMN_GROUP.SPRING,
     viewColumn: 'offered',
     getValue: retrieveValue('offered', 'spring'),
   },
   {
     name: 'Instructors',
     key: 'instructors-spring',
+    columnGroup: COLUMN_GROUP.SPRING,
     viewColumn: 'instructors',
     getValue: ({ spring: { instructors } }): ReactElement => (
       instructors.length === 0
@@ -197,6 +226,7 @@ export const tableFields: CourseInstanceListColumn[] = [
   {
     name: 'Times',
     key: 'times-spring',
+    columnGroup: COLUMN_GROUP.SPRING,
     viewColumn: 'times',
     getValue: ({ spring: { meetings } }): ReactElement => (
       meetings[0].day === null
@@ -215,6 +245,7 @@ export const tableFields: CourseInstanceListColumn[] = [
   {
     name: 'Room',
     key: 'rooms-spring',
+    columnGroup: COLUMN_GROUP.SPRING,
     viewColumn: 'rooms',
     getValue: ({ spring: { meetings } }): ReactElement => (
       meetings[0].day === null
@@ -236,24 +267,28 @@ export const tableFields: CourseInstanceListColumn[] = [
   {
     name: 'Pre',
     key: 'pre-enrollment-spring',
-    viewColumn: 'preEnrollment',
+    columnGroup: COLUMN_GROUP.SPRING,
+    viewColumn: 'enrollment',
     getValue: retrieveValue('preEnrollment', 'spring'),
   },
   {
     name: 'Study',
     key: 'study-card-enrollment-spring',
-    viewColumn: 'studyCardEnrollment',
+    columnGroup: COLUMN_GROUP.SPRING,
+    viewColumn: 'enrollment',
     getValue: retrieveValue('studyCardEnrollment', 'spring'),
   },
   {
     name: 'Actual',
     key: 'actual-enrollment-spring',
-    viewColumn: 'actualEnrollment',
+    columnGroup: COLUMN_GROUP.SPRING,
+    viewColumn: 'enrollment',
     getValue: retrieveValue('actualEnrollment', 'spring'),
   },
   {
     name: 'Notes',
     key: 'notes',
+    columnGroup: COLUMN_GROUP.META,
     viewColumn: 'notes',
     getValue: retrieveValue('notes'),
   },

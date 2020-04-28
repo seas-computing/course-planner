@@ -28,9 +28,7 @@ const currentView = [
   'instructors',
   'times',
   'rooms',
-  'preEnrollment',
-  'studyCardEnrollment',
-  'actualEnrollment',
+  'enrollment',
   'notes',
 ];
 
