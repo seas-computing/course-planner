@@ -17,11 +17,14 @@ This setup uses `docker` and `docker-compose` for local development, as defined 
        ├── course-planner-etl
        ├── mark-one
 
-1. To start the project, run:
+1. In development , check out the develop branch :
+   ```sh
+   git checkout develop
+   ```
+1. Start the project, run:
    ```sh
    docker-compose up
    ```
-
 1. Run the database migration:
    ```sh
    docker-compose exec node npm run orm -- migration:run
@@ -29,15 +32,17 @@ This setup uses `docker` and `docker-compose` for local development, as defined 
 
 1. switch to course-planner-etl and migrate the data: 
    ```sh
+   cd course-planner-etl
    npm run start
    ```
 
 Note:
-For Mac user, virtual image data 9for docker) is located on ~/Library/Containers/com.docker.docker/Data/vms/0 .
-Need to remove the old data from docker volume inorder to migrate new data with new schema, otherwise old data and schema might cause issues. 
+For Mac user, virtual image data (for docker) is located on ~/Library/Containers/com.docker.docker/Data/vms/0 .
+You need to remove the old data from docker volume inorder to migrate new data and new schema, otherwise old data and schema might cause issues. 
 
 ```sh
-$ screen ~/Library/Containers/com.docker.docker/Data/vms/0/tty 
+screen ~/Library/Containers/com.docker.docker/Data/vms/0/tty
+
 ```
 press Ctrl+a, followed by pressing k and y to kill the session.
 
