@@ -3,6 +3,7 @@ import { Repository } from 'typeorm';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { TERM } from 'server/semester/semester.entity';
 import groupBy from 'lodash.groupby';
+import { ConfigService } from 'server/config/config.service';
 import { FacultyScheduleView } from './FacultyScheduleView.entity';
 import { FacultyScheduleSemesterView } from './FacultyScheduleSemesterView.entity';
 import { FacultyScheduleCourseView } from './FacultyScheduleCourseView.entity';
@@ -30,11 +31,18 @@ export class FacultyScheduleService {
   private readonly facultyScheduleAbsenceRepository:
   Repository<FacultyScheduleAbsenceView>;
 
+  @InjectRepository(ConfigService)
+  private readonly configService: ConfigService;
+
   /**
    * Resolves a list of faculty for the Faculty tab
+   * @param acadYears represents an array of years of faculty schedules will be
+   * shown. The default value of acadYears is an array of the current academic
+   * year calculated in the config service
    */
-  public async getAllFaculty(acadYears: number[]):
-  Promise<{ [key: string]: FacultyResponseDTO[] }> {
+  public async getAllFaculty(
+    acadYears: number[] = [this.configService.academicYear]
+  ): Promise<{ [key: string]: FacultyResponseDTO[] }> {
     const results = await this.facultyScheduleRepository
       .createQueryBuilder('f')
       .leftJoinAndMapOne(
