@@ -1,5 +1,17 @@
-import React, { ReactElement, ReactNode } from 'react';
+import React, { ReactElement, ReactNode, useState } from 'react';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
+import {
+  Button,
+  BorderlessButton,
+  VARIANT,
+  Modal,
+  ModalBody,
+  ModalHeader,
+  ModalFooter,
+} from 'mark-one';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faStickyNote as withNotes, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
+import { faStickyNote as withoutNotes } from '@fortawesome/free-regular-svg-icons';
 
 /**
  * Simple helper function that takes a property name and optionally a semester
@@ -290,6 +302,58 @@ export const tableFields: CourseInstanceListColumn[] = [
     key: 'notes',
     columnGroup: COLUMN_GROUP.META,
     viewColumn: 'notes',
-    getValue: retrieveValue('notes'),
+    getValue: ({ notes, catalogNumber }): ReactElement => {
+      const hasNotes = notes && notes.trim().length > 0;
+      const [modalOpen, toggleModal] = useState(false);
+      return (
+        <React.Fragment>
+          <BorderlessButton
+            variant={VARIANT.INFO}
+            disabled={!hasNotes}
+            onClick={(): void => { if (hasNotes) { toggleModal(true); } }}
+          >
+            <FontAwesomeIcon icon={hasNotes ? withNotes : withoutNotes} />
+          </BorderlessButton>
+          {hasNotes && (
+            <Modal
+              isVisible={modalOpen}
+              closeHandler={(): void => { toggleModal(false); }}
+            >
+              <ModalHeader
+                closeButtonHandler={(): void => { toggleModal(false); }}
+              >
+                {`${catalogNumber} Notes`}
+              </ModalHeader>
+              <ModalBody>
+                {notes}
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  variant={VARIANT.DEFAULT}
+                  onClick={(): void => { toggleModal(false); }}
+                >
+                  Close
+                </Button>
+              </ModalFooter>
+            </Modal>
+          )}
+        </React.Fragment>
+      );
+    },
+  },
+  {
+    name: 'Details',
+    key: 'details',
+    columnGroup: COLUMN_GROUP.META,
+    viewColumn: 'details',
+    getValue: (): ReactElement => (
+      <BorderlessButton
+        variant={VARIANT.INFO}
+        onClick={(): void => { }}
+      >
+        <FontAwesomeIcon icon={faFolderOpen} />
+      </BorderlessButton>
+
+    ),
   },
 ];
