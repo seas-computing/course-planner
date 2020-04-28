@@ -39,6 +39,9 @@ const currentView = [
  */
 const showRetired = false;
 
+
+// TODO: Get the actual current academic year instead of hard coding
+const acadYear = 2020;
 /**
  * Component representing the list of CourseInstances in a given Academic year
  */
@@ -57,7 +60,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
 
   useEffect((): void => {
     setFetching(true);
-    getCourseInstancesForYear(2020)
+    getCourseInstancesForYear(acadYear)
       .then((courses: CourseInstanceResponseDTO[][]): void => {
         setCourses(courses[0]);
       })
@@ -78,6 +81,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
         ? <p>Fetching data...</p>
         : (
           <CourseInstanceTable
+            academicYear={acadYear}
             courseList={
               showRetired
                 ? currentCourses
