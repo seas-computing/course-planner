@@ -33,10 +33,12 @@ export class FacultyScheduleController {
     isArray: true,
   })
   public async getAll(
-    @Param('acadYears') acadYears: string
+    @Param('acadYears') acadYears?: string
   ): Promise<{ [key: string]: FacultyResponseDTO[] }> {
-    const acadYearsArray = acadYears.split(',')
-      .map((year): number => parseInt(year.trim(), 10));
+    const acadYearsArray = acadYears != null
+      ? acadYears.split(',')
+        .map((year): number => parseInt(year.trim(), 10))
+      : undefined;
     return this.facultyScheduleService.getAllFaculty(acadYearsArray);
   }
 }
