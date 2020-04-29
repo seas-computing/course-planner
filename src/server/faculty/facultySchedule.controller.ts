@@ -17,7 +17,7 @@ import { Authentication } from 'server/auth/authentication.guard';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { FacultyScheduleService } from './facultySchedule.service';
 
-@ApiUseTags('Faculty')
+@ApiUseTags('Faculty Schedule')
 @UseGuards(Authentication, new RequireGroup(GROUP.ADMIN))
 @Controller('api/faculty/schedule')
 @ApiUnauthorizedResponse({ description: 'Thrown if the user is not authenticated' })
