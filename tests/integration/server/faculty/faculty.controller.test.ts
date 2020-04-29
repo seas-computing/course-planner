@@ -20,6 +20,10 @@ import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 import { regularUser, string, adminUser } from 'common/__tests__/data';
 import { SessionModule } from 'nestjs-session';
 import { FacultyService } from 'server/faculty/faculty.service';
+import { FacultyScheduleAbsenceView } from 'server/faculty/FacultyScheduleAbsenceView.entity';
+import { FacultyScheduleCourseView } from 'server/faculty/FacultyScheduleCourseView.entity';
+import { FacultyScheduleSemesterView } from 'server/faculty/FacultyScheduleSemesterView.entity';
+import { FacultyScheduleView } from 'server/faculty/FacultyScheduleView.entity';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 const mockFacultyRepository = {
@@ -36,6 +40,14 @@ const mockFacultyService = {
 const mockAreaRepository = {
   findOneOrFail: stub(),
 };
+
+const mockFacultyScheduleAbsenceViewRepository = {};
+
+const mockFacultyScheduleCourseViewRepository = {};
+
+const mockFacultyScheduleSemesterViewRepository = {};
+
+const mockFacultyScheduleViewRepository = {};
 
 describe('Faculty API', function () {
   let authStub: SinonStub;
@@ -72,6 +84,18 @@ describe('Faculty API', function () {
 
       .overrideProvider(getRepositoryToken(Area))
       .useValue(mockAreaRepository)
+
+      .overrideProvider(getRepositoryToken(FacultyScheduleAbsenceView))
+      .useValue(mockFacultyScheduleAbsenceViewRepository)
+
+      .overrideProvider(getRepositoryToken(FacultyScheduleCourseView))
+      .useValue(mockFacultyScheduleCourseViewRepository)
+
+      .overrideProvider(getRepositoryToken(FacultyScheduleSemesterView))
+      .useValue(mockFacultyScheduleSemesterViewRepository)
+
+      .overrideProvider(getRepositoryToken(FacultyScheduleView))
+      .useValue(mockFacultyScheduleViewRepository)
 
       .compile();
 
