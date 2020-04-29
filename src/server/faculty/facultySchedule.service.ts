@@ -4,34 +4,31 @@ import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { TERM } from 'server/semester/semester.entity';
 import groupBy from 'lodash.groupby';
 import { ConfigService } from 'server/config/config.service';
+import {
+  Injectable,
+  Inject,
+} from '@nestjs/common';
 import { FacultyScheduleView } from './FacultyScheduleView.entity';
 import { FacultyScheduleSemesterView } from './FacultyScheduleSemesterView.entity';
 import { FacultyScheduleCourseView } from './FacultyScheduleCourseView.entity';
 import { FacultyScheduleAbsenceView } from './FacultyScheduleAbsenceView.entity';
+import { Faculty } from './faculty.entity';
 
 /**
  * @class FacultyScheduleService
  * Injectable service that provides additional methods for querying the database
  * on Faculty.
  */
+@Injectable()
 export class FacultyScheduleService {
   @InjectRepository(FacultyScheduleView)
   private readonly facultyScheduleRepository:
   Repository<FacultyScheduleView>;
 
-  @InjectRepository(FacultyScheduleSemesterView)
-  private readonly facultyScheduleSemesterRepository:
-  Repository<FacultyScheduleSemesterView>;
+  @InjectRepository(Faculty)
+  protected facultyEntityRepository: Repository<Faculty>;
 
-  @InjectRepository(FacultyScheduleCourseView)
-  private readonly facultyScheduleCourseRepository:
-  Repository<FacultyScheduleCourseView>;
-
-  @InjectRepository(FacultyScheduleAbsenceView)
-  private readonly facultyScheduleAbsenceRepository:
-  Repository<FacultyScheduleAbsenceView>;
-
-  @InjectRepository(ConfigService)
+  @Inject(ConfigService)
   private readonly configService: ConfigService;
 
   /**
