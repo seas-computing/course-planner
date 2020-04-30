@@ -14,7 +14,7 @@ import { Course } from 'server/course/course.entity';
     .select('fci."courseInstanceId"', 'courseInstanceId')
     .addSelect('fci."facultyId"', 'facultyId')
     .addSelect('ci."semesterId"', 'semesterId')
-    .addSelect('ci."courseId"', 'courseId')
+    .addSelect('ci."courseId"', 'id')
     .addSelect("CONCAT_WS(' ', c.prefix, c.number)", 'catalogNumber')
     .from(FacultyCourseInstance, 'fci')
     .leftJoin(CourseInstance, 'ci', 'ci.id = fci."courseInstanceId"')
