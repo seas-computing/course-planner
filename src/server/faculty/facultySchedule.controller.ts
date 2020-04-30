@@ -39,6 +39,6 @@ export class FacultyScheduleController {
       ? acadYears.split(',')
         .map((year): number => parseInt(year.trim(), 10))
       : undefined;
-    return this.facultyScheduleService.getAllFaculty(acadYearsArray);
+    return this.facultyScheduleService.getAll(acadYearsArray);
   }
 }
