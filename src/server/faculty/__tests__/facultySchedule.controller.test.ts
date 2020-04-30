@@ -62,12 +62,22 @@ describe('Faculty Schedule Controller', function () {
   describe('/faculty/schedule', function () {
     let getStub: SinonStub;
     beforeEach(function () {
-      getStub = stub(fsService, 'getAllFaculty').resolves(null);
+      getStub = stub(fsService, 'getAll').resolves(null);
       stub(configService, 'academicYear').get(() => 2020);
     });
     context('When academic year parameter is not set', function () {
       it('should call the service with the undefined argument', async function () {
         await fsController.getAll();
+        deepStrictEqual(getStub.args, [[undefined]]);
+      });
+    });
+    context('When academic year parameter is set', function () {
+      it('should call the service with the provided non-null argument', async function () {
+        await fsController.getAll('2019');
+        deepStrictEqual(getStub.args, [[[2019]]]);
+      });
+      it('should call the service with undefined when the academic year parameter is set to null', async function () {
+        await fsController.getAll(null);
         deepStrictEqual(getStub.args, [[undefined]]);
       });
     });
