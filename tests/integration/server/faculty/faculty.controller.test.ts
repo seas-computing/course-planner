@@ -111,6 +111,10 @@ describe('Faculty API', function () {
       ...mockFacultyRepository,
       ...mockAreaRepository,
       ...mockFacultyService,
+      ...mockFacultyScheduleAbsenceViewRepository,
+      ...mockFacultyScheduleCourseViewRepository,
+      ...mockFacultyScheduleSemesterViewRepository,
+      ...mockFacultyScheduleViewRepository,
     })
       .forEach((sinonStub: SinonStub): void => {
         sinonStub.reset();
