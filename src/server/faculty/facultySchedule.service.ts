@@ -22,7 +22,7 @@ import { Faculty } from './faculty.entity';
 @Injectable()
 export class FacultyScheduleService {
   @InjectRepository(FacultyScheduleView)
-  private readonly facultyScheduleRepository:
+  private facultyScheduleRepository:
   Repository<FacultyScheduleView>;
 
   @InjectRepository(Faculty)
@@ -37,7 +37,7 @@ export class FacultyScheduleService {
    * shown. The default value of acadYears is an array of the current academic
    * year calculated in the config service
    */
-  public async getAllFaculty(
+  public async getAll(
     acadYears: number[] = [this.configService.academicYear]
   ): Promise<{ [key: string]: FacultyResponseDTO[] }> {
     const results = await this.facultyScheduleRepository
@@ -48,14 +48,12 @@ export class FacultyScheduleService {
         'fall',
         `fall.term = '${TERM.FALL}'`
       )
-      // setting dto.fall.courses
       .leftJoinAndMapMany(
         'fall.courses',
         FacultyScheduleCourseView,
         'fall_courses',
         'fall_courses."facultyId" = f.id and fall_courses."semesterId" = fall.id'
       )
-      // setting dto.fall.absence
       .leftJoinAndMapOne(
         'fall.absence',
         FacultyScheduleAbsenceView,
@@ -68,14 +66,12 @@ export class FacultyScheduleService {
         'spring',
         `spring.term = '${TERM.SPRING}'`
       )
-      // setting dto.spring.courses
       .leftJoinAndMapMany(
         'spring.courses',
         FacultyScheduleCourseView,
         'spring_courses',
         'spring_courses."facultyId" = f.id and spring_courses."semesterId" = spring.id'
       )
-      // setting dto.spring.absence
       .leftJoinAndMapOne(
         'spring.absence',
         FacultyScheduleAbsenceView,
