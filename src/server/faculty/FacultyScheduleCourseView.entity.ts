@@ -25,28 +25,25 @@ import { Course } from 'server/course/course.entity';
  */
 export class FacultyScheduleCourseView {
   /**
-   * From [[FacultyCourseInstance]]
+   * From [[CourseInstance]]
    */
   @ViewColumn()
+  public id: string;
+
+  /**
+   * From [[FacultyCourseInstance]]
+   */
   public courseInstanceId: string;
 
   /**
    * From [[FacultyCourseInstance]]
    */
-  @ViewColumn()
   public facultyId: string;
 
   /**
    * From [[CourseInstance]]
    */
-  @ViewColumn()
   public semesterId: string;
-
-  /**
-   * From [[CourseInstance]]
-   */
-  @ViewColumn()
-  public courseId: string;
 
   /**
    * From [[Course]]
