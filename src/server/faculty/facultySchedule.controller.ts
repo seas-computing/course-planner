@@ -33,7 +33,7 @@ export class FacultyScheduleController {
   public async getAll(
     @Param('acadYears') acadYears?: string
   ): Promise<{ [key: string]: FacultyResponseDTO[] }> {
-    const acadYearsArray = acadYears !== null
+    const acadYearsArray = acadYears != null
       ? acadYears.split(',')
         .map((year): number => parseInt(year.trim(), 10))
       : undefined;
