@@ -56,7 +56,7 @@ describe('Faculty Schedule Service', function () {
     let result: { [key: string]: FacultyResponseDTO[] };
     const acadYears = [2019];
     beforeEach(async function () {
-      result = await fsService.getAll(acadYears);
+      result = await fsService.getAllByYear(acadYears);
     });
     it('should return a non empty object of data', function () {
       notStrictEqual(Object.keys(result).length, 0);

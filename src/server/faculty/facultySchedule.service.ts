@@ -37,7 +37,7 @@ export class FacultyScheduleService {
    * shown. The default value of acadYears is an array of the current academic
    * year calculated in the config service
    */
-  public async getAll(
+  public async getAllByYear(
     acadYears: number[] = [this.configService.academicYear]
   ): Promise<{ [key: string]: FacultyResponseDTO[] }> {
     const results = await this.facultyScheduleRepository
