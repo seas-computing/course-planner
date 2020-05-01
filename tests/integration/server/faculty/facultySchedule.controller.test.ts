@@ -27,7 +27,6 @@ import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 import {
   regularUser,
   string,
-  adminUser,
 } from 'common/__tests__/data';
 import { SessionModule } from 'nestjs-session';
 import { FacultyScheduleAbsenceView } from 'server/faculty/FacultyScheduleAbsenceView.entity';
@@ -43,7 +42,7 @@ const mockFacultyRepository = {
 };
 
 const mockFacultyScheduleService = {
-  getAll: stub(),
+  getAllByYear: stub(),
 };
 
 const mockAreaRepository = {};
@@ -136,7 +135,7 @@ describe('Faculty Schedule API', function () {
 
         strictEqual(response.ok, false);
         strictEqual(response.status, HttpStatus.FORBIDDEN);
-        strictEqual(mockFacultyScheduleService.getAll.callCount, 0);
+        strictEqual(mockFacultyScheduleService.getAllByYear.callCount, 0);
       });
     });
     describe('User is authenticated', function () {
@@ -148,7 +147,7 @@ describe('Faculty Schedule API', function () {
             area: new Area(),
           }),
         };
-        mockFacultyScheduleService.getAll.resolves(mockFaculty);
+        mockFacultyScheduleService.getAllByYear.resolves(mockFaculty);
 
         const response = await request(api).get('/api/faculty/schedule');
 
@@ -157,7 +156,7 @@ describe('Faculty Schedule API', function () {
           response.body,
           JSON.parse(JSON.stringify(mockFaculty))
         );
-        strictEqual(mockFacultyScheduleService.getAll.callCount, 1);
+        strictEqual(mockFacultyScheduleService.getAllByYear.callCount, 1);
       });
     });
   });
