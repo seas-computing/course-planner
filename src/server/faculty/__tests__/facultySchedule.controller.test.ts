@@ -62,7 +62,7 @@ describe('Faculty Schedule Controller', function () {
   describe('/faculty/schedule', function () {
     let getStub: SinonStub;
     beforeEach(function () {
-      getStub = stub(fsService, 'getAll').resolves(null);
+      getStub = stub(fsService, 'getAllByYear').resolves(null);
       stub(configService, 'academicYear').get(() => 2020);
     });
     context('When academic year parameter is not set', function () {
