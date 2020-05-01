@@ -71,6 +71,7 @@ abstract class NonClassEvent {
   @ApiModelProperty({
     type: 'enum',
     enum: DAY,
+    example: DAY.FRI,
   })
   public day: DAY;
 
