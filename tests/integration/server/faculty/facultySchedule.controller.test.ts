@@ -140,37 +140,24 @@ describe('Faculty Schedule API', function () {
       });
     });
     describe('User is authenticated', function () {
-      describe('User is a member of the admin group', function () {
-        it('returns all faculty in the database', async function () {
-          authStub.resolves(adminUser);
-          const mockFaculty = {
-            2020: Array(10).fill({
-              ...new Faculty(),
-              area: new Area(),
-            }),
-          };
-          mockFacultyScheduleService.getAll.resolves(mockFaculty);
+      it('is accessible to authenticated users and returns all faculty in the database', async function () {
+        authStub.resolves(regularUser);
+        const mockFaculty = {
+          2020: Array(10).fill({
+            ...new Faculty(),
+            area: new Area(),
+          }),
+        };
+        mockFacultyScheduleService.getAll.resolves(mockFaculty);
 
-          const response = await request(api).get('/api/faculty/schedule');
+        const response = await request(api).get('/api/faculty/schedule');
 
-          strictEqual(response.ok, true);
-          deepStrictEqual(
-            response.body,
-            JSON.parse(JSON.stringify(mockFaculty))
-          );
-          strictEqual(mockFacultyScheduleService.getAll.callCount, 1);
-        });
-      });
-      describe('User is not a member of the admin group', function () {
-        it('is inaccessible to unauthorized users', async function () {
-          authStub.resolves(regularUser);
-
-          const response = await request(api).get('/api/faculty/schedule');
-
-          strictEqual(response.ok, false);
-          strictEqual(response.status, HttpStatus.FORBIDDEN);
-          strictEqual(mockFacultyScheduleService.getAll.callCount, 0);
-        });
+        strictEqual(response.ok, true);
+        deepStrictEqual(
+          response.body,
+          JSON.parse(JSON.stringify(mockFaculty))
+        );
+        strictEqual(mockFacultyScheduleService.getAll.callCount, 1);
       });
     });
   });
