@@ -18,7 +18,6 @@ import {
       WHEN term = '${TERM.FALL}' THEN semester."academicYear" + 1
       ELSE semester."academicYear"
     END`, 'academicYear')
-    .addSelect('semester."academicYear"', 'calendarYear')
     .addSelect('semester.term', 'term')
     .from(Semester, 'semester'),
 })
@@ -38,13 +37,6 @@ export class FacultyScheduleSemesterView {
    */
   @ViewColumn()
   public academicYear: string;
-
-  /**
-   * From [[Semester]]
-   * The calendar year in which the course instances takes place
-   */
-  @ViewColumn()
-  public calendarYear: string;
 
   /**
    * From [[Semester]]
