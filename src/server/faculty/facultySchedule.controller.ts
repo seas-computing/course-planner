@@ -3,7 +3,7 @@ import {
   Get,
   UseGuards,
   Inject,
-  Param,
+  Query,
 } from '@nestjs/common';
 import {
   ApiOperation,
@@ -31,7 +31,7 @@ export class FacultyScheduleController {
     isArray: true,
   })
   public async getAll(
-    @Param('acadYears') acadYears?: string
+    @Query('acadYears') acadYears?: string
   ): Promise<{ [key: string]: FacultyResponseDTO[] }> {
     const acadYearsArray = acadYears != null
       ? acadYears.split(',')
