@@ -26,9 +26,8 @@ export class FacultyScheduleController {
   @Get('/')
   @ApiOperation({ title: 'Retrieve all faculty along with their area, course instances, and absences' })
   @ApiOkResponse({
-    type: FacultyResponseDTO,
-    description: 'An array of all the faculty along with their area, course instances, and absences',
-    isArray: true,
+    type: Object,
+    description: 'An object where the academic year maps to an array of faculty along with their area, course instances, and absences',
   })
   public async getAll(
     @Query('acadYears') acadYears?: string
