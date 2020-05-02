@@ -8,7 +8,6 @@ import { FacultyService } from './faculty.service';
 import { FacultyScheduleController } from './facultySchedule.controller';
 import { FacultyScheduleService } from './facultySchedule.service';
 import { FacultyScheduleView } from './FacultyScheduleView.entity';
-import { FacultyScheduleAbsenceView } from './FacultyScheduleAbsenceView.entity';
 import { FacultyScheduleCourseView } from './FacultyScheduleCourseView.entity';
 import { FacultyScheduleSemesterView } from './FacultyScheduleSemesterView.entity';
 
@@ -17,7 +16,6 @@ import { FacultyScheduleSemesterView } from './FacultyScheduleSemesterView.entit
     TypeOrmModule.forFeature([
       Faculty,
       Area,
-      FacultyScheduleAbsenceView,
       FacultyScheduleCourseView,
       FacultyScheduleSemesterView,
       FacultyScheduleView,

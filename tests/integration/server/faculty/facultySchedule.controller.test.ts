@@ -29,12 +29,12 @@ import {
   string,
 } from 'common/__tests__/data';
 import { SessionModule } from 'nestjs-session';
-import { FacultyScheduleAbsenceView } from 'server/faculty/FacultyScheduleAbsenceView.entity';
 import { FacultyScheduleCourseView } from 'server/faculty/FacultyScheduleCourseView.entity';
 import { FacultyScheduleSemesterView } from 'server/faculty/FacultyScheduleSemesterView.entity';
 import { FacultyScheduleView } from 'server/faculty/FacultyScheduleView.entity';
 import { AUTH_MODE } from 'common/constants';
 import { FacultyScheduleService } from 'server/faculty/facultySchedule.service';
+import { Absence } from 'server/absence/absence.entity';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 const mockFacultyRepository = {
@@ -47,7 +47,7 @@ const mockFacultyScheduleService = {
 
 const mockAreaRepository = {};
 
-const mockFacultyScheduleAbsenceViewRepository = {};
+const mockAbsenceRepository = {};
 
 const mockFacultyScheduleCourseViewRepository = {};
 
@@ -91,8 +91,8 @@ describe('Faculty Schedule API', function () {
       .overrideProvider(getRepositoryToken(Area))
       .useValue(mockAreaRepository)
 
-      .overrideProvider(getRepositoryToken(FacultyScheduleAbsenceView))
-      .useValue(mockFacultyScheduleAbsenceViewRepository)
+      .overrideProvider(getRepositoryToken(Absence))
+      .useValue(mockAbsenceRepository)
 
       .overrideProvider(getRepositoryToken(FacultyScheduleCourseView))
       .useValue(mockFacultyScheduleCourseViewRepository)
@@ -117,7 +117,7 @@ describe('Faculty Schedule API', function () {
       ...mockFacultyRepository,
       ...mockAreaRepository,
       ...mockFacultyScheduleService,
-      ...mockFacultyScheduleAbsenceViewRepository,
+      ...mockAbsenceRepository,
       ...mockFacultyScheduleCourseViewRepository,
       ...mockFacultyScheduleSemesterViewRepository,
       ...mockFacultyScheduleViewRepository,

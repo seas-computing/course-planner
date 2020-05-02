@@ -7,12 +7,12 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Authentication } from 'server/auth/authentication.guard';
 import { ConfigService } from 'server/config/config.service';
 import { deepStrictEqual } from 'assert';
+import { Absence } from 'server/absence/absence.entity';
 import { FacultyScheduleController } from '../facultySchedule.controller';
 import { FacultyScheduleService } from '../facultySchedule.service';
 import { FacultyScheduleView } from '../FacultyScheduleView.entity';
 import { FacultyScheduleSemesterView } from '../FacultyScheduleSemesterView.entity';
 import { FacultyScheduleCourseView } from '../FacultyScheduleCourseView.entity';
-import { FacultyScheduleAbsenceView } from '../FacultyScheduleAbsenceView.entity';
 import { Faculty } from '../faculty.entity';
 
 describe('Faculty Schedule Controller', function () {
@@ -37,7 +37,7 @@ describe('Faculty Schedule Controller', function () {
           useValue: mockRepository,
         },
         {
-          provide: getRepositoryToken(FacultyScheduleAbsenceView),
+          provide: getRepositoryToken(Absence),
           useValue: mockRepository,
         },
         {

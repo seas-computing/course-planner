@@ -8,10 +8,10 @@ import {
   Injectable,
   Inject,
 } from '@nestjs/common';
+import { Absence } from 'server/absence/absence.entity';
 import { FacultyScheduleView } from './FacultyScheduleView.entity';
 import { FacultyScheduleSemesterView } from './FacultyScheduleSemesterView.entity';
 import { FacultyScheduleCourseView } from './FacultyScheduleCourseView.entity';
-import { FacultyScheduleAbsenceView } from './FacultyScheduleAbsenceView.entity';
 import { Faculty } from './faculty.entity';
 
 /**
@@ -56,7 +56,7 @@ export class FacultyScheduleService {
       )
       .leftJoinAndMapOne(
         'fall.absence',
-        FacultyScheduleAbsenceView,
+        Absence,
         'fall_absence',
         'fall_absence."facultyId" = f.id and fall_absence."semesterId" = fall.id'
       )
@@ -74,7 +74,7 @@ export class FacultyScheduleService {
       )
       .leftJoinAndMapOne(
         'spring.absence',
-        FacultyScheduleAbsenceView,
+        Absence,
         'spring_absence',
         'spring_absence."facultyId" = f.id and spring_absence."semesterId" = spring.id'
       )

@@ -52,7 +52,7 @@ describe('Faculty Schedule Service', function () {
   afterEach(async function () {
     await testModule.close();
   });
-  describe('getAllFaculty', function () {
+  describe('getAllByYear', function () {
     let result: { [key: string]: FacultyResponseDTO[] };
     const acadYears = [2019];
     beforeEach(async function () {
