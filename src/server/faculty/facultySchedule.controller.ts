@@ -23,6 +23,14 @@ export class FacultyScheduleController {
   @Inject(FacultyScheduleService)
   private readonly facultyScheduleService: FacultyScheduleService;
 
+  /**
+   * Responds with an object in which the requested academic year(s) maps to an
+   * array of faculty along with their area, course instances, and absences.
+   *
+   * @param acadYears is an array of strings that represent academic years for
+   * which faculty schedule data is being requested. If no argument is provided
+   * for acadYears, all years will be returned.
+   */
   @Get('/')
   @ApiOperation({ title: 'Retrieve all faculty along with their area, course instances, and absences' })
   @ApiOkResponse({
