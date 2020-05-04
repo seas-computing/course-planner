@@ -1,6 +1,15 @@
-import { notStrictEqual, strictEqual } from 'assert';
-import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import {
+  notStrictEqual,
+  strictEqual,
+} from 'assert';
+import {
+  Test,
+  TestingModule,
+} from '@nestjs/testing';
+import {
+  TypeOrmModule,
+  TypeOrmModuleOptions,
+} from '@nestjs/typeorm';
 import { ConfigService } from 'server/config/config.service';
 import { ConfigModule } from 'server/config/config.module';
 import { AuthModule } from 'server/auth/auth.module';
