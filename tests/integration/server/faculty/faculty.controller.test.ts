@@ -24,6 +24,7 @@ import { FacultyScheduleCourseView } from 'server/faculty/FacultyScheduleCourseV
 import { FacultyScheduleSemesterView } from 'server/faculty/FacultyScheduleSemesterView.entity';
 import { FacultyScheduleView } from 'server/faculty/FacultyScheduleView.entity';
 import { Absence } from 'server/absence/absence.entity';
+import { Semester } from 'server/semester/semester.entity';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 const mockFacultyRepository = {
@@ -42,6 +43,8 @@ const mockAreaRepository = {
 };
 
 const mockAbsenceRepository = {};
+
+const mockSemesterRepository = {};
 
 const mockFacultyScheduleCourseViewRepository = {};
 
@@ -85,6 +88,9 @@ describe('Faculty API', function () {
       .overrideProvider(getRepositoryToken(Area))
       .useValue(mockAreaRepository)
 
+      .overrideProvider(getRepositoryToken(Semester))
+      .useValue(mockSemesterRepository)
+
       .overrideProvider(getRepositoryToken(Absence))
       .useValue(mockAbsenceRepository)
 
@@ -112,6 +118,7 @@ describe('Faculty API', function () {
       ...mockAreaRepository,
       ...mockFacultyService,
       ...mockAbsenceRepository,
+      ...mockSemesterRepository,
       ...mockFacultyScheduleCourseViewRepository,
       ...mockFacultyScheduleSemesterViewRepository,
       ...mockFacultyScheduleViewRepository,

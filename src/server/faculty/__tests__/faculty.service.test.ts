@@ -3,6 +3,7 @@ import { stub, SinonStub } from 'sinon';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { deepStrictEqual } from 'assert';
 import { appliedMathFacultyMember, bioengineeringFacultyMember } from 'testData';
+import { Semester } from 'server/semester/semester.entity';
 import { FacultyService } from '../faculty.service';
 import { Faculty } from '../faculty.entity';
 
@@ -23,6 +24,10 @@ describe('Faculty service', function () {
   beforeEach(async function () {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
+        {
+          provide: getRepositoryToken(Semester),
+          useValue: {},
+        },
         {
           provide: getRepositoryToken(Faculty),
           useValue: mockFacultyRepository,

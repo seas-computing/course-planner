@@ -5,6 +5,8 @@ import {
 import {
   stub,
   SinonStub,
+  SinonStubbedInstance,
+  createStubInstance,
 } from 'sinon';
 import request from 'supertest';
 import {
@@ -27,6 +29,7 @@ import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 import {
   regularUser,
   string,
+  rawYearList,
 } from 'common/__tests__/data';
 import { SessionModule } from 'nestjs-session';
 import { FacultyScheduleCourseView } from 'server/faculty/FacultyScheduleCourseView.entity';
@@ -35,6 +38,8 @@ import { FacultyScheduleView } from 'server/faculty/FacultyScheduleView.entity';
 import { AUTH_MODE } from 'common/constants';
 import { FacultyScheduleService } from 'server/faculty/facultySchedule.service';
 import { Absence } from 'server/absence/absence.entity';
+import { Semester } from 'server/semester/semester.entity';
+import { SelectQueryBuilder } from 'typeorm';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 const mockFacultyRepository = {
@@ -58,9 +63,21 @@ const mockFacultyScheduleViewRepository = {};
 describe('Faculty Schedule API', function () {
   let authStub: SinonStub;
   let api: HttpServer;
+  let mockSemesterRepository: Record<string, SinonStub>;
+  let mockSemesterQueryBuilder: SinonStubbedInstance<
+  SelectQueryBuilder<Semester>
+  >;
 
   beforeEach(async function () {
     authStub = stub(TestingStrategy.prototype, 'login');
+    mockSemesterQueryBuilder = createStubInstance(SelectQueryBuilder);
+    mockSemesterRepository = {};
+    mockSemesterRepository.createQueryBuilder = stub()
+      .returns(mockSemesterQueryBuilder);
+    mockSemesterQueryBuilder.select.returnsThis();
+    mockSemesterQueryBuilder.distinct.returnsThis();
+    mockSemesterQueryBuilder.orderBy.returnsThis();
+    mockSemesterQueryBuilder.getRawMany.resolves(rawYearList);
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [
@@ -91,6 +108,9 @@ describe('Faculty Schedule API', function () {
       .overrideProvider(getRepositoryToken(Area))
       .useValue(mockAreaRepository)
 
+      .overrideProvider(getRepositoryToken(Semester))
+      .useValue(mockSemesterRepository)
+
       .overrideProvider(getRepositoryToken(Absence))
       .useValue(mockAbsenceRepository)
 
@@ -117,6 +137,7 @@ describe('Faculty Schedule API', function () {
       ...mockFacultyRepository,
       ...mockAreaRepository,
       ...mockFacultyScheduleService,
+      ...mockSemesterRepository,
       ...mockAbsenceRepository,
       ...mockFacultyScheduleCourseViewRepository,
       ...mockFacultyScheduleSemesterViewRepository,
@@ -145,6 +166,7 @@ describe('Faculty Schedule API', function () {
           2020: Array(10).fill({
             ...new Faculty(),
             area: new Area(),
+            semester: new Semester(),
           }),
         };
         mockFacultyScheduleService.getAllByYear.resolves(mockFaculty);
