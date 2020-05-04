@@ -1,5 +1,7 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from '@nestjs/common';
+import { SemesterService } from 'server/semester/semester.service';
+import { Semester } from 'server/semester/semester.entity';
 import { ManageFacultyController } from './faculty.controller';
 import { Faculty } from './faculty.entity';
 import { Area } from '../area/area.entity';
@@ -14,6 +16,7 @@ import { FacultyScheduleSemesterView } from './FacultyScheduleSemesterView.entit
 @Module({
   imports: [
     TypeOrmModule.forFeature([
+      Semester,
       Faculty,
       Area,
       FacultyScheduleCourseView,
@@ -29,6 +32,7 @@ import { FacultyScheduleSemesterView } from './FacultyScheduleSemesterView.entit
     MultiYearPlanFacultyListingView,
     FacultyService,
     FacultyScheduleService,
+    SemesterService,
   ],
 })
 export class FacultyModule { }
