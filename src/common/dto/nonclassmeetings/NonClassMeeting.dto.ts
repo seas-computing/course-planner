@@ -69,7 +69,7 @@ abstract class MeetingLocation {
 
 abstract class MeetingSemester {
   @ApiModelProperty({
-    description: 'Semester PK ID',
+    description: 'Semester primary key ID',
     example: '93a6ddba-f026-4157-b913-351bb8fbe12d',
   })
   public id: string;
