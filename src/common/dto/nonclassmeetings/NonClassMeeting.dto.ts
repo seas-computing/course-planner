@@ -1,4 +1,4 @@
-import { DAY, TERM_PATTERN } from 'common/constants';
+import { DAY, TERM_PATTERN, TERM } from 'common/constants';
 import { ApiModelProperty } from '@nestjs/swagger';
 import { CourseArea } from '../courses/CourseArea.dto';
 
@@ -67,6 +67,28 @@ abstract class MeetingLocation {
   public room: Room;
 }
 
+abstract class MeetingSemester {
+  @ApiModelProperty({
+    description: 'Semester PK ID',
+    example: '93a6ddba-f026-4157-b913-351bb8fbe12d',
+  })
+  public id: string;
+
+  @ApiModelProperty({
+    description: 'Academic year in YYYY format',
+    example: '2011',
+  })
+  public academicYear: string;
+
+  @ApiModelProperty({
+    description: 'An indicator of the term this semester takes place in',
+    example: TERM.FALL,
+    type: 'enum',
+    enum: TERM,
+  })
+  public term: TERM;
+}
+
 abstract class NonClassEvent {
   @ApiModelProperty({
     type: 'enum',
@@ -87,6 +109,9 @@ abstract class NonClassEvent {
 
   @ApiModelProperty({ type: MeetingLocation })
   public room: MeetingLocation;
+
+  @ApiModelProperty({ type: MeetingSemester })
+  public semester: MeetingSemester;
 }
 
 export default abstract class NonClassMeetingResponseDTO {
