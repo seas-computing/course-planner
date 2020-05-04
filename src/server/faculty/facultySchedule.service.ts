@@ -3,11 +3,7 @@ import { Repository } from 'typeorm';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { TERM } from 'server/semester/semester.entity';
 import groupBy from 'lodash.groupby';
-import { ConfigService } from 'server/config/config.service';
-import {
-  Injectable,
-  Inject,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Absence } from 'server/absence/absence.entity';
 import { FacultyScheduleView } from './FacultyScheduleView.entity';
 import { FacultyScheduleSemesterView } from './FacultyScheduleSemesterView.entity';
@@ -28,18 +24,18 @@ export class FacultyScheduleService {
   @InjectRepository(Faculty)
   protected facultyEntityRepository: Repository<Faculty>;
 
-  @Inject(ConfigService)
-  private readonly configService: ConfigService;
-
   /**
    * Resolves a list of faculty for the Faculty tab
    * @param acadYears represents an array of years of faculty schedules will be
-   * shown. The default value of acadYears is an array of the current academic
-   * year calculated in the config service
+   * shown. If no values were supplied for acadYears, all data for the
+   * existing valid academic years will be returned.
    */
-  public async getAllByYear(
-    acadYears: number[] = [this.configService.academicYear]
-  ): Promise<{ [key: string]: FacultyResponseDTO[] }> {
+  public async getAllByYear(acadYears: number[]):
+  Promise<{ [key: string]: FacultyResponseDTO[] }> {
+    // Prevent SQL error in the case where acadYears array is invalid
+    if (acadYears.length === 0) {
+      return {};
+    }
     const results = await this.facultyScheduleRepository
       .createQueryBuilder('f')
       .leftJoinAndMapOne(
