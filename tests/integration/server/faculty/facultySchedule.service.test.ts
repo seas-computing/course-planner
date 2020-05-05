@@ -1,6 +1,7 @@
 import {
   notStrictEqual,
   strictEqual,
+  deepStrictEqual,
 } from 'assert';
 import {
   Test,
@@ -19,10 +20,80 @@ import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import MockDB from '../../../mocks/database/MockDB';
 
+/**
+ * Account for the way null is sorted in SQL.
+ * In SQL, nulls are ordered last by default.
+ * I.e., if `a` is not null (or undefined) and b is null (or undefined)
+ * or if `a` is less than `b`,
+ * then `a` is sorted before `b`.
+ * @param a The first value
+ * @param b The second value
+ * @return true if `a` is sorted before `b`, false otherwise
+*/
+const sqlBefore = (a, b): boolean => (a != null && b == null) || a < b;
+
+/**
+ * Account for the way null is sorted in SQL.
+ * In SQL, nulls are ordered last by default.
+ * I.e., if `a` is null (or undefined) and b is not null (or undefined)
+ * or if `a` is greater than `b`,
+ * then `a` is sorted after `b`.
+ * @param a The first value
+ * @param b The second value
+ * @return true if `a` is sorted after `b`, false otherwise
+*/
+const sqlAfter = (a, b): boolean => (a == null && b != null) || a > b;
+
+/**
+ * Sorts by area, then last name, and finally by first name.
+ * @param result The object whose keys will be sorted
+ */
+const sortResults = (result): {
+  [key: string]: FacultyResponseDTO[];
+} => {
+  const sorted = {};
+  Object.keys(result).forEach((key): void => {
+    sorted[key] = result[key].slice().sort((a, b): number => {
+      if (sqlBefore(a.area, b.area)) {
+        return -1;
+      } if (sqlAfter(a.area, b.area)) {
+        return 1;
+      } if (a.lastName < b.lastName) {
+        return -1;
+      } if (a.lastName > b.lastName) {
+        return 1;
+      } if (a.firstName < b.firstName) {
+        return -1;
+      }
+      return 0;
+    });
+  });
+  return sorted;
+};
+
+const allDataValidYears = (result): boolean => (
+  Object.keys(result)
+    .every((year) => {
+      const dtos = result[year];
+      return dtos.every((faculty) => (
+        faculty.fall.academicYear.toString() === year
+          && faculty.spring.academicYear.toString() === year
+      ));
+    })
+);
+
 describe('Faculty Schedule Service', function () {
   let testModule: TestingModule;
   let db: MockDB;
   let fsService: FacultyScheduleService;
+  // let semesterService: SemesterService;
+  // let semesterRepository: Repository<Semester>;
+  const fakeDbYearList = [
+    2018,
+    2019,
+    2020,
+    2021,
+  ];
   before(async function () {
     db = new MockDB();
     await db.init();
@@ -63,35 +134,62 @@ describe('Faculty Schedule Service', function () {
   });
   describe('getAllByYear', function () {
     let result: { [key: string]: FacultyResponseDTO[] };
-    const acadYears = [2019];
-    beforeEach(async function () {
-      result = await fsService.getAllByYear(acadYears);
+    let acadYears: number[];
+    context('when called with no argument', function () {
+      beforeEach(async function () {
+        acadYears = fakeDbYearList;
+        result = await fsService.getAllByYear(acadYears);
+      });
+      it('should return a non-empty object of data', function () {
+        notStrictEqual(Object.keys(result).length, 0);
+      });
+      it('should return instances from academic years in database', function () {
+        const actual = Object.keys(result)
+          .every((year) => fakeDbYearList.includes(parseInt(year, 10)));
+        strictEqual(actual, true);
+        strictEqual(allDataValidYears(result), true);
+      });
+      it('should return the faculty ordered by area, then last name, and then first name', function () {
+        const sorted = sortResults(result);
+        deepStrictEqual(result, sorted);
+      });
     });
-    it('should return a non empty object of data', function () {
-      notStrictEqual(Object.keys(result).length, 0);
+    context('when called with one argument', function () {
+      beforeEach(async function () {
+        acadYears = [2020];
+        result = await fsService.getAllByYear(acadYears);
+      });
+      it('should return a non-empty object of data', function () {
+        notStrictEqual(Object.keys(result).length, 0);
+      });
+      it('should return instances from the given academic year only', function () {
+        const allKeysValid = Object.keys(result)
+          .every((year) => acadYears.includes(parseInt(year, 10)));
+        strictEqual(allKeysValid, true);
+        strictEqual(allDataValidYears(result), true);
+      });
+      it('should return the faculty ordered by area, then last name, and then first name', function () {
+        const sorted = sortResults(result);
+        deepStrictEqual(result, sorted);
+      });
     });
-    it('should return instances from the given academic year only', function () {
-      const actual = Object.keys(result)
-        .every((year) => acadYears.includes(parseInt(year, 10)));
-      strictEqual(actual, true);
-    });
-    it('should return the faculty ordered by area, then last name, and then first name', function () {
-      const sorted = {};
-      Object.keys(result).forEach((key) => {
-        sorted[key] = result[key].slice().sort((a, b) => {
-          if (a.area < b.area) {
-            return -1;
-          } if (a.area > b.area) {
-            return 1;
-          } if (a.lastName < b.lastName) {
-            return -1;
-          } if (a.lastName > b.lastName) {
-            return 1;
-          } if (a.firstName < b.firstName) {
-            return -1;
-          }
-          return 0;
-        });
+    context('when called with multiple arguments', function () {
+      beforeEach(async function () {
+        acadYears = [2018, 2019, 2020];
+        result = await fsService.getAllByYear(acadYears);
+      });
+      it('should return a non-empty object of data', function () {
+        notStrictEqual(Object.keys(result).length, 0);
+      });
+      it('should return instances from the given academic year only', function () {
+        const allKeysValid = Object.keys(result)
+          .every((year) => acadYears.includes(parseInt(year, 10)));
+        strictEqual(allKeysValid, true);
+        strictEqual(allDataValidYears(result), true);
+      });
+      it('should return the faculty ordered by area, then last name, and then first name', function () {
+        const sorted = sortResults(result);
+        deepStrictEqual(result, sorted);
       });
     });
   });
