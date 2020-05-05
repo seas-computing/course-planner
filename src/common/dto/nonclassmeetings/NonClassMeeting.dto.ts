@@ -97,10 +97,10 @@ abstract class MeetingFaculty {
   public id: string;
 
   @ApiModelProperty({
-    description: 'A concatenation of the faculty member\'s first and last name ',
-    example: 'James Waldo',
+    description: 'A concatenation of the faculty member\'s last and first ',
+    example: 'Waldo, James',
   })
-  public displayName: string;
+  public listName: string;
 }
 
 abstract class NonClassEvent {
