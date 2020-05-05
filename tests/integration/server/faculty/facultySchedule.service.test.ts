@@ -32,7 +32,8 @@ import { TestingStrategy } from '../../../mocks/authentication/testing.strategy'
  * @param b The second value
  * @return true if `a` is sorted before `b`, false otherwise
 */
-const sqlBefore = (a, b): boolean => (a != null && b == null) || a < b;
+const sqlBefore = (a: string, b: string):
+boolean => (a != null && b == null) || a < b;
 
 /**
  * Account for the way null is sorted in SQL.
@@ -44,13 +45,14 @@ const sqlBefore = (a, b): boolean => (a != null && b == null) || a < b;
  * @param b The second value
  * @return true if `a` is sorted after `b`, false otherwise
 */
-const sqlAfter = (a, b): boolean => (a == null && b != null) || a > b;
+const sqlAfter = (a: string, b: string):
+boolean => (a == null && b != null) || a > b;
 
 /**
  * Sorts by area, then last name, and finally by first name.
  * @param result The object whose keys will be sorted
  */
-const sortResults = (result): {
+const sortResults = (result: {}): {
   [key: string]: FacultyResponseDTO[];
 } => {
   const sorted = {};
@@ -73,13 +75,20 @@ const sortResults = (result): {
   return sorted;
 };
 
-const allDataValidYears = (result): boolean => (
+/**
+ * Verifies that the academic years within faculty data returned matches the
+ * expected years (based on what years were requested)
+ * @param result The object whose academic year values will be checked
+ */
+const allDataValidYears = (result: {}): boolean => (
   Object.keys(result)
     .every((year) => {
       const dtos = result[year];
       return dtos.every((faculty) => (
-        faculty.fall.academicYear.toString() === year
-          && faculty.spring.academicYear.toString() === year
+        Object.keys(result)
+          .includes(faculty.fall.academicYear.toString())
+          && Object.keys(result)
+            .includes(faculty.spring.academicYear.toString())
       ));
     })
 );
@@ -88,8 +97,6 @@ describe('Faculty Schedule Service', function () {
   let testModule: TestingModule;
   let db: MockDB;
   let fsService: FacultyScheduleService;
-  // let semesterService: SemesterService;
-  // let semesterRepository: Repository<Semester>;
   const fakeDbYearList = [
     2018,
     2019,
@@ -186,7 +193,7 @@ describe('Faculty Schedule Service', function () {
       it('should return a non-empty object of data', function () {
         notStrictEqual(Object.keys(result).length, 0);
       });
-      it('should return instances from the given academic year only', function () {
+      it('should return instances from the given academic years only', function () {
         const allKeysValid = Object.keys(result)
           .every((year) => acadYears.includes(parseInt(year, 10)));
         strictEqual(allKeysValid, true);
