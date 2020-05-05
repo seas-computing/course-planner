@@ -1,6 +1,7 @@
 import { DAY, TERM_PATTERN, TERM } from 'common/constants';
 import { ApiModelProperty } from '@nestjs/swagger';
 import { CourseArea } from '../courses/CourseArea.dto';
+import { ManageFacultyResponseDTO } from '../faculty/ManageFacultyResponse.dto';
 
 abstract class Course {
   @ApiModelProperty({ type: CourseArea })
@@ -112,6 +113,9 @@ abstract class NonClassEvent {
 
   @ApiModelProperty({ type: MeetingSemester })
   public semester: MeetingSemester;
+
+  @ApiModelProperty({ type: ManageFacultyResponseDTO })
+  public faculty: ManageFacultyResponseDTO[] = [];
 }
 
 export default abstract class NonClassMeetingResponseDTO {
