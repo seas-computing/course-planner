@@ -10,11 +10,10 @@ import { Faculty } from 'server/faculty/faculty.entity';
 import { appliedMathFacultyMember, bioengineeringFacultyMember } from 'testData';
 import { Area } from 'server/area/area.entity';
 import { AuthModule } from 'server/auth/auth.module';
+import { AUTH_MODE } from 'common/constants';
 import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
-import { AUTH_MODE } from 'common/constants';
-
 
 describe('Faculty service', function () {
   let facultyService: FacultyService;
