@@ -56,15 +56,14 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
     .findIndex(({ viewColumn }): boolean => (
       viewColumn === 'enrollment'
     ));
-
   return (
     <Table>
       <colgroup span={courseData.length} />
-      <colgroup span={fallData.length} />
-      <colgroup span={springData.length} />
+      {(fallData.length > 0 && <colgroup span={fallData.length} />)}
+      {(springData.length > 0 && <colgroup span={springData.length} />)}
       <colgroup span={metaData.length} />
       <TableHead>
-        {fallData.length > 0 && springData.length > 0 && (
+        {(fallData.length > 0 && springData.length > 0) && (
           <tr>
             {courseData.map(({ key }): ReactElement => (
               <th key={key} style={{ opacity: 0 }} />
@@ -103,7 +102,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
             <TableHeadingCell
               key={key}
               scope="col"
-              rowSpan="2"
+              rowSpan={firstEnrollmentField > -1 ? '2' : '1'}
             >
               {name}
             </TableHeadingCell>
@@ -119,7 +118,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
                   return (
                     <TableHeadingCell
                       key={field.key}
-                      scope="colgroup"
+                      scope="auto"
                       colSpan="3"
                     >
                       Enrollment
@@ -133,7 +132,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
                   <TableHeadingCell
                     key={field.key}
                     scope="col"
-                    rowSpan="2"
+                    rowSpan={firstEnrollmentField > -1 ? '2' : null}
                   >
                     {field.name}
                   </TableHeadingCell>
@@ -144,31 +143,34 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
             <TableHeadingCell
               key={key}
               scope="col"
-              rowSpan="2"
+              rowSpan={firstEnrollmentField > -1 ? '2' : '1'}
             >
               {name}
             </TableHeadingCell>
           ))
           }
         </TableRow>
-        <TableRow>
-          {tableData.map(
-            (field: CourseInstanceListColumn): ReactElement => {
-              if (field.viewColumn === 'enrollment') {
-                return (
-                  <TableHeadingCell
-                    scope="colgroup"
-                    key={field.key}
-                  >
-                    {field.name}
-                  </TableHeadingCell>
-                );
+        {firstEnrollmentField > -1 && (
+          <TableRow>
+            {tableData.map(
+              (field: CourseInstanceListColumn): ReactElement => {
+                if (field.viewColumn === 'enrollment') {
+                  return (
+                    <TableHeadingCell
+                      scope="col"
+                      key={field.key}
+                    >
+                      {field.name}
+                    </TableHeadingCell>
+                  );
+                }
+                return null;
               }
-              return null;
-            }
 
-          )}
-        </TableRow>
+            )}
+          </TableRow>
+        )
+        }
       </TableHead>
       <TableBody>
         {courseList.map(
@@ -178,13 +180,22 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
           ): ReactElement => (
             <TableRow key={course.id} isStriped={index % 2 !== 0}>
               {tableData.map(
-                (field: CourseInstanceListColumn): ReactElement => (
-                  <TableCell
-                    key={field.key}
-                  >
-                    {field.getValue(course)}
-                  </TableCell>
-                )
+                (field: CourseInstanceListColumn): ReactElement => {
+                  if (field.viewColumn === 'catalogNumber') {
+                    return (
+                      <TableHeadingCell scope="row" key={field.key}>
+                        {field.getValue(course)}
+                      </TableHeadingCell>
+                    );
+                  }
+                  return (
+                    <TableCell
+                      key={field.key}
+                    >
+                      {field.getValue(course)}
+                    </TableCell>
+                  );
+                }
               )}
             </TableRow>
           )
