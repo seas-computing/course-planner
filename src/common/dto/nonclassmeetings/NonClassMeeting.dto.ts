@@ -30,7 +30,7 @@ abstract class Course {
   @ApiModelProperty({
     example: 'Same as CS 109a, STATS 121a',
   })
-  public notes: string;
+  public notes?: string = '';
 
   @ApiModelProperty({
     type: 'enum',
