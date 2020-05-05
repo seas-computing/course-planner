@@ -1,7 +1,6 @@
 import { DAY, TERM_PATTERN, TERM } from 'common/constants';
 import { ApiModelProperty } from '@nestjs/swagger';
 import { CourseArea } from '../courses/CourseArea.dto';
-import { ManageFacultyResponseDTO } from '../faculty/ManageFacultyResponse.dto';
 
 abstract class Course {
   @ApiModelProperty({ type: CourseArea })
@@ -90,6 +89,26 @@ abstract class MeetingSemester {
   public term: TERM;
 }
 
+abstract class MeetingFaculty {
+  @ApiModelProperty({
+    description: 'Faculty primary key ID',
+    example: '55d5b9e0-259a-4bb4-8bb2-d1421ef47bf2',
+  })
+  public id: string;
+
+  @ApiModelProperty({
+    description: 'A concatenation of the faculty member\'s first and last name ',
+    example: 'James Waldo',
+  })
+  public displayName: string;
+
+  @ApiModelProperty({
+    description: 'A concatenation of the faculty member\'s last and first ',
+    example: 'Waldo, James',
+  })
+  public listName: string;
+}
+
 abstract class NonClassEvent {
   @ApiModelProperty({
     type: 'enum',
@@ -114,8 +133,8 @@ abstract class NonClassEvent {
   @ApiModelProperty({ type: MeetingSemester })
   public semester: MeetingSemester;
 
-  @ApiModelProperty({ type: ManageFacultyResponseDTO })
-  public faculty: ManageFacultyResponseDTO[] = [];
+  @ApiModelProperty({ type: MeetingFaculty })
+  public faculty: MeetingFaculty[] = [];
 }
 
 export default abstract class NonClassMeetingResponseDTO {
