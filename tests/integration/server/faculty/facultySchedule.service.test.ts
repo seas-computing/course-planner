@@ -17,8 +17,10 @@ import { AuthModule } from 'server/auth/auth.module';
 import { FacultyScheduleService } from 'server/faculty/facultySchedule.service';
 import { FacultyModule } from 'server/faculty/faculty.module';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
+import { AUTH_MODE } from 'common/constants';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import MockDB from '../../../mocks/database/MockDB';
+import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 /**
  * Account for the way null is sorted in SQL.
@@ -118,7 +120,10 @@ describe('Faculty Schedule Service', function () {
           }),
           inject: [ConfigService],
         }),
-        AuthModule,
+        AuthModule.register({
+          strategies: [TestingStrategy],
+          defaultStrategy: AUTH_MODE.TEST,
+        }),
         PopulationModule,
         FacultyModule,
       ],
