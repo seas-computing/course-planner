@@ -76,6 +76,11 @@ export class FacultyScheduleService {
       )
       .where('fall.academicYear IN (:...acadYears)', { acadYears })
       .andWhere('spring.academicYear IN (:...acadYears)', { acadYears })
+      // The first condition ensures that spring and fall semester years are in sync
+      // The second two conditions fix the case where only one semester exists for a given academic year
+      .andWhere(`(("fall"."academicYear" = "spring"."academicYear")
+        or ("fall"."academicYear" is null and "spring"."academicYear" is not null)
+        or ("spring"."academicYear" is null and "fall"."academicYear" is not null))`)
       .orderBy('f.area', 'ASC')
       .addOrderBy('f."lastName"', 'ASC')
       .addOrderBy('f."firstName"', 'ASC')
