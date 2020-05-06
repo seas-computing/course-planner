@@ -87,8 +87,9 @@ describe('Faculty Schedule Service', function () {
         acadYears = [2020];
         result = await fsService.getAllByYear(acadYears);
       });
-      it('should return a non-empty object of data', function () {
+      it('should return a non-empty object of data for the requested academic year', function () {
         notStrictEqual(Object.keys(result).length, 0);
+        deepStrictEqual(Object.keys(result), acadYears.map(String));
       });
       it('should return instances from the given academic year only', function () {
         const allKeysValid = Object.keys(result)
@@ -106,8 +107,9 @@ describe('Faculty Schedule Service', function () {
         acadYears = [2018, 2019, 2020];
         result = await fsService.getAllByYear(acadYears);
       });
-      it('should return a non-empty object of data', function () {
+      it('should return a non-empty object of data for the requested academic years', function () {
         notStrictEqual(Object.keys(result).length, 0);
+        deepStrictEqual(Object.keys(result).sort(), acadYears.map(String));
       });
       it('should return instances from the given academic years only', function () {
         const allKeysValid = Object.keys(result)
