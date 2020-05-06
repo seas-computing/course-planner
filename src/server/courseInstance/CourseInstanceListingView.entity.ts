@@ -7,12 +7,12 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { Semester, TERM } from 'server/semester/semester.entity';
+import { Semester } from 'server/semester/semester.entity';
 import { FacultyListingView } from 'server/faculty/FacultyListingView.entity';
 import { MeetingListingView } from 'server/meeting/MeetingListingView.entity';
 import { CourseListingView } from 'server/course/CourseListingView.entity';
+import { OFFERED, TERM } from 'common/constants';
 import { CourseInstance } from './courseinstance.entity';
-import { OFFERED } from '../../common/constants';
 
 /**
  * [[CourseInstanceListingView]]s are used to generate the table of courses on

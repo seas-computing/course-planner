@@ -9,9 +9,9 @@ import {
 } from 'typeorm';
 import {
   Semester,
-  TERM,
 } from 'server/semester/semester.entity';
 import { MultiYearPlanFacultyListingView } from 'server/courseInstance/MultiYearPlanFacultyListingView.entity';
+import { TERM } from 'common/constants';
 import { CourseInstance } from './courseinstance.entity';
 import { MultiYearPlanView } from './MultiYearPlanView.entity';
 

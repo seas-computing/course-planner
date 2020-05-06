@@ -1,13 +1,13 @@
 import { CourseInstance } from 'server/courseInstance/courseinstance.entity';
 import { Course } from 'server/course/course.entity';
-import { Semester, TERM } from 'server/semester/semester.entity';
+import { Semester } from 'server/semester/semester.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Room } from 'server/location/room.entity';
 import { Area } from 'server/area/area.entity';
 import { Faculty } from 'server/faculty/faculty.entity';
 import { FacultyCourseInstance } from 'server/courseInstance/facultycourseinstance.entity';
-import { TERM_PATTERN, OFFERED } from 'common/constants';
+import { TERM_PATTERN, OFFERED, TERM } from 'common/constants';
 import { Meeting } from 'server/meeting/meeting.entity';
 import { BasePopulationService } from './base.population';
 import { CourseData } from './data';

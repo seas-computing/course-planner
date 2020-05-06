@@ -1,4 +1,5 @@
-import { Semester, TERM } from 'server/semester/semester.entity';
+import { Semester } from 'server/semester/semester.entity';
+import { TERM } from 'common/constants';
 
 /**
  * The first [[Semester]] of academic year 2020. This [[Semester]] is part of
