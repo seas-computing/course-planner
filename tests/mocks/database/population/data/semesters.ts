@@ -1,4 +1,4 @@
-import { TERM } from 'server/semester/semester.entity';
+import { TERM } from 'common/constants';
 
 /**
  * A list of semesters that can be used to populate the database

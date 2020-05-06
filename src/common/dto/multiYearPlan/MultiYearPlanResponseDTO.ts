@@ -1,5 +1,5 @@
 import { ApiModelProperty } from '@nestjs/swagger';
-import { TERM } from 'server/semester/semester.entity';
+import { TERM } from 'common/constants';
 
 export abstract class MultiYearPlanInstanceFaculty {
   @ApiModelProperty({

@@ -1,5 +1,9 @@
-import { TERM_PATTERN, DAY, FACULTY_TYPE } from 'common/constants';
-import { TERM } from 'server/semester/semester.entity';
+import {
+  TERM_PATTERN,
+  DAY,
+  FACULTY_TYPE,
+  TERM,
+} from 'common/constants';
 
 export * from './areas';
 export * from './buildings';

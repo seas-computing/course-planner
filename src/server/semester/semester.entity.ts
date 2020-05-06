@@ -4,15 +4,11 @@ import {
   ObjectType,
   OneToMany,
 } from 'typeorm';
+import { TERM } from 'common/constants';
 import { BaseEntity } from '../base/base.entity';
 import { CourseInstance } from '../courseInstance/courseinstance.entity';
 import { NonClassEvent } from '../nonClassEvent/nonclassevent.entity';
 import { Absence } from '../absence/absence.entity';
-
-export enum TERM {
-  FALL = 'FALL',
-  SPRING = 'SPRING',
-}
 
 @Entity()
 export class Semester extends BaseEntity {
