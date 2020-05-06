@@ -33,7 +33,7 @@ import { TestingStrategy } from '../../../mocks/authentication/testing.strategy'
  * @return true if `a` is sorted before `b`, false otherwise
 */
 const sqlBefore = (a: string, b: string):
-boolean => (a != null && b == null) || a < b;
+boolean => (a !== null && b === null) || a < b;
 
 /**
  * Account for the way null is sorted in SQL.
@@ -46,7 +46,7 @@ boolean => (a != null && b == null) || a < b;
  * @return true if `a` is sorted after `b`, false otherwise
 */
 const sqlAfter = (a: string, b: string):
-boolean => (a == null && b != null) || a > b;
+boolean => (a === null && b !== null) || a > b;
 
 /**
  * Sorts by area, then last name, and finally by first name.
