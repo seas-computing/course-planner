@@ -22,6 +22,10 @@ import { PopulationModule } from '../../../mocks/database/population/population.
 import MockDB from '../../../mocks/database/MockDB';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
+interface FacultyScheduleResponse {
+  [key: string]: FacultyResponseDTO[];
+}
+
 /**
  * Account for the way null is sorted in SQL.
  * In SQL, nulls are ordered last by default.
@@ -94,12 +98,6 @@ describe('Faculty Schedule Service', function () {
   let testModule: TestingModule;
   let db: MockDB;
   let fsService: FacultyScheduleService;
-  const fakeDbYearList = [
-    2018,
-    2019,
-    2020,
-    2021,
-  ];
   before(async function () {
     db = new MockDB();
     await db.init();
@@ -144,23 +142,12 @@ describe('Faculty Schedule Service', function () {
   describe('getAllByYear', function () {
     let result: { [key: string]: FacultyResponseDTO[] };
     let acadYears: number[];
-    context('when called with no argument', function () {
+    context('when called with an empty array', function () {
       beforeEach(async function () {
-        acadYears = fakeDbYearList;
-        result = await fsService.getAllByYear(acadYears);
+        result = await fsService.getAllByYear([]);
       });
-      it('should return a non-empty object of data', function () {
-        notStrictEqual(Object.keys(result).length, 0);
-      });
-      it('should return instances from academic years in database', function () {
-        const actual = Object.keys(result)
-          .every((year) => fakeDbYearList.includes(parseInt(year, 10)));
-        strictEqual(actual, true);
-        strictEqual(allDataValidYears(result), true);
-      });
-      it('should return the faculty ordered by area, then last name, and then first name', function () {
-        const sorted = sortResults(result);
-        deepStrictEqual(result, sorted);
+      it('should return an empty object', function () {
+        strictEqual(Object.keys(result).length, 0);
       });
     });
     context('when called with one argument', function () {
