@@ -12,15 +12,18 @@ import {
 import { Absence } from 'server/absence/absence.entity';
 import { SemesterService } from 'server/semester/semester.service';
 import { Semester } from 'server/semester/semester.entity';
-import { FacultyScheduleController } from '../facultySchedule.controller';
+import { Area } from 'server/area/area.entity';
+import { FacultyController } from '../faculty.controller';
 import { FacultyScheduleService } from '../facultySchedule.service';
 import { FacultyScheduleView } from '../FacultyScheduleView.entity';
 import { FacultyScheduleSemesterView } from '../FacultyScheduleSemesterView.entity';
 import { FacultyScheduleCourseView } from '../FacultyScheduleCourseView.entity';
 import { Faculty } from '../faculty.entity';
+import { FacultyService } from '../faculty.service';
 
 describe('Faculty Schedule Controller', function () {
-  let fsController: FacultyScheduleController;
+  let fsController: FacultyController;
+  let facultyService: FacultyService;
   let fsService: FacultyScheduleService;
   let semesterService: SemesterService;
   const mockRepository: Record<string, SinonStub> = {};
@@ -32,7 +35,7 @@ describe('Faculty Schedule Controller', function () {
   ];
   beforeEach(async function () {
     const testModule = await Test.createTestingModule({
-      controllers: [FacultyScheduleController],
+      controllers: [FacultyController],
       providers: [
         {
           provide: getRepositoryToken(Semester),
@@ -58,7 +61,16 @@ describe('Faculty Schedule Controller', function () {
           provide: getRepositoryToken(Faculty),
           useValue: mockRepository,
         },
+        {
+          provide: getRepositoryToken(Area),
+          useValue: mockRepository,
+        },
+        {
+          provide: getRepositoryToken(Semester),
+          useValue: mockRepository,
+        },
         FacultyScheduleService,
+        FacultyService,
         SemesterService,
       ],
     })
@@ -67,32 +79,38 @@ describe('Faculty Schedule Controller', function () {
       .compile();
 
     fsController = testModule
-      .get<FacultyScheduleController>(FacultyScheduleController);
+      .get<FacultyController>(FacultyController);
     fsService = testModule
       .get<FacultyScheduleService>(FacultyScheduleService);
+    facultyService = testModule
+      .get<FacultyService>(FacultyService);
     semesterService = testModule
       .get<SemesterService>(SemesterService);
   });
   describe('/faculty/schedule', function () {
     describe('Get all faculty', function () {
-      let getStub: SinonStub;
+      let facultyScheduleGetStub: SinonStub;
+      let facultyGetStub: SinonStub;
       beforeEach(function () {
-        getStub = stub(fsService, 'getAllByYear').resolves(null);
+        facultyScheduleGetStub = stub(fsService, 'getAllByYear').resolves(null);
+        facultyGetStub = stub(facultyService, 'find').resolves(null);
         stub(semesterService, 'getYearList').resolves(fakeYearList.map(String));
       });
       context('With the academic year parameter not set', function () {
         it('should call the service with the list of valid years in the database', async function () {
           await fsController.getAllFaculty();
-          strictEqual(getStub.callCount, 1);
-          deepStrictEqual(getStub.args[0][0], fakeYearList);
+          strictEqual(facultyScheduleGetStub.callCount, 1);
+          strictEqual(facultyGetStub.callCount, 0);
+          deepStrictEqual(facultyScheduleGetStub.args[0][0], fakeYearList);
         });
       });
       context('With one valid academic year parameter', function () {
         it('should call the service with the provided argument', async function () {
           await fsController.getAllFaculty('2019');
-          strictEqual(getStub.callCount, 1);
-          strictEqual(getStub.args[0].length, 1);
-          deepStrictEqual(getStub.args[0][0], [2019]);
+          strictEqual(facultyScheduleGetStub.callCount, 1);
+          strictEqual(facultyGetStub.callCount, 0);
+          strictEqual(facultyScheduleGetStub.args[0].length, 1);
+          deepStrictEqual(facultyScheduleGetStub.args[0][0], [2019]);
         });
       });
       context('With multiple valid academic years', function () {
@@ -100,8 +118,9 @@ describe('Faculty Schedule Controller', function () {
           const validYearArgs = [2019, 2020];
           const controllerArgs = validYearArgs.join(',');
           await fsController.getAllFaculty(controllerArgs);
-          strictEqual(getStub.callCount, 1);
-          deepStrictEqual(getStub.args[0][0], validYearArgs);
+          strictEqual(facultyScheduleGetStub.callCount, 1);
+          strictEqual(facultyGetStub.callCount, 0);
+          deepStrictEqual(facultyScheduleGetStub.args[0][0], validYearArgs);
         });
       });
       context('With duplicate valid years', function () {
@@ -110,15 +129,17 @@ describe('Faculty Schedule Controller', function () {
           const uniqueYears = Array.from(new Set(years));
           const controllerYears = years.join(',');
           await fsController.getAllFaculty(controllerYears);
-          strictEqual(getStub.callCount, 1);
-          deepStrictEqual(getStub.args[0][0], uniqueYears);
+          strictEqual(facultyScheduleGetStub.callCount, 1);
+          strictEqual(facultyGetStub.callCount, 0);
+          deepStrictEqual(facultyScheduleGetStub.args[0][0], uniqueYears);
         });
       });
       context('With an invalid academic year', function () {
         it('should not call the service with the invalid year', async function () {
           await fsController.getAllFaculty('1980');
-          strictEqual(getStub.callCount, 0);
-          strictEqual(getStub.calledWith([1980]), false);
+          strictEqual(facultyScheduleGetStub.callCount, 0);
+          strictEqual(facultyGetStub.callCount, 0);
+          strictEqual(facultyScheduleGetStub.calledWith([1980]), false);
         });
       });
       context('With both invalid and valid academic years', function () {
@@ -126,8 +147,9 @@ describe('Faculty Schedule Controller', function () {
           const validYearArgs = [2018, 2020];
           const invalidYearArgs = [1910, 1800];
           await fsController.getAllFaculty([...validYearArgs, ...invalidYearArgs].join(','));
-          strictEqual(getStub.callCount, 1);
-          deepStrictEqual(getStub.args[0][0], validYearArgs);
+          strictEqual(facultyScheduleGetStub.callCount, 1);
+          strictEqual(facultyGetStub.callCount, 0);
+          deepStrictEqual(facultyScheduleGetStub.args[0][0], validYearArgs);
         });
       });
     });

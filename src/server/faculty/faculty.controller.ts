@@ -8,6 +8,7 @@ import {
   UseGuards,
   NotFoundException,
   Inject,
+  Query,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -27,14 +28,17 @@ import { UpdateFacultyDTO } from 'common/dto/faculty/UpdateFaculty.dto';
 import { Authentication } from 'server/auth/authentication.guard';
 import { Area } from 'server/area/area.entity';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
+import { SemesterService } from 'server/semester/semester.service';
+import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { Faculty } from './faculty.entity';
 import { FacultyService } from './faculty.service';
+import { FacultyScheduleService } from './facultySchedule.service';
 
 @ApiUseTags('Faculty')
-@UseGuards(Authentication, new RequireGroup(GROUP.ADMIN))
+@UseGuards(Authentication)
 @Controller('api/faculty')
 @ApiUnauthorizedResponse({ description: 'Thrown if the user is not authenticated' })
-export class ManageFacultyController {
+export class FacultyController {
   @InjectRepository(Faculty)
   private facultyRepository: Repository<Faculty>
 
@@ -44,6 +48,13 @@ export class ManageFacultyController {
   @Inject(FacultyService)
   private facultyService: FacultyService;
 
+  @Inject(FacultyScheduleService)
+  private readonly facultyScheduleService: FacultyScheduleService;
+
+  @Inject(SemesterService)
+  private readonly semesterService: SemesterService;
+
+  @UseGuards(new RequireGroup(GROUP.ADMIN))
   @Get('/')
   @ApiOperation({ title: 'Retrieve all faculty in the database' })
   @ApiOkResponse({
@@ -55,6 +66,45 @@ export class ManageFacultyController {
     return this.facultyService.find();
   }
 
+  /**
+   * Responds with an object in which the requested academic year(s) maps to an
+   * array of faculty along with their area, course instances, and absences.
+   *
+   * @param acadYears is an array of strings that represent academic years for
+   * which faculty schedule data is being requested. If no argument is provided
+   * for acadYears, all years will be returned.
+   */
+  @Get('/schedule')
+  @ApiOperation({ title: 'Retrieve all faculty along with their area, course instances, and absences' })
+  @ApiOkResponse({
+    type: Object,
+    description: 'An object where the academic year maps to an array of faculty along with their area, course instances, and absences',
+  })
+  public async getAllFaculty(
+    @Query('acadYears') acadYears?: string
+  ): Promise<{ [key: string]: FacultyResponseDTO[] }> {
+    let acadYearStrings: string[];
+    // fetch an array of all existing years
+    const existingYears = await this.semesterService.getYearList();
+    if (acadYears) {
+      // deduplicate requested years
+      acadYearStrings = Array.from(new Set(acadYears.trim().split(',')))
+      // keep valid years only by filtering out years that do not exist in database
+        .filter((year): boolean => existingYears.includes(year));
+    } else {
+      // if no years were provided, send back all years as an array of numbers
+      acadYearStrings = [...existingYears];
+    }
+    const acadYearNums = acadYearStrings
+      .map((year): number => parseInt(year, 10));
+    // avoid unnecessary call to the service when there are no valid years
+    if (acadYearNums.length === 0) {
+      return {};
+    }
+    return this.facultyScheduleService.getAllByYear(acadYearNums);
+  }
+
+  @UseGuards(new RequireGroup(GROUP.ADMIN))
   @Post('/')
   @ApiOperation({ title: 'Create a new faculty entry in the database' })
   @ApiOkResponse({
@@ -77,6 +127,7 @@ export class ManageFacultyController {
     });
   }
 
+  @UseGuards(new RequireGroup(GROUP.ADMIN))
   @Put(':id')
   @ApiOperation({ title: 'Edit an existing faculty entry in the database' })
   @ApiOkResponse({
