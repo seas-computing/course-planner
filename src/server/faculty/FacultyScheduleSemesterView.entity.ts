@@ -6,8 +6,8 @@ import {
 } from 'typeorm';
 import {
   Semester,
-  TERM,
 } from 'server/semester/semester.entity';
+import { TERM } from 'common/constants';
 
 @ViewEntity('FacultyScheduleSemesterView', {
   expression: (connection: Connection):
