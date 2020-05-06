@@ -1,7 +1,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
-import { TERM } from 'server/semester/semester.entity';
+import { TERM } from 'common/constants';
 import groupBy from 'lodash.groupby';
 import { Injectable } from '@nestjs/common';
 import { Absence } from 'server/absence/absence.entity';
