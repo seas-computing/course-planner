@@ -80,17 +80,14 @@ const sortResults = (result: {}): {
  * expected years (based on what years were requested)
  * @param result The object whose academic year values will be checked
  */
-const allDataValidYears = (result: {}): boolean => (
-  Object.keys(result)
-    .every((year) => {
-      const dtos = result[year];
-      return dtos.every((faculty) => (
-        Object.keys(result)
-          .includes(faculty.fall.academicYear.toString())
-          && Object.keys(result)
-            .includes(faculty.spring.academicYear.toString())
-      ));
-    })
+const allDataValidYears = (result: FacultyScheduleResponse): boolean => (
+  Object.entries(result)
+    .every(([year, dtos]) => (
+      dtos.every((faculty) => (
+        faculty.fall.academicYear.toString() === year
+          && faculty.spring.academicYear.toString() === year
+      ))
+    ))
 );
 
 describe('Faculty Schedule Service', function () {
