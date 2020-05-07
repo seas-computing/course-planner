@@ -119,12 +119,15 @@ describe('Faculty Schedule API', function () {
     });
     describe('User is authenticated', function () {
       let result: { [key: string]: FacultyResponseDTO[] };
-      it('is accessible to authenticated users and returns all faculty in the database', async function () {
+      it('is accessible to authenticated users', async function () {
         authStub.resolves(regularUser);
 
         const response = await request(api).get('/api/faculty/schedule');
 
         strictEqual(response.ok, true);
+      });
+      it('returns all faculty in the database', async function () {
+        const response = await request(api).get('/api/faculty/schedule');
         result = response.body;
         const facultyRepository: Repository<Faculty> = testModule
           .get(getRepositoryToken(Faculty));
