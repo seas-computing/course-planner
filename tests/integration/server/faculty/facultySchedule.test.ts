@@ -151,7 +151,7 @@ describe('Faculty Schedule API', function () {
           const response = await request(api).get('/api/faculty/schedule?acadYears=' + acadYears.join(','));
           result = response.body;
         });
-        it('should return a non-empty object of data for the requested academic year', function () {
+        it('should return an object with a key for the requested academic year', function () {
           notStrictEqual(Object.keys(result).length, 0);
           deepStrictEqual(Object.keys(result), acadYears.map(String));
         });
@@ -173,7 +173,7 @@ describe('Faculty Schedule API', function () {
           const response = await request(api).get('/api/faculty/schedule?acadYears=' + acadYears.join(','));
           result = response.body;
         });
-        it('should return a non-empty object of data for the requested academic years', function () {
+        it('should return an object with a key for the requested academic years', function () {
           notStrictEqual(Object.keys(result).length, 0);
           deepStrictEqual(Object.keys(result).sort(), acadYears.map(String));
         });
