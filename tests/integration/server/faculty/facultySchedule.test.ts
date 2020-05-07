@@ -141,6 +141,7 @@ describe('Faculty Schedule API', function () {
               && dto.lastName === faculty.lastName)
           ))
         ));
+        strictEqual(dbFaculty.length > 0, true);
         strictEqual(allFacultyFound, true);
       });
       context('when one year is provided', function () {
