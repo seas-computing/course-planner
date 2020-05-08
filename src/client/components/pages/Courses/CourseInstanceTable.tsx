@@ -1,6 +1,7 @@
 import React, {
   FunctionComponent,
   ReactElement,
+  useContext,
 } from 'react';
 import {
   Table,
@@ -13,6 +14,8 @@ import {
   TableRowHeadingCell,
   BaseTheme,
 } from 'mark-one';
+
+import { ThemeContext } from 'styled-components';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { CourseInstanceListColumn, COLUMN_GROUP } from './tableFields';
 
@@ -55,6 +58,9 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
     .findIndex(({ viewColumn }): boolean => (
       viewColumn === 'enrollment'
     ));
+
+  const theme: BaseTheme = useContext(ThemeContext);
+
   return (
     <Table>
       <colgroup span={courseData.length} />
@@ -183,6 +189,17 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
             <TableRow key={course.id} isStriped={index % 2 !== 0}>
               {tableData.map(
                 (field: CourseInstanceListColumn): ReactElement => {
+                  if (field.viewColumn === 'area') {
+                    const area = field.getValue(course) as string;
+                    return (
+                      <TableCell
+                        key={field.key}
+                        backgroundColor={theme.color.area[area.toLowerCase()]}
+                      >
+                        {area}
+                      </TableCell>
+                    );
+                  }
                   if (field.viewColumn === 'catalogNumber') {
                     return (
                       <TableRowHeadingCell scope="row" key={field.key}>
