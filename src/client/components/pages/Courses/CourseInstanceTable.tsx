@@ -9,12 +9,11 @@ import {
   TableRow,
   TableHeadingCell,
   TableCell,
-  BorderlessButton,
-  VARIANT,
+  TableHeadingSpacer,
+  TableRowHeadingCell,
+  BaseTheme,
 } from 'mark-one';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { CourseInstanceListColumn, COLUMN_GROUP } from './tableFields';
 
 interface CourseInstanceTableProps {
@@ -64,91 +63,94 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
       <colgroup span={metaData.length} />
       <TableHead>
         {(fallData.length > 0 && springData.length > 0) && (
-          <tr>
-            {courseData.map(({ key }): ReactElement => (
-              <th key={key} style={{ opacity: 0 }} />
-            ))}
-            <th
+          <TableRow noHighlight>
+            <>
+              {courseData.map(({ key }): TableHeadingSpacer => (
+                <TableHeadingSpacer key={key} />
+              ))}
+            </>
+            <TableHeadingCell
+              backgroundColor="transparent"
               colSpan={fallData.length}
               scope="colgroup"
             >
-              <BorderlessButton
-                variant={VARIANT.POSITIVE}
-                onClick={(): void => {}}
-              >
-                <FontAwesomeIcon icon={faArrowLeft} />
-              </BorderlessButton>
               {`Fall ${academicYear - 1}`}
-            </th>
-            <th
+            </TableHeadingCell>
+            <TableHeadingCell
+              backgroundColor="transparent"
               colSpan={fallData.length}
               scope="colgroup"
             >
               {`Spring ${academicYear}`}
-              <BorderlessButton
-                variant={VARIANT.POSITIVE}
-                onClick={(): void => {}}
-              >
-                <FontAwesomeIcon icon={faArrowRight} />
-              </BorderlessButton>
-            </th>
-            {metaData.map(({ key }): ReactElement => (
-              <th key={key} style={{ opacity: 0 }} />
-            ))}
-          </tr>
+            </TableHeadingCell>
+            <>
+              {metaData.map(({ key }): ReactElement => (
+                <TableHeadingSpacer key={key} />
+              ))}
+            </>
+          </TableRow>
         )}
         <TableRow>
-          {courseData.map(({ key, name }): ReactElement => (
-            <TableHeadingCell
-              key={key}
-              scope="col"
-              rowSpan={firstEnrollmentField > -1 ? '2' : '1'}
-            >
-              {name}
-            </TableHeadingCell>
-          ))
-          }
-          {[fallData, springData].map(
-            (dataList: CourseInstanceListColumn[]): ReactElement[] => dataList
-              .map((
-                field: CourseInstanceListColumn,
-                index: number
-              ): ReactElement => {
-                if (index === firstEnrollmentField) {
+          <>
+            {courseData.map(({ key, name }): ReactElement => (
+              <TableHeadingCell
+                key={key}
+                scope="col"
+                rowSpan={firstEnrollmentField > -1 ? '2' : '1'}
+              >
+                {name}
+              </TableHeadingCell>
+            ))
+            }
+          </>
+          <>
+            {[fallData, springData].map(
+              (dataList: CourseInstanceListColumn[]): ReactElement[] => dataList
+                .map((
+                  field: CourseInstanceListColumn,
+                  index: number
+                ): ReactElement => {
+                  if (index === firstEnrollmentField) {
+                    return (
+                      <TableHeadingCell
+                        key={field.key}
+                        scope="auto"
+                        colSpan={dataList
+                          .filter(({ viewColumn }): boolean => viewColumn === 'enrollment')
+                          .length
+                        }
+                      >
+                        Enrollment
+                      </TableHeadingCell>
+                    );
+                  }
+                  if (field.viewColumn === 'enrollment') {
+                    return null;
+                  }
                   return (
                     <TableHeadingCell
                       key={field.key}
-                      scope="auto"
-                      colSpan="3"
+                      scope="col"
+                      rowSpan={firstEnrollmentField > -1 ? '2' : null}
                     >
-                      Enrollment
+                      {field.name}
                     </TableHeadingCell>
                   );
-                }
-                if (field.viewColumn === 'enrollment') {
-                  return null;
-                }
-                return (
-                  <TableHeadingCell
-                    key={field.key}
-                    scope="col"
-                    rowSpan={firstEnrollmentField > -1 ? '2' : null}
-                  >
-                    {field.name}
-                  </TableHeadingCell>
-                );
-              })
-          )}
-          {metaData.map(({ key, name }): ReactElement => (
-            <TableHeadingCell
-              key={key}
-              scope="col"
-              rowSpan={firstEnrollmentField > -1 ? '2' : '1'}
-            >
-              {name}
-            </TableHeadingCell>
-          ))
-          }
+                })
+            )}
+          </>
+          <>
+            {metaData.map(({ key, name }): ReactElement => (
+              <TableHeadingCell
+                key={key}
+                scope="col"
+                rowSpan={firstEnrollmentField > -1 ? '2' : '1'}
+              >
+                {name}
+              </TableHeadingCell>
+            ))
+            }
+          </>
         </TableRow>
         {firstEnrollmentField > -1 && (
           <TableRow>
