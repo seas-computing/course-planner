@@ -185,9 +185,9 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
                 (field: CourseInstanceListColumn): ReactElement => {
                   if (field.viewColumn === 'catalogNumber') {
                     return (
-                      <TableHeadingCell scope="row" key={field.key}>
+                      <TableRowHeadingCell scope="row" key={field.key}>
                         {field.getValue(course)}
-                      </TableHeadingCell>
+                      </TableRowHeadingCell>
                     );
                   }
                   return (
