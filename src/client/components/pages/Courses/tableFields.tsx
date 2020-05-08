@@ -28,9 +28,15 @@ const retrieveValue = (
 ): (arg0: CourseInstanceResponseDTO
   ) => ReactNode => (
   course: CourseInstanceResponseDTO
-): string => (sem
-  ? course[sem][prop]
-  : course[prop]);
+): string => {
+  const rawValue = sem
+    ? course[sem][prop]
+    : course[prop];
+  if (typeof rawValue === 'boolean') {
+    return rawValue ? 'Yes' : 'No';
+  }
+  return rawValue;
+};
 
 /**
  * Constants by which to group columns
