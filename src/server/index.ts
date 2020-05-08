@@ -18,6 +18,7 @@ async function bootstrap(): Promise<void> {
       .setBasePath('/api')
       .addTag('Course', 'Endpoints for course management operations')
       .addTag('Faculty', 'Endpoints for faculty management operations')
+      .addTag('Faculty Schedule', 'Endpoints for faculty schedule operations')
       .build();
     const document = SwaggerModule.createDocument(app, options);
     SwaggerModule.setup('docs/api', app, document);

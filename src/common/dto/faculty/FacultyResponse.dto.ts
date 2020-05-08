@@ -89,10 +89,10 @@ export abstract class FacultyResponseDTO {
   @ApiModelProperty({
     type: FacultySemester,
   })
-  public spring: FacultySemester;
+  public fall: FacultySemester;
 
   @ApiModelProperty({
     type: FacultySemester,
   })
-  public fall: FacultySemester;
+  public spring: FacultySemester;
 }

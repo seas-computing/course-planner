@@ -20,6 +20,11 @@ import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 import { regularUser, string, adminUser } from 'common/__tests__/data';
 import { SessionModule } from 'nestjs-session';
 import { FacultyService } from 'server/faculty/faculty.service';
+import { FacultyScheduleCourseView } from 'server/faculty/FacultyScheduleCourseView.entity';
+import { FacultyScheduleSemesterView } from 'server/faculty/FacultyScheduleSemesterView.entity';
+import { FacultyScheduleView } from 'server/faculty/FacultyScheduleView.entity';
+import { Absence } from 'server/absence/absence.entity';
+import { Semester } from 'server/semester/semester.entity';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 const mockFacultyRepository = {
@@ -36,6 +41,16 @@ const mockFacultyService = {
 const mockAreaRepository = {
   findOneOrFail: stub(),
 };
+
+const mockAbsenceRepository = {};
+
+const mockSemesterRepository = {};
+
+const mockFacultyScheduleCourseViewRepository = {};
+
+const mockFacultyScheduleSemesterViewRepository = {};
+
+const mockFacultyScheduleViewRepository = {};
 
 describe('Faculty API', function () {
   let authStub: SinonStub;
@@ -73,6 +88,21 @@ describe('Faculty API', function () {
       .overrideProvider(getRepositoryToken(Area))
       .useValue(mockAreaRepository)
 
+      .overrideProvider(getRepositoryToken(Semester))
+      .useValue(mockSemesterRepository)
+
+      .overrideProvider(getRepositoryToken(Absence))
+      .useValue(mockAbsenceRepository)
+
+      .overrideProvider(getRepositoryToken(FacultyScheduleCourseView))
+      .useValue(mockFacultyScheduleCourseViewRepository)
+
+      .overrideProvider(getRepositoryToken(FacultyScheduleSemesterView))
+      .useValue(mockFacultyScheduleSemesterViewRepository)
+
+      .overrideProvider(getRepositoryToken(FacultyScheduleView))
+      .useValue(mockFacultyScheduleViewRepository)
+
       .compile();
 
     const nestApp = await module.createNestApplication()
@@ -87,6 +117,11 @@ describe('Faculty API', function () {
       ...mockFacultyRepository,
       ...mockAreaRepository,
       ...mockFacultyService,
+      ...mockAbsenceRepository,
+      ...mockSemesterRepository,
+      ...mockFacultyScheduleCourseViewRepository,
+      ...mockFacultyScheduleSemesterViewRepository,
+      ...mockFacultyScheduleViewRepository,
     })
       .forEach((sinonStub: SinonStub): void => {
         sinonStub.reset();

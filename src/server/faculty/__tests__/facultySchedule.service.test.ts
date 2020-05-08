@@ -2,13 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { stub, SinonStub } from 'sinon';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { deepStrictEqual } from 'assert';
-import { appliedMathFacultyMember, bioengineeringFacultyMember } from 'testData';
-import { Semester } from 'server/semester/semester.entity';
-import { FacultyService } from '../faculty.service';
 import { Faculty } from '../faculty.entity';
+import { FacultyScheduleService } from '../facultySchedule.service';
+import { FacultyScheduleView } from '../FacultyScheduleView.entity';
 
 const mockQueryBuilder = {
-  leftJoinAndSelect: stub().returnsThis(),
+  leftJoinAndMapOne: stub().returnsThis(),
+  leftJoinAndMapMany: stub().returnsThis(),
   orderBy: stub().returnsThis(),
   addOrderBy: stub().returnsThis(),
   getMany: stub(),
@@ -18,24 +18,27 @@ const mockFacultyRepository = {
   createQueryBuilder: stub().returns(mockQueryBuilder),
 };
 
-describe('Faculty service', function () {
-  let facultyService: FacultyService;
+const mockRepository: Record<string, SinonStub> = {};
+
+describe('Faculty schedule service', function () {
+  let facultyScheduleService: FacultyScheduleService;
 
   beforeEach(async function () {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
-          provide: getRepositoryToken(Semester),
-          useValue: {},
+          provide: getRepositoryToken(FacultyScheduleView),
+          useValue: mockRepository,
         },
         {
           provide: getRepositoryToken(Faculty),
           useValue: mockFacultyRepository,
         },
-        FacultyService,
+        FacultyScheduleService,
       ],
     }).compile();
-    facultyService = module.get<FacultyService>(FacultyService);
+    facultyScheduleService = module
+      .get<FacultyScheduleService>(FacultyScheduleService);
   });
 
   afterEach(function () {
@@ -47,19 +50,12 @@ describe('Faculty service', function () {
       });
   });
 
-  describe('find', function () {
-    it('returns all faculty from the database', async function () {
-      mockQueryBuilder.getMany.resolves([
-        appliedMathFacultyMember,
-        bioengineeringFacultyMember,
-      ]);
-
-      const results = await facultyService.find();
-
-      deepStrictEqual(results, [
-        appliedMathFacultyMember,
-        bioengineeringFacultyMember,
-      ]);
+  describe('getAllByYear', function () {
+    context('when passed no years (an empty array)', function () {
+      it('returns data for no years (an empty object)', async function () {
+        const results = await facultyScheduleService.getAllByYear([]);
+        deepStrictEqual(results, {});
+      });
     });
   });
 });

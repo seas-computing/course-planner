@@ -8,14 +8,21 @@ import { NotFoundException } from '@nestjs/common';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { TimeoutError } from 'rxjs';
 import { appliedMathFacultyMember } from 'testData';
-import { ManageFacultyController } from '../faculty.controller';
+import { Semester } from 'server/semester/semester.entity';
+import { SemesterService } from 'server/semester/semester.service';
+import { FacultyController } from '../faculty.controller';
 import { Faculty } from '../faculty.entity';
 import { Area } from '../../area/area.entity';
 import { FacultyService } from '../faculty.service';
+import { FacultyScheduleService } from '../facultySchedule.service';
 
 const mockFacultyService = {
   find: stub(),
 };
+
+const mockFacultyScheduleService = {};
+
+const mockSemesterService = {};
 
 const mockFacultyRepository = {
   find: stub(),
@@ -28,8 +35,10 @@ const mockAreaRepository = {
   findOneOrFail: stub(),
 };
 
+const mockSemesterRepository = {};
+
 describe('Faculty controller', function () {
-  let controller: ManageFacultyController;
+  let controller: FacultyController;
 
   beforeEach(async function () {
     const module: TestingModule = await Test.createTestingModule({
@@ -39,6 +48,14 @@ describe('Faculty controller', function () {
           useValue: mockFacultyService,
         },
         {
+          provide: FacultyScheduleService,
+          useValue: mockFacultyScheduleService,
+        },
+        {
+          provide: SemesterService,
+          useValue: mockSemesterService,
+        },
+        {
           provide: getRepositoryToken(Faculty),
           useValue: mockFacultyRepository,
         },
@@ -46,16 +63,21 @@ describe('Faculty controller', function () {
           provide: getRepositoryToken(Area),
           useValue: mockAreaRepository,
         },
+        {
+          provide: getRepositoryToken(Semester),
+          useValue: mockSemesterRepository,
+        },
       ],
-      controllers: [ManageFacultyController],
+      controllers: [FacultyController],
     }).overrideGuard(Authentication).useValue(true).compile();
 
-    controller = module.get<ManageFacultyController>(ManageFacultyController);
+    controller = module.get<FacultyController>(FacultyController);
   });
   afterEach(function () {
     Object.values({
       ...mockFacultyRepository,
       ...mockAreaRepository,
+      ...mockSemesterRepository,
     })
       .forEach((sinonStub: SinonStub): void => {
         sinonStub.reset();
