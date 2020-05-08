@@ -12,7 +12,8 @@ import { MESSAGE_TYPE, MESSAGE_ACTION, AppMessage } from 'client/classes';
 import { OFFERED } from 'common/constants';
 import CourseInstanceTable from './CourseInstanceTable';
 import { tableFields } from './tableFields';
-/**
+
+/*
  * TODO
  * Until the functionality for defining a retrieving custom view is implemented
  * we can just hard code/comment the columns to display
@@ -20,19 +21,19 @@ import { tableFields } from './tableFields';
 const currentView = [
   'area',
   'catalogNumber',
-  'title',
-  'sameAs',
+  // 'title',
+  // 'sameAs',
   'isSEAS',
-  'isUndergraduate',
+  // 'isUndergraduate',
   'offered',
   'instructors',
-  'times',
-  'rooms',
-  'enrollment',
+  // 'times',
+  // 'rooms',
+  // 'enrollment',
   'notes',
 ];
 
-/**
+/*
  * TODO
  * Until the functionality for setting "Show Retired Courses" is iomplemented
  * this will be hard-coded here
@@ -42,6 +43,7 @@ const showRetired = false;
 
 // TODO: Get the actual current academic year instead of hard coding
 const acadYear = 2020;
+
 /**
  * Component representing the list of CourseInstances in a given Academic year
  */
