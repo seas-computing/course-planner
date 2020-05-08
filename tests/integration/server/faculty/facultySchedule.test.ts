@@ -121,7 +121,7 @@ describe('Faculty Schedule API', function () {
       describe('User is a member of the read-only group', function () {
         let result: { [key: string]: FacultyResponseDTO[] };
         beforeEach(async function () {
-          authStub.returns(readOnlyUser);
+          authStub.resolves(readOnlyUser);
         });
         it('is accessible to authenticated users', async function () {
           const response = await request(api).get('/api/faculty/schedule');
