@@ -74,6 +74,7 @@ export class FacultyController {
    * which faculty schedule data is being requested. If no argument is provided
    * for acadYears, all years will be returned.
    */
+  @UseGuards(new RequireGroup(GROUP.READ_ONLY))
   @Get('/schedule')
   @ApiOperation({ title: 'Retrieve all faculty along with their area, course instances, and absences' })
   @ApiOkResponse({

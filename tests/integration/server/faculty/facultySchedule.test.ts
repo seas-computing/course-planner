@@ -32,8 +32,8 @@ import {
 import { Faculty } from 'server/faculty/faculty.entity';
 import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 import {
-  regularUser,
   string,
+  readOnlyUser,
 } from 'common/__tests__/data';
 import { SessionModule } from 'nestjs-session';
 import { Repository } from 'typeorm';
@@ -118,74 +118,77 @@ describe('Faculty Schedule API', function () {
       });
     });
     describe('User is authenticated', function () {
-      let result: { [key: string]: FacultyResponseDTO[] };
-      it('is accessible to authenticated users', async function () {
-        authStub.resolves(regularUser);
-
-        const response = await request(api).get('/api/faculty/schedule');
-
-        strictEqual(response.ok, true);
-      });
-      it('returns all faculty in the database', async function () {
-        const response = await request(api).get('/api/faculty/schedule');
-        result = response.body;
-        const facultyRepository: Repository<Faculty> = testModule
-          .get(getRepositoryToken(Faculty));
-        const dbFaculty = await facultyRepository.find();
-        // every faculty member
-        const allFacultyFound = dbFaculty.every((faculty) => (
-          // appears in at least one year
-          Object.values(result).some((dtos) => (
-            // and within that year at least one object
-            dtos.some((dto) => dto.firstName === faculty.firstName
-              && dto.lastName === faculty.lastName)
-          ))
-        ));
-        strictEqual(dbFaculty.length > 0, true);
-        strictEqual(allFacultyFound, true);
-      });
-      context('when one year is provided', function () {
-        let acadYears: number[];
+      describe('User is a member of the read-only group', function () {
+        let result: { [key: string]: FacultyResponseDTO[] };
         beforeEach(async function () {
-          acadYears = [2020];
-          const response = await request(api).get('/api/faculty/schedule?acadYears=' + acadYears.join(','));
+          authStub.returns(readOnlyUser);
+        });
+        it('is accessible to authenticated users', async function () {
+          const response = await request(api).get('/api/faculty/schedule');
+
+          strictEqual(response.ok, true);
+        });
+        it('returns all faculty in the database', async function () {
+          const response = await request(api).get('/api/faculty/schedule');
           result = response.body;
+          const facultyRepository: Repository<Faculty> = testModule
+            .get(getRepositoryToken(Faculty));
+          const dbFaculty = await facultyRepository.find();
+          // every faculty member
+          const allFacultyFound = dbFaculty.every((faculty) => (
+            // appears in at least one year
+            Object.values(result).some((dtos) => (
+              // and within that year at least one object
+              dtos.some((dto) => dto.firstName === faculty.firstName
+                && dto.lastName === faculty.lastName)
+            ))
+          ));
+          strictEqual(dbFaculty.length > 0, true);
+          strictEqual(allFacultyFound, true);
         });
-        it('should return an object with a key for the requested academic year', function () {
-          notStrictEqual(Object.keys(result).length, 0);
-          deepStrictEqual(Object.keys(result), acadYears.map(String));
+        context('when one year is provided', function () {
+          let acadYears: number[];
+          beforeEach(async function () {
+            acadYears = [2020];
+            const response = await request(api).get('/api/faculty/schedule?acadYears=' + acadYears.join(','));
+            result = response.body;
+          });
+          it('should return an object with a key for the requested academic year', function () {
+            notStrictEqual(Object.keys(result).length, 0);
+            deepStrictEqual(Object.keys(result), acadYears.map(String));
+          });
+          it('should return instances from the given academic year only', function () {
+            const allKeysValid = Object.keys(result)
+              .every((year) => acadYears.includes(parseInt(year, 10)));
+            strictEqual(allKeysValid, true);
+            strictEqual(allDataValidYears(result), true);
+          });
+          it('should return the faculty ordered by area, then last name, and then first name', function () {
+            const sorted = sortResults(result);
+            deepStrictEqual(result, sorted);
+          });
         });
-        it('should return instances from the given academic year only', function () {
-          const allKeysValid = Object.keys(result)
-            .every((year) => acadYears.includes(parseInt(year, 10)));
-          strictEqual(allKeysValid, true);
-          strictEqual(allDataValidYears(result), true);
-        });
-        it('should return the faculty ordered by area, then last name, and then first name', function () {
-          const sorted = sortResults(result);
-          deepStrictEqual(result, sorted);
-        });
-      });
-      context('when more than one year is provided', function () {
-        let acadYears: number[];
-        beforeEach(async function () {
-          acadYears = [2018, 2019, 2020];
-          const response = await request(api).get('/api/faculty/schedule?acadYears=' + acadYears.join(','));
-          result = response.body;
-        });
-        it('should return an object with a key for the requested academic years', function () {
-          notStrictEqual(Object.keys(result).length, 0);
-          deepStrictEqual(Object.keys(result).sort(), acadYears.map(String));
-        });
-        it('should return instances from the given academic years only', function () {
-          const allKeysValid = Object.keys(result)
-            .every((year) => acadYears.includes(parseInt(year, 10)));
-          strictEqual(allKeysValid, true);
-          strictEqual(allDataValidYears(result), true);
-        });
-        it('should return the faculty ordered by area, then last name, and then first name', function () {
-          const sorted = sortResults(result);
-          deepStrictEqual(result, sorted);
+        context('when more than one year is provided', function () {
+          let acadYears: number[];
+          beforeEach(async function () {
+            acadYears = [2018, 2019, 2020];
+            const response = await request(api).get('/api/faculty/schedule?acadYears=' + acadYears.join(','));
+            result = response.body;
+          });
+          it('should return an object with a key for the requested academic years', function () {
+            notStrictEqual(Object.keys(result).length, 0);
+            deepStrictEqual(Object.keys(result).sort(), acadYears.map(String));
+          });
+          it('should return instances from the given academic years only', function () {
+            const allKeysValid = Object.keys(result)
+              .every((year) => acadYears.includes(parseInt(year, 10)));
+            strictEqual(allKeysValid, true);
+            strictEqual(allDataValidYears(result), true);
+          });
+          it('should return the faculty ordered by area, then last name, and then first name', function () {
+            const sorted = sortResults(result);
+            deepStrictEqual(result, sorted);
+          });
         });
       });
     });
