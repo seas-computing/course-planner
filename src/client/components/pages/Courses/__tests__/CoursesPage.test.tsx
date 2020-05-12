@@ -5,12 +5,11 @@ import {
   render, BoundFunction, QueryByText, FindByText, wait,
 } from 'test-utils';
 import * as courseAPI from 'client/api';
-import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { AppMessage, MESSAGE_TYPE, MESSAGE_ACTION } from 'client/classes';
-import CourseInstanceList from '../CoursesPage';
+import { cs50CourseInstance } from 'testData';
+import CoursesPage from '../CoursesPage';
 
-
-describe('Course Instances List', function () {
+describe.only('Course Instances List', function () {
   let getStub: SinonStub;
   let dispatchStub: SinonStub;
   beforeEach(function () {
@@ -23,31 +22,28 @@ describe('Course Instances List', function () {
       beforeEach(function () {
         getStub.resolves([
           [
-            {
-              id: 'abc123',
-              area: 'CS',
-              catalogNumber: 'CS 109A',
-              title: 'Data Science',
-            },
+            { ...cs50CourseInstance },
           ],
-        ] as CourseInstanceResponseDTO[][]);
-        ({ findByText } = render(<CourseInstanceList />, dispatchStub));
+        ]);
+        ({ findByText } = render(<CoursesPage />, dispatchStub));
       });
       it('calls the fetch function on render', function () {
         strictEqual(getStub.callCount, 1);
       });
-      it('requests data for the current academic years', function () {
-        const today = new Date();
-        let currentYear = today.getFullYear();
-        if (today.getMonth() > 5) {
-          currentYear = today.getFullYear() + 1;
-        }
-        strictEqual(getStub.args[0][0], currentYear);
-      });
+      // TODO: Test "showRetired" when implemented
+      // TODO: Test custom views when implemented
+      // TODO: When the academic year is computed instead of hard-coded, bring
+      // back this test:
+      // it('requests data for the current academic year', function () {
+      // const today = new Date();
+      // let currentYear = today.getFullYear();
+      // if (today.getMonth() > 5) {
+      // currentYear = today.getFullYear() + 1;
+      // }
+      // strictEqual(getStub.args[0][0], currentYear);
+      // });
       it('renders the data in the table', async function () {
-        await findByText('Data Science');
-        await findByText('CS 109A');
-        await findByText('CS');
+        await findByText('CS 050');
       });
     });
     context('When API request fails', function () {
@@ -55,7 +51,7 @@ describe('Course Instances List', function () {
       const errorMessage = 'Failed to retrieve course data';
       beforeEach(function () {
         getStub.rejects(new Error(errorMessage));
-        ({ queryByText } = render(<CourseInstanceList />, dispatchStub));
+        ({ queryByText } = render(<CoursesPage />, dispatchStub));
       });
       it('Should call the dispatchStub function', async function () {
         await wait(() => queryByText('Fetching') === null);
