@@ -1,30 +1,26 @@
-import React, { ReactElement, ReactNode, useState } from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import {
-  Button,
   BorderlessButton,
   VARIANT,
-  Modal,
-  ModalBody,
-  ModalHeader,
-  ModalFooter,
 } from 'mark-one';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStickyNote as withNotes, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
 import { faStickyNote as withoutNotes } from '@fortawesome/free-regular-svg-icons';
+import { TERM } from 'common/constants';
 
 /**
  * Simple helper function that takes a property name and optionally a semester
  * and returns a function that accepts a Course object, then returns the value
  * associated with the property/semester.property.
  *
- * This is mainly a way to simplify the looping logic requireq in the
+ * This is mainly a way to simplify the looping logic required in the
  * CourseInstanceList
  */
 
-const retrieveValue = (
+export const retrieveValue = (
   prop: string,
-  sem?: string
+  sem?: TERM
 ): (arg0: CourseInstanceResponseDTO
   ) => ReactNode => (
   course: CourseInstanceResponseDTO
@@ -128,7 +124,7 @@ export const tableFields: CourseInstanceListColumn[] = [
     key: 'offered-fall',
     columnGroup: COLUMN_GROUP.FALL,
     viewColumn: 'offered',
-    getValue: retrieveValue('offered', 'fall'),
+    getValue: retrieveValue('offered', TERM.FALL),
   },
   {
     name: 'Instructors',
@@ -197,28 +193,28 @@ export const tableFields: CourseInstanceListColumn[] = [
     key: 'pre-enrollment-fall',
     columnGroup: COLUMN_GROUP.FALL,
     viewColumn: 'enrollment',
-    getValue: retrieveValue('preEnrollment', 'fall'),
+    getValue: retrieveValue('preEnrollment', TERM.FALL),
   },
   {
     name: 'Study',
     key: 'study-card-enrollment-fall',
     columnGroup: COLUMN_GROUP.FALL,
     viewColumn: 'enrollment',
-    getValue: retrieveValue('studyCardEnrollment', 'fall'),
+    getValue: retrieveValue('studyCardEnrollment', TERM.FALL),
   },
   {
     name: 'Actual',
     key: 'actual-enrollment-fall',
     columnGroup: COLUMN_GROUP.FALL,
     viewColumn: 'enrollment',
-    getValue: retrieveValue('actualEnrollment', 'fall'),
+    getValue: retrieveValue('actualEnrollment', TERM.FALL),
   },
   {
     name: 'Offered',
     key: 'offered-spring',
     columnGroup: COLUMN_GROUP.SPRING,
     viewColumn: 'offered',
-    getValue: retrieveValue('offered', 'spring'),
+    getValue: retrieveValue('offered', TERM.SPRING),
   },
   {
     name: 'Instructors',
@@ -287,63 +283,37 @@ export const tableFields: CourseInstanceListColumn[] = [
     key: 'pre-enrollment-spring',
     columnGroup: COLUMN_GROUP.SPRING,
     viewColumn: 'enrollment',
-    getValue: retrieveValue('preEnrollment', 'spring'),
+    getValue: retrieveValue('preEnrollment', TERM.SPRING),
   },
   {
     name: 'Study',
     key: 'study-card-enrollment-spring',
     columnGroup: COLUMN_GROUP.SPRING,
     viewColumn: 'enrollment',
-    getValue: retrieveValue('studyCardEnrollment', 'spring'),
+    getValue: retrieveValue('studyCardEnrollment', TERM.SPRING),
   },
   {
     name: 'Actual',
     key: 'actual-enrollment-spring',
     columnGroup: COLUMN_GROUP.SPRING,
     viewColumn: 'enrollment',
-    getValue: retrieveValue('actualEnrollment', 'spring'),
+    getValue: retrieveValue('actualEnrollment', TERM.SPRING),
   },
   {
     name: 'Notes',
     key: 'notes',
     columnGroup: COLUMN_GROUP.META,
     viewColumn: 'notes',
-    getValue: ({ notes, catalogNumber }): ReactElement => {
+    getValue: ({ notes }): ReactElement => {
       const hasNotes = notes && notes.trim().length > 0;
-      const [modalOpen, toggleModal] = useState(false);
       return (
-        <React.Fragment>
-          <BorderlessButton
-            variant={VARIANT.INFO}
-            disabled={!hasNotes}
-            onClick={(): void => { if (hasNotes) { toggleModal(true); } }}
-          >
-            <FontAwesomeIcon icon={hasNotes ? withNotes : withoutNotes} />
-          </BorderlessButton>
-          {hasNotes && (
-            <Modal
-              isVisible={modalOpen}
-              closeHandler={(): void => { toggleModal(false); }}
-            >
-              <ModalHeader
-                closeButtonHandler={(): void => { toggleModal(false); }}
-              >
-                {`${catalogNumber} Notes`}
-              </ModalHeader>
-              <ModalBody>
-                {notes}
-              </ModalBody>
-              <ModalFooter>
-                <Button
-                  variant={VARIANT.DEFAULT}
-                  onClick={(): void => { toggleModal(false); }}
-                >
-                  Close
-                </Button>
-              </ModalFooter>
-            </Modal>
-          )}
-        </React.Fragment>
+        <BorderlessButton
+          variant={VARIANT.INFO}
+          disabled={!hasNotes}
+          onClick={(): void => { }}
+        >
+          <FontAwesomeIcon icon={hasNotes ? withNotes : withoutNotes} />
+        </BorderlessButton>
       );
     },
   },
@@ -359,7 +329,6 @@ export const tableFields: CourseInstanceListColumn[] = [
       >
         <FontAwesomeIcon icon={faFolderOpen} />
       </BorderlessButton>
-
     ),
   },
 ];
