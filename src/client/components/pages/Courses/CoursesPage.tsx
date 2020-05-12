@@ -31,6 +31,7 @@ const currentView = [
   // 'rooms',
   // 'enrollment',
   'notes',
+  'details',
 ];
 
 /*
@@ -94,7 +95,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
                 )}
             tableData={tableFields.filter(
               ({ viewColumn }): boolean => (
-                currentView.includes(viewColumn) || viewColumn === 'details'
+                currentView.includes(viewColumn)
               )
             )}
           />
