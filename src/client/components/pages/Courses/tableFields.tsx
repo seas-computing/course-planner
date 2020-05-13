@@ -1,4 +1,4 @@
-import React, { ReactElement, ReactNode } from 'react';
+import React, { ReactElement, ReactNode, ReactText } from 'react';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import {
   BorderlessButton,
@@ -24,16 +24,100 @@ export const retrieveValue = (
 ): (arg0: CourseInstanceResponseDTO
   ) => ReactNode => (
   course: CourseInstanceResponseDTO
-): string => {
-  const rawValue = sem
-    ? course[sem][prop]
-    : course[prop];
+): ReactText => {
+  let rawValue: ReactText;
+  if (sem) {
+    rawValue = course[sem.toLowerCase()][prop];
+  } else {
+    rawValue = course[prop];
+  }
   if (typeof rawValue === 'boolean') {
     return rawValue ? 'Yes' : 'No';
   }
   return rawValue;
 };
 
+/**
+ * Helper function that returns a function that will format a course's
+ * instructors into a list
+ */
+
+export const formatInstructors = (
+  sem: TERM
+): (arg0: CourseInstanceResponseDTO
+  ) => ReactNode => (
+  course: CourseInstanceResponseDTO
+): ReactNode => {
+  const { instructors } = course[sem.toLowerCase()];
+  return instructors.length === 0
+    ? null
+    : (
+      <ol>
+        {instructors.map(
+          ({ id, displayName }): ReactElement => (
+            <li key={id}>
+              {displayName}
+            </li>
+          )
+        )}
+      </ol>
+    );
+};
+
+/**
+ * Helper function to format meeting times into a list
+ */
+
+export const formatTimes = (
+  sem: TERM
+): (arg0: CourseInstanceResponseDTO
+  ) => ReactNode => (
+  course: CourseInstanceResponseDTO
+): ReactNode => {
+  const { meetings } = course[sem.toLowerCase()];
+  return meetings[0].day === null
+    ? null
+    : (
+      <ol>
+        {meetings.map(({
+          id,
+          day,
+          startTime,
+          endTime,
+        }): ReactElement => (
+          <li key={id}>
+            {`${day}: ${startTime}-${endTime}`}
+          </li>
+        ))}
+      </ol>
+    );
+};
+/**
+ * Helper function to format meeting rooms into a list
+ */
+
+export const formatRooms = (
+  sem: TERM
+): (arg0: CourseInstanceResponseDTO
+  ) => ReactNode => (
+  course: CourseInstanceResponseDTO
+): ReactNode => {
+  const { meetings } = course[sem.toLowerCase()];
+  return meetings[0].day === null
+    ? null
+    : (
+      <ol>
+        {meetings.map(({
+          id,
+          room: { name },
+        }): ReactElement => (
+          <li key={id}>
+            {name}
+          </li>
+        ))}
+      </ol>
+    );
+};
 /**
  * Constants by which to group columns
  */
@@ -131,62 +215,21 @@ export const tableFields: CourseInstanceListColumn[] = [
     key: 'instructors-fall',
     columnGroup: COLUMN_GROUP.FALL,
     viewColumn: 'instructors',
-    getValue: ({ fall: { instructors } }): ReactElement => (
-      instructors.length === 0
-        ? null
-        : (
-          <ol>
-            {instructors.map(
-              (prof): ReactElement => (
-                <li key={prof.id}>
-                  {prof.displayName}
-                </li>
-              )
-            )}
-          </ol>
-        )
-    ),
+    getValue: formatInstructors(TERM.FALL),
   },
   {
     name: 'Times',
     key: 'times-fall',
     columnGroup: COLUMN_GROUP.FALL,
     viewColumn: 'times',
-    getValue: ({ fall: { meetings } }): ReactElement => (
-      meetings[0].day === null
-        ? null
-        : (
-          <ol>
-            {meetings.map((mtg): ReactElement => (
-              <li key={mtg.id}>
-                {`${mtg.day}: ${mtg.startTime}-${mtg.endTime}`}
-              </li>
-            ))}
-          </ol>
-        )
-    ),
+    getValue: formatTimes(TERM.FALL),
   },
   {
     name: 'Room',
     key: 'rooms-fall',
     columnGroup: COLUMN_GROUP.FALL,
     viewColumn: 'rooms',
-    getValue: ({ fall: { meetings } }): ReactElement => (
-      meetings[0].day === null
-        ? null
-        : (
-          <ol>
-            {meetings.map((mtg): ReactElement => (
-              mtg.room !== null
-              && (
-                <li key={mtg.id}>
-                  {mtg.room.name}
-                </li>
-              )
-            ))}
-          </ol>
-        )
-    ),
+    getValue: formatRooms(TERM.FALL),
   },
   {
     name: 'Pre',
@@ -221,62 +264,21 @@ export const tableFields: CourseInstanceListColumn[] = [
     key: 'instructors-spring',
     columnGroup: COLUMN_GROUP.SPRING,
     viewColumn: 'instructors',
-    getValue: ({ spring: { instructors } }): ReactElement => (
-      instructors.length === 0
-        ? null
-        : (
-          <ol>
-            {instructors.map(
-              (prof): ReactElement => (
-                <li key={prof.id}>
-                  {prof.displayName}
-                </li>
-              )
-            )}
-          </ol>
-        )
-    ),
+    getValue: formatInstructors(TERM.SPRING),
   },
   {
     name: 'Times',
     key: 'times-spring',
     columnGroup: COLUMN_GROUP.SPRING,
     viewColumn: 'times',
-    getValue: ({ spring: { meetings } }): ReactElement => (
-      meetings[0].day === null
-        ? null
-        : (
-          <ol>
-            {meetings.map((mtg): ReactElement => (
-              <li key={mtg.id}>
-                {`${mtg.day}: ${mtg.startTime}-${mtg.endTime}`}
-              </li>
-            ))}
-          </ol>
-        )
-    ),
+    getValue: formatTimes(TERM.SPRING),
   },
   {
     name: 'Room',
     key: 'rooms-spring',
     columnGroup: COLUMN_GROUP.SPRING,
     viewColumn: 'rooms',
-    getValue: ({ spring: { meetings } }): ReactElement => (
-      meetings[0].day === null
-        ? null
-        : (
-          <ol>
-            {meetings.map((mtg): ReactElement => (
-              mtg.room !== null
-              && (
-                <li key={mtg.id}>
-                  {mtg.room.name}
-                </li>
-              )
-            ))}
-          </ol>
-        )
-    ),
+    getValue: formatRooms(TERM.SPRING),
   },
   {
     name: 'Pre',
@@ -306,13 +308,17 @@ export const tableFields: CourseInstanceListColumn[] = [
     viewColumn: 'notes',
     getValue: ({ notes }): ReactElement => {
       const hasNotes = notes && notes.trim().length > 0;
+      const titleText = hasNotes ? 'View/Edit Notes' : 'Add Notes';
       return (
         <BorderlessButton
           variant={VARIANT.INFO}
-          disabled={!hasNotes}
           onClick={(): void => { }}
+          aria-label={titleText}
         >
-          <FontAwesomeIcon icon={hasNotes ? withNotes : withoutNotes} />
+          <FontAwesomeIcon
+            title={titleText}
+            icon={hasNotes ? withNotes : withoutNotes}
+          />
         </BorderlessButton>
       );
     },
