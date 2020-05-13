@@ -13,7 +13,6 @@ import {
   MESSAGE_TYPE,
   MESSAGE_ACTION,
 } from 'client/classes';
-import getCurrentAcademicYear from 'common/utils/getCurrentAcademicYear';
 import FacultyScheduleTable from './FacultyScheduleTable';
 
 /**
@@ -35,7 +34,8 @@ const FacultySchedule: FunctionComponent = function (): ReactElement {
 
   const [fetching, setFetching] = useState(false);
 
-  const acadYear = getCurrentAcademicYear();
+  // TODO: Get the actual current academic year instead of hard coding
+  const acadYear = 2020;
 
   /**
    * Get faculty schedule data from the server

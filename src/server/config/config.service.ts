@@ -1,7 +1,6 @@
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { RedisStoreOptions } from 'connect-redis';
 import { AUTH_MODE } from 'common/constants';
-import getCurrentAcademicYear from 'common/utils/getCurrentAcademicYear';
 
 /**
  * Parses process.env to create a clean configuration interface
@@ -109,7 +108,13 @@ class ConfigService {
    * then the academic year is the next calendar year.
    */
   public get academicYear(): number {
-    return getCurrentAcademicYear();
+    const now = new Date();
+    const calendarYear = now.getFullYear();
+    const JUNE = 5;
+    const academicYear = now.getMonth() <= JUNE
+      ? calendarYear
+      : calendarYear + 1;
+    return academicYear;
   }
 }
 
