@@ -39,6 +39,7 @@ import NoMatch from './pages/NoMatch';
 import logo from '../img/seas-logo.svg';
 import CourseAdmin from './pages/CourseAdmin';
 import FacultyAdmin from './pages/FacultyAdmin';
+import FacultyPage from './pages/Faculty/FacultyPage';
 
 /**
  * The primary app component. Fetches the current user from the server when it
@@ -140,6 +141,7 @@ const ColdApp: SFC = (): ReactElement => {
                 <Switch>
                   <Redirect from="/" exact to="/courses" />
                   <Route path="/course-admin" component={CourseAdmin} />
+                  <Route exact path="/faculty" component={FacultyPage} />
                   <Route path="/faculty-admin" component={FacultyAdmin} />
                   <Route component={NoMatch} />
                 </Switch>
