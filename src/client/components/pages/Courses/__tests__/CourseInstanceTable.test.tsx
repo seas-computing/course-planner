@@ -7,7 +7,7 @@ import { cs50CourseInstance, es095CourseInstance } from 'testData';
 import CourseInstanceTable from '../CourseInstanceTable';
 import { tableFields } from '../tableFields';
 
-describe.only('CourseInstanceTable', function () {
+describe('CourseInstanceTable', function () {
   const academicYear = 2020;
   const courseList = [
     cs50CourseInstance,

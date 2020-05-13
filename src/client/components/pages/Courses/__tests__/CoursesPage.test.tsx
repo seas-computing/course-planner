@@ -9,7 +9,7 @@ import { AppMessage, MESSAGE_TYPE, MESSAGE_ACTION } from 'client/classes';
 import { cs50CourseInstance } from 'testData';
 import CoursesPage from '../CoursesPage';
 
-describe.only('Course Instances List', function () {
+describe('Course Instances List', function () {
   let getStub: SinonStub;
   let dispatchStub: SinonStub;
   beforeEach(function () {
