@@ -73,6 +73,11 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
       {(springColumns.length > 0 && <colgroup span={springColumns.length} />)}
       <colgroup span={metaColumns.length} />
       <TableHead>
+        {/*
+          * Our top level of headers should only show the two semesters in the
+          * current academic year, with all other headers blanked. If no
+          * semester fields have been included, it will not render at all.
+          */}
         {(fallColumns.length > 0 && springColumns.length > 0) && (
           <TableRow noHighlight>
             <>
@@ -101,6 +106,12 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
             </>
           </TableRow>
         )}
+        {/*
+          * Our second layer of headers will includes all of the main column
+          * headings. Because the individual enrollment values are nested under
+          * "Enrollment", all non-enrollment headers will need to have
+          * rowSpan="2" when the enrollment columns are visible.
+          */}
         <TableRow>
           <>
             {courseColumns.map(({ key, name }): ReactElement => (
@@ -164,6 +175,11 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
             }
           </>
         </TableRow>
+        {/*
+          * The third layers of headers will only include the sub-values for
+          * Enrollment, so it will only be rendered if the "Enrollment" column
+          * is visible.
+          */}
         {firstEnrollmentField > -1 && (
           <TableRow>
             {tableData.map(
