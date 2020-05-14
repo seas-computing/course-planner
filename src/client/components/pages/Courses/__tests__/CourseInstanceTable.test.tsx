@@ -4,6 +4,7 @@ import {
   render, BoundFunction, AllByRole, getRoles,
 } from 'test-utils';
 import { cs50CourseInstance, es095CourseInstance } from 'testData';
+import { COURSE_TABLE_COLUMN } from 'common/constants';
 import CourseInstanceTable from '../CourseInstanceTable';
 import { tableFields } from '../tableFields';
 
@@ -16,19 +17,19 @@ describe('CourseInstanceTable', function () {
   describe('Header rows', function () {
     context('With all fields visible', function () {
       const testView = [
-        'area',
-        'catalogNumber',
-        'title',
-        'sameAs',
-        'isSEAS',
-        'isUndergraduate',
-        'offered',
-        'instructors',
-        'times',
-        'rooms',
-        'enrollment',
-        'notes',
-        'details',
+        COURSE_TABLE_COLUMN.AREA,
+        COURSE_TABLE_COLUMN.CATALOG_NUMBER,
+        COURSE_TABLE_COLUMN.TITLE,
+        COURSE_TABLE_COLUMN.SAME_AS,
+        COURSE_TABLE_COLUMN.IS_SEAS,
+        COURSE_TABLE_COLUMN.IS_UNDERGRADUATE,
+        COURSE_TABLE_COLUMN.OFFERED,
+        COURSE_TABLE_COLUMN.INSTRUCTORS,
+        COURSE_TABLE_COLUMN.TIMES,
+        COURSE_TABLE_COLUMN.ROOMS,
+        COURSE_TABLE_COLUMN.ENROLLMENT,
+        COURSE_TABLE_COLUMN.NOTES,
+        COURSE_TABLE_COLUMN.DETAILS,
       ];
       let getAllByRole: BoundFunction<AllByRole>;
       beforeEach(function () {
@@ -64,7 +65,7 @@ describe('CourseInstanceTable', function () {
         const [, secondRow] = getAllByRole('row');
         const { columnheader } = getRoles(secondRow);
         const enrollment = columnheader.find((elem) => (
-          elem.textContent === 'enrollment'
+          elem.textContent === 'Enrollment'
         ));
         notStrictEqual(enrollment, null);
       });
@@ -80,11 +81,11 @@ describe('CourseInstanceTable', function () {
         );
       });
     });
-    context('With no semester of fields visible', function () {
+    context('With no semester fields visible', function () {
       const testView = [
-        'area',
-        'catalogNumber',
-        'details',
+        COURSE_TABLE_COLUMN.AREA,
+        COURSE_TABLE_COLUMN.CATALOG_NUMBER,
+        COURSE_TABLE_COLUMN.DETAILS,
       ];
       let getAllByRole: BoundFunction<AllByRole>;
       beforeEach(function () {
@@ -119,10 +120,10 @@ describe('CourseInstanceTable', function () {
     });
     context('With semesters, but no enrollment data visible', function () {
       const testView = [
-        'area',
-        'catalogNumber',
-        'instructors',
-        'details',
+        COURSE_TABLE_COLUMN.AREA,
+        COURSE_TABLE_COLUMN.CATALOG_NUMBER,
+        COURSE_TABLE_COLUMN.INSTRUCTORS,
+        COURSE_TABLE_COLUMN.DETAILS,
       ];
       let getAllByRole: BoundFunction<AllByRole>;
       beforeEach(function () {
@@ -164,19 +165,19 @@ describe('CourseInstanceTable', function () {
   });
   describe('Table body', function () {
     const testView = [
-      'area',
-      'catalogNumber',
-      'title',
-      'sameAs',
-      'isSEAS',
-      'isUndergraduate',
-      'offered',
-      'instructors',
-      'times',
-      'rooms',
-      'enrollment',
-      'notes',
-      'details',
+      COURSE_TABLE_COLUMN.AREA,
+      COURSE_TABLE_COLUMN.CATALOG_NUMBER,
+      COURSE_TABLE_COLUMN.TITLE,
+      COURSE_TABLE_COLUMN.SAME_AS,
+      COURSE_TABLE_COLUMN.IS_SEAS,
+      COURSE_TABLE_COLUMN.IS_UNDERGRADUATE,
+      COURSE_TABLE_COLUMN.OFFERED,
+      COURSE_TABLE_COLUMN.INSTRUCTORS,
+      COURSE_TABLE_COLUMN.TIMES,
+      COURSE_TABLE_COLUMN.ROOMS,
+      COURSE_TABLE_COLUMN.ENROLLMENT,
+      COURSE_TABLE_COLUMN.NOTES,
+      COURSE_TABLE_COLUMN.DETAILS,
     ];
     let getAllByRole: BoundFunction<AllByRole>;
     beforeEach(function () {

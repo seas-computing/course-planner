@@ -17,7 +17,8 @@ import {
 
 import { ThemeContext } from 'styled-components';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
-import { CourseInstanceListColumn, COLUMN_GROUP } from './tableFields';
+import { COURSE_TABLE_COLUMN, COURSE_TABLE_COLUMN_GROUP } from 'common/constants';
+import { CourseInstanceListColumn } from './tableFields';
 
 interface CourseInstanceTableProps {
   /**
@@ -42,55 +43,59 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
   courseList,
   tableData,
 }): ReactElement => {
-  const courseData = tableData.filter(
-    ({ columnGroup }): boolean => columnGroup === COLUMN_GROUP.COURSE
+  const courseColumns = tableData.filter(
+    ({ columnGroup }): boolean => (
+      columnGroup === COURSE_TABLE_COLUMN_GROUP.COURSE)
   );
-  const fallData = tableData.filter(
-    ({ columnGroup }): boolean => columnGroup === COLUMN_GROUP.FALL
+  const fallColumns = tableData.filter(
+    ({ columnGroup }): boolean => (
+      columnGroup === COURSE_TABLE_COLUMN_GROUP.FALL)
   );
-  const springData = tableData.filter(
-    ({ columnGroup }): boolean => columnGroup === COLUMN_GROUP.SPRING
+  const springColumns = tableData.filter(
+    ({ columnGroup }): boolean => (
+      columnGroup === COURSE_TABLE_COLUMN_GROUP.SPRING)
   );
-  const metaData = tableData.filter(
-    ({ columnGroup }): boolean => columnGroup === COLUMN_GROUP.META
+  const metaColumns = tableData.filter(
+    ({ columnGroup }): boolean => (
+      columnGroup === COURSE_TABLE_COLUMN_GROUP.META)
   );
-  const firstEnrollmentField = fallData
+  const firstEnrollmentField = fallColumns
     .findIndex(({ viewColumn }): boolean => (
-      viewColumn === 'enrollment'
+      viewColumn === COURSE_TABLE_COLUMN.ENROLLMENT
     ));
 
   const theme: BaseTheme = useContext(ThemeContext);
 
   return (
     <Table>
-      <colgroup span={courseData.length} />
-      {(fallData.length > 0 && <colgroup span={fallData.length} />)}
-      {(springData.length > 0 && <colgroup span={springData.length} />)}
-      <colgroup span={metaData.length} />
+      <colgroup span={courseColumns.length} />
+      {(fallColumns.length > 0 && <colgroup span={fallColumns.length} />)}
+      {(springColumns.length > 0 && <colgroup span={springColumns.length} />)}
+      <colgroup span={metaColumns.length} />
       <TableHead>
-        {(fallData.length > 0 && springData.length > 0) && (
+        {(fallColumns.length > 0 && springColumns.length > 0) && (
           <TableRow noHighlight>
             <>
-              {courseData.map(({ key }): TableHeadingSpacer => (
+              {courseColumns.map(({ key }): TableHeadingSpacer => (
                 <TableHeadingSpacer key={key} />
               ))}
             </>
             <TableHeadingCell
               backgroundColor="transparent"
-              colSpan={fallData.length}
+              colSpan={fallColumns.length}
               scope="colgroup"
             >
               {`Fall ${academicYear - 1}`}
             </TableHeadingCell>
             <TableHeadingCell
               backgroundColor="transparent"
-              colSpan={fallData.length}
+              colSpan={fallColumns.length}
               scope="colgroup"
             >
               {`Spring ${academicYear}`}
             </TableHeadingCell>
             <>
-              {metaData.map(({ key }): ReactElement => (
+              {metaColumns.map(({ key }): ReactElement => (
                 <TableHeadingSpacer key={key} />
               ))}
             </>
@@ -98,7 +103,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
         )}
         <TableRow>
           <>
-            {courseData.map(({ key, name }): ReactElement => (
+            {courseColumns.map(({ key, name }): ReactElement => (
               <TableHeadingCell
                 key={key}
                 scope="col"
@@ -110,7 +115,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
             }
           </>
           <>
-            {[fallData, springData].map(
+            {[fallColumns, springColumns].map(
               (dataList: CourseInstanceListColumn[]): ReactElement[] => dataList
                 .map((
                   field: CourseInstanceListColumn,
@@ -122,7 +127,8 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
                         key={field.key}
                         scope="auto"
                         colSpan={dataList
-                          .filter(({ viewColumn }): boolean => viewColumn === 'enrollment')
+                          .filter(({ viewColumn }): boolean => (
+                            viewColumn === COURSE_TABLE_COLUMN.ENROLLMENT))
                           .length
                         }
                       >
@@ -130,7 +136,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
                       </TableHeadingCell>
                     );
                   }
-                  if (field.viewColumn === 'enrollment') {
+                  if (field.viewColumn === COURSE_TABLE_COLUMN.ENROLLMENT) {
                     return null;
                   }
                   return (
@@ -146,7 +152,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
             )}
           </>
           <>
-            {metaData.map(({ key, name }): ReactElement => (
+            {metaColumns.map(({ key, name }): ReactElement => (
               <TableHeadingCell
                 key={key}
                 scope="col"
@@ -162,7 +168,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
           <TableRow>
             {tableData.map(
               (field: CourseInstanceListColumn): ReactElement => {
-                if (field.viewColumn === 'enrollment') {
+                if (field.viewColumn === COURSE_TABLE_COLUMN.ENROLLMENT) {
                   return (
                     <TableHeadingCell
                       scope="col"
@@ -189,18 +195,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
             <TableRow key={course.id} isStriped={index % 2 !== 0}>
               {tableData.map(
                 (field: CourseInstanceListColumn): ReactElement => {
-                  if (field.viewColumn === 'area') {
-                    const area = field.getValue(course) as string;
-                    return (
-                      <TableCell
-                        key={field.key}
-                        backgroundColor={theme.color.area[area.toLowerCase()]}
-                      >
-                        {area}
-                      </TableCell>
-                    );
-                  }
-                  if (field.viewColumn === 'catalogNumber') {
+                  if (field.viewColumn === COURSE_TABLE_COLUMN.CATALOG_NUMBER) {
                     return (
                       <TableRowHeadingCell scope="row" key={field.key}>
                         {field.getValue(course)}
@@ -210,6 +205,12 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
                   return (
                     <TableCell
                       key={field.key}
+                      backgroundColor={
+                        field.viewColumn === COURSE_TABLE_COLUMN.AREA
+                          ? theme.color.area[
+                            String(field.getValue(course)).toLowerCase()
+                          ]
+                          : null}
                     >
                       {field.getValue(course)}
                     </TableCell>

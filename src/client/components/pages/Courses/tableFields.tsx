@@ -7,7 +7,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStickyNote as withNotes, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
 import { faStickyNote as withoutNotes } from '@fortawesome/free-regular-svg-icons';
-import { TERM } from 'common/constants';
+import { TERM, COURSE_TABLE_COLUMN, COURSE_TABLE_COLUMN_GROUP } from 'common/constants';
 
 /**
  * Simple helper function that takes a property name and optionally a semester
@@ -118,15 +118,6 @@ export const formatRooms = (
       </ol>
     );
 };
-/**
- * Constants by which to group columns
- */
-export enum COLUMN_GROUP {
-  SPRING,
-  FALL,
-  COURSE,
-  META
-}
 
 /**
  * Describes the columns in the CourseInstanceList
@@ -144,11 +135,11 @@ export interface CourseInstanceListColumn {
   /**
    * The name of the column as it appears in the [[View]] entity
    */
-  viewColumn: string;
+  viewColumn: COURSE_TABLE_COLUMN;
   /**
    * For grouping columns
    */
-  columnGroup: COLUMN_GROUP;
+  columnGroup: COURSE_TABLE_COLUMN_GROUP;
   /**
    * A function that will retrieve the appropriate data to appear in the cell
    */
@@ -164,148 +155,148 @@ export const tableFields: CourseInstanceListColumn[] = [
   {
     name: 'Area',
     key: 'area',
-    columnGroup: COLUMN_GROUP.COURSE,
-    viewColumn: 'area',
+    columnGroup: COURSE_TABLE_COLUMN_GROUP.COURSE,
+    viewColumn: COURSE_TABLE_COLUMN.AREA,
     getValue: retrieveValue('area'),
   },
   {
     name: 'Course',
     key: 'catalog-number',
-    columnGroup: COLUMN_GROUP.COURSE,
-    viewColumn: 'catalogNumber',
+    columnGroup: COURSE_TABLE_COLUMN_GROUP.COURSE,
+    viewColumn: COURSE_TABLE_COLUMN.CATALOG_NUMBER,
     getValue: retrieveValue('catalogNumber'),
   },
   {
     name: 'Title',
     key: 'title',
-    columnGroup: COLUMN_GROUP.COURSE,
-    viewColumn: 'title',
+    columnGroup: COURSE_TABLE_COLUMN_GROUP.COURSE,
+    viewColumn: COURSE_TABLE_COLUMN.TITLE,
     getValue: retrieveValue('title'),
   },
   {
     name: 'Same As',
     key: 'same-as',
-    columnGroup: COLUMN_GROUP.COURSE,
-    viewColumn: 'sameAs',
+    columnGroup: COURSE_TABLE_COLUMN_GROUP.COURSE,
+    viewColumn: COURSE_TABLE_COLUMN.SAME_AS,
     getValue: retrieveValue('sameAs'),
   },
   {
     name: 'Is SEAS?',
     key: 'is-seas',
-    columnGroup: COLUMN_GROUP.COURSE,
-    viewColumn: 'isSEAS',
+    columnGroup: COURSE_TABLE_COLUMN_GROUP.COURSE,
+    viewColumn: COURSE_TABLE_COLUMN.IS_SEAS,
     getValue: retrieveValue('isSEAS'),
   },
   {
     name: 'Is Undergraduate?',
     key: 'is-undergraduate',
-    columnGroup: COLUMN_GROUP.COURSE,
-    viewColumn: 'isUndergraduate',
+    columnGroup: COURSE_TABLE_COLUMN_GROUP.COURSE,
+    viewColumn: COURSE_TABLE_COLUMN.IS_UNDERGRADUATE,
     getValue: retrieveValue('isUndergraduate'),
   },
   {
     name: 'Offered',
     key: 'offered-fall',
-    columnGroup: COLUMN_GROUP.FALL,
-    viewColumn: 'offered',
+    columnGroup: COURSE_TABLE_COLUMN_GROUP.FALL,
+    viewColumn: COURSE_TABLE_COLUMN.OFFERED,
     getValue: retrieveValue('offered', TERM.FALL),
   },
   {
     name: 'Instructors',
     key: 'instructors-fall',
-    columnGroup: COLUMN_GROUP.FALL,
-    viewColumn: 'instructors',
+    columnGroup: COURSE_TABLE_COLUMN_GROUP.FALL,
+    viewColumn: COURSE_TABLE_COLUMN.INSTRUCTORS,
     getValue: formatInstructors(TERM.FALL),
   },
   {
     name: 'Times',
     key: 'times-fall',
-    columnGroup: COLUMN_GROUP.FALL,
-    viewColumn: 'times',
+    columnGroup: COURSE_TABLE_COLUMN_GROUP.FALL,
+    viewColumn: COURSE_TABLE_COLUMN.TIMES,
     getValue: formatTimes(TERM.FALL),
   },
   {
     name: 'Room',
     key: 'rooms-fall',
-    columnGroup: COLUMN_GROUP.FALL,
-    viewColumn: 'rooms',
+    columnGroup: COURSE_TABLE_COLUMN_GROUP.FALL,
+    viewColumn: COURSE_TABLE_COLUMN.ROOMS,
     getValue: formatRooms(TERM.FALL),
   },
   {
     name: 'Pre',
     key: 'pre-enrollment-fall',
-    columnGroup: COLUMN_GROUP.FALL,
-    viewColumn: 'enrollment',
+    columnGroup: COURSE_TABLE_COLUMN_GROUP.FALL,
+    viewColumn: COURSE_TABLE_COLUMN.ENROLLMENT,
     getValue: retrieveValue('preEnrollment', TERM.FALL),
   },
   {
     name: 'Study',
     key: 'study-card-enrollment-fall',
-    columnGroup: COLUMN_GROUP.FALL,
-    viewColumn: 'enrollment',
+    columnGroup: COURSE_TABLE_COLUMN_GROUP.FALL,
+    viewColumn: COURSE_TABLE_COLUMN.ENROLLMENT,
     getValue: retrieveValue('studyCardEnrollment', TERM.FALL),
   },
   {
     name: 'Actual',
     key: 'actual-enrollment-fall',
-    columnGroup: COLUMN_GROUP.FALL,
-    viewColumn: 'enrollment',
+    columnGroup: COURSE_TABLE_COLUMN_GROUP.FALL,
+    viewColumn: COURSE_TABLE_COLUMN.ENROLLMENT,
     getValue: retrieveValue('actualEnrollment', TERM.FALL),
   },
   {
     name: 'Offered',
     key: 'offered-spring',
-    columnGroup: COLUMN_GROUP.SPRING,
-    viewColumn: 'offered',
+    columnGroup: COURSE_TABLE_COLUMN_GROUP.SPRING,
+    viewColumn: COURSE_TABLE_COLUMN.OFFERED,
     getValue: retrieveValue('offered', TERM.SPRING),
   },
   {
     name: 'Instructors',
     key: 'instructors-spring',
-    columnGroup: COLUMN_GROUP.SPRING,
-    viewColumn: 'instructors',
+    columnGroup: COURSE_TABLE_COLUMN_GROUP.SPRING,
+    viewColumn: COURSE_TABLE_COLUMN.INSTRUCTORS,
     getValue: formatInstructors(TERM.SPRING),
   },
   {
     name: 'Times',
     key: 'times-spring',
-    columnGroup: COLUMN_GROUP.SPRING,
-    viewColumn: 'times',
+    columnGroup: COURSE_TABLE_COLUMN_GROUP.SPRING,
+    viewColumn: COURSE_TABLE_COLUMN.TIMES,
     getValue: formatTimes(TERM.SPRING),
   },
   {
     name: 'Room',
     key: 'rooms-spring',
-    columnGroup: COLUMN_GROUP.SPRING,
-    viewColumn: 'rooms',
+    columnGroup: COURSE_TABLE_COLUMN_GROUP.SPRING,
+    viewColumn: COURSE_TABLE_COLUMN.ROOMS,
     getValue: formatRooms(TERM.SPRING),
   },
   {
     name: 'Pre',
     key: 'pre-enrollment-spring',
-    columnGroup: COLUMN_GROUP.SPRING,
-    viewColumn: 'enrollment',
+    columnGroup: COURSE_TABLE_COLUMN_GROUP.SPRING,
+    viewColumn: COURSE_TABLE_COLUMN.ENROLLMENT,
     getValue: retrieveValue('preEnrollment', TERM.SPRING),
   },
   {
     name: 'Study',
     key: 'study-card-enrollment-spring',
-    columnGroup: COLUMN_GROUP.SPRING,
-    viewColumn: 'enrollment',
+    columnGroup: COURSE_TABLE_COLUMN_GROUP.SPRING,
+    viewColumn: COURSE_TABLE_COLUMN.ENROLLMENT,
     getValue: retrieveValue('studyCardEnrollment', TERM.SPRING),
   },
   {
     name: 'Actual',
     key: 'actual-enrollment-spring',
-    columnGroup: COLUMN_GROUP.SPRING,
-    viewColumn: 'enrollment',
+    columnGroup: COURSE_TABLE_COLUMN_GROUP.SPRING,
+    viewColumn: COURSE_TABLE_COLUMN.ENROLLMENT,
     getValue: retrieveValue('actualEnrollment', TERM.SPRING),
   },
   {
     name: 'Notes',
     key: 'notes',
-    columnGroup: COLUMN_GROUP.META,
-    viewColumn: 'notes',
+    columnGroup: COURSE_TABLE_COLUMN_GROUP.META,
+    viewColumn: COURSE_TABLE_COLUMN.NOTES,
     getValue: ({ notes }): ReactElement => {
       const hasNotes = notes && notes.trim().length > 0;
       const titleText = hasNotes ? 'View/Edit Notes' : 'Add Notes';
@@ -326,8 +317,8 @@ export const tableFields: CourseInstanceListColumn[] = [
   {
     name: 'Details',
     key: 'details',
-    columnGroup: COLUMN_GROUP.META,
-    viewColumn: 'details',
+    columnGroup: COURSE_TABLE_COLUMN_GROUP.META,
+    viewColumn: COURSE_TABLE_COLUMN.DETAILS,
     getValue: (): ReactElement => (
       <BorderlessButton
         variant={VARIANT.INFO}

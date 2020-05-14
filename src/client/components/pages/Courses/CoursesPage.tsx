@@ -9,7 +9,7 @@ import { MessageContext } from 'client/context';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { getCourseInstancesForYear } from 'client/api';
 import { MESSAGE_TYPE, MESSAGE_ACTION, AppMessage } from 'client/classes';
-import { OFFERED } from 'common/constants';
+import { OFFERED, COURSE_TABLE_COLUMN } from 'common/constants';
 import CourseInstanceTable from './CourseInstanceTable';
 import { tableFields } from './tableFields';
 
@@ -19,19 +19,19 @@ import { tableFields } from './tableFields';
  * we can just hard code/comment the columns to display
  */
 const currentView = [
-  'area',
-  'catalogNumber',
-  // 'title',
-  // 'sameAs',
-  'isSEAS',
-  // 'isUndergraduate',
-  'offered',
-  'instructors',
-  // 'times',
-  // 'rooms',
-  // 'enrollment',
-  'notes',
-  'details',
+  COURSE_TABLE_COLUMN.AREA,
+  COURSE_TABLE_COLUMN.CATALOG_NUMBER,
+  // COURSE_TABLE_COLUMN.TITLE,
+  // COURSE_TABLE_COLUMN.SAME_AS,
+  COURSE_TABLE_COLUMN.IS_SEAS,
+  // COURSE_TABLE_COLUMN.IS_UNDERGRADUATE,
+  COURSE_TABLE_COLUMN.OFFERED,
+  COURSE_TABLE_COLUMN.INSTRUCTORS,
+  // COURSE_TABLE_COLUMN.TIMES,
+  // COURSE_TABLE_COLUMN.ROOMS,
+  // COURSE_TABLE_COLUMN.ENROLLMENT,
+  COURSE_TABLE_COLUMN.NOTES,
+  COURSE_TABLE_COLUMN.DETAILS,
 ];
 
 /*

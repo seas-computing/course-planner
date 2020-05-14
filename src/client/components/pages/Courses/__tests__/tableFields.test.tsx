@@ -3,7 +3,7 @@ import {
   cs50CourseInstance, ac209aCourseInstance,
 } from 'testData';
 import { strictEqual, deepStrictEqual } from 'assert';
-import { TERM } from 'common/constants';
+import { TERM, COURSE_TABLE_COLUMN } from 'common/constants';
 import { render } from 'test-utils';
 import {
   retrieveValue, tableFields, formatInstructors, formatTimes, formatRooms,
@@ -127,7 +127,7 @@ describe('tableFields', function () {
     context('Course with Notes', function () {
       it('renders a button to view/edit notes', function () {
         const notesField = tableFields.find(({ viewColumn }): boolean => (
-          viewColumn === 'notes'));
+          viewColumn === COURSE_TABLE_COLUMN.NOTES));
         const { queryByLabelText } = render(
           <div>
             {notesField.getValue(ac209aCourseInstance)}
@@ -141,7 +141,7 @@ describe('tableFields', function () {
     context('Course without notes', function () {
       it('renders a button to add notes', function () {
         const notesField = tableFields.find(({ viewColumn }): boolean => (
-          viewColumn === 'notes'));
+          viewColumn === COURSE_TABLE_COLUMN.NOTES));
         const { queryByLabelText } = render(
           <div>
             {notesField.getValue(cs50CourseInstance)}
