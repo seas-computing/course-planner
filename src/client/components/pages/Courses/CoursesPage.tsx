@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useContext,
 } from 'react';
+import { LoadSpinner } from 'mark-one';
 import { MessageContext } from 'client/context';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { getCourseInstancesForYear } from 'client/api';
@@ -81,7 +82,11 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   return (
     <div className="course-instance-table">
       {fetching
-        ? <p>Fetching data...</p>
+        ? (
+          <div>
+            <LoadSpinner>Fetching Course Data</LoadSpinner>
+          </div>
+        )
         : (
           <CourseInstanceTable
             academicYear={acadYear}
