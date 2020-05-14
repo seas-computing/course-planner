@@ -17,9 +17,37 @@ This setup uses `docker` and `docker-compose` for local development, as defined 
        ├── course-planner-etl
        ├── mark-one
 
-1. To start the project, run:
+1. If in development, check out the develop branch:
+   ```sh
+   git checkout develop
+   ```
+1. Install the required packages:
+   ```sh
+   npm install
+   ```
+1. Start the project, run:
    ```sh
    docker-compose up
    ```
+1. Run the database migrations:
+   ```sh
+   docker-compose exec node npm run orm -- migration:run
+   ```
+
+1. switch to course-planner-etl and migrate the data: 
+   ```sh
+   cd ../course-planner-etl
+   git pull
+   npm install
+   npm run start
+   ```
+
+Note:
+You need to remove the old data from docker volume in order to migrate new the data and schema, otherwise the old data and schema might cause issues. 
+
+```sh
+docker volume ls
+docker volume rm course-planner_postgres_data
+```
 
 [docker]: https://docs.docker.com/install/
