@@ -18,7 +18,10 @@ import {
 } from 'mark-one';
 import { TableRowProps } from 'mark-one/lib/Tables/TableRow';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFolderOpen } from '@fortawesome/free-solid-svg-icons';
+import {
+  faFolderOpen,
+  faEdit,
+} from '@fortawesome/free-solid-svg-icons';
 import { ThemeContext } from 'styled-components';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 
@@ -131,7 +134,21 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
               <TableCell>{faculty.firstName}</TableCell>
               <TableCell>{categoryEnumToTitleCase(faculty.category)}</TableCell>
               <TableCell>{faculty.jointWith}</TableCell>
-              <TableCell>{absenceEnumToTitleCase(faculty.fall.absence ? faculty.fall.absence.type : '')}</TableCell>
+              <TableCell>
+                {absenceEnumToTitleCase(
+                  faculty.fall.absence
+                    ? faculty.fall.absence.type
+                    : ''
+                )}
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <BorderlessButton
+                    variant={VARIANT.INFO}
+                    onClick={(): void => {}}
+                  >
+                    <FontAwesomeIcon icon={faEdit} />
+                  </BorderlessButton>
+                </div>
+              </TableCell>
               <TableCell>
                 {faculty.fall.courses.map((course): ReactElement => (
                   <div key={course.id}>
@@ -139,7 +156,21 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
                   </div>
                 ))}
               </TableCell>
-              <TableCell>{absenceEnumToTitleCase(faculty.spring.absence ? faculty.spring.absence.type : '')}</TableCell>
+              <TableCell>
+                {absenceEnumToTitleCase(
+                  faculty.spring.absence
+                    ? faculty.spring.absence.type
+                    : ''
+                )}
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <BorderlessButton
+                    variant={VARIANT.INFO}
+                    onClick={(): void => {}}
+                  >
+                    <FontAwesomeIcon icon={faEdit} />
+                  </BorderlessButton>
+                </div>
+              </TableCell>
               <TableCell>
                 {faculty.spring.courses.map((course): ReactElement => (
                   <div key={course.id}>
