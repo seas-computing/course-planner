@@ -35,7 +35,7 @@ const FacultySchedule: FunctionComponent = function (): ReactElement {
   const [fetching, setFetching] = useState(false);
 
   // TODO: Get the actual current academic year instead of hard coding
-  const acadYear = 2020;
+  const acadYear = 2021;
 
   /**
    * Get faculty schedule data from the server
@@ -45,7 +45,7 @@ const FacultySchedule: FunctionComponent = function (): ReactElement {
     setFetching(true);
     getFacultySchedulesForYear(acadYear)
       .then((facultySchedules): void => {
-        setFacultySchedules(facultySchedules);
+        setFacultySchedules(facultySchedules[acadYear]);
       })
       .catch((err: Error): void => {
         dispatchMessage({
