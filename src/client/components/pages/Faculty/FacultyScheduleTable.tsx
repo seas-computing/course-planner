@@ -32,6 +32,35 @@ interface FacultyScheduleTableProps {
   facultySchedules: FacultyResponseDTO[];
 }
 
+/**
+ * A helper function that converts the faculty absence enum into the desired
+ * format for the Faculty table
+ * The string is split on the hyphen and joined with a space. Only the first
+ * letter of each word is capitalized.
+ * (e.g. 'SABBATICAL_INELIGIBLE' becomes 'Sabbatical Ineligible')
+ */
+const absenceEnumToTitleCase = function (str: string): string {
+  const words = str.split('_');
+  return words.map(
+    (word): string => word.charAt(0) + word.slice(1).toLowerCase()
+  ).join(' ');
+};
+
+/**
+ * A helper function that converts the faculty category enum into the desired
+ * format for the Faculty table
+ */
+const categoryEnumToTitleCase = function (str: string): string {
+  let result: string;
+  if (str === 'NON_SEAS_LADDER') {
+    result = 'Non-SEAS Ladder';
+  } else if (str === 'LADDER') {
+    result = 'Ladder';
+  } else if (str === 'NON_LADDER') {
+    result = 'Non-Ladder';
+  }
+  return result;
+};
 const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
   academicYear,
   facultySchedules,
@@ -83,20 +112,20 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
               </TableCell>
               <TableCell>{faculty.lastName}</TableCell>
               <TableCell>{faculty.firstName}</TableCell>
-              <TableCell>{faculty.category}</TableCell>
+              <TableCell>{categoryEnumToTitleCase(faculty.category)}</TableCell>
               <TableCell>{faculty.jointWith}</TableCell>
-              <TableCell>{faculty.fall.absence.type}</TableCell>
+              <TableCell>{absenceEnumToTitleCase(faculty.fall.absence ? faculty.fall.absence.type : '')}</TableCell>
               <TableCell>
                 {faculty.fall.courses.map((course): ReactElement => (
-                  <div>
+                  <div key={course.id}>
                     {course.catalogNumber}
                   </div>
                 ))}
               </TableCell>
-              <TableCell>{faculty.spring.absence.type}</TableCell>
+              <TableCell>{absenceEnumToTitleCase(faculty.spring.absence ? faculty.spring.absence.type : '')}</TableCell>
               <TableCell>
                 {faculty.spring.courses.map((course): ReactElement => (
-                  <div>
+                  <div key={course.id}>
                     {course.catalogNumber}
                   </div>
                 ))}
