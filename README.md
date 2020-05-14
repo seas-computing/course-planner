@@ -17,9 +17,13 @@ This setup uses `docker` and `docker-compose` for local development, as defined 
        ├── course-planner-etl
        ├── mark-one
 
-1. In development , check out the develop branch :
+1. If in development, check out the develop branch:
    ```sh
    git checkout develop
+   ```
+1. Install the required packages:
+   ```sh
+   npm install
    ```
 1. Start the project, run:
    ```sh
@@ -33,6 +37,8 @@ This setup uses `docker` and `docker-compose` for local development, as defined 
 1. switch to course-planner-etl and migrate the data: 
    ```sh
    cd course-planner-etl
+   git pull
+   npm install
    npm run start
    ```
 
