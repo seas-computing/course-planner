@@ -25,7 +25,7 @@ interface CourseInstanceTableProps {
    */
   courseList: CourseInstanceResponseDTO[];
   /**
-   * The data to display to show
+   * The data to display
    */
   tableData: CourseInstanceListColumn[];
   /**
