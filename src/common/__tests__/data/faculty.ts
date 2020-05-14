@@ -88,7 +88,6 @@ export const newAreaFacultyMemberResponse: ManageFacultyResponseDTO = {
  * An example [[FacultyResponseDTO]] response representing a schedule of an
  * applied math faculty member
  */
-
 export const appliedMathFacultyScheduleResponse: FacultyResponseDTO = {
   id: 'e8a7f24e-d6d0-4c9d-bfb6-89d070d21091',
   firstName: 'Sean',
@@ -96,7 +95,7 @@ export const appliedMathFacultyScheduleResponse: FacultyResponseDTO = {
   category: FACULTY_TYPE.LADDER,
   area: 'AM',
   fall: {
-    academicYear: 2019,
+    academicYear: 2021,
     courses: [
       {
         id: '37b66373-5000-43f2-9c14-8c2426273785',
@@ -113,7 +112,7 @@ export const appliedMathFacultyScheduleResponse: FacultyResponseDTO = {
     },
   },
   spring: {
-    academicYear: 2019,
+    academicYear: 2021,
     courses: [
       {
         id: '37b66373-5000-43f2-9c14-8c2426273785',
@@ -140,7 +139,7 @@ FacultyResponseDTO = {
   category: FACULTY_TYPE.NON_LADDER,
   area: 'EE',
   fall: {
-    academicYear: 2021,
+    academicYear: 2022,
     courses: [
       {
         id: '22225da5-5213-4787-b819-955f554eca4e',
@@ -161,7 +160,7 @@ FacultyResponseDTO = {
     },
   },
   spring: {
-    academicYear: 2021,
+    academicYear: 2022,
     courses: [
       {
         id: '441c517f-bc48-46e3-86c2-4949d1908c5d',
