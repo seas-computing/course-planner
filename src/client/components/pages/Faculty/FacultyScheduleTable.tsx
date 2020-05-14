@@ -10,6 +10,7 @@ import {
   TableRow,
   TableHeadingCell,
   TableBody,
+  TableHeadingSpacer,
   ALIGN,
   TableCell,
   BorderlessButton,
@@ -61,6 +62,10 @@ const categoryEnumToTitleCase = function (str: string): string {
   }
   return result;
 };
+
+/**
+ * Component representing the Faculty Schedules for a given academic year
+ */
 const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
   academicYear,
   facultySchedules,
@@ -76,11 +81,23 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
       <colgroup span={2} />
       <col />
       <TableHead>
-        <TableRow>
-          <td style={{ border: 'none' }} rowSpan={5} />
-          <th colSpan={2} scope="colgroup">{`Fall ${academicYear - 1}`}</th>
-          <th colSpan={2} scope="colgroup">{`Spring ${academicYear}`}</th>
-          <td style={{ border: 'none' }} rowSpan={1} />
+        <TableRow noHighlight>
+          <TableHeadingSpacer colSpan={5} />
+          <TableHeadingCell
+            backgroundColor="transparent"
+            colSpan={2}
+            scope="colgroup"
+          >
+            {`Fall ${academicYear - 1}`}
+          </TableHeadingCell>
+          <TableHeadingCell
+            backgroundColor="transparent"
+            colSpan={2}
+            scope="colgroup"
+          >
+            {`Spring ${academicYear}`}
+          </TableHeadingCell>
+          <TableHeadingSpacer rowSpan={1} />
         </TableRow>
         <TableRow isStriped>
           <TableHeadingCell scope="col">Area</TableHeadingCell>
