@@ -33,6 +33,9 @@ const FacultySchedule: FunctionComponent = function (): ReactElement {
    */
   const dispatchMessage = useContext(MessageContext);
 
+  /**
+   * Indicates whether the faculty data is in the process of being fetched
+   */
   const [fetching, setFetching] = useState(false);
 
   // TODO: Get the actual current academic year in future ticket instead of hard coding
