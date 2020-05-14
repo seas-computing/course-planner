@@ -29,7 +29,7 @@ This setup uses `docker` and `docker-compose` for local development, as defined 
    ```sh
    docker-compose up
    ```
-1. Run the database migration:
+1. Run the database migrations:
    ```sh
    docker-compose exec node npm run orm -- migration:run
    ```
