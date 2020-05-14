@@ -5,6 +5,7 @@ import React, {
   useContext,
   useEffect,
 } from 'react';
+import { LoadSpinner } from 'mark-one';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { MessageContext } from 'client/context';
 import { getFacultySchedulesForYear } from 'client/api';
@@ -34,7 +35,7 @@ const FacultySchedule: FunctionComponent = function (): ReactElement {
 
   const [fetching, setFetching] = useState(false);
 
-  // TODO: Get the actual current academic year instead of hard coding
+  // TODO: Get the actual current academic year in future ticket instead of hard coding
   const acadYear = 2021;
 
   /**
@@ -61,7 +62,11 @@ const FacultySchedule: FunctionComponent = function (): ReactElement {
   return (
     <div className="faculty-schedule-table">
       {fetching
-        ? <p>Fetching data...</p>
+        ? (
+          <div>
+            <LoadSpinner>Fetching Faculty Data</LoadSpinner>
+          </div>
+        )
         : (
           <FacultyScheduleTable
             academicYear={acadYear}
