@@ -18,7 +18,7 @@ Promise<ManageFacultyResponseDTO[]> => {
 export const getFacultySchedulesForYear = async (
   acadYears: number
 ):
-Promise<FacultyResponseDTO[]> => {
+Promise<{ [key: string]: FacultyResponseDTO[] }> => {
   const response = await request
     .get(`/api/faculty/schedule?acadYears=${acadYears}`);
   return response.data;
