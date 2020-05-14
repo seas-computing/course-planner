@@ -20,7 +20,7 @@ import {
 } from 'assert';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 
-describe.only('Faculty API', function () {
+describe('Faculty API', function () {
   let result: FacultyResponseDTO;
   let getStub: SinonStub;
   describe('GET /faculty/schedule', function () {
