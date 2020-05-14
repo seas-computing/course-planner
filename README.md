@@ -36,22 +36,18 @@ This setup uses `docker` and `docker-compose` for local development, as defined 
 
 1. switch to course-planner-etl and migrate the data: 
    ```sh
-   cd course-planner-etl
+   cd ../course-planner-etl
    git pull
    npm install
    npm run start
    ```
 
 Note:
-For Mac users, virtual image data (for docker) is located in ~/Library/Containers/com.docker.docker/Data/vms/0 .
 You need to remove the old data from docker volume in order to migrate new the data and schema, otherwise the old data and schema might cause issues. 
 
 ```sh
-screen ~/Library/Containers/com.docker.docker/Data/vms/0/tty
-
+docker volume ls
+docker volume rm course-planner_postgres_data
 ```
-press Ctrl+a, followed by pressing k and y to kill the session.
-
-
 
 [docker]: https://docs.docker.com/install/
