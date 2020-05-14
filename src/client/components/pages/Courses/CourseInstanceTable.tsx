@@ -143,7 +143,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
                     <TableHeadingCell
                       key={field.key}
                       scope="col"
-                      rowSpan={firstEnrollmentField > -1 ? '2' : null}
+                      rowSpan={firstEnrollmentField > -1 ? 2 : 1}
                     >
                       {field.name}
                     </TableHeadingCell>
@@ -156,7 +156,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
               <TableHeadingCell
                 key={key}
                 scope="col"
-                rowSpan={firstEnrollmentField > -1 ? '2' : '1'}
+                rowSpan={firstEnrollmentField > -1 ? 2 : 1}
               >
                 {name}
               </TableHeadingCell>
