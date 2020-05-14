@@ -43,7 +43,7 @@ This setup uses `docker` and `docker-compose` for local development, as defined 
    ```
 
 Note:
-For Mac user, virtual image data (for docker) is located on ~/Library/Containers/com.docker.docker/Data/vms/0 .
+For Mac users, virtual image data (for docker) is located in ~/Library/Containers/com.docker.docker/Data/vms/0 .
 You need to remove the old data from docker volume inorder to migrate new data and new schema, otherwise old data and schema might cause issues. 
 
 ```sh
