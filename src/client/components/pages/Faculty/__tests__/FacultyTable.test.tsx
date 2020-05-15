@@ -16,17 +16,11 @@ import {
   wait,
   GetByText,
 } from '@testing-library/react';
-import {
-  stub,
-  SinonStub,
-} from 'sinon';
-import request from 'axios';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import FacultyScheduleTable, {
   categoryEnumToTitleCase,
   absenceEnumToTitleCase,
 } from '../FacultyScheduleTable';
-import FacultySchedule from '../FacultyPage';
 
 /**
  * Helper function used to compare table row contents with faculty schedule data
