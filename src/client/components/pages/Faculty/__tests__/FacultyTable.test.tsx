@@ -17,10 +17,17 @@ import {
   GetByText,
 } from '@testing-library/react';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
+import {
+  SinonStub,
+  stub,
+} from 'sinon';
+import request from 'axios';
+import { error } from 'testData';
 import FacultyScheduleTable, {
   categoryEnumToTitleCase,
   absenceEnumToTitleCase,
 } from '../FacultyScheduleTable';
+import FacultySchedule from '../FacultyPage';
 
 /**
  * Helper function used to compare table row contents with faculty schedule data
@@ -159,6 +166,27 @@ describe('FacultyScheduleTable', function () {
         const newAreaStyle = window.getComputedStyle(getByText('NA'));
         strictEqual(newAreaStyle.backgroundColor, '');
       });
+    });
+  });
+  context('When faculty data fetch fails', function () {
+    let getStub: SinonStub;
+    let dispatchMessage: SinonStub;
+    const emptyTestData = [];
+    beforeEach(function () {
+      getStub = stub(request, 'get');
+      dispatchMessage = stub();
+      getStub.rejects(error);
+    });
+    afterEach(function () {
+      getStub.restore();
+    });
+    it('should throw an error', async function () {
+      const { getAllByRole } = render(
+        <FacultySchedule />,
+        dispatchMessage
+      );
+      await wait(() => getAllByRole('row').length === emptyTestData.length + 2);
+      strictEqual(dispatchMessage.callCount, 1);
     });
   });
 });
