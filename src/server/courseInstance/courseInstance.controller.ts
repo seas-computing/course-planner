@@ -11,7 +11,7 @@ import {
   ApiUseTags,
   ApiImplicitQuery,
 } from '@nestjs/swagger';
-import CourseResponseDTO from 'common/dto/courses/CourseInstanceResponse';
+import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { CourseInstanceService } from './courseInstance.service';
 import { SemesterService } from '../semester/semester.service';
 
@@ -37,7 +37,7 @@ export class CourseInstanceController {
   @Get('/')
   public async getInstances(
     @Query('acadYear') years?: string
-  ): Promise<CourseResponseDTO[][]> {
+  ): Promise<CourseInstanceResponseDTO[][]> {
     let yearList: string[];
 
     // fetch a list of all valid years
@@ -56,7 +56,7 @@ export class CourseInstanceController {
     }
     return Promise.all(
       yearList.map(
-        (year: string): Promise<CourseResponseDTO[]> => {
+        (year: string): Promise<CourseInstanceResponseDTO[]> => {
           const requestYear = parseInt(year, 10);
           return this.ciService.getAllByYear(requestYear);
         }
