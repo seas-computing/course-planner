@@ -94,6 +94,7 @@ export const appliedMathFacultyScheduleResponse: FacultyResponseDTO = {
   lastName: 'Garrison',
   category: FACULTY_TYPE.LADDER,
   area: 'AM',
+  jointWith: '',
   fall: {
     academicYear: 2021,
     courses: [
@@ -138,8 +139,9 @@ FacultyResponseDTO = {
   lastName: 'Demler',
   category: FACULTY_TYPE.NON_LADDER,
   area: 'EE',
+  jointWith: '',
   fall: {
-    academicYear: 2022,
+    academicYear: 2021,
     courses: [
       {
         id: '22225da5-5213-4787-b819-955f554eca4e',
@@ -160,7 +162,7 @@ FacultyResponseDTO = {
     },
   },
   spring: {
-    academicYear: 2022,
+    academicYear: 2021,
     courses: [
       {
         id: '441c517f-bc48-46e3-86c2-4949d1908c5d',
