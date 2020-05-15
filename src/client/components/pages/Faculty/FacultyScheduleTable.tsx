@@ -43,7 +43,7 @@ interface FacultyScheduleTableProps {
  * letter of each word is capitalized.
  * (e.g. 'SABBATICAL_INELIGIBLE' becomes 'Sabbatical Ineligible')
  */
-const absenceEnumToTitleCase = function (str: string): string {
+export const absenceEnumToTitleCase = function (str: string): string {
   const words = str.split('_');
   return words.map(
     (word): string => word.charAt(0) + word.slice(1).toLowerCase()
@@ -54,7 +54,7 @@ const absenceEnumToTitleCase = function (str: string): string {
  * A helper function that converts the faculty category enum into the desired
  * format for the Faculty table
  */
-const categoryEnumToTitleCase = function (str: string): string {
+export const categoryEnumToTitleCase = function (str: string): string {
   let result: string;
   if (str === 'NON_SEAS_LADDER') {
     result = 'Non-SEAS Ladder';
