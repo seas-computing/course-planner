@@ -120,7 +120,7 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
         </TableRow>
       </TableHead>
       <TableBody isScrollable>
-        {facultySchedules
+        {facultySchedules && facultySchedules
           .map((faculty, facultyIndex): ReactElement<TableRowProps> => (
             <TableRow isStriped={facultyIndex % 2 === 1} key={faculty.id}>
               <TableCell
