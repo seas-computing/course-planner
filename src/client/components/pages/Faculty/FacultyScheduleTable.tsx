@@ -79,10 +79,14 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
   const theme: BaseTheme = useContext(ThemeContext);
   return (
     <Table>
-      <col span={5} />
+      <colgroup>
+        <col span={5} />
+      </colgroup>
       <colgroup span={2} />
       <colgroup span={2} />
-      <col />
+      <colgroup>
+        <col />
+      </colgroup>
       <TableHead>
         <TableRow noHighlight>
           <TableHeadingSpacer colSpan={5} />
