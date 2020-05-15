@@ -65,7 +65,7 @@ const assertRowMatchesResponse = function (
     .join(''));
 };
 
-describe.only('FacultyScheduleTable', function () {
+describe('FacultyScheduleTable', function () {
   const facultyScheduleList = [
     appliedMathFacultyScheduleResponse,
     electricalEngineeringFacultyScheduleResponse,
