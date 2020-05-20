@@ -64,7 +64,7 @@ describe('Faculty API', function () {
             await api.getAllFacultyMembers();
             fail('Did not throw an error');
           } catch (err) {
-            deepStrictEqual(err, error);
+            strictEqual(err, error);
           }
         });
       });
