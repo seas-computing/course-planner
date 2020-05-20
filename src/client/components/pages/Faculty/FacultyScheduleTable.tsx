@@ -59,7 +59,7 @@ export const categoryEnumToTitleCase = function (str: string): string {
   const result: string = {
     [FACULTY_TYPE.LADDER]: 'Ladder',
     [FACULTY_TYPE.NON_SEAS_LADDER]: 'Non-SEAS Ladder',
-    [FACULTY_TYPE.NON_LADDER]: 'Non Ladder',
+    [FACULTY_TYPE.NON_LADDER]: 'Non-Ladder',
   }[str];
   return result;
 };
