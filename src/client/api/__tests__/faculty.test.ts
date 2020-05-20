@@ -57,7 +57,7 @@ describe('Faculty API', function () {
       });
       context('when data fetch fails', function () {
         beforeEach(async function () {
-          getStub.rejects();
+          getStub.rejects(error);
         });
         it('should throw an error', async function () {
           try {
