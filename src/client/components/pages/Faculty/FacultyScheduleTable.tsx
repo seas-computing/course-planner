@@ -24,6 +24,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { ThemeContext } from 'styled-components';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
+import { FACULTY_TYPE } from 'common/constants';
 
 interface FacultyScheduleTableProps {
   /**
@@ -55,14 +56,11 @@ export const absenceEnumToTitleCase = function (str: string): string {
  * format for the Faculty table
  */
 export const categoryEnumToTitleCase = function (str: string): string {
-  let result: string;
-  if (str === 'NON_SEAS_LADDER') {
-    result = 'Non-SEAS Ladder';
-  } else if (str === 'LADDER') {
-    result = 'Ladder';
-  } else if (str === 'NON_LADDER') {
-    result = 'Non-Ladder';
-  }
+  const result: string = {
+    [FACULTY_TYPE.LADDER]: 'Ladder',
+    [FACULTY_TYPE.NON_SEAS_LADDER]: 'Non-SEAS Ladder',
+    [FACULTY_TYPE.NON_LADDER]: 'Non Ladder',
+  }[str];
   return result;
 };
 
