@@ -36,7 +36,7 @@ describe('Faculty API', function () {
         beforeEach(async function () {
           getStub.resolves({
             data: {
-              2021: [
+              [acadYear]: [
                 appliedMathFacultyScheduleResponse,
               ],
             },
