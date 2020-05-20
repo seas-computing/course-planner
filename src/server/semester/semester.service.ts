@@ -42,8 +42,8 @@ export class SemesterService {
       .select('sem.term', 'term')
       .addSelect('sem."academicYear"', 'year')
       .distinct(true)
-      .orderBy('term', 'ASC')
-      .addOrderBy('year', 'ASC')
+      .orderBy('year', 'ASC')
+      .addOrderBy('term', 'ASC')
       .getRawMany()
       .then(
         // raw result is array, so we need to map to get the desired format (e.g. 'FALL 2021')
