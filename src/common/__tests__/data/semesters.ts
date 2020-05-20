@@ -40,4 +40,20 @@ export const rawYearList = [
   { year: '2019' },
   { year: '2020' },
   { year: '2021' },
+
+];
+/**
+ * A collection of semester data, as returned by the database query in
+ * [[SemesterService#getSemesterList]]
+ */
+export const rawSemesterList = [
+  { term: 'FALL', year: 2018 },
+  { term: 'SPRING', year: 2018 },
+  { term: 'FALL', year: 2019 },
+  { term: 'SPRING', year: 2019 },
+  { term: 'FALL', year: 2020 },
+  { term: 'SPRING', year: 2020 },
+  { term: 'FALL', year: 2021 },
+  { term: 'SPRING', year: 2021 },
+  { term: 'FALL', year: 2022 },
 ];
