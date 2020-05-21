@@ -1,6 +1,8 @@
 import { Faculty } from 'server/faculty/faculty.entity';
 import { FACULTY_TYPE } from 'common/constants';
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
+import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
+import { ABSENCE_TYPE } from 'server/absence/absence.entity';
 
 /**
  * An example [[Faculty]] entry representing an applied math faculty member
@@ -80,4 +82,152 @@ export const newAreaFacultyMemberResponse: ManageFacultyResponseDTO = {
   lastName: 'Lawson',
   HUID: '80598351',
   category: FACULTY_TYPE.NON_SEAS_LADDER,
+};
+
+/**
+ * An example [[FacultyResponseDTO]] response representing a schedule of an
+ * applied math faculty member
+ */
+export const appliedMathFacultyScheduleResponse: FacultyResponseDTO = {
+  id: 'e8a7f24e-d6d0-4c9d-bfb6-89d070d21091',
+  firstName: 'Sean',
+  lastName: 'Garrison',
+  category: FACULTY_TYPE.LADDER,
+  area: 'AM',
+  jointWith: '',
+  fall: {
+    academicYear: 2021,
+    courses: [
+      {
+        id: '37b66373-5000-43f2-9c14-8c2426273785',
+        catalogNumber: 'AM 10',
+      },
+      {
+        id: '6cfaf5af-d2bc-4959-81cc-9f87bf38f9d3',
+        catalogNumber: 'AM 20',
+      },
+    ],
+    absence: {
+      id: 'e8a7f24e-d6d0-4c9d-bfb6-89d070d21091',
+      type: ABSENCE_TYPE.SABBATICAL_ELIGIBLE,
+    },
+  },
+  spring: {
+    academicYear: 2021,
+    courses: [
+      {
+        id: '37b66373-5000-43f2-9c14-8c2426273785',
+        catalogNumber: 'AM 10',
+      },
+    ],
+    absence: {
+      id: 'e8a7f24e-d6d0-4c9d-bfb6-89d070d21091',
+      type: ABSENCE_TYPE.SABBATICAL_ELIGIBLE,
+    },
+  },
+};
+
+/**
+ * An example [[FacultyResponseDTO]] response representing a schedule of an
+ * applied math faculty member
+ */
+
+export const electricalEngineeringFacultyScheduleResponse:
+FacultyResponseDTO = {
+  id: 'aef568df-969d-41d9-9fa5-746cbf734dce',
+  firstName: 'Avi',
+  lastName: 'Demler',
+  category: FACULTY_TYPE.NON_LADDER,
+  area: 'EE',
+  jointWith: '',
+  fall: {
+    academicYear: 2021,
+    courses: [
+      {
+        id: '22225da5-5213-4787-b819-955f554eca4e',
+        catalogNumber: 'EE 100',
+      },
+      {
+        id: '05d04a88-8db2-46fe-8b87-aa70244ad655',
+        catalogNumber: 'EE 20',
+      },
+      {
+        id: 'bbc7492a-71b2-489b-a9ec-a0a052c4f5c8',
+        catalogNumber: 'EE 210',
+      },
+    ],
+    absence: {
+      id: 'e8a7f24e-d6d0-4c9d-bfb6-89d070d21091',
+      type: ABSENCE_TYPE.SABBATICAL_ELIGIBLE,
+    },
+  },
+  spring: {
+    academicYear: 2021,
+    courses: [
+      {
+        id: '441c517f-bc48-46e3-86c2-4949d1908c5d',
+        catalogNumber: 'EE 204',
+      },
+      {
+        id: '73d1ee13-8b05-46d9-86fc-9e86442f94bd',
+        catalogNumber: 'EE 130',
+      },
+      {
+        id: 'bbc7492a-71b2-489b-a9ec-a0a052c4f5c8',
+        catalogNumber: 'EE 210',
+      },
+      {
+        id: 'c6d3e613-fc0e-4ad4-91d3-7396dbb364f8',
+        catalogNumber: 'EE 300',
+      },
+    ],
+    absence: {
+      id: '5f700cd5-9ff9-48a7-875d-2a7b7dc290ea',
+      type: ABSENCE_TYPE.SABBATICAL_INELIGIBLE,
+    },
+  },
+};
+
+/**
+ * An example [[FacultyResponseDTO]] response representing a schedule of a
+ * faculty member in an area that does not yet exist for the purpose of testing
+ * that the backgroundColor prop is not passed when area does not exist
+ */
+export const newAreaFacultyScheduleResponse: FacultyResponseDTO = {
+  id: '441c517f-bc48-46e3-86c2-4949d1908c5d',
+  firstName: 'Penelope',
+  lastName: 'Watson',
+  category: FACULTY_TYPE.LADDER,
+  area: 'NA',
+  jointWith: '',
+  fall: {
+    academicYear: 2021,
+    courses: [
+      {
+        id: '37b66373-5000-43f2-9c14-8c2426273785',
+        catalogNumber: 'NA 100',
+      },
+      {
+        id: '6cfaf5af-d2bc-4959-81cc-9f87bf38f9d3',
+        catalogNumber: 'NA 210',
+      },
+    ],
+    absence: {
+      id: 'e8a7f24e-d6d0-4c9d-bfb6-89d070d21091',
+      type: ABSENCE_TYPE.SABBATICAL_ELIGIBLE,
+    },
+  },
+  spring: {
+    academicYear: 2021,
+    courses: [
+      {
+        id: '37b66373-5000-43f2-9c14-8c2426273785',
+        catalogNumber: 'NA 310',
+      },
+    ],
+    absence: {
+      id: 'e8a7f24e-d6d0-4c9d-bfb6-89d070d21091',
+      type: ABSENCE_TYPE.SABBATICAL_ELIGIBLE,
+    },
+  },
 };

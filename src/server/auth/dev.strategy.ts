@@ -17,7 +17,7 @@ class DevStrategy extends PassportStrategy(Strategy, AUTH_MODE.DEV) {
       firstName: 'Test',
       lastName: 'User',
       email: 'noreply@seas.harvard.edu',
-      groups: [GROUP.ADMIN],
+      groups: [GROUP.ADMIN, GROUP.READ_ONLY],
     });
     return req;
   }

@@ -39,6 +39,7 @@ import NoMatch from './pages/NoMatch';
 import logo from '../img/seas-logo.svg';
 import CourseAdmin from './pages/CourseAdmin';
 import FacultyAdmin from './pages/FacultyAdmin';
+import FacultyPage from './pages/Faculty/FacultyPage';
 import CourseInstanceList from './pages/Courses/CoursesPage';
 
 /**
@@ -142,6 +143,7 @@ const ColdApp: SFC = (): ReactElement => {
                   <Redirect from="/" exact to="/courses" />
                   <Route path="/courses" component={CourseInstanceList} />
                   <Route path="/course-admin" component={CourseAdmin} />
+                  <Route exact path="/faculty" component={FacultyPage} />
                   <Route path="/faculty-admin" component={FacultyAdmin} />
                   <Route component={NoMatch} />
                 </Switch>

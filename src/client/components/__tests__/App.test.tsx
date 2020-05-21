@@ -210,5 +210,16 @@ describe('App', function () {
         getByText('HUID')
       ));
     });
+    it('renders the Faculty component when URL matches the faculty URL', function () {
+      const url = '/faculty';
+      const { getAllByText } = render(
+        <MemoryRouter initialEntries={[url]}>
+          <App />
+        </MemoryRouter>
+      );
+      return waitForElement(() => (
+        getAllByText('Sabbatical Leave')
+      ));
+    });
   });
 });
