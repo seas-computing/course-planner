@@ -67,7 +67,7 @@ describe('Metadata Controller', function () {
       const expectedSemesters = rawSemesterList
         .map(({ term, year }): string => `${term} ${year}`);
       beforeEach(async function () {
-        academicYearStub = stub(configService, 'academicYear')
+        stub(configService, 'academicYear')
           .get(() => expectedAcademicYear);
         findAreaStub.resolves(expectedAreas);
         getSemesterListStub.resolves(expectedSemesters);
