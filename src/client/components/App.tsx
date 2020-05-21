@@ -112,7 +112,7 @@ const ColdApp: SFC = (): ReactElement => {
 
   useEffect((): void => {
     getMetadata()
-      .then(({ data: metadata }): void => {
+      .then((metadata): void => {
         setMetadata(metadata);
       })
       .catch((): void => {
