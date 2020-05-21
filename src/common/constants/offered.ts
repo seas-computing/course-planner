@@ -24,3 +24,15 @@ enum OFFERED {
 }
 
 export default OFFERED;
+
+/**
+ * Helper function to get a cleaner text version of the enum value
+ */
+
+export const offeredEnumToString = (offeredEnum: OFFERED): string => (
+  {
+    Y: 'Yes',
+    N: 'No',
+    RETIRED: 'Retired',
+  }[offeredEnum]
+);

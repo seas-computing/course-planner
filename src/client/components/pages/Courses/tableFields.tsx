@@ -34,6 +34,9 @@ export const retrieveValue = (
   if (typeof rawValue === 'boolean') {
     return rawValue ? 'Yes' : 'No';
   }
+  if (rawValue in OFFERED) {
+    return offeredEnumToString(rawValue as OFFERED);
+  }
   return rawValue;
 };
 
