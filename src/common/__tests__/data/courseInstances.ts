@@ -56,6 +56,7 @@ export const cs50CourseInstance: CourseInstanceResponseDTO = {
         endTime: '12:00 PM',
         room: {
           id: 'afc4ee36-b0cf-4cd7-97b7-b51b3323280d',
+          campus: 'Cambridge',
           name: 'Sanders Theater',
         },
       },
@@ -99,6 +100,7 @@ export const es095CourseInstance: CourseInstanceResponseDTO = {
         endTime: '05:45 PM',
         room: {
           id: 'bb64bef2-584c-4a40-8d3f-34137580472f',
+          campus: 'Cambridge',
           name: 'Maxwell Dworkin G110',
         },
       },
@@ -125,6 +127,7 @@ export const es095CourseInstance: CourseInstanceResponseDTO = {
         endTime: '06:00 PM',
         room: {
           id: 'bb64bef2-584c-4a40-8d3f-34137580472f',
+          campus: 'Cambridge',
           name: 'Maxwell Dworkin G110',
         },
       },
@@ -191,6 +194,7 @@ export const ac209aCourseInstance: CourseInstanceResponseDTO = {
         endTime: '02:45 PM',
         room: {
           id: '533bc88d-3652-43c9-9936-56e280b57d6f',
+          campus: 'Cambridge',
           name: 'Northwest Building B101',
         },
       },
@@ -201,6 +205,7 @@ export const ac209aCourseInstance: CourseInstanceResponseDTO = {
         endTime: '02:45 PM',
         room: {
           id: '533bc88d-3652-43c9-9936-56e280b57d6f',
+          campus: 'Cambridge',
           name: 'Northwest Building B101',
         },
       },

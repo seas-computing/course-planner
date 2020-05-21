@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Room } from 'server/location/room.entity';
 import { Building } from 'server/location/building.entity';
+import { Campus } from 'server/location/campus.entity';
 import { MeetingListingView } from 'server/meeting/MeetingListingView.entity';
 
 /**
@@ -24,7 +25,9 @@ import { MeetingListingView } from 'server/meeting/MeetingListingView.entity';
   SelectQueryBuilder<Room> => connection.createQueryBuilder()
     .select('r.id', 'id')
     .addSelect("CONCAT_WS(' ', b.name, r.name)", 'name')
+    .addSelect('c.name', 'campus')
     .leftJoin(Building, 'b', 'r."buildingId" = b.id')
+    .leftJoin(Campus, 'c', 'b."campusId" = c.id')
     .from(Room, 'r'),
 })
 export class RoomListingView {
@@ -41,6 +44,13 @@ export class RoomListingView {
 
   @ViewColumn()
   public name: string;
+
+  /**
+   * From [[Campus]]
+   * The name of the campus where the building is located
+   */
+  @ViewColumn()
+  public campus: string;
 
   /**
    * One [[Room]] can have many [[MeetingListingView]]
