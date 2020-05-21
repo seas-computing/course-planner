@@ -49,6 +49,16 @@ export const retrieveValue = (
 };
 
 /**
+ * Utility component to arrange the list and button in the instructors column
+ */
+
+const InstructorsLayout = styled.div`
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+`;
+
+/**
  * Helper function that returns a function that will format a course's
  * instructors into a list
  */
@@ -63,15 +73,26 @@ export const formatInstructors = (
   return instructors.length === 0
     ? null
     : (
-      <ol>
+      <TableCellList>
         {instructors.map(
-          ({ id, displayName }): ReactElement => (
-            <li key={id}>
-              {displayName}
-            </li>
+          ({ id, displayName }, index: number): ReactElement => (
+            <TableCellListItem key={id}>
+              <InstructorsLayout>
+                {displayName}
+                {index === 0 && (
+                  <BorderlessButton
+                    onClick={(): void => {}}
+                    variant={VARIANT.INFO}
+                  >
+                    <FontAwesomeIcon icon={faEdit} />
+                  </BorderlessButton>
+                )
+                }
+              </InstructorsLayout>
+            </TableCellListItem>
           )
         )}
-      </ol>
+      </TableCellList>
     );
 };
 
