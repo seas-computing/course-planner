@@ -2,12 +2,20 @@ import React, { ReactElement, ReactNode, ReactText } from 'react';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import {
   BorderlessButton,
+  TableCellList,
+  TableCellListItem,
   VARIANT,
 } from 'mark-one';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStickyNote as withNotes, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
+import { faStickyNote as withNotes, faFolderOpen, faEdit } from '@fortawesome/free-solid-svg-icons';
 import { faStickyNote as withoutNotes } from '@fortawesome/free-regular-svg-icons';
-import { TERM, COURSE_TABLE_COLUMN, COURSE_TABLE_COLUMN_GROUP } from 'common/constants';
+import {
+  TERM, COURSE_TABLE_COLUMN, COURSE_TABLE_COLUMN_GROUP, OFFERED,
+} from 'common/constants';
+import { CampusIcon } from 'client/components/general';
+import { dayEnumToString } from 'common/constants/day';
+import { offeredEnumToString } from 'common/constants/offered';
+import styled from 'styled-components';
 
 /**
  * Simple helper function that takes a property name and optionally a semester
@@ -68,10 +76,32 @@ export const formatInstructors = (
 };
 
 /**
- * Helper function to format meeting times into a list
+ * Utility component to style the data about a meeting
+ */
+const MeetingGrid = styled.div`
+  display: grid;
+  grid-template-areas: "time campus room button";
+  grid-template-columns: 2fr 2em 3fr 2em;
+  column-gap: ${({ theme }): string => (theme.ws.xsmall)};
+  align-items: baseline;
+`;
+
+/**
+ * Handles the placement of a single piece of the meeting data
  */
 
-export const formatTimes = (
+const MeetingGridSection = styled.div<{area: string}>`
+  grid-area: ${({ area }): string => area};
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+`;
+
+/**
+ * Helper function to format day, time, and room into a single list
+ */
+
+export const formatMeetings = (
   sem: TERM
 ): (arg0: CourseInstanceResponseDTO
   ) => ReactNode => (
@@ -81,47 +111,40 @@ export const formatTimes = (
   return meetings[0].day === null
     ? null
     : (
-      <ol>
+      <TableCellList>
         {meetings.map(({
           id,
+          room: { name: roomName, campus },
           day,
           startTime,
           endTime,
         }): ReactElement => (
-          <li key={id}>
-            {`${day}: ${startTime}-${endTime}`}
-          </li>
+          <TableCellListItem key={id}>
+            <MeetingGrid>
+              <MeetingGridSection area="time">
+                <div>{dayEnumToString(day)}</div>
+                <div>{`${startTime}-${endTime}`}</div>
+              </MeetingGridSection>
+              <MeetingGridSection area="room">
+                {roomName}
+              </MeetingGridSection>
+              <MeetingGridSection area="campus">
+                <CampusIcon>{campus}</CampusIcon>
+              </MeetingGridSection>
+              <MeetingGridSection area="button">
+                <BorderlessButton
+                  onClick={(): void => {}}
+                  variant={VARIANT.INFO}
+                >
+                  <FontAwesomeIcon icon={faEdit} />
+                </BorderlessButton>
+              </MeetingGridSection>
+            </MeetingGrid>
+          </TableCellListItem>
         ))}
-      </ol>
+      </TableCellList>
     );
 };
-/**
- * Helper function to format meeting rooms into a list
- */
-
-export const formatRooms = (
-  sem: TERM
-): (arg0: CourseInstanceResponseDTO
-  ) => ReactNode => (
-  course: CourseInstanceResponseDTO
-): ReactNode => {
-  const { meetings } = course[sem.toLowerCase()];
-  return meetings[0].day === null
-    ? null
-    : (
-      <ol>
-        {meetings.map(({
-          id,
-          room: { name },
-        }): ReactElement => (
-          <li key={id}>
-            {name}
-          </li>
-        ))}
-      </ol>
-    );
-};
-
 /**
  * Describes the columns in the CourseInstanceList
  */
@@ -212,18 +235,11 @@ export const tableFields: CourseInstanceListColumn[] = [
     getValue: formatInstructors(TERM.FALL),
   },
   {
-    name: 'Times',
-    key: 'times-fall',
+    name: 'Meetings',
+    key: 'meetings-fall',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.FALL,
-    viewColumn: COURSE_TABLE_COLUMN.TIMES,
-    getValue: formatTimes(TERM.FALL),
-  },
-  {
-    name: 'Room',
-    key: 'rooms-fall',
-    columnGroup: COURSE_TABLE_COLUMN_GROUP.FALL,
-    viewColumn: COURSE_TABLE_COLUMN.ROOMS,
-    getValue: formatRooms(TERM.FALL),
+    viewColumn: COURSE_TABLE_COLUMN.MEETINGS,
+    getValue: formatMeetings(TERM.FALL),
   },
   {
     name: 'Pre',
@@ -261,18 +277,11 @@ export const tableFields: CourseInstanceListColumn[] = [
     getValue: formatInstructors(TERM.SPRING),
   },
   {
-    name: 'Times',
-    key: 'times-spring',
+    name: 'Meetings',
+    key: 'meetings-spring',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.SPRING,
-    viewColumn: COURSE_TABLE_COLUMN.TIMES,
-    getValue: formatTimes(TERM.SPRING),
-  },
-  {
-    name: 'Room',
-    key: 'rooms-spring',
-    columnGroup: COURSE_TABLE_COLUMN_GROUP.SPRING,
-    viewColumn: COURSE_TABLE_COLUMN.ROOMS,
-    getValue: formatRooms(TERM.SPRING),
+    viewColumn: COURSE_TABLE_COLUMN.MEETINGS,
+    getValue: formatMeetings(TERM.SPRING),
   },
   {
     name: 'Pre',

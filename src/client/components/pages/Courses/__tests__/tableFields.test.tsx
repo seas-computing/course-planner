@@ -5,8 +5,9 @@ import {
 import { strictEqual, deepStrictEqual } from 'assert';
 import { TERM, COURSE_TABLE_COLUMN } from 'common/constants';
 import { render } from 'test-utils';
+import { dayEnumToString } from 'common/constants/day';
 import {
-  retrieveValue, tableFields, formatInstructors, formatTimes, formatRooms,
+  retrieveValue, tableFields, formatInstructors, formatMeetings,
 } from '../tableFields';
 
 describe('tableFields', function () {
@@ -73,83 +74,61 @@ describe('tableFields', function () {
         });
       });
     });
-    describe('formatTimes', function () {
+    describe('formatMeetings', function () {
       context('When semester has data', function () {
         it('Should return a component that renders days/times as a list', function () {
-          const fallTimes = formatTimes(TERM.FALL);
+          const fallMeetings = formatMeetings(TERM.FALL);
           const { getAllByRole } = render(
             <div>
-              {fallTimes(ac209aCourseInstance)}
+              {fallMeetings(ac209aCourseInstance)}
             </div>,
             (): void => {}
           );
           const entries = getAllByRole('listitem')
             .map(({ textContent }): string => textContent);
           const timesList = ac209aCourseInstance.fall.meetings
-            .map(({ day, startTime, endTime }): string => (
-              `${day}: ${startTime}-${endTime}`));
+            .map(({
+              day, startTime, endTime, room,
+            }): string => (
+              `${dayEnumToString(day)}${startTime}-${endTime}${room.name}${room.campus}`));
           deepStrictEqual(entries, timesList);
         });
       });
       context('When semester does not have data', function () {
         it('Should return null', function () {
-          const springTimes = formatTimes(TERM.SPRING);
+          const springTimes = formatMeetings(TERM.SPRING);
           strictEqual(springTimes(ac209aCourseInstance), null);
         });
       });
     });
-    describe('formatRooms', function () {
-      context('When semester has data', function () {
-        it('Should return a component that renders rooms as a list', function () {
-          const fallRooms = formatRooms(TERM.FALL);
-          const { getAllByRole } = render(
+    describe('Notes field', function () {
+      context('Course with Notes', function () {
+        it('renders a button to view/edit notes', function () {
+          const notesField = tableFields.find(({ viewColumn }): boolean => (
+            viewColumn === COURSE_TABLE_COLUMN.NOTES));
+          const { queryByLabelText } = render(
             <div>
-              {fallRooms(ac209aCourseInstance)}
+              {notesField.getValue(ac209aCourseInstance)}
             </div>,
             (): void => {}
           );
-          const entries = getAllByRole('listitem')
-            .map(({ textContent }): string => textContent);
-          const roomsList = ac209aCourseInstance.fall.meetings
-            .map(({ room }): string => room.name);
-          deepStrictEqual(entries, roomsList);
+          const icon = queryByLabelText('View/Edit Notes');
+          strictEqual(icon !== null, true);
         });
       });
-      context('When semester does not have data', function () {
-        it('Should return null', function () {
-          const springRooms = formatRooms(TERM.SPRING);
-          strictEqual(springRooms(ac209aCourseInstance), null);
+      context('Course without notes', function () {
+        it('renders a button to add notes', function () {
+          const notesField = tableFields.find(({ viewColumn }): boolean => (
+            viewColumn === COURSE_TABLE_COLUMN.NOTES));
+          const { queryByLabelText } = render(
+            <div>
+              {notesField.getValue(cs50CourseInstance)}
+            </div>,
+            (): void => {}
+          );
+          const icon = queryByLabelText('Add Notes');
+          strictEqual(icon !== null, true);
         });
-      });
-    });
-  });
-  describe('Notes field', function () {
-    context('Course with Notes', function () {
-      it('renders a button to view/edit notes', function () {
-        const notesField = tableFields.find(({ viewColumn }): boolean => (
-          viewColumn === COURSE_TABLE_COLUMN.NOTES));
-        const { queryByLabelText } = render(
-          <div>
-            {notesField.getValue(ac209aCourseInstance)}
-          </div>,
-          (): void => {}
-        );
-        const icon = queryByLabelText('View/Edit Notes');
-        strictEqual(icon !== null, true);
-      });
-    });
-    context('Course without notes', function () {
-      it('renders a button to add notes', function () {
-        const notesField = tableFields.find(({ viewColumn }): boolean => (
-          viewColumn === COURSE_TABLE_COLUMN.NOTES));
-        const { queryByLabelText } = render(
-          <div>
-            {notesField.getValue(cs50CourseInstance)}
-          </div>,
-          (): void => {}
-        );
-        const icon = queryByLabelText('Add Notes');
-        strictEqual(icon !== null, true);
       });
     });
   });
