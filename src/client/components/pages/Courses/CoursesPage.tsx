@@ -22,14 +22,13 @@ import { tableFields } from './tableFields';
 const currentView = [
   COURSE_TABLE_COLUMN.AREA,
   COURSE_TABLE_COLUMN.CATALOG_NUMBER,
-  // COURSE_TABLE_COLUMN.TITLE,
-  // COURSE_TABLE_COLUMN.SAME_AS,
+  COURSE_TABLE_COLUMN.TITLE,
+  COURSE_TABLE_COLUMN.SAME_AS,
   COURSE_TABLE_COLUMN.IS_SEAS,
   // COURSE_TABLE_COLUMN.IS_UNDERGRADUATE,
   COURSE_TABLE_COLUMN.OFFERED,
   COURSE_TABLE_COLUMN.INSTRUCTORS,
-  // COURSE_TABLE_COLUMN.TIMES,
-  // COURSE_TABLE_COLUMN.ROOMS,
+  COURSE_TABLE_COLUMN.MEETINGS,
   // COURSE_TABLE_COLUMN.ENROLLMENT,
   COURSE_TABLE_COLUMN.NOTES,
   COURSE_TABLE_COLUMN.DETAILS,
@@ -44,7 +43,7 @@ const showRetired = false;
 
 
 // TODO: Get the actual current academic year instead of hard coding
-const acadYear = 2020;
+const acadYear = 2019;
 
 /**
  * Component representing the list of CourseInstances in a given Academic year
