@@ -6,6 +6,7 @@ import { strictEqual, deepStrictEqual } from 'assert';
 import { TERM, COURSE_TABLE_COLUMN } from 'common/constants';
 import { render } from 'test-utils';
 import { dayEnumToString } from 'common/constants/day';
+import { offeredEnumToString } from 'common/constants/offered';
 import {
   retrieveValue, tableFields, formatInstructors, formatMeetings,
 } from '../tableFields';
@@ -21,15 +22,15 @@ describe('tableFields', function () {
         );
       });
       it('Should return a function to get a semester level field', function () {
-        const getValueFall = retrieveValue('offered', TERM.FALL);
-        const getValueSpring = retrieveValue('offered', TERM.SPRING);
+        const getValueFall = retrieveValue('actualEnrollment', TERM.FALL);
+        const getValueSpring = retrieveValue('actualEnrollment', TERM.SPRING);
         strictEqual(
           getValueFall(cs50CourseInstance),
-          cs50CourseInstance.fall.offered
+          cs50CourseInstance.fall.actualEnrollment
         );
         strictEqual(
           getValueSpring(cs50CourseInstance),
-          cs50CourseInstance.spring.offered
+          cs50CourseInstance.spring.actualEnrollment
         );
       });
       it('should return a function that converts true booleans to "Yes"', function () {
@@ -44,6 +45,13 @@ describe('tableFields', function () {
         strictEqual(
           getBooleanValue({ ...cs50CourseInstance, isSEAS: false }),
           'No'
+        );
+      });
+      it('Should return a function that converts OFFERED values to strings', function () {
+        const getValueFall = retrieveValue('offered', TERM.FALL);
+        strictEqual(
+          getValueFall(cs50CourseInstance),
+          offeredEnumToString(cs50CourseInstance.fall.offered)
         );
       });
     });
