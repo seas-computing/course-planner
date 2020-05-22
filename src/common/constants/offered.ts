@@ -29,10 +29,17 @@ export default OFFERED;
  * Helper function to get a cleaner text version of the enum value
  */
 
-export const offeredEnumToString = (offeredEnum: OFFERED): string => (
-  {
-    Y: 'Yes',
-    N: 'No',
-    RETIRED: 'Retired',
-  }[offeredEnum]
-);
+export const offeredEnumToString = (offeredEnum: OFFERED): string | null => {
+  switch (offeredEnum) {
+    case OFFERED.Y:
+      return 'Yes';
+    case OFFERED.N:
+      return 'No';
+    case OFFERED.BLANK:
+      return '';
+    case OFFERED.RETIRED:
+      return 'Retired';
+    default:
+      return null;
+  }
+};
