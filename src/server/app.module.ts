@@ -13,6 +13,7 @@ import { AuthModule } from './auth/auth.module';
 import { CourseModule } from './course/course.module';
 import { FacultyModule } from './faculty/faculty.module';
 import { CourseInstanceModule } from './courseInstance/courseInstance.module';
+import { MetadataModule } from './metadata/metadata.module';
 
 /**
  * Base application module that configures the database connections and other
@@ -59,6 +60,7 @@ import { CourseInstanceModule } from './courseInstance/courseInstance.module';
     CourseModule,
     FacultyModule,
     CourseInstanceModule,
+    MetadataModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'client'),
       exclude: ['/api*'],
