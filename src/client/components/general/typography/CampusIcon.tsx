@@ -15,6 +15,7 @@ const StyledCampusIcon = styled.strong`
   align-items: center;
   justify-content: center;
   background-color: ${({ theme }): string => (theme.color.text.dark)};
+  text-transform: capitalize;
   color:  ${({ theme }): string => (theme.color.text.light)};
   border-radius: 50%;
   width: 1.5em;
@@ -32,11 +33,13 @@ const StyledCampusIcon = styled.strong`
 
 const CampusIcon: FunctionComponent<CampusIconProps> = ({
   children,
-}): ReactElement => {
+}: CampusIconProps): ReactElement => {
   const [initial, ...rest] = children;
   return (
     <span>
-      <StyledCampusIcon title={children}>{initial}</StyledCampusIcon>
+      <StyledCampusIcon title={children}>
+        {initial}
+      </StyledCampusIcon>
       <HiddenText>{rest.join('')}</HiddenText>
     </span>
   );
