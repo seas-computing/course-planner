@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { TERM } from 'common/constants';
 import { Semester } from './semester.entity';
 
 /**
@@ -41,9 +42,14 @@ export class SemesterService {
       .createQueryBuilder('sem')
       .select('sem.term', 'term')
       .addSelect('sem."academicYear"', 'year')
+      .addSelect(`CASE
+      WHEN term = '${TERM.SPRING}' THEN 1
+      WHEN term = '${TERM.FALL}' THEN 2
+      ELSE 3
+    END`, 'termOrder')
       .distinct(true)
       .orderBy('year', 'ASC')
-      .addOrderBy('term', 'ASC')
+      .addOrderBy('"termOrder"', 'ASC')
       .getRawMany()
       .then(
         // raw result is array, so we need to map to get the desired format (e.g. 'FALL 2021')
