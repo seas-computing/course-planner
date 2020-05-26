@@ -33,7 +33,7 @@ describe('Metadata API', function () {
         beforeEach(async function () {
           getStub.resolves({
             data: {
-              academicYear: 2021,
+              currentAcademicYear: 2021,
               areas: rawAreaList.map((area) => area.name),
               semesters: rawSemesterList
                 .map(({ term, year }): string => `${term} ${year}`),

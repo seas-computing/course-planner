@@ -74,7 +74,7 @@ describe('Metadata Controller', function () {
         metadata = await mdController.getMetadata();
       });
       it('should return the correct academic year', async function () {
-        strictEqual(metadata.academicYear, expectedAcademicYear);
+        strictEqual(metadata.currentAcademicYear, expectedAcademicYear);
       });
       it('should return the correct areas', async function () {
         strictEqual(findAreaStub.callCount, 1);
