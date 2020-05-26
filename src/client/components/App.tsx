@@ -105,7 +105,7 @@ const ColdApp: SFC = (): ReactElement => {
    * Provider.
    */
   const [currentMetadata, setMetadata] = useState({
-    academicYear: null,
+    currentAcademicYear: null,
     areas: [],
     semesters: [],
   });
