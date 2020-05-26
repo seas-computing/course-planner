@@ -30,7 +30,7 @@ describe('Metadata Controller', function () {
         {
           provide: AreaService,
           useValue: {
-            find: findAreaStub,
+            getAreaList: findAreaStub,
           },
         },
         {

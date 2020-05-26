@@ -51,7 +51,7 @@ describe('Metadata API', function () {
         it('should return the metadata', function () {
           deepStrictEqual(result,
             {
-              academicYear: 2021,
+              currentAcademicYear: 2021,
               areas: rawAreaList.map((area) => area.name),
               semesters: rawSemesterList
                 .map(({ term, year }): string => `${term} ${year}`),
