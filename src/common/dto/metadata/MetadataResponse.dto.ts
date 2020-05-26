@@ -12,7 +12,7 @@ export abstract class MetadataResponse {
     type: 'number',
     example: 2012,
   })
-  public academicYear: number;
+  public currentAcademicYear: number;
 
   @ApiModelProperty({
     type: 'string',
