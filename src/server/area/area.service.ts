@@ -10,7 +10,7 @@ export class AreaService {
    * Resolve an array containing all areas that currently exist in the
    * database, as strings
    */
-  public async find(): Promise<string[]> {
+  public async getAreaList(): Promise<string[]> {
     return this.areaRepository
       .createQueryBuilder('a')
       .select('a.name', 'name')

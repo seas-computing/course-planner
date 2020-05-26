@@ -44,7 +44,7 @@ export class MetadataController {
   public async getMetadata(): Promise<MetadataResponse> {
     return {
       academicYear: this.configService.academicYear,
-      areas: await this.areaService.find(),
+      areas: await this.areaService.getAreaList(),
       semesters: await this.semesterService.getSemesterList(),
     };
   }

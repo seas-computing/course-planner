@@ -48,7 +48,7 @@ describe('Area Service', function () {
         mockAreaQueryBuilder.getRawMany.resolves(rawAreaList);
       });
       it('returns a list of just the areas', async function () {
-        const result = await areaService.find();
+        const result = await areaService.getAreaList();
         const areaArray = rawAreaList.map((area) => area.name);
         strictEqual(result.length, rawAreaList.length);
         deepStrictEqual(result, areaArray);
@@ -62,7 +62,7 @@ describe('Area Service', function () {
         mockAreaQueryBuilder.getRawMany.resolves([]);
       });
       it('returns an empty array', async function () {
-        const result = await areaService.find();
+        const result = await areaService.getAreaList();
         strictEqual(result.length, 0);
         deepStrictEqual(result, []);
       });
