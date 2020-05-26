@@ -16,14 +16,14 @@ export abstract class MetadataResponse {
 
   @ApiModelProperty({
     type: 'string',
-    example: 'AP',
+    example: ['AP', 'CS'],
     isArray: true,
   })
   public areas: string[];
 
   @ApiModelProperty({
     type: 'string',
-    example: 'Fall 2012',
+    example: ['Fall 2012', 'Spring 2013'],
     isArray: true,
   })
   public semesters: string[];
