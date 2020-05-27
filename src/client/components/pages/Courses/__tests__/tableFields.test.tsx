@@ -3,7 +3,7 @@ import {
   cs50CourseInstance, ac209aCourseInstance,
 } from 'testData';
 import { strictEqual, deepStrictEqual } from 'assert';
-import { TERM, COURSE_TABLE_COLUMN } from 'common/constants';
+import { TERM, COURSE_TABLE_COLUMN, IS_SEAS } from 'common/constants';
 import { render } from 'test-utils';
 import {
   retrieveValue, tableFields, formatInstructors, formatTimes, formatRooms,
@@ -34,14 +34,14 @@ describe('tableFields', function () {
       it('should return a function that converts true booleans to "Yes"', function () {
         const getBooleanValue = retrieveValue('isSEAS');
         strictEqual(
-          getBooleanValue({ ...cs50CourseInstance, isSEAS: true }),
+          getBooleanValue({ ...cs50CourseInstance, isSEAS: IS_SEAS.Y }),
           'Yes'
         );
       });
       it('should return a function that converts false booleans to "No"', function () {
         const getBooleanValue = retrieveValue('isSEAS');
         strictEqual(
-          getBooleanValue({ ...cs50CourseInstance, isSEAS: false }),
+          getBooleanValue({ ...cs50CourseInstance, isSEAS: IS_SEAS.Y }),
           'No'
         );
       });

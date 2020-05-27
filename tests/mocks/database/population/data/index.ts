@@ -3,6 +3,7 @@ import {
   DAY,
   FACULTY_TYPE,
   TERM,
+  IS_SEAS,
 } from 'common/constants';
 
 export * from './areas';
@@ -32,7 +33,7 @@ export interface CourseData {
   notes: string;
   private: boolean;
   termPattern: TERM_PATTERN;
-  isSEAS: boolean;
+  isSEAS: IS_SEAS;
   sameAs: string | null;
   instances: {
     facultyHUIDs: string[];
