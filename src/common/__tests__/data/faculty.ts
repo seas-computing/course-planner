@@ -1,8 +1,7 @@
 import { Faculty } from 'server/faculty/faculty.entity';
-import { FACULTY_TYPE } from 'common/constants';
+import { ABSENCE_TYPE, FACULTY_TYPE } from 'common/constants';
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
-import { ABSENCE_TYPE } from 'server/absence/absence.entity';
 
 /**
  * An example [[Faculty]] entry representing an applied math faculty member

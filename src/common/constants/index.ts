@@ -1,3 +1,4 @@
+export { default as ABSENCE_TYPE } from './absenceType';
 export { default as FACULTY_TYPE } from './facultyType';
 export { default as DAY } from './day';
 export { default as OFFERED } from './offered';
