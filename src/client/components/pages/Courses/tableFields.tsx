@@ -49,16 +49,6 @@ export const retrieveValue = (
 };
 
 /**
- * Utility component to arrange the list and button in the instructors column
- */
-
-const InstructorsLayout = styled.div`
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-`;
-
-/**
  * Helper function that returns a function that will format a course's
  * instructors into a list
  */
@@ -73,26 +63,23 @@ export const formatInstructors = (
   return instructors.length === 0
     ? null
     : (
-      <TableCellList>
-        {instructors.map(
-          ({ id, displayName }, index: number): ReactElement => (
-            <TableCellListItem key={id}>
-              <InstructorsLayout>
+      <>
+        <TableCellList>
+          {instructors.map(
+            ({ id, displayName }): ReactElement => (
+              <TableCellListItem key={id}>
                 {displayName}
-                {index === 0 && (
-                  <BorderlessButton
-                    onClick={(): void => {}}
-                    variant={VARIANT.INFO}
-                  >
-                    <FontAwesomeIcon icon={faEdit} />
-                  </BorderlessButton>
-                )
-                }
-              </InstructorsLayout>
-            </TableCellListItem>
-          )
-        )}
-      </TableCellList>
+              </TableCellListItem>
+            )
+          )}
+        </TableCellList>
+        <BorderlessButton
+          onClick={(): void => {}}
+          variant={VARIANT.INFO}
+        >
+          <FontAwesomeIcon icon={faEdit} />
+        </BorderlessButton>
+      </>
     );
 };
 
@@ -101,7 +88,7 @@ export const formatInstructors = (
  */
 const MeetingGrid = styled.div`
   display: grid;
-  grid-template-areas: "time campus room button";
+  grid-template-areas: "time campus room";
   grid-template-columns: 2fr 2em 3fr 2em;
   column-gap: ${({ theme }): string => (theme.ws.xsmall)};
   align-items: baseline;
@@ -132,38 +119,38 @@ export const formatMeetings = (
   return meetings[0].day === null
     ? null
     : (
-      <TableCellList>
-        {meetings.map(({
-          id,
-          room: { name: roomName, campus },
-          day,
-          startTime,
-          endTime,
-        }): ReactElement => (
-          <TableCellListItem key={id}>
-            <MeetingGrid>
-              <MeetingGridSection area="time">
-                <div>{dayEnumToString(day)}</div>
-                <div>{`${startTime}-${endTime}`}</div>
-              </MeetingGridSection>
-              <MeetingGridSection area="room">
-                {roomName}
-              </MeetingGridSection>
-              <MeetingGridSection area="campus">
-                <CampusIcon>{campus}</CampusIcon>
-              </MeetingGridSection>
-              <MeetingGridSection area="button">
-                <BorderlessButton
-                  onClick={(): void => {}}
-                  variant={VARIANT.INFO}
-                >
-                  <FontAwesomeIcon icon={faEdit} />
-                </BorderlessButton>
-              </MeetingGridSection>
-            </MeetingGrid>
-          </TableCellListItem>
-        ))}
-      </TableCellList>
+      <>
+        <TableCellList>
+          {meetings.map(({
+            id,
+            room: { name: roomName, campus },
+            day,
+            startTime,
+            endTime,
+          }): ReactElement => (
+            <TableCellListItem key={id}>
+              <MeetingGrid>
+                <MeetingGridSection area="time">
+                  <div>{dayEnumToString(day)}</div>
+                  <div>{`${startTime}-${endTime}`}</div>
+                </MeetingGridSection>
+                <MeetingGridSection area="room">
+                  {roomName}
+                </MeetingGridSection>
+                <MeetingGridSection area="campus">
+                  <CampusIcon>{campus}</CampusIcon>
+                </MeetingGridSection>
+              </MeetingGrid>
+            </TableCellListItem>
+          ))}
+        </TableCellList>
+        <BorderlessButton
+          onClick={(): void => {}}
+          variant={VARIANT.INFO}
+        >
+          <FontAwesomeIcon icon={faEdit} />
+        </BorderlessButton>
+      </>
     );
 };
 /**
