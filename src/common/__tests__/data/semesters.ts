@@ -47,13 +47,13 @@ export const rawYearList = [
  * [[SemesterService#getSemesterList]]
  */
 export const rawSemesterList = [
-  { term: 'FALL', year: 2018 },
-  { term: 'SPRING', year: 2018 },
-  { term: 'FALL', year: 2019 },
-  { term: 'SPRING', year: 2019 },
-  { term: 'FALL', year: 2020 },
-  { term: 'SPRING', year: 2020 },
-  { term: 'FALL', year: 2021 },
-  { term: 'SPRING', year: 2021 },
-  { term: 'FALL', year: 2022 },
+  { term: 'SPRING', year: 2018, termOrder: 1 },
+  { term: 'FALL', year: 2018, termOrder: 2 },
+  { term: 'SPRING', year: 2019, termOrder: 1 },
+  { term: 'FALL', year: 2019, termOrder: 2 },
+  { term: 'SPRING', year: 2020, termOrder: 1 },
+  { term: 'FALL', year: 2020, termOrder: 2 },
+  { term: 'SPRING', year: 2021, termOrder: 1 },
+  { term: 'FALL', year: 2021, termOrder: 2 },
+  { term: 'SPRING', year: 2022, termOrder: 1 },
 ];
