@@ -7,8 +7,17 @@ import { RoomPopulationService } from './room.population';
 import { CoursePopulationService } from './course.population';
 import { FacultyPopulationService } from './faculty.population';
 import {
-  areas, semesters, buildings, campuses, rooms, faculty, courses,
+  areas,
+  semesters,
+  buildings,
+  campuses,
+  rooms,
+  faculty,
+  courses,
+  nonClassParents,
+  nonClassEvents,
 } from './data';
+import { NonClassEventPopulationService } from './nonclassevents.population';
 
 /**
  * Imlements the nestjs lifecycle hooks to automatically populate and
@@ -37,6 +46,10 @@ export class PopulationService implements
   @Inject(CoursePopulationService)
   protected courseService: CoursePopulationService;
 
+  @Inject(NonClassEventPopulationService)
+  protected nonClassEventPopulationService: NonClassEventPopulationService;
+
+
   /**
    * Calls the necessary populate functions to fill the table with data,
    * resolving when all have finished.
@@ -47,6 +60,10 @@ export class PopulationService implements
     await this.roomService.populate({ buildings, campuses, rooms });
     await this.facultyService.populate({ faculty });
     await this.courseService.populate({ courses });
+    await this.nonClassEventPopulationService.populate({
+      parents: nonClassParents,
+      events: nonClassEvents,
+    });
   }
 
   /**

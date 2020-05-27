@@ -14,6 +14,7 @@ import { CourseModule } from './course/course.module';
 import { FacultyModule } from './faculty/faculty.module';
 import { CourseInstanceModule } from './courseInstance/courseInstance.module';
 import { MetadataModule } from './metadata/metadata.module';
+import { NonClassEventModule } from './nonClassEvent/nonclassevent.module';
 
 /**
  * Base application module that configures the database connections and other
@@ -61,6 +62,7 @@ import { MetadataModule } from './metadata/metadata.module';
     FacultyModule,
     CourseInstanceModule,
     MetadataModule,
+    NonClassEventModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'client'),
       exclude: ['/api*'],
