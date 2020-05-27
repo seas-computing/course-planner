@@ -1,4 +1,7 @@
-import { strictEqual, deepStrictEqual } from 'assert';
+import {
+  strictEqual,
+  deepStrictEqual,
+} from 'assert';
 import {
   createStubInstance,
   SinonStubbedInstance,
@@ -9,7 +12,10 @@ import { Test } from '@nestjs/testing';
 import { SelectQueryBuilder } from 'typeorm';
 import { Semester } from 'server/semester/semester.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { rawYearList } from 'testData';
+import {
+  rawYearList,
+  rawSemesterList,
+} from 'testData';
 import { SemesterService } from '../semester.service';
 
 describe('Semester Service', function () {
@@ -59,6 +65,41 @@ describe('Semester Service', function () {
       });
       it('returns an empty array', async function () {
         const result = await semesterService.getYearList();
+        strictEqual(result.length, 0);
+        deepStrictEqual(result, []);
+      });
+    });
+  });
+  describe('getSemesterList', function () {
+    context('When there are records in the database', function () {
+      beforeEach(function () {
+        mockSemesterQueryBuilder.select.returnsThis();
+        mockSemesterQueryBuilder.addSelect.returnsThis();
+        mockSemesterQueryBuilder.distinct.returnsThis();
+        mockSemesterQueryBuilder.orderBy.returnsThis();
+        mockSemesterQueryBuilder.addOrderBy.returnsThis();
+        mockSemesterQueryBuilder.getRawMany.resolves(rawSemesterList);
+      });
+      it('returns a list of the terms and years of existing semesters', async function () {
+        const result = await semesterService.getSemesterList();
+        strictEqual(result.length, rawSemesterList.length);
+        deepStrictEqual(
+          result,
+          rawSemesterList.map(({ term, year }): string => `${term} ${year}`)
+        );
+      });
+    });
+    context('When there are no records in the database', function () {
+      beforeEach(function () {
+        mockSemesterQueryBuilder.select.returnsThis();
+        mockSemesterQueryBuilder.addSelect.returnsThis();
+        mockSemesterQueryBuilder.distinct.returnsThis();
+        mockSemesterQueryBuilder.orderBy.returnsThis();
+        mockSemesterQueryBuilder.addOrderBy.returnsThis();
+        mockSemesterQueryBuilder.getRawMany.resolves([]);
+      });
+      it('returns an empty array', async function () {
+        const result = await semesterService.getSemesterList();
         strictEqual(result.length, 0);
         deepStrictEqual(result, []);
       });
