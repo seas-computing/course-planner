@@ -91,20 +91,6 @@ abstract class MeetingSemester {
   public term: TERM;
 }
 
-abstract class MeetingFaculty {
-  @ApiModelProperty({
-    description: 'Faculty primary key ID',
-    example: '55d5b9e0-259a-4bb4-8bb2-d1421ef47bf2',
-  })
-  public id: string;
-
-  @ApiModelProperty({
-    description: 'A concatenation of the faculty member\'s last and first ',
-    example: 'Waldo, James',
-  })
-  public listName: string;
-}
-
 abstract class NonClassEvent {
   @ApiModelProperty({
     type: 'enum',
@@ -128,9 +114,6 @@ abstract class NonClassEvent {
 
   @ApiModelProperty({ type: MeetingSemester })
   public semester: MeetingSemester;
-
-  @ApiModelProperty({ type: MeetingFaculty })
-  public faculty: MeetingFaculty[] = [];
 }
 
 export default abstract class NonClassMeetingResponseDTO {
