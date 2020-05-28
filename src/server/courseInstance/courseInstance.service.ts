@@ -9,7 +9,7 @@ import { Semester } from 'server/semester/semester.entity';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { MultiYearPlanView } from 'server/courseInstance/MultiYearPlanView.entity';
 import { ConfigService } from 'server/config/config.service';
-import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
+import { MultiYearPlanServiceResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanServiceResponseDTO';
 import { Course } from 'server/course/course.entity';
 import { MultiYearPlanFacultyListingView } from 'server/courseInstance/MultiYearPlanFacultyListingView.entity';
 import { TERM } from 'common/constants';
@@ -108,7 +108,7 @@ export class CourseInstanceService {
   /**
    * Calculates an array of academic years based on the current year
    */
-  private computeAcademicYears(numYears: number = 4): number[] {
+  public computeAcademicYears(numYears: number = 4): number[] {
     // If an invalid number of years is provided, use the default number of years
     const validatedNumYears = (
       Math.floor(numYears) > 0
@@ -126,7 +126,7 @@ export class CourseInstanceService {
    * Resolves a list of course instances for the Multi Year Plan
    */
   public async getMultiYearPlan(numYears?: number):
-  Promise<MultiYearPlanResponseDTO[]> {
+  Promise<MultiYearPlanServiceResponseDTO[]> {
     const academicYears = this.computeAcademicYears(numYears);
     return await this.multiYearPlanViewRepository
       .createQueryBuilder('c')
@@ -153,6 +153,6 @@ export class CourseInstanceService {
       .addOrderBy('"catalogNumber"', 'ASC')
       .addOrderBy('instructors."instructorOrder"', 'ASC')
       .addOrderBy('instructors."displayName"', 'ASC')
-      .getMany() as MultiYearPlanResponseDTO[];
+      .getMany() as MultiYearPlanServiceResponseDTO[];
   }
 }
