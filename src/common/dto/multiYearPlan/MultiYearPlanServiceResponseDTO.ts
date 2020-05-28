@@ -1,7 +1,7 @@
 import { ApiModelProperty } from '@nestjs/swagger';
 import { TERM } from 'common/constants';
 
-export abstract class MultiYearPlanInstanceFaculty {
+export abstract class MultiYearPlanServiceFaculty {
   @ApiModelProperty({
     type: 'string',
     example: 'f696d531-aef2-413f-9922-f480aa9d6039',
@@ -21,21 +21,7 @@ export abstract class MultiYearPlanInstanceFaculty {
   public instructorOrder: number;
 }
 
-export abstract class MultiYearPlanInstance {
-  @ApiModelProperty({
-    type: 'string',
-    example: '1f8cc026-d8bf-429d-9fdb-32b89cfdce9d',
-  })
-  public id: string;
-
-  @ApiModelProperty({
-    isArray: true,
-    type: MultiYearPlanInstanceFaculty,
-  })
-  public faculty: MultiYearPlanInstanceFaculty[];
-}
-
-export abstract class MultiYearPlanSemester {
+export abstract class MultiYearPlanServiceInstance {
   @ApiModelProperty({
     type: 'string',
     example: 'fc772fd6-651e-40c3-97e6-b815818120ce',
@@ -44,30 +30,30 @@ export abstract class MultiYearPlanSemester {
 
   @ApiModelProperty({
     type: 'string',
-    example: '2019',
+    example: '2012',
   })
   public academicYear: string;
 
   @ApiModelProperty({
     type: 'string',
-    example: '2019',
+    example: '2011',
   })
   public calendarYear: string;
 
   @ApiModelProperty({
     type: 'string',
-    example: TERM.SPRING,
+    example: TERM.FALL,
   })
   public term: TERM;
 
   @ApiModelProperty({
     isArray: true,
-    type: MultiYearPlanInstance,
+    type: MultiYearPlanServiceFaculty,
   })
-  public instances: MultiYearPlanInstance[];
+  public faculty: MultiYearPlanServiceFaculty[];
 }
 
-export abstract class MultiYearPlanResponseDTO {
+export abstract class MultiYearPlanServiceResponseDTO {
   @ApiModelProperty({
     type: 'string',
     example: '37b66373-5000-43f2-9c14-8c2426273785',
@@ -94,7 +80,7 @@ export abstract class MultiYearPlanResponseDTO {
 
   @ApiModelProperty({
     isArray: true,
-    type: MultiYearPlanSemester,
+    type: MultiYearPlanServiceInstance,
   })
-  public semesters: MultiYearPlanSemester[];
+  public instances: MultiYearPlanServiceInstance[];
 }
