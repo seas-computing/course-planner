@@ -61,10 +61,9 @@ export abstract class MultiYearPlanSemester {
   public term: TERM;
 
   @ApiModelProperty({
-    isArray: true,
     type: MultiYearPlanInstance,
   })
-  public instances: MultiYearPlanInstance[];
+  public instance: MultiYearPlanInstance;
 }
 
 export abstract class MultiYearPlanResponseDTO {

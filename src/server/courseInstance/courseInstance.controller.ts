@@ -107,16 +107,18 @@ export class CourseInstanceController {
       area: course.area,
       catalogNumber: course.catalogNumber,
       title: course.title,
-      // Put the instances inside of each semester
+      // There should only ever be one instance for a course within a given
+      // semester, which is why we are setting the first element of the array
+      // to the instance property.
       semesters: semesters.map((semester): MultiYearPlanSemester => ({
         ...semester,
-        instances: course.instances.filter((instance): boolean => (
+        instance: course.instances.filter((instance): boolean => (
           instance.academicYear === semester.academicYear
               && instance.term === semester.term))
-          .map(({ id, faculty }): MultiYearPlanInstance => ({ id, faculty })),
+          .map(({ id, faculty }):
+          MultiYearPlanInstance => ({ id, faculty }))[0],
       })),
     }));
-
     return coursesBySemester;
   }
 }
