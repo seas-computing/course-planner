@@ -13,7 +13,7 @@ import { OFFERED } from 'common/constants';
 import { Meeting } from 'server/meeting/meeting.entity';
 import { ConfigService } from 'server/config/config.service';
 import { ConfigModule } from 'server/config/config.module';
-import { MultiYearPlanResponseDTO, MultiYearPlanInstanceFaculty, MultiYearPlanInstance } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
+import { MultiYearPlanServiceResponseDTO, MultiYearPlanServiceFaculty, MultiYearPlanServiceInstance } from 'common/dto/multiYearPlan/MultiYearPlanServiceResponseDTO';
 import flatMap from 'lodash.flatmap';
 import { AuthModule } from 'server/auth/auth.module';
 import MockDB from '../../../mocks/database/MockDB';
@@ -191,7 +191,7 @@ describe('Course Instance Service', function () {
     });
   });
   describe('getMultiYearPlan', function () {
-    let result: MultiYearPlanResponseDTO[];
+    let result: MultiYearPlanServiceResponseDTO[];
     const numYears = 4;
     beforeEach(async function () {
       result = await ciService.getMultiYearPlan(numYears);
@@ -201,17 +201,17 @@ describe('Course Instance Service', function () {
     });
     it('should return the instructors for each course instance ordered by instructorOrder and displayName', function () {
       const minFacultyToSort = 3;
-      const multipleFacultyArrays: MultiYearPlanInstanceFaculty[][] = flatMap(
+      const multipleFacultyArrays: MultiYearPlanServiceFaculty[][] = flatMap(
         result,
         // get all the instances
-        (course: MultiYearPlanResponseDTO) => course.instances
+        (course: MultiYearPlanServiceResponseDTO) => course.instances
       )
         // discard instances with less than 3 faculty
-        .filter((instance: MultiYearPlanInstance) => (
+        .filter((instance: MultiYearPlanServiceInstance) => (
           instance.faculty.length >= minFacultyToSort
         ))
         // get the faculty
-        .map((instance: MultiYearPlanInstance) => instance.faculty);
+        .map((instance: MultiYearPlanServiceInstance) => instance.faculty);
       const facultyArraysToCheck = 2;
       // confirm that we have at least 2 to check
       strictEqual(multipleFacultyArrays.length >= facultyArraysToCheck, true);
