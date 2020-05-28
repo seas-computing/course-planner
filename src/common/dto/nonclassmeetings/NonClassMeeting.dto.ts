@@ -141,7 +141,7 @@ export default abstract class NonClassMeetingResponseDTO {
   public id: string;
 
   @ApiModelProperty({
-    description: 'The title of this non class meeting',
+    description: 'The title of this non class parent',
     example: 'Reading group',
   })
   public title: string;
