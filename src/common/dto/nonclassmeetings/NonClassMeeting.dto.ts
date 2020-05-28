@@ -41,19 +41,6 @@ abstract class Course {
   public termPattern: TERM_PATTERN;
 }
 
-abstract class Room {
-  @ApiModelProperty({
-    description: 'The room ID',
-    example: 'b205ec82-1694-4269-887a-3030fdc65d92',
-  })
-  public id: string;
-
-  @ApiModelProperty({
-    example: 'Geological Museum 105',
-  })
-  public name: string;
-}
-
 abstract class MeetingLocation {
   @ApiModelProperty({
     example: 'Allston',
@@ -61,12 +48,9 @@ abstract class MeetingLocation {
   public campus: string;
 
   @ApiModelProperty({
-    example: 'Maxwell-Dworkin',
+    example: 'Geological Museum 105',
   })
-  public building: string;
-
-  @ApiModelProperty({ type: Room })
-  public room: Room;
+  public room: string;
 }
 
 abstract class MeetingSemester {
