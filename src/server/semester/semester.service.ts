@@ -68,4 +68,28 @@ export class SemesterService {
       .getRawMany() as unknown[] as FullSemester[];
     return semesters;
   }
+
+  /**
+   * Resolve an array containing all semesters that currently exist in the
+   * database, as strings
+   */
+  public async getSemesterList(): Promise<string[]> {
+    return this.semesterRepository
+      .createQueryBuilder('sem')
+      .select('sem.term', 'term')
+      .addSelect('sem."academicYear"', 'year')
+      .addSelect(`CASE
+      WHEN term = '${TERM.SPRING}' THEN 1
+      WHEN term = '${TERM.FALL}' THEN 2
+      ELSE 3
+    END`, 'termOrder')
+      .distinct(true)
+      .orderBy('year', 'ASC')
+      .addOrderBy('"termOrder"', 'ASC')
+      .getRawMany()
+      .then(
+        // raw result is array, so we need to map to get the desired format (e.g. 'FALL 2021')
+        (results): string[] => results.map(({ term, year }): string => `${term} ${year}`)
+      );
+  }
 }
