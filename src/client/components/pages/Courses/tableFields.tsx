@@ -8,7 +8,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStickyNote as withNotes, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
 import { faStickyNote as withoutNotes } from '@fortawesome/free-regular-svg-icons';
 import {
-  TERM, COURSE_TABLE_COLUMN, COURSE_TABLE_COLUMN_GROUP, IS_SEAS, isSEASEnumToString,
+  TERM,
+  COURSE_TABLE_COLUMN,
+  COURSE_TABLE_COLUMN_GROUP,
+  IS_SEAS,
+  isSEASEnumToString,
 } from 'common/constants';
 
 /**
