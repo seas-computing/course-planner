@@ -7,7 +7,9 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStickyNote as withNotes, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
 import { faStickyNote as withoutNotes } from '@fortawesome/free-regular-svg-icons';
-import { TERM, COURSE_TABLE_COLUMN, COURSE_TABLE_COLUMN_GROUP } from 'common/constants';
+import {
+  TERM, COURSE_TABLE_COLUMN, COURSE_TABLE_COLUMN_GROUP, IS_SEAS, isSEASEnumToString,
+} from 'common/constants';
 
 /**
  * Simple helper function that takes a property name and optionally a semester
@@ -33,6 +35,9 @@ export const retrieveValue = (
   }
   if (typeof rawValue === 'boolean') {
     return rawValue ? 'Yes' : 'No';
+  }
+  if (rawValue in IS_SEAS) {
+    return isSEASEnumToString(rawValue as IS_SEAS);
   }
   return rawValue;
 };

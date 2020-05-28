@@ -12,3 +12,20 @@ enum IS_SEAS {
 }
 
 export default IS_SEAS;
+
+/**
+ * Helper function to get a cleaner text version of the enum value
+ */
+
+export const isSEASEnumToString = (isSEASEnum: IS_SEAS): string | null => {
+  switch (isSEASEnum) {
+    case IS_SEAS.Y:
+      return 'Yes';
+    case IS_SEAS.N:
+      return 'No';
+    case IS_SEAS.EPS:
+      return 'EPS';
+    default:
+      return null;
+  }
+};
