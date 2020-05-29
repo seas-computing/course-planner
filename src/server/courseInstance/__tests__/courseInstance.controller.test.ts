@@ -315,6 +315,31 @@ describe('Course Instance Controller', function () {
           [[fiveYearAcademicYearList]]);
         deepStrictEqual(actual, fiveYearResponse);
       });
+      it('should return the semesters in chronological order', async function () {
+        getStub = stub(ciService, 'getMultiYearPlan').resolves(defaultServiceResponse);
+        getFullSemestersStub = stub(semesterService, 'getFullSemesters').resolves(defaultSemesterList);
+        const actual = await ciController.getMultiYearPlan(null);
+        const sorted = actual.map((course) => ({
+          ...course,
+          semesters: course.semesters.slice().sort((semester1, semester2):
+          number => {
+            if (semester1.calendarYear < semester2.calendarYear) {
+              return -1;
+            }
+            if (semester1.calendarYear > semester2.calendarYear) {
+              return 1;
+            }
+            if (semester1.academicYear < semester2.academicYear) {
+              return -1;
+            }
+            if (semester1.academicYear > semester2.academicYear) {
+              return 1;
+            }
+            return 0;
+          }),
+        }));
+        deepStrictEqual(actual, sorted);
+      });
     });
   });
 });
