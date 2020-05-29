@@ -7,6 +7,8 @@ import { NonClassEvent } from './nonclassevent.entity';
 import { NonClassEventService } from './nonClassEvent.service';
 import { Area } from 'server/area/area.entity';
 import { NonClassEventController } from './nonClassEvent.controller';
+import { NonClassParentView } from './NonClassParentView.entity';
+import { NonClassEventView } from './NonClassEvent.view.entity';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { NonClassEventController } from './nonClassEvent.controller';
       Course,
       NonClassParent,
       NonClassEvent,
+      NonClassParentView,
+      NonClassEventView,
     ]),
   ],
   providers: [

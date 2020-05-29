@@ -2,27 +2,39 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Course } from 'server/course/course.entity';
 import { Area } from 'server/area/area.entity';
-import { NonClassParent } from 'server/nonClassParent/nonclassparent.entity';
-import { NonClassEvent } from './nonclassevent.entity';
+import { TERM } from 'common/constants';
+import { NonClassParentView } from './NonClassParentView.entity';
+import { NonClassEventView } from './NonClassEvent.view.entity';
 
 export class NonClassEventService {
-  @InjectRepository(NonClassParent)
-  public parentRepository: Repository<NonClassParent>
+  @InjectRepository(NonClassParentView)
+  public parentRepository: Repository<NonClassParentView>;
 
-  public async find(academicYear: number = 2019): Promise<any> {
+  public async find(): Promise<NonClassParentView[]> {
     return this.parentRepository.createQueryBuilder('p')
-      .leftJoinAndMapOne('p.course', Course, 'c', 'c."id" = p."courseId"')
-      .leftJoinAndMapOne('c.area', Area, 'a', 'a."id" = c."areaId"')
       .leftJoinAndMapOne(
-        'p.fall',
-        NonClassEvent, 'fallEvent',
-        '"fallEvent"."nonClassParentId" = p."id"'
+        'p.course',
+        Course, 'course',
+        'course."id" = p."courseId"'
+      )
+      .leftJoinAndMapOne(
+        'course.area',
+        Area, 'area',
+        'area."id" = course."areaId"'
       )
       .leftJoinAndMapOne(
         'p.spring',
-        NonClassEvent, 'springEvent',
-        '"springEvent"."nonClassParentId" = p."id"'
+        NonClassEventView,
+        'spring',
+        `spring."nonClassParentId" = p.id AND spring.term = '${TERM.SPRING}'`
       )
+      .leftJoinAndMapOne(
+        'p.fall',
+        NonClassEventView,
+        'fall',
+        `fall."nonClassParentId" = p.id AND fall.term = '${TERM.FALL}'`
+      )
+      .orderBy('area.name', 'ASC')
       .getMany();
   }
 }
