@@ -27,4 +27,9 @@ describe('dayEnumToString', function () {
       strictEqual(dayEnumToString(DAY.FRI), 'Friday');
     });
   });
+  context('Any other value', function () {
+    it('Should return null', function () {
+      strictEqual(dayEnumToString('foo' as DAY), null);
+    });
+  });
 });
