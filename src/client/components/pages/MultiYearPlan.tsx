@@ -97,7 +97,7 @@ const MultiYearPlan: FunctionComponent = function (): ReactElement {
         <TableCell key={instance.id}>
           {
             instance.faculty.length > 0
-              ? (instance.faculty.map((f) => (f.displayName)).join(';'))
+              ? (instance.faculty.map((f,index) => (<div key={index}> {f.displayName} <br /> </div>)))
               : null
           }
         </TableCell>

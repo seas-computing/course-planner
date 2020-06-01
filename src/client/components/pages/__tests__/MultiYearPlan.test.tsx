@@ -88,7 +88,8 @@ describe('MultYearPlan', function () {
       strictEqual(rowsContent[2][2], es285MultiYearPlanResponse.title);
       const facultyNames1 = es285MultiYearPlanResponse.instances
         .map((instance) => (
-          instance.faculty.map((f) => (f.displayName)).join(';')
+          //instance.faculty.map((f) => (f.displayName)).join(';')
+          instance.faculty.map((f,index) => (<div key={index}> {f.displayName} <br /> </div>))
         )).join();
       const facultyNames2 = rowsContent[2].slice(3).join();
       strictEqual(facultyNames1, facultyNames2);
