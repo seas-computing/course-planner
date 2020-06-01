@@ -148,7 +148,7 @@ export class CourseInstanceService {
       // Note that although the academic year in the semester entity is actually
       // the calendar year, academicYear is truly the academic year and has
       // been calculated by the MultiYearPlanInstanceView
-      .where('ci."academicYear" IN (:...academicYears)', { academicYears })
+      .where('s."academicYear" IN (:...academicYears)', { academicYears })
       .orderBy('c.area', 'ASC')
       .addOrderBy('"catalogNumber"', 'ASC')
       .addOrderBy('instructors."instructorOrder"', 'ASC')
