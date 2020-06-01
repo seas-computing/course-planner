@@ -5,7 +5,6 @@ const CellLayout = styled.div`
   align-items: flex-start;
   justify-content: space-between;
   padding: ${({ theme }): string => (theme.ws.xsmall)};
-  vertical-align: top;
 `;
 
 /**
