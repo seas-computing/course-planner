@@ -55,6 +55,7 @@ abstract class Instance {
         endTime: '13:00:00-5',
         room: {
           id: 'c7b1fa3f-c5b0-478d-a29c-7f85a4d80109',
+          campus: 'Cambridge',
           name: 'Maxwell Dworkin 119',
         },
       },
@@ -68,6 +69,7 @@ abstract class Instance {
     endTime: string;
     room: {
       id: string;
+      campus: string;
       name: string;
     };
   }[];
