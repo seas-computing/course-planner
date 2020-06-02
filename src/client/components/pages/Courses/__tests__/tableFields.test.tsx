@@ -20,28 +20,28 @@ describe('tableFields', function () {
         );
       });
       it('Should return a function to get a semester level field', function () {
-        const getValueFall = retrieveValue('offered', TERM.FALL);
-        const getValueSpring = retrieveValue('offered', TERM.SPRING);
+        const getValueFall = retrieveValue('actualEnrollment', TERM.FALL);
+        const getValueSpring = retrieveValue('actualEnrollment', TERM.SPRING);
         strictEqual(
           getValueFall(cs50CourseInstance),
-          cs50CourseInstance.fall.offered
+          cs50CourseInstance.fall.actualEnrollment
         );
         strictEqual(
           getValueSpring(cs50CourseInstance),
-          cs50CourseInstance.spring.offered
+          cs50CourseInstance.spring.actualEnrollment
         );
       });
       it('should return a function that converts true booleans to "Yes"', function () {
-        const getBooleanValue = retrieveValue('isSEAS');
+        const getBooleanValue = retrieveValue('isUndergraduate');
         strictEqual(
-          getBooleanValue({ ...cs50CourseInstance, isSEAS: true }),
+          getBooleanValue({ ...cs50CourseInstance, isUndergraduate: true }),
           'Yes'
         );
       });
       it('should return a function that converts false booleans to "No"', function () {
-        const getBooleanValue = retrieveValue('isSEAS');
+        const getBooleanValue = retrieveValue('isUndergraduate');
         strictEqual(
-          getBooleanValue({ ...cs50CourseInstance, isSEAS: false }),
+          getBooleanValue({ ...cs50CourseInstance, isUndergraduate: false }),
           'No'
         );
       });

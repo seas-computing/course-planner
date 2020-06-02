@@ -1,5 +1,5 @@
 import { Course } from 'server/course/course.entity';
-import { TERM_PATTERN } from 'common/constants';
+import { TERM_PATTERN, IS_SEAS } from 'common/constants';
 import { CreateCourse } from 'common/dto/courses/CreateCourse.dto';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import { UpdateCourseDTO } from 'common/dto/courses/UpdateCourse.dto';
@@ -36,7 +36,7 @@ export const createCourseDtoExample: CreateCourse = Object.assign(
       name: 'CS',
     },
     title: 'Introduction to Computer Science',
-    isSEAS: true,
+    isSEAS: IS_SEAS.Y,
     isUndergraduate: true,
     prefix: 'CS',
     number: '050',
@@ -56,7 +56,7 @@ export const computerScienceCourseResponse: ManageCourseResponseDTO = {
     name: 'CS',
   },
   title: 'Introduction to Computer Science',
-  isSEAS: true,
+  isSEAS: IS_SEAS.Y,
   isUndergraduate: true,
   catalogNumber: 'CS 050',
   termPattern: TERM_PATTERN.FALL,
@@ -74,7 +74,7 @@ export const physicsCourseResponse: ManageCourseResponseDTO = {
     name: 'AP',
   },
   title: 'Introduction to Quantum Theory of Solids',
-  isSEAS: true,
+  isSEAS: IS_SEAS.Y,
   isUndergraduate: true,
   catalogNumber: 'AP 295a',
   termPattern: TERM_PATTERN.SPRING,
@@ -92,7 +92,7 @@ export const newAreaCourseResponse: ManageCourseResponseDTO = {
     name: 'NA',
   },
   title: 'Introduction to New Area',
-  isSEAS: true,
+  isSEAS: IS_SEAS.Y,
   isUndergraduate: true,
   catalogNumber: 'NA 100',
   termPattern: TERM_PATTERN.SPRING,
@@ -114,6 +114,6 @@ export const updateCourseExample: UpdateCourseDTO = {
   termPattern: TERM_PATTERN.FALL,
   sameAs: '',
   isUndergraduate: true,
-  isSEAS: true,
+  isSEAS: IS_SEAS.Y,
   private: true,
 };

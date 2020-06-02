@@ -1,4 +1,4 @@
-import { TERM_PATTERN, DAY } from 'common/constants';
+import { TERM_PATTERN, DAY, IS_SEAS } from 'common/constants';
 
 /**
  * A list of courses, with associated faculty, meetings, and rooms, which can
@@ -15,7 +15,7 @@ export const courses = [
     private: false,
     sameAs: '',
     termPattern: TERM_PATTERN.FALL,
-    isSEAS: true,
+    isSEAS: IS_SEAS.Y,
     instances: {
       facultyHUIDs: ['11111111'],
       meetings: [{
@@ -36,7 +36,7 @@ export const courses = [
     private: false,
     sameAs: '',
     termPattern: TERM_PATTERN.FALL,
-    isSEAS: true,
+    isSEAS: IS_SEAS.Y,
     instances: {
       facultyHUIDs: ['12121212'],
       meetings: [{
@@ -63,7 +63,7 @@ export const courses = [
     private: false,
     sameAs: '',
     termPattern: TERM_PATTERN.SPRING,
-    isSEAS: true,
+    isSEAS: IS_SEAS.Y,
     instances: {
       facultyHUIDs: ['13131313', '14141414'],
       meetings: [{
@@ -90,7 +90,7 @@ export const courses = [
     private: false,
     sameAs: 'AC 209A, Stats 121A',
     termPattern: TERM_PATTERN.FALL,
-    isSEAS: true,
+    isSEAS: IS_SEAS.Y,
     instances: {
       facultyHUIDs: [
         '15151515',
@@ -121,7 +121,7 @@ export const courses = [
     private: false,
     sameAs: 'AC 209B, Stats 121B',
     termPattern: TERM_PATTERN.SPRING,
-    isSEAS: true,
+    isSEAS: IS_SEAS.Y,
     instances: {
       facultyHUIDs: [
         '15151515',
@@ -152,7 +152,7 @@ export const courses = [
     private: false,
     sameAs: '',
     termPattern: TERM_PATTERN.FALL,
-    isSEAS: true,
+    isSEAS: IS_SEAS.Y,
     instances: {
       facultyHUIDs: ['18181818'],
       meetings: [{
@@ -179,7 +179,7 @@ export const courses = [
     private: false,
     sameAs: '',
     termPattern: TERM_PATTERN.SPRING,
-    isSEAS: true,
+    isSEAS: IS_SEAS.Y,
     instances: {
       facultyHUIDs: ['19191919'],
       meetings: [{
@@ -206,7 +206,7 @@ export const courses = [
     private: false,
     sameAs: 'AP 195',
     termPattern: TERM_PATTERN.FALL,
-    isSEAS: false,
+    isSEAS: IS_SEAS.N,
     instances: {
       facultyHUIDs: ['20202020'],
       meetings: [{
@@ -233,7 +233,7 @@ export const courses = [
     private: true,
     sameAs: '',
     termPattern: TERM_PATTERN.BOTH,
-    isSEAS: true,
+    isSEAS: IS_SEAS.Y,
     instances: {
       facultyHUIDs: [],
       meetings: [],
@@ -249,7 +249,7 @@ export const courses = [
     private: false,
     sameAs: '',
     termPattern: TERM_PATTERN.BOTH,
-    isSEAS: true,
+    isSEAS: IS_SEAS.Y,
     instances: {
       facultyHUIDs: ['21212121'],
       meetings: [{
@@ -282,7 +282,7 @@ export const courses = [
     private: false,
     sameAs: '',
     termPattern: TERM_PATTERN.BOTH,
-    isSEAS: true,
+    isSEAS: IS_SEAS.Y,
     instances: {
       facultyHUIDs: [],
       meetings: [{
@@ -303,7 +303,7 @@ export const courses = [
     private: false,
     sameAs: 'Gen Ed 1080',
     termPattern: TERM_PATTERN.FALL,
-    isSEAS: true,
+    isSEAS: IS_SEAS.Y,
     instances: {
       facultyHUIDs: ['22222222'],
       meetings: [{

@@ -1,5 +1,5 @@
 import { ApiModelProperty } from '@nestjs/swagger';
-import { TERM_PATTERN } from 'common/constants';
+import { TERM_PATTERN, IS_SEAS } from 'common/constants';
 import {
   IsBoolean,
   IsString,
@@ -60,12 +60,13 @@ export abstract class UpdateCourseDTO {
   public sameAs?: string;
 
   @ApiModelProperty({
-    type: 'boolean',
+    type: 'string',
+    enum: IS_SEAS,
     example: true,
   })
-  @IsBoolean()
+  @IsEnum(IS_SEAS)
   @IsOptional()
-  public isSEAS: boolean;
+  public isSEAS: IS_SEAS;
 
   @ApiModelProperty({
     type: 'string',

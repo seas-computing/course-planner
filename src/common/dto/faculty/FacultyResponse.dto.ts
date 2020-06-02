@@ -1,6 +1,5 @@
 import { ApiModelProperty } from '@nestjs/swagger';
-import { ABSENCE_TYPE } from 'server/absence/absence.entity';
-import { FACULTY_TYPE } from '../../constants';
+import { FACULTY_TYPE, ABSENCE_TYPE } from 'common/constants';
 
 export abstract class FacultyCourse {
   @ApiModelProperty({
