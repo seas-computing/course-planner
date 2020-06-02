@@ -10,7 +10,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStickyNote as withNotes, faFolderOpen, faEdit } from '@fortawesome/free-solid-svg-icons';
 import { faStickyNote as withoutNotes } from '@fortawesome/free-regular-svg-icons';
 import {
-  TERM, COURSE_TABLE_COLUMN, COURSE_TABLE_COLUMN_GROUP, OFFERED,
+  TERM,
+  COURSE_TABLE_COLUMN,
+  COURSE_TABLE_COLUMN_GROUP,
+  OFFERED,
+  IS_SEAS,
+  isSEASEnumToString,
 } from 'common/constants';
 import { CampusIcon } from 'client/components/general';
 import { dayEnumToString } from 'common/constants/day';
@@ -44,6 +49,9 @@ export const retrieveValue = (
   }
   if (rawValue in OFFERED) {
     return offeredEnumToString(rawValue as OFFERED);
+  }
+  if (rawValue in IS_SEAS) {
+    return isSEASEnumToString(rawValue as IS_SEAS);
   }
   return rawValue;
 };

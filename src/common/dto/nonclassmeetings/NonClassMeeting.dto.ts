@@ -1,4 +1,6 @@
-import { DAY, TERM_PATTERN, TERM } from 'common/constants';
+import {
+  DAY, TERM_PATTERN, TERM, IS_SEAS,
+} from 'common/constants';
 import { ApiModelProperty } from '@nestjs/swagger';
 import { CourseArea } from '../courses/CourseArea.dto';
 
@@ -19,7 +21,7 @@ abstract class Course {
   @ApiModelProperty({
     example: true,
   })
-  public isSEAS: boolean
+  public isSEAS: IS_SEAS;
 
   @ApiModelProperty({
     example: false,

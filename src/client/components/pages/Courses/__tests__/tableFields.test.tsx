@@ -34,16 +34,16 @@ describe('tableFields', function () {
         );
       });
       it('should return a function that converts true booleans to "Yes"', function () {
-        const getBooleanValue = retrieveValue('isSEAS');
+        const getBooleanValue = retrieveValue('isUndergraduate');
         strictEqual(
-          getBooleanValue({ ...cs50CourseInstance, isSEAS: true }),
+          getBooleanValue({ ...cs50CourseInstance, isUndergraduate: true }),
           'Yes'
         );
       });
       it('should return a function that converts false booleans to "No"', function () {
-        const getBooleanValue = retrieveValue('isSEAS');
+        const getBooleanValue = retrieveValue('isUndergraduate');
         strictEqual(
-          getBooleanValue({ ...cs50CourseInstance, isSEAS: false }),
+          getBooleanValue({ ...cs50CourseInstance, isUndergraduate: false }),
           'No'
         );
       });

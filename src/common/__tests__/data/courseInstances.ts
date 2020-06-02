@@ -1,5 +1,7 @@
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
-import { TERM_PATTERN, OFFERED, DAY } from 'common/constants';
+import {
+  TERM_PATTERN, OFFERED, DAY, IS_SEAS,
+} from 'common/constants';
 
 /**
  * The data object representing the intro to computer science course CS 50 in
@@ -14,7 +16,7 @@ export const cs50CourseInstance: CourseInstanceResponseDTO = {
   isUndergraduate: true,
   catalogNumber: 'CS 050',
   sameAs: '',
-  isSEAS: true,
+  isSEAS: IS_SEAS.Y,
   notes: null,
   termPattern: TERM_PATTERN.FALL,
   spring: {
@@ -76,7 +78,7 @@ export const es095CourseInstance: CourseInstanceResponseDTO = {
   isUndergraduate: true,
   catalogNumber: 'ES 095r',
   sameAs: '',
-  isSEAS: true,
+  isSEAS: IS_SEAS.Y,
   notes: null,
   termPattern: TERM_PATTERN.BOTH,
   spring: {
@@ -148,7 +150,7 @@ export const ac209aCourseInstance: CourseInstanceResponseDTO = {
   isUndergraduate: false,
   catalogNumber: 'AC 209a',
   sameAs: 'CS 109a, STATS 121a',
-  isSEAS: true,
+  isSEAS: IS_SEAS.Y,
   notes: 'Same as CS 109a, STATS 121a',
   termPattern: TERM_PATTERN.FALL,
   spring: {

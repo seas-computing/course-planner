@@ -6,7 +6,7 @@ import {
   ObjectType,
   Index,
 } from 'typeorm';
-import { TERM_PATTERN } from 'common/constants';
+import { TERM_PATTERN, IS_SEAS } from 'common/constants';
 import { BaseEntity } from '../base/base.entity';
 import { CourseInstance } from '../courseInstance/courseinstance.entity';
 import { Area } from '../area/area.entity';
@@ -118,11 +118,12 @@ export class Course extends BaseEntity {
    * courses offered by SEAS
    */
   @Column({
-    type: 'boolean',
+    type: 'enum',
+    enum: Object.values(IS_SEAS),
     comment: 'Not all courses are delivered by SEAS, some are delivered by other divisions (for example, some courses may be science courses), therefore it may be desireable to denote such courses to differenciate them from courses offered by SEAS',
-    default: true,
+    default: IS_SEAS.Y,
   })
-  public isSEAS: boolean = true;
+  public isSEAS: IS_SEAS = IS_SEAS.Y;
 
   /**
    * An occurance of a [[Course]] that takes place in a [[Semester]]. Over time
