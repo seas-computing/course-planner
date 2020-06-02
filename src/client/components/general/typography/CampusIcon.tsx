@@ -23,6 +23,8 @@ const StyledCampusIcon = styled.strong`
   font-size: ${({ theme }): string => (theme.font.bold.size)};
   font-weight: ${({ theme }): string => (theme.font.bold.weight)};
   font-family: ${({ theme }): string => (theme.font.bold.family)};
+  user-select: none;
+  cursor: default;
 `;
 
 /**
