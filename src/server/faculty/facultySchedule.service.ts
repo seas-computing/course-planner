@@ -84,6 +84,8 @@ export class FacultyScheduleService {
       .orderBy('f.area', 'ASC')
       .addOrderBy('f."lastName"', 'ASC')
       .addOrderBy('f."firstName"', 'ASC')
+      .addOrderBy('fall_courses."catalogNumber"', 'ASC')
+      .addOrderBy('spring_courses."catalogNumber"', 'ASC')
       .getMany() as FacultyResponseDTO[];
     return groupBy(results, (result): number => result.fall.academicYear);
   }
