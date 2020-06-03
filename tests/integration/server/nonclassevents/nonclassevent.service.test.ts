@@ -6,9 +6,9 @@ import { NonClassEventModule } from 'server/nonClassEvent/nonclassevent.module';
 import { SemesterModule } from 'server/semester/semester.module';
 import { AuthModule } from 'server/auth/auth.module';
 import { NonClassEventService } from 'server/nonClassEvent/nonClassEvent.service';
+import { strictEqual } from 'assert';
 import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
-import { strictEqual } from 'assert';
 
 describe('NonClassEvent Service', function () {
   let testModule: TestingModule;
@@ -59,9 +59,11 @@ describe('NonClassEvent Service', function () {
 
       const events = await service.find();
       const fallIsCorrect = events.map((event) => event.fall.academicYear)
+        .map(parseInt)
         .every((academicYear) => academicYear === expectedAcdemicYear);
 
       const springIsCorrect = events.map((event) => event.spring.academicYear)
+        .map(parseInt)
         .every((academicYear) => academicYear === expectedAcdemicYear + 1);
 
       strictEqual(fallIsCorrect, true);
