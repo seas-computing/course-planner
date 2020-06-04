@@ -9,10 +9,13 @@ import {
 import { NonClassParent } from 'server/nonClassParent/nonclassparent.entity';
 import { NonClassEventView } from './NonClassEvent.view.entity';
 
-
 @ViewEntity('NonClassParentView', {
   expression: (connection: Connection):
   SelectQueryBuilder<NonClassParent> => connection.createQueryBuilder()
+    .select('parent.id', 'id')
+    .addSelect('parent.contact', 'contact')
+    .addSelect('parent.title', 'title')
+    .addSelect('parent."courseId"', 'courseId')
     .from(NonClassParent, 'parent'),
 })
 export class NonClassParentView {

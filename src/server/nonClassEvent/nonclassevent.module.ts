@@ -6,7 +6,6 @@ import { NonClassParent } from 'server/nonClassParent/nonclassparent.entity';
 import { NonClassEvent } from './nonclassevent.entity';
 import { NonClassEventService } from './nonClassEvent.service';
 import { Area } from 'server/area/area.entity';
-import { NonClassEventController } from './nonClassEvent.controller';
 import { NonClassParentView } from './NonClassParentView.entity';
 import { NonClassEventView } from './NonClassEvent.view.entity';
 

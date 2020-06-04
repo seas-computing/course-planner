@@ -41,7 +41,7 @@ abstract class Course {
   public termPattern: TERM_PATTERN;
 }
 
-abstract class MeetingLocation {
+abstract class Location {
   @ApiModelProperty({
     example: 'Allston',
   })
@@ -53,29 +53,7 @@ abstract class MeetingLocation {
   public room: string;
 }
 
-abstract class MeetingSemester {
-  @ApiModelProperty({
-    description: 'Semester primary key ID',
-    example: '93a6ddba-f026-4157-b913-351bb8fbe12d',
-  })
-  public id: string;
-
-  @ApiModelProperty({
-    description: 'Academic year in YYYY format',
-    example: '2011',
-  })
-  public academicYear: string;
-
-  @ApiModelProperty({
-    description: 'An indicator of the term this semester takes place in',
-    example: TERM.FALL,
-    type: 'enum',
-    enum: TERM,
-  })
-  public term: TERM;
-}
-
-abstract class NonClassEvent {
+abstract class Meeting {
   @ApiModelProperty({
     type: 'enum',
     enum: DAY,
@@ -93,11 +71,18 @@ abstract class NonClassEvent {
   })
   public end: string;
 
-  @ApiModelProperty({ type: MeetingLocation })
-  public room: MeetingLocation;
+  @ApiModelProperty({ type: Location })
+  public room: Location;
+}
 
-  @ApiModelProperty({ type: MeetingSemester })
-  public semester: MeetingSemester;
+abstract class NonClassEvent {
+  public term: TERM;
+
+  @ApiModelProperty({
+    type: Meeting,
+    isArray: true,
+  })
+  public meetings: Meeting[];
 }
 
 export default abstract class NonClassMeetingResponseDTO {
