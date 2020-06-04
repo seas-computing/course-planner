@@ -78,7 +78,7 @@ export class CourseInstanceController {
   @ApiUseTags('Course Instance')
   @ApiOperation({ title: 'Retrieve the multi-year plan' })
   @ApiOkResponse({
-    type: MultiYearPlanServiceResponseDTO,
+    type: MultiYearPlanResponseDTO,
     description: 'An array of all the multi-year plan records',
     isArray: true,
   })
