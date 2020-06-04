@@ -3,12 +3,10 @@ import {
   Connection,
   ViewColumn,
   SelectQueryBuilder,
-  OneToMany,
-  ObjectType,
 } from 'typeorm';
 import { Course } from 'server/course/course.entity';
 import { Area } from 'server/area/area.entity';
-import { MultiYearPlanInstanceView } from './MultiYearPlanInstanceView.entity';
+import { SemesterView } from 'server/semester/SemesterView.entity';
 
 /**
  * A subset of fields from the [[Course]]
@@ -54,12 +52,5 @@ export class MultiYearPlanView {
   @ViewColumn()
   public title: string;
 
-  /**
-   * One [[MultiYearPlanView]] has many [[MultiYearPlanInstanceView]]
-   */
-  @OneToMany(
-    (): ObjectType<MultiYearPlanInstanceView> => MultiYearPlanInstanceView,
-    ({ courseId }): string => courseId
-  )
-  public instances: MultiYearPlanInstanceView[];
+  public semesters: SemesterView[];
 }

@@ -5,14 +5,14 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CourseListingView } from 'server/course/CourseListingView.entity';
-import { Semester } from 'server/semester/semester.entity';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { MultiYearPlanView } from 'server/courseInstance/MultiYearPlanView.entity';
 import { ConfigService } from 'server/config/config.service';
-import { MultiYearPlanServiceResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanServiceResponseDTO';
 import { Course } from 'server/course/course.entity';
 import { MultiYearPlanFacultyListingView } from 'server/courseInstance/MultiYearPlanFacultyListingView.entity';
 import { TERM } from 'common/constants';
+import { SemesterView } from 'server/semester/SemesterView.entity';
+import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import { MultiYearPlanInstanceView } from './MultiYearPlanInstanceView.entity';
 
 /**
@@ -126,19 +126,23 @@ export class CourseInstanceService {
    * Resolves a list of course instances for the Multi Year Plan
    */
   public async getMultiYearPlan(numYears?: number):
-  Promise<MultiYearPlanServiceResponseDTO[]> {
+  Promise<MultiYearPlanResponseDTO[]> {
     const academicYears = this.computeAcademicYears(numYears);
     return await this.multiYearPlanViewRepository
       .createQueryBuilder('c')
       .leftJoinAndMapMany(
-        'c.instances',
+        'c.semesters',
+        SemesterView,
+        's',
+        // get all the semesters filtered by the WHERE clause below
+        's.id = s.id'
+      )
+      .leftJoinAndMapOne(
+        'c.instance',
         MultiYearPlanInstanceView,
         'ci',
-        // Note that the second part of this join clause is needed
-        // so that the where clause applies to both joins
-        'c.id = ci."courseId"'
+        'c.id = ci."courseId" AND s.id = ci."semesterId"'
       )
-      .leftJoin(Semester, 's', 's.id = ci."semesterId"')
       .leftJoinAndMapMany(
         'ci.faculty',
         MultiYearPlanFacultyListingView,
@@ -147,12 +151,14 @@ export class CourseInstanceService {
       )
       // Note that although the academic year in the semester entity is actually
       // the calendar year, academicYear is truly the academic year and has
-      // been calculated by the MultiYearPlanInstanceView
+      // been calculated by the SemesterView
       .where('s."academicYear" IN (:...academicYears)', { academicYears })
-      .orderBy('c.area', 'ASC')
+      .orderBy('s."academicYear', 'ASC')
+      .addOrderBy('s."termOrder"', 'ASC')
+      .addOrderBy('c.area', 'ASC')
       .addOrderBy('"catalogNumber"', 'ASC')
       .addOrderBy('instructors."instructorOrder"', 'ASC')
       .addOrderBy('instructors."displayName"', 'ASC')
-      .getMany() as MultiYearPlanServiceResponseDTO[];
+      .getMany() as MultiYearPlanResponseDTO[];
   }
 }

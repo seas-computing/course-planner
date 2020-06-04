@@ -5,6 +5,7 @@ import {
   SelectQueryBuilder,
 } from 'typeorm';
 import { TERM } from 'common/constants';
+import { MultiYearPlanInstanceView } from 'server/courseInstance/MultiYearPlanInstanceView.entity';
 import { Semester } from './semester.entity';
 
 /**
@@ -22,6 +23,11 @@ import { Semester } from './semester.entity';
       ELSE s.academicYear
     END`, 'academicYear')
     .addSelect('s.term', 'term')
+    .addSelect(`CASE
+    WHEN term = '${TERM.SPRING}' THEN 1
+    WHEN term = '${TERM.FALL}' THEN 2
+    ELSE 3
+    END`, 'termOrder')
     .from(Semester, 's'),
 })
 
@@ -55,4 +61,17 @@ export class SemesterView {
    */
   @ViewColumn()
   public term: string;
+
+  /**
+   * An assignment of a number to fall and spring semesters for the purpose of
+   * arranging semesters in chronological order
+   */
+  @ViewColumn()
+  public termOrder: number;
+
+  /**
+   * From [[CourseInstance]]
+   * The course instance for the given semester
+   */
+  public instance: MultiYearPlanInstanceView;
 }

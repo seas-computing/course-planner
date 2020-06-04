@@ -4,7 +4,6 @@ import {
   Query,
   Inject,
 } from '@nestjs/common';
-import { MultiYearPlanServiceResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanServiceResponseDTO';
 import {
   ApiOkResponse,
   ApiOperation,
@@ -13,9 +12,9 @@ import {
 } from '@nestjs/swagger';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { ConfigService } from 'server/config/config.service';
-import { MultiYearPlanResponseDTO, MultiYearPlanSemester, MultiYearPlanInstance } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
+import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import { CourseInstanceService } from './courseInstance.service';
-import { SemesterService, FullSemester } from '../semester/semester.service';
+import { SemesterService } from '../semester/semester.service';
 
 @Controller('api/course-instances')
 export class CourseInstanceController {
@@ -90,35 +89,6 @@ export class CourseInstanceController {
   public async getMultiYearPlan(
     @Query('numYears') numYears?: number
   ): Promise<MultiYearPlanResponseDTO[]> {
-    // Retrieve all the multiyear plan data
-    const courses = await this.ciService.getMultiYearPlan(numYears);
-
-    const academicYears = this.ciService.computeAcademicYears(numYears);
-
-    // Get a list of all the semesters for the requested academic years
-    const semesters: FullSemester[] = await this.semesterService
-      .getFullSemesters(academicYears);
-
-    // Return all requested semesters for each course
-    // regardless of whether or not course instances are present
-    const coursesBySemester: MultiYearPlanResponseDTO[] = courses.map((course):
-    MultiYearPlanResponseDTO => ({
-      id: course.id,
-      area: course.area,
-      catalogNumber: course.catalogNumber,
-      title: course.title,
-      // There should only ever be one instance for a course within a given
-      // semester, which is why we are setting the first element of the array
-      // to the instance property.
-      semesters: semesters.map((semester): MultiYearPlanSemester => ({
-        ...semester,
-        instance: course.instances.filter((instance): boolean => (
-          instance.academicYear === semester.academicYear
-              && instance.term === semester.term))
-          .map(({ id, faculty }):
-          MultiYearPlanInstance => ({ id, faculty }))[0],
-      })),
-    }));
-    return coursesBySemester;
+    return this.ciService.getMultiYearPlan(numYears);
   }
 }
