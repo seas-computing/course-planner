@@ -22,9 +22,7 @@ import { courses } from '../../../../tests/mocks/database/population/data';
  * Retrieve an array of years for the requested number of years
  */
 const getYearList = (year: number, numYears: number) => (
-  Array.from({ length: numYears })
-    .map((value, index): number => index)
-    .map((offset): number => year + offset)
+  Array.from({ length: numYears }, (_, index): number => year + index)
 );
 
 const testSemesterId = '1d1957de-c199-67f1-1d03-2265bec6bbc4';
