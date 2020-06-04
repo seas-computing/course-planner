@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Semester } from './semester.entity';
 import { TERM } from 'common/constants';
+import { Semester } from './semester.entity';
 
 /**
  * @class SemesterService
