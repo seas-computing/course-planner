@@ -6,7 +6,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * one course instance. It also adds a SemesterView, which calculates the
  * academic year and also includes other properties from the Semester entity.
  */
-export class SemesterView1591303806904 implements MigrationInterface {
+export class MultiYearPlanSemesters1591308687655 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query('DELETE FROM "typeorm_metadata" WHERE "type" = \'VIEW\' AND "schema" = $1 AND "name" = $2', ['public', 'MultiYearPlanInstanceView']);
     await queryRunner.query('DROP VIEW "MultiYearPlanInstanceView"', undefined);
