@@ -3,9 +3,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Course } from 'server/course/course.entity';
 import { Semester } from 'server/semester/semester.entity';
 import { NonClassParent } from 'server/nonClassParent/nonclassparent.entity';
+import { Area } from 'server/area/area.entity';
 import { NonClassEvent } from './nonclassevent.entity';
 import { NonClassEventService } from './nonClassEvent.service';
-import { Area } from 'server/area/area.entity';
 import { NonClassParentView } from './NonClassParentView.entity';
 import { NonClassEventView } from './NonClassEvent.view.entity';
 
@@ -25,7 +25,6 @@ import { NonClassEventView } from './NonClassEvent.view.entity';
     NonClassEventService,
   ],
   controllers: [
-    NonClassEventController,
   ],
   exports: [],
 })

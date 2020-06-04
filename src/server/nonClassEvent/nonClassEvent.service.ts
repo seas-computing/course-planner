@@ -11,7 +11,8 @@ export class NonClassEventService {
   @InjectRepository(NonClassParentView)
   public parentRepository: Repository<NonClassParentView>;
 
-  public async find(academicYear: number = 2020): Promise<NonClassParentView[]> {
+  public async find(academicYear: number = 2020):
+  Promise<NonClassParentView[]> {
     return this.parentRepository.createQueryBuilder('p')
       .leftJoinAndMapOne(
         'p.course',
