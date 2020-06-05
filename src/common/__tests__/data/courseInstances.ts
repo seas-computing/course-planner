@@ -1,5 +1,11 @@
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
-import { TERM_PATTERN, OFFERED, DAY } from 'common/constants';
+import {
+  TERM_PATTERN,
+  OFFERED,
+  DAY,
+  TERM,
+} from 'common/constants';
+import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 
 /**
  * The data object representing the intro to computer science course CS 50 in
@@ -207,3 +213,943 @@ export const ac209aCourseInstance: CourseInstanceResponseDTO = {
     ],
   },
 };
+
+/**
+ * The starting academic year for the multi year plan test data
+ */
+export const testMultiYearPlanStartYear = 2020;
+
+/**
+ * The academic years corresponding to `testFourYearPlan`
+ */
+export const testFourYearPlanAcademicYears = [2020, 2021, 2022, 2023];
+
+/**
+ * Data representing a four year plan, which contains semesters from
+ * Spring 2019 to Fall 2022. This four year plan contains data for AP 275,
+ * ES 115, and CS 223.
+ */
+export const testFourYearPlan: MultiYearPlanResponseDTO[] = [{
+  id: '37b66373-5000-43f2-9c14-8c2426273785',
+  area: 'AP',
+  catalogNumber: 'AP 275',
+  title: 'Computational Design of Materials',
+  semesters: [
+    {
+      id: 'ecf56c0b-0ba9-4532-b1ba-177071aac2e1',
+      academicYear: '2020',
+      calendarYear: '2019',
+      term: TERM.FALL,
+      instance: {
+        id: '4dcef6f9-4e3e-49c0-a369-c30ab9615b96',
+        faculty: [
+          {
+            id: '4dcef6f9-4e3e-49c0-a369-c30ab9615b96',
+            displayName: 'Masahiro, Morii',
+            instructorOrder: 0,
+          },
+        ],
+      },
+    },
+    {
+      id: '49372311-991d-45a7-a1bf-2ba967d62663',
+      academicYear: '2020',
+      calendarYear: '2020',
+      term: TERM.SPRING,
+      instance: {
+        id: '85d2ecdf-6015-4510-98ed-3b55991d2aea',
+        faculty: [
+          {
+            id: '4dcef6f9-4e3e-49c0-a369-c30ab9615b96',
+            displayName: 'Masahiro, Morii',
+            instructorOrder: 0,
+          },
+          {
+            id: 'f696d531-aef2-413f-9922-f480aa9d6039',
+            displayName: 'Rycroft, Christopher',
+            instructorOrder: 1,
+          },
+          {
+            id: '05d04a88-8db2-46fe-8b87-aa70244ad655',
+            displayName: 'Yacoby, Amir',
+            instructorOrder: 2,
+          },
+        ],
+      },
+    },
+    {
+      id: '7dd78af1-8821-4aba-b617-279922b7ffab',
+      academicYear: '2021',
+      calendarYear: '2020',
+      term: TERM.FALL,
+      instance: {
+        id: '441c517f-bc48-46e3-86c2-4949d1908c5d',
+        faculty: [
+          {
+            id: '4dcef6f9-4e3e-49c0-a369-c30ab9615b96',
+            displayName: 'Masahiro, Morii',
+            instructorOrder: 0,
+          },
+        ],
+      },
+    },
+    {
+      id: '5f700cd5-9ff9-48a7-875d-2a7b7dc290ea',
+      academicYear: '2021',
+      calendarYear: '2021',
+      term: TERM.SPRING,
+      instance: {
+        id: '127b33e4-e59a-43cb-a832-d5fc62a702ec',
+        faculty: [
+          {
+            id: '4dcef6f9-4e3e-49c0-a369-c30ab9615b96',
+            displayName: 'Masahiro, Morii',
+            instructorOrder: 0,
+          },
+          {
+            id: 'f696d531-aef2-413f-9922-f480aa9d6039',
+            displayName: 'Rycroft, Christopher',
+            instructorOrder: 1,
+          },
+          {
+            id: '05d04a88-8db2-46fe-8b87-aa70244ad655',
+            displayName: 'Yacoby, Amir',
+            instructorOrder: 2,
+          },
+        ],
+      },
+    },
+    {
+      id: '73d1ee13-8b05-46d9-86fc-9e86442f94bd',
+      academicYear: '2022',
+      calendarYear: '2021',
+      term: TERM.FALL,
+      instance: {
+        id: 'bbc7492a-71b2-489b-a9ec-a0a052c4f5c8',
+        faculty: [
+          {
+            id: '4dcef6f9-4e3e-49c0-a369-c30ab9615b96',
+            displayName: 'Masahiro, Morii',
+            instructorOrder: 0,
+          },
+          {
+            id: '513e9576-cdc5-4911-8d1c-3f95c1bdc6cd',
+            displayName: 'Golub, Benjamin',
+            instructorOrder: 1,
+          },
+        ],
+      },
+    },
+    {
+      id: '0dfa51cc-673b-4238-abc7-0908e9e57468',
+      academicYear: '2022',
+      calendarYear: '2022',
+      term: TERM.SPRING,
+      instance: {
+        id: 'a9db3a67-f688-4474-a9ef-ae05d1327f4f',
+        faculty: [
+          {
+            id: '4dcef6f9-4e3e-49c0-a369-c30ab9615b96',
+            displayName: 'Masahiro, Morii',
+            instructorOrder: 0,
+          },
+          {
+            id: 'f696d531-aef2-413f-9922-f480aa9d6039',
+            displayName: 'Rycroft, Christopher',
+            instructorOrder: 1,
+          },
+        ],
+      },
+    },
+    {
+      id: '83f73535-dbae-48b1-a73e-e3792358ab8d',
+      academicYear: '2023',
+      calendarYear: '2022',
+      term: TERM.FALL,
+      instance: {
+        id: '61c48ebb-8025-43be-9d01-df057df74674',
+        faculty: [],
+      },
+    },
+    {
+      id: '1e6e51ba-adc9-4526-a0b1-0dcb71e3d38e',
+      academicYear: '2023',
+      calendarYear: '2023',
+      term: TERM.SPRING,
+      instance: {
+        id: '1f8cc026-d8bf-429d-9fdb-32b89cfdce9d',
+        faculty: [],
+      },
+    },
+  ],
+},
+{
+  id: '9a07e8a3-d6d5-4e89-9d32-8ad04785b9ab',
+  area: 'ES',
+  catalogNumber: 'ES 115',
+  title: 'Mathematical Modeling',
+  semesters: [
+    {
+      id: 'ecf56c0b-0ba9-4532-b1ba-177071aac2e1',
+      academicYear: '2020',
+      calendarYear: '2019',
+      term: TERM.FALL,
+      instance: {
+        id: '7dd78af1-8821-4aba-b617-279922b7ffab',
+        faculty: [
+          {
+            id: 'be64ce4b-081d-4987-8414-681bc5ca3193',
+            displayName: 'Klecker, Nancy',
+            instructorOrder: 0,
+          },
+        ],
+      },
+    },
+    {
+      id: '49372311-991d-45a7-a1bf-2ba967d62663',
+      academicYear: '2020',
+      calendarYear: '2020',
+      term: TERM.SPRING,
+      instance: {
+        id: 'be64ce4b-081d-4987-8414-681bc5ca3193',
+        faculty: [
+          {
+            id: '441c517f-bc48-46e3-86c2-4949d1908c5d',
+            displayName: 'Chen, Yiling',
+            instructorOrder: 0,
+          },
+          {
+            id: 'be64ce4b-081d-4987-8414-681bc5ca3193',
+            displayName: 'Klecker, Nancy',
+            instructorOrder: 1,
+          },
+        ],
+      },
+    },
+    {
+      id: '7dd78af1-8821-4aba-b617-279922b7ffab',
+      academicYear: '2021',
+      calendarYear: '2020',
+      term: TERM.FALL,
+      instance: {
+        id: 'e3c785a1-d917-44a2-8349-829d05103de6',
+        faculty: [
+          {
+            id: '441c517f-bc48-46e3-86c2-4949d1908c5d',
+            displayName: 'Chen, Yiling',
+            instructorOrder: 0,
+          },
+          {
+            id: 'be64ce4b-081d-4987-8414-681bc5ca3193',
+            displayName: 'Klecker, Nancy',
+            instructorOrder: 1,
+          },
+          {
+            id: '91c44209-68ff-4f3e-91b8-288709a49f26',
+            displayName: 'Shapiro, Avi',
+            instructorOrder: 2,
+          },
+        ],
+      },
+    },
+    {
+      id: '5f700cd5-9ff9-48a7-875d-2a7b7dc290ea',
+      academicYear: '2021',
+      calendarYear: '2021',
+      term: TERM.SPRING,
+      instance: {
+        id: 'bbc7492a-71b2-489b-a9ec-a0a052c4f5c8',
+        faculty: [
+          {
+            id: '91c44209-68ff-4f3e-91b8-288709a49f26',
+            displayName: 'Shapiro, Avi',
+            instructorOrder: 0,
+          },
+        ],
+      },
+    },
+    {
+      id: '73d1ee13-8b05-46d9-86fc-9e86442f94bd',
+      academicYear: '2022',
+      calendarYear: '2021',
+      term: TERM.FALL,
+      instance: {
+        id: 'cb489cc5-a7bd-4e29-b465-71d88ca73b71',
+        faculty: [
+          {
+            id: 'be64ce4b-081d-4987-8414-681bc5ca3193',
+            displayName: 'Klecker, Nancy',
+            instructorOrder: 0,
+          },
+          {
+            id: '91c44209-68ff-4f3e-91b8-288709a49f26',
+            displayName: 'Shapiro, Avi',
+            instructorOrder: 1,
+          },
+        ],
+      },
+    },
+    {
+      id: '0dfa51cc-673b-4238-abc7-0908e9e57468',
+      academicYear: '2022',
+      calendarYear: '2022',
+      term: TERM.SPRING,
+      instance: {
+        id: '5f700cd5-9ff9-48a7-875d-2a7b7dc290ea',
+        faculty: [
+          {
+            id: 'be64ce4b-081d-4987-8414-681bc5ca3193',
+            displayName: 'Klecker, Nancy',
+            instructorOrder: 0,
+          },
+          {
+            id: '441c517f-bc48-46e3-86c2-4949d1908c5d',
+            displayName: 'Chen, Yiling',
+            instructorOrder: 1,
+          },
+        ],
+      },
+    },
+    {
+      id: '83f73535-dbae-48b1-a73e-e3792358ab8d',
+      academicYear: '2023',
+      calendarYear: '2022',
+      term: TERM.FALL,
+      instance: {
+        id: '127b33e4-e59a-43cb-a832-d5fc62a702ec',
+        faculty: [
+          {
+            id: 'be64ce4b-081d-4987-8414-681bc5ca3193',
+            displayName: 'Klecker, Nancy',
+            instructorOrder: 0,
+          },
+        ],
+      },
+    },
+    {
+      id: '1e6e51ba-adc9-4526-a0b1-0dcb71e3d38e',
+      academicYear: '2023',
+      calendarYear: '2023',
+      term: TERM.SPRING,
+      instance: {
+        id: 'c1b15206-8df8-483b-91e3-58a3911d15e7',
+        faculty: [
+          {
+            id: 'be64ce4b-081d-4987-8414-681bc5ca3193',
+            displayName: 'Klecker, Nancy',
+            instructorOrder: 0,
+          },
+          {
+            id: '441c517f-bc48-46e3-86c2-4949d1908c5d',
+            displayName: 'Chen, Yiling',
+            instructorOrder: 1,
+          },
+          {
+            id: '91c44209-68ff-4f3e-91b8-288709a49f26',
+            displayName: 'Shapiro, Avi',
+            instructorOrder: 2,
+          },
+        ],
+      },
+    },
+  ],
+},
+{
+  id: 'b7dfe6fa-668a-4b89-912a-520c8aac8e6a',
+  area: 'CS',
+  catalogNumber: 'CS 223',
+  title: 'Probabilistic Analysis and Algorithms',
+  semesters: [
+    {
+      id: 'ecf56c0b-0ba9-4532-b1ba-177071aac2e1',
+      academicYear: '2020',
+      calendarYear: '2019',
+      term: TERM.FALL,
+      instance: {
+        id: '2ca4b43f-1c73-4e17-a7d4-bd6f347d30d6',
+        faculty: [
+          {
+            id: 'd1130416-cf7f-41eb-8a16-e93d97205142',
+            displayName: 'Brooks, David',
+            instructorOrder: 0,
+          },
+          {
+            id: '50b38487-e035-4e40-a48d-9b603ac7dfe1',
+            displayName: 'Goldsmith, Mara',
+            instructorOrder: 1,
+          },
+        ],
+      },
+    },
+    {
+      id: '49372311-991d-45a7-a1bf-2ba967d62663',
+      academicYear: '2020',
+      calendarYear: '2020',
+      term: TERM.SPRING,
+      instance: {
+        id: '508cacd5-6e75-4c3c-83a3-d274c00770e4',
+        faculty: [
+          {
+            id: 'd1130416-cf7f-41eb-8a16-e93d97205142',
+            displayName: 'Brooks, David',
+            instructorOrder: 0,
+          },
+          {
+            id: '50b38487-e035-4e40-a48d-9b603ac7dfe1',
+            displayName: 'Goldsmith, Mara',
+            instructorOrder: 1,
+          },
+          {
+            id: '54284de9-2b2c-4aac-915f-f960f319d3db',
+            displayName: 'Dawson, Emily',
+            instructorOrder: 2,
+          },
+        ],
+      },
+    },
+    {
+      id: '7dd78af1-8821-4aba-b617-279922b7ffab',
+      academicYear: '2021',
+      calendarYear: '2020',
+      term: TERM.FALL,
+      instance: {
+        id: 'abefdab5-49e7-4865-a22c-7a6b04a7ac42',
+        faculty: [
+          {
+            id: 'd1130416-cf7f-41eb-8a16-e93d97205142',
+            displayName: 'Brooks, David',
+            instructorOrder: 0,
+          },
+          {
+            id: '50b38487-e035-4e40-a48d-9b603ac7dfe1',
+            displayName: 'Goldsmith, Mara',
+            instructorOrder: 1,
+          },
+          {
+            id: '54284de9-2b2c-4aac-915f-f960f319d3db',
+            displayName: 'Dawson, Emily',
+            instructorOrder: 2,
+          },
+        ],
+      },
+    },
+    {
+      id: '5f700cd5-9ff9-48a7-875d-2a7b7dc290ea',
+      academicYear: '2021',
+      calendarYear: '2021',
+      term: TERM.SPRING,
+      instance: {
+        id: 'b3eadbe3-816f-4219-836a-9fca021dcc86',
+        faculty: [
+          {
+            id: 'd1130416-cf7f-41eb-8a16-e93d97205142',
+            displayName: 'Brooks, David',
+            instructorOrder: 0,
+          },
+          {
+            id: '54284de9-2b2c-4aac-915f-f960f319d3db',
+            displayName: 'Dawson, Emily',
+            instructorOrder: 1,
+          },
+        ],
+      },
+    },
+    {
+      id: '73d1ee13-8b05-46d9-86fc-9e86442f94bd',
+      academicYear: '2022',
+      calendarYear: '2021',
+      term: TERM.FALL,
+      instance: {
+        id: '155938bd-a4fb-47c1-9dfb-2c33480535ef',
+        faculty: [
+          {
+            id: '54284de9-2b2c-4aac-915f-f960f319d3db',
+            displayName: 'Dawson, Emily',
+            instructorOrder: 0,
+          },
+        ],
+      },
+    },
+    {
+      id: '0dfa51cc-673b-4238-abc7-0908e9e57468',
+      academicYear: '2022',
+      calendarYear: '2022',
+      term: TERM.SPRING,
+      instance: {
+        id: 'a2bdd06f-44b7-49c5-a4c6-ae3a01c07e7d',
+        faculty: [
+          {
+            id: 'd1130416-cf7f-41eb-8a16-e93d97205142',
+            displayName: 'Brooks, David',
+            instructorOrder: 0,
+          },
+          {
+            id: '50b38487-e035-4e40-a48d-9b603ac7dfe1',
+            displayName: 'Goldsmith, Mara',
+            instructorOrder: 1,
+          },
+          {
+            id: '54284de9-2b2c-4aac-915f-f960f319d3db',
+            displayName: 'Dawson, Emily',
+            instructorOrder: 2,
+          },
+        ],
+      },
+    },
+    {
+      id: '83f73535-dbae-48b1-a73e-e3792358ab8d',
+      academicYear: '2023',
+      calendarYear: '2022',
+      term: TERM.FALL,
+      instance: {
+        id: 'f397e975-75db-4cf0-a4d7-7f929e376e83',
+        faculty: [
+          {
+            id: '54284de9-2b2c-4aac-915f-f960f319d3db',
+            displayName: 'Dawson, Emily',
+            instructorOrder: 0,
+          },
+        ],
+      },
+    },
+    {
+      id: '1e6e51ba-adc9-4526-a0b1-0dcb71e3d38e',
+      academicYear: '2023',
+      calendarYear: '2023',
+      term: TERM.SPRING,
+      instance: {
+        id: 'be77d84c-dc60-44c0-8d74-77187d63ce20',
+        faculty: [
+          {
+            id: 'd1130416-cf7f-41eb-8a16-e93d97205142',
+            displayName: 'Brooks, David',
+            instructorOrder: 0,
+          },
+          {
+            id: '50b38487-e035-4e40-a48d-9b603ac7dfe1',
+            displayName: 'Goldsmith, Mara',
+            instructorOrder: 1,
+          },
+        ],
+      },
+    },
+  ],
+}];
+
+/**
+ * The academic years corresponding to `testThreeYearPlan`
+ */
+export const testThreeYearPlanAcademicYears = [2020, 2021, 2022];
+
+/**
+ * Data representing a three year plan, which contains semesters from
+ * Fall 2020 to Spring 2022. This three year plan contains data for AP 275,
+ * ES 115, and CS 223.
+ */
+export const testThreeYearPlan: MultiYearPlanResponseDTO[] = [{
+  id: '37b66373-5000-43f2-9c14-8c2426273785',
+  area: 'AP',
+  catalogNumber: 'AP 275',
+  title: 'Computational Design of Materials',
+  semesters: [
+    {
+      id: 'ecf56c0b-0ba9-4532-b1ba-177071aac2e1',
+      academicYear: '2020',
+      calendarYear: '2019',
+      term: TERM.FALL,
+      instance: {
+        id: '4dcef6f9-4e3e-49c0-a369-c30ab9615b96',
+        faculty: [
+          {
+            id: '4dcef6f9-4e3e-49c0-a369-c30ab9615b96',
+            displayName: 'Masahiro, Morii',
+            instructorOrder: 0,
+          },
+        ],
+      },
+    },
+    {
+      id: '49372311-991d-45a7-a1bf-2ba967d62663',
+      academicYear: '2020',
+      calendarYear: '2020',
+      term: TERM.SPRING,
+      instance: {
+        id: '85d2ecdf-6015-4510-98ed-3b55991d2aea',
+        faculty: [
+          {
+            id: 'f696d531-aef2-413f-9922-f480aa9d6039',
+            displayName: 'Rycroft, Christopher',
+            instructorOrder: 0,
+          },
+          {
+            id: '4dcef6f9-4e3e-49c0-a369-c30ab9615b96',
+            displayName: 'Masahiro, Morii',
+            instructorOrder: 1,
+          },
+          {
+            id: '05d04a88-8db2-46fe-8b87-aa70244ad655',
+            displayName: 'Yacoby, Amir',
+            instructorOrder: 2,
+          },
+        ],
+      },
+    },
+    {
+      id: '7dd78af1-8821-4aba-b617-279922b7ffab',
+      academicYear: '2021',
+      calendarYear: '2020',
+      term: TERM.FALL,
+      instance: {
+        id: '441c517f-bc48-46e3-86c2-4949d1908c5d',
+        faculty: [
+          {
+            id: '4dcef6f9-4e3e-49c0-a369-c30ab9615b96',
+            displayName: 'Masahiro, Morii',
+            instructorOrder: 0,
+          },
+        ],
+      },
+    },
+    {
+      id: '5f700cd5-9ff9-48a7-875d-2a7b7dc290ea',
+      academicYear: '2021',
+      calendarYear: '2021',
+      term: TERM.SPRING,
+      instance: {
+        id: '127b33e4-e59a-43cb-a832-d5fc62a702ec',
+        faculty: [
+          {
+            id: 'f696d531-aef2-413f-9922-f480aa9d6039',
+            displayName: 'Rycroft, Christopher',
+            instructorOrder: 0,
+          },
+          {
+            id: '4dcef6f9-4e3e-49c0-a369-c30ab9615b96',
+            displayName: 'Masahiro, Morii',
+            instructorOrder: 1,
+          },
+          {
+            id: '05d04a88-8db2-46fe-8b87-aa70244ad655',
+            displayName: 'Yacoby, Amir',
+            instructorOrder: 2,
+          },
+        ],
+      },
+    },
+    {
+      id: '73d1ee13-8b05-46d9-86fc-9e86442f94bd',
+      academicYear: '2022',
+      calendarYear: '2021',
+      term: TERM.FALL,
+      instance: {
+        id: 'bbc7492a-71b2-489b-a9ec-a0a052c4f5c8',
+        faculty: [
+          {
+            id: '513e9576-cdc5-4911-8d1c-3f95c1bdc6cd',
+            displayName: 'Golub, Benjamin',
+            instructorOrder: 0,
+          },
+          {
+            id: '4dcef6f9-4e3e-49c0-a369-c30ab9615b96',
+            displayName: 'Masahiro, Morii',
+            instructorOrder: 1,
+          },
+        ],
+      },
+    },
+    {
+      id: '0dfa51cc-673b-4238-abc7-0908e9e57468',
+      academicYear: '2022',
+      calendarYear: '2022',
+      term: TERM.SPRING,
+      instance: {
+        id: 'a9db3a67-f688-4474-a9ef-ae05d1327f4f',
+        faculty: [
+          {
+            id: 'f696d531-aef2-413f-9922-f480aa9d6039',
+            displayName: 'Rycroft, Christopher',
+            instructorOrder: 0,
+          },
+          {
+            id: '4dcef6f9-4e3e-49c0-a369-c30ab9615b96',
+            displayName: 'Masahiro, Morii',
+            instructorOrder: 1,
+          },
+        ],
+      },
+    },
+  ],
+},
+{
+  id: '9a07e8a3-d6d5-4e89-9d32-8ad04785b9ab',
+  area: 'ES',
+  catalogNumber: 'ES 115',
+  title: 'Mathematical Modeling',
+  semesters: [
+    {
+      id: 'ecf56c0b-0ba9-4532-b1ba-177071aac2e1',
+      academicYear: '2020',
+      calendarYear: '2019',
+      term: TERM.FALL,
+      instance: {
+        id: '7dd78af1-8821-4aba-b617-279922b7ffab',
+        faculty: [
+          {
+            id: 'be64ce4b-081d-4987-8414-681bc5ca3193',
+            displayName: 'Klecker, Nancy',
+            instructorOrder: 0,
+          },
+        ],
+      },
+    },
+    {
+      id: '49372311-991d-45a7-a1bf-2ba967d62663',
+      academicYear: '2020',
+      calendarYear: '2020',
+      term: TERM.SPRING,
+      instance: {
+        id: 'be64ce4b-081d-4987-8414-681bc5ca3193',
+        faculty: [
+          {
+            id: 'be64ce4b-081d-4987-8414-681bc5ca3193',
+            displayName: 'Klecker, Nancy',
+            instructorOrder: 0,
+          },
+          {
+            id: '441c517f-bc48-46e3-86c2-4949d1908c5d',
+            displayName: 'Chen, Yiling',
+            instructorOrder: 1,
+          },
+        ],
+      },
+    },
+    {
+      id: '7dd78af1-8821-4aba-b617-279922b7ffab',
+      academicYear: '2021',
+      calendarYear: '2020',
+      term: TERM.FALL,
+      instance: {
+        id: 'e3c785a1-d917-44a2-8349-829d05103de6',
+        faculty: [
+          {
+            id: 'be64ce4b-081d-4987-8414-681bc5ca3193',
+            displayName: 'Klecker, Nancy',
+            instructorOrder: 0,
+          },
+          {
+            id: '441c517f-bc48-46e3-86c2-4949d1908c5d',
+            displayName: 'Chen, Yiling',
+            instructorOrder: 1,
+          },
+          {
+            id: '91c44209-68ff-4f3e-91b8-288709a49f26',
+            displayName: 'Shapiro, Avi',
+            instructorOrder: 2,
+          },
+        ],
+      },
+    },
+    {
+      id: '5f700cd5-9ff9-48a7-875d-2a7b7dc290ea',
+      academicYear: '2021',
+      calendarYear: '2021',
+      term: TERM.SPRING,
+      instance: {
+        id: 'bbc7492a-71b2-489b-a9ec-a0a052c4f5c8',
+        faculty: [
+          {
+            id: '91c44209-68ff-4f3e-91b8-288709a49f26',
+            displayName: 'Shapiro, Avi',
+            instructorOrder: 0,
+          },
+        ],
+      },
+    },
+    {
+      id: '73d1ee13-8b05-46d9-86fc-9e86442f94bd',
+      academicYear: '2022',
+      calendarYear: '2021',
+      term: TERM.FALL,
+      instance: {
+        id: 'cb489cc5-a7bd-4e29-b465-71d88ca73b71',
+        faculty: [
+          {
+            id: 'be64ce4b-081d-4987-8414-681bc5ca3193',
+            displayName: 'Klecker, Nancy',
+            instructorOrder: 0,
+          },
+          {
+            id: '91c44209-68ff-4f3e-91b8-288709a49f26',
+            displayName: 'Shapiro, Avi',
+            instructorOrder: 1,
+          },
+        ],
+      },
+    },
+    {
+      id: '0dfa51cc-673b-4238-abc7-0908e9e57468',
+      academicYear: '2022',
+      calendarYear: '2022',
+      term: TERM.SPRING,
+      instance: {
+        id: '5f700cd5-9ff9-48a7-875d-2a7b7dc290ea',
+        faculty: [
+          {
+            id: 'be64ce4b-081d-4987-8414-681bc5ca3193',
+            displayName: 'Klecker, Nancy',
+            instructorOrder: 0,
+          },
+          {
+            id: '441c517f-bc48-46e3-86c2-4949d1908c5d',
+            displayName: 'Chen, Yiling',
+            instructorOrder: 1,
+          },
+        ],
+      },
+    },
+  ],
+},
+{
+  id: 'b7dfe6fa-668a-4b89-912a-520c8aac8e6a',
+  area: 'CS',
+  catalogNumber: 'CS 223',
+  title: 'Probabilistic Analysis and Algorithms',
+  semesters: [
+    {
+      id: 'ecf56c0b-0ba9-4532-b1ba-177071aac2e1',
+      academicYear: '2020',
+      calendarYear: '2019',
+      term: TERM.FALL,
+      instance: {
+        id: '2ca4b43f-1c73-4e17-a7d4-bd6f347d30d6',
+        faculty: [
+          {
+            id: 'd1130416-cf7f-41eb-8a16-e93d97205142',
+            displayName: 'Brooks, David',
+            instructorOrder: 0,
+          },
+          {
+            id: '50b38487-e035-4e40-a48d-9b603ac7dfe1',
+            displayName: 'Goldsmith, Mara',
+            instructorOrder: 1,
+          },
+        ],
+      },
+    },
+    {
+      id: '49372311-991d-45a7-a1bf-2ba967d62663',
+      academicYear: '2020',
+      calendarYear: '2020',
+      term: TERM.SPRING,
+      instance: {
+        id: '508cacd5-6e75-4c3c-83a3-d274c00770e4',
+        faculty: [
+          {
+            id: 'd1130416-cf7f-41eb-8a16-e93d97205142',
+            displayName: 'Brooks, David',
+            instructorOrder: 0,
+          },
+          {
+            id: '50b38487-e035-4e40-a48d-9b603ac7dfe1',
+            displayName: 'Goldsmith, Mara',
+            instructorOrder: 1,
+          },
+          {
+            id: '54284de9-2b2c-4aac-915f-f960f319d3db',
+            displayName: 'Dawson, Emily',
+            instructorOrder: 2,
+          },
+        ],
+      },
+    },
+    {
+      id: '7dd78af1-8821-4aba-b617-279922b7ffab',
+      academicYear: '2021',
+      calendarYear: '2020',
+      term: TERM.FALL,
+      instance: {
+        id: 'abefdab5-49e7-4865-a22c-7a6b04a7ac42',
+        faculty: [
+          {
+            id: 'd1130416-cf7f-41eb-8a16-e93d97205142',
+            displayName: 'Brooks, David',
+            instructorOrder: 0,
+          },
+          {
+            id: '50b38487-e035-4e40-a48d-9b603ac7dfe1',
+            displayName: 'Goldsmith, Mara',
+            instructorOrder: 1,
+          },
+          {
+            id: '54284de9-2b2c-4aac-915f-f960f319d3db',
+            displayName: 'Dawson, Emily',
+            instructorOrder: 2,
+          },
+        ],
+      },
+    },
+    {
+      id: '5f700cd5-9ff9-48a7-875d-2a7b7dc290ea',
+      academicYear: '2021',
+      calendarYear: '2021',
+      term: TERM.SPRING,
+      instance: {
+        id: 'b3eadbe3-816f-4219-836a-9fca021dcc86',
+        faculty: [
+          {
+            id: 'd1130416-cf7f-41eb-8a16-e93d97205142',
+            displayName: 'Brooks, David',
+            instructorOrder: 0,
+          },
+          {
+            id: '54284de9-2b2c-4aac-915f-f960f319d3db',
+            displayName: 'Dawson, Emily',
+            instructorOrder: 1,
+          },
+        ],
+      },
+    },
+    {
+      id: '73d1ee13-8b05-46d9-86fc-9e86442f94bd',
+      academicYear: '2022',
+      calendarYear: '2021',
+      term: TERM.FALL,
+      instance: {
+        id: '155938bd-a4fb-47c1-9dfb-2c33480535ef',
+        faculty: [
+          {
+            id: '54284de9-2b2c-4aac-915f-f960f319d3db',
+            displayName: 'Dawson, Emily',
+            instructorOrder: 0,
+          },
+        ],
+      },
+    },
+    {
+      id: '0dfa51cc-673b-4238-abc7-0908e9e57468',
+      academicYear: '2022',
+      calendarYear: '2022',
+      term: TERM.SPRING,
+      instance: {
+        id: 'a2bdd06f-44b7-49c5-a4c6-ae3a01c07e7d',
+        faculty: [
+          {
+            id: 'd1130416-cf7f-41eb-8a16-e93d97205142',
+            displayName: 'Brooks, David',
+            instructorOrder: 0,
+          },
+          {
+            id: '50b38487-e035-4e40-a48d-9b603ac7dfe1',
+            displayName: 'Goldsmith, Mara',
+            instructorOrder: 1,
+          },
+          {
+            id: '54284de9-2b2c-4aac-915f-f960f319d3db',
+            displayName: 'Dawson, Emily',
+            instructorOrder: 2,
+          },
+        ],
+      },
+    },
+  ],
+}];
