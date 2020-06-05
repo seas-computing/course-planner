@@ -138,7 +138,7 @@ export class CourseInstanceService {
         's.id = s.id'
       )
       .leftJoinAndMapOne(
-        'c.instance',
+        's.instance',
         MultiYearPlanInstanceView,
         'ci',
         'c.id = ci."courseId" AND s.id = ci."semesterId"'
@@ -153,7 +153,7 @@ export class CourseInstanceService {
       // the calendar year, academicYear is truly the academic year and has
       // been calculated by the SemesterView
       .where('s."academicYear" IN (:...academicYears)', { academicYears })
-      .orderBy('s."academicYear', 'ASC')
+      .orderBy('s."academicYear"', 'ASC')
       .addOrderBy('s."termOrder"', 'ASC')
       .addOrderBy('c.area', 'ASC')
       .addOrderBy('"catalogNumber"', 'ASC')
