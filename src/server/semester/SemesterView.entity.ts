@@ -24,8 +24,8 @@ import { Semester } from './semester.entity';
     END`, 'academicYear')
     .addSelect('s.term', 'term')
     .addSelect(`CASE
-    WHEN term = '${TERM.SPRING}' THEN 1
-    WHEN term = '${TERM.FALL}' THEN 2
+    WHEN term = '${TERM.FALL}' THEN 1
+    WHEN term = '${TERM.SPRING}' THEN 2
     ELSE 3
     END`, 'termOrder')
     .from(Semester, 's'),
