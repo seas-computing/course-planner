@@ -128,7 +128,7 @@ export class CourseInstanceService {
   public async getMultiYearPlan(numYears?: number):
   Promise<MultiYearPlanResponseDTO[]> {
     const academicYears = this.computeAcademicYears(numYears);
-    return await this.multiYearPlanViewRepository
+    const temp = this.multiYearPlanViewRepository
       .createQueryBuilder('c')
       .leftJoinAndMapMany(
         'c.semesters',
@@ -153,12 +153,13 @@ export class CourseInstanceService {
       // the calendar year, academicYear is truly the academic year and has
       // been calculated by the SemesterView
       .where('s."academicYear" IN (:...academicYears)', { academicYears })
-      .orderBy('s."academicYear"', 'ASC')
-      .addOrderBy('s."termOrder"', 'ASC')
-      .addOrderBy('c.area', 'ASC')
+      .orderBy('c.area', 'ASC')
       .addOrderBy('"catalogNumber"', 'ASC')
+      .addOrderBy('s."academicYear"', 'ASC')
+      .addOrderBy('s."termOrder"', 'ASC')
       .addOrderBy('instructors."instructorOrder"', 'ASC')
-      .addOrderBy('instructors."displayName"', 'ASC')
-      .getMany() as MultiYearPlanResponseDTO[];
+      .addOrderBy('instructors."displayName"', 'ASC');
+    console.log(temp.getSql());
+    return await temp.getMany() as MultiYearPlanResponseDTO[];
   }
 }
