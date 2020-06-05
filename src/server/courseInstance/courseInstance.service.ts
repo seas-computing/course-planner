@@ -128,7 +128,7 @@ export class CourseInstanceService {
   public async getMultiYearPlan(numYears?: number):
   Promise<MultiYearPlanResponseDTO[]> {
     const academicYears = this.computeAcademicYears(numYears);
-    const temp = this.multiYearPlanViewRepository
+    return await this.multiYearPlanViewRepository
       .createQueryBuilder('c')
       .leftJoinAndMapMany(
         'c.semesters',
@@ -158,8 +158,7 @@ export class CourseInstanceService {
       .addOrderBy('s."academicYear"', 'ASC')
       .addOrderBy('s."termOrder"', 'ASC')
       .addOrderBy('instructors."instructorOrder"', 'ASC')
-      .addOrderBy('instructors."displayName"', 'ASC');
-    console.log(temp.getSql());
-    return await temp.getMany() as MultiYearPlanResponseDTO[];
+      .addOrderBy('instructors."displayName"', 'ASC')
+      .getMany() as MultiYearPlanResponseDTO[];
   }
 }
