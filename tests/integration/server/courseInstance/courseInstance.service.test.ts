@@ -13,9 +13,13 @@ import { OFFERED } from 'common/constants';
 import { Meeting } from 'server/meeting/meeting.entity';
 import { ConfigService } from 'server/config/config.service';
 import { ConfigModule } from 'server/config/config.module';
-import { MultiYearPlanServiceResponseDTO, MultiYearPlanServiceFaculty, MultiYearPlanServiceInstance } from 'common/dto/multiYearPlan/MultiYearPlanServiceResponseDTO';
 import flatMap from 'lodash.flatmap';
 import { AuthModule } from 'server/auth/auth.module';
+import {
+  MultiYearPlanResponseDTO,
+  MultiYearPlanInstanceFaculty,
+  MultiYearPlanInstance,
+} from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 
@@ -191,7 +195,7 @@ describe('Course Instance Service', function () {
     });
   });
   describe('getMultiYearPlan', function () {
-    let result: MultiYearPlanServiceResponseDTO[];
+    let result: MultiYearPlanResponseDTO[];
     const numYears = 4;
     beforeEach(async function () {
       result = await ciService.getMultiYearPlan(numYears);
@@ -201,17 +205,18 @@ describe('Course Instance Service', function () {
     });
     it('should return the instructors for each course instance ordered by instructorOrder and displayName', function () {
       const minFacultyToSort = 3;
-      const multipleFacultyArrays: MultiYearPlanServiceFaculty[][] = flatMap(
+      const multipleFacultyArrays: MultiYearPlanInstanceFaculty[][] = flatMap(
         result,
         // get all the instances
-        (course: MultiYearPlanServiceResponseDTO) => course.instances
-      )
-        // discard instances with less than 3 faculty
-        .filter((instance: MultiYearPlanServiceInstance) => (
-          instance.faculty.length >= minFacultyToSort
-        ))
-        // get the faculty
-        .map((instance: MultiYearPlanServiceInstance) => instance.faculty);
+        (course: MultiYearPlanResponseDTO) => course.semesters
+          .map(({ instance }) => instance)
+          // discard instances with less than 3 faculty
+          .filter((instance: MultiYearPlanInstance) => (
+            instance != null && instance.faculty.length >= minFacultyToSort
+          ))
+          // get the faculty
+          .map((instance: MultiYearPlanInstance) => instance.faculty)
+      );
       const facultyArraysToCheck = 2;
       // confirm that we have at least 2 to check
       strictEqual(multipleFacultyArrays.length >= facultyArraysToCheck, true);
