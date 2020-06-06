@@ -13,11 +13,13 @@ import {
   TableHeadingSpacer,
   TableRowHeadingCell,
   BaseTheme,
+  VALIGN,
 } from 'mark-one';
 
 import { ThemeContext } from 'styled-components';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { COURSE_TABLE_COLUMN, COURSE_TABLE_COLUMN_GROUP } from 'common/constants';
+import { CellLayout } from 'client/components/general';
 import { CourseInstanceListColumn } from './tableFields';
 
 interface CourseInstanceTableProps {
@@ -213,13 +215,20 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
                 (field: CourseInstanceListColumn): ReactElement => {
                   if (field.viewColumn === COURSE_TABLE_COLUMN.CATALOG_NUMBER) {
                     return (
-                      <TableRowHeadingCell scope="row" key={field.key}>
-                        {field.getValue(course)}
+                      <TableRowHeadingCell
+                        scope="row"
+                        key={field.key}
+                        verticalAlignment={VALIGN.TOP}
+                      >
+                        <CellLayout>
+                          {field.getValue(course)}
+                        </CellLayout>
                       </TableRowHeadingCell>
                     );
                   }
                   return (
                     <TableCell
+                      verticalAlignment={VALIGN.TOP}
                       key={field.key}
                       backgroundColor={
                         field.viewColumn === COURSE_TABLE_COLUMN.AREA
@@ -228,7 +237,9 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
                           ]
                           : null}
                     >
-                      {field.getValue(course)}
+                      <CellLayout>
+                        {field.getValue(course)}
+                      </CellLayout>
                     </TableCell>
                   );
                 }
