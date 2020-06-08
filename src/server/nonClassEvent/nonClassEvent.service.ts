@@ -9,7 +9,7 @@ import { NonClassEventView } from './NonClassEvent.view.entity';
 
 export class NonClassEventService {
   @InjectRepository(NonClassParentView)
-  public parentRepository: Repository<NonClassParentView>;
+  private parentRepository: Repository<NonClassParentView>;
 
   public async find(academicYear: number = 2020):
   Promise<NonClassParentView[]> {
