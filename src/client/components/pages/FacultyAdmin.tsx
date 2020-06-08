@@ -15,6 +15,10 @@ import {
   BorderlessButton,
   VARIANT,
   ALIGN,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
 } from 'mark-one';
 import {
   MESSAGE_TYPE,
@@ -64,6 +68,16 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
       });
   }, [dispatchMessage]);
 
+  /**
+   * Keeps track of whether the modal is currently visible.
+   * By default, the modal is not visible.
+   */
+  const [modalVisible, setModalVisible] = useState(false);
+  /**
+   * Provides the Mark-One theme using styled component's ThemeContext
+   */
+  const theme = useContext(ThemeContext);
+
   return (
     <div className="faculty-admin-table">
       <Table>
@@ -92,7 +106,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
                 <TableCell alignment={ALIGN.CENTER}>
                   <BorderlessButton
                     variant={VARIANT.INFO}
-                    onClick={(): void => {}}
+                    onClick={(): void => { setModalVisible(true); }}
                   >
                     <FontAwesomeIcon icon={faEdit} />
                   </BorderlessButton>
@@ -101,6 +115,13 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
             ))}
         </TableBody>
       </Table>
+      <Modal
+        closeHandler={(): void => { setModalVisible(false); }}
+        isVisible={modalVisible}
+      >
+        <ModalHeader>Edit Faculty</ModalHeader>
+        <ModalBody>Modal Body</ModalBody>
+      </Modal>
     </div>
   );
 };
