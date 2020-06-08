@@ -41,6 +41,13 @@ describe('Faculty Admin', function () {
       );
       return waitForElement(() => container.querySelector('.faculty-admin-table'));
     });
+    it('creates the "create faculty" button', async function () {
+      const { container } = render(
+        <FacultyAdmin />,
+        dispatchMessage
+      );
+      return waitForElement(() => container.querySelector('.create-faculty-button'));
+    });
     context('when course data fetch succeeds', function () {
       it('displays the correct faculty information', async function () {
         const { getByText } = render(
