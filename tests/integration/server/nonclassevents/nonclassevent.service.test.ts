@@ -6,7 +6,7 @@ import { NonClassEventModule } from 'server/nonClassEvent/nonclassevent.module';
 import { SemesterModule } from 'server/semester/semester.module';
 import { AuthModule } from 'server/auth/auth.module';
 import { NonClassEventService } from 'server/nonClassEvent/nonClassEvent.service';
-import { strictEqual } from 'assert';
+import { deepStrictEqual } from 'assert';
 import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 
@@ -55,19 +55,26 @@ describe('NonClassEvent Service', function () {
   });
   describe('find', function () {
     it('retrieves data for the academic year specified', async function () {
-      const expectedAcdemicYear = 2019;
+      const expectedAcdemicYear = 2020;
 
-      const events = await service.find();
-      const fallIsCorrect = events.map((event) => event.fall.academicYear)
-        .map(parseInt)
-        .every((academicYear) => academicYear === expectedAcdemicYear);
+      const events = await service.find(expectedAcdemicYear);
 
-      const springIsCorrect = events.map((event) => event.spring.academicYear)
-        .map(parseInt)
-        .every((academicYear) => academicYear === expectedAcdemicYear + 1);
+      const springAcademicYears = events.map((event) => event.fall.academicYear)
+        .map((acyr) => parseInt(acyr));
 
-      strictEqual(fallIsCorrect, true);
-      strictEqual(springIsCorrect, true);
+      const fallAcademicyears = events.map((event) => event.spring.academicYear)
+        .map((acyr) => parseInt(acyr));
+
+      deepStrictEqual(springAcademicYears.length > 0, true);
+      deepStrictEqual(fallAcademicyears.length > 0, true);
+      deepStrictEqual(
+        springAcademicYears,
+        Array(springAcademicYears.length).fill(expectedAcdemicYear)
+      );
+      deepStrictEqual(
+        fallAcademicyears,
+        Array(fallAcademicyears.length).fill(expectedAcdemicYear)
+      );
     });
   });
 });
