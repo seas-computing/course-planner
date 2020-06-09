@@ -3,14 +3,9 @@ import {
   Connection,
   ViewColumn,
   SelectQueryBuilder,
-  ManyToOne,
-  ObjectType,
-  JoinColumn,
 } from 'typeorm';
 import { MultiYearPlanFacultyListingView } from 'server/courseInstance/MultiYearPlanFacultyListingView.entity';
-import { TERM } from 'common/constants';
 import { CourseInstance } from './courseinstance.entity';
-import { MultiYearPlanView } from './MultiYearPlanView.entity';
 
 @ViewEntity('MultiYearPlanInstanceView', {
   expression: (connection: Connection):
