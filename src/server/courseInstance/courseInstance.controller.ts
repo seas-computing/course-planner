@@ -11,7 +11,6 @@ import {
   ApiImplicitQuery,
 } from '@nestjs/swagger';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
-import { ConfigService } from 'server/config/config.service';
 import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import { CourseInstanceService } from './courseInstance.service';
 import { SemesterService } from '../semester/semester.service';
@@ -23,9 +22,6 @@ export class CourseInstanceController {
 
   @Inject(SemesterService)
   private readonly semesterService: SemesterService;
-
-  @Inject(ConfigService)
-  private readonly configService: ConfigService;
 
   /**
    * Responds with an aggregated list of courses and their instances.
