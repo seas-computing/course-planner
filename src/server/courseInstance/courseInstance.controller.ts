@@ -69,6 +69,24 @@ export class CourseInstanceController {
   }
 
   /**
+   * Computes the academic years corresponding to the number of years given
+   * @param numYears The number of years requested
+   */
+  public computeAcademicYears(numYears: number): number[] {
+    // If an invalid number of years is provided, use the default number of years
+    const validatedNumYears = (
+      Math.floor(numYears) > 0
+    ) ? Math.floor(numYears) : 4;
+    // Fetch the current academic year and convert each year to a number
+    // so that we can calculate the plans for specified or default number of years
+    const { academicYear } = this.configService;
+    const academicYears = Array.from({ length: validatedNumYears })
+      .map((value, index): number => index)
+      .map((offset): number => academicYear + offset);
+    return academicYears;
+  }
+
+  /**
    * Responds with a list of multiyear plan records
    *
    * @param numYears represents the number of years that the Multi Year Plan
@@ -89,16 +107,7 @@ export class CourseInstanceController {
   public async getMultiYearPlan(
     @Query('numYears') numYears: number = 4
   ): Promise<MultiYearPlanResponseDTO[]> {
-    // If an invalid number of years is provided, use the default number of years
-    const validatedNumYears = (
-      Math.floor(numYears) > 0
-    ) ? Math.floor(numYears) : 4;
-    // Fetch the current academic year and convert each year to a number
-    // so that we can calculate the plans for specified or default number of years
-    const { academicYear } = this.configService;
-    const academicYears = Array.from({ length: validatedNumYears })
-      .map((value, index): number => index)
-      .map((offset): number => academicYear + offset);
+    const academicYears = this.computeAcademicYears(numYears);
     return this.ciService.getMultiYearPlan(academicYears);
   }
 }

@@ -151,61 +151,30 @@ describe('Course Instance Controller', function () {
         deepStrictEqual(actual, testFourYearPlan);
       });
     });
-    context('When number of years parameter is set', function () {
-      it('should return the data in the expected format for the default number of years when numYears is equal to 0', async function () {
-        getStub = stub(ciService, 'getMultiYearPlan').resolves(testFourYearPlan);
-        const actual = await ciController.getMultiYearPlan(0);
-        deepStrictEqual(getStub.args, [[testFourYearPlanAcademicYears]]);
-        deepStrictEqual(actual, testFourYearPlan);
-      });
-      it('should return the data in the expected format for the default number of years when numYears is negative', async function () {
-        getStub = stub(ciService, 'getMultiYearPlan').resolves(testFourYearPlan);
-        const actual = await ciController.getMultiYearPlan(-3);
-        deepStrictEqual(getStub.args, [[testFourYearPlanAcademicYears]]);
-        deepStrictEqual(actual, testFourYearPlan);
-      });
-      it('should return the data in the expected format for the default number of years if numYears is null', async function () {
-        getStub = stub(ciService, 'getMultiYearPlan').resolves(testFourYearPlan);
-        const actual = await ciController.getMultiYearPlan(null);
-        deepStrictEqual(getStub.args, [[testFourYearPlanAcademicYears]]);
-        deepStrictEqual(actual, testFourYearPlan);
-      });
-      it('should return the data in the expected format for the floor of the number of years when numYears is equal to a float', async function () {
-        getStub = stub(ciService, 'getMultiYearPlan').resolves(testThreeYearPlan);
-        const actual = await ciController.getMultiYearPlan(3.3);
-        deepStrictEqual(getStub.args, [[testThreeYearPlanAcademicYears]]);
-        deepStrictEqual(actual, testThreeYearPlan);
-      });
-      it('should return the data in the expected format for the specified number of years when numYears is a positive integer', async function () {
-        getStub = stub(ciService, 'getMultiYearPlan').resolves(testThreeYearPlan);
-        const actual = await ciController.getMultiYearPlan(3);
-        deepStrictEqual(getStub.args, [[testThreeYearPlanAcademicYears]]);
-        deepStrictEqual(actual, testThreeYearPlan);
-      });
-      it('should return the semesters in chronological order', async function () {
-        getStub = stub(ciService, 'getMultiYearPlan').resolves(testFourYearPlan);
-        const actual = await ciController.getMultiYearPlan(null);
-        const sorted = actual.map((course) => ({
-          ...course,
-          semesters: course.semesters.slice().sort((semester1, semester2):
-          number => {
-            if (semester1.calendarYear < semester2.calendarYear) {
-              return -1;
-            }
-            if (semester1.calendarYear > semester2.calendarYear) {
-              return 1;
-            }
-            if (semester1.academicYear < semester2.academicYear) {
-              return -1;
-            }
-            if (semester1.academicYear > semester2.academicYear) {
-              return 1;
-            }
-            return 0;
-          }),
-        }));
-        deepStrictEqual(actual, sorted);
-      });
+  });
+  describe('computeAcademicYears', function () {
+    beforeEach(function () {
+      stub(configService, 'academicYear').get(() => testMultiYearPlanStartYear);
+    });
+    it('should return the default list of years when numYears is equal to 0', function () {
+      const actual = ciController.computeAcademicYears(0);
+      deepStrictEqual(actual, testFourYearPlanAcademicYears);
+    });
+    it('should return the default list of years when numYears is negative', function () {
+      const actual = ciController.computeAcademicYears(-3);
+      deepStrictEqual(actual, testFourYearPlanAcademicYears);
+    });
+    it('should return the default list of years if numYears is null', function () {
+      const actual = ciController.computeAcademicYears(null);
+      deepStrictEqual(actual, testFourYearPlanAcademicYears);
+    });
+    it('should return a list of years with a length of numYears rounded down when numYears is a float', function () {
+      const actual = ciController.computeAcademicYears(3.3);
+      deepStrictEqual(actual, testThreeYearPlanAcademicYears);
+    });
+    it('should return a list of years with a length of numYears when numYears is a positive integer', function () {
+      const actual = ciController.computeAcademicYears(3);
+      deepStrictEqual(actual, testThreeYearPlanAcademicYears);
     });
   });
 });
