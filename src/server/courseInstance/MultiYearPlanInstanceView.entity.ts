@@ -4,7 +4,7 @@ import {
   ViewColumn,
   SelectQueryBuilder,
 } from 'typeorm';
-import { MultiYearPlanFacultyListingView } from 'server/courseInstance/MultiYearPlanFacultyListingView.entity';
+import { FacultyListingView } from 'server/faculty/FacultyListingView.entity';
 import { CourseInstance } from './courseinstance.entity';
 
 @ViewEntity('MultiYearPlanInstanceView', {
@@ -35,5 +35,5 @@ export class MultiYearPlanInstanceView {
    * From [[Faculty]]
    * The faculty for the course instance
    */
-  public faculty: MultiYearPlanFacultyListingView[];
+  public faculty: FacultyListingView[];
 }

@@ -9,10 +9,10 @@ import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse
 import { MultiYearPlanView } from 'server/courseInstance/MultiYearPlanView.entity';
 import { ConfigService } from 'server/config/config.service';
 import { Course } from 'server/course/course.entity';
-import { MultiYearPlanFacultyListingView } from 'server/courseInstance/MultiYearPlanFacultyListingView.entity';
 import { TERM } from 'common/constants';
 import { SemesterView } from 'server/semester/SemesterView.entity';
 import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
+import { FacultyListingView } from 'server/faculty/FacultyListingView.entity';
 import { MultiYearPlanInstanceView } from './MultiYearPlanInstanceView.entity';
 
 /**
@@ -127,7 +127,7 @@ export class CourseInstanceService {
       )
       .leftJoinAndMapMany(
         'ci.faculty',
-        MultiYearPlanFacultyListingView,
+        FacultyListingView,
         'instructors',
         'instructors."courseInstanceId" = ci.id'
       )

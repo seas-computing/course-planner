@@ -53,9 +53,5 @@ export class FacultyListingView {
   /**
    * Many [[FacultyListingViews]] have one [[CourseInstanceView]]s
    */
-  @ManyToOne(
-    (): ObjectType<CourseInstanceListingView> => CourseInstanceListingView,
-    ({ instructors }): FacultyListingView[] => instructors
-  )
-  public courseInstanceId: CourseInstanceListingView;
+  public courseInstanceId: string;
 }
