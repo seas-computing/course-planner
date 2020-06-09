@@ -12,6 +12,8 @@ import {
   testFourYearPlan,
   testThreeYearPlan,
   testMultiYearPlanStartYear,
+  testFourYearPlanAcademicYears,
+  testThreeYearPlanAcademicYears,
 } from 'testData';
 import { CourseInstanceService } from '../courseInstance.service';
 import { CourseInstanceController } from '../courseInstance.controller';
@@ -138,7 +140,6 @@ describe('Course Instance Controller', function () {
   });
   describe('/multi-year-plan', function () {
     let getStub: SinonStub;
-
     beforeEach(function () {
       stub(configService, 'academicYear').get(() => testMultiYearPlanStartYear);
     });
@@ -146,7 +147,7 @@ describe('Course Instance Controller', function () {
       it('should return the data in the expected format for the default number of years', async function () {
         getStub = stub(ciService, 'getMultiYearPlan').resolves(testFourYearPlan);
         const actual = await ciController.getMultiYearPlan();
-        deepStrictEqual(getStub.args, [[undefined]]);
+        deepStrictEqual(getStub.args, [[testFourYearPlanAcademicYears]]);
         deepStrictEqual(actual, testFourYearPlan);
       });
     });
@@ -154,31 +155,31 @@ describe('Course Instance Controller', function () {
       it('should return the data in the expected format for the default number of years when numYears is equal to 0', async function () {
         getStub = stub(ciService, 'getMultiYearPlan').resolves(testFourYearPlan);
         const actual = await ciController.getMultiYearPlan(0);
-        deepStrictEqual(getStub.args, [[0]]);
+        deepStrictEqual(getStub.args, [[testFourYearPlanAcademicYears]]);
         deepStrictEqual(actual, testFourYearPlan);
       });
       it('should return the data in the expected format for the default number of years when numYears is negative', async function () {
         getStub = stub(ciService, 'getMultiYearPlan').resolves(testFourYearPlan);
         const actual = await ciController.getMultiYearPlan(-3);
-        deepStrictEqual(getStub.args, [[-3]]);
+        deepStrictEqual(getStub.args, [[testFourYearPlanAcademicYears]]);
         deepStrictEqual(actual, testFourYearPlan);
       });
       it('should return the data in the expected format for the default number of years if numYears is null', async function () {
         getStub = stub(ciService, 'getMultiYearPlan').resolves(testFourYearPlan);
         const actual = await ciController.getMultiYearPlan(null);
-        deepStrictEqual(getStub.args, [[null]]);
+        deepStrictEqual(getStub.args, [[testFourYearPlanAcademicYears]]);
         deepStrictEqual(actual, testFourYearPlan);
       });
-      it('should return the data in the expected format for the default number of years when numYears is equal to a float', async function () {
+      it('should return the data in the expected format for the floor of the number of years when numYears is equal to a float', async function () {
         getStub = stub(ciService, 'getMultiYearPlan').resolves(testThreeYearPlan);
-        const actual = await ciController.getMultiYearPlan(5.3);
-        deepStrictEqual(getStub.args, [[5.3]]);
+        const actual = await ciController.getMultiYearPlan(3.3);
+        deepStrictEqual(getStub.args, [[testThreeYearPlanAcademicYears]]);
         deepStrictEqual(actual, testThreeYearPlan);
       });
       it('should return the data in the expected format for the specified number of years when numYears is a positive integer', async function () {
         getStub = stub(ciService, 'getMultiYearPlan').resolves(testThreeYearPlan);
-        const actual = await ciController.getMultiYearPlan(5);
-        deepStrictEqual(getStub.args, [[5]]);
+        const actual = await ciController.getMultiYearPlan(3);
+        deepStrictEqual(getStub.args, [[testThreeYearPlanAcademicYears]]);
         deepStrictEqual(actual, testThreeYearPlan);
       });
       it('should return the semesters in chronological order', async function () {

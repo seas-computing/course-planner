@@ -12,6 +12,7 @@ import {
 } from '@nestjs/swagger';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
+import { ConfigService } from 'server/config/config.service';
 import { CourseInstanceService } from './courseInstance.service';
 import { SemesterService } from '../semester/semester.service';
 
@@ -22,6 +23,9 @@ export class CourseInstanceController {
 
   @Inject(SemesterService)
   private readonly semesterService: SemesterService;
+
+  @Inject(ConfigService)
+  private readonly configService: ConfigService;
 
   /**
    * Responds with an aggregated list of courses and their instances.
@@ -83,8 +87,18 @@ export class CourseInstanceController {
   })
   @Get('/multi-year-plan')
   public async getMultiYearPlan(
-    @Query('numYears') numYears?: number
+    @Query('numYears') numYears: number = 4
   ): Promise<MultiYearPlanResponseDTO[]> {
-    return this.ciService.getMultiYearPlan(numYears);
+    // If an invalid number of years is provided, use the default number of years
+    const validatedNumYears = (
+      Math.floor(numYears) > 0
+    ) ? Math.floor(numYears) : 4;
+    // Fetch the current academic year and convert each year to a number
+    // so that we can calculate the plans for specified or default number of years
+    const { academicYear } = this.configService;
+    const academicYears = Array.from({ length: validatedNumYears })
+      .map((value, index): number => index)
+      .map((offset): number => academicYear + offset);
+    return this.ciService.getMultiYearPlan(academicYears);
   }
 }

@@ -106,28 +106,10 @@ export class CourseInstanceService {
   }
 
   /**
-   * Calculates an array of academic years based on the current year
-   */
-  public computeAcademicYears(numYears: number = 4): number[] {
-    // If an invalid number of years is provided, use the default number of years
-    const validatedNumYears = (
-      Math.floor(numYears) > 0
-    ) ? Math.floor(numYears) : 4;
-    // Fetch the current academic year and convert each year to a number
-    // so that we can calculate the plans for specified or default number of years
-    const { academicYear } = this.configService;
-    const academicYears = Array.from({ length: validatedNumYears })
-      .map((value, index): number => index)
-      .map((offset): number => academicYear + offset);
-    return academicYears;
-  }
-
-  /**
    * Resolves a list of course instances for the Multi Year Plan
    */
-  public async getMultiYearPlan(numYears?: number):
+  public async getMultiYearPlan(academicYears: number[]):
   Promise<MultiYearPlanResponseDTO[]> {
-    const academicYears = this.computeAcademicYears(numYears);
     return await this.multiYearPlanViewRepository
       .createQueryBuilder('c')
       .leftJoinAndMapMany(

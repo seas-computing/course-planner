@@ -20,6 +20,7 @@ import {
   MultiYearPlanInstanceFaculty,
   MultiYearPlanInstance,
 } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
+import { testFourYearPlanAcademicYears } from 'testData';
 import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 
@@ -196,9 +197,8 @@ describe('Course Instance Service', function () {
   });
   describe('getMultiYearPlan', function () {
     let result: MultiYearPlanResponseDTO[];
-    const numYears = 4;
     beforeEach(async function () {
-      result = await ciService.getMultiYearPlan(numYears);
+      result = await ciService.getMultiYearPlan(testFourYearPlanAcademicYears);
     });
     it('should return a nonempty array of data', function () {
       notStrictEqual(result.length, 0);
