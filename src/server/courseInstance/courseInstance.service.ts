@@ -1,13 +1,9 @@
-import {
-  Injectable,
-  Inject,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CourseListingView } from 'server/course/CourseListingView.entity';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { MultiYearPlanView } from 'server/courseInstance/MultiYearPlanView.entity';
-import { ConfigService } from 'server/config/config.service';
 import { Course } from 'server/course/course.entity';
 import { TERM } from 'common/constants';
 import { SemesterView } from 'server/semester/SemesterView.entity';
@@ -31,9 +27,6 @@ export class CourseInstanceService {
 
   @InjectRepository(Course)
   protected courseEntityRepository: Repository<Course>;
-
-  @Inject(ConfigService)
-  private readonly configService: ConfigService;
 
   /**
    * Resolves a list of courses, which in turn contain sub-lists of instances

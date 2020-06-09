@@ -10,7 +10,6 @@ import { ConfigService } from 'server/config/config.service';
 import { Course } from 'server/course/course.entity';
 import {
   testFourYearPlan,
-  testThreeYearPlan,
   testMultiYearPlanStartYear,
   testFourYearPlanAcademicYears,
   testThreeYearPlanAcademicYears,
