@@ -260,5 +260,30 @@ describe('Course Instance Service', function () {
       });
       deepStrictEqual(result, sorted);
     });
+    it('should return the semesters in chronological order', async function () {
+      const sorted = result.map((course) => ({
+        ...course,
+        semesters: course
+          .semesters.slice().sort((semester1, semester2): number => {
+            if (semester1.academicYear < semester2.academicYear) {
+              return -1;
+            }
+            if (semester1.academicYear > semester2.academicYear) {
+              return 1;
+            }
+            if (semester1.calendarYear < semester2.calendarYear) {
+              return -1;
+            }
+            if (semester1.calendarYear > semester2.calendarYear) {
+              return 1;
+            }
+            return 0;
+          }),
+      }));
+      deepStrictEqual(
+        JSON.parse(JSON.stringify(result)),
+        JSON.parse(JSON.stringify(sorted))
+      );
+    });
   });
 });
