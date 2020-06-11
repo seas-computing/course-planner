@@ -68,7 +68,7 @@ export class CourseInstanceController {
   }
 
   /**
-   * Computes the academic year list based on the number of years specified
+   * Computes the academic year list for the number of years specified
    */
   public computeAcademicYears(numYears: number): number[] {
     // Fetch the current academic year and convert each year to a number
@@ -93,7 +93,7 @@ export class CourseInstanceController {
   })
   @Get('/multi-year-plan')
   public async getMultiYearPlan(): Promise<MultiYearPlanResponseDTO[]> {
-    // numYears represents the number of years specified for the multi year plan
+    // The number of years specified for the multi year plan
     const numYears = 4;
     const academicYears = this.computeAcademicYears(numYears);
     return this.ciService.getMultiYearPlan(academicYears);
