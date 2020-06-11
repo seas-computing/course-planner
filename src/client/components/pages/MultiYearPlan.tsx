@@ -74,87 +74,84 @@ const MultiYearPlan: FunctionComponent = function (): ReactElement {
       });
   }, []);
 
-  let data = (
-    <div>
-      <LoadSpinner>Fetching Course Data</LoadSpinner>
-    </div>
-  );
-
-  if (!fetching) {
-    let acyear = null;
-    if (multiYearPlan.length > 0) {
-      const course = multiYearPlan[0];
-      acyear = (
-        course.instances.map((instance):
+  const yearsHeaders = (myp) => (
+    myp.length > 0
+      ? myp[0].instances.map((instance):
         ReactElement<TableHeadProps> => (
           <TableHeadingCell key={instance.id} scope="col">
             {instance.term.slice(0, 1) + '\'' + instance.calendarYear.slice(2, 4) + 'instructors'}
           </TableHeadingCell>
         ))
-      );
-    }
+      : null
+  );
 
-    const courseInstance = (course) => (
-      course.instances.map((instance):
-      ReactElement<TableHeadProps> => (
-        <TableCell key={instance.id}>
-        <TableCellList>
-          {
-            instance.faculty.length > 0
-              ? instance.faculty.map((f) => (
-                <TableCellListItem key={f.id}>
-                  {f.displayName}
-                  <br />
-                </TableCellListItem>
-              ))
-              : null
-          }
-          </TableCellList>
-        </TableCell>
-      ))
-    );
+  const courseInstance = (course) => (
+    course.instances.map((instance):
+    ReactElement<TableHeadProps> => (
+      <TableCell key={instance.id}>
+      <TableCellList>
+        {
+          instance.faculty.length > 0
+            ? instance.faculty.map((f) => (
+              <TableCellListItem key={f.id}>
+                {f.displayName}
+                <br />
+              </TableCellListItem>
+            ))
+            : null
+        }
+        </TableCellList>
+      </TableCell>
+    ))
+  );
 
-    data = (
-      <Table>
-        <TableHead>
-          <TableRow isStriped>
-            <TableHeadingCell scope="col">Area</TableHeadingCell>
-            <TableHeadingCell scope="col">CatalogNumber</TableHeadingCell>
-            <TableHeadingCell scope="col">Title</TableHeadingCell>
-            { acyear }
-          </TableRow>
-        </TableHead>
-        <TableBody isScrollable>
-          {multiYearPlan
-            .map((course, courseIndex): ReactElement<TableRowProps> => (
-              <TableRow isStriped={courseIndex % 2 === 1} key={course.id}>
-                <TableCell
-                  alignment={ALIGN.CENTER}
-                  backgroundColor={
-                    (course.area
-                      && theme.color.area[course.area.toLowerCase()])
-                      ? theme
-                        .color
-                        .area[course.area.toLowerCase()]
-                      : undefined
-                  }
-                >
-                  {course.area}
-                </TableCell>
-                <TableRowHeadingCell scope="row"> {course.catalogNumber} </TableRowHeadingCell>
-                <TableCell>{course.title}</TableCell>
-                {courseInstance(course)}
-              </TableRow>
-            ))}
-        </TableBody>
-      </Table>
-    );
-  }
   return (
     <div className="multi-year-plan">
-      {data}
+      {fetching
+        ? (
+          <div>
+            <LoadSpinner>Fetching Course Data</LoadSpinner>
+          </div>
+        )
+        : (
+          <Table>
+          <TableHead>
+            <TableRow isStriped>
+              <TableHeadingCell scope="col">Area</TableHeadingCell>
+              <TableHeadingCell scope="col">CatalogNumber</TableHeadingCell>
+              <TableHeadingCell scope="col">Title</TableHeadingCell>
+              { yearsHeaders(multiYearPlan) }
+            </TableRow>
+          </TableHead>
+          <TableBody isScrollable>
+            {multiYearPlan
+              .map((course, courseIndex): ReactElement<TableRowProps> => (
+                <TableRow isStriped={courseIndex % 2 === 1} key={course.id}>
+                  <TableCell
+                    alignment={ALIGN.CENTER}
+                    backgroundColor={
+                      (course.area
+                        && theme.color.area[course.area.toLowerCase()])
+                        ? theme
+                          .color
+                          .area[course.area.toLowerCase()]
+                        : undefined
+                    }
+                  >
+                    {course.area}
+                  </TableCell>
+                  <TableRowHeadingCell scope="row"> {course.catalogNumber} </TableRowHeadingCell>
+                  <TableCell>{course.title}</TableCell>
+                  {courseInstance(course)}
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+
+        )}
     </div>
   );
+
 };
 
 export default MultiYearPlan;
