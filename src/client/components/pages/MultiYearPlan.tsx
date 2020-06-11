@@ -15,6 +15,9 @@ import {
   TableCell,
   ALIGN,
   LoadSpinner,
+  TableRowHeadingCell,
+  TableCellList,
+  TableCellListItem,
 } from 'mark-one';
 import { ThemeContext } from 'styled-components';
 import {
@@ -91,20 +94,22 @@ const MultiYearPlan: FunctionComponent = function (): ReactElement {
       );
     }
 
-    const courceInstance = (course) => (
+    const courseInstance = (course) => (
       course.instances.map((instance):
       ReactElement<TableHeadProps> => (
         <TableCell key={instance.id}>
+        <TableCellList>
           {
             instance.faculty.length > 0
               ? instance.faculty.map((f) => (
-                <div key={f.id}>
+                <TableCellListItem key={f.id}>
                   {f.displayName}
                   <br />
-                </div>
+                </TableCellListItem>
               ))
               : null
           }
+          </TableCellList>
         </TableCell>
       ))
     );
@@ -136,9 +141,9 @@ const MultiYearPlan: FunctionComponent = function (): ReactElement {
                 >
                   {course.area}
                 </TableCell>
-                <TableCell>{course.catalogNumber}</TableCell>
+                <TableRowHeadingCell scope="row"> {course.catalogNumber} </TableRowHeadingCell>
                 <TableCell>{course.title}</TableCell>
-                {courceInstance(course)}
+                {courseInstance(course)}
               </TableRow>
             ))}
         </TableBody>
