@@ -8,7 +8,6 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiUseTags,
-  ApiImplicitQuery,
 } from '@nestjs/swagger';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
@@ -69,19 +68,14 @@ export class CourseInstanceController {
   }
 
   /**
-   * Computes the academic years corresponding to the number of years given
-   * @param numYears The number of years requested
+   * Computes the academic year list based on the number of years specified
    */
   public computeAcademicYears(numYears: number): number[] {
-    // If an invalid number of years is provided, use the default number of years
-    const validatedNumYears = (
-      Math.floor(numYears) > 0
-    ) ? Math.floor(numYears) : 4;
     // Fetch the current academic year and convert each year to a number
-    // so that we can calculate the plans for specified or default number of years
+    // so that we can calculate the plans for the specified number of years
     const { academicYear } = this.configService;
     const academicYears = Array.from(
-      { length: validatedNumYears },
+      { length: numYears },
       (_, offset): number => academicYear + offset
     );
     return academicYears;
@@ -89,9 +83,6 @@ export class CourseInstanceController {
 
   /**
    * Responds with a list of multiyear plan records
-   *
-   * @param numYears represents the number of years that the Multi Year Plan
-   * will show. Its value defaults to 4 years.
    */
   @ApiUseTags('Course Instance')
   @ApiOperation({ title: 'Retrieve the multi-year plan' })
@@ -100,14 +91,10 @@ export class CourseInstanceController {
     description: 'An array of all the multi-year plan records',
     isArray: true,
   })
-  @ApiImplicitQuery({
-    name: 'numYears',
-    description: 'Represents the number of years that the Multi Year Plan will show',
-  })
   @Get('/multi-year-plan')
-  public async getMultiYearPlan(
-    @Query('numYears') numYears: number = 4
-  ): Promise<MultiYearPlanResponseDTO[]> {
+  public async getMultiYearPlan(): Promise<MultiYearPlanResponseDTO[]> {
+    // numYears represents the number of years specified for the multi year plan
+    const numYears = 4;
     const academicYears = this.computeAcademicYears(numYears);
     return this.ciService.getMultiYearPlan(academicYears);
   }
