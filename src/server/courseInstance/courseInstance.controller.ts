@@ -80,9 +80,10 @@ export class CourseInstanceController {
     // Fetch the current academic year and convert each year to a number
     // so that we can calculate the plans for specified or default number of years
     const { academicYear } = this.configService;
-    const academicYears = Array.from({ length: validatedNumYears })
-      .map((value, index): number => index)
-      .map((offset): number => academicYear + offset);
+    const academicYears = Array.from(
+      { length: validatedNumYears },
+      (_, offset): number => academicYear + offset
+    );
     return academicYears;
   }
 
