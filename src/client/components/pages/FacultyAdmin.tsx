@@ -20,6 +20,7 @@ import {
   ModalFooter,
   ModalHeader,
   Button,
+  Dropdown,
 } from 'mark-one';
 import {
   MESSAGE_TYPE,
@@ -31,6 +32,7 @@ import { TableRowProps } from 'mark-one/lib/Tables/TableRow';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
+import { MetadataContext } from 'client/context/MetadataContext';
 import { getAllFacultyMembers } from '../../api/faculty';
 import { getAreaColor } from '../../../common/constants';
 
@@ -48,6 +50,11 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
    * The current value for the message context
    */
   const dispatchMessage = useContext(MessageContext);
+
+  /**
+   * The current value for the metadata context
+   */
+  const metadata = useContext(MetadataContext);
 
   /**
    * Gets the faculty data from the server
@@ -86,6 +93,17 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
     editFacultyModalVisible,
     setEditFacultyModalVisible,
   ] = useState(false);
+
+  /**
+   * Keeps track of the currently selected value of the create faculty
+   * area dropdown.
+   * By default, the initially selected area will be the first area in the
+   * metadata area list.
+   */
+  const [
+    createFacultyArea,
+    setCreateFacultyArea,
+  ] = useState('');
 
   /**
    * Provides the Mark-One theme using styled component's ThemeContext
@@ -143,11 +161,30 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
           </TableBody>
         </Table>
         <Modal
-          closeHandler={(): void => { setCreateFacultyModalVisible(false); }}
+          closeHandler={(): void => {
+            setCreateFacultyModalVisible(false);
+            setCreateFacultyArea(metadata.areas[0]);
+          }}
           isVisible={createFacultyModalVisible}
         >
           <ModalHeader>Create New Faculty</ModalHeader>
-          <ModalBody>Modal Body</ModalBody>
+          <ModalBody>
+            <label htmlFor="course_area">Area</label>
+            <Dropdown
+              name="course_area"
+              options={metadata.areas.map((area):
+              {value: string; label: string} => ({
+                value: area,
+                label: area,
+              }))}
+              onChange={(event): void => setCreateFacultyArea(
+                (event.target as HTMLInputElement).value
+              )}
+              value={createFacultyArea}
+            >
+              Area
+            </Dropdown>
+          </ModalBody>
         </Modal>
         <Modal
           closeHandler={(): void => { setEditFacultyModalVisible(false); }}
