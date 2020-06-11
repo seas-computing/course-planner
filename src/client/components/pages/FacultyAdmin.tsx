@@ -172,11 +172,14 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
             <label htmlFor="course_area">Area</label>
             <Dropdown
               name="course_area"
-              options={metadata.areas.map((area):
+              /**
+               * Insert an empty option so that no area is pre-selected in dropdown
+               */
+              options={[{ value: '', label: '' }].concat(metadata.areas.map((area):
               {value: string; label: string} => ({
                 value: area,
                 label: area,
-              }))}
+              })))}
               onChange={(event): void => setCreateFacultyArea(
                 (event.target as HTMLInputElement).value
               )}
