@@ -21,6 +21,7 @@ import {
   ModalHeader,
   Button,
   Dropdown,
+  TextInput,
 } from 'mark-one';
 import {
   MESSAGE_TYPE,
@@ -33,6 +34,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
 import { MetadataContext } from 'client/context/MetadataContext';
+import { POSITION } from 'mark-one/lib/Forms/Label';
 import { getAllFacultyMembers } from '../../api/faculty';
 import { getAreaColor } from '../../../common/constants';
 
@@ -95,7 +97,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
   ] = useState(false);
 
   /**
-   * Keeps track of the currently selected value of the create faculty
+   * Keeps track of the currently selected value of the Create Faculty
    * area dropdown.
    * By default, the initially selected area will be the first area in the
    * metadata area list.
@@ -103,6 +105,51 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
   const [
     createFacultyArea,
     setCreateFacultyArea,
+  ] = useState('');
+
+  /**
+   * Keeps track of the current value of the HUID text field in the
+   * Create Faculty modal
+   */
+  const [
+    createFacultyHUID,
+    setCreateFacultyHUID,
+  ] = useState('');
+
+  /**
+   * Keeps tracks of the current value of the first name field in the
+   * Create Faculty modal
+   */
+  const [
+    createFacultyFirstName,
+    setCreateFacultyFirstName,
+  ] = useState('');
+
+  /**
+   * Keeps tracks of the current value of the last name field in the
+   * Create Faculty modal
+   */
+  const [
+    createFacultyLastName,
+    setCreateFacultyLastName,
+  ] = useState('');
+
+  /**
+   * Keeps tracks of the current value of the joint with field in the
+   * Create Faculty modal
+   */
+  const [
+    createFacultyJointWith,
+    setCreateFacultyJointWith,
+  ] = useState('');
+
+  /**
+   * Keeps tracks of the current value of the faculty category dropdown in the
+   * Create Faculty modal
+   */
+  const [
+    createFacultyCategory,
+    setCreateFacultyCategory,
   ] = useState('');
 
   /**
@@ -163,7 +210,12 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
         <Modal
           closeHandler={(): void => {
             setCreateFacultyModalVisible(false);
-            setCreateFacultyArea(metadata.areas[0]);
+            setCreateFacultyArea('');
+            setCreateFacultyHUID('');
+            setCreateFacultyFirstName('');
+            setCreateFacultyLastName('');
+            setCreateFacultyJointWith('');
+            setCreateFacultyCategory('');
           }}
           isVisible={createFacultyModalVisible}
         >
@@ -181,12 +233,72 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
                 label: area,
               })))}
               onChange={(event): void => setCreateFacultyArea(
-                (event.target as HTMLInputElement).value
+                (event.target as HTMLSelectElement).value
               )}
               value={createFacultyArea}
             >
               Area
             </Dropdown>
+            <TextInput
+              id="HUID"
+              name="HUID"
+              label="HUID"
+              labelPosition={POSITION.TOP}
+              placeholder="e.g. 12345678"
+              onChange={(event): void => setCreateFacultyHUID(
+                (event.target as HTMLInputElement).value
+              )}
+              value={createFacultyHUID}
+            />
+            <TextInput
+              id="first_name"
+              name="first_name"
+              label="First name"
+              labelPosition={POSITION.TOP}
+              placeholder="e.g. Jane"
+              onChange={(event): void => setCreateFacultyFirstName(
+                (event.target as HTMLInputElement).value
+              )}
+              value={createFacultyFirstName}
+            />
+            <TextInput
+              id="last_name"
+              name="last_name"
+              label="Last name"
+              labelPosition={POSITION.TOP}
+              placeholder="e.g. Smith"
+              onChange={(event): void => setCreateFacultyLastName(
+                (event.target as HTMLInputElement).value
+              )}
+              value={createFacultyLastName}
+            />
+            <TextInput
+              id="joint_with"
+              name="joint_with"
+              label="Joint with..."
+              labelPosition={POSITION.TOP}
+              placeholder="Add 'Joint With' entry"
+              onChange={(event): void => setCreateFacultyJointWith(
+                (event.target as HTMLInputElement).value
+              )}
+              value={createFacultyJointWith}
+            />
+            <label htmlFor="faculty_category">Category</label>
+            <Dropdown
+              name="faculty_category"
+              /**
+               * Insert an empty option so that no category is pre-selected in dropdown
+               */
+              options={[{ value: '', label: '' }].concat(['Ladder', 'Non-ladder', 'Non-SEAS ladder'].map((category):
+              {value: string; label: string} => ({
+                value: category,
+                label: category,
+              })))}
+              onChange={(event): void => setCreateFacultyCategory(
+                (event.target as HTMLSelectElement).value
+              )}
+              value={createFacultyCategory}
+            />
           </ModalBody>
         </Modal>
         <Modal
