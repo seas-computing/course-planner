@@ -35,8 +35,10 @@ import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
 import { MetadataContext } from 'client/context/MetadataContext';
 import { POSITION } from 'mark-one/lib/Forms/Label';
+import { FACULTY_TYPE } from 'common/constants';
 import { getAllFacultyMembers } from '../../api/faculty';
 import { getAreaColor } from '../../../common/constants';
+import { categoryEnumToTitleCase } from './Faculty/FacultyScheduleTable';
 
 /**
  * The component represents the Faculty Admin page, which will be rendered at
@@ -289,11 +291,13 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
               /**
                * Insert an empty option so that no category is pre-selected in dropdown
                */
-              options={[{ value: '', label: '' }].concat(['Ladder', 'Non-ladder', 'Non-SEAS ladder'].map((category):
-              {value: string; label: string} => ({
-                value: category,
-                label: category,
-              })))}
+              options={[{ value: '', label: '' }]
+                .concat(Object.values(FACULTY_TYPE)
+                  .map((category):
+                  {value: string; label: string} => ({
+                    value: categoryEnumToTitleCase(category),
+                    label: categoryEnumToTitleCase(category),
+                  })))}
               onChange={(event): void => setCreateFacultyCategory(
                 (event.target as HTMLSelectElement).value
               )}
