@@ -3,12 +3,9 @@ import {
   Connection,
   SelectQueryBuilder,
   ViewColumn,
-  ManyToOne,
-  ObjectType,
 } from 'typeorm';
 import { Faculty } from 'server/faculty/faculty.entity';
 import { FacultyCourseInstance } from 'server/courseInstance/facultycourseinstance.entity';
-import { CourseInstanceListingView } from 'server/courseInstance/CourseInstanceListingView.entity';
 
 /**
  * Lists faculty by "lastName, firstName", and also disaggregates the
@@ -53,9 +50,5 @@ export class FacultyListingView {
   /**
    * Many [[FacultyListingViews]] have one [[CourseInstanceView]]s
    */
-  @ManyToOne(
-    (): ObjectType<CourseInstanceListingView> => CourseInstanceListingView,
-    ({ instructors }): FacultyListingView[] => instructors
-  )
-  public courseInstanceId: CourseInstanceListingView;
+  public courseInstanceId: string;
 }

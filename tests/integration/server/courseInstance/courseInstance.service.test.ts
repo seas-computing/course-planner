@@ -13,9 +13,14 @@ import { OFFERED } from 'common/constants';
 import { Meeting } from 'server/meeting/meeting.entity';
 import { ConfigService } from 'server/config/config.service';
 import { ConfigModule } from 'server/config/config.module';
-import { MultiYearPlanResponseDTO, MultiYearPlanInstanceFaculty, MultiYearPlanInstance } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import flatMap from 'lodash.flatmap';
 import { AuthModule } from 'server/auth/auth.module';
+import {
+  MultiYearPlanResponseDTO,
+  MultiYearPlanInstanceFaculty,
+  MultiYearPlanInstance,
+} from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
+import { testFourYearPlanAcademicYears } from 'testData';
 import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 
@@ -192,9 +197,8 @@ describe('Course Instance Service', function () {
   });
   describe('getMultiYearPlan', function () {
     let result: MultiYearPlanResponseDTO[];
-    const numYears = 4;
     beforeEach(async function () {
-      result = await ciService.getMultiYearPlan(numYears);
+      result = await ciService.getMultiYearPlan(testFourYearPlanAcademicYears);
     });
     it('should return a nonempty array of data', function () {
       notStrictEqual(result.length, 0);
@@ -204,14 +208,15 @@ describe('Course Instance Service', function () {
       const multipleFacultyArrays: MultiYearPlanInstanceFaculty[][] = flatMap(
         result,
         // get all the instances
-        (course: MultiYearPlanResponseDTO) => course.instances
-      )
-        // discard instances with less than 3 faculty
-        .filter((instance: MultiYearPlanInstance) => (
-          instance.faculty.length >= minFacultyToSort
-        ))
-        // get the faculty
-        .map((instance: MultiYearPlanInstance) => instance.faculty);
+        (course: MultiYearPlanResponseDTO) => course.semesters
+          .map(({ instance }) => instance)
+          // discard instances with less than 3 faculty
+          .filter((instance: MultiYearPlanInstance) => (
+            instance != null && instance.faculty.length >= minFacultyToSort
+          ))
+          // get the faculty
+          .map((instance: MultiYearPlanInstance) => instance.faculty)
+      );
       const facultyArraysToCheck = 2;
       // confirm that we have at least 2 to check
       strictEqual(multipleFacultyArrays.length >= facultyArraysToCheck, true);
@@ -254,6 +259,31 @@ describe('Course Instance Service', function () {
         return 0;
       });
       deepStrictEqual(result, sorted);
+    });
+    it('should return the semesters in chronological order', async function () {
+      const sorted = result.map((course) => ({
+        ...course,
+        semesters: course
+          .semesters.slice().sort((semester1, semester2): number => {
+            if (semester1.academicYear < semester2.academicYear) {
+              return -1;
+            }
+            if (semester1.academicYear > semester2.academicYear) {
+              return 1;
+            }
+            if (semester1.calendarYear < semester2.calendarYear) {
+              return -1;
+            }
+            if (semester1.calendarYear > semester2.calendarYear) {
+              return 1;
+            }
+            return 0;
+          }),
+      }));
+      deepStrictEqual(
+        JSON.parse(JSON.stringify(result)),
+        JSON.parse(JSON.stringify(sorted))
+      );
     });
   });
 });

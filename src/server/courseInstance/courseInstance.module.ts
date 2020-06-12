@@ -6,6 +6,7 @@ import { MultiYearPlanInstanceView } from 'server/courseInstance/MultiYearPlanIn
 import { SemesterModule } from 'server/semester/semester.module';
 import { SemesterService } from 'server/semester/semester.service';
 import { Course } from 'server/course/course.entity';
+import { ConfigService } from 'server/config/config.service';
 import { CourseInstanceService } from './courseInstance.service';
 import { CourseInstanceController } from './courseInstance.controller';
 
@@ -22,6 +23,7 @@ import { CourseInstanceController } from './courseInstance.controller';
   providers: [
     SemesterService,
     CourseInstanceService,
+    ConfigService,
   ],
   controllers: [CourseInstanceController],
   exports: [

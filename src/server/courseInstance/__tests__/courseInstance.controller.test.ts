@@ -8,6 +8,11 @@ import { SemesterService } from 'server/semester/semester.service';
 import { Semester } from 'server/semester/semester.entity';
 import { ConfigService } from 'server/config/config.service';
 import { Course } from 'server/course/course.entity';
+import {
+  testFourYearPlan,
+  testMultiYearPlanStartYear,
+  testFourYearPlanAcademicYears,
+} from 'testData';
 import { CourseInstanceService } from '../courseInstance.service';
 import { CourseInstanceController } from '../courseInstance.controller';
 import { MultiYearPlanView } from '../MultiYearPlanView.entity';
@@ -134,36 +139,22 @@ describe('Course Instance Controller', function () {
   describe('/multi-year-plan', function () {
     let getStub: SinonStub;
     beforeEach(function () {
-      getStub = stub(ciService, 'getMultiYearPlan').resolves(null);
-      stub(configService, 'academicYear').get(() => 2020);
+      stub(configService, 'academicYear').get(() => testMultiYearPlanStartYear);
     });
-    context('When number of years parameter is not set', function () {
-      it('should call the service with the undefined argument', async function () {
-        await ciController.getMultiYearPlan();
-        deepStrictEqual(getStub.args, [[undefined]]);
-      });
+    it('should return the data in the expected format for the expected number of years', async function () {
+      getStub = stub(ciService, 'getMultiYearPlan').resolves(testFourYearPlan);
+      const actual = await ciController.getMultiYearPlan();
+      deepStrictEqual(getStub.args, [[testFourYearPlanAcademicYears]]);
+      deepStrictEqual(actual, testFourYearPlan);
     });
-    context('When number of years parameter is set', function () {
-      it('should call the service with the argument 0 when numYears is equal to 0', async function () {
-        await ciController.getMultiYearPlan(0);
-        deepStrictEqual(getStub.args, [[0]]);
-      });
-      it('should call the service with the negative value of numYears when numYears is negative', async function () {
-        await ciController.getMultiYearPlan(-3);
-        deepStrictEqual(getStub.args, [[-3]]);
-      });
-      it('should call the service with null if numYears is null', async function () {
-        await ciController.getMultiYearPlan(null);
-        deepStrictEqual(getStub.args, [[null]]);
-      });
-      it('should call the service with the float value of numYears when numYears is equal to a float', async function () {
-        await ciController.getMultiYearPlan(2.3);
-        deepStrictEqual(getStub.args, [[2.3]]);
-      });
-      it('should fetch the multi year plan for the given number of years when numYears is a positive integer', async function () {
-        await ciController.getMultiYearPlan(5);
-        deepStrictEqual(getStub.args, [[5]]);
-      });
+  });
+  describe('computeAcademicYears', function () {
+    beforeEach(function () {
+      stub(configService, 'academicYear').get(() => testMultiYearPlanStartYear);
+    });
+    it('should return a 4 year list starting with the current academic year when numYears is equal to 4', function () {
+      const actual = ciController.computeAcademicYears(4);
+      deepStrictEqual(actual, testFourYearPlanAcademicYears);
     });
   });
 });
