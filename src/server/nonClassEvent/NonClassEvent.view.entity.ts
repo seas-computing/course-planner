@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Semester } from 'server/semester/semester.entity';
 import { TERM } from 'common/constants';
+import { MeetingListingView } from 'server/meeting/MeetingListingView.entity';
 import { NonClassEvent } from './nonclassevent.entity';
 import { NonClassParentView } from './NonClassParentView.entity';
 
@@ -45,6 +46,12 @@ export class NonClassEventView {
    */
   @ViewColumn()
   public term: TERM;
+
+  /**
+   * An array of [[MeetingListView]]s representing the scheduled occurances
+   * of this [[NonClassEventView]] in a given [[Semester]]
+   */
+  public meetings: MeetingListingView[];
 
   /**
    * From [[CourseInstance]]
