@@ -11,6 +11,7 @@ import { DAY } from 'common/constants';
 import { CourseInstanceListingView } from 'server/courseInstance/CourseInstanceListingView.entity';
 import { RoomListingView } from 'server/location/RoomListingView.entity';
 import { Meeting } from './meeting.entity';
+import { NonClassEventView } from 'server/nonClassEvent/NonClassEvent.view.entity';
 
 /**
  * Consolidates data about a [[CourseInstances]] associated [[Meeting]]s to
@@ -22,6 +23,7 @@ import { Meeting } from './meeting.entity';
   SelectQueryBuilder<Meeting> => connection.createQueryBuilder()
     .select('m.id', 'id')
     .addSelect('m."courseInstanceId"', 'courseInstanceId')
+    .addSelect('m."nonClassEventId"', 'nonClassEventId')
     .addSelect('m.day', 'day')
     .addSelect('TO_CHAR(CAST (m."startTime" AS TIME), \'HH12:MI AM\')', 'startTime')
     .addSelect('TO_CHAR(CAST (m."endTime" AS TIME), \'HH12:MI AM\')', 'endTime')
@@ -80,4 +82,15 @@ export class MeetingListingView {
     ({ meetings }): MeetingListingView[] => meetings
   )
   public courseInstanceId: string;
+
+
+  /**
+   * Many [[MeetingListingView]]s can have one [[NonClassEventView]]
+   */
+  @JoinColumn()
+  @ManyToOne(
+    (): ObjectType<NonClassEventView> => NonClassEventView,
+    ({ meetings }): MeetingListingView[] => meetings
+  )
+  public nonClasseventId: string;
 }
