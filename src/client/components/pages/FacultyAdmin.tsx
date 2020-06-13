@@ -288,10 +288,12 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
               )}
               value={createFacultyJointWith}
             />
-            <label htmlFor="faculty_category">Category</label>
-            <Dropdown
-              name="faculty_category"
-              /**
+            <label htmlFor="facultyCategory">
+              Category
+              <Dropdown
+                id="facultyCategory"
+                name="facultyCategory"
+                /**
                * Insert an empty option so that no category is pre-selected in dropdown
                */
               options={[{ value: '', label: '' }]
