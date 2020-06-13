@@ -223,9 +223,10 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
         >
           <ModalHeader>Create New Faculty</ModalHeader>
           <ModalBody>
-            <label htmlFor="course_area">Area</label>
+            <label htmlFor="courseArea">Area</label>
             <Dropdown
-              name="course_area"
+              id="courseArea"
+              name="courseArea"
               /**
                * Insert an empty option so that no area is pre-selected in dropdown
                */
@@ -253,8 +254,8 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
               value={createFacultyHUID}
             />
             <TextInput
-              id="first_name"
-              name="first_name"
+              id="firstName"
+              name="firstName"
               label="First name"
               labelPosition={POSITION.TOP}
               placeholder="e.g. Jane"
@@ -264,8 +265,8 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
               value={createFacultyFirstName}
             />
             <TextInput
-              id="last_name"
-              name="last_name"
+              id="lastName"
+              name="lastName"
               label="Last name"
               labelPosition={POSITION.TOP}
               placeholder="e.g. Smith"
@@ -275,8 +276,8 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
               value={createFacultyLastName}
             />
             <TextInput
-              id="joint_with"
-              name="joint_with"
+              id="jointWith"
+              name="jointWith"
               label="Joint with..."
               labelPosition={POSITION.TOP}
               placeholder="Add 'Joint With' entry"
