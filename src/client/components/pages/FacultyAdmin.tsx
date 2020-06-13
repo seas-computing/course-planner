@@ -296,18 +296,19 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
                 /**
                * Insert an empty option so that no category is pre-selected in dropdown
                */
-              options={[{ value: '', label: '' }]
-                .concat(Object.values(FACULTY_TYPE)
-                  .map((category):
-                  {value: string; label: string} => ({
-                    value: categoryEnumToTitleCase(category),
-                    label: categoryEnumToTitleCase(category),
-                  })))}
-              onChange={(event): void => setCreateFacultyCategory(
-                (event.target as HTMLSelectElement).value
-              )}
-              value={createFacultyCategory}
-            />
+                options={[{ value: '', label: '' }]
+                  .concat(Object.values(FACULTY_TYPE)
+                    .map((category):
+                    {value: string; label: string} => ({
+                      value: categoryEnumToTitleCase(category),
+                      label: categoryEnumToTitleCase(category),
+                    })))}
+                onChange={(event): void => setCreateFacultyCategory(
+                  (event.target as HTMLSelectElement).value
+                )}
+                value={createFacultyCategory}
+              />
+            </label>
           </ModalBody>
           <ModalFooter>
             <Button
