@@ -212,6 +212,8 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
         <Modal
           closeHandler={(): void => {
             setCreateFacultyModalVisible(false);
+          }}
+          onClose={(): void => {
             setCreateFacultyArea('');
             setCreateFacultyHUID('');
             setCreateFacultyFirstName('');
@@ -305,6 +307,20 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
               value={createFacultyCategory}
             />
           </ModalBody>
+          <ModalFooter>
+            <Button
+              onClick={(): void => setCreateFacultyModalVisible(false)}
+              variant={VARIANT.PRIMARY}
+            >
+              Submit
+            </Button>
+            <Button
+              onClick={(): void => setCreateFacultyModalVisible(false)}
+              variant={VARIANT.SECONDARY}
+            >
+              Cancel
+            </Button>
+          </ModalFooter>
         </Modal>
         <Modal
           closeHandler={(): void => { setEditFacultyModalVisible(false); }}
