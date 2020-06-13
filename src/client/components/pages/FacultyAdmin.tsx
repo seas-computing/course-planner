@@ -196,9 +196,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
       throw new Error('At least a first or last name must be provided for a faculty member. Please try again.');
     }
     await createFaculty({
-      area: {
-        name: createFacultyArea,
-      },
+      area: createFacultyArea,
       HUID: createFacultyHUID,
       firstName: createFacultyFirstName,
       lastName: createFacultyLastName,
