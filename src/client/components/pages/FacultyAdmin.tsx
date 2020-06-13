@@ -204,7 +204,6 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
       category: createFacultyCategory.replace(/\W/g, '_').toUpperCase() as FACULTY_TYPE,
     });
   };
-
   return (
     <>
       <div className="create-faculty-button">
