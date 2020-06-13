@@ -22,6 +22,7 @@ import {
   Button,
   Dropdown,
   TextInput,
+  ValidationErrorMessage,
 } from 'mark-one';
 import {
   MESSAGE_TYPE,
@@ -36,7 +37,10 @@ import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyRespon
 import { MetadataContext } from 'client/context/MetadataContext';
 import { POSITION } from 'mark-one/lib/Forms/Label';
 import { FACULTY_TYPE } from 'common/constants';
-import { getAllFacultyMembers } from '../../api/faculty';
+import {
+  getAllFacultyMembers,
+  createFaculty,
+} from '../../api/faculty';
 import { getAreaColor } from '../../../common/constants';
 import { categoryEnumToTitleCase } from './Faculty/FacultyScheduleTable';
 
@@ -154,10 +158,54 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
     setCreateFacultyCategory,
   ] = useState('');
 
+  const [
+    createFacultyErrorMessage,
+    setCreateFacultyErrorMessage,
+  ] = useState('');
+
   /**
    * Provides the Mark-One theme using styled component's ThemeContext
    */
   const theme = useContext(ThemeContext);
+
+  /**
+   * Verifies whether the HUID provided meets the formatting requirements
+  */
+  const validHUID = (huid: string): boolean => (
+    huid.length === 8 && /^\d+$/.test(huid)
+  );
+
+  /**
+   * Submits the create faculty form, checking for valid inputs
+   */
+  const submitCreateFacultyForm = async ():
+  Promise<void> => {
+    const form = document.getElementById('createFacultyForm') as HTMLFormElement;
+    // Since we are not using a submit button within the form
+    // to submit, we must check the validity ourselves.
+    // Here, if the form does not pass HTML validation,
+    // we show the validation errors to the user
+    // and return without submitting.
+    if (!form.reportValidity()) {
+      throw new Error('Please correct the errors in the form.');
+    }
+    if (!validHUID(createFacultyHUID)) {
+      throw new Error('An HUID must contain 8 digits. Please try again.');
+    }
+    if (!createFacultyFirstName && !createFacultyLastName) {
+      throw new Error('At least a first or last name must be provided for a faculty member. Please try again.');
+    }
+    await createFaculty({
+      area: {
+        name: createFacultyArea,
+      },
+      HUID: createFacultyHUID,
+      firstName: createFacultyFirstName,
+      lastName: createFacultyLastName,
+      jointWith: createFacultyJointWith,
+      category: createFacultyCategory.replace(/\W/g, '_').toUpperCase() as FACULTY_TYPE,
+    });
+  };
 
   return (
     <>
@@ -225,94 +273,111 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
         >
           <ModalHeader>Create New Faculty</ModalHeader>
           <ModalBody>
-            <label htmlFor="courseArea">
-              Area
-              <Dropdown
-                id="courseArea"
-                name="courseArea"
-                /**
-               * Insert an empty option so that no area is pre-selected in dropdown
-               */
-                options={[{ value: '', label: '' }].concat(metadata.areas.map((area):
-                {value: string; label: string} => ({
-                  value: area,
-                  label: area,
-                })))}
-                onChange={(event): void => setCreateFacultyArea(
-                  (event.target as HTMLSelectElement).value
+            <form id="createFacultyForm" action="/api/faculty" method="post">
+              <label htmlFor="courseArea">
+                Area
+                <Dropdown
+                  id="courseArea"
+                  name="courseArea"
+                  /**
+                   * Insert an empty option so that no area is pre-selected in dropdown
+                   */
+                  options={[{ value: '', label: '' }].concat(metadata.areas.map((area):
+                  {value: string; label: string} => ({
+                    value: area,
+                    label: area,
+                  })))}
+                  onChange={(event): void => setCreateFacultyArea(
+                    (event.target as HTMLSelectElement).value
+                  )}
+                  value={createFacultyArea}
+                />
+              </label>
+              <TextInput
+                id="HUID"
+                name="HUID"
+                label="HUID"
+                labelPosition={POSITION.TOP}
+                placeholder="e.g. 12345678"
+                onChange={(event): void => setCreateFacultyHUID(
+                  (event.target as HTMLInputElement).value.trim()
                 )}
-                value={createFacultyArea}
+                value={createFacultyHUID}
               />
-            </label>
-            <TextInput
-              id="HUID"
-              name="HUID"
-              label="HUID"
-              labelPosition={POSITION.TOP}
-              placeholder="e.g. 12345678"
-              onChange={(event): void => setCreateFacultyHUID(
-                (event.target as HTMLInputElement).value
-              )}
-              value={createFacultyHUID}
-            />
-            <TextInput
-              id="firstName"
-              name="firstName"
-              label="First name"
-              labelPosition={POSITION.TOP}
-              placeholder="e.g. Jane"
-              onChange={(event): void => setCreateFacultyFirstName(
-                (event.target as HTMLInputElement).value
-              )}
-              value={createFacultyFirstName}
-            />
-            <TextInput
-              id="lastName"
-              name="lastName"
-              label="Last name"
-              labelPosition={POSITION.TOP}
-              placeholder="e.g. Smith"
-              onChange={(event): void => setCreateFacultyLastName(
-                (event.target as HTMLInputElement).value
-              )}
-              value={createFacultyLastName}
-            />
-            <TextInput
-              id="jointWith"
-              name="jointWith"
-              label="Joint with..."
-              labelPosition={POSITION.TOP}
-              placeholder="Add 'Joint With' entry"
-              onChange={(event): void => setCreateFacultyJointWith(
-                (event.target as HTMLInputElement).value
-              )}
-              value={createFacultyJointWith}
-            />
-            <label htmlFor="facultyCategory">
-              Category
-              <Dropdown
-                id="facultyCategory"
-                name="facultyCategory"
-                /**
-               * Insert an empty option so that no category is pre-selected in dropdown
-               */
-                options={[{ value: '', label: '' }]
-                  .concat(Object.values(FACULTY_TYPE)
-                    .map((category):
-                    {value: string; label: string} => ({
-                      value: categoryEnumToTitleCase(category),
-                      label: categoryEnumToTitleCase(category),
-                    })))}
-                onChange={(event): void => setCreateFacultyCategory(
-                  (event.target as HTMLSelectElement).value
+              <TextInput
+                id="firstName"
+                name="firstName"
+                label="First name"
+                labelPosition={POSITION.TOP}
+                placeholder="e.g. Jane"
+                onChange={(event): void => setCreateFacultyFirstName(
+                  (event.target as HTMLInputElement).value.trim()
                 )}
-                value={createFacultyCategory}
+                value={createFacultyFirstName}
               />
-            </label>
+              <TextInput
+                id="lastName"
+                name="lastName"
+                label="Last name"
+                labelPosition={POSITION.TOP}
+                placeholder="e.g. Smith"
+                onChange={(event): void => setCreateFacultyLastName(
+                  (event.target as HTMLInputElement).value.trim()
+                )}
+                value={createFacultyLastName}
+              />
+              <TextInput
+                id="jointWith"
+                name="jointWith"
+                label="Joint with..."
+                labelPosition={POSITION.TOP}
+                placeholder="Add 'Joint With' entry"
+                onChange={(event): void => setCreateFacultyJointWith(
+                  (event.target as HTMLInputElement).value.trim()
+                )}
+                value={createFacultyJointWith}
+              />
+              <label htmlFor="facultyCategory">
+                Category
+                <Dropdown
+                  id="facultyCategory"
+                  name="facultyCategory"
+                  /**
+                   * Insert an empty option so that no category is pre-selected in dropdown
+                   */
+                  options={[{ value: '', label: '' }]
+                    .concat(Object.values(FACULTY_TYPE)
+                      .map((category):
+                      {value: string; label: string} => {
+                        const categoryTitle = categoryEnumToTitleCase(category);
+                        return {
+                          value: categoryTitle,
+                          label: categoryTitle,
+                        };
+                      }))}
+                  onChange={(event): void => setCreateFacultyCategory(
+                    (event.target as HTMLSelectElement).value
+                  )}
+                  value={createFacultyCategory}
+                />
+              </label>
+              <ValidationErrorMessage>
+                {createFacultyErrorMessage}
+              </ValidationErrorMessage>
+            </form>
           </ModalBody>
           <ModalFooter>
             <Button
-              onClick={(): void => setCreateFacultyModalVisible(false)}
+              onClick={async (): Promise<void> => {
+                try {
+                  submitCreateFacultyForm();
+                } catch (error) {
+                  setCreateFacultyErrorMessage(error.message);
+                  // leave the modal visible after an error
+                  return;
+                }
+                setCreateFacultyModalVisible(false);
+              }}
               variant={VARIANT.PRIMARY}
             >
               Submit

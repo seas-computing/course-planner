@@ -1,5 +1,6 @@
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
+import { CreateFacultyDTO } from 'common/dto/faculty/CreateFaculty.dto';
 import request from './request';
 
 /**
@@ -9,6 +10,15 @@ export const getAllFacultyMembers = async ():
 Promise<ManageFacultyResponseDTO[]> => {
   const response = await request.get('/api/faculty/');
   return response.data as ManageFacultyResponseDTO[];
+};
+
+/**
+ * Submits a POST request to create a new faculty for the Faculty Admin tab
+ */
+export const createFaculty = async (facultyInfo: CreateFacultyDTO):
+Promise<ManageFacultyResponseDTO> => {
+  const response = await request.post('/api/faculty', facultyInfo);
+  return response.data;
 };
 
 /**
