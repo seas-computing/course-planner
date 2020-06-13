@@ -225,25 +225,25 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
         >
           <ModalHeader>Create New Faculty</ModalHeader>
           <ModalBody>
-            <label htmlFor="courseArea">Area</label>
-            <Dropdown
-              id="courseArea"
-              name="courseArea"
-              /**
+            <label htmlFor="courseArea">
+              Area
+              <Dropdown
+                id="courseArea"
+                name="courseArea"
+                /**
                * Insert an empty option so that no area is pre-selected in dropdown
                */
-              options={[{ value: '', label: '' }].concat(metadata.areas.map((area):
-              {value: string; label: string} => ({
-                value: area,
-                label: area,
-              })))}
-              onChange={(event): void => setCreateFacultyArea(
-                (event.target as HTMLSelectElement).value
-              )}
-              value={createFacultyArea}
-            >
-              Area
-            </Dropdown>
+                options={[{ value: '', label: '' }].concat(metadata.areas.map((area):
+                {value: string; label: string} => ({
+                  value: area,
+                  label: area,
+                })))}
+                onChange={(event): void => setCreateFacultyArea(
+                  (event.target as HTMLSelectElement).value
+                )}
+                value={createFacultyArea}
+              />
+            </label>
             <TextInput
               id="HUID"
               name="HUID"
