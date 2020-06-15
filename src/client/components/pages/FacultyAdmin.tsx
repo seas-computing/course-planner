@@ -208,6 +208,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
     <>
       <div className="create-faculty-button">
         <Button
+          id="createFaculty"
           onClick={
             (): void => { setCreateFacultyModalVisible(true); }
           }
@@ -255,6 +256,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
           </TableBody>
         </Table>
         <Modal
+          ariaLabelledBy="createFaculty"
           closeHandler={(): void => {
             setCreateFacultyModalVisible(false);
           }}
@@ -288,6 +290,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
                     (event.target as HTMLSelectElement).value
                   )}
                   value={createFacultyArea}
+                  required
                 />
               </label>
               <TextInput
@@ -300,6 +303,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
                   (event.target as HTMLInputElement).value.trim()
                 )}
                 value={createFacultyHUID}
+                required
               />
               <TextInput
                 id="firstName"
@@ -356,6 +360,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
                     (event.target as HTMLSelectElement).value
                   )}
                   value={createFacultyCategory}
+                  required
                 />
               </label>
               <ValidationErrorMessage>
@@ -367,7 +372,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
             <Button
               onClick={async (): Promise<void> => {
                 try {
-                  submitCreateFacultyForm();
+                  await submitCreateFacultyForm();
                 } catch (error) {
                   setCreateFacultyErrorMessage(error.message);
                   // leave the modal visible after an error
@@ -388,6 +393,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
           </ModalFooter>
         </Modal>
         <Modal
+          ariaLabelledBy="editFaculty"
           closeHandler={(): void => { setEditFacultyModalVisible(false); }}
           isVisible={editFacultyModalVisible}
         >
