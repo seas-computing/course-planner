@@ -97,7 +97,7 @@ describe('Faculty controller', function () {
         firstName: 'Sam',
         lastName: 'Johnston',
         category: FACULTY_TYPE.LADDER,
-        area: new Area(),
+        area: 'AM',
       });
 
       strictEqual(mockFacultyRepository.save.callCount, 1);
@@ -108,7 +108,7 @@ describe('Faculty controller', function () {
         firstName: 'Sam',
         lastName: 'Johnston',
         category: FACULTY_TYPE.LADDER,
-        area: new Area(),
+        area: 'AM',
       };
       mockFacultyRepository.save.resolves({
         ...facultyMember,
