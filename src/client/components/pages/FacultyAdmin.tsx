@@ -38,11 +38,14 @@ import { MetadataContext } from 'client/context/MetadataContext';
 import { POSITION } from 'mark-one/lib/Forms/Label';
 import { FACULTY_TYPE } from 'common/constants';
 import {
+  validHUID,
+  categoryEnumToTitleCase,
+} from 'common/__tests__/utils/facultyHelperFunctions';
+import {
   getAllFacultyMembers,
   createFaculty,
 } from '../../api/faculty';
 import { getAreaColor } from '../../../common/constants';
-import { categoryEnumToTitleCase } from './Faculty/FacultyScheduleTable';
 
 /**
  * The component represents the Faculty Admin page, which will be rendered at
@@ -169,13 +172,6 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
   const theme = useContext(ThemeContext);
 
   /**
-   * Verifies whether the HUID provided meets the formatting requirements
-  */
-  const validHUID = (huid: string): boolean => (
-    huid.length === 8 && /^\d+$/.test(huid)
-  );
-
-  /**
    * Submits the create faculty form, checking for valid inputs
    */
   const submitCreateFacultyForm = async ():
@@ -184,8 +180,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
     // Since we are not using a submit button within the form
     // to submit, we must check the validity ourselves.
     // Here, if the form does not pass HTML validation,
-    // we show the validation errors to the user
-    // and return without submitting.
+    // we show the validation errors to the user and return without submitting.
     if (!form.reportValidity()) {
       throw new Error('Please correct the errors in the form.');
     }

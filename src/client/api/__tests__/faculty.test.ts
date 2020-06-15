@@ -8,7 +8,6 @@ import {
   error,
   appliedMathFacultyScheduleResponse,
   newAppliedPhysicsFacultyMember,
-  appliedMathFacultyMember,
 } from 'testData';
 import * as api from 'client/api';
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
