@@ -23,11 +23,12 @@ import {
 } from 'sinon';
 import request from 'axios';
 import { error } from 'testData';
-import FacultyScheduleTable, {
-  categoryEnumToTitleCase,
+import {
   absenceEnumToTitleCase,
-} from '../FacultyScheduleTable';
+  categoryEnumToTitleCase,
+} from 'common/__tests__/utils/facultyHelperFunctions';
 import FacultySchedule from '../FacultyPage';
+import FacultyScheduleTable from '../FacultyScheduleTable';
 
 /**
  * Helper function used to compare table row contents with faculty schedule data

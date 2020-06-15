@@ -3,7 +3,7 @@ import { ABSENCE_TYPE, FACULTY_TYPE } from 'common/constants';
 import {
   absenceEnumToTitleCase,
   categoryEnumToTitleCase,
-} from '../FacultyScheduleTable';
+} from 'common/__tests__/utils/facultyHelperFunctions';
 
 describe('Faculty Schedule Table Fields', function () {
   describe('helper functions', function () {
