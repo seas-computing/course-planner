@@ -2,6 +2,7 @@ import { Faculty } from 'server/faculty/faculty.entity';
 import { ABSENCE_TYPE, FACULTY_TYPE } from 'common/constants';
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
+import { CreateFacultyDTO } from 'common/dto/faculty/CreateFaculty.dto';
 
 /**
  * An example [[Faculty]] entry representing an applied math faculty member
@@ -34,6 +35,17 @@ export const bioengineeringFacultyMember = Object.assign(new Faculty(), {
   HUID: '50602117',
   category: FACULTY_TYPE.LADDER,
 });
+
+/**
+ * An example [[CreateFacultyDTO]] representing an applied physics faculty member
+ */
+export const newAppliedPhysicsFacultyMember: CreateFacultyDTO = {
+  HUID: '41297905',
+  firstName: 'Sam',
+  lastName: 'Conwell',
+  category: FACULTY_TYPE.NON_LADDER,
+  area: 'AP',
+};
 
 /**
  * An example [[ManageFacultyResponseDTO]] response representing a physics faculty

@@ -7,6 +7,8 @@ import {
   bioengineeringFacultyMemberResponse,
   error,
   appliedMathFacultyScheduleResponse,
+  newAppliedPhysicsFacultyMember,
+  appliedMathFacultyMember,
 } from 'testData';
 import * as api from 'client/api';
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
@@ -72,8 +74,10 @@ describe('Faculty API', function () {
   });
 });
 describe('Faculty Admin API', function () {
-  let result: ManageFacultyResponseDTO[];
+  let getFacultyResult: ManageFacultyResponseDTO[];
+  let createFacultyResult: ManageFacultyResponseDTO;
   let getStub: SinonStub;
+  let postStub: SinonStub;
   describe('GET /faculty', function () {
     beforeEach(function () {
       getStub = stub(request, 'get');
@@ -90,7 +94,7 @@ describe('Faculty Admin API', function () {
               bioengineeringFacultyMemberResponse,
             ],
           } as AxiosResponse<ManageFacultyResponseDTO[]>);
-          result = await api.getAllFacultyMembers();
+          getFacultyResult = await api.getAllFacultyMembers();
         });
         it('should call getAllFacultyMembers', function () {
           strictEqual(getStub.callCount, 1);
@@ -100,7 +104,7 @@ describe('Faculty Admin API', function () {
           strictEqual(path, '/api/faculty/');
         });
         it('should return the faculty members', function () {
-          deepStrictEqual(result,
+          deepStrictEqual(getFacultyResult,
             [
               physicsFacultyMemberResponse,
               bioengineeringFacultyMemberResponse,
@@ -119,6 +123,46 @@ describe('Faculty Admin API', function () {
             deepStrictEqual(err, error);
           }
         });
+      });
+    });
+  });
+  describe('POST /faculty', function () {
+    beforeEach(async function () {
+      postStub = stub(request, 'post');
+    });
+    afterEach(function () {
+      postStub.restore();
+    });
+    context('when POST request succeeds', function () {
+      beforeEach(async function () {
+        postStub.resolves({
+          data: physicsFacultyMemberResponse,
+        } as AxiosResponse<ManageFacultyResponseDTO>);
+        createFacultyResult = await api
+          .createFaculty(newAppliedPhysicsFacultyMember);
+      });
+      it('should call createFaculty', function () {
+        strictEqual(postStub.callCount, 1);
+      });
+      it('should make the request to /api/faculty', function () {
+        const [[path]] = postStub.args;
+        strictEqual(path, '/api/faculty');
+      });
+      it('should return the created faculty member', function () {
+        deepStrictEqual(createFacultyResult, physicsFacultyMemberResponse);
+      });
+    });
+    context('when POST request fails', function () {
+      beforeEach(async function () {
+        postStub.rejects();
+      });
+      it('should throw an error', async function () {
+        try {
+          await api.createFaculty(newAppliedPhysicsFacultyMember);
+          fail('Did not throw an error');
+        } catch (err) {
+          deepStrictEqual(err, error);
+        }
       });
     });
   });
