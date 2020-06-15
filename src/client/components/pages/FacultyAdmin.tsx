@@ -211,7 +211,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
           onClick={
             (): void => { setCreateFacultyModalVisible(true); }
           }
-          variant={VARIANT.PRIMARY}
+          variant={VARIANT.INFO}
         >
           Create New Faculty
         </Button>
