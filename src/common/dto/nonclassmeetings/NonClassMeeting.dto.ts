@@ -2,11 +2,9 @@ import {
   DAY, TERM_PATTERN, TERM, IS_SEAS,
 } from 'common/constants';
 import { ApiModelProperty } from '@nestjs/swagger';
-import { CourseArea } from '../courses/CourseArea.dto';
 
 abstract class Course {
-  @ApiModelProperty({ type: CourseArea })
-  public area: CourseArea;
+  public area: string;
 
   @ApiModelProperty({
     example: 'Data Science 1: Introduction to Data Science',

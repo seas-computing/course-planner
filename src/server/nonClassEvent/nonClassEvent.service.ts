@@ -1,13 +1,11 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Course } from 'server/course/course.entity';
-import { Area } from 'server/area/area.entity';
 import { TERM } from 'common/constants';
 import { MeetingListingView } from 'server/meeting/MeetingListingView.entity';
-import NonClassMeetingResponseDTO from 'common/dto/nonclassmeetings/NonClassMeeting.dto';
 import { RoomListingView } from 'server/location/RoomListingView.entity';
 import { NonClassParentView } from './NonClassParentView.entity';
 import { NonClassEventView } from './NonClassEvent.view.entity';
+import { CourseListingView } from 'server/course/CourseListingView.entity';
 
 export class NonClassEventService {
   @InjectRepository(NonClassParentView)
@@ -18,13 +16,8 @@ export class NonClassEventService {
     const nonClassEvents = await this.parentRepository.createQueryBuilder('p')
       .leftJoinAndMapOne(
         'p.course',
-        Course, 'course',
+        CourseListingView, 'course',
         'course."id" = p."courseId"'
-      )
-      .leftJoinAndMapOne(
-        'course.area',
-        Area, 'area',
-        'area."id" = course."areaId"'
       )
       .leftJoinAndMapOne(
         'p.spring',
@@ -66,7 +59,7 @@ export class NonClassEventService {
         RoomListingView, 'fall_meetings_room',
         'fall_meetings_room.id = "fall_meetings"."roomId"'
       )
-      .orderBy('area.name', 'ASC');
+      .orderBy('course.area', 'ASC');
     return nonClassEvents.getMany();
   }
 }
