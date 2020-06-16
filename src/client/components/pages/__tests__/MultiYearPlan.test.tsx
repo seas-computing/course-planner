@@ -13,7 +13,7 @@ import {
 import request,
 { AxiosResponse } from 'axios';
 import {
-  ac207MultiYearPlanResponse,
+  ac209aMultiYearPlanResponse,
   es285MultiYearPlanResponse,
   error,
 } from 'testData';
@@ -27,7 +27,7 @@ describe('MultYearPlan', function () {
   let getStub: SinonStub;
   let dispatchMessage: SinonStub;
   const testData = [
-    ac207MultiYearPlanResponse,
+    ac209aMultiYearPlanResponse,
     es285MultiYearPlanResponse,
   ];
   beforeEach(function () {
@@ -57,7 +57,7 @@ describe('MultYearPlan', function () {
         dispatchMessage
       );
       strictEqual(getStub.callCount, 1);
-      const { area } = ac207MultiYearPlanResponse;
+      const { area } = ac209aMultiYearPlanResponse;
       return waitForElement(() => getByText(area));
     });
     it('displays the correct number of rows in the table', async function () {
@@ -80,14 +80,14 @@ describe('MultYearPlan', function () {
         .map(
           (row) => (Array.from(row.cells).map((cell) => cell.textContent))
         );
-      strictEqual(rowsContent[1][0], ac207MultiYearPlanResponse.area);
-      strictEqual(rowsContent[1][1], ac207MultiYearPlanResponse.catalogNumber);
-      strictEqual(rowsContent[1][2], ac207MultiYearPlanResponse.title);
+      strictEqual(rowsContent[1][0], ac209aMultiYearPlanResponse.area);
+      strictEqual(rowsContent[1][1], ac209aMultiYearPlanResponse.catalogNumber);
+      strictEqual(rowsContent[1][2], ac209aMultiYearPlanResponse.title);
       strictEqual(rowsContent[2][0], es285MultiYearPlanResponse.area);
       strictEqual(rowsContent[2][1], es285MultiYearPlanResponse.catalogNumber);
       strictEqual(rowsContent[2][2], es285MultiYearPlanResponse.title);
-      const facultyNames1 = es285MultiYearPlanResponse.instances
-        .map(instance => instance.faculty.map(f => f.displayName).join(''))
+      const facultyNames1 = es285MultiYearPlanResponse.semesters
+        .map((semester) => semester.instance.faculty.map((f) => f.displayName).join(''))
         .join();
       const facultyNames2 = rowsContent[2].slice(3).join();
       strictEqual(facultyNames1, facultyNames2);

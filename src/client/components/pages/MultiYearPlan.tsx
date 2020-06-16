@@ -40,22 +40,6 @@ const MultiYearPlan: FunctionComponent = function (): ReactElement {
   const dispatchMessage = useContext(MessageContext);
   const theme: BaseTheme = useContext(ThemeContext);
 
-  /*
-  * Sort MultiYearPlanResponse by instances
-  *
-  const sortmultiYearPlanInstances = (mYP: MultiYearPlanResponseDTO[]):
-  MultiYearPlanResponseDTO[] => {
-    mYP.map(courseInst => (
-      courseInst.instances.sort((a, b) => (
-        parseInt(a.calendarYear) - parseInt(b.calendarYear)
-          ? parseInt(a.calendarYear) - parseInt(b.calendarYear)
-          : parseInt(a.academicYear) - parseInt(b.academicYear)
-      ))
-    ));
-    return (mYP);
-  };
-  */
-
   useEffect((): void => {
     setFetching(true);
     getMultiYearPlan()
@@ -76,22 +60,22 @@ const MultiYearPlan: FunctionComponent = function (): ReactElement {
 
   const yearsHeaders = (myp) => (
     myp.length > 0
-      ? myp[0].instances.map((instance):
+      ? myp[0].semesters.map((semester):
       ReactElement<TableHeadProps> => (
-        <TableHeadingCell key={instance.id} scope="col">
-          {instance.term.slice(0, 1) + '\'' + instance.calendarYear.slice(2, 4) + 'instructors'}
+        <TableHeadingCell key={semester.id} scope="col">
+          {semester.term.slice(0, 1) + '\'' + semester.calendarYear.slice(2, 4) + 'instructors'}
         </TableHeadingCell>
       ))
       : null
   );
 
   const courseInstance = (course) => (
-    course.instances.map((instance):
+    course.semesters.map((semester):
     ReactElement<TableHeadProps> => (
-      <TableCell key={instance.id}>
+      <TableCell key={semester.id}>
         <TableCellList>
-          {instance.faculty.length > 0
-            ? instance.faculty.map((f) => (
+          {semester.instance.faculty.length > 0
+            ? semester.instance.faculty.map((f) => (
               <TableCellListItem key={f.id}>
                 {f.displayName}
               </TableCellListItem>
