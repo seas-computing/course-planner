@@ -87,7 +87,7 @@ abstract class NonClassEvent {
 
 export default abstract class NonClassMeetingResponseDTO {
   @ApiModelProperty({
-    description: 'NonClassParent id',
+    description: 'NonClassParent ID',
     example: '56a825b0-8860-4434-b843-c530a86138a1',
   })
   public id: string;
