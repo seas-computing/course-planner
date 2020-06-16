@@ -6,7 +6,7 @@ import {
 } from 'typeorm';
 import { Course } from 'server/course/course.entity';
 import { Area } from 'server/area/area.entity';
-import { TERM_PATTERN } from 'common/constants';
+import { TERM_PATTERN, IS_SEAS } from 'common/constants';
 import { CourseInstanceListingView } from 'server/courseInstance/CourseInstanceListingView.entity';
 
 /**
@@ -79,7 +79,7 @@ export class CourseListingView {
    * courses offered by SEAS
    */
   @ViewColumn()
-  public isSEAS: boolean;
+  public isSEAS: IS_SEAS;
 
   /**
    * From [[Course]]

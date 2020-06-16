@@ -4,14 +4,14 @@ import {
   Query,
   Inject,
 } from '@nestjs/common';
-import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import {
   ApiOkResponse,
   ApiOperation,
   ApiUseTags,
-  ApiImplicitQuery,
 } from '@nestjs/swagger';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
+import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
+import { ConfigService } from 'server/config/config.service';
 import { CourseInstanceService } from './courseInstance.service';
 import { SemesterService } from '../semester/semester.service';
 
@@ -22,6 +22,9 @@ export class CourseInstanceController {
 
   @Inject(SemesterService)
   private readonly semesterService: SemesterService;
+
+  @Inject(ConfigService)
+  private readonly configService: ConfigService;
 
   /**
    * Responds with an aggregated list of courses and their instances.
@@ -65,10 +68,21 @@ export class CourseInstanceController {
   }
 
   /**
+   * Computes the academic year list for the number of years specified
+   */
+  public computeAcademicYears(numYears: number): number[] {
+    // Fetch the current academic year and convert each year to a number
+    // so that we can calculate the plans for the specified number of years
+    const { academicYear } = this.configService;
+    const academicYears = Array.from(
+      { length: numYears },
+      (_, offset): number => academicYear + offset
+    );
+    return academicYears;
+  }
+
+  /**
    * Responds with a list of multiyear plan records
-   *
-   * @param numYears represents the number of years that the Multi Year Plan
-   * will show. Its value defaults to 4 years.
    */
   @ApiUseTags('Course Instance')
   @ApiOperation({ title: 'Retrieve the multi-year plan' })
@@ -77,14 +91,11 @@ export class CourseInstanceController {
     description: 'An array of all the multi-year plan records',
     isArray: true,
   })
-  @ApiImplicitQuery({
-    name: 'numYears',
-    description: 'Represents the number of years that the Multi Year Plan will show',
-  })
   @Get('/multi-year-plan')
-  public async getMultiYearPlan(
-    @Query('numYears') numYears?: number
-  ): Promise<MultiYearPlanResponseDTO[]> {
-    return this.ciService.getMultiYearPlan(numYears);
+  public async getMultiYearPlan(): Promise<MultiYearPlanResponseDTO[]> {
+    // The number of years specified for the multi year plan
+    const numYears = 4;
+    const academicYears = this.computeAcademicYears(numYears);
+    return this.ciService.getMultiYearPlan(academicYears);
   }
 }

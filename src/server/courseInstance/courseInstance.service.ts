@@ -1,18 +1,14 @@
-import {
-  Injectable,
-  Inject,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CourseListingView } from 'server/course/CourseListingView.entity';
-import { Semester } from 'server/semester/semester.entity';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { MultiYearPlanView } from 'server/courseInstance/MultiYearPlanView.entity';
-import { ConfigService } from 'server/config/config.service';
-import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import { Course } from 'server/course/course.entity';
-import { MultiYearPlanFacultyListingView } from 'server/courseInstance/MultiYearPlanFacultyListingView.entity';
 import { TERM } from 'common/constants';
+import { SemesterView } from 'server/semester/SemesterView.entity';
+import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
+import { FacultyListingView } from 'server/faculty/FacultyListingView.entity';
 import { MultiYearPlanInstanceView } from './MultiYearPlanInstanceView.entity';
 
 /**
@@ -31,9 +27,6 @@ export class CourseInstanceService {
 
   @InjectRepository(Course)
   protected courseEntityRepository: Repository<Course>;
-
-  @Inject(ConfigService)
-  private readonly configService: ConfigService;
 
   /**
    * Resolves a list of courses, which in turn contain sub-lists of instances
@@ -106,51 +99,39 @@ export class CourseInstanceService {
   }
 
   /**
-   * Calculates an array of academic years based on the current year
-   */
-  private computeAcademicYears(numYears: number = 4): number[] {
-    // If an invalid number of years is provided, use the default number of years
-    const validatedNumYears = (
-      Math.floor(numYears) > 0
-    ) ? Math.floor(numYears) : 4;
-    // Fetch the current academic year and convert each year to a number
-    // so that we can calculate the plans for specified or default number of years
-    const { academicYear } = this.configService;
-    const academicYears = Array.from({ length: validatedNumYears })
-      .map((value, index): number => index)
-      .map((offset): number => academicYear + offset);
-    return academicYears;
-  }
-
-  /**
    * Resolves a list of course instances for the Multi Year Plan
    */
-  public async getMultiYearPlan(numYears?: number):
+  public async getMultiYearPlan(academicYears: number[]):
   Promise<MultiYearPlanResponseDTO[]> {
-    const academicYears = this.computeAcademicYears(numYears);
     return await this.multiYearPlanViewRepository
       .createQueryBuilder('c')
       .leftJoinAndMapMany(
-        'c.instances',
+        'c.semesters',
+        SemesterView,
+        's',
+        // get all the semesters filtered by the WHERE clause below
+        's.id = s.id'
+      )
+      .leftJoinAndMapOne(
+        's.instance',
         MultiYearPlanInstanceView,
         'ci',
-        // Note that the second part of this join clause is needed
-        // so that the where clause applies to both joins
-        'c.id = ci."courseId"'
+        'c.id = ci."courseId" AND s.id = ci."semesterId"'
       )
-      .leftJoin(Semester, 's', 's.id = ci."semesterId"')
       .leftJoinAndMapMany(
         'ci.faculty',
-        MultiYearPlanFacultyListingView,
+        FacultyListingView,
         'instructors',
         'instructors."courseInstanceId" = ci.id'
       )
       // Note that although the academic year in the semester entity is actually
       // the calendar year, academicYear is truly the academic year and has
-      // been calculated by the MultiYearPlanInstanceView
+      // been calculated by the SemesterView
       .where('s."academicYear" IN (:...academicYears)', { academicYears })
       .orderBy('c.area', 'ASC')
       .addOrderBy('"catalogNumber"', 'ASC')
+      .addOrderBy('s."academicYear"', 'ASC')
+      .addOrderBy('s."termOrder"', 'ASC')
       .addOrderBy('instructors."instructorOrder"', 'ASC')
       .addOrderBy('instructors."displayName"', 'ASC')
       .getMany() as MultiYearPlanResponseDTO[];

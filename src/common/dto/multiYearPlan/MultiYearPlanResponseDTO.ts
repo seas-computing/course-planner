@@ -24,33 +24,46 @@ export abstract class MultiYearPlanInstanceFaculty {
 export abstract class MultiYearPlanInstance {
   @ApiModelProperty({
     type: 'string',
-    example: 'fc772fd6-651e-40c3-97e6-b815818120ce',
+    example: '1f8cc026-d8bf-429d-9fdb-32b89cfdce9d',
   })
   public id: string;
-
-  @ApiModelProperty({
-    type: 'string',
-    example: '2012',
-  })
-  public academicYear: string;
-
-  @ApiModelProperty({
-    type: 'string',
-    example: '2011',
-  })
-  public calendarYear: string;
-
-  @ApiModelProperty({
-    type: 'string',
-    example: TERM.FALL,
-  })
-  public term: TERM;
 
   @ApiModelProperty({
     isArray: true,
     type: MultiYearPlanInstanceFaculty,
   })
   public faculty: MultiYearPlanInstanceFaculty[];
+}
+
+export abstract class MultiYearPlanSemester {
+  @ApiModelProperty({
+    type: 'string',
+    example: 'fc772fd6-651e-40c3-97e6-b815818120ce',
+  })
+  public id: string;
+
+  @ApiModelProperty({
+    type: 'string',
+    example: '2019',
+  })
+  public academicYear: string;
+
+  @ApiModelProperty({
+    type: 'string',
+    example: '2019',
+  })
+  public calendarYear: string;
+
+  @ApiModelProperty({
+    type: 'string',
+    example: TERM.SPRING,
+  })
+  public term: TERM;
+
+  @ApiModelProperty({
+    type: MultiYearPlanInstance,
+  })
+  public instance: MultiYearPlanInstance;
 }
 
 export abstract class MultiYearPlanResponseDTO {
@@ -80,7 +93,7 @@ export abstract class MultiYearPlanResponseDTO {
 
   @ApiModelProperty({
     isArray: true,
-    type: MultiYearPlanInstance,
+    type: MultiYearPlanSemester,
   })
-  public instances: MultiYearPlanInstance[];
+  public semesters: MultiYearPlanSemester[];
 }

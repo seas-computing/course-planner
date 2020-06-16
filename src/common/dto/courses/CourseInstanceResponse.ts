@@ -1,5 +1,7 @@
 import { ApiModelProperty } from '@nestjs/swagger';
-import { DAY, OFFERED, TERM_PATTERN } from 'common/constants';
+import {
+  DAY, OFFERED, TERM_PATTERN, IS_SEAS,
+} from 'common/constants';
 
 /**
  * @module Server.DTOS.Courses
@@ -53,6 +55,7 @@ abstract class Instance {
         endTime: '13:00:00-5',
         room: {
           id: 'c7b1fa3f-c5b0-478d-a29c-7f85a4d80109',
+          campus: 'Cambridge',
           name: 'Maxwell Dworkin 119',
         },
       },
@@ -66,6 +69,7 @@ abstract class Instance {
     endTime: string;
     room: {
       id: string;
+      campus: string;
       name: string;
     };
   }[];
@@ -127,10 +131,11 @@ export default abstract class CourseInstanceResponseDTO {
   public sameAs: string;
 
   @ApiModelProperty({
-    type: 'boolean',
+    type: 'string',
+    enum: IS_SEAS,
     example: true,
   })
-  public isSEAS: boolean;
+  public isSEAS: IS_SEAS;
 
   @ApiModelProperty({
     type: Instance,
