@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { NonClassParent } from 'server/nonClassParent/nonclassparent.entity';
 import { NonClassEventView } from './NonClassEvent.view.entity';
+import { CourseListingView } from 'server/course/CourseListingView.entity';
 
 @ViewEntity('NonClassParentView', {
   expression: (connection: Connection):
@@ -28,7 +29,10 @@ export class NonClassParentView {
   @ViewColumn()
   public title: string;
 
+  @ViewColumn()
   public courseId: string;
+
+  public course: CourseListingView;
 
   public spring: NonClassEventView;
 
