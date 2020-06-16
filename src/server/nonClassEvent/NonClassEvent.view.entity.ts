@@ -22,8 +22,8 @@ import { NonClassParentView } from './NonClassParentView.entity';
         ELSE s.academicYear
       END`, 'academicYear')
     .addSelect('s.term', 'term')
-    .leftJoin(Semester, 's', 's.id = event."semesterId"')
     .addSelect('event."semesterId"', 'semesterId')
+    .leftJoin(Semester, 's', 's.id = event."semesterId"')
     .from(NonClassEvent, 'event'),
 })
 export class NonClassEventView {
