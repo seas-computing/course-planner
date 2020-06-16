@@ -10,8 +10,8 @@ import {
 import { DAY } from 'common/constants';
 import { CourseInstanceListingView } from 'server/courseInstance/CourseInstanceListingView.entity';
 import { RoomListingView } from 'server/location/RoomListingView.entity';
-import { Meeting } from './meeting.entity';
 import { NonClassEventView } from 'server/nonClassEvent/NonClassEvent.view.entity';
+import { Meeting } from './meeting.entity';
 
 /**
  * Consolidates data about a [[CourseInstances]] associated [[Meeting]]s to

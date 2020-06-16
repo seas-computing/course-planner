@@ -6,7 +6,7 @@ import { NonClassEventModule } from 'server/nonClassEvent/nonclassevent.module';
 import { SemesterModule } from 'server/semester/semester.module';
 import { AuthModule } from 'server/auth/auth.module';
 import { NonClassEventService } from 'server/nonClassEvent/nonClassEvent.service';
-import { deepStrictEqual, strictEqual } from 'assert';
+import { deepStrictEqual } from 'assert';
 import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 

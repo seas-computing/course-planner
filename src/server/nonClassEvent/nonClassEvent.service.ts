@@ -3,9 +3,9 @@ import { Repository } from 'typeorm';
 import { TERM } from 'common/constants';
 import { MeetingListingView } from 'server/meeting/MeetingListingView.entity';
 import { RoomListingView } from 'server/location/RoomListingView.entity';
+import { CourseListingView } from 'server/course/CourseListingView.entity';
 import { NonClassParentView } from './NonClassParentView.entity';
 import { NonClassEventView } from './NonClassEvent.view.entity';
-import { CourseListingView } from 'server/course/CourseListingView.entity';
 
 export class NonClassEventService {
   @InjectRepository(NonClassParentView)

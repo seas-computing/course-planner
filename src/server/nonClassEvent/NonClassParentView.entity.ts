@@ -7,8 +7,8 @@ import {
   ObjectType,
 } from 'typeorm';
 import { NonClassParent } from 'server/nonClassParent/nonclassparent.entity';
-import { NonClassEventView } from './NonClassEvent.view.entity';
 import { CourseListingView } from 'server/course/CourseListingView.entity';
+import { NonClassEventView } from './NonClassEvent.view.entity';
 
 @ViewEntity('NonClassParentView', {
   expression: (connection: Connection):

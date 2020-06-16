@@ -5,9 +5,9 @@ import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
 import { Course } from 'server/course/course.entity';
 import { Semester } from 'server/semester/semester.entity';
 import { TERM } from 'common/constants';
+import { Meeting } from 'server/meeting/meeting.entity';
 import { BasePopulationService } from './base.population';
 import { NonClassParentData, NonClassEventData } from './data';
-import { Meeting } from 'server/meeting/meeting.entity';
 
 export class NonClassEventPopulationService
   extends BasePopulationService<NonClassEvent> {
