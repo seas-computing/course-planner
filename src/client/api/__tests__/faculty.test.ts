@@ -8,6 +8,7 @@ import {
   error,
   appliedMathFacultyScheduleResponse,
   newAppliedPhysicsFacultyMember,
+  bioengineeringFacultyMember,
 } from 'testData';
 import * as api from 'client/api';
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
@@ -75,8 +76,10 @@ describe('Faculty API', function () {
 describe('Faculty Admin API', function () {
   let getFacultyResult: ManageFacultyResponseDTO[];
   let createFacultyResult: ManageFacultyResponseDTO;
+  let editFacultyResult: ManageFacultyResponseDTO;
   let getStub: SinonStub;
   let postStub: SinonStub;
+  let putStub: SinonStub;
   describe('GET /faculty', function () {
     beforeEach(function () {
       getStub = stub(request, 'get');
@@ -158,6 +161,46 @@ describe('Faculty Admin API', function () {
       it('should throw an error', async function () {
         try {
           await api.createFaculty(newAppliedPhysicsFacultyMember);
+          fail('Did not throw an error');
+        } catch (err) {
+          deepStrictEqual(err, error);
+        }
+      });
+    });
+  });
+  describe('PUT /faculty/:id', function () {
+    beforeEach(async function () {
+      putStub = stub(request, 'put');
+    });
+    afterEach(function () {
+      putStub.restore();
+    });
+    context('when PUT request succeeds', function () {
+      beforeEach(async function () {
+        putStub.resolves({
+          data: bioengineeringFacultyMemberResponse,
+        } as AxiosResponse<ManageFacultyResponseDTO>);
+        editFacultyResult = await api
+          .editFaculty(bioengineeringFacultyMember);
+      });
+      it('should call editFaculty', function () {
+        strictEqual(putStub.callCount, 1);
+      });
+      it('should make the request to /api/faculty/:id', function () {
+        const [[path]] = putStub.args;
+        strictEqual(path, `/api/faculty/${bioengineeringFacultyMember.id}`);
+      });
+      it('should return the updated faculty member', function () {
+        deepStrictEqual(editFacultyResult, bioengineeringFacultyMemberResponse);
+      });
+    });
+    context('when PUT request fails', function () {
+      beforeEach(async function () {
+        putStub.rejects();
+      });
+      it('should throw an error', async function () {
+        try {
+          await api.editFaculty(bioengineeringFacultyMember);
           fail('Did not throw an error');
         } catch (err) {
           deepStrictEqual(err, error);
