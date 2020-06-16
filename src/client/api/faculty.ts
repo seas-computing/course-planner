@@ -1,6 +1,7 @@
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { CreateFacultyDTO } from 'common/dto/faculty/CreateFaculty.dto';
+import { UpdateFacultyDTO } from 'common/dto/faculty/UpdateFaculty.dto';
 import request from './request';
 
 /**
@@ -18,6 +19,15 @@ Promise<ManageFacultyResponseDTO[]> => {
 export const createFaculty = async (facultyInfo: CreateFacultyDTO):
 Promise<ManageFacultyResponseDTO> => {
   const response = await request.post('/api/faculty', facultyInfo);
+  return response.data;
+};
+
+/**
+ * Edit an existing faculty member entry
+ */
+export const editFaculty = async (facultyInfo: UpdateFacultyDTO):
+Promise<ManageFacultyResponseDTO> => {
+  const response = await request.put(`/api/faculty/${facultyInfo.id}`, facultyInfo);
   return response.data;
 };
 
