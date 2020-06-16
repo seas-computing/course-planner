@@ -106,8 +106,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
   ] = useState(false);
 
   /**
-   * Keeps track of the currently selected value of the Create Faculty
-   * area dropdown.
+   * The currently selected value of the Create Faculty area dropdown.
    * By default, the initially selected area will be the first area in the
    * metadata area list.
    */
@@ -117,8 +116,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
   ] = useState('');
 
   /**
-   * Keeps track of the current value of the HUID text field in the
-   * Create Faculty modal
+   * The current value of the HUID text field in the Create Faculty modal
    */
   const [
     createFacultyHUID,
@@ -126,8 +124,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
   ] = useState('');
 
   /**
-   * Keeps tracks of the current value of the first name field in the
-   * Create Faculty modal
+   * The current value of the first name field in the Create Faculty modal
    */
   const [
     createFacultyFirstName,
@@ -135,8 +132,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
   ] = useState('');
 
   /**
-   * Keeps tracks of the current value of the last name field in the
-   * Create Faculty modal
+   * The current value of the last name field in the Create Faculty modal
    */
   const [
     createFacultyLastName,
@@ -144,8 +140,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
   ] = useState('');
 
   /**
-   * Keeps tracks of the current value of the joint with field in the
-   * Create Faculty modal
+   * The current value of the joint with field in the Create Faculty modal
    */
   const [
     createFacultyJointWith,
@@ -161,6 +156,9 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
     setCreateFacultyCategory,
   ] = useState('');
 
+  /**
+   * The current value of the error message within the Create Faculty modal
+   */
   const [
     createFacultyErrorMessage,
     setCreateFacultyErrorMessage,
