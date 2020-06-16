@@ -43,6 +43,11 @@ abstract class Course {
 
 abstract class Location {
   @ApiModelProperty({
+    example: 'e77babce-1a85-4d5f-9d24-1c581b6bf6bb',
+  })
+  public id: string;
+
+  @ApiModelProperty({
     example: 'Allston',
   })
   public campus: string;
@@ -55,6 +60,11 @@ abstract class Location {
 
 abstract class Meeting {
   @ApiModelProperty({
+    example: '526ba3b-87d5-40d0-be89-b0d3b6bef5f7',
+  })
+  public id: string;
+
+  @ApiModelProperty({
     type: 'enum',
     enum: DAY,
     example: DAY.FRI,
@@ -62,20 +72,33 @@ abstract class Meeting {
   public day: DAY;
 
   @ApiModelProperty({
-    example: '18:00:00.000-04',
+    example: '06:00 PM',
   })
-  public start: string;
+  public startTime: string;
 
   @ApiModelProperty({
-    example: '19:00:00.000-04',
+    example: '07:00 PM',
   })
-  public end: string;
+  public endTime: string;
 
   @ApiModelProperty({ type: Location })
   public room: Location;
 }
 
 abstract class NonClassEvent {
+  @ApiModelProperty({
+    description: 'NonClassEvent ID',
+    example: 'dbd48f1-8233-4770-a73c-3c034e7250a0',
+  })
+  public id: string;
+
+  @ApiModelProperty({
+    description: 'Denotes wether this NonClassEvent occurs in'
+      + ` ${TERM.SPRING} or ${TERM.FALL}`,
+    type: 'enum',
+    enum: TERM,
+    example: TERM.SPRING,
+  })
   public term: TERM;
 
   @ApiModelProperty({
