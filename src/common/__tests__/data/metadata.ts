@@ -1,3 +1,5 @@
+import { MetadataResponse } from 'common/dto/metadata/MetadataResponse.dto';
+
 /**
  * Example of an academic year
  */
@@ -22,7 +24,7 @@ const semesters = [
  * Example of the data returned from the /api/metadata endpoint, used for
  * populating certain fields throughout the app.
  */
-export const metadata = {
+export const metadata: MetadataResponse = {
   currentAcademicYear,
   areas,
   semesters,
