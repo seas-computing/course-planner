@@ -106,7 +106,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
   ] = useState(false);
 
   /**
-   * The currently selected value of the Create Faculty area dropdown.
+   * The current value of the area dropdown in the Create Faculty Modal.
    * By default, the initially selected area will be the first area in the
    * metadata area list.
    */
@@ -148,7 +148,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
   ] = useState('');
 
   /**
-   * Keeps tracks of the current value of the faculty category dropdown in the
+   * The current value of the faculty category dropdown in the
    * Create Faculty modal
    */
   const [
@@ -265,12 +265,12 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
         >
           <ModalHeader>Create New Faculty</ModalHeader>
           <ModalBody>
-            <form id="createFacultyForm" action="/api/faculty" method="post">
-              <label htmlFor="courseArea">
+            <form id="createFacultyForm">
+              <label htmlFor="createFacultyCourseArea">
                 Area
                 <Dropdown
-                  id="courseArea"
-                  name="courseArea"
+                  id="createFacultyCourseArea"
+                  name="createFacultyCourseArea"
                   /**
                    * Insert an empty option so that no area is pre-selected in dropdown
                    */
@@ -287,8 +287,8 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
                 />
               </label>
               <TextInput
-                id="HUID"
-                name="HUID"
+                id="createFacultyHUID"
+                name="createFacultyHUID"
                 label="HUID"
                 labelPosition={POSITION.TOP}
                 placeholder="e.g. 12345678"
@@ -299,8 +299,8 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
                 required
               />
               <TextInput
-                id="firstName"
-                name="firstName"
+                id="createFacultyFirstName"
+                name="createFacultyFirstName"
                 label="First name"
                 labelPosition={POSITION.TOP}
                 placeholder="e.g. Jane"
@@ -310,8 +310,8 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
                 value={createFacultyFirstName}
               />
               <TextInput
-                id="lastName"
-                name="lastName"
+                id="createFacultyLastName"
+                name="createFacultyLastName"
                 label="Last name"
                 labelPosition={POSITION.TOP}
                 placeholder="e.g. Smith"
@@ -321,8 +321,8 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
                 value={createFacultyLastName}
               />
               <TextInput
-                id="jointWith"
-                name="jointWith"
+                id="createFacultyJointWith"
+                name="createFacultyJointWith"
                 label="Joint with..."
                 labelPosition={POSITION.TOP}
                 placeholder="Add 'Joint With' entry"
@@ -331,11 +331,11 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
                 )}
                 value={createFacultyJointWith}
               />
-              <label htmlFor="facultyCategory">
+              <label htmlFor="createFacultyCategory">
                 Category
                 <Dropdown
-                  id="facultyCategory"
-                  name="facultyCategory"
+                  id="createFacultyCategory"
+                  name="createFacultyCategory"
                   /**
                    * Insert an empty option so that no category is pre-selected in dropdown
                    */

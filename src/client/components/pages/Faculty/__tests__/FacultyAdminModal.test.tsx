@@ -48,23 +48,23 @@ describe('Faculty Admin Modal', function () {
       const createFacultyButtonText = 'Create New Faculty';
       await waitForElement(() => getByText(createFacultyButtonText));
       fireEvent.click(getByText(createFacultyButtonText));
-      const courseAreaSelect = document.getElementById('courseArea') as HTMLSelectElement;
+      const courseAreaSelect = document.getElementById('createFacultyCourseArea') as HTMLSelectElement;
       // Pick the first option after the blank
       fireEvent.change(courseAreaSelect,
         { target: { value: courseAreaSelect.options[1].value } });
-      const facultyCategorySelect = document.getElementById('facultyCategory') as HTMLSelectElement;
+      const facultyCategorySelect = document.getElementById('createFacultyCategory') as HTMLSelectElement;
       // Pick the first option after the blank
       fireEvent.change(facultyCategorySelect,
         { target: { value: facultyCategorySelect.options[1].value } });
-      const firstNameInput = document.getElementById('firstName') as HTMLInputElement;
+      const firstNameInput = document.getElementById('createFacultyFirstName') as HTMLInputElement;
       fireEvent.change(firstNameInput, { target: { value: 'Jane' } });
-      const lastNameInput = document.getElementById('lastName') as HTMLInputElement;
+      const lastNameInput = document.getElementById('createFacultyLastName') as HTMLInputElement;
       fireEvent.change(lastNameInput, { target: { value: 'Smith' } });
-      const huidInput = document.getElementById('HUID') as HTMLInputElement;
+      const huidInput = document.getElementById('createFacultyHUID') as HTMLInputElement;
       fireEvent.change(huidInput, { target: { value: '12345678' } });
     });
     it('displays the appropriate validation error when the HUID is invalid', async function () {
-      const huidInput = document.getElementById('HUID') as HTMLInputElement;
+      const huidInput = document.getElementById('createFacultyHUID') as HTMLInputElement;
       fireEvent.change(huidInput, { target: { value: '123' } });
       const submitButton = getByText('Submit');
       fireEvent.click(submitButton);
@@ -72,9 +72,9 @@ describe('Faculty Admin Modal', function () {
       return waitForElement(() => getByText(errorMessage, { exact: false }));
     });
     it('displays the appropriate validation error when neither the first or last name are supplied', async function () {
-      const lastNameInput = document.getElementById('lastName') as HTMLInputElement;
+      const lastNameInput = document.getElementById('createFacultyLastName') as HTMLInputElement;
       fireEvent.change(lastNameInput, { target: { value: '' } });
-      const firstNameInput = document.getElementById('firstName') as HTMLInputElement;
+      const firstNameInput = document.getElementById('createFacultyFirstName') as HTMLInputElement;
       fireEvent.change(firstNameInput, { target: { value: '' } });
       const submitButton = getByText('Submit');
       fireEvent.click(submitButton);
@@ -82,7 +82,7 @@ describe('Faculty Admin Modal', function () {
       return waitForElement(() => getByText(errorMessage, { exact: false }));
     });
     it('displays the appropriate validation error when the course area is not supplied', async function () {
-      const courseAreaSelect = document.getElementById('courseArea') as HTMLSelectElement;
+      const courseAreaSelect = document.getElementById('createFacultyCourseArea') as HTMLSelectElement;
       fireEvent.change(courseAreaSelect, { target: { value: '' } });
       const submitButton = getByText('Submit');
       fireEvent.click(submitButton);
@@ -90,7 +90,7 @@ describe('Faculty Admin Modal', function () {
       return waitForElement(() => getByText(errorMessage, { exact: false }));
     });
     it('displays the appropriate validation error when the faculty category is not supplied', async function () {
-      const facultyCategorySelect = document.getElementById('facultyCategory') as HTMLSelectElement;
+      const facultyCategorySelect = document.getElementById('createFacultyCategory') as HTMLSelectElement;
       fireEvent.change(facultyCategorySelect, { target: { value: '' } });
       const submitButton = getByText('Submit');
       fireEvent.click(submitButton);
