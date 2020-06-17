@@ -44,6 +44,7 @@ import {
 import {
   getAllFacultyMembers,
   createFaculty,
+  editFaculty,
 } from '../../api/faculty';
 import { getAreaColor } from '../../../common/constants';
 
@@ -165,6 +166,71 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
   ] = useState('');
 
   /**
+   * The currently selected faculty
+   */
+  const [
+    currentFaculty,
+    setCurrentFaculty,
+  ] = useState(null as ManageFacultyResponseDTO);
+
+  /**
+   * The currently selected value of the area dropdown in the Edit Faculty Modal
+   */
+  const [
+    editFacultyArea,
+    setEditFacultyArea,
+  ] = useState('');
+
+  /**
+   * The current value of the HUID text field in the Edit Faculty modal
+   */
+  const [
+    editFacultyHUID,
+    setEditFacultyHUID,
+  ] = useState('');
+
+  /**
+   * The current value of the first name field in the Edit Faculty modal
+   */
+  const [
+    editFacultyFirstName,
+    setEditFacultyFirstName,
+  ] = useState('');
+
+  /**
+   * The current value of the last name field in the Edit Faculty modal
+   */
+  const [
+    editFacultyLastName,
+    setEditFacultyLastName,
+  ] = useState('');
+
+  /**
+   * The current value of the joint with field in the Edit Faculty modal
+   */
+  const [
+    editFacultyJointWith,
+    setEditFacultyJointWith,
+  ] = useState('');
+
+  /**
+   * The current value of the faculty category dropdown in the
+   * Edit Faculty modal
+   */
+  const [
+    editFacultyCategory,
+    setEditFacultyCategory,
+  ] = useState('');
+
+  /**
+   * The current value of the error message within the Edit Faculty modal
+   */
+  const [
+    editFacultyErrorMessage,
+    setEditFacultyErrorMessage,
+  ] = useState('');
+
+  /**
    * Provides the Mark-One theme using styled component's ThemeContext
    */
   const theme = useContext(ThemeContext);
@@ -197,6 +263,37 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
       category: createFacultyCategory.replace(/\W/g, '_').toUpperCase() as FACULTY_TYPE,
     });
   };
+
+  /**
+   * Submits the edit faculty form, checking for valid inputs
+   */
+  const submitEditFacultyForm = async ():
+  Promise<void> => {
+    const form = document.getElementById('editFacultyForm') as HTMLFormElement;
+    // Since we are not using a submit button within the form
+    // to submit, we must check the validity ourselves.
+    // Here, if the form does not pass HTML validation,
+    // we show the validation errors to the user and return without submitting.
+    if (!form.reportValidity()) {
+      throw new Error('Please fill in the required fields and try again. If the problem persists, contact SEAS Computing.');
+    }
+    if (!validHUID(editFacultyHUID)) {
+      throw new Error('An HUID must contain 8 digits. Please try again.');
+    }
+    if (!editFacultyFirstName && !editFacultyLastName) {
+      throw new Error('At least a first or last name must be provided for a faculty member. Please try again.');
+    }
+    await editFaculty({
+      id: currentFaculty.id,
+      area: editFacultyArea,
+      HUID: editFacultyHUID,
+      firstName: editFacultyFirstName,
+      lastName: editFacultyLastName,
+      jointWith: editFacultyJointWith,
+      category: editFacultyCategory.replace(/\W/g, '_').toUpperCase() as FACULTY_TYPE,
+    });
+  };
+
   return (
     <>
       <div className="create-faculty-button">
@@ -236,9 +333,13 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
                   <TableCell>{faculty.firstName}</TableCell>
                   <TableCell alignment={ALIGN.CENTER}>
                     <BorderlessButton
+                      id="editFaculty"
                       variant={VARIANT.INFO}
                       onClick={
-                        (): void => { setEditFacultyModalVisible(true); }
+                        (): void => {
+                          setCurrentFaculty(faculty);
+                          setEditFacultyModalVisible(true);
+                        }
                       }
                     >
                       <FontAwesomeIcon icon={faEdit} />
@@ -389,10 +490,144 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
         <Modal
           ariaLabelledBy="editFaculty"
           closeHandler={(): void => { setEditFacultyModalVisible(false); }}
+          onOpen={(): void => {
+            setEditFacultyArea(currentFaculty.area.name);
+            setEditFacultyHUID(currentFaculty.HUID);
+            setEditFacultyFirstName(currentFaculty.firstName || '');
+            setEditFacultyLastName(currentFaculty.lastName || '');
+            setEditFacultyJointWith(currentFaculty.jointWith || '');
+            setEditFacultyCategory(currentFaculty.category);
+          }}
+          onClose={(): void => {
+            setEditFacultyArea('');
+            setEditFacultyHUID('');
+            setEditFacultyFirstName('');
+            setEditFacultyLastName('');
+            setEditFacultyJointWith('');
+            setEditFacultyCategory('');
+          }}
           isVisible={editFacultyModalVisible}
         >
           <ModalHeader>Edit Faculty</ModalHeader>
-          <ModalBody>Modal Body</ModalBody>
+          <ModalBody>
+            <form id="editFacultyForm">
+              <label htmlFor="editFacultyCourseArea">
+                Area
+                <Dropdown
+                  id="editFacultyCourseArea"
+                  name="editFacultyCourseArea"
+                  /**
+                   * Insert an empty option so that no area is pre-selected in dropdown
+                   */
+                  options={[{ value: '', label: '' }].concat(metadata.areas.map((area):
+                  {value: string; label: string} => ({
+                    value: area,
+                    label: area,
+                  })))}
+                  onChange={(event): void => setEditFacultyArea(
+                    (event.target as HTMLSelectElement).value
+                  )}
+                  value={editFacultyArea}
+                  required
+                />
+              </label>
+              <TextInput
+                id="editFacultyHUID"
+                name="editFacultyHUID"
+                label="HUID"
+                labelPosition={POSITION.TOP}
+                placeholder="e.g. 12345678"
+                onChange={(event): void => setEditFacultyHUID(
+                  (event.target as HTMLInputElement).value.trim()
+                )}
+                value={editFacultyHUID}
+                required
+              />
+              <TextInput
+                id="editFacultyFirstName"
+                name="editFacultyFirstName"
+                label="First name"
+                labelPosition={POSITION.TOP}
+                onChange={(event): void => setEditFacultyFirstName(
+                  (event.target as HTMLInputElement).value.trim()
+                )}
+                value={editFacultyFirstName}
+              />
+              <TextInput
+                id="editFacultyLastName"
+                name="editFacultyLastName"
+                label="Last name"
+                labelPosition={POSITION.TOP}
+                onChange={(event): void => setEditFacultyLastName(
+                  (event.target as HTMLInputElement).value.trim()
+                )}
+                value={editFacultyLastName}
+              />
+              <TextInput
+                id="editFacultyJointWith"
+                name="editFacultyJointWith"
+                label="Joint with..."
+                labelPosition={POSITION.TOP}
+                placeholder="Add 'Joint With' entry"
+                onChange={(event): void => setEditFacultyJointWith(
+                  (event.target as HTMLInputElement).value.trim()
+                )}
+                value={editFacultyJointWith}
+              />
+              <label htmlFor="facultyCategory">
+                Category
+                <Dropdown
+                  id="editFacultyCategory"
+                  name="editFacultyCategory"
+                  /**
+                   * Insert an empty option so that no category is pre-selected in dropdown
+                   */
+                  options={[{ value: '', label: '' }]
+                    .concat(Object.values(FACULTY_TYPE)
+                      .map((category):
+                      {value: string; label: string} => {
+                        const categoryTitle = categoryEnumToTitleCase(category);
+                        return {
+                          value: categoryTitle,
+                          label: categoryTitle,
+                        };
+                      }))}
+                  onChange={(event): void => setEditFacultyCategory(
+                    (event.target as HTMLSelectElement).value
+                  )}
+                  value={editFacultyCategory}
+                  required
+                />
+              </label>
+              <ValidationErrorMessage>
+                {editFacultyErrorMessage}
+              </ValidationErrorMessage>
+            </form>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              id="editFacultySubmit"
+              onClick={async (): Promise<void> => {
+                try {
+                  await submitEditFacultyForm();
+                } catch (error) {
+                  setEditFacultyErrorMessage(error.message);
+                  // leave the modal visible after an error
+                  return;
+                }
+                setEditFacultyModalVisible(false);
+              }}
+              variant={VARIANT.PRIMARY}
+            >
+              Submit
+            </Button>
+            <Button
+              onClick={(): void => setEditFacultyModalVisible(false)}
+              variant={VARIANT.SECONDARY}
+            >
+              Cancel
+            </Button>
+          </ModalFooter>
         </Modal>
       </div>
     </>
