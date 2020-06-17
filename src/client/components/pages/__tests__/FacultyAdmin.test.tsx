@@ -18,6 +18,7 @@ import {
   error,
 } from 'testData';
 import { render } from 'test-utils';
+import { testMetadata } from 'common/__tests__/data/metadata';
 import FacultyAdmin from '../FacultyAdmin';
 
 describe('Faculty Admin', function () {
@@ -37,14 +38,16 @@ describe('Faculty Admin', function () {
     it('creates a table', async function () {
       const { container } = render(
         <FacultyAdmin />,
-        dispatchMessage
+        dispatchMessage,
+        testMetadata
       );
       return waitForElement(() => container.querySelector('.faculty-admin-table'));
     });
     it('creates the "create faculty" button', async function () {
       const { container } = render(
         <FacultyAdmin />,
-        dispatchMessage
+        dispatchMessage,
+        testMetadata
       );
       return waitForElement(() => container.querySelector('.create-faculty-button'));
     });
@@ -52,7 +55,8 @@ describe('Faculty Admin', function () {
       it('displays the correct faculty information', async function () {
         const { getByText } = render(
           <FacultyAdmin />,
-          dispatchMessage
+          dispatchMessage,
+          testMetadata
         );
         strictEqual(getStub.callCount, 1);
         const { lastName } = bioengineeringFacultyMemberResponse;
@@ -61,7 +65,8 @@ describe('Faculty Admin', function () {
       it('displays the correct number of rows in the table', async function () {
         const { getAllByRole } = render(
           <FacultyAdmin />,
-          dispatchMessage
+          dispatchMessage,
+          testMetadata
         );
         await wait(() => getAllByRole('row').length > 1);
         const rows = getAllByRole('row');
@@ -70,7 +75,8 @@ describe('Faculty Admin', function () {
       it('displays the correct content in the table cells', async function () {
         const { getAllByRole } = render(
           <FacultyAdmin />,
-          dispatchMessage
+          dispatchMessage,
+          testMetadata
         );
         await wait(() => getAllByRole('row').length > 1);
         const rows = Array.from(getAllByRole('row')) as HTMLTableRowElement[];
@@ -112,7 +118,8 @@ describe('Faculty Admin', function () {
       it('does not pass the backgroundColor prop when area does not exist', async function () {
         const { getAllByRole, getByText } = render(
           <FacultyAdmin />,
-          dispatchMessage
+          dispatchMessage,
+          testMetadata
         );
         await wait(() => getAllByRole('row').length > 1);
         const newAreaStyle = window.getComputedStyle(getByText('NA'));
@@ -127,7 +134,8 @@ describe('Faculty Admin', function () {
       it('displays the correct number of rows in the table (only the header row', async function () {
         const { getAllByRole } = render(
           <FacultyAdmin />,
-          dispatchMessage
+          dispatchMessage,
+          testMetadata
         );
         await wait(() => getAllByRole('row').length === emptyTestData.length + 1);
         const rows = getAllByRole('row');
@@ -142,7 +150,8 @@ describe('Faculty Admin', function () {
       it('should throw an error', async function () {
         const { getAllByRole } = render(
           <FacultyAdmin />,
-          dispatchMessage
+          dispatchMessage,
+          testMetadata
         );
         await wait(() => getAllByRole('row').length === emptyTestData.length + 1);
         strictEqual(dispatchMessage.callCount, 1);
