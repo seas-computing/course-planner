@@ -26,10 +26,7 @@ export const appliedMathFacultyMember = Object.assign(new Faculty(), {
  */
 export const bioengineeringFacultyMember = Object.assign(new Faculty(), {
   id: '38ae66ec-7589-4948-8e21-41d142db4d3b',
-  area: {
-    id: '29b70622-271b-4d1c-b70a-306e217758e9',
-    name: 'BE',
-  },
+  area: 'BE',
   firstName: 'Amanda',
   lastName: 'Su',
   HUID: '50602117',
