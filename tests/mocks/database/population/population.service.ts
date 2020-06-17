@@ -49,7 +49,6 @@ export class PopulationService implements
   @Inject(NonClassEventPopulationService)
   protected nonClassEventPopulationService: NonClassEventPopulationService;
 
-
   /**
    * Calls the necessary populate functions to fill the table with data,
    * resolving when all have finished.

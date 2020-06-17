@@ -256,9 +256,8 @@ describe('Population Service', function () {
         }
       });
     });
-
     it('Should populate the nonClassParents table', async function () {
-      const parentsRepository = testModule.get(
+      const parentsRepository: Repository<NonClassParent> = testModule.get(
         getRepositoryToken(NonClassParent)
       );
       const dbParents = await parentsRepository.find({
@@ -271,17 +270,18 @@ describe('Population Service', function () {
       );
     });
     it('Should populate the nonClassEvents table', async function () {
-      const eventsRepository = testModule.get(
+      const eventsRepository: Repository<NonClassEvent> = testModule.get(
         getRepositoryToken(NonClassEvent)
       );
       const dbEvents = await eventsRepository.find({
         relations: ['nonClassParent'],
       });
 
-      deepStrictEqual(
-        dbEvents.map(({ id, nonClassParent, ...event }) => ({ ...event })),
-        nonClassEvents.map(({ nonClassParent, ...event }) => ({ ...event }))
-      );
+      const expectedEvents = [
+        ...new Set(dbEvents.map(({ title }) => title)),
+      ];
+
+      deepStrictEqual(nonClassEvents.map(({ title }) => title), expectedEvents);
     });
   });
   describe('Automatic depopulation', function () {
