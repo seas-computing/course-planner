@@ -1,14 +1,17 @@
 import { ConfigModule } from 'server/config/config.module';
-import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { TypeOrmModule, TypeOrmModuleOptions, getRepositoryToken } from '@nestjs/typeorm';
 import { ConfigService } from 'server/config/config.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NonClassEventModule } from 'server/nonClassEvent/nonclassevent.module';
 import { SemesterModule } from 'server/semester/semester.module';
 import { AuthModule } from 'server/auth/auth.module';
 import { NonClassEventService } from 'server/nonClassEvent/nonClassEvent.service';
-import { deepStrictEqual } from 'assert';
+import { deepStrictEqual, notStrictEqual, strictEqual } from 'assert';
 import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
+import { Meeting } from 'server/meeting/meeting.entity';
+import { format, parse } from 'date-fns';
+import { utcToZonedTime } from 'date-fns-tz';
 
 describe('NonClassEvent Service', function () {
   let testModule: TestingModule;
@@ -87,6 +90,83 @@ describe('NonClassEvent Service', function () {
 
       deepStrictEqual(catalogNumbersValid, true);
       deepStrictEqual(catalogNumbers.length, events.length);
+    });
+    describe('Meetings', function () {
+      let dbMeetings: Meeting[];
+      beforeEach(async function () {
+        const meetingRepository = testModule.get(getRepositoryToken(Meeting));
+        dbMeetings = await meetingRepository.find({
+          relations: ['room', 'room.building'],
+        });
+      });
+      it('Should format the startTimes and endTimes as HH:MM AM', async function () {
+        const expectedAcdemicYear = 2020;
+
+        const events = await service.find(expectedAcdemicYear);
+
+        notStrictEqual(events.length, 0);
+        events.forEach(({ spring, fall }) => {
+          [spring, fall].forEach(({ meetings }) => {
+            meetings.forEach(({ id, startTime, endTime }) => {
+              if (id) {
+                const {
+                  startTime: dbStartTime,
+                  endTime: dbEndTime,
+                } = dbMeetings
+                  .find(
+                    ({ id: dbID }) => dbID === id
+                  );
+                // We're using Jan 1 as the date because JS is being too clever
+                // and always trying to componsate for DST for us.
+                const fmtDBStartTime = format(
+                  utcToZonedTime(
+                    parse(
+                      dbStartTime,
+                      'HH:mm:ssx',
+                      new Date(2020, 0, 1)
+                    ),
+                    'America/New_York'
+                  ),
+                  'hh:mm aa'
+                );
+                const fmtDBEndTime = format(
+                  utcToZonedTime(
+                    parse(
+                      dbEndTime,
+                      'HH:mm:ssx',
+                      new Date(2020, 0, 1)
+                    ),
+                    'America/New_York'
+                  ),
+                  'hh:mm aa'
+                );
+
+                strictEqual(startTime, fmtDBStartTime);
+                strictEqual(endTime, fmtDBEndTime);
+              }
+            });
+          });
+        });
+      });
+      it('Should concatenate the room and building name', async function () {
+        const expectedAcdemicYear = 2020;
+
+        const events = await service.find(expectedAcdemicYear);
+
+        notStrictEqual(events.length, 0);
+        events.forEach(({ spring, fall }) => {
+          [spring, fall].forEach(({ meetings }) => {
+            meetings.forEach(({ id, room }) => {
+              if (id) {
+                const { room: dbRoom } = dbMeetings
+                  .find(({ id: dbID }) => dbID === id);
+                const catName = `${dbRoom.building.name} ${dbRoom.name}`;
+                strictEqual(room.name, catName);
+              }
+            });
+          });
+        });
+      });
     });
   });
 });
