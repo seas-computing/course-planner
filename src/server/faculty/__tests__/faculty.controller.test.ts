@@ -33,17 +33,28 @@ describe('Faculty controller', function () {
 
     mockSemesterService = {};
 
+    mockAreaRepository = {
+      findOneOrFail: stub(),
+      findOne: stub(),
+      create: stub(),
+      save: stub(),
+    };
+
     mockFacultyRepository = {
       find: stub(),
       save: stub(),
       findOneOrFail: stub(),
     };
 
-    mockAreaRepository = {
-      findOneOrFail: stub(),
-    };
-
     mockSemesterRepository = {};
+
+    /**
+     * Converts an instance into a plain object
+     */
+    const toPlainObject = (instance) => JSON.parse(JSON.stringify(instance));
+
+    describe('Faculty controller', function () {
+      let controller: FacultyController;
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -91,42 +102,52 @@ describe('Faculty controller', function () {
   });
 
   describe('create', function () {
-    it('creates a single faculty member', async function () {
-      await controller.create({
-        HUID: '12345678',
-        firstName: 'Sam',
-        lastName: 'Johnston',
-        category: FACULTY_TYPE.LADDER,
-        area: 'AM',
+    context('when area exists', function () {
+      it('creates a single faculty member', async function () {
+        mockAreaRepository.findOne.resolves(appliedMathFacultyMember.area);
+        mockAreaRepository.save.resolves(appliedMathFacultyMember.area);
+        const facultyMember = {
+          HUID: appliedMathFacultyMember.HUID,
+          firstName: appliedMathFacultyMember.firstName,
+          lastName: appliedMathFacultyMember.lastName,
+          category: appliedMathFacultyMember.category,
+          area: appliedMathFacultyMember.area.name,
+          jointWith: appliedMathFacultyMember.jointWith,
+        };
+        mockFacultyRepository.save.resolves({
+          ...facultyMember,
+          id: appliedMathFacultyMember.id,
+        });
+        await controller.create(facultyMember);
+        strictEqual(mockFacultyRepository.save.callCount, 1);
       });
-
-      strictEqual(mockFacultyRepository.save.callCount, 1);
-    });
-    it('returns the newly created faculty member', async function () {
-      const facultyMember = {
-        HUID: '12345678',
-        firstName: 'Sam',
-        lastName: 'Johnston',
-        category: FACULTY_TYPE.LADDER,
-        area: 'AM',
-      };
-      mockFacultyRepository.save.resolves({
-        ...facultyMember,
-        id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
+      it('returns the newly created faculty member', async function () {
+        mockAreaRepository.findOne.resolves(appliedMathFacultyMember.area);
+        mockAreaRepository.save.resolves(appliedMathFacultyMember.area);
+        const facultyMember = {
+          HUID: appliedMathFacultyMember.HUID,
+          firstName: appliedMathFacultyMember.firstName,
+          lastName: appliedMathFacultyMember.lastName,
+          category: appliedMathFacultyMember.category,
+          area: appliedMathFacultyMember.area.name,
+          jointWith: appliedMathFacultyMember.jointWith,
+        };
+        mockFacultyRepository.save.resolves({
+          ...facultyMember,
+          id: appliedMathFacultyMember.id,
+        });
+        const newlyCreatedFaculty = await controller.create(facultyMember);
+        deepStrictEqual(
+          newlyCreatedFaculty,
+          toPlainObject(appliedMathFacultyMember)
+        );
       });
-      const {
-        id,
-        ...newlyCreatedFaculty
-      } = await controller.create(facultyMember);
-
-      strictEqual(id, 'a49edd11-0f2d-4d8f-9096-a4062955a11a');
-      deepStrictEqual(newlyCreatedFaculty, facultyMember);
     });
   });
 
   describe('update', function () {
     it('returns the updated faculty member', async function () {
-      const newArea = new Area();
+      const newArea = 'NA';
       const newFacultyMemberInfo = {
         id: '8636efc3-6b3e-4c44-ba38-4e0e788dba43',
         HUID: '87654321',
@@ -143,10 +164,7 @@ describe('Faculty controller', function () {
       deepStrictEqual(updatedFacultyMember, newFacultyMemberInfo);
     });
     it('throws a Not Found Error if the area does not exist', async function () {
-      const newArea = {
-        id: 'abc32sdf-84923-fm32-1111-72jshckddiws',
-        name: 'Juggling',
-      };
+      const newArea = 'NA';
       const newFacultyMemberInfo = {
         id: '8636efc3-6b3e-4c44-ba38-4e0e788dba43',
         HUID: '87654321',
@@ -158,7 +176,7 @@ describe('Faculty controller', function () {
       mockAreaRepository
         .findOneOrFail
         .rejects(new EntityNotFoundError(Area, {
-          where: { id: newArea.id },
+          where: { name: newArea },
         }));
       await rejects(
         () => controller.update('8636efc3-6b3e-4c44-ba38-4e0e788dba43', newFacultyMemberInfo),
@@ -166,7 +184,7 @@ describe('Faculty controller', function () {
       );
     });
     it('throws a Not Found Error if the faculty does not exist', async function () {
-      const newArea = new Area();
+      const newArea = 'NA';
       const newFacultyMemberInfo = {
         id: '1636efd9-6b3e-4c44-ba38-4e0e788dba54',
         HUID: '87654321',
@@ -193,7 +211,7 @@ describe('Faculty controller', function () {
         firstName: 'Bob',
         lastName: 'Lovelace',
         category: FACULTY_TYPE.LADDER,
-        area: new Area(),
+        area: 'AM',
       };
 
       mockFacultyRepository
@@ -212,7 +230,7 @@ describe('Faculty controller', function () {
         firstName: 'Bob',
         lastName: 'Lovelace',
         category: FACULTY_TYPE.LADDER,
-        area: new Area(),
+        area: 'NA',
       };
       mockAreaRepository
         .findOneOrFail

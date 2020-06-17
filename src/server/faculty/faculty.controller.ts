@@ -116,16 +116,39 @@ export class FacultyController {
   @ApiBadRequestResponse({
     description: 'Bad Request: the request is not in accordance with the createFaculty DTO',
   })
-  public create(@Body() faculty: CreateFacultyDTO):
+  public async create(@Body() facultyDto: CreateFacultyDTO):
   Promise<ManageFacultyResponseDTO> {
-    return this.facultyRepository.save({
+    let faculty = {
+      ...new Faculty(),
+      HUID: facultyDto.HUID,
+      firstName: facultyDto.firstName,
+      lastName: facultyDto.lastName,
+      category: facultyDto.category,
+      area: { name: facultyDto.area },
+      jointWith: facultyDto.jointWith,
+    };
+    let area = await this.areaRepository.findOne({ name: facultyDto.area });
+    if (area == null) {
+      area = {
+        ...new Area(),
+        name: facultyDto.area,
+      };
+    }
+    faculty.area = area;
+    area = await this.areaRepository.save(area);
+    faculty = await this.facultyRepository.save(faculty);
+    return {
+      id: faculty.id,
       HUID: faculty.HUID,
       firstName: faculty.firstName,
       lastName: faculty.lastName,
       category: faculty.category,
-      area: faculty.area,
+      area: {
+        id: area.id,
+        name: area.name,
+      },
       jointWith: faculty.jointWith,
-    });
+    };
   }
 
   @UseGuards(new RequireGroup(GROUP.ADMIN))
