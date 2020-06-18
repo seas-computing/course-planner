@@ -19,6 +19,10 @@ import { NonClassEventView } from './NonClassEvent.view.entity';
       NonClassEvent,
       NonClassParentView,
       NonClassEventView,
+      Meeting,
+      Room,
+      Building,
+      Campus,
     ]),
   ],
   providers: [
