@@ -10,15 +10,12 @@ import { CreateFacultyDTO } from 'common/dto/faculty/CreateFaculty.dto';
 
 export const appliedMathFacultyMember = Object.assign(new Faculty(), {
   id: '01ac81d4-9644-4d6b-9daa-022b26903130',
-  area: {
-    id: 'a035245a-9237-4346-9c8a-e8532022215d',
-    name: 'AM',
-  },
   firstName: 'Susan',
   lastName: 'Lee',
   HUID: '90132717',
   jointWith: 'PHYS (0.5 FTE SEAS)',
   category: FACULTY_TYPE.LADDER,
+  area: 'AM',
 });
 
 /**

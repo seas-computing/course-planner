@@ -88,10 +88,10 @@ describe('Faculty service', function () {
       bioengineering,
     ] = await areaRepository.save([
       {
-        name: appliedMathFacultyMember.area.name,
+        name: appliedMathFacultyMember.area,
       },
       {
-        name: bioengineeringFacultyMember.area.name,
+        name: bioengineeringFacultyMember.area,
       },
     ]);
 
@@ -122,7 +122,7 @@ describe('Faculty service', function () {
     await facultyRepository.query(`TRUNCATE ${Faculty.name} CASCADE`);
     const [appliedMath] = await areaRepository.save([
       {
-        name: appliedMathFacultyMember.area.name,
+        name: appliedMathFacultyMember.area,
       },
     ]);
     // Save two example faculty members in the database, deliberately not
@@ -164,7 +164,7 @@ describe('Faculty service', function () {
     await facultyRepository.query(`TRUNCATE ${Faculty.name} CASCADE`);
     const [appliedMath] = await areaRepository.save([
       {
-        name: appliedMathFacultyMember.area.name,
+        name: appliedMathFacultyMember.area,
       },
     ]);
     // Save two example faculty members in the database, deliberately not

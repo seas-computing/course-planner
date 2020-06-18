@@ -56,6 +56,7 @@ describe('Faculty API', function () {
   let mockFacultyScheduleCourseViewRepository: Record<string, SinonStub> = {};
   let mockFacultyScheduleSemesterViewRepository: Record<string, SinonStub> = {};
   let mockFacultyScheduleViewRepository: Record<string, SinonStub> = {};
+  let mockFacultyService: Record<string, SinonStub> = {};
 
   beforeEach(async function () {
     mockFacultyRepository = {
@@ -74,7 +75,6 @@ describe('Faculty API', function () {
       findOneOrFail: stub(),
       save: stub(),
     };
-
     mockAbsenceRepository = {};
     mockSemesterRepository = {};
     mockFacultyScheduleCourseViewRepository = {};
@@ -402,20 +402,16 @@ describe('Faculty API', function () {
         authStub.rejects(new ForbiddenException());
       });
       it('cannot update a faculty entry', async function () {
-        const area = Object.assign(new Area(), {
-          id: '8636efc3-6b3e-4c44-ba38-4e0e788dba43',
-          name: 'ESE',
-        });
         const faculty = Object.assign(new Faculty(), {
           id: 'b9122f78-af19-46a4-9655-29a932796739',
           HUID: '12345678',
           firstName: 'Sam',
           lastName: 'Johnston',
           category: FACULTY_TYPE.LADDER,
-          area,
+          area: 'ESE',
         });
-        mockAreaRepository.findOneOrFail.resolves(area);
-        mockAreaRepository.save.resolves(area);
+        mockAreaRepository.findOneOrFail.resolves(faculty.area);
+        mockAreaRepository.save.resolves(faculty.area);
         mockFacultyRepository.save.resolves(faculty);
         const response = await request(api)
           .put(`/api/faculty/${faculty.id}`)
@@ -438,19 +434,15 @@ describe('Faculty API', function () {
           authStub.returns(adminUser);
         });
         it('updates a faculty member entry in the database', async function () {
-          const newArea = {
-            id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
-            name: 'AP',
-          };
           const newFacultyMemberInfo = {
             id: 'df15cfff-0f6f-4769-8841-1ab8a9c335d9',
             HUID: '87654321',
             firstName: 'Grace',
             lastName: 'Hopper',
             category: FACULTY_TYPE.NON_SEAS_LADDER,
-            area: newArea,
+            area: 'AP',
           };
-          mockAreaRepository.findOneOrFail.resolves(newArea);
+          mockAreaRepository.findOneOrFail.resolves(newFacultyMemberInfo.area);
           mockFacultyRepository.findOneOrFail.resolves(newFacultyMemberInfo);
           mockFacultyRepository.save.resolves(newFacultyMemberInfo);
           const response = await request(api)
@@ -467,7 +459,7 @@ describe('Faculty API', function () {
               HUID: '01234567',
               firstName: 'Ada',
               lastName: 'Lovelace',
-              area: new Area(),
+              area: 'ESE',
             });
           const body = response.body as BadRequestException;
           strictEqual(response.ok, false);
@@ -475,18 +467,14 @@ describe('Faculty API', function () {
           strictEqual(/category/.test(body.message), true);
         });
         it('allows you to update a faculty member so that the entry has a last name but no first name', async function () {
-          const newArea = {
-            id: 'i20bae22-0f2d-4d8g-9096-h12gbc4b72k',
-            name: 'AP',
-          };
           const newFacultyMemberInfo = {
             id: '69694326-4d12-4c32-8a26-b2c28352ba31',
             HUID: '87654321',
             lastName: 'Hopper',
             category: FACULTY_TYPE.NON_SEAS_LADDER,
-            area: newArea,
+            area: 'BE',
           };
-          mockAreaRepository.findOneOrFail.resolves(newArea);
+          mockAreaRepository.findOneOrFail.resolves(newFacultyMemberInfo.area);
           mockFacultyRepository.findOneOrFail.resolves(newFacultyMemberInfo);
           mockFacultyRepository.save.resolves(newFacultyMemberInfo);
           const response = await request(api)
@@ -496,18 +484,14 @@ describe('Faculty API', function () {
           strictEqual(response.status, HttpStatus.OK);
         });
         it('allows you to update a faculty member so that the entry has a first name but no last name', async function () {
-          const newArea = {
-            id: 'i20bae22-0f2d-4d8g-9096-h12gbc4b72k',
-            name: 'AP',
-          };
           const newFacultyMemberInfo = {
             id: '69694326-4d12-4c32-8a26-b2c28352ba31',
             HUID: '87654321',
             firstName: 'Grace',
             category: FACULTY_TYPE.NON_SEAS_LADDER,
-            area: newArea,
+            area: 'ACS',
           };
-          mockAreaRepository.findOneOrFail.resolves(newArea);
+          mockAreaRepository.findOneOrFail.resolves(newFacultyMemberInfo.area);
           mockFacultyRepository.findOneOrFail.resolves(newFacultyMemberInfo);
           mockFacultyRepository.save.resolves(newFacultyMemberInfo);
           const response = await request(api)
@@ -517,17 +501,13 @@ describe('Faculty API', function () {
           strictEqual(response.status, HttpStatus.OK);
         });
         it('does not allow you to update faculty member so that the entry has neither first nor last name', async function () {
-          const newArea = {
-            id: 'i20bae22-0f2d-4d8g-9096-h12gbc4b72k',
-            name: 'AP',
-          };
           const newFacultyMemberInfo = {
             id: 'g12gaa52-1gj5-ha21-1123-hn625632n123',
             HUID: '87654321',
             category: FACULTY_TYPE.NON_SEAS_LADDER,
-            area: newArea,
+            area: 'AP',
           };
-          mockAreaRepository.findOneOrFail.resolves(newArea);
+          mockAreaRepository.findOneOrFail.resolves(newFacultyMemberInfo.area);
           mockFacultyRepository.findOneOrFail.resolves(newFacultyMemberInfo);
           mockFacultyRepository.save.resolves(newFacultyMemberInfo);
           const response = await request(api)
@@ -537,18 +517,14 @@ describe('Faculty API', function () {
           strictEqual(response.status, HttpStatus.BAD_REQUEST);
         });
         it('throws a Not Found exception if faculty does not exist', async function () {
-          const newArea = {
-            id: 'i20bae22-0f2d-4d8g-9096-h12gbc4b72k',
-            name: 'AP',
-          };
           const newFacultyMemberInfo = {
             id: '69694326-4d12-4c32-8a26-b2c28352ba31',
             HUID: '87654321',
             lastName: 'Huntington',
             category: FACULTY_TYPE.NON_SEAS_LADDER,
-            area: newArea,
+            area: 'AP',
           };
-          mockAreaRepository.findOneOrFail.resolves(newArea);
+          mockAreaRepository.findOneOrFail.resolves(newFacultyMemberInfo.area);
           mockFacultyRepository.findOneOrFail.rejects(new EntityNotFoundError(Faculty, `${newFacultyMemberInfo.id}`));
           mockFacultyRepository.save.rejects(new EntityNotFoundError(Faculty, `${newFacultyMemberInfo.id}`));
           const response = await request(api)
@@ -561,27 +537,23 @@ describe('Faculty API', function () {
           strictEqual(message.includes('Faculty'), true);
         });
         it('throws a Not Found exception if area does not exist', async function () {
-          const newArea = {
-            id: 'abc32sdf-84923-fm32-1111-72jshckddiws',
-            name: 'Juggling',
-          };
           const newFacultyMemberInfo = {
             id: '69694326-4d12-4c32-8a26-b2c28352ba31',
             HUID: '87654321',
             lastName: 'Brown',
             category: FACULTY_TYPE.NON_LADDER,
-            area: newArea,
+            area: 'NA',
           };
           mockFacultyRepository.save.resolves(newFacultyMemberInfo);
-          mockAreaRepository.findOneOrFail.rejects(new EntityNotFoundError(Area, `${newArea.id}`));
+          mockAreaRepository.findOneOrFail.rejects(new EntityNotFoundError(Area, `${newFacultyMemberInfo.area}`));
           const response = await request(api)
-            .put(`/api/faculty/${newArea.id}`)
+            .put(`/api/faculty/${newFacultyMemberInfo.id}`)
             .send(newFacultyMemberInfo);
           const body = response.body as NotFoundException;
           const message = body.message as string;
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.NOT_FOUND);
-          strictEqual(message.includes('Area'), true);
+          strictEqual(response.body.message.includes('Area'), true);
         });
       });
       describe('User is not a member of the admin group', function () {
