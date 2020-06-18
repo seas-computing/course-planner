@@ -35,6 +35,13 @@ describe('Faculty controller', function () {
 
     mockSemesterService = {};
 
+    mockFacultyRepository = {
+      find: stub(),
+      save: stub(),
+      create: stub(),
+      findOneOrFail: stub(),
+    };
+
     mockAreaRepository = {
       findOneOrFail: stub(),
       findOne: stub(),
@@ -49,14 +56,6 @@ describe('Faculty controller', function () {
     };
 
     mockSemesterRepository = {};
-
-    /**
-     * Converts an instance into a plain object
-     */
-    const toPlainObject = (instance) => JSON.parse(JSON.stringify(instance));
-
-    describe('Faculty controller', function () {
-      let controller: FacultyController;
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -89,19 +88,6 @@ describe('Faculty controller', function () {
     }).overrideGuard(Authentication).useValue(true).compile();
 
     controller = module.get<FacultyController>(FacultyController);
-  });
-  afterEach(function () {
-    [
-      mockFacultyRepository,
-      mockAreaRepository,
-      mockSemesterRepository,
-    ]
-      .forEach((mock): void => {
-        Object.values(mock)
-          .forEach((sinonStub: SinonStub): void => {
-            sinonStub.reset();
-          });
-      });
   });
 
   describe('getAll', function () {
@@ -154,7 +140,7 @@ describe('Faculty controller', function () {
         const newlyCreatedFaculty = await controller.create(facultyMember);
         deepStrictEqual(
           newlyCreatedFaculty,
-          toPlainObject(appliedMathFacultyMember)
+          appliedMathFacultyMember
         );
       });
     });
@@ -184,7 +170,7 @@ describe('Faculty controller', function () {
         const newlyCreatedFaculty = await controller.create(facultyMember);
         deepStrictEqual(
           newlyCreatedFaculty,
-          toPlainObject(newAreaFacultyMemberResponse)
+          newAreaFacultyMemberResponse
         );
       });
       it('saves the new area', async function () {
