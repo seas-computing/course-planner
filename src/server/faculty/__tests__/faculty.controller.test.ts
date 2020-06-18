@@ -6,6 +6,8 @@ import { FACULTY_TYPE } from 'common/constants';
 import { Authentication } from 'server/auth/authentication.guard';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import * as dummy from 'testData';
+import { TimeoutError } from 'rxjs';
+import { appliedMathFacultyMember, newAreaFacultyMemberResponse } from 'testData';
 import { Semester } from 'server/semester/semester.entity';
 import { SemesterService } from 'server/semester/semester.service';
 import { FacultyController } from '../faculty.controller';
@@ -88,6 +90,19 @@ describe('Faculty controller', function () {
 
     controller = module.get<FacultyController>(FacultyController);
   });
+  afterEach(function () {
+    [
+      mockFacultyRepository,
+      mockAreaRepository,
+      mockSemesterRepository,
+    ]
+      .forEach((mock): void => {
+        Object.values(mock)
+          .forEach((sinonStub: SinonStub): void => {
+            sinonStub.reset();
+          });
+      });
+  });
 
   describe('getAll', function () {
     it('returns all faculty in the database', async function () {
@@ -103,9 +118,11 @@ describe('Faculty controller', function () {
 
   describe('create', function () {
     context('when area exists', function () {
-      it('creates a single faculty member', async function () {
+      beforeEach(function () {
         mockAreaRepository.findOne.resolves(appliedMathFacultyMember.area);
         mockAreaRepository.save.resolves(appliedMathFacultyMember.area);
+      });
+      it('creates a single faculty member', async function () {
         const facultyMember = {
           HUID: appliedMathFacultyMember.HUID,
           firstName: appliedMathFacultyMember.firstName,
@@ -122,8 +139,6 @@ describe('Faculty controller', function () {
         strictEqual(mockFacultyRepository.save.callCount, 1);
       });
       it('returns the newly created faculty member', async function () {
-        mockAreaRepository.findOne.resolves(appliedMathFacultyMember.area);
-        mockAreaRepository.save.resolves(appliedMathFacultyMember.area);
         const facultyMember = {
           HUID: appliedMathFacultyMember.HUID,
           firstName: appliedMathFacultyMember.firstName,
@@ -141,6 +156,40 @@ describe('Faculty controller', function () {
           newlyCreatedFaculty,
           toPlainObject(appliedMathFacultyMember)
         );
+      });
+    });
+    context('when area does not exist', function () {
+      let facultyMember;
+      beforeEach(function () {
+        mockAreaRepository.findOne.resolves(null);
+        mockAreaRepository.save.resolves(newAreaFacultyMemberResponse.area);
+        facultyMember = {
+          HUID: newAreaFacultyMemberResponse.HUID,
+          firstName: newAreaFacultyMemberResponse.firstName,
+          lastName: newAreaFacultyMemberResponse.lastName,
+          category: newAreaFacultyMemberResponse.category,
+          area: newAreaFacultyMemberResponse.area.name,
+          jointWith: newAreaFacultyMemberResponse.jointWith,
+        };
+        mockFacultyRepository.save.resolves({
+          ...facultyMember,
+          id: newAreaFacultyMemberResponse.id,
+        });
+      });
+      it('creates a single faculty member', async function () {
+        await controller.create(facultyMember);
+        strictEqual(mockFacultyRepository.save.callCount, 1);
+      });
+      it('returns the newly created faculty member', async function () {
+        const newlyCreatedFaculty = await controller.create(facultyMember);
+        deepStrictEqual(
+          newlyCreatedFaculty,
+          toPlainObject(newAreaFacultyMemberResponse)
+        );
+      });
+      it('saves the new area', async function () {
+        await controller.create(facultyMember);
+        strictEqual(mockAreaRepository.save.callCount, 1);
       });
     });
   });

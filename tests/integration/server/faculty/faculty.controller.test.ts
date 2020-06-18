@@ -34,7 +34,15 @@ describe('Faculty API', function () {
 
   let mockFacultyService: Record<string, SinonStub>;
 
+<<<<<<< HEAD
   let mockAreaRepository: Record<string, SinonStub>;
+=======
+const mockAreaRepository = {
+  findOne: stub(),
+  findOneOrFail: stub(),
+  save: stub(),
+};
+>>>>>>> Updating how sinon stubs are reset
 
   let mockAbsenceRepository: Record<string, SinonStub>;
 
@@ -126,7 +134,30 @@ describe('Faculty API', function () {
       .useGlobalPipes(new BadRequestExceptionPipe())
       .init();
 
+<<<<<<< HEAD
     api = nestApp.getHttpServer() as HttpServer;
+=======
+    api = nestApp.getHttpServer();
+  });
+  afterEach(function () {
+    authStub.restore();
+    [
+      mockFacultyRepository,
+      mockAreaRepository,
+      mockFacultyService,
+      mockAbsenceRepository,
+      mockSemesterRepository,
+      mockFacultyScheduleCourseViewRepository,
+      mockFacultyScheduleSemesterViewRepository,
+      mockFacultyScheduleViewRepository,
+    ]
+      .forEach((mock) => {
+        Object.values(mock)
+          .forEach((sinonStub: SinonStub): void => {
+            sinonStub.reset();
+          });
+      });
+>>>>>>> Updating how sinon stubs are reset
   });
 
   describe('GET /', function () {
