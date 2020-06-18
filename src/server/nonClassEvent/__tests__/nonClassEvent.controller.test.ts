@@ -1,8 +1,12 @@
 import { ConfigService } from 'server/config/config.service';
 import { TestingModule, Test } from '@nestjs/testing';
 import { stub } from 'sinon';
-import { strictEqual } from 'assert';
+import { strictEqual, deepStrictEqual } from 'assert';
 import { year } from 'testData';
+import {
+  computationalModelingofFluidsReadingGroup,
+  dataScienceReadingGroup,
+} from 'common/__tests__/data/nonClassEvents';
 import { NonClassEventController } from '../nonClassEvent.controller';
 import { NonClassEventService } from '../nonClassEvent.service';
 
@@ -53,5 +57,21 @@ describe('NonClassEvent controller', function () {
 
       strictEqual(mockNonClassEventService.find.args[0][0], currentAcdemicYear);
     });
+    it('returns all the NonClassEvent records in the database', async function () {
+      mockNonClassEventService.find.resolves([
+        dataScienceReadingGroup,
+        computationalModelingofFluidsReadingGroup,
+      ]);
+
+      const results = await controller.find();
+
+      deepStrictEqual(
+        results,
+        [
+          dataScienceReadingGroup,
+          computationalModelingofFluidsReadingGroup,
+        ]
+      );
+    })
   });
 });
