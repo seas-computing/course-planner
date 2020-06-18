@@ -13,8 +13,7 @@ import {
 import request,
 { AxiosResponse } from 'axios';
 import {
-  ac209aMultiYearPlanResponse,
-  es285MultiYearPlanResponse,
+  testFourYearPlan,
   error,
 } from 'testData';
 import {
@@ -26,10 +25,9 @@ import MultiYearPlan from '../MultiYearPlan';
 describe('MultYearPlan', function () {
   let getStub: SinonStub;
   let dispatchMessage: SinonStub;
-  const testData = [
-    ac209aMultiYearPlanResponse,
-    es285MultiYearPlanResponse,
-  ];
+
+  const testData = testFourYearPlan;
+
   beforeEach(function () {
     getStub = stub(request, 'get');
     dispatchMessage = stub();
@@ -57,7 +55,7 @@ describe('MultYearPlan', function () {
         dispatchMessage
       );
       strictEqual(getStub.callCount, 1);
-      const { area } = ac209aMultiYearPlanResponse;
+      const { area } = testFourYearPlan[0];
       return waitForElement(() => getByText(area));
     });
     it('displays the correct number of rows in the table', async function () {
@@ -80,16 +78,13 @@ describe('MultYearPlan', function () {
         .map(
           (row) => (Array.from(row.cells).map((cell) => cell.textContent))
         );
-      strictEqual(rowsContent[1][0], ac209aMultiYearPlanResponse.area);
-      strictEqual(rowsContent[1][1], ac209aMultiYearPlanResponse.catalogNumber);
-      strictEqual(rowsContent[1][2], ac209aMultiYearPlanResponse.title);
-      strictEqual(rowsContent[2][0], es285MultiYearPlanResponse.area);
-      strictEqual(rowsContent[2][1], es285MultiYearPlanResponse.catalogNumber);
-      strictEqual(rowsContent[2][2], es285MultiYearPlanResponse.title);
-      const facultyNames1 = es285MultiYearPlanResponse.semesters
+      strictEqual(rowsContent[1][0], testFourYearPlan[0].area);
+      strictEqual(rowsContent[1][1], testFourYearPlan[0].catalogNumber);
+      strictEqual(rowsContent[1][2], testFourYearPlan[0].title);
+      const facultyNames1 = testFourYearPlan[0].semesters
         .map((semester) => semester.instance.faculty.map((f) => f.displayName).join(''))
         .join();
-      const facultyNames2 = rowsContent[2].slice(3).join();
+      const facultyNames2 = rowsContent[1].slice(3).join();
       strictEqual(facultyNames1, facultyNames2);
     });
   });
@@ -105,7 +100,7 @@ describe('MultYearPlan', function () {
     afterEach(function () {
       getStub.restore();
     });
-    it('displays the correct number of rows in the table (only the header row', async function () {
+    it('displays the correct number of rows in the table (header only)', async function () {
       const { getAllByRole } = render(
         <MultiYearPlan />,
         dispatchMessage
