@@ -1,11 +1,12 @@
 import {
-  Controller, Get, Inject, Query,
+  Controller, Get, Inject, Query, UseGuards,
 } from '@nestjs/common';
 import NonClassMeetingResponseDTO from 'common/dto/nonclassmeetings/NonClassMeeting.dto';
 import { ConfigService } from 'server/config/config.service';
+import { Authentication } from 'server/auth/authentication.guard';
 import { NonClassEventService } from './nonClassEvent.service';
 
-
+@UseGuards(Authentication)
 @Controller('api/non-class-events')
 export class NonClassEventController {
   @Inject(ConfigService)
@@ -14,7 +15,7 @@ export class NonClassEventController {
   @Inject(NonClassEventService)
   private service: NonClassEventService;
 
-  @Get('')
+  @Get('/')
   public async find(
     @Query('acyr') acyr?: number
   ): Promise<NonClassMeetingResponseDTO[]> {
