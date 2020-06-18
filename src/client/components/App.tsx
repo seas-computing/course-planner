@@ -32,7 +32,7 @@ import {
   PageTitle,
   Link,
 } from 'mark-one';
-import { getCurrentUser } from 'client/api';
+import { UserAPI } from 'client/api';
 import { UserResponse } from 'common/dto/users/userResponse.dto';
 import { MetadataContext } from 'client/context/MetadataContext';
 import { getMetadata } from 'client/api/metadata';
@@ -77,8 +77,8 @@ export const ColdApp: SFC = (): ReactElement => {
    */
 
   useEffect((): void => {
-    getCurrentUser()
-      .then((user): UserResponse => {
+    UserAPI.getCurrentUser()
+      .then(({ data: user }): UserResponse => {
         setUser(user);
         return user;
       })
