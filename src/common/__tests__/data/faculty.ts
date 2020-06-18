@@ -42,6 +42,24 @@ export const newAppliedPhysicsFacultyMember: CreateFacultyDTO = {
 };
 
 /**
+ * An example [[ManageFacultyResponseDTO]] response representing an applied math
+ * faculty member
+ */
+
+export const appliedMathFacultyMemberResponse = Object.assign(new Faculty(), {
+  id: '01ac81d4-9644-4d6b-9daa-022b26903130',
+  firstName: 'Susan',
+  lastName: 'Lee',
+  HUID: '90132717',
+  jointWith: 'PHYS (0.5 FTE SEAS)',
+  category: FACULTY_TYPE.LADDER,
+  area: {
+    id: 'ee5d2d73-801e-44a2-8e89-45942bf2de43',
+    name: 'AM',
+  },
+});
+
+/**
  * An example [[ManageFacultyResponseDTO]] response representing a physics faculty
  * member
  */
