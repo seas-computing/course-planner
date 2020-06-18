@@ -90,6 +90,7 @@ export const newAreaFacultyMemberResponse: ManageFacultyResponseDTO = {
   lastName: 'Lawson',
   HUID: '80598351',
   category: FACULTY_TYPE.NON_SEAS_LADDER,
+  jointWith: 'AM 110',
 };
 
 /**
