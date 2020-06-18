@@ -7,11 +7,11 @@ import { SemesterModule } from 'server/semester/semester.module';
 import { AuthModule } from 'server/auth/auth.module';
 import { NonClassEventService } from 'server/nonClassEvent/nonClassEvent.service';
 import { deepStrictEqual, notStrictEqual, strictEqual } from 'assert';
-import MockDB from '../../../mocks/database/MockDB';
-import { PopulationModule } from '../../../mocks/database/population/population.module';
 import { Meeting } from 'server/meeting/meeting.entity';
 import { format, parse } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
+import { PopulationModule } from '../../../mocks/database/population/population.module';
+import MockDB from '../../../mocks/database/MockDB';
 
 describe('NonClassEvent Service', function () {
   let testModule: TestingModule;

@@ -20,7 +20,6 @@ export class NonClassEventPopulationService
   @InjectRepository(NonClassEvent)
   protected eventRepository: Repository<NonClassEvent>;
 
-
   @InjectRepository(Semester)
   protected semesterRepository: Repository<Semester>;
 
