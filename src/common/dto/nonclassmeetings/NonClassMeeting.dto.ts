@@ -53,7 +53,7 @@ abstract class Location {
   @ApiModelProperty({
     example: 'Geological Museum 105',
   })
-  public room: string;
+  public name: string;
 }
 
 abstract class Meeting {
