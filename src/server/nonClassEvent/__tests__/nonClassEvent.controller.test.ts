@@ -72,6 +72,6 @@ describe('NonClassEvent controller', function () {
           computationalModelingofFluidsReadingGroup,
         ]
       );
-    })
+    });
   });
 });
