@@ -46,24 +46,16 @@ import { Semester } from 'server/semester/semester.entity';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 describe('Faculty API', function () {
-  let mockFacultyRepository: Record<string, SinonStub>;
-
-  let mockFacultyService: Record<string, SinonStub>;
-
-  let mockAreaRepository: Record<string, SinonStub>;
-
-  let mockAbsenceRepository: Record<string, SinonStub>;
-
-  let mockSemesterRepository: Record<string, SinonStub>;
-
-  let mockFacultyScheduleCourseViewRepository: Record<string, SinonStub>;
-
-  let mockFacultyScheduleSemesterViewRepository: Record<string, SinonStub>;
-
-  let mockFacultyScheduleViewRepository: Record<string, SinonStub>;
-
   let authStub: SinonStub;
   let api: HttpServer;
+  let mockFacultyService: Record<string, SinonStub>;
+  let mockFacultyRepository: Record<string, SinonStub> = {};
+  let mockAreaRepository: Record<string, SinonStub> = {};
+  let mockAbsenceRepository: Record<string, SinonStub> = {};
+  let mockSemesterRepository: Record<string, SinonStub> = {};
+  let mockFacultyScheduleCourseViewRepository: Record<string, SinonStub> = {};
+  let mockFacultyScheduleSemesterViewRepository: Record<string, SinonStub> = {};
+  let mockFacultyScheduleViewRepository: Record<string, SinonStub> = {};
 
   beforeEach(async function () {
     mockFacultyRepository = {
@@ -84,15 +76,18 @@ describe('Faculty API', function () {
     };
 
     mockAbsenceRepository = {};
-
     mockSemesterRepository = {};
-
     mockFacultyScheduleCourseViewRepository = {};
-
     mockFacultyScheduleSemesterViewRepository = {};
-
     mockFacultyScheduleViewRepository = {};
+
     authStub = stub(TestingStrategy.prototype, 'login');
+    mockFacultyRepository = {
+      create: stub(),
+      save: stub(),
+      findOneOrFail: stub(),
+      find: stub(),
+    };
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [
