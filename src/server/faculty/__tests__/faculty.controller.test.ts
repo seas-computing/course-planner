@@ -7,7 +7,11 @@ import { Authentication } from 'server/auth/authentication.guard';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import * as dummy from 'testData';
 import { TimeoutError } from 'rxjs';
-import { appliedMathFacultyMember, newAreaFacultyMemberResponse } from 'testData';
+import {
+  appliedMathFacultyMember,
+  newAreaFacultyMemberResponse,
+  appliedMathFacultyMemberResponse,
+} from 'testData';
 import { Semester } from 'server/semester/semester.entity';
 import { SemesterService } from 'server/semester/semester.service';
 import { FacultyController } from '../faculty.controller';
@@ -105,8 +109,10 @@ describe('Faculty controller', function () {
   describe('create', function () {
     context('when area exists', function () {
       beforeEach(function () {
-        mockAreaRepository.findOne.resolves(appliedMathFacultyMember.area);
-        mockAreaRepository.save.resolves(appliedMathFacultyMember.area);
+        mockAreaRepository
+          .findOne
+          .resolves(appliedMathFacultyMemberResponse.area);
+        mockAreaRepository.save.resolves(appliedMathFacultyMemberResponse.area);
       });
       it('creates a single faculty member', async function () {
         const facultyMember = {
