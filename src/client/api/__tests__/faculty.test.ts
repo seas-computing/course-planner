@@ -16,6 +16,7 @@ import {
   strictEqual,
   deepStrictEqual,
   fail,
+  notDeepStrictEqual,
 } from 'assert';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import request, {
@@ -128,7 +129,7 @@ describe('Faculty Admin API', function () {
       });
     });
   });
-  describe('POST /faculty', function () {
+  describe('createFaculty', function () {
     beforeEach(async function () {
       postStub = stub(request, 'post');
     });
@@ -168,7 +169,7 @@ describe('Faculty Admin API', function () {
       });
     });
   });
-  describe('PUT /faculty/:id', function () {
+  describe('editFaculty', function () {
     beforeEach(async function () {
       putStub = stub(request, 'put');
     });
@@ -176,12 +177,21 @@ describe('Faculty Admin API', function () {
       putStub.restore();
     });
     context('when PUT request succeeds', function () {
+      const newLastName = 'Jones';
+      const editedFacultyMember = {
+        ...bioengineeringFacultyMember,
+        lastName: newLastName,
+      };
+      const editedFacultyMemberResponse = {
+        ...bioengineeringFacultyMemberResponse,
+        lastName: newLastName,
+      };
       beforeEach(async function () {
         putStub.resolves({
-          data: bioengineeringFacultyMemberResponse,
+          data: editedFacultyMemberResponse,
         } as AxiosResponse<ManageFacultyResponseDTO>);
         editFacultyResult = await api
-          .editFaculty(bioengineeringFacultyMember);
+          .editFaculty(editedFacultyMember);
       });
       it('should call editFaculty', function () {
         strictEqual(putStub.callCount, 1);
@@ -191,7 +201,10 @@ describe('Faculty Admin API', function () {
         strictEqual(path, `/api/faculty/${bioengineeringFacultyMember.id}`);
       });
       it('should return the updated faculty member', function () {
-        deepStrictEqual(editFacultyResult, bioengineeringFacultyMemberResponse);
+        // verify that the object is different from the original
+        notDeepStrictEqual(bioengineeringFacultyMember, editedFacultyMember);
+        // and then verify that we received back the edited object
+        deepStrictEqual(editFacultyResult, editedFacultyMemberResponse);
       });
     });
     context('when PUT request fails', function () {
