@@ -1,5 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { stub, SinonStub } from 'sinon';
+import {
+  Test,
+  TestingModule,
+} from '@nestjs/testing';
+import {
+  stub,
+  SinonStub,
+} from 'sinon';
 import request from 'supertest';
 import {
   HttpStatus,
@@ -8,10 +14,16 @@ import {
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
-import { strictEqual } from 'assert';
+import {
+  strictEqual,
+  deepStrictEqual,
+} from 'assert';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
-import { FACULTY_TYPE, AUTH_MODE } from 'common/constants';
+import {
+  FACULTY_TYPE,
+  AUTH_MODE,
+} from 'common/constants';
 import { Area } from 'server/area/area.entity';
 import { FacultyModule } from 'server/faculty/faculty.module';
 import { Faculty } from 'server/faculty/faculty.entity';
@@ -19,7 +31,11 @@ import { AuthModule } from 'server/auth/auth.module';
 import { ConfigModule } from 'server/config/config.module';
 import { ConfigService } from 'server/config/config.service';
 import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
-import { regularUser, string, adminUser } from 'common/__tests__/data';
+import {
+  regularUser,
+  string,
+  adminUser,
+} from 'common/__tests__/data';
 import { SessionModule } from 'nestjs-session';
 import { FacultyService } from 'server/faculty/faculty.service';
 import { FacultyScheduleCourseView } from 'server/faculty/FacultyScheduleCourseView.entity';
@@ -210,21 +226,33 @@ const mockAreaRepository = {
         authStub.rejects(new ForbiddenException());
       });
       it('cannot create a faculty entry', async function () {
+        const area = Object.assign(new Area(), {
+          id: '8636efc3-6b3e-4c44-ba38-4e0e788dba43',
+          name: 'ACS',
+        });
+        const faculty = Object.assign(new Faculty(), {
+          id: 'b9122f78-af19-46a4-9655-29a932796739',
+          HUID: '12345678',
+          firstName: 'Sam',
+          lastName: 'Johnston',
+          category: FACULTY_TYPE.LADDER,
+          area,
+        });
+        mockAreaRepository.findOne.resolves(area);
+        mockAreaRepository.save.resolves(area);
+        mockFacultyRepository.save.resolves(faculty);
         const response = await request(api)
           .post('/api/faculty')
           .send({
-            HUID: '87654321',
-            firstName: 'Grace',
-            lastName: 'Hopper',
-            category: FACULTY_TYPE.NON_SEAS_LADDER,
-            area: {
-              id: 'c16ehj34-1gge-5d3j-1251-ah153144b22w',
-              name: 'AP',
-            },
+            HUID: faculty.HUID,
+            firstName: faculty.firstName,
+            lastName: faculty.lastName,
+            category: faculty.category,
+            area: faculty.area.name,
           });
         strictEqual(response.ok, false);
         strictEqual(response.status, HttpStatus.FORBIDDEN);
-        strictEqual(mockFacultyRepository.create.callCount, 0);
+        strictEqual(mockFacultyRepository.save.callCount, 0);
       });
     });
 
@@ -234,29 +262,59 @@ const mockAreaRepository = {
           authStub.returns(adminUser);
         });
         it('creates a new faculty member in the database', async function () {
+          const area = Object.assign(new Area(), {
+            id: '8636efc3-6b3e-4c44-ba38-4e0e788dba43',
+            name: 'ACS',
+          });
+          const faculty = Object.assign(new Faculty(), {
+            id: 'b9122f78-af19-46a4-9655-29a932796739',
+            HUID: '12345678',
+            firstName: 'Sam',
+            lastName: 'Johnston',
+            category: FACULTY_TYPE.LADDER,
+            area,
+          });
+          mockAreaRepository.findOne.resolves(area);
+          mockAreaRepository.save.resolves(area);
+          mockFacultyRepository.save.resolves(faculty);
           const response = await request(api)
             .post('/api/faculty')
             .send({
-              HUID: '12345678',
-              firstName: 'Sam',
-              lastName: 'Johnston',
-              category: FACULTY_TYPE.LADDER,
-              area: {
-                id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
-                name: 'ACS',
-              },
+              HUID: faculty.HUID,
+              firstName: faculty.firstName,
+              lastName: faculty.lastName,
+              category: faculty.category,
+              area: faculty.area.name,
             });
           strictEqual(response.ok, true);
           strictEqual(response.status, HttpStatus.CREATED);
+          deepStrictEqual(response.body, {
+            ...faculty,
+            area: {
+              ...area,
+            },
+          });
         });
         it('reports validation errors', async function () {
+          const area = Object.assign(new Area(), {
+            id: '8636efc3-6b3e-4c44-ba38-4e0e788dba43',
+            name: 'ACS',
+          });
+          const faculty = Object.assign(new Faculty(), {
+            id: '2f4c8b5c-f06e-49cb-bea9-88e338794f31',
+            firstName: 'Jen',
+            category: FACULTY_TYPE.NON_LADDER,
+            area,
+          });
+          mockAreaRepository.findOne.resolves(area);
+          mockAreaRepository.save.resolves(area);
+          mockFacultyRepository.save.resolves(faculty);
           const response = await request(api)
             .post('/api/faculty')
             .send({
-              firstName: 'Sam',
-              lastName: 'Johnston',
-              category: FACULTY_TYPE.LADDER,
-              area: new Area(),
+              firstName: faculty.lastName,
+              category: faculty.category,
+              area: faculty.area.name,
             });
           const body = response.body as BadRequestException;
           strictEqual(response.ok, false);
@@ -264,45 +322,77 @@ const mockAreaRepository = {
           strictEqual(/HUID/.test(body.message), true);
         });
         it('allows you to create a faculty member with a last name and no first name', async function () {
+          const area = Object.assign(new Area(), {
+            id: '8636efc3-6b3e-4c44-ba38-4e0e788dba43',
+            name: 'ACS',
+          });
+          const faculty = Object.assign(new Faculty(), {
+            id: '49372311-991d-45a7-a1bf-2ba967d62663',
+            HUID: '12345678',
+            lastName: 'Chen',
+            category: FACULTY_TYPE.LADDER,
+            area,
+          });
+          mockAreaRepository.findOne.resolves(area);
+          mockAreaRepository.save.resolves(area);
+          mockFacultyRepository.save.resolves(faculty);
           const response = await request(api)
             .post('/api/faculty')
             .send({
-              HUID: '12345678',
-              lastName: 'Chen',
-              category: FACULTY_TYPE.LADDER,
-              area: {
-                id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
-                name: 'ACS',
-              },
+              HUID: faculty.HUID,
+              lastName: faculty.lastName,
+              category: faculty.category,
+              area: faculty.area.name,
             });
           strictEqual(response.ok, true);
           strictEqual(response.status, HttpStatus.CREATED);
         });
         it('allows you to create a faculty member with a first name and no last name', async function () {
+          const area = Object.assign(new Area(), {
+            id: '8636efc3-6b3e-4c44-ba38-4e0e788dba43',
+            name: 'ACS',
+          });
+          const faculty = Object.assign(new Faculty(), {
+            id: '2f4c8b5c-f06e-49cb-bea9-88e338794f31',
+            HUID: '12345678',
+            firstName: 'Lisa',
+            category: FACULTY_TYPE.NON_LADDER,
+            area,
+          });
+          mockAreaRepository.findOne.resolves(area);
+          mockAreaRepository.save.resolves(area);
+          mockFacultyRepository.save.resolves(faculty);
           const response = await request(api)
             .post('/api/faculty')
             .send({
-              HUID: '12345678',
-              firstName: 'Ada',
-              category: FACULTY_TYPE.LADDER,
-              area: {
-                id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
-                name: 'ACS',
-              },
+              HUID: faculty.HUID,
+              firstName: faculty.firstName,
+              category: faculty.category,
+              area: faculty.area.name,
             });
           strictEqual(response.ok, true);
           strictEqual(response.status, HttpStatus.CREATED);
         });
         it('does not allow you to create a faculty member with both no first name and no last name', async function () {
+          const area = Object.assign(new Area(), {
+            id: '8636efc3-6b3e-4c44-ba38-4e0e788dba43',
+            name: 'ACS',
+          });
+          const faculty = Object.assign(new Faculty(), {
+            id: '2f4c8b5c-f06e-49cb-bea9-88e338794f31',
+            HUID: '12345678',
+            category: FACULTY_TYPE.NON_LADDER,
+            area,
+          });
+          mockAreaRepository.findOne.resolves(area);
+          mockAreaRepository.save.resolves(area);
+          mockFacultyRepository.save.resolves(faculty);
           const response = await request(api)
             .post('/api/faculty')
             .send({
-              HUID: '12345678',
-              category: FACULTY_TYPE.LADDER,
-              area: {
-                id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
-                name: 'ACS',
-              },
+              HUID: faculty.HUID,
+              category: faculty.category,
+              area: faculty.area.name,
             });
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.BAD_REQUEST);
@@ -327,18 +417,30 @@ const mockAreaRepository = {
         authStub.rejects(new ForbiddenException());
       });
       it('cannot update a faculty entry', async function () {
+        const area = Object.assign(new Area(), {
+          id: '8636efc3-6b3e-4c44-ba38-4e0e788dba43',
+          name: 'ESE',
+        });
+        const faculty = Object.assign(new Faculty(), {
+          id: 'b9122f78-af19-46a4-9655-29a932796739',
+          HUID: '12345678',
+          firstName: 'Sam',
+          lastName: 'Johnston',
+          category: FACULTY_TYPE.LADDER,
+          area,
+        });
+        mockAreaRepository.findOneOrFail.resolves(area);
+        mockAreaRepository.save.resolves(area);
+        mockFacultyRepository.save.resolves(faculty);
         const response = await request(api)
-          .put('/api/faculty/a49edd11-0f2d-4d8f-9096-a4062955a11a')
+          .put(`/api/faculty/${faculty.id}`)
           .send({
-            id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
-            HUID: '87654321',
-            firstName: 'Grace',
-            lastName: 'Hopper',
-            category: FACULTY_TYPE.NON_SEAS_LADDER,
-            area: {
-              id: 'c16ehj34-1gge-5d3j-1251-ah153144b22w',
-              name: 'AP',
-            },
+            id: faculty.id,
+            HUID: faculty.HUID,
+            firstName: faculty.firstName,
+            lastName: faculty.lastName,
+            category: faculty.category,
+            area: faculty.area.name,
           });
         strictEqual(response.ok, false);
         strictEqual(response.status, HttpStatus.FORBIDDEN);
