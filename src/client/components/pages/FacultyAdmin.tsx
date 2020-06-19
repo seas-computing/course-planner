@@ -41,12 +41,22 @@ import {
   validHUID,
   categoryEnumToTitleCase,
 } from 'common/__tests__/utils/facultyHelperFunctions';
+import { compareValues } from 'common/__tests__/utils/compareValues';
 import {
   getAllFacultyMembers,
   createFaculty,
   editFaculty,
 } from '../../api/faculty';
 import { getAreaColor } from '../../../common/constants';
+
+/**
+ * Sorts faculty by area, last name, and first name
+ */
+const sortFaculty = (faculty: ManageFacultyResponseDTO[]):
+ManageFacultyResponseDTO[] => faculty.slice()
+  .sort((member1, member2): number => compareValues(member1.area, member2.area)
+    || compareValues(member1.lastName, member2.lastName)
+    || compareValues(member1.firstName, member2.lastName));
 
 /**
  * The component represents the Faculty Admin page, which will be rendered at
@@ -239,7 +249,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
    * Submits the create faculty form, checking for valid inputs
    */
   const submitCreateFacultyForm = async ():
-  Promise<void> => {
+  Promise<ManageFacultyResponseDTO> => {
     const form = document.getElementById('createFacultyForm') as HTMLFormElement;
     // Since we are not using a submit button within the form
     // to submit, we must check the validity ourselves.
@@ -254,7 +264,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
     if (!createFacultyFirstName && !createFacultyLastName) {
       throw new Error('At least a first or last name must be provided for a faculty member. Please try again.');
     }
-    await createFaculty({
+    return createFaculty({
       area: createFacultyArea,
       HUID: createFacultyHUID,
       firstName: createFacultyFirstName,
@@ -468,7 +478,12 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
               id="createFacultySubmit"
               onClick={async (): Promise<void> => {
                 try {
-                  await submitCreateFacultyForm();
+                  const newFacultyEntry = await submitCreateFacultyForm();
+                  // Sort the new list of faculty
+                  setFacultyMembers(sortFaculty([
+                    ...currentFacultyMembers,
+                    newFacultyEntry,
+                  ]));
                 } catch (error) {
                   setCreateFacultyErrorMessage(error.message);
                   // leave the modal visible after an error
