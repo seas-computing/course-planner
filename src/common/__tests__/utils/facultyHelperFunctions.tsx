@@ -1,4 +1,5 @@
 import { FACULTY_TYPE } from 'common/constants';
+import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
 
 /**
   * Verifies whether the HUID provided meets the formatting requirements
@@ -33,3 +34,30 @@ export const categoryEnumToTitleCase = function (str: string): string {
   }[str];
   return result;
 };
+
+/**
+ * Sorts faculty by area, last name, and first name
+ */
+export const sortFaculty = (faculty: ManageFacultyResponseDTO[]):
+ManageFacultyResponseDTO[] => faculty.slice()
+  .sort((member1, member2): number => {
+    if (member1.area.name < member2.area.name) {
+      return -1;
+    }
+    if (member1.area.name > member2.area.name) {
+      return 1;
+    }
+    if (member1.lastName < member2.lastName) {
+      return -1;
+    }
+    if (member1.lastName > member2.lastName) {
+      return 1;
+    }
+    if (member1.firstName < member2.firstName) {
+      return -1;
+    }
+    if (member1.firstName > member2.firstName) {
+      return 1;
+    }
+    return 0;
+  });

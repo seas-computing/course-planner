@@ -40,23 +40,14 @@ import { FACULTY_TYPE } from 'common/constants';
 import {
   validHUID,
   categoryEnumToTitleCase,
+  sortFaculty,
 } from 'common/__tests__/utils/facultyHelperFunctions';
-import { compareValues } from 'common/__tests__/utils/compareValues';
 import {
   getAllFacultyMembers,
   createFaculty,
   editFaculty,
 } from '../../api/faculty';
 import { getAreaColor } from '../../../common/constants';
-
-/**
- * Sorts faculty by area, last name, and first name
- */
-const sortFaculty = (faculty: ManageFacultyResponseDTO[]):
-ManageFacultyResponseDTO[] => faculty.slice()
-  .sort((member1, member2): number => compareValues(member1.area, member2.area)
-    || compareValues(member1.lastName, member2.lastName)
-    || compareValues(member1.firstName, member2.lastName));
 
 /**
  * The component represents the Faculty Admin page, which will be rendered at
