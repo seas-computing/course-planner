@@ -361,6 +361,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
             setCreateFacultyLastName('');
             setCreateFacultyJointWith('');
             setCreateFacultyCategory('');
+            setCreateFacultyErrorMessage('');
           }}
           isVisible={createFacultyModalVisible}
         >
