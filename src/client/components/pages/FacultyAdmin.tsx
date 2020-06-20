@@ -334,7 +334,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
                   <TableCell>{faculty.firstName}</TableCell>
                   <TableCell alignment={ALIGN.CENTER}>
                     <BorderlessButton
-                      id="editFaculty"
+                      id={`editFaculty${faculty.id}`}
                       variant={VARIANT.INFO}
                       onClick={
                         (): void => {
