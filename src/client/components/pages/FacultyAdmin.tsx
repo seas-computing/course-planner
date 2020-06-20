@@ -276,7 +276,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
     // Here, if the form does not pass HTML validation,
     // we show the validation errors to the user and return without submitting.
     if (!form.reportValidity()) {
-      throw new Error('Please fill in the required fields and try again. If the problem persists, contact SEAS Computing.');
+      throw new Error('Please fill in the required fields and try again.');
     }
     if (!validHUID(editFacultyHUID)) {
       throw new Error('An HUID must contain 8 digits. Please try again.');
