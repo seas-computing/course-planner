@@ -167,8 +167,10 @@ export class FacultyController {
   })
   public async update(@Param('id') id: string, @Body() faculty: UpdateFacultyDTO):
   Promise<ManageFacultyResponseDTO> {
+    let existingArea: Area;
     try {
-      await this.areaRepository.findOneOrFail(faculty.area);
+      existingArea = await this.areaRepository
+        .findOneOrFail({ where: { name: faculty.area } });
     } catch (e) {
       if (e instanceof EntityNotFoundError) {
         throw new NotFoundException('The entered Area does not exist');
@@ -183,11 +185,11 @@ export class FacultyController {
       }
       throw e;
     }
-    const existingArea = await this.areaRepository.findOneOrFail(faculty.area);
     const validFaculty = {
       ...faculty,
       area: existingArea,
     };
+    console.log(validFaculty);
     return this.facultyRepository.save(validFaculty);
   }
 }
