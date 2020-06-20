@@ -269,7 +269,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
    * Submits the edit faculty form, checking for valid inputs
    */
   const submitEditFacultyForm = async ():
-  Promise<void> => {
+  Promise<ManageFacultyResponseDTO> => {
     const form = document.getElementById('editFacultyForm') as HTMLFormElement;
     // Since we are not using a submit button within the form
     // to submit, we must check the validity ourselves.
@@ -284,7 +284,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
     if (!editFacultyFirstName && !editFacultyLastName) {
       throw new Error('At least a first or last name must be provided for a faculty member. Please try again.');
     }
-    await editFaculty({
+    return editFaculty({
       id: currentFaculty.id,
       area: editFacultyArea,
       HUID: editFacultyHUID,
