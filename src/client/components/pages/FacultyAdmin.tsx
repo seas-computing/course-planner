@@ -504,6 +504,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
             setEditFacultyLastName(currentFaculty.lastName || '');
             setEditFacultyJointWith(currentFaculty.jointWith || '');
             setEditFacultyCategory(currentFaculty.category);
+            setEditFacultyErrorMessage('');
           }}
           isVisible={editFacultyModalVisible}
         >
