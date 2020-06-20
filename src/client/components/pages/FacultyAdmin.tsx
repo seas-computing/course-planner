@@ -505,14 +505,6 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
             setEditFacultyJointWith(currentFaculty.jointWith || '');
             setEditFacultyCategory(currentFaculty.category);
           }}
-          onClose={(): void => {
-            setEditFacultyArea('');
-            setEditFacultyHUID('');
-            setEditFacultyFirstName('');
-            setEditFacultyLastName('');
-            setEditFacultyJointWith('');
-            setEditFacultyCategory('');
-          }}
           isVisible={editFacultyModalVisible}
         >
           <ModalHeader>Edit Faculty</ModalHeader>
