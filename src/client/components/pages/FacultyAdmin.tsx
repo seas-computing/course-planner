@@ -448,7 +448,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
                       {value: string; label: string} => {
                         const categoryTitle = categoryEnumToTitleCase(category);
                         return {
-                          value: categoryTitle,
+                          value: category,
                           label: categoryTitle,
                         };
                       }))}
@@ -587,7 +587,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
                       {value: string; label: string} => {
                         const categoryTitle = categoryEnumToTitleCase(category);
                         return {
-                          value: categoryTitle,
+                          value: category,
                           label: categoryTitle,
                         };
                       }))}
