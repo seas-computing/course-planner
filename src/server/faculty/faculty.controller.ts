@@ -189,7 +189,6 @@ export class FacultyController {
       ...faculty,
       area: existingArea,
     };
-    console.log(validFaculty);
     return this.facultyRepository.save(validFaculty);
   }
 }
