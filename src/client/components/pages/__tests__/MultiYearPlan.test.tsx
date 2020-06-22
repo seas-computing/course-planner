@@ -5,13 +5,15 @@ import {
 import {
   waitForElement,
   wait,
+  findByRole,
+  getByRole,
+  screen,
 } from '@testing-library/react';
 import {
   stub,
   SinonStub,
 } from 'sinon';
-import request,
-{ AxiosResponse } from 'axios';
+import request, { AxiosResponse } from 'axios';
 import {
   testFourYearPlan,
   error,
@@ -44,7 +46,8 @@ describe('MultYearPlan', function () {
         <MultiYearPlan />,
         dispatchMessage
       );
-      return waitForElement(() => container.querySelector('.multi-year-plan'));
+      return waitForElement(() => container.querySelector('multi-year-plan'));
+      //return findByRole(container, '.multi-year-plan');
     });
   });
 

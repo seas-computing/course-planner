@@ -13,11 +13,11 @@ import {
   TableHeadingCell,
   TableBody,
   TableCell,
-  ALIGN,
   LoadSpinner,
   TableRowHeadingCell,
   TableCellList,
   TableCellListItem,
+  VALIGN,
 } from 'mark-one';
 import { ThemeContext } from 'styled-components';
 import {
@@ -26,12 +26,18 @@ import {
   MESSAGE_ACTION,
 } from 'client/classes';
 import { MessageContext } from 'client/context';
-import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
-import { TableRowProps } from 'mark-one/lib/Tables/TableRow';
-import { TableHeadProps } from 'mark-one/lib/Tables/TableHead';
+import {
+  MultiYearPlanResponseDTO,
+  MultiYearPlanSemester,
+} from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import { getMultiYearPlan } from '../../api/multiYearPlan';
 
-const MultiYearPlan: FunctionComponent = function (): ReactElement {
+/**
+ * The component represents the Multi Year Plan page, which will be rendered at
+ * route '/four-year-plan'
+ */
+
+const MultiYearPlan: FunctionComponent = (): ReactElement => {
   const [multiYearPlan, setMultiYearPlan] = useState(
     [] as MultiYearPlanResponseDTO[]
   );
@@ -58,26 +64,37 @@ const MultiYearPlan: FunctionComponent = function (): ReactElement {
       });
   }, []);
 
-  const yearsHeaders = (myp) => (
+  /**
+  * yearsHeaders function take the multi year plan list and create
+  * a the semesters headers using the semesters in the first of the
+  * multi year plan list.
+  */
+
+  const yearsHeaders = (myp: MultiYearPlanResponseDTO[]):
+  TableHeadingCell[] => (
     myp.length > 0
-      ? myp[0].semesters.map((semester):
-      ReactElement<TableHeadProps> => (
-        <TableHeadingCell key={semester.id} scope="col">
-          {semester.term.slice(0, 1) + '\'' + semester.calendarYear.slice(2, 4) + 'instructors'}
-        </TableHeadingCell>
-      ))
+      ? myp[0].semesters
+        .map((semester: MultiYearPlanSemester): TableHeadingCell => (
+          <TableHeadingCell key={semester.id} scope="col">
+            {`${semester.term[0]}'${semester.calendarYear.slice(2)} Instructors`}
+          </TableHeadingCell>
+        ))
       : null
   );
 
-  const courseInstance = (course) => (
-    course.semesters.map((semester):
-    ReactElement<TableHeadProps> => (
+  /**
+  * courseInstance function take a multi year plan object and fill up the
+  * instructors of the object semesters.
+  */
+
+  const courseInstance = (course: MultiYearPlanResponseDTO): TableCell[] => (
+    course.semesters.map((semester): TableCell => (
       <TableCell key={semester.id}>
         <TableCellList>
           {semester.instance.faculty.length > 0
-            ? semester.instance.faculty.map((f) => (
-              <TableCellListItem key={f.id}>
-                {f.displayName}
+            ? semester.instance.faculty.map((faculty): TableCellListItem => (
+              <TableCellListItem key={faculty.id}>
+                {faculty.displayName}
               </TableCellListItem>
             ))
             : null
@@ -102,22 +119,20 @@ const MultiYearPlan: FunctionComponent = function (): ReactElement {
                 <TableHeadingCell scope="col">Area</TableHeadingCell>
                 <TableHeadingCell scope="col">CatalogNumber</TableHeadingCell>
                 <TableHeadingCell scope="col">Title</TableHeadingCell>
-                {yearsHeaders(multiYearPlan)}
+                <React.Fragment>
+                  {yearsHeaders(multiYearPlan)}
+                </React.Fragment>
               </TableRow>
             </TableHead>
             <TableBody isScrollable>
               {multiYearPlan
-                .map((course, courseIndex): ReactElement<TableRowProps> => (
+                .map((course, courseIndex): TableRow => (
                   <TableRow isStriped={courseIndex % 2 === 1} key={course.id}>
                     <TableCell
-                      alignment={ALIGN.CENTER}
+                      verticalAlignment={VALIGN.TOP}
                       backgroundColor={
                         (course.area
                           && theme.color.area[course.area.toLowerCase()])
-                          ? theme
-                            .color
-                            .area[course.area.toLowerCase()]
-                          : undefined
                       }
                     >
                       {course.area}
@@ -126,7 +141,9 @@ const MultiYearPlan: FunctionComponent = function (): ReactElement {
                       {course.catalogNumber}
                     </TableRowHeadingCell>
                     <TableCell>{course.title}</TableCell>
-                    {courseInstance(course)}
+                    <React.Fragment>
+                      {courseInstance(course)}
+                    </React.Fragment>
                   </TableRow>
                 ))}
             </TableBody>
