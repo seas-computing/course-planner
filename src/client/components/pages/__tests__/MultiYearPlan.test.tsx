@@ -46,8 +46,7 @@ describe('MultYearPlan', function () {
         <MultiYearPlan />,
         dispatchMessage
       );
-      return waitForElement(() => container.querySelector('multi-year-plan'));
-      //return findByRole(container, '.multi-year-plan');
+      return findByRole(container, 'multi-year-plan');
     });
   });
 
