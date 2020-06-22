@@ -48,15 +48,15 @@ export const newAppliedPhysicsFacultyMember: CreateFacultyDTO = {
 
 export const appliedMathFacultyMemberResponse = Object.assign(new Faculty(), {
   id: '01ac81d4-9644-4d6b-9daa-022b26903130',
+  area: {
+    id: 'ee5d2d73-801e-44a2-8e89-45942bf2de43',
+    name: 'AM',
+  },
   firstName: 'Susan',
   lastName: 'Lee',
   HUID: '90132717',
   jointWith: 'PHYS (0.5 FTE SEAS)',
   category: FACULTY_TYPE.LADDER,
-  area: {
-    id: 'ee5d2d73-801e-44a2-8e89-45942bf2de43',
-    name: 'AM',
-  },
 });
 
 /**
