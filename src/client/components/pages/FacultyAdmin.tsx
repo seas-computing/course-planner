@@ -516,14 +516,11 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
                 <Dropdown
                   id="editFacultyCourseArea"
                   name="editFacultyCourseArea"
-                  /**
-                   * Insert an empty option so that no area is pre-selected in dropdown
-                   */
-                  options={[{ value: '', label: '' }].concat(metadata.areas.map((area):
+                  options={metadata.areas.map((area):
                   {value: string; label: string} => ({
                     value: area,
                     label: area,
-                  })))}
+                  }))}
                   onChange={(event): void => setEditFacultyArea(
                     (event.target as HTMLSelectElement).value
                   )}
@@ -609,7 +606,15 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
               id="editFacultySubmit"
               onClick={async (): Promise<void> => {
                 try {
-                  await submitEditFacultyForm();
+                  const editedFacultyMember = await submitEditFacultyForm();
+                  setFacultyMembers(sortFaculty(
+                    currentFacultyMembers.map((faculty):
+                    ManageFacultyResponseDTO => (
+                      faculty.id === editedFacultyMember.id
+                        ? editedFacultyMember
+                        : faculty
+                    ))
+                  ));
                 } catch (error) {
                   setEditFacultyErrorMessage(error.message);
                   // leave the modal visible after an error
