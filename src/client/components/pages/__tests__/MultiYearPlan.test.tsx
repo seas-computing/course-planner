@@ -107,7 +107,7 @@ describe('MultYearPlan', function () {
       );
       await wait(() => getAllByRole('row').length === emptyTestData.length + 1);
       const rows = getAllByRole('row');
-      strictEqual(rows.length, emptyTestData.length + 1);
+      strictEqual(rows.length, 1);
     });
   });
 
