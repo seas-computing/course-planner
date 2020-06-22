@@ -3,9 +3,9 @@ import {
   strictEqual,
 } from 'assert';
 import {
-  waitForElement,
   wait,
   findByRole,
+  findByText,
 } from '@testing-library/react';
 import {
   stub,
@@ -50,13 +50,13 @@ describe('MultYearPlan', function () {
 
   context('when multi year plan data fetch succeeds', function () {
     it('displays the MYP area information', async function () {
-      const { getByText } = render(
+      const { container } = render(
         <MultiYearPlan />,
         dispatchMessage
       );
       strictEqual(getStub.callCount, 1);
       const { area } = testFourYearPlan[0];
-      return waitForElement(() => getByText(area));
+      return findByText(container, area);
     });
     it('displays the correct number of rows in the table', async function () {
       const { getAllByRole } = render(
@@ -100,7 +100,7 @@ describe('MultYearPlan', function () {
     afterEach(function () {
       getStub.restore();
     });
-    it('displays the correct number of rows in the table (header only)', async function () {
+    it('only displays the header row', async function () {
       const { getAllByRole } = render(
         <MultiYearPlan />,
         dispatchMessage
