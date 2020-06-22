@@ -43,3 +43,10 @@ Promise<Record<string, FacultyResponseDTO[]>> => {
     .get(`/api/faculty/schedule?acadYears=${acadYears}`);
   return response.data as Record<string, FacultyResponseDTO[]>;
 };
+
+export const FacultyAPI = {
+  getAllFacultyMembers,
+  createFaculty,
+  editFaculty,
+  getFacultySchedulesForYear,
+};
