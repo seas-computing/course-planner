@@ -6,8 +6,6 @@ import {
   waitForElement,
   wait,
   findByRole,
-  getByRole,
-  screen,
 } from '@testing-library/react';
 import {
   stub,
@@ -46,7 +44,7 @@ describe('MultYearPlan', function () {
         <MultiYearPlan />,
         dispatchMessage
       );
-      return findByRole(container, 'multi-year-plan');
+      return findByRole(container, 'table');
     });
   });
 

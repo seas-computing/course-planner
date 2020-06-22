@@ -105,7 +105,7 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
   );
 
   return (
-    <div className="multi-year-plan" role="multi-year-plan">
+    <div className="multi-year-plan">
       {fetching
         ? (
           <div>
