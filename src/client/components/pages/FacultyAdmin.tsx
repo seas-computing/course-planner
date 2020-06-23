@@ -42,12 +42,8 @@ import {
   categoryEnumToTitleCase,
   sortFaculty,
 } from 'common/__tests__/utils/facultyHelperFunctions';
-import {
-  getAllFacultyMembers,
-  createFaculty,
-  editFaculty,
-} from '../../api/faculty';
 import { getAreaColor } from '../../../common/constants';
+import { FacultyAPI } from '../../api/faculty';
 
 /**
  * The component represents the Faculty Admin page, which will be rendered at
@@ -74,9 +70,10 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
    * If it fails, display a message for the user
    */
   useEffect((): void => {
-    getAllFacultyMembers()
-      .then((facultyMembers) => {
+    FacultyAPI.getAllFacultyMembers()
+      .then((facultyMembers): ManageFacultyResponseDTO[] => {
         setFacultyMembers(facultyMembers);
+        return facultyMembers;
       })
       .catch((): void => {
         dispatchMessage({
@@ -255,7 +252,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
     if (!createFacultyFirstName && !createFacultyLastName) {
       throw new Error('At least a first or last name must be provided for a faculty member. Please try again.');
     }
-    return createFaculty({
+    return FacultyAPI.createFaculty({
       area: createFacultyArea,
       HUID: createFacultyHUID,
       firstName: createFacultyFirstName,
@@ -284,7 +281,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
     if (!editFacultyFirstName && !editFacultyLastName) {
       throw new Error('At least a first or last name must be provided for a faculty member. Please try again.');
     }
-    return editFaculty({
+    return FacultyAPI.editFaculty({
       id: currentFaculty.id,
       area: editFacultyArea,
       HUID: editFacultyHUID,

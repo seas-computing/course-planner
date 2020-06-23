@@ -10,7 +10,7 @@ import {
   newAppliedPhysicsFacultyMember,
   bioengineeringFacultyMember,
 } from 'testData';
-import * as api from 'client/api';
+import { FacultyAPI } from 'client/api';
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
 import {
   strictEqual,
@@ -44,7 +44,8 @@ describe('Faculty API', function () {
               ],
             },
           });
-          const response = await api.getFacultySchedulesForYear(acadYear);
+          const response = await FacultyAPI
+            .getFacultySchedulesForYear(acadYear);
           result = response[acadYear][0];
         });
         it('should call getAllFacultySchedules', function () {
@@ -64,7 +65,7 @@ describe('Faculty API', function () {
         });
         it('should throw an error', async function () {
           try {
-            await api.getAllFacultyMembers();
+            await FacultyAPI.getAllFacultyMembers();
             fail('Did not throw an error');
           } catch (err) {
             strictEqual(err, error);
@@ -97,7 +98,7 @@ describe('Faculty Admin API', function () {
               bioengineeringFacultyMemberResponse,
             ],
           } as AxiosResponse<ManageFacultyResponseDTO[]>);
-          getFacultyResult = await api.getAllFacultyMembers();
+          getFacultyResult = await FacultyAPI.getAllFacultyMembers();
         });
         it('should call getAllFacultyMembers', function () {
           strictEqual(getStub.callCount, 1);
@@ -120,7 +121,7 @@ describe('Faculty Admin API', function () {
         });
         it('should throw an error', async function () {
           try {
-            await api.getAllFacultyMembers();
+            await FacultyAPI.getAllFacultyMembers();
             fail('Did not throw an error');
           } catch (err) {
             deepStrictEqual(err, error);
@@ -141,7 +142,7 @@ describe('Faculty Admin API', function () {
         postStub.resolves({
           data: physicsFacultyMemberResponse,
         } as AxiosResponse<ManageFacultyResponseDTO>);
-        createFacultyResult = await api
+        createFacultyResult = await FacultyAPI
           .createFaculty(newAppliedPhysicsFacultyMember);
       });
       it('should call createFaculty', function () {
@@ -161,7 +162,7 @@ describe('Faculty Admin API', function () {
       });
       it('should throw an error', async function () {
         try {
-          await api.createFaculty(newAppliedPhysicsFacultyMember);
+          await FacultyAPI.createFaculty(newAppliedPhysicsFacultyMember);
           fail('Did not throw an error');
         } catch (err) {
           deepStrictEqual(err, error);
@@ -190,7 +191,7 @@ describe('Faculty Admin API', function () {
         putStub.resolves({
           data: editedFacultyMemberResponse,
         } as AxiosResponse<ManageFacultyResponseDTO>);
-        editFacultyResult = await api
+        editFacultyResult = await FacultyAPI
           .editFaculty(editedFacultyMember);
       });
       it('should call editFaculty', function () {
@@ -213,7 +214,7 @@ describe('Faculty Admin API', function () {
       });
       it('should throw an error', async function () {
         try {
-          await api.editFaculty(bioengineeringFacultyMember);
+          await FacultyAPI.editFaculty(bioengineeringFacultyMember);
           fail('Did not throw an error');
         } catch (err) {
           deepStrictEqual(err, error);
