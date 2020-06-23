@@ -8,7 +8,7 @@ const currentAcademicYear = 2021;
 /**
  * Example of a list of academic areas
  */
-const areas = ['CS', 'AP', 'Mat & ME'];
+const areas = ['ACS', 'AM', 'AP', 'BE', 'CS', 'EE', 'ESE', 'General', 'Mat & ME', 'MDE', 'MSMBA', 'SEM'];
 
 /**
  * Example of a list of semesters
