@@ -249,9 +249,6 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
     if (!validHUID(createFacultyHUID)) {
       throw new Error('An HUID must contain 8 digits. Please try again.');
     }
-    if (!createFacultyFirstName && !createFacultyLastName) {
-      throw new Error('At least a first or last name must be provided for a faculty member. Please try again.');
-    }
     return FacultyAPI.createFaculty({
       area: createFacultyArea,
       HUID: createFacultyHUID,
@@ -277,9 +274,6 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
     }
     if (!validHUID(editFacultyHUID)) {
       throw new Error('An HUID must contain 8 digits. Please try again.');
-    }
-    if (!editFacultyFirstName && !editFacultyLastName) {
-      throw new Error('At least a first or last name must be provided for a faculty member. Please try again.');
     }
     return FacultyAPI.editFaculty({
       id: currentFaculty.id,
@@ -419,6 +413,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
                   (event.target as HTMLInputElement).value.trim()
                 )}
                 value={createFacultyLastName}
+                required
               />
               <TextInput
                 id="createFacultyJointWith"
@@ -556,6 +551,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
                   (event.target as HTMLInputElement).value.trim()
                 )}
                 value={editFacultyLastName}
+                required
               />
               <TextInput
                 id="editFacultyJointWith"

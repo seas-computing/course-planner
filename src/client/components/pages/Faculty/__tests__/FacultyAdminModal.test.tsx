@@ -71,14 +71,12 @@ describe('Faculty Admin Modal', function () {
       const errorMessage = 'HUID must contain 8 digits';
       return waitForElement(() => getByText(errorMessage, { exact: false }));
     });
-    it('displays the appropriate validation error when neither the first or last name are supplied', async function () {
+    it('displays the appropriate validation error when the last name is not supplied', async function () {
       const lastNameInput = document.getElementById('createFacultyLastName') as HTMLInputElement;
       fireEvent.change(lastNameInput, { target: { value: '' } });
-      const firstNameInput = document.getElementById('createFacultyFirstName') as HTMLInputElement;
-      fireEvent.change(firstNameInput, { target: { value: '' } });
       const submitButton = getByText('Submit');
       fireEvent.click(submitButton);
-      const errorMessage = 'At least a first or last name must be provided';
+      const errorMessage = 'Please fill in the required fields and try again';
       return waitForElement(() => getByText(errorMessage, { exact: false }));
     });
     it('displays the appropriate validation error when the course area is not supplied', async function () {
