@@ -139,20 +139,20 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
   ] = useState('');
 
   /**
-   * The current value of the joint with field in the Create Faculty modal
-   */
-  const [
-    createFacultyJointWith,
-    setCreateFacultyJointWith,
-  ] = useState('');
-
-  /**
    * The current value of the faculty category dropdown in the
    * Create Faculty modal
    */
   const [
     createFacultyCategory,
     setCreateFacultyCategory,
+  ] = useState('');
+
+  /**
+   * The current value of the joint with field in the Create Faculty modal
+   */
+  const [
+    createFacultyJointWith,
+    setCreateFacultyJointWith,
   ] = useState('');
 
   /**
@@ -204,20 +204,20 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
   ] = useState('');
 
   /**
-   * The current value of the joint with field in the Edit Faculty modal
-   */
-  const [
-    editFacultyJointWith,
-    setEditFacultyJointWith,
-  ] = useState('');
-
-  /**
    * The current value of the faculty category dropdown in the
    * Edit Faculty modal
    */
   const [
     editFacultyCategory,
     setEditFacultyCategory,
+  ] = useState('');
+
+  /**
+   * The current value of the joint with field in the Edit Faculty modal
+   */
+  const [
+    editFacultyJointWith,
+    setEditFacultyJointWith,
   ] = useState('');
 
   /**
@@ -415,17 +415,6 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
                 value={createFacultyLastName}
                 required
               />
-              <TextInput
-                id="createFacultyJointWith"
-                name="createFacultyJointWith"
-                label="Joint with..."
-                labelPosition={POSITION.TOP}
-                placeholder="Add 'Joint With' entry"
-                onChange={(event): void => setCreateFacultyJointWith(
-                  (event.target as HTMLInputElement).value.trim()
-                )}
-                value={createFacultyJointWith}
-              />
               <label htmlFor="createFacultyCategory">
                 Category
                 <Dropdown
@@ -451,6 +440,17 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
                   required
                 />
               </label>
+              <TextInput
+                id="createFacultyJointWith"
+                name="createFacultyJointWith"
+                label="Joint with..."
+                labelPosition={POSITION.TOP}
+                placeholder="Add 'Joint With' entry"
+                onChange={(event): void => setCreateFacultyJointWith(
+                  (event.target as HTMLInputElement).value.trim()
+                )}
+                value={createFacultyJointWith}
+              />
               <ValidationErrorMessage>
                 {createFacultyErrorMessage}
               </ValidationErrorMessage>
@@ -553,17 +553,6 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
                 value={editFacultyLastName}
                 required
               />
-              <TextInput
-                id="editFacultyJointWith"
-                name="editFacultyJointWith"
-                label="Joint with..."
-                labelPosition={POSITION.TOP}
-                placeholder="Add 'Joint With' entry"
-                onChange={(event): void => setEditFacultyJointWith(
-                  (event.target as HTMLInputElement).value.trim()
-                )}
-                value={editFacultyJointWith}
-              />
               <label htmlFor="facultyCategory">
                 Category
                 <Dropdown
@@ -589,6 +578,17 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
                   required
                 />
               </label>
+              <TextInput
+                id="editFacultyJointWith"
+                name="editFacultyJointWith"
+                label="Joint with..."
+                labelPosition={POSITION.TOP}
+                placeholder="Add 'Joint With' entry"
+                onChange={(event): void => setEditFacultyJointWith(
+                  (event.target as HTMLInputElement).value.trim()
+                )}
+                value={editFacultyJointWith}
+              />
               <ValidationErrorMessage>
                 {editFacultyErrorMessage}
               </ValidationErrorMessage>
