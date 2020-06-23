@@ -508,11 +508,11 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
                 <Dropdown
                   id="editFacultyCourseArea"
                   name="editFacultyCourseArea"
-                  options={metadata.areas.map((area):
+                  options={[{ value: '', label: '' }].concat(metadata.areas.map((area):
                   {value: string; label: string} => ({
                     value: area,
                     label: area,
-                  }))}
+                  })))}
                   onChange={(event): void => setEditFacultyArea(
                     (event.target as HTMLSelectElement).value
                   )}
