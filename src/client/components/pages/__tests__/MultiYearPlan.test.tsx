@@ -55,7 +55,7 @@ describe('MultYearPlan', function () {
         dispatchMessage
       );
       strictEqual(getStub.callCount, 1);
-      const { area } = testFourYearPlan[0];
+      const { area } = testData[0];
       return findByText(container, area);
     });
     it('displays the correct number of rows in the table', async function () {
@@ -78,10 +78,10 @@ describe('MultYearPlan', function () {
         .map(
           (row) => (Array.from(row.cells).map((cell) => cell.textContent))
         );
-      strictEqual(rowsContent[1][0], testFourYearPlan[0].area);
-      strictEqual(rowsContent[1][1], testFourYearPlan[0].catalogNumber);
-      strictEqual(rowsContent[1][2], testFourYearPlan[0].title);
-      const facultyNames1 = testFourYearPlan[0].semesters
+      strictEqual(rowsContent[1][0], testData[0].area);
+      strictEqual(rowsContent[1][1], testData[0].catalogNumber);
+      strictEqual(rowsContent[1][2], testData[0].title);
+      const facultyNames1 = testData[0].semesters
         .map((semester) => semester.instance.faculty.map((f) => f.displayName).join(''))
         .join();
       const facultyNames2 = rowsContent[1].slice(3).join();
