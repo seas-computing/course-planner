@@ -5,6 +5,7 @@ import {
   fireEvent,
   BoundFunction,
   GetByText,
+  wait,
 } from '@testing-library/react';
 import React from 'react';
 import {
@@ -13,9 +14,16 @@ import {
 } from 'sinon';
 import { render } from 'test-utils';
 import { testMetadata } from 'common/__tests__/data/metadata';
+import { FacultyAPI } from 'client/api';
+import {
+  physicsFacultyMemberResponse,
+  bioengineeringFacultyMemberResponse,
+  appliedMathFacultyMemberResponse,
+} from 'testData';
+import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
 import FacultyAdmin from '../../FacultyAdmin';
 
-describe('Faculty Admin Modal', function () {
+describe('Faculty Admin Modals', function () {
   let dispatchMessage: SinonStub;
   describe('Helper function', function () {
     describe('validHUID', function () {
@@ -56,12 +64,28 @@ describe('Faculty Admin Modal', function () {
       // Pick the first option after the blank
       fireEvent.change(facultyCategorySelect,
         { target: { value: facultyCategorySelect.options[1].value } });
+      const huidInput = document.getElementById('createFacultyHUID') as HTMLInputElement;
+      fireEvent.change(huidInput, { target: { value: '12345678' } });
       const firstNameInput = document.getElementById('createFacultyFirstName') as HTMLInputElement;
       fireEvent.change(firstNameInput, { target: { value: 'Jane' } });
       const lastNameInput = document.getElementById('createFacultyLastName') as HTMLInputElement;
       fireEvent.change(lastNameInput, { target: { value: 'Smith' } });
+    });
+    it('displays the appropriate validation error when the course area is not supplied', async function () {
+      const courseAreaSelect = document.getElementById('createFacultyCourseArea') as HTMLSelectElement;
+      fireEvent.change(courseAreaSelect, { target: { value: '' } });
+      const submitButton = getByText('Submit');
+      fireEvent.click(submitButton);
+      const errorMessage = 'Please fill in the required fields and try again';
+      return waitForElement(() => getByText(errorMessage, { exact: false }));
+    });
+    it('displays the appropriate validation error when the HUID is not supplied', async function () {
       const huidInput = document.getElementById('createFacultyHUID') as HTMLInputElement;
-      fireEvent.change(huidInput, { target: { value: '12345678' } });
+      fireEvent.change(huidInput, { target: { value: '' } });
+      const submitButton = getByText('Submit');
+      fireEvent.click(submitButton);
+      const errorMessage = 'Please fill in the required fields and try again';
+      return waitForElement(() => getByText(errorMessage, { exact: false }));
     });
     it('displays the appropriate validation error when the HUID is invalid', async function () {
       const huidInput = document.getElementById('createFacultyHUID') as HTMLInputElement;
@@ -79,16 +103,115 @@ describe('Faculty Admin Modal', function () {
       const errorMessage = 'Please fill in the required fields and try again';
       return waitForElement(() => getByText(errorMessage, { exact: false }));
     });
+    it('displays the appropriate validation error when the faculty category is not supplied', async function () {
+      const facultyCategorySelect = document.getElementById('createFacultyCategory') as HTMLSelectElement;
+      fireEvent.change(facultyCategorySelect, { target: { value: '' } });
+      const submitButton = getByText('Submit');
+      fireEvent.click(submitButton);
+      const errorMessage = 'Please fill in the required fields and try again';
+      return waitForElement(() => getByText(errorMessage, { exact: false }));
+    });
+  });
+  describe('Edit Faculty Admin Modal', function () {
+    let getStub: SinonStub;
+    let editStub: SinonStub;
+    let getByText: BoundFunction<GetByText>;
+    beforeEach(async function () {
+      getStub = stub(FacultyAPI, 'getAllFacultyMembers');
+      getStub.resolves([
+        physicsFacultyMemberResponse,
+        bioengineeringFacultyMemberResponse,
+        appliedMathFacultyMemberResponse,
+      ] as ManageFacultyResponseDTO[]);
+      editStub = stub(FacultyAPI, 'editFaculty');
+      editStub.resolves({
+        ...physicsFacultyMemberResponse,
+        lastName: 'Hudson',
+      });
+      dispatchMessage = stub();
+      ({ getByText } = render(
+        <FacultyAdmin />,
+        dispatchMessage,
+        testMetadata
+      ));
+      await waitForElement(
+        () => getByText(physicsFacultyMemberResponse.lastName)
+      );
+      const physicsFacultyEditButton = document
+        .getElementById('editFaculty' + physicsFacultyMemberResponse.id);
+      fireEvent.click(physicsFacultyEditButton);
+      const areaDropdown = await waitForElement(() => document.getElementById('editFacultyCourseArea') as HTMLSelectElement);
+      await wait(() => (
+        areaDropdown.value === physicsFacultyMemberResponse.area.name
+      ));
+    });
+    it('populates the modal with the existing faculty information', async function () {
+      const courseAreaSelect = document
+        .getElementById('editFacultyCourseArea') as HTMLSelectElement;
+      const huidInput = document.getElementById('editFacultyHUID') as HTMLInputElement;
+      const firstNameInput = document.getElementById('editFacultyFirstName') as HTMLInputElement;
+      const lastNameInput = document.getElementById('editFacultyLastName') as HTMLInputElement;
+      const jointWithInput = document.getElementById('editFacultyJointWith') as HTMLInputElement;
+      const categorySelect = document.getElementById('editFacultyCategory') as HTMLSelectElement;
+      strictEqual(
+        courseAreaSelect.value,
+        physicsFacultyMemberResponse.area.name
+      );
+      strictEqual(
+        huidInput.value,
+        physicsFacultyMemberResponse.HUID, 'HUID'
+      );
+      strictEqual(
+        firstNameInput.value,
+        physicsFacultyMemberResponse.firstName, 'first name'
+      );
+      strictEqual(
+        lastNameInput.value,
+        physicsFacultyMemberResponse.lastName, 'last name'
+      );
+      strictEqual(
+        jointWithInput.value,
+        physicsFacultyMemberResponse.jointWith || '', 'joint with'
+      );
+      strictEqual(
+        categorySelect.value,
+        physicsFacultyMemberResponse.category, 'category'
+      );
+    });
     it('displays the appropriate validation error when the course area is not supplied', async function () {
-      const courseAreaSelect = document.getElementById('createFacultyCourseArea') as HTMLSelectElement;
+      const courseAreaSelect = document.getElementById('editFacultyCourseArea') as HTMLSelectElement;
       fireEvent.change(courseAreaSelect, { target: { value: '' } });
       const submitButton = getByText('Submit');
       fireEvent.click(submitButton);
       const errorMessage = 'Please fill in the required fields and try again';
       return waitForElement(() => getByText(errorMessage, { exact: false }));
     });
+    it('displays the appropriate validation error when the HUID is not supplied', async function () {
+      const huidInput = document.getElementById('editFacultyHUID') as HTMLInputElement;
+      fireEvent.change(huidInput, { target: { value: '' } });
+      const submitButton = getByText('Submit');
+      fireEvent.click(submitButton);
+      const errorMessage = 'Please fill in the required fields and try again';
+      return waitForElement(() => getByText(errorMessage, { exact: false }));
+    });
+    it('displays the appropriate validation error when the HUID is invalid', async function () {
+      const huidInput = document.getElementById('editFacultyHUID') as HTMLInputElement;
+      fireEvent.change(huidInput, { target: { value: '123' } });
+      const submitButton = getByText('Submit');
+      fireEvent.click(submitButton);
+      const errorMessage = 'HUID must contain 8 digits';
+      return waitForElement(() => getByText(errorMessage, { exact: false }));
+    });
+    it('displays the appropriate validation error when the last name is not supplied', async function () {
+      const lastNameInput = document.getElementById('editFacultyLastName') as HTMLInputElement;
+      fireEvent.change(lastNameInput, { target: { value: '' } });
+      const submitButton = getByText('Submit');
+      fireEvent.click(submitButton);
+      const errorMessage = 'Please fill in the required fields and try again';
+      return waitForElement(() => getByText(errorMessage, { exact: false }));
+    });
     it('displays the appropriate validation error when the faculty category is not supplied', async function () {
-      const facultyCategorySelect = document.getElementById('createFacultyCategory') as HTMLSelectElement;
+      const facultyCategorySelect = document.getElementById('editFacultyCategory') as HTMLSelectElement;
       fireEvent.change(facultyCategorySelect, { target: { value: '' } });
       const submitButton = getByText('Submit');
       fireEvent.click(submitButton);
