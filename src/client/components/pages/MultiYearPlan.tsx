@@ -89,7 +89,7 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
 
   const courseInstance = (course: MultiYearPlanResponseDTO): TableCell[] => (
     course.semesters.map((semester): TableCell => (
-      <TableCell key={semester.id}>
+      <TableCell verticalAlignment={VALIGN.TOP} key={semester.id}>
         <TableCellList>
           {semester.instance.faculty.length > 0
             ? semester.instance.faculty.map((faculty): TableCellListItem => (
@@ -137,10 +137,12 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
                     >
                       {course.area}
                     </TableCell>
-                    <TableRowHeadingCell scope="row">
+                    <TableRowHeadingCell verticalAlignment={VALIGN.TOP} scope="row">
                       {course.catalogNumber}
                     </TableRowHeadingCell>
-                    <TableCell>{course.title}</TableCell>
+                    <TableCell verticalAlignment={VALIGN.TOP}>
+                      {course.title}
+                    </TableCell>
                     <React.Fragment>
                       {courseInstance(course)}
                     </React.Fragment>

@@ -1,21 +1,9 @@
 import React from 'react';
-import {
-  strictEqual,
-} from 'assert';
-import {
-  wait,
-  findByRole,
-  findByText,
-} from '@testing-library/react';
-import {
-  stub,
-  SinonStub,
-} from 'sinon';
+import { strictEqual } from 'assert';
+import { wait } from '@testing-library/react';
+import { stub, SinonStub } from 'sinon';
 import request, { AxiosResponse } from 'axios';
-import {
-  testFourYearPlan,
-  error,
-} from 'testData';
+import { testFourYearPlan, error } from 'testData';
 import {
   MultiYearPlanResponseDTO,
 } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
@@ -40,23 +28,23 @@ describe('MultYearPlan', function () {
   });
   describe('rendering', function () {
     it('create table', async function () {
-      const { container } = render(
+      const { findByRole } = render(
         <MultiYearPlan />,
         dispatchMessage
       );
-      return findByRole(container, 'table');
+      return findByRole('table');
     });
   });
 
   context('when multi year plan data fetch succeeds', function () {
     it('displays the MYP area information', async function () {
-      const { container } = render(
+      const { findByText } = render(
         <MultiYearPlan />,
         dispatchMessage
       );
       strictEqual(getStub.callCount, 1);
       const { area } = testData[0];
-      return findByText(container, area);
+      return findByText(area);
     });
     it('displays the correct number of rows in the table', async function () {
       const { getAllByRole } = render(
