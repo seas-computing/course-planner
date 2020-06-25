@@ -246,8 +246,17 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
     if (!form.reportValidity()) {
       throw new Error('Please fill in the required fields and try again. If the problem persists, contact SEAS Computing.');
     }
+    if (!createFacultyArea) {
+      throw new Error('The area is required to submit this form.');
+    }
     if (!validHUID(createFacultyHUID)) {
-      throw new Error('An HUID must contain 8 digits. Please try again.');
+      throw new Error('An HUID is required and must contain 8 digits. Please try again.');
+    }
+    if (!createFacultyLastName) {
+      throw new Error('The faculty\'s last name is required to submit this form.');
+    }
+    if (!createFacultyCategory) {
+      throw new Error('The category is required to submit this form.');
     }
     return FacultyAPI.createFaculty({
       area: createFacultyArea,
@@ -272,8 +281,17 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
     if (!form.reportValidity()) {
       throw new Error('Please fill in the required fields and try again.');
     }
+    if (!editFacultyArea) {
+      throw new Error('The area is required to submit this form.');
+    }
     if (!validHUID(editFacultyHUID)) {
-      throw new Error('An HUID must contain 8 digits. Please try again.');
+      throw new Error('An HUID is required and must contain 8 digits. Please try again.');
+    }
+    if (!editFacultyLastName) {
+      throw new Error('The faculty\'s last name is required to submit this form.');
+    }
+    if (!editFacultyCategory) {
+      throw new Error('The category is required to submit this form.');
     }
     return FacultyAPI.editFaculty({
       id: currentFaculty.id,
@@ -493,7 +511,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
             setEditFacultyArea(currentFaculty.area.name);
             setEditFacultyHUID(currentFaculty.HUID);
             setEditFacultyFirstName(currentFaculty.firstName || '');
-            setEditFacultyLastName(currentFaculty.lastName || '');
+            setEditFacultyLastName(currentFaculty.lastName);
             setEditFacultyJointWith(currentFaculty.jointWith || '');
             setEditFacultyCategory(currentFaculty.category);
             setEditFacultyErrorMessage('');

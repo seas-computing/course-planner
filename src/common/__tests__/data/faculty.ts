@@ -76,6 +76,22 @@ export const physicsFacultyMemberResponse: ManageFacultyResponseDTO = {
 };
 
 /**
+ * An [[ManageFacultyResponseDTO]] response representing a physics faculty
+ * member
+ */
+export const anotherPhysicsFacultyMemberResponse: ManageFacultyResponseDTO = {
+  id: '1f31a245-e069-407c-a8f5-449245e6a18e',
+  area: {
+    id: '140bd70d-08e2-4164-ab8e-29934f315760',
+    name: 'AP',
+  },
+  firstName: 'Michelle',
+  lastName: 'Kenney',
+  HUID: '84938288',
+  category: FACULTY_TYPE.NON_LADDER,
+};
+
+/**
  * An example [[ManageFacultyResponseDTO]] response representing a bioengineering
  * faculty member
  */
