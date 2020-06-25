@@ -3,9 +3,9 @@
 # STAGE 1: Install node_modules on a stretch container
 FROM node:10-stretch as base
 ARG APP_DIR=/node
-EXPOSE 3000
-WORKDIR $APP_DIR 
-RUN chown node:node $APP_DIR
+EXPOSE ${SERVER_PORT} ${CLIENT_PORT}
+WORKDIR ${APP_DIR}
+RUN chown node:node ${APP_DIR}
 COPY --chown=node:node package*.json ./
 USER node
 RUN ["npm", "install", "--no-optional"]
@@ -19,7 +19,7 @@ RUN npm run build && rm -rf node_modules && npm install --no-optional --producti
 # Since this does not extend the base image, we need to set workdir, user, etc. again.
 FROM node:10-alpine
 ARG APP_DIR=/node
-EXPOSE 3000
+EXPOSE ${SERVER_PORT}
 WORKDIR ${APP_DIR}
 COPY --from=builder --chown=node:node $APP_DIR/build ./
 COPY --from=builder --chown=node:node $APP_DIR/tsconfig.production.json ./tsconfig.json
