@@ -3,6 +3,8 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { BadRequestExceptionPipe } from './utils/BadRequestExceptionPipe';
 import { AppModule } from './app.module';
 
+declare const module: NodeModule & { hot: Record<string, Function> };
+
 const { SERVER_PORT, NODE_ENV } = process.env;
 
 /**
@@ -25,6 +27,11 @@ async function bootstrap(): Promise<void> {
   }
   app.useGlobalPipes(new BadRequestExceptionPipe());
   await app.listen(SERVER_PORT);
+
+  if (module.hot) {
+    module.hot.accept();
+    module.hot.dispose((): Promise<void> => app.close());
+  }
 }
 
 bootstrap();
