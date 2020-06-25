@@ -47,7 +47,8 @@
     "typeorm": "^0.2.18"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.server.json && webpack",
+    "build:client": "webpack",
+    "build:server": "tsc -p tsconfig.server.json",
     "codecov": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
     "docs": "typedoc",
     "lint": "eslint --ext=ts,tsx,js ./src ./tests",
