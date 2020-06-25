@@ -1,12 +1,10 @@
-import { join } from 'path';
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import session from 'express-session';
 import ConnectRedis from 'connect-redis';
 import { SAMLStrategy } from 'server/auth/saml.strategy';
 import { DevStrategy } from 'server/auth/dev.strategy';
 import { SessionModule, NestSessionOptions } from 'nestjs-session';
-import { ServeStaticModule } from '@nestjs/serve-static';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
 import { AuthModule } from './auth/auth.module';
@@ -61,10 +59,6 @@ import { MetadataModule } from './metadata/metadata.module';
     FacultyModule,
     CourseInstanceModule,
     MetadataModule,
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'client'),
-      exclude: ['/api*'],
-    }),
   ],
   controllers: [],
   providers: [],
