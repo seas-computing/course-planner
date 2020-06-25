@@ -69,25 +69,6 @@ import { MetadataModule } from './metadata/metadata.module';
   controllers: [],
   providers: [],
 })
-class AppModule implements NestModule {
-  private readonly config: ConfigService;
-
-  public constructor(config: ConfigService) {
-    this.config = config;
-  }
-
-  /**
-     * Sets up middleware for consumption by the app. In development, the
-     * dev-middleware will override the ServerStaticModule injected above.
-     */
-  public configure(consumer: MiddlewareConsumer): void {
-    if (this.config.isDevelopment) {
-      // eslint-disable-next-line
-      const { devServer, hotServer } = require('./config/dev.middleware');
-      consumer.apply(devServer, hotServer).forRoutes('/');
-      consumer.apply(devServer, hotServer).forRoutes('/courses/*');
-    }
-  }
-}
+class AppModule { }
 
 export { AppModule };
