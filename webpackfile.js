@@ -7,9 +7,11 @@ const TerserPlugin = require('terser-webpack-plugin');
 
 /**
  * This Webpack configuration only handles bunding the client code in
- * production. To make changes to the development configuration, see:
+ * production.
  *
- *   src/server/config/dev.middleware.ts
+ * Changes to the dev configuration should be made in:
+ *    webpackfile.client-dev.js
+ *    webpackfile.server-dev.js
  */
 
 module.exports = {
