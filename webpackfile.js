@@ -6,7 +6,7 @@ const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 
 /**
- * This Webpack configuration only handles bunding the client code in
+ * This Webpack configuration only handles bundling the client code in
  * production.
  *
  * Changes to the dev configuration should be made in:

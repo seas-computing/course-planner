@@ -4,6 +4,13 @@ const nodeExternals = require('webpack-node-externals');
 const StartServerPlugin = require('start-server-webpack-plugin');
 const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
+/**
+ * This webpack configuration handles hot-reloading of server code in
+ * development.
+ *
+ * To change the production configuration for webpack, see webpackfile.js
+ */
+
 module.exports = {
   entry: [
     'webpack/hot/poll?100',

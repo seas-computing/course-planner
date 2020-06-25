@@ -13,8 +13,10 @@ const {
 } = process.env;
 
 /**
- * This webpack configuration handles live-reloading of our code in development
- * To change the production configuration for webpack, see webpackfile.prod.js
+ * This webpack configuration handles hot-reloading of client code in
+ * development.
+ *
+ * To change the production configuration for webpack, see webpackfile.js
  */
 
 module.exports = {
@@ -27,16 +29,21 @@ module.exports = {
     './src/client/index.tsx',
   ],
   devServer: {
+    // This will push everything to the index.html file, letting us handle
+    // routing via React Router
     historyApiFallback: {
       rewrites: [
         { from: /./, to: '/courses/index.html' },
       ],
     },
+    // We need to open the server to everyone so we can reach it from outside
+    // the container
     host: '0.0.0.0',
     hot: true,
     hotOnly: true,
     port: CLIENT_PORT,
     publicPath,
+    // All requests to /api should be forwarded to our server container
     proxy: {
       '/api': `http://node:${SERVER_PORT}`,
     },
