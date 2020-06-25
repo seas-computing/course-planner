@@ -4,7 +4,13 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const HtmlWebpackRootPlugin = require('html-webpack-root-plugin');
 const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
-const publicPath = '/';
+const publicPath = '/courses';
+
+const {
+  SERVER_PORT,
+  CLIENT_PORT,
+  APP_NAME,
+} = process.env;
 
 /**
  * This webpack configuration handles live-reloading of our code in development
@@ -17,18 +23,24 @@ module.exports = {
   mode: 'development',
   devtool: 'cheap-eval-source-map',
   entry: [
-    'webpack-hot-middleware/client',
     'react-hot-loader/patch',
     './src/client/index.tsx',
   ],
   devServer: {
-    port: 3000,
-    allowedHosts: '127.0.0.1',
+    historyApiFallback: {
+      rewrites: [
+        { from: /./, to: '/courses/index.html' },
+      ],
+    },
+    host: '0.0.0.0',
     hot: true,
     hotOnly: true,
+    port: CLIENT_PORT,
+    publicPath,
     proxy: {
-      '/api': 'http://node:3001',
+      '/api': `http://node:${SERVER_PORT}`,
     },
+    serveIndex: false,
   },
   output: {
     path: resolve(__dirname, 'build/static'),
@@ -79,9 +91,8 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: process.env.APP_NAME,
+      title: APP_NAME,
     }),
     new HtmlWebpackRootPlugin(),
-    new webpack.HotModuleReplacementPlugin(),
   ],
 };
