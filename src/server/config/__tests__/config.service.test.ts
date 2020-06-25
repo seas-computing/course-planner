@@ -89,10 +89,6 @@ describe('Configuration Service', function () {
       it('provides the database port', function () {
         strictEqual(dbOptions.port.toString(), DB_PORT);
       });
-
-      it('provides a glob to import entity classes', function () {
-        deepStrictEqual(dbOptions.entities, ['server/**/*.entity.js']);
-      });
     });
     context('In development mode', function () {
       const NODE_ENV = 'development';
@@ -123,10 +119,6 @@ describe('Configuration Service', function () {
 
       it('provides the database port', function () {
         strictEqual(dbOptions.port.toString(), DB_PORT);
-      });
-
-      it('provides a glob to import entity classes', function () {
-        deepStrictEqual(dbOptions.entities, ['src/server/**/*.entity.ts']);
       });
     });
   });
