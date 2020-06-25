@@ -9,8 +9,6 @@ stages:
     if: branch = master
   - name: build
     if: (branch = master OR branch = develop) AND type != pull_request
-env:
-  - CLIENT_PORT=3001 SERVER_PORT=3000
 jobs:
   include:
     - stage: test
