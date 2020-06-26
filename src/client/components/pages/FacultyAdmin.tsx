@@ -156,6 +156,35 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
   ] = useState('');
 
   /**
+   * The current value of the error message for the Create Faculty Area field
+   */
+  const [
+    createFacultyAreaErrorMessage,
+    setCreateFacultyAreaErrorMessage,
+  ] = useState('');
+  /**
+   * The current value of the error message for the Create Faculty HUID field
+   */
+  const [
+    createFacultyHUIDErrorMessage,
+    setCreateFacultyHUIDErrorMessage,
+  ] = useState('');
+  /**
+   * The current value of the error message for the Create Faculty Last Name field
+   */
+  const [
+    createFacultyLastNameErrorMessage,
+    setCreateFacultyLastNameErrorMessage,
+  ] = useState('');
+  /**
+   * The current value of the error message for the Create Faculty Category field
+   */
+  const [
+    createFacultyCategoryErrorMessage,
+    setCreateFacultyCategoryErrorMessage,
+  ] = useState('');
+
+  /**
    * The current value of the error message within the Create Faculty modal
    */
   const [
@@ -221,6 +250,35 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
   ] = useState('');
 
   /**
+   * The current value of the error message for the Edit Faculty Area field
+   */
+  const [
+    editFacultyAreaErrorMessage,
+    setEditFacultyAreaErrorMessage,
+  ] = useState('');
+  /**
+   * The current value of the error message for the Edit Faculty HUID field
+   */
+  const [
+    editFacultyHUIDErrorMessage,
+    setEditFacultyHUIDErrorMessage,
+  ] = useState('');
+  /**
+   * The current value of the error message for the Edit Faculty Last Name field
+   */
+  const [
+    editFacultyLastNameErrorMessage,
+    setEditFacultyLastNameErrorMessage,
+  ] = useState('');
+  /**
+   * The current value of the error message for the Edit Faculty Category field
+   */
+  const [
+    editFacultyCategoryErrorMessage,
+    setEditFacultyCategoryErrorMessage,
+  ] = useState('');
+
+  /**
    * The current value of the error message within the Edit Faculty modal
    */
   const [
@@ -238,25 +296,25 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
    */
   const submitCreateFacultyForm = async ():
   Promise<ManageFacultyResponseDTO> => {
-    const form = document.getElementById('createFacultyForm') as HTMLFormElement;
-    // Since we are not using a submit button within the form
-    // to submit, we must check the validity ourselves.
-    // Here, if the form does not pass HTML validation,
-    // we show the validation errors to the user and return without submitting.
-    if (!form.reportValidity()) {
-      throw new Error('Please fill in the required fields and try again. If the problem persists, contact SEAS Computing.');
-    }
+    let isValid = true;
     if (!createFacultyArea) {
-      throw new Error('The area is required to submit this form.');
+      setCreateFacultyAreaErrorMessage('The area is required to submit this form.');
+      isValid = false;
     }
     if (!validHUID(createFacultyHUID)) {
-      throw new Error('An HUID is required and must contain 8 digits. Please try again.');
+      setCreateFacultyHUIDErrorMessage('An HUID is required and must contain 8 digits. Please try again.');
+      isValid = false;
     }
     if (!createFacultyLastName) {
-      throw new Error('The faculty\'s last name is required to submit this form.');
+      setCreateFacultyLastNameErrorMessage('The faculty\'s last name is required to submit this form.');
+      isValid = false;
     }
     if (!createFacultyCategory) {
-      throw new Error('The category is required to submit this form.');
+      setCreateFacultyCategoryErrorMessage('The category is required to submit this form.');
+      isValid = false;
+    }
+    if (!isValid) {
+      throw new Error('Please fill in the required fields and try again. If the problem persists, contact SEAS Computing.');
     }
     return FacultyAPI.createFaculty({
       area: createFacultyArea,
@@ -273,25 +331,25 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
    */
   const submitEditFacultyForm = async ():
   Promise<ManageFacultyResponseDTO> => {
-    const form = document.getElementById('editFacultyForm') as HTMLFormElement;
-    // Since we are not using a submit button within the form
-    // to submit, we must check the validity ourselves.
-    // Here, if the form does not pass HTML validation,
-    // we show the validation errors to the user and return without submitting.
-    if (!form.reportValidity()) {
-      throw new Error('Please fill in the required fields and try again.');
-    }
+    let isValid = true;
     if (!editFacultyArea) {
-      throw new Error('The area is required to submit this form.');
+      setEditFacultyAreaErrorMessage('The area is required to submit this form.');
+      isValid = false;
     }
     if (!validHUID(editFacultyHUID)) {
-      throw new Error('An HUID is required and must contain 8 digits. Please try again.');
+      setEditFacultyHUIDErrorMessage('An HUID is required and must contain 8 digits. Please try again.');
+      isValid = false;
     }
     if (!editFacultyLastName) {
-      throw new Error('The faculty\'s last name is required to submit this form.');
+      setEditFacultyLastNameErrorMessage('The faculty\'s last name is required to submit this form.');
+      isValid = false;
     }
     if (!editFacultyCategory) {
-      throw new Error('The category is required to submit this form.');
+      setEditFacultyCategoryErrorMessage('The category is required to submit this form.');
+      isValid = false;
+    }
+    if (!isValid) {
+      throw new Error('Please fill in the required fields and try again. If the problem persists, contact SEAS Computing.');
     }
     return FacultyAPI.editFaculty({
       id: currentFaculty.id,
@@ -371,6 +429,10 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
             setCreateFacultyLastName('');
             setCreateFacultyJointWith('');
             setCreateFacultyCategory('');
+            setCreateFacultyAreaErrorMessage('');
+            setCreateFacultyHUIDErrorMessage('');
+            setCreateFacultyLastNameErrorMessage('');
+            setCreateFacultyCategoryErrorMessage('');
             setCreateFacultyErrorMessage('');
           }}
           isVisible={createFacultyModalVisible}
@@ -378,26 +440,25 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
           <ModalHeader>Create New Faculty</ModalHeader>
           <ModalBody>
             <form id="createFacultyForm">
-              <label htmlFor="createFacultyCourseArea">
-                Area
-                <Dropdown
-                  id="createFacultyCourseArea"
-                  name="createFacultyCourseArea"
-                  /**
-                   * Insert an empty option so that no area is pre-selected in dropdown
-                   */
-                  options={[{ value: '', label: '' }].concat(metadata.areas.map((area):
-                  {value: string; label: string} => ({
-                    value: area,
-                    label: area,
-                  })))}
-                  onChange={(event): void => setCreateFacultyArea(
-                    (event.target as HTMLSelectElement).value
-                  )}
-                  value={createFacultyArea}
-                  required
-                />
-              </label>
+              <Dropdown
+                id="createFacultyCourseArea"
+                name="createFacultyCourseArea"
+                label="Area"
+                /**
+                 * Insert an empty option so that no area is pre-selected in dropdown
+                 */
+                options={[{ value: '', label: '' }].concat(metadata.areas.map((area):
+                {value: string; label: string} => ({
+                  value: area,
+                  label: area,
+                })))}
+                onChange={(event): void => setCreateFacultyArea(
+                  (event.target as HTMLSelectElement).value
+                )}
+                value={createFacultyArea}
+                errorMessage={createFacultyAreaErrorMessage}
+                isRequired
+              />
               <TextInput
                 id="createFacultyHUID"
                 name="createFacultyHUID"
@@ -408,7 +469,8 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
                   (event.target as HTMLInputElement).value.trim()
                 )}
                 value={createFacultyHUID}
-                required
+                errorMessage={createFacultyHUIDErrorMessage}
+                isRequired
               />
               <TextInput
                 id="createFacultyFirstName"
@@ -431,33 +493,33 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
                   (event.target as HTMLInputElement).value.trim()
                 )}
                 value={createFacultyLastName}
-                required
+                errorMessage={createFacultyLastNameErrorMessage}
+                isRequired
               />
-              <label htmlFor="createFacultyCategory">
-                Category
-                <Dropdown
-                  id="createFacultyCategory"
-                  name="createFacultyCategory"
-                  /**
-                   * Insert an empty option so that no category is pre-selected in dropdown
-                   */
-                  options={[{ value: '', label: '' }]
-                    .concat(Object.values(FACULTY_TYPE)
-                      .map((category):
-                      {value: string; label: string} => {
-                        const categoryTitle = categoryEnumToTitleCase(category);
-                        return {
-                          value: category,
-                          label: categoryTitle,
-                        };
-                      }))}
-                  onChange={(event): void => setCreateFacultyCategory(
-                    (event.target as HTMLSelectElement).value
-                  )}
-                  value={createFacultyCategory}
-                  required
-                />
-              </label>
+              <Dropdown
+                id="createFacultyCategory"
+                name="createFacultyCategory"
+                label="Category"
+                /**
+                 * Insert an empty option so that no category is pre-selected in dropdown
+                 */
+                options={[{ value: '', label: '' }]
+                  .concat(Object.values(FACULTY_TYPE)
+                    .map((category):
+                    {value: string; label: string} => {
+                      const categoryTitle = categoryEnumToTitleCase(category);
+                      return {
+                        value: category,
+                        label: categoryTitle,
+                      };
+                    }))}
+                onChange={(event): void => setCreateFacultyCategory(
+                  (event.target as HTMLSelectElement).value
+                )}
+                value={createFacultyCategory}
+                errorMessage={createFacultyCategoryErrorMessage}
+                isRequired
+              />
               <TextInput
                 id="createFacultyJointWith"
                 name="createFacultyJointWith"
@@ -514,6 +576,10 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
             setEditFacultyLastName(currentFaculty.lastName);
             setEditFacultyJointWith(currentFaculty.jointWith || '');
             setEditFacultyCategory(currentFaculty.category);
+            setEditFacultyAreaErrorMessage('');
+            setEditFacultyHUIDErrorMessage('');
+            setEditFacultyLastNameErrorMessage('');
+            setEditFacultyCategoryErrorMessage('');
             setEditFacultyErrorMessage('');
           }}
           isVisible={editFacultyModalVisible}
@@ -521,23 +587,22 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
           <ModalHeader>Edit Faculty</ModalHeader>
           <ModalBody>
             <form id="editFacultyForm">
-              <label htmlFor="editFacultyCourseArea">
-                Area
-                <Dropdown
-                  id="editFacultyCourseArea"
-                  name="editFacultyCourseArea"
-                  options={[{ value: '', label: '' }].concat(metadata.areas.map((area):
-                  {value: string; label: string} => ({
-                    value: area,
-                    label: area,
-                  })))}
-                  onChange={(event): void => setEditFacultyArea(
-                    (event.target as HTMLSelectElement).value
-                  )}
-                  value={editFacultyArea}
-                  required
-                />
-              </label>
+              <Dropdown
+                id="editFacultyCourseArea"
+                name="editFacultyCourseArea"
+                label="Area"
+                options={[{ value: '', label: '' }].concat(metadata.areas.map((area):
+                {value: string; label: string} => ({
+                  value: area,
+                  label: area,
+                })))}
+                onChange={(event): void => setEditFacultyArea(
+                  (event.target as HTMLSelectElement).value
+                )}
+                value={editFacultyArea}
+                errorMessage={editFacultyAreaErrorMessage}
+                isRequired
+              />
               <TextInput
                 id="editFacultyHUID"
                 name="editFacultyHUID"
@@ -548,7 +613,8 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
                   (event.target as HTMLInputElement).value.trim()
                 )}
                 value={editFacultyHUID}
-                required
+                errorMessage={editFacultyHUIDErrorMessage}
+                isRequired
               />
               <TextInput
                 id="editFacultyFirstName"
@@ -569,33 +635,33 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
                   (event.target as HTMLInputElement).value.trim()
                 )}
                 value={editFacultyLastName}
-                required
+                errorMessage={editFacultyLastNameErrorMessage}
+                isRequired
               />
-              <label htmlFor="facultyCategory">
-                Category
-                <Dropdown
-                  id="editFacultyCategory"
-                  name="editFacultyCategory"
-                  /**
-                   * Insert an empty option so that no category is pre-selected in dropdown
-                   */
-                  options={[{ value: '', label: '' }]
-                    .concat(Object.values(FACULTY_TYPE)
-                      .map((category):
-                      {value: string; label: string} => {
-                        const categoryTitle = categoryEnumToTitleCase(category);
-                        return {
-                          value: category,
-                          label: categoryTitle,
-                        };
-                      }))}
-                  onChange={(event): void => setEditFacultyCategory(
-                    (event.target as HTMLSelectElement).value
-                  )}
-                  value={editFacultyCategory}
-                  required
-                />
-              </label>
+              <Dropdown
+                id="editFacultyCategory"
+                name="editFacultyCategory"
+                label="Category"
+                /**
+                 * Insert an empty option so that no category is pre-selected in dropdown
+                 */
+                options={[{ value: '', label: '' }]
+                  .concat(Object.values(FACULTY_TYPE)
+                    .map((category):
+                    {value: string; label: string} => {
+                      const categoryTitle = categoryEnumToTitleCase(category);
+                      return {
+                        value: category,
+                        label: categoryTitle,
+                      };
+                    }))}
+                onChange={(event): void => setEditFacultyCategory(
+                  (event.target as HTMLSelectElement).value
+                )}
+                value={editFacultyCategory}
+                errorMessage={editFacultyCategoryErrorMessage}
+                isRequired
+              />
               <TextInput
                 id="editFacultyJointWith"
                 name="editFacultyJointWith"

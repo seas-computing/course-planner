@@ -110,7 +110,7 @@ describe('Faculty Admin Modals', function () {
       fireEvent.change(courseAreaSelect, { target: { value: '' } });
       const submitButton = getByText('Submit');
       fireEvent.click(submitButton);
-      const errorMessage = 'Please fill in the required fields and try again';
+      const errorMessage = 'area is required to submit';
       return waitForElement(() => getByText(errorMessage, { exact: false }));
     });
     it('displays the appropriate validation error when the HUID is not supplied', async function () {
@@ -118,7 +118,7 @@ describe('Faculty Admin Modals', function () {
       fireEvent.change(huidInput, { target: { value: '' } });
       const submitButton = getByText('Submit');
       fireEvent.click(submitButton);
-      const errorMessage = 'Please fill in the required fields and try again';
+      const errorMessage = 'An HUID is required';
       return waitForElement(() => getByText(errorMessage, { exact: false }));
     });
     it('displays the appropriate validation error when the HUID is invalid', async function () {
@@ -134,7 +134,7 @@ describe('Faculty Admin Modals', function () {
       fireEvent.change(lastNameInput, { target: { value: '' } });
       const submitButton = getByText('Submit');
       fireEvent.click(submitButton);
-      const errorMessage = 'Please fill in the required fields and try again';
+      const errorMessage = 'last name is required to submit';
       return waitForElement(() => getByText(errorMessage, { exact: false }));
     });
     it('displays the appropriate validation error when the faculty category is not supplied', async function () {
@@ -142,7 +142,7 @@ describe('Faculty Admin Modals', function () {
       fireEvent.change(facultyCategorySelect, { target: { value: '' } });
       const submitButton = getByText('Submit');
       fireEvent.click(submitButton);
-      const errorMessage = 'Please fill in the required fields and try again';
+      const errorMessage = 'category is required to submit';
       return waitForElement(() => getByText(errorMessage, { exact: false }));
     });
     it('sorts the updated list of faculty by area, last name, and first name ascending on modal submission', async function () {
@@ -239,7 +239,7 @@ describe('Faculty Admin Modals', function () {
       fireEvent.change(courseAreaSelect, { target: { value: '' } });
       const submitButton = getByText('Submit');
       fireEvent.click(submitButton);
-      const errorMessage = 'Please fill in the required fields and try again';
+      const errorMessage = 'area is required to submit';
       return waitForElement(() => getByText(errorMessage, { exact: false }));
     });
     it('displays the appropriate validation error when the HUID is not supplied', async function () {
@@ -247,7 +247,7 @@ describe('Faculty Admin Modals', function () {
       fireEvent.change(huidInput, { target: { value: '' } });
       const submitButton = getByText('Submit');
       fireEvent.click(submitButton);
-      const errorMessage = 'Please fill in the required fields and try again';
+      const errorMessage = 'An HUID is required';
       return waitForElement(() => getByText(errorMessage, { exact: false }));
     });
     it('displays the appropriate validation error when the HUID is invalid', async function () {
@@ -263,7 +263,7 @@ describe('Faculty Admin Modals', function () {
       fireEvent.change(lastNameInput, { target: { value: '' } });
       const submitButton = getByText('Submit');
       fireEvent.click(submitButton);
-      const errorMessage = 'Please fill in the required fields and try again';
+      const errorMessage = 'last name is required';
       return waitForElement(() => getByText(errorMessage, { exact: false }));
     });
     it('displays the appropriate validation error when the faculty category is not supplied', async function () {
@@ -271,7 +271,7 @@ describe('Faculty Admin Modals', function () {
       fireEvent.change(facultyCategorySelect, { target: { value: '' } });
       const submitButton = getByText('Submit');
       fireEvent.click(submitButton);
-      const errorMessage = 'Please fill in the required fields and try again';
+      const errorMessage = 'category is required';
       return waitForElement(() => getByText(errorMessage, { exact: false }));
     });
     it('sorts the updated list of faculty by area, last name, and first name ascending on modal submission', async function () {
