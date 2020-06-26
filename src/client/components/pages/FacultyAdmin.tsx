@@ -438,6 +438,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
           isVisible={createFacultyModalVisible}
         >
           <ModalHeader>Create New Faculty</ModalHeader>
+          <NoteText>Note: * denotes a required field</NoteText>
           <ModalBody>
             <form id="createFacultyForm">
               <Dropdown
@@ -585,6 +586,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
           isVisible={editFacultyModalVisible}
         >
           <ModalHeader>Edit Faculty</ModalHeader>
+          <NoteText>Note: * denotes a required field</NoteText>
           <ModalBody>
             <form id="editFacultyForm">
               <Dropdown
