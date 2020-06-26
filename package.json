@@ -55,8 +55,8 @@
     "test": "TS_NODE_FILES=true nyc mocha",
     "test:watch": "TS_NODE_FILES=true mocha --watch",
     "typecheck": "tsc --incremental false --noEmit",
-    "start:client": "webpack-dev-server --config webpackfile.dev.js",
-    "start:server": "webpack --config webpackfile.server.js",
+    "start:client": "webpack-dev-server --config webpackfile.client-dev.js",
+    "start:server": "webpack --config webpackfile.server-dev.js",
     "orm": "ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm"
   },
   "devDependencies": {
