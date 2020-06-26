@@ -15,14 +15,7 @@ import {
   BorderlessButton,
   VARIANT,
   ALIGN,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
   Button,
-  Dropdown,
-  TextInput,
-  ValidationErrorMessage,
 } from 'mark-one';
 import {
   MESSAGE_TYPE,
@@ -44,6 +37,8 @@ import {
 } from 'common/__tests__/utils/facultyHelperFunctions';
 import { getAreaColor } from '../../../common/constants';
 import { FacultyAPI } from '../../api/faculty';
+import EditFacultyModal from './EditFacultyModal';
+import CreateFacultyModal from './CreateFacultyModal';
 
 /**
  * The component represents the Faculty Admin page, which will be rendered at
@@ -51,40 +46,12 @@ import { FacultyAPI } from '../../api/faculty';
  */
 
 const FacultyAdmin: FunctionComponent = function (): ReactElement {
+  /**
+   * The current list of faculty members used to populate the Faculty Admin table
+   */
   const [currentFacultyMembers, setFacultyMembers] = useState(
     [] as ManageFacultyResponseDTO[]
   );
-
-  /**
-   * The current value for the message context
-   */
-  const dispatchMessage = useContext(MessageContext);
-
-  /**
-   * The current value for the metadata context
-   */
-  const metadata = useContext(MetadataContext);
-
-  /**
-   * Gets the faculty data from the server
-   * If it fails, display a message for the user
-   */
-  useEffect((): void => {
-    FacultyAPI.getAllFacultyMembers()
-      .then((facultyMembers): ManageFacultyResponseDTO[] => {
-        setFacultyMembers(facultyMembers);
-        return facultyMembers;
-      })
-      .catch((): void => {
-        dispatchMessage({
-          message: new AppMessage(
-            'Unable to get faculty data from server. If the problem persists, contact SEAS Computing',
-            MESSAGE_TYPE.ERROR
-          ),
-          type: MESSAGE_ACTION.PUSH,
-        });
-      });
-  }, [dispatchMessage]);
 
   /**
    * Keeps track of whether the create faculty modal is currently visible.
@@ -105,94 +72,6 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
   ] = useState(false);
 
   /**
-   * The current value of the area dropdown in the Create Faculty Modal.
-   * By default, the initially selected area will be the first area in the
-   * metadata area list.
-   */
-  const [
-    createFacultyArea,
-    setCreateFacultyArea,
-  ] = useState('');
-
-  /**
-   * The current value of the HUID text field in the Create Faculty modal
-   */
-  const [
-    createFacultyHUID,
-    setCreateFacultyHUID,
-  ] = useState('');
-
-  /**
-   * The current value of the first name field in the Create Faculty modal
-   */
-  const [
-    createFacultyFirstName,
-    setCreateFacultyFirstName,
-  ] = useState('');
-
-  /**
-   * The current value of the last name field in the Create Faculty modal
-   */
-  const [
-    createFacultyLastName,
-    setCreateFacultyLastName,
-  ] = useState('');
-
-  /**
-   * The current value of the faculty category dropdown in the
-   * Create Faculty modal
-   */
-  const [
-    createFacultyCategory,
-    setCreateFacultyCategory,
-  ] = useState('');
-
-  /**
-   * The current value of the joint with field in the Create Faculty modal
-   */
-  const [
-    createFacultyJointWith,
-    setCreateFacultyJointWith,
-  ] = useState('');
-
-  /**
-   * The current value of the error message for the Create Faculty Area field
-   */
-  const [
-    createFacultyAreaErrorMessage,
-    setCreateFacultyAreaErrorMessage,
-  ] = useState('');
-  /**
-   * The current value of the error message for the Create Faculty HUID field
-   */
-  const [
-    createFacultyHUIDErrorMessage,
-    setCreateFacultyHUIDErrorMessage,
-  ] = useState('');
-  /**
-   * The current value of the error message for the Create Faculty Last Name field
-   */
-  const [
-    createFacultyLastNameErrorMessage,
-    setCreateFacultyLastNameErrorMessage,
-  ] = useState('');
-  /**
-   * The current value of the error message for the Create Faculty Category field
-   */
-  const [
-    createFacultyCategoryErrorMessage,
-    setCreateFacultyCategoryErrorMessage,
-  ] = useState('');
-
-  /**
-   * The current value of the error message within the Create Faculty modal
-   */
-  const [
-    createFacultyErrorMessage,
-    setCreateFacultyErrorMessage,
-  ] = useState('');
-
-  /**
    * The currently selected faculty
    */
   const [
@@ -201,166 +80,35 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
   ] = useState(null as ManageFacultyResponseDTO);
 
   /**
-   * The currently selected value of the area dropdown in the Edit Faculty Modal
+   * The current value for the message context
    */
-  const [
-    editFacultyArea,
-    setEditFacultyArea,
-  ] = useState('');
+  const dispatchMessage = useContext(MessageContext);
 
   /**
-   * The current value of the HUID text field in the Edit Faculty modal
+   * Gets the faculty data from the server
+   * If it fails, display a message for the user
    */
-  const [
-    editFacultyHUID,
-    setEditFacultyHUID,
-  ] = useState('');
-
-  /**
-   * The current value of the first name field in the Edit Faculty modal
-   */
-  const [
-    editFacultyFirstName,
-    setEditFacultyFirstName,
-  ] = useState('');
-
-  /**
-   * The current value of the last name field in the Edit Faculty modal
-   */
-  const [
-    editFacultyLastName,
-    setEditFacultyLastName,
-  ] = useState('');
-
-  /**
-   * The current value of the faculty category dropdown in the
-   * Edit Faculty modal
-   */
-  const [
-    editFacultyCategory,
-    setEditFacultyCategory,
-  ] = useState('');
-
-  /**
-   * The current value of the joint with field in the Edit Faculty modal
-   */
-  const [
-    editFacultyJointWith,
-    setEditFacultyJointWith,
-  ] = useState('');
-
-  /**
-   * The current value of the error message for the Edit Faculty Area field
-   */
-  const [
-    editFacultyAreaErrorMessage,
-    setEditFacultyAreaErrorMessage,
-  ] = useState('');
-  /**
-   * The current value of the error message for the Edit Faculty HUID field
-   */
-  const [
-    editFacultyHUIDErrorMessage,
-    setEditFacultyHUIDErrorMessage,
-  ] = useState('');
-  /**
-   * The current value of the error message for the Edit Faculty Last Name field
-   */
-  const [
-    editFacultyLastNameErrorMessage,
-    setEditFacultyLastNameErrorMessage,
-  ] = useState('');
-  /**
-   * The current value of the error message for the Edit Faculty Category field
-   */
-  const [
-    editFacultyCategoryErrorMessage,
-    setEditFacultyCategoryErrorMessage,
-  ] = useState('');
-
-  /**
-   * The current value of the error message within the Edit Faculty modal
-   */
-  const [
-    editFacultyErrorMessage,
-    setEditFacultyErrorMessage,
-  ] = useState('');
+  useEffect((): void => {
+    FacultyAPI.getAllFacultyMembers()
+      .then((facultyMembers): ManageFacultyResponseDTO[] => {
+        setFacultyMembers(facultyMembers);
+        return facultyMembers;
+      })
+      .catch((): void => {
+        dispatchMessage({
+          message: new AppMessage(
+            'Unable to get faculty data from server. If the problem persists, contact SEAS Computing',
+            MESSAGE_TYPE.ERROR
+          ),
+          type: MESSAGE_ACTION.PUSH,
+        });
+      });
+  }, []);
 
   /**
    * Provides the Mark-One theme using styled component's ThemeContext
    */
   const theme = useContext(ThemeContext);
-
-  /**
-   * Submits the create faculty form, checking for valid inputs
-   */
-  const submitCreateFacultyForm = async ():
-  Promise<ManageFacultyResponseDTO> => {
-    let isValid = true;
-    if (!createFacultyArea) {
-      setCreateFacultyAreaErrorMessage('The area is required to submit this form.');
-      isValid = false;
-    }
-    if (!validHUID(createFacultyHUID)) {
-      setCreateFacultyHUIDErrorMessage('An HUID is required and must contain 8 digits. Please try again.');
-      isValid = false;
-    }
-    if (!createFacultyLastName) {
-      setCreateFacultyLastNameErrorMessage('The faculty\'s last name is required to submit this form.');
-      isValid = false;
-    }
-    if (!createFacultyCategory) {
-      setCreateFacultyCategoryErrorMessage('The category is required to submit this form.');
-      isValid = false;
-    }
-    if (!isValid) {
-      throw new Error('Please fill in the required fields and try again. If the problem persists, contact SEAS Computing.');
-    }
-    return FacultyAPI.createFaculty({
-      area: createFacultyArea,
-      HUID: createFacultyHUID,
-      firstName: createFacultyFirstName,
-      lastName: createFacultyLastName,
-      jointWith: createFacultyJointWith,
-      category: createFacultyCategory.replace(/\W/g, '_').toUpperCase() as FACULTY_TYPE,
-    });
-  };
-
-  /**
-   * Submits the edit faculty form, checking for valid inputs
-   */
-  const submitEditFacultyForm = async ():
-  Promise<ManageFacultyResponseDTO> => {
-    let isValid = true;
-    if (!editFacultyArea) {
-      setEditFacultyAreaErrorMessage('The area is required to submit this form.');
-      isValid = false;
-    }
-    if (!validHUID(editFacultyHUID)) {
-      setEditFacultyHUIDErrorMessage('An HUID is required and must contain 8 digits. Please try again.');
-      isValid = false;
-    }
-    if (!editFacultyLastName) {
-      setEditFacultyLastNameErrorMessage('The faculty\'s last name is required to submit this form.');
-      isValid = false;
-    }
-    if (!editFacultyCategory) {
-      setEditFacultyCategoryErrorMessage('The category is required to submit this form.');
-      isValid = false;
-    }
-    if (!isValid) {
-      throw new Error('Please fill in the required fields and try again. If the problem persists, contact SEAS Computing.');
-    }
-    return FacultyAPI.editFaculty({
-      id: currentFaculty.id,
-      area: editFacultyArea,
-      HUID: editFacultyHUID,
-      firstName: editFacultyFirstName,
-      lastName: editFacultyLastName,
-      jointWith: editFacultyJointWith,
-      category: editFacultyCategory.replace(/\W/g, '_').toUpperCase() as FACULTY_TYPE,
-    });
-  };
 
   return (
     <>
@@ -417,302 +165,32 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
               ))}
           </TableBody>
         </Table>
-        <Modal
-          ariaLabelledBy="createFaculty"
-          closeHandler={(): void => {
-            setCreateFacultyModalVisible(false);
-          }}
-          onClose={(): void => {
-            setCreateFacultyArea('');
-            setCreateFacultyHUID('');
-            setCreateFacultyFirstName('');
-            setCreateFacultyLastName('');
-            setCreateFacultyJointWith('');
-            setCreateFacultyCategory('');
-            setCreateFacultyAreaErrorMessage('');
-            setCreateFacultyHUIDErrorMessage('');
-            setCreateFacultyLastNameErrorMessage('');
-            setCreateFacultyCategoryErrorMessage('');
-            setCreateFacultyErrorMessage('');
-          }}
+        <CreateFacultyModal
           isVisible={createFacultyModalVisible}
-        >
-          <ModalHeader>Create New Faculty</ModalHeader>
-          <NoteText>Note: * denotes a required field</NoteText>
-          <ModalBody>
-            <form id="createFacultyForm">
-              <Dropdown
-                id="createFacultyCourseArea"
-                name="createFacultyCourseArea"
-                label="Area"
-                /**
-                 * Insert an empty option so that no area is pre-selected in dropdown
-                 */
-                options={[{ value: '', label: '' }].concat(metadata.areas.map((area):
-                {value: string; label: string} => ({
-                  value: area,
-                  label: area,
-                })))}
-                onChange={(event): void => setCreateFacultyArea(
-                  (event.target as HTMLSelectElement).value
-                )}
-                value={createFacultyArea}
-                errorMessage={createFacultyAreaErrorMessage}
-                isRequired
-              />
-              <TextInput
-                id="createFacultyHUID"
-                name="createFacultyHUID"
-                label="HUID"
-                labelPosition={POSITION.TOP}
-                placeholder="e.g. 12345678"
-                onChange={(event): void => setCreateFacultyHUID(
-                  (event.target as HTMLInputElement).value.trim()
-                )}
-                value={createFacultyHUID}
-                errorMessage={createFacultyHUIDErrorMessage}
-                isRequired
-              />
-              <TextInput
-                id="createFacultyFirstName"
-                name="createFacultyFirstName"
-                label="First name"
-                labelPosition={POSITION.TOP}
-                placeholder="e.g. Jane"
-                onChange={(event): void => setCreateFacultyFirstName(
-                  (event.target as HTMLInputElement).value.trim()
-                )}
-                value={createFacultyFirstName}
-              />
-              <TextInput
-                id="createFacultyLastName"
-                name="createFacultyLastName"
-                label="Last name"
-                labelPosition={POSITION.TOP}
-                placeholder="e.g. Smith"
-                onChange={(event): void => setCreateFacultyLastName(
-                  (event.target as HTMLInputElement).value.trim()
-                )}
-                value={createFacultyLastName}
-                errorMessage={createFacultyLastNameErrorMessage}
-                isRequired
-              />
-              <Dropdown
-                id="createFacultyCategory"
-                name="createFacultyCategory"
-                label="Category"
-                /**
-                 * Insert an empty option so that no category is pre-selected in dropdown
-                 */
-                options={[{ value: '', label: '' }]
-                  .concat(Object.values(FACULTY_TYPE)
-                    .map((category):
-                    {value: string; label: string} => {
-                      const categoryTitle = categoryEnumToTitleCase(category);
-                      return {
-                        value: category,
-                        label: categoryTitle,
-                      };
-                    }))}
-                onChange={(event): void => setCreateFacultyCategory(
-                  (event.target as HTMLSelectElement).value
-                )}
-                value={createFacultyCategory}
-                errorMessage={createFacultyCategoryErrorMessage}
-                isRequired
-              />
-              <TextInput
-                id="createFacultyJointWith"
-                name="createFacultyJointWith"
-                label="Joint with..."
-                labelPosition={POSITION.TOP}
-                placeholder="Add 'Joint With' entry"
-                onChange={(event): void => setCreateFacultyJointWith(
-                  (event.target as HTMLInputElement).value.trim()
-                )}
-                value={createFacultyJointWith}
-              />
-              <ValidationErrorMessage>
-                {createFacultyErrorMessage}
-              </ValidationErrorMessage>
-            </form>
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              id="createFacultySubmit"
-              onClick={async (): Promise<void> => {
-                try {
-                  const newFacultyEntry = await submitCreateFacultyForm();
-                  // Sort the new list of faculty
-                  setFacultyMembers(sortFaculty([
-                    ...currentFacultyMembers,
-                    newFacultyEntry,
-                  ]));
-                } catch (error) {
-                  setCreateFacultyErrorMessage(error.message);
-                  // leave the modal visible after an error
-                  return;
-                }
-                setCreateFacultyModalVisible(false);
-              }}
-              variant={VARIANT.PRIMARY}
-            >
-              Submit
-            </Button>
-            <Button
-              onClick={(): void => setCreateFacultyModalVisible(false)}
-              variant={VARIANT.SECONDARY}
-            >
-              Cancel
-            </Button>
-          </ModalFooter>
-        </Modal>
-        <Modal
-          ariaLabelledBy="editFaculty"
-          closeHandler={(): void => { setEditFacultyModalVisible(false); }}
-          onOpen={(): void => {
-            setEditFacultyArea(currentFaculty.area.name);
-            setEditFacultyHUID(currentFaculty.HUID);
-            setEditFacultyFirstName(currentFaculty.firstName || '');
-            setEditFacultyLastName(currentFaculty.lastName);
-            setEditFacultyJointWith(currentFaculty.jointWith || '');
-            setEditFacultyCategory(currentFaculty.category);
-            setEditFacultyAreaErrorMessage('');
-            setEditFacultyHUIDErrorMessage('');
-            setEditFacultyLastNameErrorMessage('');
-            setEditFacultyCategoryErrorMessage('');
-            setEditFacultyErrorMessage('');
+          onClose={(): void => setCreateFacultyModalVisible(false)}
+          onSuccess={(newFacultyEntry: ManageFacultyResponseDTO): void => {
+            // Sort the new list of faculty
+            setFacultyMembers(sortFaculty([
+              ...currentFacultyMembers,
+              newFacultyEntry,
+            ]));
           }}
+        />
+        <EditFacultyModal
           isVisible={editFacultyModalVisible}
-        >
-          <ModalHeader>Edit Faculty</ModalHeader>
-          <NoteText>Note: * denotes a required field</NoteText>
-          <ModalBody>
-            <form id="editFacultyForm">
-              <Dropdown
-                id="editFacultyCourseArea"
-                name="editFacultyCourseArea"
-                label="Area"
-                options={[{ value: '', label: '' }].concat(metadata.areas.map((area):
-                {value: string; label: string} => ({
-                  value: area,
-                  label: area,
-                })))}
-                onChange={(event): void => setEditFacultyArea(
-                  (event.target as HTMLSelectElement).value
-                )}
-                value={editFacultyArea}
-                errorMessage={editFacultyAreaErrorMessage}
-                isRequired
-              />
-              <TextInput
-                id="editFacultyHUID"
-                name="editFacultyHUID"
-                label="HUID"
-                labelPosition={POSITION.TOP}
-                placeholder="e.g. 12345678"
-                onChange={(event): void => setEditFacultyHUID(
-                  (event.target as HTMLInputElement).value.trim()
-                )}
-                value={editFacultyHUID}
-                errorMessage={editFacultyHUIDErrorMessage}
-                isRequired
-              />
-              <TextInput
-                id="editFacultyFirstName"
-                name="editFacultyFirstName"
-                label="First name"
-                labelPosition={POSITION.TOP}
-                onChange={(event): void => setEditFacultyFirstName(
-                  (event.target as HTMLInputElement).value.trim()
-                )}
-                value={editFacultyFirstName}
-              />
-              <TextInput
-                id="editFacultyLastName"
-                name="editFacultyLastName"
-                label="Last name"
-                labelPosition={POSITION.TOP}
-                onChange={(event): void => setEditFacultyLastName(
-                  (event.target as HTMLInputElement).value.trim()
-                )}
-                value={editFacultyLastName}
-                errorMessage={editFacultyLastNameErrorMessage}
-                isRequired
-              />
-              <Dropdown
-                id="editFacultyCategory"
-                name="editFacultyCategory"
-                label="Category"
-                /**
-                 * Insert an empty option so that no category is pre-selected in dropdown
-                 */
-                options={[{ value: '', label: '' }]
-                  .concat(Object.values(FACULTY_TYPE)
-                    .map((category):
-                    {value: string; label: string} => {
-                      const categoryTitle = categoryEnumToTitleCase(category);
-                      return {
-                        value: category,
-                        label: categoryTitle,
-                      };
-                    }))}
-                onChange={(event): void => setEditFacultyCategory(
-                  (event.target as HTMLSelectElement).value
-                )}
-                value={editFacultyCategory}
-                errorMessage={editFacultyCategoryErrorMessage}
-                isRequired
-              />
-              <TextInput
-                id="editFacultyJointWith"
-                name="editFacultyJointWith"
-                label="Joint with..."
-                labelPosition={POSITION.TOP}
-                placeholder="Add 'Joint With' entry"
-                onChange={(event): void => setEditFacultyJointWith(
-                  (event.target as HTMLInputElement).value.trim()
-                )}
-                value={editFacultyJointWith}
-              />
-              <ValidationErrorMessage>
-                {editFacultyErrorMessage}
-              </ValidationErrorMessage>
-            </form>
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              id="editFacultySubmit"
-              onClick={async (): Promise<void> => {
-                try {
-                  const editedFacultyMember = await submitEditFacultyForm();
-                  setFacultyMembers(sortFaculty(
-                    currentFacultyMembers.map((faculty):
-                    ManageFacultyResponseDTO => (
-                      faculty.id === editedFacultyMember.id
-                        ? editedFacultyMember
-                        : faculty
-                    ))
-                  ));
-                } catch (error) {
-                  setEditFacultyErrorMessage(error.message);
-                  // leave the modal visible after an error
-                  return;
-                }
-                setEditFacultyModalVisible(false);
-              }}
-              variant={VARIANT.PRIMARY}
-            >
-              Submit
-            </Button>
-            <Button
-              onClick={(): void => setEditFacultyModalVisible(false)}
-              variant={VARIANT.SECONDARY}
-            >
-              Cancel
-            </Button>
-          </ModalFooter>
-        </Modal>
+          currentFaculty={currentFaculty}
+          onClose={(): void => setEditFacultyModalVisible(false)}
+          onSuccess={(editedFacultyMember: ManageFacultyResponseDTO): void => {
+            setFacultyMembers(sortFaculty(
+              currentFacultyMembers.map((faculty):
+              ManageFacultyResponseDTO => (
+                faculty.id === editedFacultyMember.id
+                  ? editedFacultyMember
+                  : faculty
+              ))
+            ));
+          }}
+        />
       </div>
     </>
   );
