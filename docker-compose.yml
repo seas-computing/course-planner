@@ -16,7 +16,7 @@ services:
       context: .
       target: base
       args:
-        OPEN_PORT: SERVER_PORT
+        OPEN_PORT: ${SERVER_PORT}
     environment:
       - APP_NAME
       - CAS_URL
@@ -50,7 +50,7 @@ services:
       context: .
       target: base
       args:
-        OPEN_PORT: CLIENT_PORT
+        OPEN_PORT: ${CLIENT_PORT}
     environment:
       - APP_NAME
       - SERVER_PORT
