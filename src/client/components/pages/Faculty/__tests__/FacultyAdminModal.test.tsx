@@ -203,8 +203,7 @@ describe('Faculty Admin Modals', function () {
       ));
     });
     it('populates the modal with the existing faculty information', async function () {
-      const courseAreaSelect = document
-        .getElementById('editFacultyCourseArea') as HTMLSelectElement;
+      const courseAreaSelect = document.getElementById('editFacultyCourseArea') as HTMLSelectElement;
       const huidInput = document.getElementById('editFacultyHUID') as HTMLInputElement;
       const firstNameInput = document.getElementById('editFacultyFirstName') as HTMLInputElement;
       const lastNameInput = document.getElementById('editFacultyLastName') as HTMLInputElement;
