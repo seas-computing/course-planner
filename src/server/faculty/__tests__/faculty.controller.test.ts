@@ -168,10 +168,6 @@ describe('Faculty controller', function () {
           id: newAreaFacultyMemberResponse.id,
         });
       });
-      it('creates a single faculty member', async function () {
-        await controller.create(facultyMember);
-        strictEqual(mockFacultyRepository.save.callCount, 1);
-      });
       it('returns the newly created faculty member', async function () {
         const newlyCreatedFaculty = await controller.create(facultyMember);
         deepStrictEqual(
