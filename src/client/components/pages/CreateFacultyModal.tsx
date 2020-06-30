@@ -166,7 +166,7 @@ FunctionComponent<CreateFacultyModalProps> = function ({
       isValid = false;
     }
     if (!createFacultyLastName) {
-      setCreateFacultyLastNameErrorMessage('The faculty\'s last name is required to submit this form.');
+      setCreateFacultyLastNameErrorMessage('Last name is required to submit this form.');
       isValid = false;
     }
     if (!createFacultyCategory) {
