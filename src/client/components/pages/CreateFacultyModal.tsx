@@ -217,11 +217,16 @@ FunctionComponent<CreateFacultyModalProps> = function ({
             /**
                  * Insert an empty option so that no area is pre-selected in dropdown
                  */
-            options={[{ value: '', label: '' }].concat(metadata.areas.map((area):
-            {value: string; label: string} => ({
-              value: area,
-              label: area,
-            })))}
+            options={
+              [{ value: '', label: '' }]
+                .concat(metadata.areas.map((area): {
+                    value: string;label: string
+                  } => ({
+                    value: area,
+                    label: area,
+                  }))
+                )
+            }
             onChange={(event): void => setCreateFacultyArea(
               (event.target as HTMLSelectElement).value
             )}
