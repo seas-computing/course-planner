@@ -172,8 +172,8 @@ export class FacultyController {
       existingArea = await this.areaRepository
         .findOneOrFail({
           where: {
-            name: faculty.area
-          }
+            name: faculty.area,
+          },
         });
     } catch (e) {
       if (e instanceof EntityNotFoundError) {
