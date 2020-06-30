@@ -3,20 +3,35 @@ import { ABSENCE_TYPE, FACULTY_TYPE } from 'common/constants';
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { CreateFacultyDTO } from 'common/dto/faculty/CreateFaculty.dto';
+import { Area } from 'server/area/area.entity';
 
 /**
  * An example [[Faculty]] entry representing an applied math faculty member
  */
-
 export const appliedMathFacultyMember = Object.assign(new Faculty(), {
   id: '01ac81d4-9644-4d6b-9daa-022b26903130',
+  area: Object.assign(new Area(), {
+    id: 'ee5d2d73-801e-44a2-8e89-45942bf2de43',
+    name: 'AM',
+  }),
   firstName: 'Susan',
   lastName: 'Lee',
   HUID: '90132717',
   jointWith: 'PHYS (0.5 FTE SEAS)',
   category: FACULTY_TYPE.LADDER,
-  area: 'AM',
 });
+
+/**
+ * An example request to create an applied math faculty member
+ */
+export const appliedMathFacultyMemberRequest: CreateFacultyDTO = {
+  firstName: appliedMathFacultyMember.firstName,
+  lastName: appliedMathFacultyMember.lastName,
+  HUID: appliedMathFacultyMember.HUID,
+  jointWith: appliedMathFacultyMember.jointWith,
+  category: appliedMathFacultyMember.category,
+  area: appliedMathFacultyMember.area.name,
+};
 
 /**
  * An example [[Faculty]] entry representing an bio engineering faculty member
@@ -45,19 +60,12 @@ export const newAppliedPhysicsFacultyMember: CreateFacultyDTO = {
  * An example [[ManageFacultyResponseDTO]] response representing an applied math
  * faculty member
  */
-
-export const appliedMathFacultyMemberResponse = Object.assign(new Faculty(), {
-  id: '01ac81d4-9644-4d6b-9daa-022b26903130',
+export const appliedMathFacultyMemberResponse: ManageFacultyResponseDTO = {
+  ...appliedMathFacultyMember,
   area: {
-    id: 'ee5d2d73-801e-44a2-8e89-45942bf2de43',
-    name: 'AM',
+    ...appliedMathFacultyMember.area,
   },
-  firstName: 'Susan',
-  lastName: 'Lee',
-  HUID: '90132717',
-  jointWith: 'PHYS (0.5 FTE SEAS)',
-  category: FACULTY_TYPE.LADDER,
-});
+};
 
 /**
  * An example [[ManageFacultyResponseDTO]] response representing a physics faculty

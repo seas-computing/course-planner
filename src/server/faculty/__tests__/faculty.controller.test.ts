@@ -8,8 +8,9 @@ import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import * as dummy from 'testData';
 import { TimeoutError } from 'rxjs';
 import {
-  appliedMathFacultyMember,
+  appliedMathFacultyMemberRequest,
   newAreaFacultyMemberResponse,
+  appliedMathFacultyMember,
   appliedMathFacultyMemberResponse,
 } from 'testData';
 import { Semester } from 'server/semester/semester.entity';
@@ -111,42 +112,21 @@ describe('Faculty controller', function () {
       beforeEach(function () {
         mockAreaRepository
           .findOne
-          .resolves(appliedMathFacultyMemberResponse.area);
-        mockAreaRepository.save.resolves(appliedMathFacultyMemberResponse.area);
+          .resolves(appliedMathFacultyMember.area);
+        mockAreaRepository.save.resolves(appliedMathFacultyMember.area);
       });
       it('creates a single faculty member', async function () {
-        const facultyMember = {
-          HUID: appliedMathFacultyMember.HUID,
-          firstName: appliedMathFacultyMember.firstName,
-          lastName: appliedMathFacultyMember.lastName,
-          category: appliedMathFacultyMember.category,
-          area: appliedMathFacultyMember.area.name,
-          jointWith: appliedMathFacultyMember.jointWith,
-        };
-        mockFacultyRepository.save.resolves({
-          ...facultyMember,
-          id: appliedMathFacultyMember.id,
-        });
-        await controller.create(facultyMember);
+        mockFacultyRepository.save.resolves(appliedMathFacultyMember);
+        await controller.create(appliedMathFacultyMemberRequest);
         strictEqual(mockFacultyRepository.save.callCount, 1);
       });
       it('returns the newly created faculty member', async function () {
-        const facultyMember = {
-          HUID: appliedMathFacultyMember.HUID,
-          firstName: appliedMathFacultyMember.firstName,
-          lastName: appliedMathFacultyMember.lastName,
-          category: appliedMathFacultyMember.category,
-          area: appliedMathFacultyMember.area.name,
-          jointWith: appliedMathFacultyMember.jointWith,
-        };
-        mockFacultyRepository.save.resolves({
-          ...facultyMember,
-          id: appliedMathFacultyMember.id,
-        });
-        const newlyCreatedFaculty = await controller.create(facultyMember);
+        mockFacultyRepository.save.resolves(appliedMathFacultyMember);
+        const newlyCreatedFaculty = await controller
+          .create(appliedMathFacultyMemberRequest);
         deepStrictEqual(
           newlyCreatedFaculty,
-          appliedMathFacultyMember
+          appliedMathFacultyMemberResponse
         );
       });
     });
