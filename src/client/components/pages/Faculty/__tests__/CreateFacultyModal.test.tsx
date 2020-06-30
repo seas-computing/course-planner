@@ -60,101 +60,131 @@ describe('Create Faculty Modal', function () {
     const createFacultyButtonText = 'Create New Faculty';
     await waitForElement(() => getByText(createFacultyButtonText));
     fireEvent.click(getByText(createFacultyButtonText));
+    newFacultyInfo = {
+      area: 'AM',
+      HUID: '12345678',
+      lastName: 'Townson',
+      firstName: 'Olive',
+      category: FACULTY_TYPE.LADDER,
+      jointWith: 'CS 350',
+    };
+    const courseAreaSelect = document.getElementById('createFacultyCourseArea') as HTMLSelectElement;
+    fireEvent.change(courseAreaSelect,
+      { target: { value: newFacultyInfo.area } });
+    const huidInput = document.getElementById('createFacultyHUID') as HTMLInputElement;
+    fireEvent.change(huidInput,
+      { target: { value: newFacultyInfo.HUID } });
+    const firstNameInput = document.getElementById('createFacultyFirstName') as HTMLInputElement;
+    fireEvent.change(firstNameInput,
+      { target: { value: newFacultyInfo.firstName } });
+    const lastNameInput = document.getElementById('createFacultyLastName') as HTMLInputElement;
+    fireEvent.change(lastNameInput,
+      { target: { value: newFacultyInfo.lastName } });
+    const facultyCategorySelect = document.getElementById('createFacultyCategory') as HTMLSelectElement;
+    fireEvent.change(facultyCategorySelect,
+      { target: { value: newFacultyInfo.category } });
+    const jointWithInput = document.getElementById('createFacultyJointWith') as HTMLInputElement;
+    fireEvent.change(jointWithInput,
+      { target: { value: newFacultyInfo.jointWith } });
   });
-  context('when no fields have been filled in', function () {
-    it('renders an empty course area field', async function () {
-      const courseAreaSelect = document.getElementById('createFacultyCourseArea') as HTMLSelectElement;
-      strictEqual(courseAreaSelect.value, '');
+  describe('Field Validation', function () {
+    describe('Area', function () {
+      it('is a required field', async function () {
+        const courseAreaSelect = document.getElementById('createFacultyCourseArea') as HTMLSelectElement;
+        fireEvent.change(courseAreaSelect, { target: { value: '' } });
+        const submitButton = getByText('Submit');
+        fireEvent.click(submitButton);
+        const errorMessage = 'area is required to submit';
+        return waitForElement(
+          () => getByText(errorMessage, { exact: false })
+        );
+      });
     });
-    it('renders an empty HUID field', async function () {
-      const huidInput = document.getElementById('createFacultyHUID') as HTMLInputElement;
-      strictEqual(huidInput.value, '');
+    describe('HUID', function () {
+      it('is a required field', async function () {
+        const huidInput = document.getElementById('createFacultyHUID') as HTMLInputElement;
+        fireEvent.change(huidInput, { target: { value: '' } });
+        const submitButton = getByText('Submit');
+        fireEvent.click(submitButton);
+        const errorMessage = 'HUID is required';
+        return waitForElement(
+          () => getByText(errorMessage, { exact: false })
+        );
+      });
+      it('raises an error message when not supplied', async function () {
+        const huidInput = document.getElementById('createFacultyHUID') as HTMLInputElement;
+        fireEvent.change(huidInput, { target: { value: '123' } });
+        const submitButton = getByText('Submit');
+        fireEvent.click(submitButton);
+        const errorMessage = 'HUID is required and must contain 8 digits';
+        return waitForElement(
+          () => getByText(errorMessage, { exact: false })
+        );
+      });
     });
-    it('renders an empty first name field', async function () {
-      const firstNameInput = document.getElementById('createFacultyFirstName') as HTMLInputElement;
-      strictEqual(firstNameInput.value, '');
+    describe('First name', function () {
+      it('is not a required field', async function () {
+        const firstNameInput = document.getElementById('createFacultyFirstName') as HTMLInputElement;
+        fireEvent.change(firstNameInput, { target: { value: '' } });
+        const submitButton = getByText('Submit');
+        fireEvent.click(submitButton);
+        strictEqual(queryAllByRole('alert').length, 0);
+      });
     });
-    it('renders an empty last name field', async function () {
-      const lastNameInput = document.getElementById('createFacultyLastName') as HTMLInputElement;
-      strictEqual(lastNameInput.value, '');
+    describe('Last name', function () {
+      it('is a required field', async function () {
+        const lastNameInput = document.getElementById('createFacultyLastName') as HTMLInputElement;
+        fireEvent.change(lastNameInput, { target: { value: '' } });
+        const submitButton = getByText('Submit');
+        fireEvent.click(submitButton);
+        const errorMessage = 'last name is required to submit';
+        return waitForElement(
+          () => getByText(errorMessage, { exact: false })
+        );
+      });
     });
-    it('renders an empty joint with field', async function () {
-      const jointWithInput = document.getElementById('createFacultyJointWith') as HTMLSelectElement;
-      strictEqual(jointWithInput.value, '');
+    describe('Category', function () {
+      it('is a required field', async function () {
+        const facultyCategorySelect = document.getElementById('createFacultyCategory') as HTMLSelectElement;
+        fireEvent.change(facultyCategorySelect, { target: { value: '' } });
+        const submitButton = getByText('Submit');
+        fireEvent.click(submitButton);
+        const errorMessage = 'category is required to submit';
+        return waitForElement(
+          () => getByText(errorMessage, { exact: false })
+        );
+      });
     });
-    it('renders an empty faculty category field', async function () {
-      const categorySelect = document.getElementById('createFacultyCategory') as HTMLSelectElement;
-      strictEqual(categorySelect.value, '');
-    });
-    it('renders no error messages', function () {
-      strictEqual(queryAllByRole('alert').length, 0);
+    describe('Joint With', function () {
+      it('is not a required field', async function () {
+        const jointWithInput = document.getElementById('createFacultyJointWith') as HTMLInputElement;
+        fireEvent.change(jointWithInput, { target: { value: '' } });
+        const submitButton = getByText('Submit');
+        fireEvent.click(submitButton);
+        strictEqual(queryAllByRole('alert').length, 0);
+      });
     });
   });
-  context('when the fields are filled in', function () {
-    beforeEach(async function () {
-      newFacultyInfo = {
-        area: 'AM',
-        HUID: '12345678',
-        lastName: 'Townson',
-        firstName: 'Olive',
-        category: FACULTY_TYPE.LADDER,
-      };
-      const courseAreaSelect = document.getElementById('createFacultyCourseArea') as HTMLSelectElement;
-      fireEvent.change(courseAreaSelect,
-        { target: { value: newFacultyInfo.area } });
-      const huidInput = document.getElementById('createFacultyHUID') as HTMLInputElement;
-      fireEvent.change(huidInput,
-        { target: { value: newFacultyInfo.HUID } });
-      const firstNameInput = document.getElementById('createFacultyFirstName') as HTMLInputElement;
-      fireEvent.change(firstNameInput,
-        { target: { value: newFacultyInfo.firstName } });
-      const lastNameInput = document.getElementById('createFacultyLastName') as HTMLInputElement;
-      fireEvent.change(lastNameInput,
-        { target: { value: newFacultyInfo.lastName } });
-      const facultyCategorySelect = document.getElementById('createFacultyCategory') as HTMLSelectElement;
-      fireEvent.change(facultyCategorySelect,
-        { target: { value: newFacultyInfo.category } });
+  describe('Input Validation', function () {
+    describe('Check validity of HUID', function () {
+      it('should return false when the provided string contains at least one letter', function () {
+        strictEqual(validHUID('a1234567'), false);
+      });
+      it('should return false when the provided string contains at least one symbol', function () {
+        strictEqual(validHUID('12$45678'), false);
+      });
+      it('should return false when the HUID has a length shorter than 8 characters', function () {
+        strictEqual(validHUID('1234567'), false);
+      });
+      it('should return false when the HUID has a length longer than 8 characters', function () {
+        strictEqual(validHUID('123456789'), false);
+      });
+      it('should return true when the provided string contains 8 digits', function () {
+        strictEqual(validHUID('12345678'), true);
+      });
     });
-    it('displays the appropriate validation error when the course area is not supplied', async function () {
-      const courseAreaSelect = document.getElementById('createFacultyCourseArea') as HTMLSelectElement;
-      fireEvent.change(courseAreaSelect, { target: { value: '' } });
-      const submitButton = getByText('Submit');
-      fireEvent.click(submitButton);
-      const errorMessage = 'area is required to submit';
-      return waitForElement(() => getByText(errorMessage, { exact: false }));
-    });
-    it('displays the appropriate validation error when the HUID is not supplied', async function () {
-      const huidInput = document.getElementById('createFacultyHUID') as HTMLInputElement;
-      fireEvent.change(huidInput, { target: { value: '' } });
-      const submitButton = getByText('Submit');
-      fireEvent.click(submitButton);
-      const errorMessage = 'HUID is required';
-      return waitForElement(() => getByText(errorMessage, { exact: false }));
-    });
-    it('displays the appropriate validation error when the HUID is invalid', async function () {
-      const huidInput = document.getElementById('createFacultyHUID') as HTMLInputElement;
-      fireEvent.change(huidInput, { target: { value: '123' } });
-      const submitButton = getByText('Submit');
-      fireEvent.click(submitButton);
-      const errorMessage = 'HUID is required and must contain 8 digits';
-      return waitForElement(() => getByText(errorMessage, { exact: false }));
-    });
-    it('displays the appropriate validation error when the last name is not supplied', async function () {
-      const lastNameInput = document.getElementById('createFacultyLastName') as HTMLInputElement;
-      fireEvent.change(lastNameInput, { target: { value: '' } });
-      const submitButton = getByText('Submit');
-      fireEvent.click(submitButton);
-      const errorMessage = 'last name is required to submit';
-      return waitForElement(() => getByText(errorMessage, { exact: false }));
-    });
-    it('displays the appropriate validation error when the faculty category is not supplied', async function () {
-      const facultyCategorySelect = document.getElementById('createFacultyCategory') as HTMLSelectElement;
-      fireEvent.change(facultyCategorySelect, { target: { value: '' } });
-      const submitButton = getByText('Submit');
-      fireEvent.click(submitButton);
-      const errorMessage = 'category is required to submit';
-      return waitForElement(() => getByText(errorMessage, { exact: false }));
-    });
+  });
+  describe('Resulting display', function () {
     it('sorts the updated list of faculty by area, last name, and first name ascending on modal submission', async function () {
       const submitButton = getByText('Submit');
       fireEvent.click(submitButton);
@@ -173,25 +203,6 @@ describe('Create Faculty Modal', function () {
         bioengineeringFacultyMemberResponse.id,
       ].map((id) => `editFaculty${id}`);
       deepStrictEqual(ids, idsInExpectedOrder);
-    });
-  });
-  describe('Validation', function () {
-    describe('Check validity of HUID', function () {
-      it('should return false when the provided string contains at least one letter', function () {
-        strictEqual(validHUID('a1234567'), false);
-      });
-      it('should return false when the provided string contains at least one symbol', function () {
-        strictEqual(validHUID('12$45678'), false);
-      });
-      it('should return false when the HUID has a length shorter than 8 characters', function () {
-        strictEqual(validHUID('1234567'), false);
-      });
-      it('should return false when the HUID has a length longer than 8 characters', function () {
-        strictEqual(validHUID('123456789'), false);
-      });
-      it('should return true when the provided string contains 8 digits', function () {
-        strictEqual(validHUID('12345678'), true);
-      });
     });
   });
 });
