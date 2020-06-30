@@ -215,8 +215,8 @@ FunctionComponent<CreateFacultyModalProps> = function ({
             name="createFacultyCourseArea"
             label="Area"
             /**
-                 * Insert an empty option so that no area is pre-selected in dropdown
-                 */
+             * Insert an empty option so that no area is pre-selected in dropdown
+             */
             options={
               [{ value: '', label: '' }]
                 .concat(metadata.areas.map((area): {

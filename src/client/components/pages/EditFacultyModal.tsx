@@ -268,8 +268,8 @@ const EditFacultyModal: FunctionComponent<EditFacultyModalProps> = function ({
             name="editFacultyCategory"
             label="Category"
             /**
-                 * Insert an empty option so that no category is pre-selected in dropdown
-                 */
+             * Insert an empty option so that no category is pre-selected in dropdown
+             */
             options={[{ value: '', label: '' }]
               .concat(Object.values(FACULTY_TYPE)
                 .map((category):
