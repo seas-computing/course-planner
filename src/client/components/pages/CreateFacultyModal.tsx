@@ -170,7 +170,7 @@ FunctionComponent<CreateFacultyModalProps> = function ({
       isValid = false;
     }
     if (!createFacultyCategory) {
-      setCreateFacultyCategoryErrorMessage('The category is required to submit this form.');
+      setCreateFacultyCategoryErrorMessage('Category is required to submit this form.');
       isValid = false;
     }
     if (!isValid) {
