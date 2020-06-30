@@ -208,7 +208,7 @@ describe('Faculty Admin API', function () {
     context('when PUT request fails', function () {
       const errorMessage = 'There was a problem with editing a faculty entry.';
       beforeEach(async function () {
-        putStub.rejects();
+        putStub.rejects(new Error(errorMessage));
       });
       it('should throw an error', async function () {
         try {
