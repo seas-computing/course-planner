@@ -123,7 +123,7 @@ describe('Faculty Admin Modals', function () {
       fireEvent.change(huidInput, { target: { value: '123' } });
       const submitButton = getByText('Submit');
       fireEvent.click(submitButton);
-      const errorMessage = 'An HUID is required and must contain 8 digits';
+      const errorMessage = 'HUID is required and must contain 8 digits';
       return waitForElement(() => getByText(errorMessage, { exact: false }));
     });
     it('displays the appropriate validation error when the last name is not supplied', async function () {
