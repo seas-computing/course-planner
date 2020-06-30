@@ -192,12 +192,10 @@ describe('Faculty Admin API', function () {
         editFacultyResult = await FacultyAPI
           .editFaculty(editedFacultyMember);
       });
-      it('should call editFaculty', function () {
-        strictEqual(putStub.callCount, 1);
-      });
       it('should make the request to /api/faculty/:id', function () {
         const [[path]] = putStub.args;
         strictEqual(path, `/api/faculty/${bioengineeringFacultyMember.id}`);
+        strictEqual(putStub.callCount, 1);
       });
       it('should return the updated faculty member', function () {
         // verify that the object is different from the original
