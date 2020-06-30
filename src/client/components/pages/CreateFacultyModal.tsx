@@ -220,12 +220,11 @@ FunctionComponent<CreateFacultyModalProps> = function ({
             options={
               [{ value: '', label: '' }]
                 .concat(metadata.areas.map((area): {
-                    value: string;label: string
-                  } => ({
-                    value: area,
-                    label: area,
-                  }))
-                )
+                  value: string;label: string;
+                } => ({
+                  value: area,
+                  label: area,
+                })))
             }
             onChange={(event): void => setCreateFacultyArea(
               (event.target as HTMLSelectElement).value
