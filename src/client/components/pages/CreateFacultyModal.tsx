@@ -162,7 +162,7 @@ FunctionComponent<CreateFacultyModalProps> = function ({
       isValid = false;
     }
     if (!validHUID(createFacultyHUID)) {
-      setCreateFacultyHUIDErrorMessage('An HUID is required and must contain 8 digits. Please try again.');
+      setCreateFacultyHUIDErrorMessage('HUID is required and must contain 8 digits.');
       isValid = false;
     }
     if (!createFacultyLastName) {
