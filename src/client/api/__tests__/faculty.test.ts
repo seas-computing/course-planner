@@ -145,12 +145,10 @@ describe('Faculty Admin API', function () {
         createFacultyResult = await FacultyAPI
           .createFaculty(newAppliedPhysicsFacultyMember);
       });
-      it('should call createFaculty', function () {
-        strictEqual(postStub.callCount, 1);
-      });
       it('should make the request to /api/faculty', function () {
         const [[path]] = postStub.args;
         strictEqual(path, '/api/faculty');
+        strictEqual(postStub.callCount, 1);
       });
       it('should return the created faculty member', function () {
         deepStrictEqual(createFacultyResult, physicsFacultyMemberResponse);
