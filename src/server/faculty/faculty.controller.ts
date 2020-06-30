@@ -170,7 +170,11 @@ export class FacultyController {
     let existingArea: Area;
     try {
       existingArea = await this.areaRepository
-        .findOneOrFail({ where: { name: faculty.area } });
+        .findOneOrFail({
+          where: {
+            name: faculty.area
+          }
+        });
     } catch (e) {
       if (e instanceof EntityNotFoundError) {
         throw new NotFoundException('The entered Area does not exist');
