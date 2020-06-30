@@ -155,15 +155,16 @@ describe('Faculty Admin API', function () {
       });
     });
     context('when POST request fails', function () {
+      const errorMessage = 'There was a problem with creating a faculty.';
       beforeEach(async function () {
-        postStub.rejects();
+        postStub.rejects(new Error(errorMessage));
       });
       it('should throw an error', async function () {
         try {
           await FacultyAPI.createFaculty(newAppliedPhysicsFacultyMember);
           fail('Did not throw an error');
         } catch (err) {
-          deepStrictEqual(err, error);
+          deepStrictEqual(err.message, errorMessage);
         }
       });
     });
@@ -205,6 +206,7 @@ describe('Faculty Admin API', function () {
       });
     });
     context('when PUT request fails', function () {
+      const errorMessage = 'There was a problem with editing a faculty entry.';
       beforeEach(async function () {
         putStub.rejects();
       });
@@ -213,7 +215,7 @@ describe('Faculty Admin API', function () {
           await FacultyAPI.editFaculty(bioengineeringFacultyMember);
           fail('Did not throw an error');
         } catch (err) {
-          deepStrictEqual(err, error);
+          deepStrictEqual(err.message, errorMessage);
         }
       });
     });
