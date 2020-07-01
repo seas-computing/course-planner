@@ -7,9 +7,10 @@ const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const publicPath = '/courses';
 
 const {
-  SERVER_PORT,
-  CLIENT_PORT,
   APP_NAME,
+  CLIENT_PORT,
+  SERVER_HOSTNAME,
+  SERVER_PORT,
 } = process.env;
 
 /**
@@ -45,7 +46,7 @@ module.exports = {
     publicPath,
     // All requests to /api should be forwarded to our server container
     proxy: {
-      '/api': `http://node:${SERVER_PORT}`,
+      '/api': `http://${SERVER_HOSTNAME}:${SERVER_PORT}`,
     },
     serveIndex: false,
   },
