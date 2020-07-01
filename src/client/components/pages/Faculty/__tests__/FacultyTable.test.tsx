@@ -25,7 +25,7 @@ import request from 'axios';
 import { error } from 'testData';
 import {
   absenceEnumToTitleCase,
-  categoryEnumToTitleCase,
+  facultyTypeEnumToTitleCase,
 } from 'common/__tests__/utils/facultyHelperFunctions';
 import FacultySchedule from '../FacultyPage';
 import FacultyScheduleTable from '../FacultyScheduleTable';
@@ -51,7 +51,7 @@ const assertRowMatchesResponse = function (
   strictEqual(area, response.area);
   strictEqual(lastName, response.lastName);
   strictEqual(firstName, response.firstName);
-  strictEqual(category, categoryEnumToTitleCase(response.category));
+  strictEqual(category, facultyTypeEnumToTitleCase(response.category));
   strictEqual(jointWith, response.jointWith);
   strictEqual(fallAbsence, absenceEnumToTitleCase(
     response.fall.absence.type

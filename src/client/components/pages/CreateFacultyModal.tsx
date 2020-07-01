@@ -19,7 +19,8 @@ import {
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
 import {
   validHUID,
-  categoryEnumToTitleCase,
+  facultyTypeEnumToTitleCase,
+  facultyTypeTitleCaseToEnum,
 } from 'common/__tests__/utils/facultyHelperFunctions';
 import { POSITION } from 'mark-one/lib/Forms/Label';
 import { FACULTY_TYPE } from 'common/constants';
@@ -182,7 +183,7 @@ FunctionComponent<CreateFacultyModalProps> = function ({
       firstName: createFacultyFirstName,
       lastName: createFacultyLastName,
       jointWith: createFacultyJointWith,
-      category: createFacultyCategory.replace(/\W/g, '_').toUpperCase() as FACULTY_TYPE,
+      category: facultyTypeTitleCaseToEnum(createFacultyCategory),
     });
   };
 
@@ -281,7 +282,7 @@ FunctionComponent<CreateFacultyModalProps> = function ({
               .concat(Object.values(FACULTY_TYPE)
                 .map((category):
                 {value: string; label: string} => {
-                  const categoryTitle = categoryEnumToTitleCase(category);
+                  const categoryTitle = facultyTypeEnumToTitleCase(category);
                   return {
                     value: category,
                     label: categoryTitle,

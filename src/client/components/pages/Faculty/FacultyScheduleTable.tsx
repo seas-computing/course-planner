@@ -22,7 +22,10 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { FACULTY_TYPE, getAreaColor } from 'common/constants';
-import { absenceEnumToTitleCase, categoryEnumToTitleCase } from 'common/__tests__/utils/facultyHelperFunctions';
+import {
+  absenceEnumToTitleCase,
+  facultyTypeEnumToTitleCase,
+} from 'common/__tests__/utils/facultyHelperFunctions';
 
 interface FacultyScheduleTableProps {
   /**
@@ -95,7 +98,7 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
             </TableCell>
             <TableCell>{faculty.lastName}</TableCell>
             <TableCell>{faculty.firstName}</TableCell>
-            <TableCell>{categoryEnumToTitleCase(faculty.category)}</TableCell>
+            <TableCell>{facultyTypeEnumToTitleCase(faculty.category)}</TableCell>
             <TableCell>{faculty.jointWith}</TableCell>
             <TableCell>
               {absenceEnumToTitleCase(

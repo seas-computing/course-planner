@@ -31,8 +31,6 @@ import { MetadataContext } from 'client/context/MetadataContext';
 import { POSITION } from 'mark-one/lib/Forms/Label';
 import { FACULTY_TYPE } from 'common/constants';
 import {
-  validHUID,
-  categoryEnumToTitleCase,
   sortFaculty,
 } from 'common/__tests__/utils/facultyHelperFunctions';
 import { getAreaColor } from '../../../common/constants';

@@ -19,7 +19,7 @@ import {
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
 import {
   validHUID,
-  categoryEnumToTitleCase,
+  facultyTypeEnumToTitleCase,
 } from 'common/__tests__/utils/facultyHelperFunctions';
 import { POSITION } from 'mark-one/lib/Forms/Label';
 import { FACULTY_TYPE } from 'common/constants';
@@ -274,7 +274,7 @@ const EditFacultyModal: FunctionComponent<EditFacultyModalProps> = function ({
               .concat(Object.values(FACULTY_TYPE)
                 .map((category):
                 {value: string; label: string} => {
-                  const categoryTitle = categoryEnumToTitleCase(category);
+                  const categoryTitle = facultyTypeEnumToTitleCase(category);
                   return {
                     value: category,
                     label: categoryTitle,

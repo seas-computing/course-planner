@@ -2,7 +2,7 @@ import { strictEqual } from 'assert';
 import { ABSENCE_TYPE, FACULTY_TYPE } from 'common/constants';
 import {
   absenceEnumToTitleCase,
-  categoryEnumToTitleCase,
+  facultyTypeEnumToTitleCase,
 } from 'common/__tests__/utils/facultyHelperFunctions';
 
 describe('Faculty Schedule Table Fields', function () {
@@ -15,21 +15,21 @@ describe('Faculty Schedule Table Fields', function () {
         strictEqual(formattedAbsence, 'Sabbatical Eligible');
       });
     });
-    describe('categoryEnumToTitleCase', function () {
+    describe('facultyTypeEnumToTitleCase', function () {
       it('convert NON_SEAS_LADDER enum value to Non-SEAS Ladder', function () {
-        const formattedCategory = categoryEnumToTitleCase(
+        const formattedCategory = facultyTypeEnumToTitleCase(
           FACULTY_TYPE.NON_SEAS_LADDER
         );
         strictEqual(formattedCategory, 'Non-SEAS Ladder');
       });
       it('convert NON_LADDER enum value to Non-Ladder', function () {
-        const formattedCategory = categoryEnumToTitleCase(
+        const formattedCategory = facultyTypeEnumToTitleCase(
           FACULTY_TYPE.NON_LADDER
         );
         strictEqual(formattedCategory, 'Non-Ladder');
       });
       it('convert LADDER enum value to Ladder', function () {
-        const formattedCategory = categoryEnumToTitleCase(
+        const formattedCategory = facultyTypeEnumToTitleCase(
           FACULTY_TYPE.LADDER
         );
         strictEqual(formattedCategory, 'Ladder');

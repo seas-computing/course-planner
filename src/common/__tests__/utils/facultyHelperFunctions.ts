@@ -23,16 +23,41 @@ export const absenceEnumToTitleCase = function (str: string): string {
 };
 
 /**
+ * Define the map here to avoid a new object being created on each call to
+ * [[facultyTypeEnumToTitleCase]]
+ */
+const facultyTypeEnumToTitleCaseMap = {
+  [FACULTY_TYPE.LADDER]: 'Ladder',
+  [FACULTY_TYPE.NON_SEAS_LADDER]: 'Non-SEAS Ladder',
+  [FACULTY_TYPE.NON_LADDER]: 'Non-Ladder',
+};
+
+/**
  * A helper function that converts the faculty category enum into the desired
  * format for the Faculty table
  */
-export const categoryEnumToTitleCase = function (str: string): string {
-  const result: string = {
-    [FACULTY_TYPE.LADDER]: 'Ladder',
-    [FACULTY_TYPE.NON_SEAS_LADDER]: 'Non-SEAS Ladder',
-    [FACULTY_TYPE.NON_LADDER]: 'Non-Ladder',
-  }[str];
-  return result;
+export const facultyTypeEnumToTitleCase = function (facultyType: FACULTY_TYPE):
+string {
+  return facultyTypeEnumToTitleCaseMap[facultyType];
+};
+
+/**
+ * Define the map here to avoid a new object being created on each call to
+ * [[facultyTypeTitleCaseToEnum]]
+ */
+const facultyTypeTitleCaseToEnumMap = {
+  Ladder: FACULTY_TYPE.LADDER,
+  'Non-SEAS Ladder': FACULTY_TYPE.NON_SEAS_LADDER,
+  'Non-Ladder': FACULTY_TYPE.NON_LADDER,
+};
+
+/**
+ * A helper function that converts from the faculty from the title case format
+ * to the category enum format
+ */
+export const facultyTypeTitleCaseToEnum = function (facultyType: string):
+FACULTY_TYPE {
+  return facultyTypeTitleCaseToEnumMap[facultyType];
 };
 
 /**
