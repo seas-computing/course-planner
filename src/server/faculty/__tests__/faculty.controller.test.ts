@@ -15,6 +15,7 @@ import {
 } from 'testData';
 import { Semester } from 'server/semester/semester.entity';
 import { SemesterService } from 'server/semester/semester.service';
+import { toPlainObject } from 'common/__tests__/utils/toPlainObject';
 import { FacultyController } from '../faculty.controller';
 import { Faculty } from '../faculty.entity';
 import { Area } from '../../area/area.entity';
@@ -27,7 +28,6 @@ describe('Faculty controller', function () {
   let mockSemesterService : Record<string, SinonStub>;
   let mockFacultyRepository : Record<string, SinonStub>;
   let mockAreaRepository : Record<string, SinonStub>;
-
   let mockSemesterRepository : Record<string, SinonStub>;
   let controller: FacultyController;
 
