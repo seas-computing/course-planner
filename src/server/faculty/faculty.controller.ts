@@ -118,24 +118,14 @@ export class FacultyController {
   })
   public async create(@Body() facultyDto: CreateFacultyDTO):
   Promise<ManageFacultyResponseDTO> {
-    let faculty = {
-      ...new Faculty(),
+    let faculty: Faculty = Object.assign(new Faculty(), {
       HUID: facultyDto.HUID,
       firstName: facultyDto.firstName,
       lastName: facultyDto.lastName,
       category: facultyDto.category,
       area: { name: facultyDto.area },
       jointWith: facultyDto.jointWith,
-    };
-    let area = await this.areaRepository.findOne({ name: facultyDto.area });
-    if (area == null) {
-      area = {
-        ...new Area(),
-        name: facultyDto.area,
-      };
-    }
-    faculty.area = area;
-    area = await this.areaRepository.save(area);
+    });
     faculty = await this.facultyRepository.save(faculty);
     return {
       id: faculty.id,
@@ -144,8 +134,8 @@ export class FacultyController {
       lastName: faculty.lastName,
       category: faculty.category,
       area: {
-        id: area.id,
-        name: area.name,
+        id: faculty.area.id,
+        name: faculty.area.name,
       },
       jointWith: faculty.jointWith,
     };

@@ -70,7 +70,8 @@ export class Faculty extends BaseEntity {
    */
   @ManyToOne(
     (): ObjectType<Area> => Area,
-    ({ faculty }): Faculty[] => faculty
+    ({ faculty }): Faculty[] => faculty,
+    { cascade: ['insert'] }
   )
   public area: Area;
 }

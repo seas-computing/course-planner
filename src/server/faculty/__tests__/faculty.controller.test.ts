@@ -133,14 +133,13 @@ describe('Faculty controller', function () {
     context('when area does not exist', function () {
       let facultyMember;
       beforeEach(function () {
-        mockAreaRepository.findOne.resolves(null);
         mockAreaRepository.save.resolves(newAreaFacultyMemberResponse.area);
         facultyMember = {
           HUID: newAreaFacultyMemberResponse.HUID,
           firstName: newAreaFacultyMemberResponse.firstName,
           lastName: newAreaFacultyMemberResponse.lastName,
           category: newAreaFacultyMemberResponse.category,
-          area: newAreaFacultyMemberResponse.area.name,
+          area: newAreaFacultyMemberResponse.area,
           jointWith: newAreaFacultyMemberResponse.jointWith,
         };
         mockFacultyRepository.save.resolves({
@@ -154,10 +153,6 @@ describe('Faculty controller', function () {
           newlyCreatedFaculty,
           newAreaFacultyMemberResponse
         );
-      });
-      it('saves the new area', async function () {
-        await controller.create(facultyMember);
-        strictEqual(mockAreaRepository.save.callCount, 1);
       });
     });
   });
