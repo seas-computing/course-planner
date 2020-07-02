@@ -26,6 +26,7 @@ import { POSITION } from 'mark-one/lib/Forms/Label';
 import { FACULTY_TYPE } from 'common/constants';
 import { FacultyAPI } from 'client/api';
 import { MetadataContext } from 'client/context/MetadataContext';
+import ValidationException from 'common/errors/ValidationException';
 
 interface CreateFacultyModalProps {
   /**
@@ -175,7 +176,7 @@ FunctionComponent<CreateFacultyModalProps> = function ({
       isValid = false;
     }
     if (!isValid) {
-      throw new Error('Please fill in the required fields and try again. If the problem persists, contact SEAS Computing.');
+      throw new ValidationException('Please fill in the required fields and try again. If the problem persists, contact SEAS Computing.');
     }
     return FacultyAPI.createFaculty({
       area: createFacultyArea,
