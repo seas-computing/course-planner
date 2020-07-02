@@ -87,6 +87,27 @@ describe('Create Faculty Modal', function () {
     fireEvent.change(jointWithInput,
       { target: { value: newFacultyInfo.jointWith } });
   });
+  describe('On Close Behavior', function () {
+    it('clears all form fields', async function () {
+      const cancelButton = getByText('Cancel');
+      fireEvent.click(cancelButton);
+      const createFacultyButtonText = 'Create New Faculty';
+      await waitForElement(() => getByText(createFacultyButtonText));
+      fireEvent.click(getByText(createFacultyButtonText));
+      const courseAreaSelect = document.getElementById('createFacultyCourseArea') as HTMLSelectElement;
+      const huidInput = document.getElementById('createFacultyHUID') as HTMLInputElement;
+      const firstNameInput = document.getElementById('createFacultyFirstName') as HTMLInputElement;
+      const lastNameInput = document.getElementById('createFacultyLastName') as HTMLInputElement;
+      const facultyCategorySelect = document.getElementById('createFacultyCategory') as HTMLSelectElement;
+      const jointWithInput = document.getElementById('createFacultyJointWith') as HTMLInputElement;
+      strictEqual(courseAreaSelect.value, '');
+      strictEqual(huidInput.value, '');
+      strictEqual(firstNameInput.value, '');
+      strictEqual(lastNameInput.value, '');
+      strictEqual(facultyCategorySelect.value, '');
+      strictEqual(jointWithInput.value, '');
+    });
+  });
   describe('Field Validation', function () {
     describe('Area', function () {
       it('is a required field', async function () {
@@ -120,6 +141,23 @@ describe('Create Faculty Modal', function () {
         return waitForElement(
           () => getByText(errorMessage, { exact: false })
         );
+      });
+      describe('validHUID', function () {
+        it('should return false when the provided string contains at least one letter', function () {
+          strictEqual(validHUID('a1234567'), false);
+        });
+        it('should return false when the provided string contains at least one symbol', function () {
+          strictEqual(validHUID('12$45678'), false);
+        });
+        it('should return false when the HUID has a length shorter than 8 characters', function () {
+          strictEqual(validHUID('1234567'), false);
+        });
+        it('should return false when the HUID has a length longer than 8 characters', function () {
+          strictEqual(validHUID('123456789'), false);
+        });
+        it('should return true when the provided string contains 8 digits', function () {
+          strictEqual(validHUID('12345678'), true);
+        });
       });
     });
     describe('First name', function () {
@@ -162,25 +200,6 @@ describe('Create Faculty Modal', function () {
         const submitButton = getByText('Submit');
         fireEvent.click(submitButton);
         strictEqual(queryAllByRole('alert').length, 0);
-      });
-    });
-  });
-  describe('Input Validation', function () {
-    describe('Check validity of HUID', function () {
-      it('should return false when the provided string contains at least one letter', function () {
-        strictEqual(validHUID('a1234567'), false);
-      });
-      it('should return false when the provided string contains at least one symbol', function () {
-        strictEqual(validHUID('12$45678'), false);
-      });
-      it('should return false when the HUID has a length shorter than 8 characters', function () {
-        strictEqual(validHUID('1234567'), false);
-      });
-      it('should return false when the HUID has a length longer than 8 characters', function () {
-        strictEqual(validHUID('123456789'), false);
-      });
-      it('should return true when the provided string contains 8 digits', function () {
-        strictEqual(validHUID('12345678'), true);
       });
     });
   });
