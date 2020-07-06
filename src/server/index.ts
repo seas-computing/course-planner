@@ -5,14 +5,23 @@ import { AppModule } from './app.module';
 
 declare const module: NodeModule & { hot: Record<string, Function> };
 
-const { SERVER_PORT, NODE_ENV } = process.env;
+const {
+  SERVER_PORT,
+  NODE_ENV,
+  CLIENT_URL,
+} = process.env;
 
 /**
  * initializes and runs the nestjs app
  */
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    cors: {
+      origin: CLIENT_URL,
+      methods: ['GET', 'PUT', 'POST', 'DELETE'],
+    },
+  });
   if (NODE_ENV === 'development') {
     const options = new DocumentBuilder()
       .setTitle('API Documentation')

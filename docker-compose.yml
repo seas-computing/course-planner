@@ -20,6 +20,7 @@ services:
     environment:
       - APP_NAME
       - CAS_URL
+      - CLIENT_URL
       - DB_HOSTNAME
       - DB_PORT
       - DB_DATABASE
