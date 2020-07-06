@@ -27,15 +27,15 @@ import { FacultyAPI } from 'client/api';
 import { MetadataContext } from 'client/context/MetadataContext';
 import ValidationException from 'common/errors/ValidationException';
 
-interface EditFacultyModalProps {
+interface FacultyModalProps {
   /**
    * Whether or not the modal should be visible on the page.
    */
   isVisible: boolean;
   /**
-   * The current faculty being edited
+   * The current faculty being edited, or undefined if creating a new faculty.
    */
-  currentFaculty: ManageFacultyResponseDTO;
+  currentFaculty?: ManageFacultyResponseDTO;
   /**
    * Handler to be invoked when the modal closes
    * e.g. to clear data entered into a form
@@ -48,10 +48,10 @@ interface EditFacultyModalProps {
 }
 
 /**
- * This component represents the Edit Faculty Modal, which will be used on
+ * This component represents the Faculty Modals, which will be used on
  * the Faculty Admin tab
  */
-const EditFacultyModal: FunctionComponent<EditFacultyModalProps> = function ({
+const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
   isVisible,
   onClose,
   onSuccess,
@@ -63,7 +63,7 @@ const EditFacultyModal: FunctionComponent<EditFacultyModalProps> = function ({
   const metadata = useContext(MetadataContext);
 
   /**
-   * The currently selected value of the area dropdown in the Edit Faculty Modal
+   * The currently selected value of the area dropdown in the Faculty Modal
    */
   const [
     editFacultyArea,
@@ -71,7 +71,7 @@ const EditFacultyModal: FunctionComponent<EditFacultyModalProps> = function ({
   ] = useState('');
 
   /**
-   * The current value of the HUID text field in the Edit Faculty modal
+   * The current value of the HUID text field in the Faculty modal
    */
   const [
     editFacultyHUID,
@@ -79,7 +79,7 @@ const EditFacultyModal: FunctionComponent<EditFacultyModalProps> = function ({
   ] = useState('');
 
   /**
-   * The current value of the first name field in the Edit Faculty modal
+   * The current value of the first name field in the Faculty modal
    */
   const [
     editFacultyFirstName,
@@ -87,7 +87,7 @@ const EditFacultyModal: FunctionComponent<EditFacultyModalProps> = function ({
   ] = useState('');
 
   /**
-   * The current value of the last name field in the Edit Faculty modal
+   * The current value of the last name field in the Faculty modal
    */
   const [
     editFacultyLastName,
@@ -96,7 +96,7 @@ const EditFacultyModal: FunctionComponent<EditFacultyModalProps> = function ({
 
   /**
    * The current value of the faculty category dropdown in the
-   * Edit Faculty modal
+   * Faculty modal
    */
   const [
     editFacultyCategory,
@@ -104,7 +104,7 @@ const EditFacultyModal: FunctionComponent<EditFacultyModalProps> = function ({
   ] = useState('');
 
   /**
-   * The current value of the joint with field in the Edit Faculty modal
+   * The current value of the joint with field in the Faculty modal
    */
   const [
     editFacultyJointWith,
@@ -112,28 +112,28 @@ const EditFacultyModal: FunctionComponent<EditFacultyModalProps> = function ({
   ] = useState('');
 
   /**
-   * The current value of the error message for the Edit Faculty Area field
+   * The current value of the error message for the Faculty Area field
    */
   const [
     editFacultyAreaErrorMessage,
     setEditFacultyAreaErrorMessage,
   ] = useState('');
   /**
-   * The current value of the error message for the Edit Faculty HUID field
+   * The current value of the error message for the Faculty HUID field
    */
   const [
     editFacultyHUIDErrorMessage,
     setEditFacultyHUIDErrorMessage,
   ] = useState('');
   /**
-   * The current value of the error message for the Edit Faculty Last Name field
+   * The current value of the error message for the Faculty Last Name field
    */
   const [
     editFacultyLastNameErrorMessage,
     setEditFacultyLastNameErrorMessage,
   ] = useState('');
   /**
-   * The current value of the error message for the Edit Faculty Category field
+   * The current value of the error message for the Faculty Category field
    */
   const [
     editFacultyCategoryErrorMessage,
@@ -141,7 +141,7 @@ const EditFacultyModal: FunctionComponent<EditFacultyModalProps> = function ({
   ] = useState('');
 
   /**
-   * The current value of the error message within the Edit Faculty modal
+   * The current value of the error message within the Faculty modal
    */
   const [
     editFacultyErrorMessage,
@@ -149,7 +149,7 @@ const EditFacultyModal: FunctionComponent<EditFacultyModalProps> = function ({
   ] = useState('');
 
   /**
-   * Submits the edit faculty form, checking for valid inputs
+   * Submits the faculty form, checking for valid inputs
    */
   const submitEditFacultyForm = async ():
   Promise<ManageFacultyResponseDTO> => {
@@ -161,45 +161,58 @@ const EditFacultyModal: FunctionComponent<EditFacultyModalProps> = function ({
     setEditFacultyCategoryErrorMessage('');
     setEditFacultyErrorMessage('');
     if (!editFacultyArea) {
-      setEditFacultyAreaErrorMessage('The area is required to submit this form.');
+      setEditFacultyAreaErrorMessage('Area is required to submit this form.');
       isValid = false;
     }
     if (!validHUID(editFacultyHUID)) {
-      setEditFacultyHUIDErrorMessage('An HUID is required and must contain 8 digits. Please try again.');
+      setEditFacultyHUIDErrorMessage('HUID is required and must contain 8 digits.');
       isValid = false;
     }
     if (!editFacultyLastName) {
-      setEditFacultyLastNameErrorMessage('The faculty\'s last name is required to submit this form.');
+      setEditFacultyLastNameErrorMessage('Last name is required to submit this form.');
       isValid = false;
     }
     if (!editFacultyCategory) {
-      setEditFacultyCategoryErrorMessage('The category is required to submit this form.');
+      setEditFacultyCategoryErrorMessage('Category is required to submit this form.');
       isValid = false;
     }
     if (!isValid) {
       throw new ValidationException('Please fill in the required fields and try again. If the problem persists, contact SEAS Computing.');
     }
-    return FacultyAPI.editFaculty({
-      id: currentFaculty.id,
-      area: editFacultyArea,
-      HUID: editFacultyHUID,
-      firstName: editFacultyFirstName,
-      lastName: editFacultyLastName,
-      jointWith: editFacultyJointWith,
-      category: editFacultyCategory.replace(/\W/g, '_').toUpperCase() as FACULTY_TYPE,
-    });
+    let result: ManageFacultyResponseDTO;
+    if (currentFaculty) {
+      result = await FacultyAPI.editFaculty({
+        id: currentFaculty.id,
+        area: editFacultyArea,
+        HUID: editFacultyHUID,
+        firstName: editFacultyFirstName,
+        lastName: editFacultyLastName,
+        jointWith: editFacultyJointWith,
+        category: editFacultyCategory as FACULTY_TYPE,
+      });
+    } else {
+      result = await FacultyAPI.createFaculty({
+        area: editFacultyArea,
+        HUID: editFacultyHUID,
+        firstName: editFacultyFirstName,
+        lastName: editFacultyLastName,
+        jointWith: editFacultyJointWith,
+        category: editFacultyCategory as FACULTY_TYPE,
+      });
+    }
+    return result;
   };
   return (
     <Modal
       ariaLabelledBy="editFaculty"
       closeHandler={onClose}
       onOpen={(): void => {
-        setEditFacultyArea(currentFaculty.area.name);
-        setEditFacultyHUID(currentFaculty.HUID);
-        setEditFacultyFirstName(currentFaculty.firstName || '');
-        setEditFacultyLastName(currentFaculty.lastName);
-        setEditFacultyJointWith(currentFaculty.jointWith || '');
-        setEditFacultyCategory(currentFaculty.category);
+        setEditFacultyArea(currentFaculty ? currentFaculty.area.name : '');
+        setEditFacultyHUID(currentFaculty ? currentFaculty.HUID : '');
+        setEditFacultyFirstName(currentFaculty ? (currentFaculty.firstName || '') : '');
+        setEditFacultyLastName(currentFaculty ? currentFaculty.lastName : '');
+        setEditFacultyJointWith(currentFaculty ? (currentFaculty.jointWith || '') : '');
+        setEditFacultyCategory(currentFaculty ? currentFaculty.category : '');
         setEditFacultyAreaErrorMessage('');
         setEditFacultyHUIDErrorMessage('');
         setEditFacultyLastNameErrorMessage('');
@@ -207,9 +220,8 @@ const EditFacultyModal: FunctionComponent<EditFacultyModalProps> = function ({
         setEditFacultyErrorMessage('');
       }}
       isVisible={isVisible}
-      onClose={onClose}
     >
-      <ModalHeader>Edit Faculty</ModalHeader>
+      <ModalHeader>{currentFaculty ? 'Edit Faculty' : 'Create New Faculty'}</ModalHeader>
       <NoteText>Note: * denotes a required field</NoteText>
       <ModalBody>
         <form id="editFacultyForm">
@@ -217,11 +229,16 @@ const EditFacultyModal: FunctionComponent<EditFacultyModalProps> = function ({
             id="editFacultyCourseArea"
             name="editFacultyCourseArea"
             label="Area"
-            options={[{ value: '', label: '' }].concat(metadata.areas.map((area):
-            {value: string; label: string} => ({
-              value: area,
-              label: area,
-            })))}
+            // Insert an empty option so that no area is pre-selected in dropdown
+            options={
+              [{ value: '', label: '' }]
+                .concat(metadata.areas.map((area): {
+                  value: string;label: string;
+                } => ({
+                  value: area,
+                  label: area,
+                })))
+            }
             onChange={(event): void => setEditFacultyArea(
               (event.target as HTMLSelectElement).value
             )}
@@ -247,6 +264,7 @@ const EditFacultyModal: FunctionComponent<EditFacultyModalProps> = function ({
             name="editFacultyFirstName"
             label="First name"
             labelPosition={POSITION.TOP}
+            placeholder="e.g. Jane"
             onChange={(event): void => setEditFacultyFirstName(
               (event.target as HTMLInputElement).value.trim()
             )}
@@ -257,6 +275,7 @@ const EditFacultyModal: FunctionComponent<EditFacultyModalProps> = function ({
             name="editFacultyLastName"
             label="Last name"
             labelPosition={POSITION.TOP}
+            placeholder="e.g. Smith"
             onChange={(event): void => setEditFacultyLastName(
               (event.target as HTMLInputElement).value.trim()
             )}
@@ -335,4 +354,4 @@ const EditFacultyModal: FunctionComponent<EditFacultyModalProps> = function ({
   );
 };
 
-export default EditFacultyModal;
+export default FacultyModal;
