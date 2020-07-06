@@ -35,8 +35,7 @@ import {
 } from 'common/__tests__/utils/facultyHelperFunctions';
 import { getAreaColor } from '../../../common/constants';
 import { FacultyAPI } from '../../api/faculty';
-import EditFacultyModal from './EditFacultyModal';
-import CreateFacultyModal from './CreateFacultyModal';
+import FacultyModal from './FacultyModal';
 
 /**
  * The component represents the Faculty Admin page, which will be rendered at
@@ -163,7 +162,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
               ))}
           </TableBody>
         </Table>
-        <CreateFacultyModal
+        <FacultyModal
           isVisible={createFacultyModalVisible}
           onClose={(): void => setCreateFacultyModalVisible(false)}
           onSuccess={(newFacultyEntry: ManageFacultyResponseDTO): void => {
@@ -174,7 +173,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
             ]));
           }}
         />
-        <EditFacultyModal
+        <FacultyModal
           isVisible={editFacultyModalVisible}
           currentFaculty={currentFaculty}
           onClose={(): void => setEditFacultyModalVisible(false)}
