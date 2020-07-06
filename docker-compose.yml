@@ -30,7 +30,7 @@ services:
       - REDIS_PORT
       - REDIS_PREFIX
       - NODE_ENV
-      - EXTERNAL_URL
+      - SERVER_URL
       - SERVER_PORT
       - SESSION_SECRET
     user: "1000:1000"
@@ -54,7 +54,7 @@ services:
     environment:
       - APP_NAME
       - CLIENT_PORT
-      - SERVER_HOSTNAME
+      - SERVER_URL
       - SERVER_PORT
     user: "1000:1000"
     ports:

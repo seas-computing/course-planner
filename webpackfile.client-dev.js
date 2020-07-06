@@ -9,7 +9,7 @@ const publicPath = '/courses';
 const {
   APP_NAME,
   CLIENT_PORT,
-  SERVER_HOSTNAME,
+  SERVER_URL,
   SERVER_PORT,
 } = process.env;
 
