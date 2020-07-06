@@ -1,5 +1,5 @@
-import request from 'axios';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
+import request from './request';
 import { ManageCourseResponseDTO } from '../../common/dto/courses/ManageCourseResponse.dto';
 
 /**
