@@ -116,6 +116,18 @@ export const bioengineeringFacultyMemberResponse: ManageFacultyResponseDTO = {
 };
 
 /**
+ * An example [[CreateFacultyDTO]] representing a faculty member in a new area
+ */
+export const newAreaFacultyMemberRequest: CreateFacultyDTO = {
+  area: 'NA',
+  firstName: 'Jessie',
+  lastName: 'Lawson',
+  HUID: '80598351',
+  category: FACULTY_TYPE.NON_SEAS_LADDER,
+  jointWith: 'AM 110',
+};
+
+/**
  * An example [[ManageFacultyResponseDTO]] response representing a faculty member
  * categorized under a new area
  */

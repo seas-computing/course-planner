@@ -9,18 +9,18 @@ import * as dummy from 'testData';
 import { TimeoutError } from 'rxjs';
 import {
   appliedMathFacultyMemberRequest,
-  newAreaFacultyMemberResponse,
   appliedMathFacultyMember,
   appliedMathFacultyMemberResponse,
+  newAreaFacultyMemberRequest,
 } from 'testData';
 import { Semester } from 'server/semester/semester.entity';
 import { SemesterService } from 'server/semester/semester.service';
-import { toPlainObject } from 'common/__tests__/utils/toPlainObject';
 import { FacultyController } from '../faculty.controller';
 import { Faculty } from '../faculty.entity';
 import { Area } from '../../area/area.entity';
 import { FacultyService } from '../faculty.service';
 import { FacultyScheduleService } from '../facultySchedule.service';
+import { NotFoundException } from '@nestjs/common';
 
 describe('Faculty controller', function () {
   let mockFacultyService : Record<string, SinonStub>;
@@ -131,28 +131,26 @@ describe('Faculty controller', function () {
       });
     });
     context('when area does not exist', function () {
-      let facultyMember;
-      beforeEach(function () {
-        mockAreaRepository.save.resolves(newAreaFacultyMemberResponse.area);
-        facultyMember = {
-          HUID: newAreaFacultyMemberResponse.HUID,
-          firstName: newAreaFacultyMemberResponse.firstName,
-          lastName: newAreaFacultyMemberResponse.lastName,
-          category: newAreaFacultyMemberResponse.category,
-          area: newAreaFacultyMemberResponse.area,
-          jointWith: newAreaFacultyMemberResponse.jointWith,
+      it('throws a Not Found Error', async function () {
+        const facultyMemberInfo = {
+          area: newAreaFacultyMemberRequest.area,
+          HUID: newAreaFacultyMemberRequest.HUID,
+          firstName: newAreaFacultyMemberRequest.firstName,
+          lastName: newAreaFacultyMemberRequest.lastName,
+          category: newAreaFacultyMemberRequest.category,
+          jointWith: newAreaFacultyMemberRequest.jointWith,
         };
-        mockFacultyRepository.save.resolves({
-          ...facultyMember,
-          id: newAreaFacultyMemberResponse.id,
-        });
-      });
-      it('returns the newly created faculty member', async function () {
-        const newlyCreatedFaculty = await controller.create(facultyMember);
-        deepStrictEqual(
-          newlyCreatedFaculty,
-          newAreaFacultyMemberResponse
-        );
+        mockAreaRepository
+          .findOneOrFail
+          .rejects(new EntityNotFoundError(Area, {
+            where: { name: newAreaFacultyMemberRequest.area },
+          }));
+        try {
+          await controller.create(facultyMemberInfo);
+        } catch (e) {
+          strictEqual(e instanceof NotFoundException, true);
+          strictEqual(e.message.message.includes('entered Area'), true);
+        }
       });
     });
   });

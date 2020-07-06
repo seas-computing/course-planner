@@ -38,6 +38,7 @@ import {
   appliedMathFacultyMemberRequest,
   appliedMathFacultyMember,
   appliedMathFacultyMemberResponse,
+  newAreaFacultyMemberRequest,
 } from 'common/__tests__/data';
 import { SessionModule } from 'nestjs-session';
 import { FacultyService } from 'server/faculty/faculty.service';
@@ -301,6 +302,22 @@ describe('Faculty API', function () {
             });
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.BAD_REQUEST);
+        });
+        it('throws a Not Found exception if area does not exist', async function () {
+          const newFacultyMemberInfo = {
+            area: newAreaFacultyMemberRequest.area,
+            HUID: newAreaFacultyMemberRequest.HUID,
+            lastName: newAreaFacultyMemberRequest.lastName,
+            category: FACULTY_TYPE.NON_LADDER,
+          };
+          mockFacultyRepository.save.resolves(newFacultyMemberInfo);
+          mockAreaRepository.findOneOrFail.rejects(new EntityNotFoundError(Area, `${newFacultyMemberInfo.area}`));
+          const response = await request(api)
+            .post('/api/faculty')
+            .send(newFacultyMemberInfo);
+          strictEqual(response.ok, false);
+          strictEqual(response.status, HttpStatus.NOT_FOUND);
+          strictEqual(response.body.message.includes('Area'), true);
         });
       });
       describe('User is not a member of the admin group', function () {

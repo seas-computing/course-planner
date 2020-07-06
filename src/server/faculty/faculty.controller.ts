@@ -113,17 +113,33 @@ export class FacultyController {
     description: 'An object with the newly created faculty member\'s information.',
     isArray: false,
   })
+  @ApiNotFoundResponse({
+    description: 'Not Found: The requested entity could not be found',
+  })
   @ApiBadRequestResponse({
     description: 'Bad Request: the request is not in accordance with the createFaculty DTO',
   })
   public async create(@Body() facultyDto: CreateFacultyDTO):
   Promise<ManageFacultyResponseDTO> {
+    let existingArea: Area;
+    try {
+      existingArea = await this.areaRepository
+        .findOneOrFail({
+          where: {
+            name: facultyDto.area,
+          },
+        });
+    } catch (e) {
+      if (e instanceof EntityNotFoundError) {
+        throw new NotFoundException('The entered Area does not exist');
+      }
+    }
     let faculty: Faculty = Object.assign(new Faculty(), {
       HUID: facultyDto.HUID,
       firstName: facultyDto.firstName,
       lastName: facultyDto.lastName,
       category: facultyDto.category,
-      area: { name: facultyDto.area },
+      area: existingArea,
       jointWith: facultyDto.jointWith,
     });
     faculty = await this.facultyRepository.save(faculty);
