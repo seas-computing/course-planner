@@ -5,6 +5,11 @@ const HtmlWebpackRootPlugin = require('html-webpack-root-plugin');
 const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 
+const {
+  APP_NAME,
+  SERVER_URL,
+} = process.env;
+
 /**
  * This Webpack configuration only handles bundling the client code in
  * production.
@@ -91,7 +96,10 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: process.env.APP_NAME,
+      title: APP_NAME,
+    }),
+    new webpack.DefinePlugin({
+      __SERVER_URL__: JSON.stringify(SERVER_URL),
     }),
     new HtmlWebpackRootPlugin(),
     new webpack.optimize.ModuleConcatenationPlugin(),

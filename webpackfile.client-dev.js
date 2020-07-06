@@ -44,10 +44,6 @@ module.exports = {
     hotOnly: true,
     port: CLIENT_PORT,
     publicPath,
-    // All requests to /api should be forwarded to our server container
-    proxy: {
-      '/api': `http://${SERVER_HOSTNAME}:${SERVER_PORT}`,
-    },
     serveIndex: false,
   },
   output: {
@@ -102,5 +98,8 @@ module.exports = {
       title: APP_NAME,
     }),
     new HtmlWebpackRootPlugin(),
+    new webpack.DefinePlugin({
+      __SERVER_URL__: JSON.stringify(SERVER_URL),
+    }),
   ],
 };
