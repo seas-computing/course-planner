@@ -16,8 +16,7 @@ import {
   stub,
   SinonStub,
 } from 'sinon';
-import request,
-{ AxiosResponse } from 'axios';
+import * as courseAPI from 'client/api/courses';
 import {
   computerScienceCourseResponse,
   physicsCourseResponse,
@@ -29,7 +28,6 @@ import {
 } from 'client/context';
 import { ThemeProvider } from 'styled-components';
 import { MarkOneTheme } from 'mark-one';
-import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import { DispatchMessage } from '../../../context/MessageContext';
 import CourseAdmin from '../CourseAdmin';
 
@@ -61,14 +59,9 @@ describe('Course Admin', function () {
     newAreaCourseResponse,
   ];
   beforeEach(function () {
-    getStub = stub(request, 'get');
+    getStub = stub(courseAPI, 'getAllCourses');
+    getStub.resolves(testData);
     dispatchMessage = stub();
-    getStub.resolves({
-      data: testData,
-    } as AxiosResponse<ManageCourseResponseDTO[]>);
-  });
-  afterEach(function () {
-    getStub.restore();
   });
   describe('rendering', function () {
     it('creates a table', async function () {
@@ -146,12 +139,7 @@ describe('Course Admin', function () {
       context('when there are no course records', function () {
         const emptyTestData = [];
         beforeEach(function () {
-          getStub.resolves({
-            data: emptyTestData,
-          } as AxiosResponse<ManageCourseResponseDTO[]>);
-        });
-        afterEach(function () {
-          getStub.restore();
+          getStub.resolves(emptyTestData);
         });
         it('displays the correct number of rows in the table (only the header row)', async function () {
           const { getAllByRole } = render(
@@ -168,9 +156,6 @@ describe('Course Admin', function () {
     context('when course data fetch fails', function () {
       beforeEach(function () {
         getStub.rejects(error);
-      });
-      afterEach(function () {
-        getStub.restore();
       });
       it('should throw an error', async function () {
         const { getAllByRole } = render(
