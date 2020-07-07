@@ -99,7 +99,7 @@ module.exports = {
       title: APP_NAME,
     }),
     new webpack.DefinePlugin({
-      __SERVER_URL__: JSON.stringify(SERVER_URL),
+      'process.env.SERVER_URL': JSON.stringify(SERVER_URL),
     }),
     new HtmlWebpackRootPlugin(),
     new webpack.optimize.ModuleConcatenationPlugin(),
