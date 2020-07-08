@@ -3,6 +3,7 @@ import React, {
   ReactElement,
   useContext,
   useState,
+  useRef,
 } from 'react';
 import {
   VARIANT,
@@ -149,6 +150,20 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
   ] = useState('');
 
   /**
+   * The current value of the Create Faculty Modal ref
+   */
+  const firstFieldRef = useRef(null);
+
+  /**
+   * Set the ref focus.
+   * Since modal may not have been rendered in DOM, wait for it to be
+   * rendered by letting next task of event queue run first.
+   */
+  const setFacultyModalFocus = (): void => {
+    setTimeout((): void => firstFieldRef.current.focus(), 0);
+  };
+
+  /**
    * Submits the faculty form, checking for valid inputs
    */
   const submitEditFacultyForm = async ():
@@ -218,6 +233,7 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
         setEditFacultyLastNameErrorMessage('');
         setEditFacultyCategoryErrorMessage('');
         setEditFacultyErrorMessage('');
+        setFacultyModalFocus();
       }}
       isVisible={isVisible}
     >
@@ -245,6 +261,7 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
             value={editFacultyArea}
             errorMessage={editFacultyAreaErrorMessage}
             isRequired
+            forwardRef={firstFieldRef}
           />
           <TextInput
             id="editFacultyHUID"

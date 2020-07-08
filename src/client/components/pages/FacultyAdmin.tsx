@@ -38,6 +38,12 @@ import { FacultyAPI } from '../../api/faculty';
 import FacultyModal from './FacultyModal';
 
 /**
+ * Computes the id of the faculty button for the faculty being edited
+ */
+const computeEditFacultyButtonId = (faculty: ManageFacultyResponseDTO):
+string => `editFaculty${faculty.id}`;
+
+/**
  * The component represents the Faculty Admin page, which will be rendered at
  * route '/faculty-admin'
  */
@@ -146,7 +152,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
                   <TableCell>{faculty.firstName}</TableCell>
                   <TableCell alignment={ALIGN.CENTER}>
                     <BorderlessButton
-                      id={`editFaculty${faculty.id}`}
+                      id={computeEditFacultyButtonId(faculty)}
                       variant={VARIANT.INFO}
                       onClick={
                         (): void => {
@@ -164,7 +170,10 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
         </Table>
         <FacultyModal
           isVisible={createFacultyModalVisible}
-          onClose={(): void => setCreateFacultyModalVisible(false)}
+          onClose={(): void => {
+            setCreateFacultyModalVisible(false);
+            document.getElementById('createFaculty').focus();
+          }}
           onSuccess={(newFacultyEntry: ManageFacultyResponseDTO): void => {
             // Sort the new list of faculty
             setFacultyMembers(sortFaculty([
@@ -176,7 +185,11 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
         <FacultyModal
           isVisible={editFacultyModalVisible}
           currentFaculty={currentFaculty}
-          onClose={(): void => setEditFacultyModalVisible(false)}
+          onClose={(): void => {
+            setEditFacultyModalVisible(false);
+            const buttonId = computeEditFacultyButtonId(currentFaculty);
+            document.getElementById(buttonId).focus();
+          }}
           onSuccess={(editedFacultyMember: ManageFacultyResponseDTO): void => {
             setFacultyMembers(sortFaculty(
               currentFacultyMembers.map((faculty):
