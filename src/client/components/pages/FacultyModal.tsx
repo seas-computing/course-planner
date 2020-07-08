@@ -222,8 +222,8 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
       isVisible={isVisible}
     >
       <ModalHeader>{currentFaculty ? 'Edit Faculty' : 'Create New Faculty'}</ModalHeader>
-      <NoteText>Note: * denotes a required field</NoteText>
       <ModalBody>
+        <NoteText>Note: * denotes a required field</NoteText>
         <form id="editFacultyForm">
           <Dropdown
             id="editFacultyCourseArea"
