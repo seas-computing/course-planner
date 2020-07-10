@@ -3,9 +3,6 @@ import {
   stub,
   SinonStub,
 } from 'sinon';
-import request, {
-  AxiosResponse,
-} from 'axios';
 import {
   rawAreaList,
   rawSemesterList,
@@ -17,6 +14,9 @@ import {
   deepStrictEqual,
   fail,
 } from 'assert';
+import request, {
+  AxiosResponse,
+} from '../request';
 
 describe('Metadata API', function () {
   let result: MetadataResponse;

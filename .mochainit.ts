@@ -1,7 +1,8 @@
 import { restore } from 'sinon';
 
 before(function () {
-  process.env.NODE_ENV = "testing";
+  process.env.NODE_ENV = 'testing';
+  process.env.SERVER_URL = '';
 });
 
 after(function () {

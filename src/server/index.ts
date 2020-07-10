@@ -3,14 +3,25 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { BadRequestExceptionPipe } from './utils/BadRequestExceptionPipe';
 import { AppModule } from './app.module';
 
-const { SERVER_PORT, NODE_ENV } = process.env;
+declare const module: NodeModule & { hot: Record<string, Function> };
+
+const {
+  SERVER_PORT,
+  NODE_ENV,
+  CLIENT_URL,
+} = process.env;
 
 /**
  * initializes and runs the nestjs app
  */
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    cors: {
+      origin: CLIENT_URL,
+      methods: ['GET', 'PUT', 'POST', 'DELETE'],
+    },
+  });
   if (NODE_ENV === 'development') {
     const options = new DocumentBuilder()
       .setTitle('API Documentation')
@@ -25,6 +36,11 @@ async function bootstrap(): Promise<void> {
   }
   app.useGlobalPipes(new BadRequestExceptionPipe());
   await app.listen(SERVER_PORT);
+
+  if (module.hot) {
+    module.hot.accept();
+    module.hot.dispose((): Promise<void> => app.close());
+  }
 }
 
 bootstrap();

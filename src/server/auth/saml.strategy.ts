@@ -68,7 +68,7 @@ class SAMLStrategy extends PassportStrategy(Strategy, AUTH_MODE.HKEY) {
     super({
       entryPoint: config.get('CAS_URL'),
       issuer: 'passport-saml',
-      host: config.get('EXTERNAL_URL'),
+      host: config.get('SERVER_URL'),
     });
   }
 

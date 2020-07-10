@@ -12,7 +12,6 @@
   ],
   "exclude": [
     "**/__tests__/*",
-    "src/server/config/dev.middleware.ts",
     "src/server/auth/dev.strategy.ts"
   ]
 }

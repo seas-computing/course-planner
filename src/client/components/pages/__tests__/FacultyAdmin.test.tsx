@@ -10,15 +10,13 @@ import {
   stub,
   SinonStub,
 } from 'sinon';
-import request,
-{ AxiosResponse } from 'axios';
+import * as facultyAPI from 'client/api/faculty';
 import {
   physicsFacultyMemberResponse,
   bioengineeringFacultyMemberResponse,
   newAreaFacultyMemberResponse,
   error,
 } from 'testData';
-import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
 import { render } from 'test-utils';
 import FacultyAdmin from '../FacultyAdmin';
 
@@ -31,14 +29,9 @@ describe('Faculty Admin', function () {
     newAreaFacultyMemberResponse,
   ];
   beforeEach(function () {
-    getStub = stub(request, 'get');
+    getStub = stub(facultyAPI, 'getAllFacultyMembers');
     dispatchMessage = stub();
-    getStub.resolves({
-      data: testData,
-    } as AxiosResponse<ManageFacultyResponseDTO[]>);
-  });
-  afterEach(function () {
-    getStub.restore();
+    getStub.resolves(testData);
   });
   describe('rendering', function () {
     it('creates a table', async function () {
@@ -120,15 +113,9 @@ describe('Faculty Admin', function () {
       });
     });
     context('when there are no faculty records', function () {
-      let emptyTestData;
+      const emptyTestData = [];
       beforeEach(function () {
-        emptyTestData = [];
-        getStub.resolves({
-          data: emptyTestData,
-        } as AxiosResponse<ManageFacultyResponseDTO[]>);
-      });
-      afterEach(function () {
-        getStub.restore();
+        getStub.resolves(emptyTestData);
       });
       it('displays the correct number of rows in the table (only the header row', async function () {
         const { getAllByRole } = render(
@@ -144,9 +131,6 @@ describe('Faculty Admin', function () {
       const emptyTestData = [];
       beforeEach(function () {
         getStub.rejects(error);
-      });
-      afterEach(function () {
-        getStub.restore();
       });
       it('should throw an error', async function () {
         const { getAllByRole } = render(

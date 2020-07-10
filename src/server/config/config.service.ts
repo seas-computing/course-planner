@@ -1,6 +1,31 @@
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { RedisStoreOptions } from 'connect-redis';
 import { AUTH_MODE } from 'common/constants';
+import { Absence } from 'server/absence/absence.entity';
+import { Area } from 'server/area/area.entity';
+import { Course } from 'server/course/course.entity';
+import { CourseListingView } from 'server/course/CourseListingView.entity';
+import { CourseInstance } from 'server/courseInstance/courseinstance.entity';
+import { CourseInstanceListingView } from 'server/courseInstance/CourseInstanceListingView.entity';
+import { FacultyCourseInstance } from 'server/courseInstance/facultycourseinstance.entity';
+import { MultiYearPlanInstanceView } from 'server/courseInstance/MultiYearPlanInstanceView.entity';
+import { MultiYearPlanView } from 'server/courseInstance/MultiYearPlanView.entity';
+import { Faculty } from 'server/faculty/faculty.entity';
+import { FacultyListingView } from 'server/faculty/FacultyListingView.entity';
+import { FacultyScheduleCourseView } from 'server/faculty/FacultyScheduleCourseView.entity';
+import { FacultyScheduleSemesterView } from 'server/faculty/FacultyScheduleSemesterView.entity';
+import { FacultyScheduleView } from 'server/faculty/FacultyScheduleView.entity';
+import { Building } from 'server/location/building.entity';
+import { Campus } from 'server/location/campus.entity';
+import { Room } from 'server/location/room.entity';
+import { RoomListingView } from 'server/location/RoomListingView.entity';
+import { Meeting } from 'server/meeting/meeting.entity';
+import { MeetingListingView } from 'server/meeting/MeetingListingView.entity';
+import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
+import { NonClassParent } from 'server/nonClassParent/nonclassparent.entity';
+import { Semester } from 'server/semester/semester.entity';
+import { SemesterView } from 'server/semester/SemesterView.entity';
+import { View } from 'server/view/view.entity';
 
 /**
  * Parses process.env to create a clean configuration interface
@@ -44,9 +69,33 @@ class ConfigService {
       password: DB_PASSWORD,
       host: DB_HOSTNAME,
       port: parseInt(DB_PORT),
-      entities: this.isProduction
-        ? ['server/**/*.entity.js']
-        : ['src/server/**/*.entity.ts'],
+      entities: [
+        Absence,
+        Area,
+        Course,
+        CourseListingView,
+        CourseInstance,
+        CourseInstanceListingView,
+        FacultyCourseInstance,
+        MultiYearPlanInstanceView,
+        MultiYearPlanView,
+        Faculty,
+        FacultyListingView,
+        FacultyScheduleCourseView,
+        FacultyScheduleSemesterView,
+        FacultyScheduleView,
+        Building,
+        Campus,
+        Room,
+        RoomListingView,
+        Meeting,
+        MeetingListingView,
+        NonClassEvent,
+        NonClassParent,
+        Semester,
+        SemesterView,
+        View,
+      ],
     };
   }
 

@@ -1,7 +1,0 @@
-{
-  "execMap": {
-    "ts": "ts-node -r tsconfig-paths/register"
-  },
-  "ignore": ["*.test.ts"],
-  "watch":  ["src/server", "src/common"]
-}
