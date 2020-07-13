@@ -7,7 +7,7 @@ import { ManageCourseResponseDTO } from '../../common/dto/courses/ManageCourseRe
  */
 export const getAllCourses = async (): Promise<ManageCourseResponseDTO[]> => {
   const response = await request.get('/api/courses/');
-  return response.data;
+  return response.data as ManageCourseResponseDTO[];
 };
 
 export const getCourseInstancesForYear = async (
@@ -15,5 +15,5 @@ export const getCourseInstancesForYear = async (
 ): Promise<CourseInstanceResponseDTO[][]> => {
   const response = await request
     .get(`/api/course-instances/?acadYear=${acadYear}`);
-  return response.data;
+  return response.data as CourseInstanceResponseDTO[][];
 };

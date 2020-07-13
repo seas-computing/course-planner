@@ -1,8 +1,11 @@
 import { UserResponse } from 'common/dto/users/userResponse.dto';
-import request, { AxiosPromise } from './request';
+import request from './request';
 
 /**
  * Get the currently authenticated user
  */
 
-export const getCurrentUser = (): AxiosPromise<UserResponse> => request.get('/api/users/current');
+export const getCurrentUser = async (): Promise<UserResponse> => {
+  const response = await request.get('/api/users/current');
+  return response.data as UserResponse;
+};
