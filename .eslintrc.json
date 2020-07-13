@@ -148,6 +148,18 @@
     "react/prop-types": "off",
     "testing-library/no-manual-cleanup": "error"
   },
+  "settings": {
+    "import/extensions": [
+      "ts",
+      "js",
+      "tsx",
+      "jsx"
+    ],
+    "import/resolver": {
+      "node": {},
+      "webpack": {}
+    }
+  },
   "overrides": [
     {
       "files": [
@@ -157,25 +169,27 @@
       "rules": {
         "func-names": 0,
         "@typescript-eslint/explicit-function-return-type": 0,
-        "@typescript-eslint/no-object-literal-type-assertion": 0
+        "@typescript-eslint/no-object-literal-type-assertion": 0,
+        "react/jsx-props-no-spreading": 0
+      }
+    },
+    {
+      "files": [
+        "src/server/**/*.entity.ts"
+      ],
+      "rules": {
+        "import/no-cycle": 0
+      }
+    },
+    {
+      "files": [
+        "src/server/**/*",
+        "src/common/**/*"
+      ],
+      "rules": {
+        "react/display-name": 0,
+        "react/static-property-placement": 0
       }
     }
-  ],
-  "settings": {
-    "import/resolver": {
-      "node": {},
-      "webpack": {
-        "config": {
-          "resolve": {
-            "extensions": [
-              ".js",
-              ".ts",
-              ".tsx",
-              ".jsx"
-            ]
-          }
-        }
-      }
-    }
-  }
+  ]
 }
