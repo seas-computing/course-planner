@@ -9,8 +9,8 @@ import React, {
 import {
   Switch,
   Route,
-  useRouteMatch,
   Redirect,
+  useLocation,
 } from 'react-router-dom';
 import {
   MESSAGE_TYPE,
@@ -127,6 +127,8 @@ const ColdApp: SFC = (): ReactElement => {
       });
   }, []);
 
+  const { pathname: currentPath } = useLocation();
+
   const tabs: { link: string; text: string }[] = [
     { link: '/courses', text: 'Courses' },
     { link: '/non-class-meetings', text: 'Non class meetings' },
@@ -152,7 +154,7 @@ const ColdApp: SFC = (): ReactElement => {
                   <TabList>
                     {tabs.map((tab): ReactElement => (
                       <TabListItem
-                        isActive={Boolean(useRouteMatch({ path: tab.link }))}
+                        isActive={tab.link === currentPath}
                         key={tab.text}
                       >
                         <Link to={tab.link}>
