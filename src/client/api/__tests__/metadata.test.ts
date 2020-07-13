@@ -22,7 +22,7 @@ describe('Metadata API', function () {
   let result: MetadataResponse;
   let getStub: SinonStub;
   describe('GET /metadata', function () {
-    beforeEach(async function () {
+    beforeEach(function () {
       getStub = stub(request, 'get');
     });
     afterEach(function () {
@@ -59,7 +59,7 @@ describe('Metadata API', function () {
         });
       });
       context('when data fetch fails', function () {
-        beforeEach(async function () {
+        beforeEach(function () {
           getStub.rejects();
         });
         it('should throw an error', async function () {
