@@ -66,7 +66,7 @@ describe('App', function () {
         </MemoryRouter>
       );
       await waitForElement(() => getByText('Courses'));
-      const link = getByText('Course Admin') as HTMLElement;
+      const link = getByText('Course Admin');
       const tab = link.parentNode as HTMLElement;
       const style = window.getComputedStyle(tab);
       const actual = [
@@ -90,7 +90,7 @@ describe('App', function () {
         </MemoryRouter>
       );
       await waitForElement(() => getByText('Courses'));
-      const link = getByText('Non class meetings') as HTMLElement;
+      const link = getByText('Non class meetings');
       fireEvent.click(link);
       const tab = link.parentNode as HTMLElement;
       const style = window.getComputedStyle(tab);
