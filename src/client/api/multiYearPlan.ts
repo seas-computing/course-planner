@@ -1,4 +1,4 @@
-import request from 'axios';
+import request from './request';
 import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 
 /**
