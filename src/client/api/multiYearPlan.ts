@@ -1,5 +1,5 @@
-import request from './request';
 import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
+import request from './request';
 
 /**
  * Retrieves Multi Year Plan
