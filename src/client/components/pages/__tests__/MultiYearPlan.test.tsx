@@ -3,13 +3,8 @@ import { strictEqual } from 'assert';
 import { wait } from '@testing-library/react';
 import { stub, SinonStub } from 'sinon';
 import { testFourYearPlan, error } from 'testData';
-import {
-  MultiYearPlanResponseDTO,
-} from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import { render } from 'test-utils';
-import request, {
-  AxiosResponse,
-} from '../../../api/request';
+import * as mypAPI from 'client/api/multiYearPlan';
 import MultiYearPlan from '../MultiYearPlan';
 
 describe('MultYearPlan', function () {
@@ -19,11 +14,9 @@ describe('MultYearPlan', function () {
   const testData = testFourYearPlan;
 
   beforeEach(function () {
-    getStub = stub(request, 'get');
+    getStub = stub(mypAPI, 'getMultiYearPlan');
     dispatchMessage = stub();
-    getStub.resolves({
-      data: testData,
-    } as AxiosResponse<MultiYearPlanResponseDTO[]>);
+    getStub.resolves(testData);
   });
   afterEach(function () {
     getStub.restore();
@@ -83,9 +76,7 @@ describe('MultYearPlan', function () {
     let emptyTestData;
     beforeEach(function () {
       emptyTestData = [];
-      getStub.resolves({
-        data: emptyTestData,
-      } as AxiosResponse<MultiYearPlanResponseDTO[]>);
+      getStub.resolves(emptyTestData);
     });
     afterEach(function () {
       getStub.restore();
