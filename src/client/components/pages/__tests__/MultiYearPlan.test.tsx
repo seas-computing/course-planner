@@ -2,16 +2,14 @@ import React from 'react';
 import { strictEqual } from 'assert';
 import { wait } from '@testing-library/react';
 import { stub, SinonStub } from 'sinon';
-//import request, { AxiosResponse } from 'axios';
-import request, {
-  AxiosResponse,
-} from '../../../api/request';
-
 import { testFourYearPlan, error } from 'testData';
 import {
   MultiYearPlanResponseDTO,
 } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import { render } from 'test-utils';
+import request, {
+  AxiosResponse,
+} from '../../../api/request';
 import MultiYearPlan from '../MultiYearPlan';
 
 describe('MultYearPlan', function () {
