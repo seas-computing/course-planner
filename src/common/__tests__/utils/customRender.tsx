@@ -6,12 +6,11 @@ import {
   RenderResult,
 } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { MarkOneTheme } from 'mark-one';
+import { MarkOneWrapper } from 'mark-one';
 import {
   MessageContext,
   DispatchMessage,
 } from 'client/context';
-import { ThemeProvider } from 'styled-components';
 
 /**
  * In order to streamline our tests, we are redefining the `render` function to
@@ -24,11 +23,11 @@ const customRender = (
   dispatchMessage: DispatchMessage
 ): RenderResult => render(
   <MemoryRouter>
-    <ThemeProvider theme={MarkOneTheme}>
+    <MarkOneWrapper>
       <MessageContext.Provider value={dispatchMessage}>
         {ui}
       </MessageContext.Provider>
-    </ThemeProvider>
+    </MarkOneWrapper>
   </MemoryRouter>
 );
 
