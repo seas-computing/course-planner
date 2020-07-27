@@ -11,7 +11,6 @@ describe('HiddenText', function () {
     );
     const hiddenStyle = window.getComputedStyle(getByText('Hidden'));
     strictEqual(hiddenStyle.display, 'none');
-    strictEqual(hiddenStyle.visibility, 'collapse');
   });
   it('Keeps the full text hidden in the DOM content', function () {
     const { container } = render(
