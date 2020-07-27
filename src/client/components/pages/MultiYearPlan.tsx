@@ -6,7 +6,6 @@ import React, {
   useEffect,
 } from 'react';
 import {
-  BaseTheme,
   Table,
   TableHead,
   TableRow,
@@ -44,7 +43,7 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
   const [fetching, setFetching] = useState(false);
 
   const dispatchMessage = useContext(MessageContext);
-  const theme: BaseTheme = useContext(ThemeContext);
+  const theme = useContext(ThemeContext);
 
   useEffect((): void => {
     setFetching(true);
