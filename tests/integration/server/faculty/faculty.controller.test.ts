@@ -403,6 +403,7 @@ describe('Faculty API', function () {
             lastName: 'Hopper',
             category: FACULTY_TYPE.NON_SEAS_LADDER,
             area: 'BE',
+            notes: 'Prefers Allston Campus',
           };
           mockAreaRepository.findOneOrFail.resolves(newFacultyMemberInfo.area);
           mockFacultyRepository.findOneOrFail.resolves(newFacultyMemberInfo);
@@ -420,6 +421,7 @@ describe('Faculty API', function () {
             firstName: 'Grace',
             category: FACULTY_TYPE.NON_SEAS_LADDER,
             area: 'ACS',
+            notes: 'Prefers Cambridge Campus',
           };
           mockAreaRepository.findOneOrFail.resolves(newFacultyMemberInfo.area);
           mockFacultyRepository.findOneOrFail.resolves(newFacultyMemberInfo);

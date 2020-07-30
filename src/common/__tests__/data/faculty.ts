@@ -18,6 +18,7 @@ export const appliedMathFacultyMember = Object.assign(new Faculty(), {
   lastName: 'Lee',
   HUID: '90132717',
   jointWith: 'PHYS (0.5 FTE SEAS)',
+  notes: 'Prefers Allston campus',
   category: FACULTY_TYPE.LADDER,
 });
 
@@ -29,6 +30,7 @@ export const appliedMathFacultyMemberRequest: CreateFacultyDTO = {
   lastName: appliedMathFacultyMember.lastName,
   HUID: appliedMathFacultyMember.HUID,
   jointWith: appliedMathFacultyMember.jointWith,
+  notes: appliedMathFacultyMember.notes,
   category: appliedMathFacultyMember.category,
   area: appliedMathFacultyMember.area.name,
 };
@@ -125,6 +127,7 @@ export const newAreaFacultyMemberRequest: CreateFacultyDTO = {
   HUID: '80598351',
   category: FACULTY_TYPE.NON_SEAS_LADDER,
   jointWith: 'AM 110',
+  notes: 'Prefers Cambridge campus',
 };
 
 /**
@@ -142,6 +145,7 @@ export const newAreaFacultyMemberResponse: ManageFacultyResponseDTO = {
   HUID: '80598351',
   category: FACULTY_TYPE.NON_SEAS_LADDER,
   jointWith: 'AM 110',
+  notes: 'Prefers Cambridge campus',
 };
 
 /**

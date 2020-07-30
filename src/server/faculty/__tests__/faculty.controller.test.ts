@@ -139,6 +139,7 @@ describe('Faculty controller', function () {
           lastName: newAreaFacultyMemberRequest.lastName,
           category: newAreaFacultyMemberRequest.category,
           jointWith: newAreaFacultyMemberRequest.jointWith,
+          notes: newAreaFacultyMemberRequest.notes,
         };
         mockAreaRepository
           .findOneOrFail
