@@ -113,6 +113,14 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
   ] = useState('');
 
   /**
+   * The current value of the notes field in the Faculty modal
+   */
+  const [
+    editFacultyNotes,
+    setEditFacultyNotes,
+  ] = useState('');
+
+  /**
    * The current value of the error message for the Faculty Area field
    */
   const [
@@ -204,6 +212,7 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
         lastName: editFacultyLastName,
         jointWith: editFacultyJointWith,
         category: editFacultyCategory as FACULTY_TYPE,
+        notes: editFacultyNotes,
       });
     } else {
       result = await FacultyAPI.createFaculty({
@@ -213,6 +222,7 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
         lastName: editFacultyLastName,
         jointWith: editFacultyJointWith,
         category: editFacultyCategory as FACULTY_TYPE,
+        notes: editFacultyNotes,
       });
     }
     return result;
@@ -335,8 +345,21 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
             )}
             value={editFacultyJointWith}
           />
+          <TextInput
+            id="editFacultyNotes"
+            name="editFacultyNotes"
+            label="Notes"
+            labelPosition={POSITION.TOP}
+            placeholder="e.g. Prefers Room X"
+            onChange={(event): void => setEditFacultyNotes(
+              (event.target as HTMLInputElement).value.trim()
+            )}
+            value={editFacultyNotes}
+          />
           {editFacultyErrorMessage && (
-            <ValidationErrorMessage>
+            <ValidationErrorMessage
+              id="editFacultyModalErrorMessage"
+            >
               {editFacultyErrorMessage}
             </ValidationErrorMessage>
           )}
