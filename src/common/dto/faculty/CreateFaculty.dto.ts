@@ -54,4 +54,11 @@ export abstract class CreateFacultyDTO {
   @IsOptional()
   @IsString()
   public jointWith?: string;
+
+  @ApiModelProperty({
+    example: 'Prefers classroom near Maxwell-Dworkin',
+  })
+  @IsOptional()
+  @IsString()
+  public notes?: string;
 }
