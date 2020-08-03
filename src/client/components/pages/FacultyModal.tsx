@@ -4,6 +4,7 @@ import React, {
   useContext,
   useState,
   useRef,
+  useEffect,
 } from 'react';
 import {
   VARIANT,
@@ -227,12 +228,9 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
     }
     return result;
   };
-  return (
-    <Modal
-      ariaLabelledBy="editFaculty"
-      closeHandler={onClose}
-      onOpen={(): void => {
-        setEditFacultyArea(currentFaculty ? currentFaculty.area.name : '');
+  useEffect(() => {
+    if (isVisible) {
+      setEditFacultyArea(currentFaculty ? currentFaculty.area.name : '');
         setEditFacultyHUID(currentFaculty ? currentFaculty.HUID : '');
         setEditFacultyFirstName(currentFaculty ? (currentFaculty.firstName || '') : '');
         setEditFacultyLastName(currentFaculty ? currentFaculty.lastName : '');
@@ -244,7 +242,12 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
         setEditFacultyCategoryErrorMessage('');
         setEditFacultyErrorMessage('');
         setFacultyModalFocus();
-      }}
+    }
+  }, [isVisible]);
+  return (
+    <Modal
+      ariaLabelledBy="editFaculty"
+      closeHandler={onClose}
       isVisible={isVisible}
     >
       <ModalHeader
