@@ -231,17 +231,18 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
   useEffect(() => {
     if (isVisible) {
       setEditFacultyArea(currentFaculty ? currentFaculty.area.name : '');
-        setEditFacultyHUID(currentFaculty ? currentFaculty.HUID : '');
-        setEditFacultyFirstName(currentFaculty ? (currentFaculty.firstName || '') : '');
-        setEditFacultyLastName(currentFaculty ? currentFaculty.lastName : '');
-        setEditFacultyJointWith(currentFaculty ? (currentFaculty.jointWith || '') : '');
-        setEditFacultyCategory(currentFaculty ? currentFaculty.category : '');
-        setEditFacultyAreaErrorMessage('');
-        setEditFacultyHUIDErrorMessage('');
-        setEditFacultyLastNameErrorMessage('');
-        setEditFacultyCategoryErrorMessage('');
-        setEditFacultyErrorMessage('');
-        setFacultyModalFocus();
+      setEditFacultyHUID(currentFaculty ? currentFaculty.HUID : '');
+      setEditFacultyFirstName(currentFaculty ? (currentFaculty.firstName || '') : '');
+      setEditFacultyLastName(currentFaculty ? currentFaculty.lastName : '');
+      setEditFacultyJointWith(currentFaculty ? (currentFaculty.jointWith || '') : '');
+      setEditFacultyCategory(currentFaculty ? currentFaculty.category : '');
+      setEditFacultyNotes(currentFaculty ? currentFaculty.notes: '');
+      setEditFacultyAreaErrorMessage('');
+      setEditFacultyHUIDErrorMessage('');
+      setEditFacultyLastNameErrorMessage('');
+      setEditFacultyCategoryErrorMessage('');
+      setEditFacultyErrorMessage('');
+      setFacultyModalFocus();
     }
   }, [isVisible]);
   return (
