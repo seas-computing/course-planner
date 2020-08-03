@@ -48,7 +48,7 @@ string => `editFaculty${faculty.id}`;
  * route '/faculty-admin'
  */
 
-const FacultyAdmin: FunctionComponent = function (): ReactElement {
+const FacultyAdmin: FunctionComponent = (): ReactElement => {
   /**
    * The current list of faculty members used to populate the Faculty Admin table
    */

@@ -20,7 +20,7 @@ import FacultyScheduleTable from './FacultyScheduleTable';
  * This component represents the Faculty page, which will be rendered at
  * the route '/faculty-schedule'
  */
-const FacultySchedule: FunctionComponent = function (): ReactElement {
+const FacultySchedule: FunctionComponent = (): ReactElement => {
   /**
    * Store the list of faculty schedules to be displayed
    */

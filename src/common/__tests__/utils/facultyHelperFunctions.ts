@@ -15,7 +15,7 @@ export const validHUID = (huid: string): boolean => (
  * letter of each word is capitalized.
  * (e.g. 'SABBATICAL_INELIGIBLE' becomes 'Sabbatical Ineligible')
  */
-export const absenceEnumToTitleCase = function (str: string): string {
+export const absenceEnumToTitleCase = (str: string): string => {
   const words = str.split('_');
   return words.map(
     (word): string => word.charAt(0) + word.slice(1).toLowerCase()
@@ -36,8 +36,8 @@ const facultyTypeEnumToTitleCaseMap = {
  * A helper function that converts the faculty category enum into the desired
  * format for the Faculty table
  */
-export const facultyTypeEnumToTitleCase = function (facultyType: FACULTY_TYPE):
-string {
+export const facultyTypeEnumToTitleCase = (facultyType: FACULTY_TYPE):
+string => {
   return facultyTypeEnumToTitleCaseMap[facultyType];
 };
 
