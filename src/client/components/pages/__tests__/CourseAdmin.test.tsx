@@ -16,7 +16,7 @@ import {
   stub,
   SinonStub,
 } from 'sinon';
-import * as courseAPI from 'client/api/courses';
+import { CourseAPI } from 'client/api/courses';
 import {
   computerScienceCourseResponse,
   physicsCourseResponse,
@@ -58,7 +58,7 @@ describe('Course Admin', function () {
     newAreaCourseResponse,
   ];
   beforeEach(function () {
-    getStub = stub(courseAPI, 'getAllCourses');
+    getStub = stub(CourseAPI, 'getAllCourses');
     getStub.resolves(testData);
     dispatchMessage = stub();
   });

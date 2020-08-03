@@ -10,7 +10,7 @@ import {
   stub,
   SinonStub,
 } from 'sinon';
-import * as facultyAPI from 'client/api/faculty';
+import { FacultyAPI } from 'client/api/faculty';
 import {
   physicsFacultyMemberResponse,
   bioengineeringFacultyMemberResponse,
@@ -30,7 +30,7 @@ describe('Faculty Admin', function () {
     newAreaFacultyMemberResponse,
   ];
   beforeEach(function () {
-    getStub = stub(facultyAPI, 'getAllFacultyMembers');
+    getStub = stub(FacultyAPI, 'getAllFacultyMembers');
     dispatchMessage = stub();
     getStub.resolves(testData);
   });
