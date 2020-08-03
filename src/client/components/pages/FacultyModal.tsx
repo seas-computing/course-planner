@@ -160,7 +160,7 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
   /**
    * The current value of the Create Faculty Modal ref
    */
-  const firstFieldRef = useRef(null);
+  const modalHeaderRef = useRef(null);
 
   /**
    * Set the ref focus.
@@ -168,7 +168,7 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
    * rendered by letting next task of event queue run first.
    */
   const setFacultyModalFocus = (): void => {
-    setTimeout((): void => firstFieldRef.current.focus(), 0);
+    setTimeout((): void => modalHeaderRef.current.focus());
   };
 
   /**
@@ -247,7 +247,11 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
       }}
       isVisible={isVisible}
     >
-      <ModalHeader>{currentFaculty ? 'Edit Faculty' : 'Create New Faculty'}</ModalHeader>
+      <ModalHeader
+        forwardRef={modalHeaderRef}
+      >
+        {currentFaculty ? 'Edit Faculty' : 'Create New Faculty'}
+      </ModalHeader>
       <ModalBody>
         <NoteText>Note: * denotes a required field</NoteText>
         <form id="editFacultyForm">
@@ -271,7 +275,6 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
             value={editFacultyArea}
             errorMessage={editFacultyAreaErrorMessage}
             isRequired
-            forwardRef={firstFieldRef}
           />
           <TextInput
             id="editFacultyHUID"
