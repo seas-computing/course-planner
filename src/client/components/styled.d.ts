@@ -1,12 +1,43 @@
 import 'styled-components';
-import { BaseTheme } from 'mark-one';
-
-/**
- * This module declaration will override the implicit type of `theme` for all
- * styled-components with the BaseTheme from MarkOne.
- */
+import { VARIANT } from 'mark-one';
+import {
+  ColorRange,
+  TextColors,
+  AcademicArea,
+  FontCategory,
+  ShadowWeight,
+  BorderWeight,
+  WhiteSpaceSize,
+  FontSpec,
+} from 'mark-one/lib/Theme/ThemeTypes';
 
 declare module 'styled-components' {
-  // eslint-disable-next-line
-  export interface DefaultTheme extends BaseTheme {}
+  export interface DefaultTheme {
+    color: {
+      background:{
+        [K in VARIANT | keyof ColorRange]:
+        K extends VARIANT
+          ? ColorRange
+          : string;
+      }
+      text: {
+        [key in TextColors]: string;
+      };
+      area: {
+        [key in AcademicArea]: string;
+      };
+    };
+    font: {
+      [key in FontCategory]: FontSpec;
+    };
+    shadow: {
+      [key in ShadowWeight]: string
+    };
+    border: {
+      [key in BorderWeight]: string
+    };
+    ws: {
+      [key in WhiteSpaceSize]: string
+    };
+  }
 }
