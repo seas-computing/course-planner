@@ -294,29 +294,41 @@ describe('Faculty Modal', function () {
         const lastNameInput = document.getElementById('editFacultyLastName') as HTMLInputElement;
         const jointWithInput = document.getElementById('editFacultyJointWith') as HTMLInputElement;
         const categorySelect = document.getElementById('editFacultyCategory') as HTMLSelectElement;
+        const notesInput = document.getElementById('editFacultyNotes') as HTMLInputElement;
         strictEqual(
           courseAreaSelect.value,
-          physicsFacultyMemberResponse.area.name
+          physicsFacultyMemberResponse.area.name,
+          'Area'
         );
         strictEqual(
           huidInput.value,
-          physicsFacultyMemberResponse.HUID, 'HUID'
+          physicsFacultyMemberResponse.HUID,
+          'HUID'
         );
         strictEqual(
           firstNameInput.value,
-          physicsFacultyMemberResponse.firstName, 'first name'
+          physicsFacultyMemberResponse.firstName || '',
+          'first name'
         );
         strictEqual(
           lastNameInput.value,
-          physicsFacultyMemberResponse.lastName, 'last name'
+          physicsFacultyMemberResponse.lastName,
+          'last name'
         );
         strictEqual(
           jointWithInput.value,
-          physicsFacultyMemberResponse.jointWith || '', 'joint with'
+          physicsFacultyMemberResponse.jointWith || '',
+          'joint with'
         );
         strictEqual(
           categorySelect.value,
-          physicsFacultyMemberResponse.category, 'category'
+          physicsFacultyMemberResponse.category,
+          'category'
+        );
+        strictEqual(
+          notesInput.value,
+          physicsFacultyMemberResponse.notes || '',
+          'notes'
         );
       });
       it('renders no error messages prior to initial form submission', async function () {
@@ -402,28 +414,28 @@ describe('Faculty Modal', function () {
           strictEqual(queryAllByRole('alert').length, 0);
         });
       });
-      describe('Resulting display', function () {
-        it('sorts the updated list of faculty by area, last name, and first name ascending on modal submission', async function () {
-          const submitButton = getByText('Submit');
-          fireEvent.click(submitButton);
-          await waitForElement(() => getByText(
-            newLastName, { exact: false }
-          ));
-          const ids = getAllByRole('button')
-            .filter((button) => button.id && button.id.startsWith('editFaculty'))
-            .map((button) => button.id);
-          const idsInExpectedOrder = [
-            // area: AM, last name: Lee
-            appliedMathFacultyMemberResponse.id,
-            // area: AP, last name: Hudson
-            physicsFacultyMemberResponse.id,
-            // area: AP, last name: Kenney
-            anotherPhysicsFacultyMemberResponse.id,
-            // area: BE, last name: Su
-            bioengineeringFacultyMemberResponse.id,
-          ].map((id) => `editFaculty${id}`);
-          deepStrictEqual(ids, idsInExpectedOrder);
-        });
+    });
+    describe('Resulting display', function () {
+      it('sorts the updated list of faculty by area, last name, and first name ascending on modal submission', async function () {
+        const submitButton = getByText('Submit');
+        fireEvent.click(submitButton);
+        await waitForElement(() => getByText(
+          newLastName, { exact: false }
+        ));
+        const ids = getAllByRole('button')
+          .filter((button) => button.id && button.id.startsWith('editFaculty'))
+          .map((button) => button.id);
+        const idsInExpectedOrder = [
+          // area: AM, last name: Lee
+          appliedMathFacultyMemberResponse.id,
+          // area: AP, last name: Hudson
+          physicsFacultyMemberResponse.id,
+          // area: AP, last name: Kenney
+          anotherPhysicsFacultyMemberResponse.id,
+          // area: BE, last name: Su
+          bioengineeringFacultyMemberResponse.id,
+        ].map((id) => `editFaculty${id}`);
+        deepStrictEqual(ids, idsInExpectedOrder);
       });
     });
   });
