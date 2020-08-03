@@ -12,7 +12,6 @@ import {
   TableCell,
   TableHeadingSpacer,
   TableRowHeadingCell,
-  BaseTheme,
   VALIGN,
 } from 'mark-one';
 
@@ -66,7 +65,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
       viewColumn === COURSE_TABLE_COLUMN.ENROLLMENT
     ));
 
-  const theme: BaseTheme = useContext(ThemeContext);
+  const theme = useContext(ThemeContext);
 
   return (
     <Table>

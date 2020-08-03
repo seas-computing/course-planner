@@ -26,8 +26,7 @@ import {
 import {
   MessageContext,
 } from 'client/context';
-import { ThemeProvider } from 'styled-components';
-import { MarkOneTheme } from 'mark-one';
+import { MarkOneWrapper } from 'mark-one';
 import { DispatchMessage } from '../../../context/MessageContext';
 import CourseAdmin from '../CourseAdmin';
 
@@ -41,11 +40,11 @@ const AppStub: FunctionComponent<AppStubProps> = function (
 ): ReactElement {
   return (
     <MemoryRouter>
-      <ThemeProvider theme={MarkOneTheme}>
+      <MarkOneWrapper>
         <MessageContext.Provider value={dispatchMessage}>
           {children}
         </MessageContext.Provider>
-      </ThemeProvider>
+      </MarkOneWrapper>
     </MemoryRouter>
   );
 };

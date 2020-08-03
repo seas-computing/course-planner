@@ -6,7 +6,6 @@ import React, {
   useEffect,
 } from 'react';
 import {
-  BaseTheme,
   Table,
   TableHead,
   TableRow,
@@ -69,7 +68,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
   /**
    * Provides the Mark-One theme using styled component's ThemeContext
    */
-  const theme: BaseTheme = useContext(ThemeContext);
+  const theme = useContext(ThemeContext);
 
   return (
     <div className="faculty-admin-table">

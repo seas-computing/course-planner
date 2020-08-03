@@ -4,7 +4,6 @@ import React, {
   useContext,
 } from 'react';
 import {
-  BaseTheme,
   Table,
   TableHead,
   TableRow,
@@ -74,7 +73,7 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
   /**
    * Provides the Mark-One theme using styled component's ThemeContext
    */
-  const theme: BaseTheme = useContext(ThemeContext);
+  const theme = useContext(ThemeContext);
   return (
     <Table>
       <colgroup>

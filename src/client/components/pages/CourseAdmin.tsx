@@ -6,7 +6,6 @@ import React, {
   useEffect,
 } from 'react';
 import {
-  BaseTheme,
   Table,
   TableHead,
   TableRow,
@@ -61,7 +60,7 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
       });
   }, []);
 
-  const theme: BaseTheme = useContext(ThemeContext);
+  const theme = useContext(ThemeContext);
 
   return (
     <div className="course-admin-table">
