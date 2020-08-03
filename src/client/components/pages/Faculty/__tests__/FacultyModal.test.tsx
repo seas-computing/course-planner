@@ -71,6 +71,7 @@ describe('Faculty Modal', function () {
         firstName: 'Olive',
         category: FACULTY_TYPE.LADDER,
         jointWith: 'CS 350',
+        notes: 'Prefers Allston campus',
       };
       const courseAreaSelect = document.getElementById('editFacultyCourseArea') as HTMLSelectElement;
       fireEvent.change(courseAreaSelect,
@@ -90,6 +91,9 @@ describe('Faculty Modal', function () {
       const jointWithInput = document.getElementById('editFacultyJointWith') as HTMLInputElement;
       fireEvent.change(jointWithInput,
         { target: { value: newFacultyInfo.jointWith } });
+      const notesInput = document.getElementById('editFacultyNotes') as HTMLInputElement;
+      fireEvent.change(notesInput,
+        { target: { value: newFacultyInfo.notes } });
     });
     describe('On Open Behavior', function () {
       it('clears all form fields', async function () {
@@ -104,12 +108,14 @@ describe('Faculty Modal', function () {
         const lastNameInput = document.getElementById('editFacultyLastName') as HTMLInputElement;
         const facultyCategorySelect = document.getElementById('editFacultyCategory') as HTMLSelectElement;
         const jointWithInput = document.getElementById('editFacultyJointWith') as HTMLInputElement;
+        const notesInput = document.getElementById('editFacultyNotes') as HTMLInputElement;
         strictEqual(courseAreaSelect.value, '');
         strictEqual(huidInput.value, '');
         strictEqual(firstNameInput.value, '');
         strictEqual(lastNameInput.value, '');
         strictEqual(facultyCategorySelect.value, '');
         strictEqual(jointWithInput.value, '');
+        strictEqual(notesInput.value, '');
       });
       it('renders no error messages prior to initial form submission', async function () {
         strictEqual(queryAllByRole('alert').length, 0);
@@ -204,6 +210,15 @@ describe('Faculty Modal', function () {
         it('is not a required field', async function () {
           const jointWithInput = document.getElementById('editFacultyJointWith') as HTMLInputElement;
           fireEvent.change(jointWithInput, { target: { value: '' } });
+          const submitButton = getByText('Submit');
+          fireEvent.click(submitButton);
+          strictEqual(queryAllByRole('alert').length, 0);
+        });
+      });
+      describe('Notes', function () {
+        it('is not a required field', async function () {
+          const notesInput = document.getElementById('editFacultyNotes') as HTMLInputElement;
+          fireEvent.change(notesInput, { target: { value: '' } });
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
           strictEqual(queryAllByRole('alert').length, 0);
