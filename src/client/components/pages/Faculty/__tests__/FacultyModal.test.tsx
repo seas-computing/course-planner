@@ -414,6 +414,15 @@ describe('Faculty Modal', function () {
           strictEqual(queryAllByRole('alert').length, 0);
         });
       });
+      describe('Notes', function () {
+        it('is not a required field', async function () {
+          const notesInput = document.getElementById('editFacultyNotes') as HTMLInputElement;
+          fireEvent.change(notesInput, { target: { value: '' } });
+          const submitButton = getByText('Submit');
+          fireEvent.click(submitButton);
+          strictEqual(queryAllByRole('alert').length, 0);
+        });
+      });
     });
     describe('Resulting display', function () {
       it('sorts the updated list of faculty by area, last name, and first name ascending on modal submission', async function () {

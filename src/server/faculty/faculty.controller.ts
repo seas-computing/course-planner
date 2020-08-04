@@ -141,6 +141,7 @@ export class FacultyController {
       category: facultyDto.category,
       area: existingArea,
       jointWith: facultyDto.jointWith,
+      notes: facultyDto.notes,
     });
     faculty = await this.facultyRepository.save(faculty);
     return {
@@ -154,6 +155,7 @@ export class FacultyController {
         name: faculty.area.name,
       },
       jointWith: faculty.jointWith,
+      notes: faculty.notes,
     };
   }
 
