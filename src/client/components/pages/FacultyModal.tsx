@@ -253,6 +253,7 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
     >
       <ModalHeader
         forwardRef={modalHeaderRef}
+        tabIndex={0}
       >
         {currentFaculty ? 'Edit Faculty' : 'Create New Faculty'}
       </ModalHeader>
