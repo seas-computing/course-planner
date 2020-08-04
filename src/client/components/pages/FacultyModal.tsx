@@ -301,7 +301,7 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
             labelPosition={POSITION.TOP}
             placeholder="e.g. Jane"
             onChange={(event): void => setEditFacultyFirstName(
-              (event.target as HTMLInputElement).value.trim()
+              (event.target as HTMLInputElement).value
             )}
             value={editFacultyFirstName}
           />
@@ -312,7 +312,7 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
             labelPosition={POSITION.TOP}
             placeholder="e.g. Smith"
             onChange={(event): void => setEditFacultyLastName(
-              (event.target as HTMLInputElement).value.trim()
+              (event.target as HTMLInputElement).value
             )}
             value={editFacultyLastName}
             errorMessage={editFacultyLastNameErrorMessage}
@@ -349,7 +349,7 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
             labelPosition={POSITION.TOP}
             placeholder="Add 'Joint With' entry"
             onChange={(event): void => setEditFacultyJointWith(
-              (event.target as HTMLInputElement).value.trim()
+              (event.target as HTMLInputElement).value
             )}
             value={editFacultyJointWith}
           />
@@ -360,7 +360,7 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
             labelPosition={POSITION.TOP}
             placeholder="e.g. Prefers Room X"
             onChange={(event): void => setEditFacultyNotes(
-              (event.target as HTMLInputElement).value.trim()
+              (event.target as HTMLInputElement).value
             )}
             value={editFacultyNotes}
           />
