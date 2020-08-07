@@ -73,7 +73,7 @@ describe('MultYearPlan', function () {
   });
 
   context('when there are empty records of multi year plan ', function () {
-    let emptyTestData;
+    let emptyTestData: Array<unknown>;
     beforeEach(function () {
       emptyTestData = [];
       getStub.resolves(emptyTestData);
