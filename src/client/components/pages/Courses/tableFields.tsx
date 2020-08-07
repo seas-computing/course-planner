@@ -333,7 +333,7 @@ export const tableFields: CourseInstanceListColumn[] = [
     key: 'notes',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.META,
     viewColumn: COURSE_TABLE_COLUMN.NOTES,
-    getValue: ({ notes }): ReactElement => {
+    getValue: ({ notes }: CourseInstanceResponseDTO): ReactElement => {
       const hasNotes = notes && notes.trim().length > 0;
       const titleText = hasNotes ? 'View/Edit Notes' : 'Add Notes';
       return (
