@@ -4,9 +4,10 @@ import { stub, SinonStub } from 'sinon';
 import {
   render, BoundFunction, QueryByText, FindByText, wait,
 } from 'test-utils';
-import * as courseAPI from 'client/api';
+import * as courseAPI from 'client/api/courses';
 import { AppMessage, MESSAGE_TYPE, MESSAGE_ACTION } from 'client/classes';
 import { cs50CourseInstance } from 'testData';
+import { MessageReducerAction } from 'client/context';
 import CoursesPage from '../CoursesPage';
 
 describe('Course Instances List', function () {
@@ -63,8 +64,9 @@ describe('Course Instances List', function () {
           errorMessage,
           MESSAGE_TYPE.ERROR
         );
-        deepStrictEqual(dispatchStub.args[0][0].message, testErrorAppMessage);
-        strictEqual(dispatchStub.args[0][0].type, MESSAGE_ACTION.PUSH);
+        const realMessage = dispatchStub.args[0][0] as MessageReducerAction;
+        deepStrictEqual(realMessage.message, testErrorAppMessage);
+        strictEqual(realMessage.type, MESSAGE_ACTION.PUSH);
       });
     });
   });
