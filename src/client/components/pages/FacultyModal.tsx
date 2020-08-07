@@ -228,7 +228,7 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
     }
     return result;
   };
-  useEffect(() => {
+  useEffect((): void => {
     if (isVisible) {
       setEditFacultyArea(currentFaculty ? currentFaculty.area.name : '');
       setEditFacultyHUID(currentFaculty ? currentFaculty.HUID : '');
@@ -236,7 +236,7 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
       setEditFacultyLastName(currentFaculty ? currentFaculty.lastName : '');
       setEditFacultyJointWith(currentFaculty ? (currentFaculty.jointWith || '') : '');
       setEditFacultyCategory(currentFaculty ? currentFaculty.category : '');
-      setEditFacultyNotes(currentFaculty ? currentFaculty.notes: '');
+      setEditFacultyNotes(currentFaculty ? currentFaculty.notes : '');
       setEditFacultyAreaErrorMessage('');
       setEditFacultyHUIDErrorMessage('');
       setEditFacultyLastNameErrorMessage('');

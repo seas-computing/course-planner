@@ -37,9 +37,7 @@ const facultyTypeEnumToTitleCaseMap = {
  * format for the Faculty table
  */
 export const facultyTypeEnumToTitleCase = (facultyType: FACULTY_TYPE):
-string => {
-  return facultyTypeEnumToTitleCaseMap[facultyType];
-};
+string => facultyTypeEnumToTitleCaseMap[facultyType];
 
 /**
  * Define the map here to avoid a new object being created on each call to

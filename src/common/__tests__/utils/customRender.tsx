@@ -11,7 +11,6 @@ import {
   MessageContext,
   DispatchMessage,
 } from 'client/context';
-import { ThemeProvider } from 'styled-components';
 import { MetadataContext } from 'client/context/MetadataContext';
 import { MetadataResponse } from 'common/dto/metadata/MetadataResponse.dto';
 
