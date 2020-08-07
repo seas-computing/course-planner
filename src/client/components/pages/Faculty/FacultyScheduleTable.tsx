@@ -52,7 +52,7 @@ export const absenceEnumToTitleCase = function (str: string): string {
  * A helper function that converts the faculty category enum into the desired
  * format for the Faculty table
  */
-export const categoryEnumToTitleCase = function (str: string): string {
+export const categoryEnumToTitleCase = function (str: FACULTY_TYPE): string {
   const result: string = {
     [FACULTY_TYPE.LADDER]: 'Ladder',
     [FACULTY_TYPE.NON_SEAS_LADDER]: 'Non-SEAS Ladder',
