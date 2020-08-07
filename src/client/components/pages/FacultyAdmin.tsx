@@ -16,7 +16,6 @@ import {
   VARIANT,
   ALIGN,
 } from 'mark-one';
-import { ThemeContext } from 'styled-components';
 import {
   MESSAGE_TYPE,
   AppMessage,
@@ -28,6 +27,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
 import { getAllFacultyMembers } from '../../api/faculty';
+import { getAreaColor } from '../../../common/constants';
 
 /**
  * The component represents the Faculty Admin page, which will be rendered at
@@ -64,11 +64,6 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
       });
   }, [dispatchMessage]);
 
-  /**
-   * Provides the Mark-One theme using styled component's ThemeContext
-   */
-  const theme = useContext(ThemeContext);
-
   return (
     <div className="faculty-admin-table">
       <Table>
@@ -87,14 +82,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
               <TableRow isStriped={facultyIndex % 2 === 1} key={faculty.id}>
                 <TableCell
                   alignment={ALIGN.CENTER}
-                  backgroundColor={
-                    (faculty.area
-                      && theme.color.area[faculty.area.name.toLowerCase()])
-                      ? theme
-                        .color
-                        .area[faculty.area.name.toLowerCase()]
-                      : undefined
-                  }
+                  backgroundColor={getAreaColor(faculty.area.name)}
                 >
                   {faculty.area && faculty.area.name}
                 </TableCell>

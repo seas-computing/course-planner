@@ -1,7 +1,6 @@
 import React, {
   FunctionComponent,
   ReactElement,
-  useContext,
 } from 'react';
 import {
   Table,
@@ -21,9 +20,8 @@ import {
   faFolderOpen,
   faEdit,
 } from '@fortawesome/free-solid-svg-icons';
-import { ThemeContext } from 'styled-components';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
-import { FACULTY_TYPE } from 'common/constants';
+import { FACULTY_TYPE, getAreaColor } from 'common/constants';
 
 interface FacultyScheduleTableProps {
   /**
@@ -69,129 +67,118 @@ export const categoryEnumToTitleCase = function (str: string): string {
 const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
   academicYear,
   facultySchedules,
-}): ReactElement => {
-  /**
-   * Provides the Mark-One theme using styled component's ThemeContext
-   */
-  const theme = useContext(ThemeContext);
-  return (
-    <Table>
-      <colgroup>
-        <col span={5} />
-      </colgroup>
-      <colgroup span={2} />
-      <colgroup span={2} />
-      <colgroup>
-        <col />
-      </colgroup>
-      <TableHead>
-        <TableRow noHighlight>
-          <TableHeadingSpacer colSpan={5} />
-          <TableHeadingCell
-            backgroundColor="transparent"
-            colSpan={2}
-            scope="colgroup"
-          >
-            {`Fall ${academicYear - 1}`}
-          </TableHeadingCell>
-          <TableHeadingCell
-            backgroundColor="transparent"
-            colSpan={2}
-            scope="colgroup"
-          >
-            {`Spring ${academicYear}`}
-          </TableHeadingCell>
-          <TableHeadingSpacer rowSpan={1} />
-        </TableRow>
-        <TableRow isStriped>
-          <TableHeadingCell scope="col">Area</TableHeadingCell>
-          <TableHeadingCell scope="col">Last Name</TableHeadingCell>
-          <TableHeadingCell scope="col">First Name</TableHeadingCell>
-          <TableHeadingCell scope="col">Category</TableHeadingCell>
-          <TableHeadingCell scope="col">Joint With</TableHeadingCell>
-          <TableHeadingCell scope="col">Sabbatical Leave</TableHeadingCell>
-          <TableHeadingCell scope="col">Courses</TableHeadingCell>
-          <TableHeadingCell scope="col">Sabbatical Leave</TableHeadingCell>
-          <TableHeadingCell scope="col">Courses</TableHeadingCell>
-          <TableHeadingCell scope="col">Detail</TableHeadingCell>
-        </TableRow>
-      </TableHead>
-      <TableBody isScrollable>
-        {facultySchedules && facultySchedules
-          .map((faculty, facultyIndex): ReactElement<TableRowProps> => (
-            <TableRow isStriped={facultyIndex % 2 === 1} key={faculty.id}>
-              <TableCell
-                alignment={ALIGN.CENTER}
-                backgroundColor={
-                  (faculty.area
-                        && theme.color.area[faculty.area.toLowerCase()])
-                    ? theme.color.area[faculty.area.toLowerCase()]
-                    : undefined
-                }
-              >
-                {faculty.area}
-              </TableCell>
-              <TableCell>{faculty.lastName}</TableCell>
-              <TableCell>{faculty.firstName}</TableCell>
-              <TableCell>{categoryEnumToTitleCase(faculty.category)}</TableCell>
-              <TableCell>{faculty.jointWith}</TableCell>
-              <TableCell>
-                {absenceEnumToTitleCase(
-                  faculty.fall.absence
-                    ? faculty.fall.absence.type
-                    : ''
-                )}
-                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <BorderlessButton
-                    variant={VARIANT.INFO}
-                    onClick={(): void => {}}
-                  >
-                    <FontAwesomeIcon icon={faEdit} />
-                  </BorderlessButton>
-                </div>
-              </TableCell>
-              <TableCell>
-                {faculty.fall.courses.map((course): ReactElement => (
-                  <div key={course.id}>
-                    {course.catalogNumber}
-                  </div>
-                ))}
-              </TableCell>
-              <TableCell>
-                {absenceEnumToTitleCase(
-                  faculty.spring.absence
-                    ? faculty.spring.absence.type
-                    : ''
-                )}
-                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <BorderlessButton
-                    variant={VARIANT.INFO}
-                    onClick={(): void => {}}
-                  >
-                    <FontAwesomeIcon icon={faEdit} />
-                  </BorderlessButton>
-                </div>
-              </TableCell>
-              <TableCell>
-                {faculty.spring.courses.map((course): ReactElement => (
-                  <div key={course.id}>
-                    {course.catalogNumber}
-                  </div>
-                ))}
-              </TableCell>
-              <TableCell alignment={ALIGN.CENTER}>
+}): ReactElement => (
+  <Table>
+    <colgroup>
+      <col span={5} />
+    </colgroup>
+    <colgroup span={2} />
+    <colgroup span={2} />
+    <colgroup>
+      <col />
+    </colgroup>
+    <TableHead>
+      <TableRow noHighlight>
+        <TableHeadingSpacer colSpan={5} />
+        <TableHeadingCell
+          backgroundColor="transparent"
+          colSpan={2}
+          scope="colgroup"
+        >
+          {`Fall ${academicYear - 1}`}
+        </TableHeadingCell>
+        <TableHeadingCell
+          backgroundColor="transparent"
+          colSpan={2}
+          scope="colgroup"
+        >
+          {`Spring ${academicYear}`}
+        </TableHeadingCell>
+        <TableHeadingSpacer rowSpan={1} />
+      </TableRow>
+      <TableRow isStriped>
+        <TableHeadingCell scope="col">Area</TableHeadingCell>
+        <TableHeadingCell scope="col">Last Name</TableHeadingCell>
+        <TableHeadingCell scope="col">First Name</TableHeadingCell>
+        <TableHeadingCell scope="col">Category</TableHeadingCell>
+        <TableHeadingCell scope="col">Joint With</TableHeadingCell>
+        <TableHeadingCell scope="col">Sabbatical Leave</TableHeadingCell>
+        <TableHeadingCell scope="col">Courses</TableHeadingCell>
+        <TableHeadingCell scope="col">Sabbatical Leave</TableHeadingCell>
+        <TableHeadingCell scope="col">Courses</TableHeadingCell>
+        <TableHeadingCell scope="col">Detail</TableHeadingCell>
+      </TableRow>
+    </TableHead>
+    <TableBody isScrollable>
+      {facultySchedules && facultySchedules
+        .map((faculty, facultyIndex): ReactElement<TableRowProps> => (
+          <TableRow isStriped={facultyIndex % 2 === 1} key={faculty.id}>
+            <TableCell
+              alignment={ALIGN.CENTER}
+              backgroundColor={getAreaColor(faculty.area)}
+            >
+              {faculty.area}
+            </TableCell>
+            <TableCell>{faculty.lastName}</TableCell>
+            <TableCell>{faculty.firstName}</TableCell>
+            <TableCell>{categoryEnumToTitleCase(faculty.category)}</TableCell>
+            <TableCell>{faculty.jointWith}</TableCell>
+            <TableCell>
+              {absenceEnumToTitleCase(
+                faculty.fall.absence
+                  ? faculty.fall.absence.type
+                  : ''
+              )}
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <BorderlessButton
                   variant={VARIANT.INFO}
                   onClick={(): void => {}}
                 >
-                  <FontAwesomeIcon icon={faFolderOpen} />
+                  <FontAwesomeIcon icon={faEdit} />
                 </BorderlessButton>
-              </TableCell>
-            </TableRow>
-          ))}
-      </TableBody>
-    </Table>
-  );
-};
+              </div>
+            </TableCell>
+            <TableCell>
+              {faculty.fall.courses.map((course): ReactElement => (
+                <div key={course.id}>
+                  {course.catalogNumber}
+                </div>
+              ))}
+            </TableCell>
+            <TableCell>
+              {absenceEnumToTitleCase(
+                faculty.spring.absence
+                  ? faculty.spring.absence.type
+                  : ''
+              )}
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <BorderlessButton
+                  variant={VARIANT.INFO}
+                  onClick={(): void => {}}
+                >
+                  <FontAwesomeIcon icon={faEdit} />
+                </BorderlessButton>
+              </div>
+            </TableCell>
+            <TableCell>
+              {faculty.spring.courses.map((course): ReactElement => (
+                <div key={course.id}>
+                  {course.catalogNumber}
+                </div>
+              ))}
+            </TableCell>
+            <TableCell alignment={ALIGN.CENTER}>
+              <BorderlessButton
+                variant={VARIANT.INFO}
+                onClick={(): void => {}}
+              >
+                <FontAwesomeIcon icon={faFolderOpen} />
+              </BorderlessButton>
+            </TableCell>
+          </TableRow>
+        ))}
+    </TableBody>
+  </Table>
+);
 
 export default FacultyScheduleTable;

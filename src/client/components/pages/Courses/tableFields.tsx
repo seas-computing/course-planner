@@ -5,6 +5,7 @@ import {
   TableCellList,
   TableCellListItem,
   VARIANT,
+  fromTheme,
 } from 'mark-one';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStickyNote as withNotes, faFolderOpen, faEdit } from '@fortawesome/free-solid-svg-icons';
@@ -98,7 +99,7 @@ const MeetingGrid = styled.div`
   display: grid;
   grid-template-areas: "time campus room";
   grid-template-columns: 2fr 2em 3fr 2em;
-  column-gap: ${({ theme }): string => (theme.ws.xsmall)};
+  column-gap: ${fromTheme('ws', 'xsmall')};
   align-items: baseline;
 `;
 

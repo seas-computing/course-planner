@@ -15,7 +15,6 @@ import {
   BorderlessButton,
   VARIANT,
 } from 'mark-one';
-import { ThemeContext } from 'styled-components';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import { MESSAGE_TYPE, AppMessage, MESSAGE_ACTION } from 'client/classes';
 import { MessageContext } from 'client/context';
@@ -23,6 +22,7 @@ import { TableRowProps } from 'mark-one/lib/Tables/TableRow';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { getAllCourses } from '../../api/courses';
+import { getAreaColor } from '../../../common/constants';
 
 /**
  * The component represents the Course Admin page, which will be rendered at
@@ -59,8 +59,6 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
       });
   }, [dispatchMessage]);
 
-  const theme = useContext(ThemeContext);
-
   return (
     <div className="course-admin-table">
       <Table>
@@ -76,12 +74,7 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
           {currentCourses.map((course, i): ReactElement<TableRowProps> => (
             <TableRow isStriped={i % 2 === 1} key={course.id}>
               <TableCell
-                backgroundColor={
-                  theme.color.area[course.area.name.toLowerCase()]
-                    ? theme
-                      .color
-                      .area[course.area.name.toLowerCase()]
-                    : undefined}
+                backgroundColor={getAreaColor(course.area.name)}
               >
                 {course.area.name}
               </TableCell>

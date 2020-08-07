@@ -1,7 +1,6 @@
 import React, {
   FunctionComponent,
   ReactElement,
-  useContext,
 } from 'react';
 import {
   Table,
@@ -14,10 +13,8 @@ import {
   TableRowHeadingCell,
   VALIGN,
 } from 'mark-one';
-
-import { ThemeContext } from 'styled-components';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
-import { COURSE_TABLE_COLUMN, COURSE_TABLE_COLUMN_GROUP } from 'common/constants';
+import { COURSE_TABLE_COLUMN, COURSE_TABLE_COLUMN_GROUP, getAreaColor } from 'common/constants';
 import { CellLayout } from 'client/components/general';
 import { CourseInstanceListColumn } from './tableFields';
 
@@ -64,8 +61,6 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
     .findIndex(({ viewColumn }): boolean => (
       viewColumn === COURSE_TABLE_COLUMN.ENROLLMENT
     ));
-
-  const theme = useContext(ThemeContext);
 
   return (
     <Table>
@@ -231,10 +226,8 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
                       key={field.key}
                       backgroundColor={
                         field.viewColumn === COURSE_TABLE_COLUMN.AREA
-                          ? theme.color.area[
-                            String(field.getValue(course)).toLowerCase()
-                          ]
-                          : null}
+                          && getAreaColor(field.getValue(course) as string)
+                      }
                     >
                       <CellLayout>
                         {field.getValue(course)}
