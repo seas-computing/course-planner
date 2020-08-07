@@ -21,6 +21,7 @@ import {
 import { CampusIcon } from 'client/components/general';
 import { dayEnumToString } from 'common/constants/day';
 import { offeredEnumToString } from 'common/constants/offered';
+import { TermKey } from 'common/constants/term';
 import styled from 'styled-components';
 
 /**
@@ -33,7 +34,8 @@ import styled from 'styled-components';
  */
 
 export const retrieveValue = (
-  prop: string,
+  prop: keyof CourseInstanceResponseDTO
+  | keyof CourseInstanceResponseDTO[TermKey],
   sem?: TERM
 ): (arg0: CourseInstanceResponseDTO
   ) => ReactNode => (
@@ -41,9 +43,12 @@ export const retrieveValue = (
 ): ReactText => {
   let rawValue: ReactText;
   if (sem) {
-    rawValue = course[sem.toLowerCase()][prop];
-  } else {
-    rawValue = course[prop];
+    const semKey = sem.toLowerCase() as TermKey;
+    if (semKey in course && prop in course[semKey]) {
+      rawValue = course[semKey][prop] as ReactText;
+    }
+  } else if (prop && prop in course) {
+    rawValue = course[prop] as ReactText;
   }
   if (typeof rawValue === 'boolean') {
     return rawValue ? 'Yes' : 'No';
@@ -68,7 +73,8 @@ export const formatInstructors = (
   ) => ReactNode => (
   course: CourseInstanceResponseDTO
 ): ReactNode => {
-  const { instructors } = course[sem.toLowerCase()];
+  const semKey = sem.toLowerCase() as TermKey;
+  const { instructors } = course[semKey];
   return instructors.length === 0
     ? null
     : (
@@ -124,7 +130,8 @@ export const formatMeetings = (
   ) => ReactNode => (
   course: CourseInstanceResponseDTO
 ): ReactNode => {
-  const { meetings } = course[sem.toLowerCase()];
+  const semKey = sem.toLowerCase() as TermKey;
+  const { meetings } = course[semKey];
   return meetings[0].day === null
     ? null
     : (
