@@ -50,12 +50,12 @@ import MultiYearPlan from './pages/MultiYearPlan';
  * mounts, then saves it to the UserContext to pass down to other components
  */
 
-const ColdApp: SFC = (): ReactElement => {
+export const ColdApp: SFC = (): ReactElement => {
   /**
    * Hook for maintaining the currently selected user
    * */
 
-  const [currentUser, setUser] = useState<UserResponse | null>(null);
+  const [currentUser, setUser] = useState<UserResponse>(null);
 
   /**
    * Set up the local reducer for maintaining the current app-wide message
@@ -192,4 +192,4 @@ const ColdApp: SFC = (): ReactElement => {
   );
 };
 
-export const App = hot(ColdApp);
+export default hot(ColdApp);

@@ -6,22 +6,15 @@ import {
 } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { stub, SinonStub } from 'sinon';
-import { AxiosResponse } from 'axios';
-import { UserResponse } from 'common/dto/users/userResponse.dto';
 import * as dummy from 'testData';
-import * as api from 'client/api';
-import { App } from '../App';
+import * as userApi from 'client/api/users';
+import { ColdApp as App } from '../App';
 
 describe('App', function () {
   let apiStub: SinonStub;
   beforeEach(function () {
-    apiStub = stub(api, 'getCurrentUser');
-    apiStub.resolves({
-      data: dummy.regularUser,
-    } as AxiosResponse<UserResponse>);
-  });
-  afterEach(function () {
-    apiStub.restore();
+    apiStub = stub(userApi, 'getCurrentUser');
+    apiStub.resolves(dummy.regularUser);
   });
   describe('rendering', function () {
     it('creates a div for app content', async function () {
@@ -135,31 +128,29 @@ describe('App', function () {
     });
     */
     it('only renders one active tab at a time', async function () {
-      const { getByText, getAllByRole } = render(
+      const { getAllByRole, findByText } = render(
         <MemoryRouter>
           <App />
         </MemoryRouter>
       );
-      await waitForElement(() => getByText('Courses'));
+      await findByText('Courses');
       const tabs = getAllByRole('listitem').map((listItem) => listItem.getElementsByTagName('div')[0]);
       const activeTabs = tabs.filter((tabItem) => window.getComputedStyle(tabItem)['border-bottom'] === '1px solid transparent');
       strictEqual(activeTabs.length, 1);
     });
     context('When userFetch succeeds', function () {
       beforeEach(function () {
-        apiStub.resolves({
-          data: dummy.regularUser,
-        } as AxiosResponse<UserResponse>);
+        apiStub.resolves(dummy.regularUser);
       });
       it('displays the name of the current user', async function () {
-        const { getByText } = render(
+        const { findByText } = render(
           <MemoryRouter>
             <App />
           </MemoryRouter>
         );
         strictEqual(apiStub.callCount, 1);
         const { fullName } = dummy.regularUser;
-        return waitForElement(() => getByText(fullName, { exact: false }));
+        return findByText(new RegExp(fullName)); // , { exact: false });
       });
     });
     context('When userFetch fails', function () {
