@@ -97,7 +97,7 @@ const ColdApp: SFC = (): ReactElement => {
           type: MESSAGE_ACTION.PUSH,
         });
       });
-  }, []);
+  }, [setUser, dispatchMessage]);
 
   /**
    * Set up the current metadata containing the current academic year, currently

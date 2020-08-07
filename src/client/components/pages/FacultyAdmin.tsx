@@ -50,9 +50,8 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
    */
   useEffect((): void => {
     getAllFacultyMembers()
-      .then((facultyMembers): ManageFacultyResponseDTO[] => {
+      .then((facultyMembers) => {
         setFacultyMembers(facultyMembers);
-        return facultyMembers;
       })
       .catch((): void => {
         dispatchMessage({
@@ -63,7 +62,7 @@ const FacultyAdmin: FunctionComponent = function (): ReactElement {
           type: MESSAGE_ACTION.PUSH,
         });
       });
-  }, []);
+  }, [dispatchMessage]);
 
   /**
    * Provides the Mark-One theme using styled component's ThemeContext

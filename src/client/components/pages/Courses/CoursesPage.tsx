@@ -76,7 +76,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
       .finally((): void => {
         setFetching(false);
       });
-  }, []);
+  }, [dispatchMessage]);
 
   return (
     <div className="course-instance-table">

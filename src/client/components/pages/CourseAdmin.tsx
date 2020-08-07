@@ -45,9 +45,8 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
    */
   useEffect((): void => {
     getAllCourses()
-      .then((courses): ManageCourseResponseDTO[] => {
+      .then((courses): void => {
         setCourses(courses);
-        return courses;
       })
       .catch((): void => {
         dispatchMessage({
@@ -58,7 +57,7 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
           type: MESSAGE_ACTION.PUSH,
         });
       });
-  }, []);
+  }, [dispatchMessage]);
 
   const theme = useContext(ThemeContext);
 

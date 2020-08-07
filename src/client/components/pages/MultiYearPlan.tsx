@@ -48,9 +48,8 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
   useEffect((): void => {
     setFetching(true);
     getMultiYearPlan()
-      .then((multiYearPlanList): MultiYearPlanResponseDTO[] => {
+      .then((multiYearPlanList) => {
         setMultiYearPlan(multiYearPlanList);
-        return multiYearPlanList;
       })
       .catch((): void => {
         dispatchMessage({
@@ -61,7 +60,7 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
       .finally((): void => {
         setFetching(false);
       });
-  }, []);
+  }, [dispatchMessage]);
 
   /**
   * yearsHeaders function take the multi year plan list and create
