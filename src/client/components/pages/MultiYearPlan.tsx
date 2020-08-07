@@ -116,9 +116,9 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
                 <TableHeadingCell scope="col">Area</TableHeadingCell>
                 <TableHeadingCell scope="col">CatalogNumber</TableHeadingCell>
                 <TableHeadingCell scope="col">Title</TableHeadingCell>
-                <React.Fragment>
+                <>
                   {yearsHeaders(multiYearPlan)}
-                </React.Fragment>
+                </>
               </TableRow>
             </TableHead>
             <TableBody isScrollable>
@@ -137,9 +137,9 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
                     <TableCell verticalAlignment={VALIGN.TOP}>
                       {course.title}
                     </TableCell>
-                    <React.Fragment>
+                    <>
                       {courseInstance(course)}
-                    </React.Fragment>
+                    </>
                   </TableRow>
                 ))}
             </TableBody>
