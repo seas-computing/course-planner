@@ -102,7 +102,7 @@ describe('Faculty controller', function () {
         area: new Area(),
       });
 
-      strictEqual(mockFacultyRepository.create.callCount, 1);
+      strictEqual(mockFacultyRepository.save.callCount, 1);
     });
     it('returns the newly created faculty member', async function () {
       const facultyMember = {
@@ -112,7 +112,7 @@ describe('Faculty controller', function () {
         category: FACULTY_TYPE.LADDER,
         area: new Area(),
       };
-      mockFacultyRepository.create.resolves({
+      mockFacultyRepository.save.resolves({
         ...facultyMember,
         id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
       });
