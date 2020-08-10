@@ -144,7 +144,7 @@ export default class MockDB {
         }
       );
 
-      this.container.stdout.on('data', (data) => {
+      this.container.stdout.on('data', (data: Buffer): void => {
         // The postgres container will stop and restart once after setting up
         // the initial user and database. So we need to wait for this message
         // to appear before it's ready to accept connections
@@ -154,7 +154,7 @@ export default class MockDB {
         }
       });
 
-      this.container.stderr.on('data', (data) => {
+      this.container.stderr.on('data', (data: Buffer): void => {
         // Errors from the postgres process inside the container will be
         // written to stderr, but won't be flagged as Error events, so we need
         // to watch for them here and reject
@@ -163,7 +163,7 @@ export default class MockDB {
         }
       });
 
-      this.container.on('error', (err) => {
+      this.container.on('error', (err: Error): void => {
         // Handles errors thrown by the docker command, rather than the postgres process
         this.state = CONTAINER_STATE.DEAD;
         reject(new Error(`Failed to create database with docker. Error: ${err.message}`));
