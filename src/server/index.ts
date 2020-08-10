@@ -3,7 +3,9 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { BadRequestExceptionPipe } from './utils/BadRequestExceptionPipe';
 import { AppModule } from './app.module';
 
-declare const module: NodeModule & { hot: Record<string, Function> };
+declare const module: NodeModule & {
+  hot: Record<string, (arg1?: () => Promise<void>) => void>
+};
 
 const {
   SERVER_PORT,
@@ -39,8 +41,8 @@ async function bootstrap(): Promise<void> {
 
   if (module.hot) {
     module.hot.accept();
-    module.hot.dispose((): Promise<void> => app.close());
+    module.hot.dispose(() => app.close());
   }
 }
 
-bootstrap();
+void bootstrap();
