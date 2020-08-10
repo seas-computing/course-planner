@@ -20,7 +20,7 @@ import { MultiYearPlanInstanceView } from './MultiYearPlanInstanceView.entity';
 @Injectable()
 export class CourseInstanceService {
   @InjectRepository(CourseListingView)
-  private readonly courseRepository: Repository<CourseListingView>
+  private readonly courseRepository: Repository<CourseListingView>;
 
   @InjectRepository(MultiYearPlanView)
   private readonly multiYearPlanViewRepository: Repository<MultiYearPlanView>;

@@ -40,10 +40,10 @@ import { FacultyScheduleService } from './facultySchedule.service';
 @ApiUnauthorizedResponse({ description: 'Thrown if the user is not authenticated' })
 export class FacultyController {
   @InjectRepository(Faculty)
-  private facultyRepository: Repository<Faculty>
+  private facultyRepository: Repository<Faculty>;
 
   @InjectRepository(Area)
-  private areaRepository: Repository<Area>
+  private areaRepository: Repository<Area>;
 
   @Inject(FacultyService)
   private facultyService: FacultyService;

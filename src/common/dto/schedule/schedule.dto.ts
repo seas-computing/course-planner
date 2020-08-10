@@ -57,5 +57,5 @@ export abstract class ScheduleViewResponseDTO {
       room: string;
       isUndergraduate: boolean;
     }
-  ]
+  ];
 }

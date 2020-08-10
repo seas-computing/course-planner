@@ -12,7 +12,7 @@ import { Semester } from './semester.entity';
 @Injectable()
 export class SemesterService {
   @InjectRepository(Semester)
-  private readonly semesterRepository: Repository<Semester>
+  private readonly semesterRepository: Repository<Semester>;
 
   /**
    * Resolves to an array containing all of the years that currently exist in the

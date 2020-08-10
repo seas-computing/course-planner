@@ -14,10 +14,10 @@ export class RoomPopulationService extends BasePopulationService<Room> {
   protected repository: Repository<Room>;
 
   @InjectRepository(Building)
-  protected buildingRepository: Repository<Building>
+  protected buildingRepository: Repository<Building>;
 
   @InjectRepository(Campus)
-  protected campusRepository: Repository<Campus>
+  protected campusRepository: Repository<Campus>;
 
   public async populate({ buildings, campuses, rooms }: {
     buildings: BuildingData[];
