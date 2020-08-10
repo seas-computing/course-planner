@@ -280,9 +280,9 @@ describe('Course Instance Service', function () {
             return 0;
           }),
       }));
-      deepStrictEqual(
-        JSON.parse(JSON.stringify(result)),
-        JSON.parse(JSON.stringify(sorted))
+      strictEqual(
+        JSON.stringify(result),
+        JSON.stringify(sorted)
       );
     });
   });
