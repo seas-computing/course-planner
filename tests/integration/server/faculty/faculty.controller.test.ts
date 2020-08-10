@@ -5,6 +5,8 @@ import {
   HttpStatus,
   HttpServer,
   ForbiddenException,
+  BadRequestException,
+  NotFoundException,
 } from '@nestjs/common';
 import { strictEqual } from 'assert';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -151,8 +153,10 @@ describe('Faculty API', function () {
 
           const response = await request(api).get('/api/faculty');
 
+          const body = response.body as Array<Faculty>;
+
           strictEqual(response.ok, true);
-          strictEqual(response.body.length, mockFaculty.length);
+          strictEqual(body.length, mockFaculty.length);
           strictEqual(mockFacultyService.find.callCount, 1);
         });
       });
@@ -223,9 +227,10 @@ describe('Faculty API', function () {
               category: FACULTY_TYPE.LADDER,
               area: new Area(),
             });
+          const body = response.body as BadRequestException;
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.BAD_REQUEST);
-          strictEqual(response.body.message.includes('HUID'), true);
+          strictEqual(/HUID/.test(body.message), true);
         });
         it('allows you to create a faculty member with a last name and no first name', async function () {
           const response = await request(api)
@@ -346,9 +351,10 @@ describe('Faculty API', function () {
               lastName: 'Lovelace',
               area: new Area(),
             });
+          const body = response.body as BadRequestException;
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.BAD_REQUEST);
-          strictEqual(response.body.message.includes('category'), true);
+          strictEqual(/category/.test(body.message), true);
         });
         it('allows you to update a faculty member so that the entry has a last name but no first name', async function () {
           const newArea = {
@@ -430,9 +436,10 @@ describe('Faculty API', function () {
           const response = await request(api)
             .put(`/api/faculty/${newFacultyMemberInfo.id}`)
             .send(newFacultyMemberInfo);
+          const body = response.body as NotFoundException;
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.NOT_FOUND);
-          strictEqual(response.body.message.includes('Faculty', 'ID'), true);
+          strictEqual(body.message, 'Could not find any entity of type Faculty in any Area with the supplied ID');
         });
         it('throws a Not Found exception if area does not exist', async function () {
           const newArea = {
@@ -451,9 +458,10 @@ describe('Faculty API', function () {
           const response = await request(api)
             .put(`/api/faculty/${newArea.id}`)
             .send(newFacultyMemberInfo);
+          const body = response.body as NotFoundException;
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.NOT_FOUND);
-          strictEqual(response.body.message.includes('Area', 'ID'), true);
+          strictEqual(body.message, 'The entered Area does not exist');
         });
       });
       describe('User is not a member of the admin group', function () {

@@ -7,6 +7,7 @@ import {
   HttpServer,
   ForbiddenException,
   UnauthorizedException,
+  BadRequestException,
 } from '@nestjs/common';
 import { strictEqual, deepStrictEqual } from 'assert';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -116,9 +117,9 @@ describe('Course API', function () {
           mockCourseRepository.find.resolves(mockCourses);
 
           const response = await request(api).get('/api/courses');
-
+          const body = response.body as Array<ManageCourseResponseDTO>;
           strictEqual(response.ok, true);
-          strictEqual(response.body.length, mockCourses.length);
+          strictEqual(body.length, mockCourses.length);
           strictEqual(mockCourseRepository.find.callCount, 1);
         });
       });
@@ -187,9 +188,11 @@ describe('Course API', function () {
             .post('/api/courses')
             .send({ title: computerScienceCourse.title });
 
+          const body = response.body as BadRequestException;
+
           deepStrictEqual(response.ok, false);
           deepStrictEqual(response.status, HttpStatus.BAD_REQUEST);
-          strictEqual(response.body.message.includes('prefix'), true);
+          strictEqual(/prefix/.test(body.message), true);
         });
       });
       describe('User is not a member of the admin group', function () {

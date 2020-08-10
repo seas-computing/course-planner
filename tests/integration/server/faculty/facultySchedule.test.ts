@@ -100,7 +100,7 @@ describe('Faculty Schedule API', function () {
       .useGlobalPipes(new BadRequestExceptionPipe())
       .init();
 
-    api = nestApp.getHttpServer();
+    api = nestApp.getHttpServer() as HttpServer;
   });
   afterEach(async function () {
     authStub.restore();
@@ -130,7 +130,7 @@ describe('Faculty Schedule API', function () {
         });
         it('returns all faculty in the database', async function () {
           const response = await request(api).get('/api/faculty/schedule');
-          result = response.body;
+          result = response.body as { [key: string]: FacultyResponseDTO[] };
           const facultyRepository: Repository<Faculty> = testModule
             .get(getRepositoryToken(Faculty));
           const dbFaculty = await facultyRepository.find();
@@ -151,7 +151,7 @@ describe('Faculty Schedule API', function () {
           beforeEach(async function () {
             acadYears = [2020];
             const response = await request(api).get('/api/faculty/schedule?acadYears=' + acadYears.join(','));
-            result = response.body;
+            result = response.body as { [key: string]: FacultyResponseDTO[] };
           });
           it('should return an object with a key for the requested academic year', function () {
             notStrictEqual(Object.keys(result).length, 0);
@@ -173,7 +173,7 @@ describe('Faculty Schedule API', function () {
           beforeEach(async function () {
             acadYears = [2018, 2019, 2020];
             const response = await request(api).get('/api/faculty/schedule?acadYears=' + acadYears.join(','));
-            result = response.body;
+            result = response.body as { [key: string]: FacultyResponseDTO[] };
           });
           it('should return an object with a key for the requested academic years', function () {
             notStrictEqual(Object.keys(result).length, 0);
