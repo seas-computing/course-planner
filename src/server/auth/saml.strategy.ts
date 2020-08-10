@@ -57,7 +57,6 @@ export interface HarvardKeyProfile extends Profile {
   displayName: string;
 }
 
-
 /**
  * Implements passport-saml to connect to Harvard Key for authentication
  */

@@ -14,8 +14,9 @@ interface FacultyScheduleResponse {
  * @param b The second value
  * @return true if `a` is sorted before `b`, false otherwise
 */
-export const sqlBefore = (a: string, b: string):
-boolean => (a !== null && b === null) || a < b;
+export const sqlBefore = (
+  a: string, b: string
+): boolean => (a !== null && b === null) || a < b;
 
 /**
  * Account for the way null is sorted in SQL.
@@ -27,8 +28,9 @@ boolean => (a !== null && b === null) || a < b;
  * @param b The second value
  * @return true if `a` is sorted after `b`, false otherwise
 */
-export const sqlAfter = (a: string, b: string):
-boolean => (a === null && b !== null) || a > b;
+export const sqlAfter = (
+  a: string, b: string
+): boolean => (a === null && b !== null) || a > b;
 
 /**
  * Sorts by area, then last name, and finally by first name.
@@ -62,7 +64,9 @@ export const sortResults = (result: Record<string, FacultyResponseDTO[]>): {
  * expected years (based on what years were requested)
  * @param result The object whose academic year values will be checked
  */
-export const allDataValidYears = (result: FacultyScheduleResponse): boolean => (
+export const allDataValidYears = (
+  result: FacultyScheduleResponse
+): boolean => (
   Object.entries(result)
     .every(([year, dtos]) => (
       dtos.every((faculty) => (

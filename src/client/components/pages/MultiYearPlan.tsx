@@ -94,8 +94,7 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
                 {faculty.displayName}
               </TableCellListItem>
             ))
-            : null
-          }
+            : null}
         </TableCellList>
       </TableCell>
     ))

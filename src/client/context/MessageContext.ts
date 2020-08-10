@@ -34,7 +34,6 @@ export interface MessageReducerAction {
   message?: AppMessage;
 }
 
-
 export const messageReducer:
 Reducer<MessageReducerState, MessageReducerAction> = (
   state,

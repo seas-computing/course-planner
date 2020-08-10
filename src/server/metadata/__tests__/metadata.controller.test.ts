@@ -1,7 +1,4 @@
-import {
-  SinonStub,
-  stub,
-} from 'sinon';
+import { SinonStub, stub } from 'sinon';
 import { Test } from '@nestjs/testing';
 import { SemesterService } from 'server/semester/semester.service';
 import { AreaService } from 'server/area/area.service';

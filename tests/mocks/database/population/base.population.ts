@@ -17,7 +17,7 @@ export abstract class BasePopulationService<E extends BaseEntity> {
    * a generic way.
    * @param data  A list of data to be entered into the database
    */
-  public abstract async populate(
+  public abstract async populate (
     data: Record<string, TestData[]>
   ): Promise<E[]>;
 

@@ -18,7 +18,6 @@ export interface MockDBOptions {
   containerName: string;
 }
 
-
 /**
  * Reasonable defaults for creating a testing db container. In cases where you
  * would need multiple containers running, each would need a different name and
@@ -41,7 +40,6 @@ enum CONTAINER_STATE {
   DEAD,
   RUNNING,
 }
-
 
 /**
  * Provides a simple API for starting and stopping a single database container,

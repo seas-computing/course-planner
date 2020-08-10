@@ -98,7 +98,7 @@ export class CourseController {
   })
   public async update(
     @Param('id') id: string,
-    @Body() course: Partial<UpdateCourseDTO>
+      @Body() course: Partial<UpdateCourseDTO>
   ): Promise<ManageCourseResponseDTO> {
     try {
       await this.courseRepository.findOneOrFail(id);

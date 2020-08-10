@@ -41,7 +41,6 @@ const currentView = [
  */
 const showRetired = false;
 
-
 // TODO: Get the actual current academic year instead of hard coding
 const acadYear = 2019;
 
@@ -96,16 +95,15 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
                   ({ spring, fall }): boolean => (
                     fall.offered !== OFFERED.RETIRED
                     && spring.offered !== OFFERED.RETIRED)
-                )}
+                )
+            }
             tableData={tableFields.filter(
               ({ viewColumn }): boolean => (
                 currentView.includes(viewColumn)
               )
             )}
           />
-        )
-
-      }
+        )}
     </div>
   );
 };

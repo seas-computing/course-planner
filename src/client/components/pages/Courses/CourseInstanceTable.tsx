@@ -118,8 +118,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
               >
                 {name}
               </TableHeadingCell>
-            ))
-            }
+            ))}
           </>
           <>
             {[fallColumns, springColumns].map(
@@ -136,8 +135,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
                         colSpan={dataList
                           .filter(({ viewColumn }): boolean => (
                             viewColumn === COURSE_TABLE_COLUMN.ENROLLMENT))
-                          .length
-                        }
+                          .length}
                       >
                         Enrollment
                       </TableHeadingCell>
@@ -167,8 +165,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
               >
                 {name}
               </TableHeadingCell>
-            ))
-            }
+            ))}
           </>
         </TableRow>
         {/*
@@ -195,8 +192,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
 
             )}
           </TableRow>
-        )
-        }
+        )}
       </TableHead>
       <TableBody>
         {courseList.map(
@@ -238,8 +234,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
               )}
             </TableRow>
           )
-        )
-        }
+        )}
       </TableBody>
     </Table>
   );
