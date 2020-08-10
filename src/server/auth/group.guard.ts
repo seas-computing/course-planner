@@ -5,6 +5,8 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { GROUP } from 'common/constants';
+import { Request } from 'express';
+import { User } from 'server/user/user.entity';
 
 @Injectable()
 class RequireGroup implements CanActivate {
@@ -17,11 +19,12 @@ class RequireGroup implements CanActivate {
   public canActivate(
     context: ExecutionContext
   ): boolean | Promise<boolean> | Observable<boolean> {
-    return context.switchToHttp().getRequest()
-      .session
-      .user
-      .groups
-      .includes(this.requiredGroup);
+    const request = context.switchToHttp().getRequest<Request>();
+    if ('session' in request && 'user' in request.session) {
+      const user = request.session.user as User;
+      return user.groups.includes(this.requiredGroup);
+    }
+    return false;
   }
 }
 

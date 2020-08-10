@@ -44,4 +44,30 @@ describe('Group guard', function () {
 
     strictEqual(guard.canActivate(context as ExecutionContext), false);
   });
+
+  it('denies access when there is no session', function () {
+    const context: Partial<ExecutionContext> = {
+      switchToHttp: stub().returns({
+        getRequest: () => ({}),
+        getResponse: stub(),
+        getNext: stub(),
+      } as HttpArgumentsHost),
+    };
+
+    strictEqual(guard.canActivate(context as ExecutionContext), false);
+  });
+
+  it('denies access when there is no user in the session', function () {
+    const context: Partial<ExecutionContext> = {
+      switchToHttp: stub().returns({
+        getRequest: () => ({
+          session: {},
+        }),
+        getResponse: stub(),
+        getNext: stub(),
+      } as HttpArgumentsHost),
+    };
+
+    strictEqual(guard.canActivate(context as ExecutionContext), false);
+  });
 });
