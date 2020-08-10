@@ -38,7 +38,7 @@ describe('Population Service', function () {
     db = new MockDB();
     await db.init();
   });
-  after(async function () {
+  after(function () {
     // we need to stop the container after test suite finishes, in case any
     // other suites will be using the back end.
     return db.stop();
@@ -51,9 +51,9 @@ describe('Population Service', function () {
           ConfigModule,
           TypeOrmModule.forRootAsync({
             imports: [ConfigModule],
-            useFactory: async (
+            useFactory: (
               config: ConfigService
-            ): Promise<TypeOrmModuleOptions> => ({
+            ): TypeOrmModuleOptions => ({
               ...config.dbOptions,
               synchronize: true,
               autoLoadEntities: true,

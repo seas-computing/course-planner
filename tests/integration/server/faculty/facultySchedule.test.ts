@@ -66,9 +66,9 @@ describe('Faculty Schedule API', function () {
         ConfigModule,
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
-          useFactory: async (
+          useFactory: (
             config: ConfigService
-          ): Promise<TypeOrmModuleOptions> => ({
+          ): TypeOrmModuleOptions => ({
             ...config.dbOptions,
             synchronize: true,
             autoLoadEntities: true,
@@ -120,7 +120,7 @@ describe('Faculty Schedule API', function () {
     describe('User is authenticated', function () {
       describe('User is a member of the read-only group', function () {
         let result: { [key: string]: FacultyResponseDTO[] };
-        beforeEach(async function () {
+        beforeEach(function () {
           authStub.resolves(readOnlyUser);
         });
         it('is accessible to authenticated users', async function () {

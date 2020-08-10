@@ -11,7 +11,7 @@ import { User } from '../user/user.entity';
 
 @Injectable()
 class DevStrategy extends PassportStrategy(Strategy, AUTH_MODE.DEV) {
-  public async validate(req: Request): Promise<Request> {
+  public validate(req: Request): Request {
     req.session.user = new User({
       eppn: 'abc123@harvard.edu',
       firstName: 'Test',

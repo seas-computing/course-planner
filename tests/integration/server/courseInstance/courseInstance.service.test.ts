@@ -45,9 +45,9 @@ describe('Course Instance Service', function () {
         ConfigModule,
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
-          useFactory: async (
+          useFactory: (
             config: ConfigService
-          ): Promise<TypeOrmModuleOptions> => ({
+          ): TypeOrmModuleOptions => ({
             ...config.dbOptions,
             synchronize: true,
             autoLoadEntities: true,
@@ -82,13 +82,13 @@ describe('Course Instance Service', function () {
     beforeEach(async function () {
       result = await ciService.getAllByYear(testYear);
     });
-    it('should return instances from spring of that year', async function () {
+    it('should return instances from spring of that year', function () {
       notStrictEqual(result.length, 0);
       result.forEach(({ spring }) => {
         strictEqual(spring.calendarYear, testYear.toString());
       });
     });
-    it('Should return instances from fall of the previous year', async function () {
+    it('Should return instances from fall of the previous year', function () {
       notStrictEqual(result.length, 0);
       result.forEach(({ fall }) => {
         strictEqual(fall.calendarYear, (testYear - 1).toString());
@@ -264,7 +264,7 @@ describe('Course Instance Service', function () {
       });
       deepStrictEqual(result, sorted);
     });
-    it('should return the semesters in chronological order', async function () {
+    it('should return the semesters in chronological order', function () {
       const sorted = result.map((course) => ({
         ...course,
         semesters: course

@@ -35,7 +35,7 @@ export class CourseInstanceService {
    *   Corresponds to the year of the spring semester.
    */
 
-  public async getAllByYear(
+  public getAllByYear(
     acadYear: number
   ): Promise<CourseInstanceResponseDTO[]> {
     const prevYear = acadYear - 1;
@@ -95,7 +95,7 @@ export class CourseInstanceService {
       .orderBy('fall_instructors."instructorOrder"', 'ASC')
       .addOrderBy('spring_instructors."instructorOrder"', 'ASC');
 
-    return courseQuery.getMany() as unknown as CourseInstanceResponseDTO[];
+    return courseQuery.getMany() as Promise<CourseInstanceResponseDTO[]>;
   }
 
   /**

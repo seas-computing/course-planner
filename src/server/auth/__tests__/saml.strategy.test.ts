@@ -37,7 +37,7 @@ describe('SAML Strategy', function () {
       email,
     } = regularUser;
 
-    const user = await saml.validate({
+    const user = saml.validate({
       eppn,
       givenName: firstName,
       sn: lastName,
@@ -61,7 +61,7 @@ describe('SAML Strategy', function () {
     const saml = module.get<SAMLStrategy>(SAMLStrategy);
 
     try {
-      await saml.validate();
+      saml.validate();
     } catch (error) {
       strictEqual(error instanceof UnauthorizedException, true);
     }

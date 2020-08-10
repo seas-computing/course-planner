@@ -35,9 +35,9 @@ describe('Faculty service', function () {
         ConfigModule,
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
-          useFactory: async (
+          useFactory: (
             config: ConfigService
-          ): Promise<TypeOrmModuleOptions> => ({
+          ): TypeOrmModuleOptions => ({
             ...config.dbOptions,
             synchronize: true,
             autoLoadEntities: true,

@@ -199,7 +199,7 @@ describe('Faculty API', function () {
 
     describe('User is authenticated', function () {
       describe('User is a member of the admin group', function () {
-        beforeEach(async function () {
+        beforeEach(function () {
           authStub.returns(adminUser);
         });
         it('creates a new faculty member in the database', async function () {
@@ -292,7 +292,7 @@ describe('Faculty API', function () {
   });
   describe('PUT /:id', function () {
     describe('User is not authenticated', function () {
-      beforeEach(async function () {
+      beforeEach(function () {
         authStub.rejects(new ForbiddenException());
       });
       it('cannot update a faculty entry', async function () {
@@ -316,7 +316,7 @@ describe('Faculty API', function () {
     });
     describe('User is authenticated', function () {
       describe('User is a member of the admin group', function () {
-        beforeEach(async function () {
+        beforeEach(function () {
           authStub.returns(adminUser);
         });
         it('updates a faculty member entry in the database', async function () {

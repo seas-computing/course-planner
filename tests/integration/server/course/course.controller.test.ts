@@ -225,7 +225,7 @@ describe('Course API', function () {
     });
     describe('User is authenticated', function () {
       describe('User is a member of the admin group', function () {
-        beforeEach(async function () {
+        beforeEach(function () {
           authStub.returns(adminUser);
         });
         it('returns a 404 if the specified course does not exist', async function () {
