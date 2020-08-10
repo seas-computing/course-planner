@@ -3,8 +3,8 @@ import { stub, SinonStub } from 'sinon';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import {
   strictEqual,
-  fail,
   deepStrictEqual,
+  rejects,
 } from 'assert';
 import { Semester } from 'server/semester/semester.entity';
 import {
@@ -91,17 +91,7 @@ describe('Course service', function () {
     it('requires that courses be created within valid areas', async function () {
       mockAreaRepository.findOneOrFail.rejects(new EntityNotFoundError(Area, ''));
 
-      try {
-        await courseService.save(computerScienceCourse);
-        fail('No error thrown');
-      } catch (e) {
-        strictEqual(e instanceof EntityNotFoundError, true);
-        strictEqual(e.message.includes('Area'), true);
-        deepStrictEqual(
-          mockAreaRepository.findOneOrFail.args[0][0],
-          computerScienceCourse.area.id
-        );
-      }
+      await rejects(() => courseService.save(computerScienceCourse), /Area/);
     });
   });
 });

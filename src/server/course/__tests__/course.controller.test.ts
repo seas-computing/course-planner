@@ -1,9 +1,4 @@
-import {
-  strictEqual,
-  deepStrictEqual,
-  fail,
-  rejects,
-} from 'assert';
+import { strictEqual, deepStrictEqual, rejects } from 'assert';
 import { TestingModule, Test } from '@nestjs/testing';
 import { stub, SinonStub } from 'sinon';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -88,25 +83,18 @@ describe('Course controller', function () {
     });
     it('throws a NotFoundException if the course area does not exist', async function () {
       mockCourseService.save.rejects(new EntityNotFoundError(Area, ''));
-
-      try {
-        await controller.create(createCourseDtoExample);
-        fail('No error thrown');
-      } catch (e) {
-        strictEqual(e instanceof NotFoundException, true);
-        strictEqual(e.response.message.includes('area'), true);
-      }
+      await rejects(
+        () => controller.create(dummy.createCourseDtoExample),
+        /Unable to find course area in database/
+      );
     });
     it('re-throws any exceptions other than EntityNotFoundError ', async function () {
-      mockCourseService.save.rejects(new Error(string));
+      mockCourseService.save.rejects(dummy.error);
 
-      try {
-        await controller.create(createCourseDtoExample);
-        fail('No error thrown');
-      } catch (e) {
-        strictEqual(e instanceof NotFoundException, false);
-        strictEqual(e.message.includes('area'), false);
-      }
+      await rejects(
+        () => controller.create(dummy.createCourseDtoExample),
+        dummy.error
+      );
     });
   });
 
@@ -146,7 +134,10 @@ describe('Course controller', function () {
       mockCourseRepository.findOneOrFail.rejects(new EntityNotFoundError(Course, ''));
 
       await rejects(
-        controller.update(computerScienceCourse.id, updateCourseExample),
+        () => controller.update(
+          dummy.computerScienceCourse.id,
+          dummy.updateCourseExample
+        ),
         NotFoundException
       );
     });
@@ -154,7 +145,10 @@ describe('Course controller', function () {
       mockCourseRepository.findOneOrFail.rejects(dummy.error);
 
       await rejects(
-        controller.update(computerScienceCourse.id, updateCourseExample),
+        () => controller.update(
+          dummy.computerScienceCourse.id,
+          dummy.updateCourseExample
+        ),
         Error
       );
     });
