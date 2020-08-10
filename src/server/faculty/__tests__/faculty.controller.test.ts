@@ -6,8 +6,7 @@ import { FACULTY_TYPE } from 'common/constants';
 import { Authentication } from 'server/auth/authentication.guard';
 import { NotFoundException } from '@nestjs/common';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
-import { TimeoutError } from 'rxjs';
-import { appliedMathFacultyMember } from 'testData';
+import * as dummy from 'testData';
 import { Semester } from 'server/semester/semester.entity';
 import { SemesterService } from 'server/semester/semester.service';
 import { FacultyController } from '../faculty.controller';
@@ -82,7 +81,7 @@ describe('Faculty controller', function () {
 
   describe('getAll', function () {
     it('returns all faculty in the database', async function () {
-      const databaseFaculty = Array(10).fill(appliedMathFacultyMember);
+      const databaseFaculty = Array(10).fill(dummy.appliedMathFacultyMember);
 
       mockFacultyService.find.resolves(databaseFaculty);
 
