@@ -27,36 +27,51 @@ import { Absence } from 'server/absence/absence.entity';
 import { Semester } from 'server/semester/semester.entity';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
-const mockFacultyRepository = {
-  create: stub(),
-  save: stub(),
-  findOneOrFail: stub(),
-  find: stub(),
-};
-
-const mockFacultyService = {
-  find: stub(),
-};
-
-const mockAreaRepository = {
-  findOneOrFail: stub(),
-};
-
-const mockAbsenceRepository = {};
-
-const mockSemesterRepository = {};
-
-const mockFacultyScheduleCourseViewRepository = {};
-
-const mockFacultyScheduleSemesterViewRepository = {};
-
-const mockFacultyScheduleViewRepository = {};
-
 describe('Faculty API', function () {
+  let mockFacultyRepository: Record<string, SinonStub>;
+
+  let mockFacultyService: Record<string, SinonStub>;
+
+  let mockAreaRepository: Record<string, SinonStub>;
+
+  let mockAbsenceRepository: Record<string, SinonStub>;
+
+  let mockSemesterRepository: Record<string, SinonStub>;
+
+  let mockFacultyScheduleCourseViewRepository: Record<string, SinonStub>;
+
+  let mockFacultyScheduleSemesterViewRepository: Record<string, SinonStub>;
+
+  let mockFacultyScheduleViewRepository: Record<string, SinonStub>;
+
   let authStub: SinonStub;
   let api: HttpServer;
 
   beforeEach(async function () {
+    mockFacultyRepository = {
+      create: stub(),
+      save: stub(),
+      findOneOrFail: stub(),
+      find: stub(),
+    };
+
+    mockFacultyService = {
+      find: stub(),
+    };
+
+    mockAreaRepository = {
+      findOneOrFail: stub(),
+    };
+
+    mockAbsenceRepository = {};
+
+    mockSemesterRepository = {};
+
+    mockFacultyScheduleCourseViewRepository = {};
+
+    mockFacultyScheduleSemesterViewRepository = {};
+
+    mockFacultyScheduleViewRepository = {};
     authStub = stub(TestingStrategy.prototype, 'login');
 
     const module: TestingModule = await Test.createTestingModule({
@@ -109,24 +124,9 @@ describe('Faculty API', function () {
       .useGlobalPipes(new BadRequestExceptionPipe())
       .init();
 
-    api = nestApp.getHttpServer();
+    api = nestApp.getHttpServer() as HttpServer;
   });
-  afterEach(function () {
-    authStub.restore();
-    Object.values({
-      ...mockFacultyRepository,
-      ...mockAreaRepository,
-      ...mockFacultyService,
-      ...mockAbsenceRepository,
-      ...mockSemesterRepository,
-      ...mockFacultyScheduleCourseViewRepository,
-      ...mockFacultyScheduleSemesterViewRepository,
-      ...mockFacultyScheduleViewRepository,
-    })
-      .forEach((sinonStub: SinonStub): void => {
-        sinonStub.reset();
-      });
-  });
+
   describe('GET /', function () {
     describe('User is not authenticated', function () {
       it('is inaccessible to unauthenticated users', async function () {

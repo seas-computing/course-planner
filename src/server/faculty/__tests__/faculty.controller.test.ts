@@ -16,31 +16,37 @@ import { Area } from '../../area/area.entity';
 import { FacultyService } from '../faculty.service';
 import { FacultyScheduleService } from '../facultySchedule.service';
 
-const mockFacultyService = {
-  find: stub(),
-};
-
-const mockFacultyScheduleService = {};
-
-const mockSemesterService = {};
-
-const mockFacultyRepository = {
-  find: stub(),
-  save: stub(),
-  create: stub(),
-  findOneOrFail: stub(),
-};
-
-const mockAreaRepository = {
-  findOneOrFail: stub(),
-};
-
-const mockSemesterRepository = {};
-
 describe('Faculty controller', function () {
+  let mockFacultyService : Record<string, SinonStub>;
+  let mockFacultyScheduleService : Record<string, SinonStub>;
+  let mockSemesterService : Record<string, SinonStub>;
+  let mockFacultyRepository : Record<string, SinonStub>;
+  let mockAreaRepository : Record<string, SinonStub>;
+
+  let mockSemesterRepository : Record<string, SinonStub>;
   let controller: FacultyController;
 
   beforeEach(async function () {
+    mockFacultyService = {
+      find: stub(),
+    };
+
+    mockFacultyScheduleService = {};
+
+    mockSemesterService = {};
+
+    mockFacultyRepository = {
+      find: stub(),
+      save: stub(),
+      findOneOrFail: stub(),
+    };
+
+    mockAreaRepository = {
+      findOneOrFail: stub(),
+    };
+
+    mockSemesterRepository = {};
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
@@ -72,16 +78,6 @@ describe('Faculty controller', function () {
     }).overrideGuard(Authentication).useValue(true).compile();
 
     controller = module.get<FacultyController>(FacultyController);
-  });
-  afterEach(function () {
-    Object.values({
-      ...mockFacultyRepository,
-      ...mockAreaRepository,
-      ...mockSemesterRepository,
-    })
-      .forEach((sinonStub: SinonStub): void => {
-        sinonStub.reset();
-      });
   });
 
   describe('getAll', function () {

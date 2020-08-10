@@ -17,21 +17,23 @@ import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { CourseService } from '../course.service';
 import { Course } from '../course.entity';
 
-const mockAreaRepository = {
-  findOneOrFail: stub(),
-};
-
-const mockCourseRespository = {
-  save: stub(),
-};
-
-const mockSemesterRepository = {
-  find: stub(),
-};
-
 describe('Course service', function () {
+  let mockAreaRepository: Record<string, SinonStub>;
+  let mockCourseRespository : Record<string, SinonStub>;
+  let mockSemesterRepository : Record<string, SinonStub>;
   let courseService: CourseService;
   beforeEach(async function () {
+    mockAreaRepository = {
+      findOneOrFail: stub(),
+    };
+
+    mockCourseRespository = {
+      save: stub(),
+    };
+
+    mockSemesterRepository = {
+      find: stub(),
+    };
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CourseService,
@@ -52,14 +54,6 @@ describe('Course service', function () {
     }).compile();
 
     courseService = module.get<CourseService>(CourseService);
-  });
-  afterEach(function () {
-    Object.values({
-      ...mockCourseRespository,
-      ...mockSemesterRepository,
-    }).forEach((sinonStub: SinonStub): void => {
-      sinonStub.reset();
-    });
   });
 
   describe('save', function () {

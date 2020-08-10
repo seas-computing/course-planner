@@ -25,20 +25,22 @@ import { CourseController } from '../course.controller';
 import { Course } from '../course.entity';
 import { CourseService } from '../course.service';
 
-const mockCourseRepository = {
-  find: stub(),
-  findOneOrFail: stub(),
-  save: stub(),
-};
-
-const mockCourseService = {
-  save: stub(),
-};
-
 describe('Course controller', function () {
   let controller: CourseController;
+  let mockCourseRepository: Record<string, SinonStub>;
+  let mockCourseService: Record<string, SinonStub>;
 
   beforeEach(async function () {
+    mockCourseRepository = {
+      find: stub(),
+      findOneOrFail: stub(),
+      save: stub(),
+    };
+
+    mockCourseService = {
+      save: stub(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
@@ -57,13 +59,6 @@ describe('Course controller', function () {
       .compile();
 
     controller = module.get<CourseController>(CourseController);
-  });
-
-  afterEach(function () {
-    Object.values(mockCourseRepository)
-      .forEach((sinonStub: SinonStub): void => {
-        sinonStub.reset();
-      });
   });
 
   describe('getAll', function () {

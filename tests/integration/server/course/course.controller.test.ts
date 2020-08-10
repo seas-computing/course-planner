@@ -33,25 +33,29 @@ import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { UpdateCourseDTO } from 'common/dto/courses/UpdateCourse.dto';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
-const mockAreaRepository = {
-  findOneOrFail: stub(),
-};
-
-const mockCourseRepository = {
-  find: stub(),
-  findOneOrFail: stub(),
-  save: stub(),
-};
-
-const mockSemesterRepository = {
-  find: stub(),
-};
-
 describe('Course API', function () {
+  let mockAreaRepository: Record<string, SinonStub>;
+  let mockCourseRepository : Record<string, SinonStub>;
+
+  let mockSemesterRepository : Record<string, SinonStub>;
   let authStub: SinonStub;
   let api: HttpServer;
 
   beforeEach(async function () {
+    mockAreaRepository = {
+      findOneOrFail: stub(),
+    };
+
+    mockCourseRepository = {
+      find: stub(),
+      findOneOrFail: stub(),
+      save: stub(),
+    };
+
+    mockSemesterRepository = {
+      find: stub(),
+    };
+
     authStub = stub(TestingStrategy.prototype, 'login');
 
     const moduleRef: TestingModule = await Test.createTestingModule({
@@ -89,15 +93,9 @@ describe('Course API', function () {
       .useGlobalPipes(new BadRequestExceptionPipe())
       .init();
 
-    api = nestApp.getHttpServer();
+    api = nestApp.getHttpServer() as HttpServer;
   });
-  afterEach(function () {
-    authStub.restore();
-    Object.values(mockCourseRepository)
-      .forEach((sinonStub: SinonStub): void => {
-        sinonStub.reset();
-      });
-  });
+
   describe('GET /courses', function () {
     describe('User is not authenticated', function () {
       it('is inaccessible to unauthenticated users', async function () {
