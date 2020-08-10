@@ -123,11 +123,11 @@ describe('Course controller', function () {
         dummy.updateCourseExample
       );
 
-      await controller.update(computerScienceCourse.id, updateCourseExample);
+      const updatedCourse = mockCourseRepository.save.args[0][0] as Course;
 
       deepStrictEqual(
-        mockCourseRepository.save.args[0][0].id,
-        computerScienceCourse.id
+        updatedCourse.id,
+        dummy.computerScienceCourse.id
       );
     });
     it('throws a NotFoundException if the course being udpated doesn\'t exist', async function () {

@@ -74,8 +74,10 @@ describe('Course service', function () {
 
       await courseService.save(computerScienceCourse);
 
+      const updatedCourse = mockCourseRespository.save.args[0][0] as Course;
+
       strictEqual(
-        mockCourseRespository.save.args[0][0].instances.length,
+        updatedCourse.instances.length,
         semesters.length
       );
     });
