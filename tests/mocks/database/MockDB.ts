@@ -148,9 +148,13 @@ export default class MockDB {
         // The postgres container will stop and restart once after setting up
         // the initial user and database. So we need to wait for this message
         // to appear before it's ready to accept connections
-        if (data.toString().includes('PostgreSQL init process complete')) {
-          this.state = CONTAINER_STATE.RUNNING;
-          resolve();
+        if (/PostgreSQL init process complete/.test(data.toString())) {
+          // Pause briefly after container is booted to prevent errors
+          // in output
+          setTimeout(() => {
+            this.state = CONTAINER_STATE.RUNNING;
+            resolve();
+          }, 100);
         }
       });
 
