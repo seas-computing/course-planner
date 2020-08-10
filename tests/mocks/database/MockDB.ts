@@ -71,6 +71,12 @@ export default class MockDB {
   /** A reference to the running child_process attached to the container */
   private container: ChildProcess;
 
+  /** expose a public stop function bound to this */
+  public stop: () => Promise<void>;
+
+  /** expose a public init function bound to this */
+  public init: () => Promise<void>;
+
   public constructor(options: MockDBOptions = defaultOptions) {
     this.name = options.containerName;
     this.databaseName = options.databaseName;
@@ -78,11 +84,13 @@ export default class MockDB {
     this.password = options.password;
     this.port = options.port;
     this.state = CONTAINER_STATE.DEAD;
+    this.stop = this._stop.bind(this) as () => Promise<void>;
+    this.init = this._init.bind(this) as () => Promise<void>;
     // Adds listeners for the Node process events to clean up the container
     // if the test run stops unexpectedly.
-    process.on('beforeExit', this.stop);
-    process.on('SIGINT', this.stop);
-    process.on('SIGTERM', this.stop);
+    process.on('beforeExit', () => { void this.stop(); });
+    process.on('SIGINT', () => { void this.stop(); });
+    process.on('SIGTERM', () => { void this.stop(); });
   }
 
   /**
@@ -108,7 +116,7 @@ export default class MockDB {
    * @returns {Promise} resolves once the container is running, or rejects
    *                    if there is an error.
    */
-  public async init(): Promise<void> {
+  private _init(): Promise<void> {
     return new Promise((resolve, reject) => {
       if (this.state === CONTAINER_STATE.RUNNING) {
         reject(new Error(`Container "${this.name}" is already running.`));
@@ -168,7 +176,7 @@ export default class MockDB {
    * @returns {Promise} resolves once the container is stopped, or rejects
    *                    if there is an error stopping it
    */
-  public async stop(): Promise<void> {
+  private async _stop(): Promise<void> {
     if (this.state === CONTAINER_STATE.DEAD) {
       return;
     }
