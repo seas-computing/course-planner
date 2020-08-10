@@ -185,19 +185,23 @@ export default class MockDB {
       return;
     }
     try {
-      await exec(
+      const { stdout, stderr } = await exec(
         [
           'docker',
           'container',
           'rm',
           '--force',
+          '--volumes',
           this.name,
         ].join(' ')
       );
-      this.state = CONTAINER_STATE.DEAD;
-      return;
-    } catch ({ stderr }) {
-      throw new Error(`Failed to remove container with docker. Error: ${stderr}`);
+      if (stdout.trim() === this.name) {
+        this.state = CONTAINER_STATE.DEAD;
+        return;
+      }
+      throw new Error(stderr);
+    } catch ({ message }) {
+      throw new Error(`Failed to remove container with docker. Error: ${message as string}`);
     }
   }
 }
