@@ -16,8 +16,9 @@ export class FacultyPopulationService extends BasePopulationService<Faculty> {
   @InjectRepository(Area)
   protected areaRepository: Repository<Area>;
 
-
-  public async populate({ faculty }: { faculty: FacultyData[] }) {
+  public async populate(
+    { faculty }: { faculty: FacultyData[] }
+  ): Promise<Faculty[]> {
     const allAreas = await this.areaRepository.find(
       {
         order: {
@@ -40,7 +41,7 @@ export class FacultyPopulationService extends BasePopulationService<Faculty> {
     }));
   }
 
-  public async drop() {
-    return this.repository.query('TRUNCATE TABLE faculty CASCADE;');
+  public async drop(): Promise<void> {
+    await this.repository.query('TRUNCATE TABLE faculty CASCADE;');
   }
 }
