@@ -34,7 +34,7 @@ boolean => (a === null && b !== null) || a > b;
  * Sorts by area, then last name, and finally by first name.
  * @param result The object whose keys will be sorted
  */
-export const sortResults = (result: {}): {
+export const sortResults = (result: Record<string, FacultyResponseDTO[]>): {
   [key: string]: FacultyResponseDTO[];
 } => {
   const sorted = {};
