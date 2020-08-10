@@ -38,8 +38,8 @@ export const sortResults = (result: Record<string, FacultyResponseDTO[]>): {
   [key: string]: FacultyResponseDTO[];
 } => {
   const sorted = {};
-  Object.keys(result).forEach((key): void => {
-    sorted[key] = result[key].slice().sort((a, b): number => {
+  Object.entries(result).forEach(([key, value]): void => {
+    sorted[key] = value.slice().sort((a, b): number => {
       if (sqlBefore(a.area, b.area)) {
         return -1;
       } if (sqlAfter(a.area, b.area)) {
