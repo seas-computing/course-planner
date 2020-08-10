@@ -20,7 +20,9 @@ export class AreaService {
       .then(
         // raw result is array of e.g. { name: 'AM'} so we are mapping to get
         // an array of area names
-        (results): string[] => results.map(({ name }): string => name)
+        (results): string[] => results.map(
+          ({ name }: {name: string}): string => name
+        )
       );
   }
 }
