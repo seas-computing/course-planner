@@ -122,6 +122,12 @@
       }
     ],
     "no-underscore-dangle": "off",
+    "no-void": [
+      "error",
+      {
+        "allowAsStatement": true
+      }
+    ],
     "prefer-arrow-callback": 0,
     "mocha/prefer-arrow-callback": 2,
     "prefer-template": "off",
