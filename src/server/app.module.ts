@@ -1,12 +1,10 @@
-import { join } from 'path';
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import session from 'express-session';
 import ConnectRedis from 'connect-redis';
 import { SAMLStrategy } from 'server/auth/saml.strategy';
 import { DevStrategy } from 'server/auth/dev.strategy';
 import { SessionModule, NestSessionOptions } from 'nestjs-session';
-import { ServeStaticModule } from '@nestjs/serve-static';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
 import { AuthModule } from './auth/auth.module';
@@ -62,34 +60,10 @@ import { NonClassEventModule } from './nonClassEvent/nonclassevent.module';
     FacultyModule,
     CourseInstanceModule,
     MetadataModule,
-    NonClassEventModule,
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'client'),
-      exclude: ['/api*'],
-    }),
   ],
   controllers: [],
   providers: [],
 })
-class AppModule implements NestModule {
-  private readonly config: ConfigService;
-
-  public constructor(config: ConfigService) {
-    this.config = config;
-  }
-
-  /**
-     * Sets up middleware for consumption by the app. In development, the
-     * dev-middleware will override the ServerStaticModule injected above.
-     */
-  public configure(consumer: MiddlewareConsumer): void {
-    if (this.config.isDevelopment) {
-      // eslint-disable-next-line
-      const { devServer, hotServer } = require('./config/dev.middleware');
-      consumer.apply(devServer, hotServer).forRoutes('/');
-      consumer.apply(devServer, hotServer).forRoutes('/courses/*');
-    }
-  }
-}
+class AppModule { }
 
 export { AppModule };

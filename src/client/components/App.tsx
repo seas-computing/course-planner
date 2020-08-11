@@ -43,6 +43,7 @@ import CourseAdmin from './pages/CourseAdmin';
 import FacultyAdmin from './pages/FacultyAdmin';
 import FacultyPage from './pages/Faculty/FacultyPage';
 import CourseInstanceList from './pages/Courses/CoursesPage';
+import MultiYearPlan from './pages/MultiYearPlan';
 
 /**
  * The primary app component. Fetches the current user from the server when it
@@ -176,6 +177,7 @@ const ColdApp: SFC = (): ReactElement => {
                     <Route path="/course-admin" component={CourseAdmin} />
                     <Route exact path="/faculty" component={FacultyPage} />
                     <Route path="/faculty-admin" component={FacultyAdmin} />
+                    <Route path="/four-year-plan" component={MultiYearPlan} />
                     <Route component={NoMatch} />
                   </Switch>
                 </PageBody>

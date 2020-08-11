@@ -2,9 +2,6 @@ import {
   stub,
   SinonStub,
 } from 'sinon';
-import request, {
-  AxiosResponse,
-} from 'axios';
 import {
   physicsFacultyMemberResponse,
   bioengineeringFacultyMemberResponse,
@@ -19,6 +16,9 @@ import {
   fail,
 } from 'assert';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
+import request, {
+  AxiosResponse,
+} from '../request';
 
 describe('Faculty API', function () {
   let result: FacultyResponseDTO;

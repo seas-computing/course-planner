@@ -2,9 +2,6 @@ import {
   stub,
   SinonStub,
 } from 'sinon';
-import request, {
-  AxiosResponse,
-} from 'axios';
 import {
   computerScienceCourseResponse,
   physicsCourseResponse,
@@ -17,6 +14,9 @@ import {
   deepStrictEqual,
   fail,
 } from 'assert';
+import request, {
+  AxiosResponse,
+} from '../request';
 
 describe('Course Admin API', function () {
   let result: ManageCourseResponseDTO[];

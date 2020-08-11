@@ -18,7 +18,6 @@ describe('CampusIcon', function () {
       () => {}
     );
     const hiddenStyle = window.getComputedStyle(getByText('llston'));
-    strictEqual(hiddenStyle.visibility, 'collapse');
     strictEqual(hiddenStyle.display, 'none');
   });
   it('Keeps the full text hidden in the DOM content', function () {

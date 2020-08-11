@@ -1,29 +1,51 @@
-import { resolve } from 'path';
-import webpack from 'webpack';
-import webpackDevServer from 'webpack-dev-middleware';
-import webpackHotServer from 'webpack-hot-middleware';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
-import HtmlWebpackRootPlugin from 'html-webpack-root-plugin';
-import TSConfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
+const { resolve } = require('path');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const HtmlWebpackRootPlugin = require('html-webpack-root-plugin');
+const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
-const publicPath = '/';
+const publicPath = '/courses';
+
+const {
+  APP_NAME,
+  CLIENT_PORT,
+  SERVER_URL,
+  SERVER_PORT,
+} = process.env;
 
 /**
- * This webpack configuration handles live-reloading of our code in development
- * through the webpack-dev-middleware. To change the production configuration
- * for webpack, see the webpackfile.js in the project root.
+ * This webpack configuration handles hot-reloading of client code in
+ * development.
+ *
+ * To change the production configuration for webpack, see webpackfile.js
  */
 
-const compiler = webpack([{
+module.exports = {
   name: 'client',
   target: 'web',
   mode: 'development',
   devtool: 'cheap-eval-source-map',
   entry: [
-    'webpack-hot-middleware/client',
     'react-hot-loader/patch',
     './src/client/index.tsx',
   ],
+  devServer: {
+    // This will push everything to the index.html file, letting us handle
+    // routing via React Router
+    historyApiFallback: {
+      rewrites: [
+        { from: /./, to: '/courses/index.html' },
+      ],
+    },
+    // We need to open the server to everyone so we can reach it from outside
+    // the container
+    host: '0.0.0.0',
+    hot: true,
+    hotOnly: true,
+    port: CLIENT_PORT,
+    publicPath,
+    serveIndex: false,
+  },
   output: {
     path: resolve(__dirname, 'build/static'),
     filename: 'app.js',
@@ -73,20 +95,11 @@ const compiler = webpack([{
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: process.env.APP_NAME,
+      title: APP_NAME,
     }),
     new HtmlWebpackRootPlugin(),
-    new webpack.HotModuleReplacementPlugin(),
+    new webpack.DefinePlugin({
+      'process.env.SERVER_URL': JSON.stringify(SERVER_URL),
+    }),
   ],
-}]);
-
-/**
- * Implements the webpack development server middleware to serve
- * compiled client code from memory. The Hot Server also allows for
- * live module replacement.
- */
-
-export const devServer = webpackDevServer(compiler, {
-  publicPath,
-});
-export const hotServer = webpackHotServer(compiler);
+};

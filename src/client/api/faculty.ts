@@ -1,6 +1,6 @@
-import request from 'axios';
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
+import request from './request';
 
 /**
  * Retrieves all faculty for the Faculty Admin tab
