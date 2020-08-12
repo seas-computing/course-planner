@@ -22,6 +22,7 @@ async function bootstrap(): Promise<void> {
     cors: {
       origin: CLIENT_URL,
       methods: ['GET', 'PUT', 'POST', 'DELETE'],
+      credentials: true,
     },
   });
   if (NODE_ENV === 'development') {

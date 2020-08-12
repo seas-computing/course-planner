@@ -15,4 +15,5 @@ export default axios.create({
    * which is set to '' in .mochainit.ts at the project root.
    */
   baseURL: process.env.SERVER_URL,
+  withCredentials: true,
 });
