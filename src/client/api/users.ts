@@ -1,11 +1,11 @@
-import { UserResponse } from 'common/dto/users/userResponse.dto';
+import { User } from 'common/classes';
 import request from './request';
 
 /**
  * Get the currently authenticated user
  */
 
-export const getCurrentUser = async (): Promise<UserResponse> => {
+export const getCurrentUser = async (): Promise<User> => {
   const response = await request.get('/api/users/current');
-  return response.data as UserResponse;
+  return new User(response.data);
 };

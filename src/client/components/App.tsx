@@ -33,9 +33,9 @@ import {
   Link,
 } from 'mark-one';
 import { getCurrentUser } from 'client/api';
-import { UserResponse } from 'common/dto/users/userResponse.dto';
 import { MetadataContext } from 'client/context/MetadataContext';
 import { getMetadata } from 'client/api/metadata';
+import { User } from 'common/classes';
 import { Message } from './layout';
 import NoMatch from './pages/NoMatch';
 import logo from '../img/seas-logo.svg';
@@ -55,7 +55,7 @@ export const ColdApp: SFC = (): ReactElement => {
    * Hook for maintaining the currently selected user
    * */
 
-  const [currentUser, setUser] = useState<UserResponse>(null);
+  const [currentUser, setUser] = useState<User | null>(null);
 
   /**
    * Set up the local reducer for maintaining the current app-wide message
@@ -78,7 +78,7 @@ export const ColdApp: SFC = (): ReactElement => {
 
   useEffect((): void => {
     getCurrentUser()
-      .then((user): UserResponse => {
+      .then((user: User): User => {
         setUser(user);
         return user;
       })
