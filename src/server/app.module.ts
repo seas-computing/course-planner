@@ -12,6 +12,7 @@ import { CourseModule } from './course/course.module';
 import { FacultyModule } from './faculty/faculty.module';
 import { CourseInstanceModule } from './courseInstance/courseInstance.module';
 import { MetadataModule } from './metadata/metadata.module';
+import { UserController } from './user/user.controller';
 
 /**
  * Base application module that configures the database connections and other
@@ -48,6 +49,7 @@ import { MetadataModule } from './metadata/metadata.module';
             store,
             resave: true,
             saveUninitialized: false,
+            unset: 'destroy',
           },
         };
       },
@@ -60,7 +62,9 @@ import { MetadataModule } from './metadata/metadata.module';
     CourseInstanceModule,
     MetadataModule,
   ],
-  controllers: [],
+  controllers: [
+    UserController,
+  ],
   providers: [],
 })
 class AppModule { }
