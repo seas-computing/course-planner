@@ -2,7 +2,7 @@ import { Strategy } from 'passport-custom';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { AUTH_MODE, GROUP } from 'common/constants';
-import { User } from '../user/user.entity';
+import { User } from 'common/classes';
 
 /**
  * Uses passport-custom to always authenticate as a specific user
