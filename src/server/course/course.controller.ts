@@ -97,8 +97,7 @@ export class CourseController {
     description: 'The supplied data did not meet validation requirements',
   })
   public async update(
-    @Param('id') id: string,
-      @Body() course: Partial<UpdateCourseDTO>
+    @Param('id') id: string, @Body() course: Partial<UpdateCourseDTO>
   ): Promise<ManageCourseResponseDTO> {
     try {
       await this.courseRepository.findOneOrFail(id);
