@@ -35,6 +35,7 @@ async function bootstrap(): Promise<void> {
     SwaggerModule.setup('docs/api', app, document);
   }
   app.useGlobalPipes(new BadRequestExceptionPipe());
+  app.setGlobalPrefix('/course-planner');
   await app.listen(SERVER_PORT);
 
   if (module.hot) {
