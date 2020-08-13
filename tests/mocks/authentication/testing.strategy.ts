@@ -27,7 +27,7 @@ class TestingStrategy extends PassportStrategy(Strategy, AUTH_MODE.TEST) {
    * Sinon to control what value the authentication stage will return.
    */
   public login(): Promise<User> {
-    return new Promise((resolve) => { resolve(regularUser); });
+    return Promise.resolve(regularUser);
   }
 }
 
