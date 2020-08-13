@@ -20,7 +20,7 @@ class RequireGroup implements CanActivate {
     context: ExecutionContext
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
-    if ('session' in request && 'user' in request.session) {
+    if (request?.session?.user) {
       const user = request.session.user as User;
       return user.groups.includes(this.requiredGroup);
     }
