@@ -150,7 +150,7 @@ describe('App', function () {
         );
         strictEqual(apiStub.callCount, 1);
         const { fullName } = dummy.regularUser;
-        return findByText(new RegExp(fullName)); // , { exact: false });
+        return findByText(new RegExp(fullName));
       });
     });
     context('When userFetch fails', function () {

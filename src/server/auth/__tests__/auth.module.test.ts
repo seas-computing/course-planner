@@ -95,9 +95,6 @@ describe('AuthModule', function () {
           defaultStrategy: passedStrategy,
         } = passportMod
           .useFactory({ authMode: AUTH_MODE.TEST }) as IAuthModuleOptions;
-        // const {
-          // defaultStrategy: passedStrategy,
-        // } = ppspy.args[0][0].useFactory({ authMode: AUTH_MODE.TEST });
         strictEqual(passedStrategy, AUTH_MODE.TEST);
       });
     });
