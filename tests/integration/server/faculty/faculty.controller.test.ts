@@ -437,9 +437,10 @@ describe('Faculty API', function () {
             .put(`/api/faculty/${newFacultyMemberInfo.id}`)
             .send(newFacultyMemberInfo);
           const body = response.body as NotFoundException;
+          const message = body.message as string;
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.NOT_FOUND);
-          strictEqual(body.message, 'Could not find any entity of type Faculty in any Area with the supplied ID');
+          strictEqual(message.includes('Faculty'), true);
         });
         it('throws a Not Found exception if area does not exist', async function () {
           const newArea = {
@@ -459,9 +460,10 @@ describe('Faculty API', function () {
             .put(`/api/faculty/${newArea.id}`)
             .send(newFacultyMemberInfo);
           const body = response.body as NotFoundException;
+          const message = body.message as string;
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.NOT_FOUND);
-          strictEqual(body.message, 'The entered Area does not exist');
+          strictEqual(message.includes('Area'), true);
         });
       });
       describe('User is not a member of the admin group', function () {
