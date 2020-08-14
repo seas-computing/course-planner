@@ -3,18 +3,23 @@ import { strictEqual } from 'assert';
 import {
   render,
   waitForElement,
+  fireEvent,
 } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { stub, SinonStub } from 'sinon';
 import * as dummy from 'testData';
 import * as userApi from 'client/api/users';
+import * as metaApi from 'client/api/metadata';
 import { ColdApp as App } from '../App';
 
 describe('App', function () {
-  let apiStub: SinonStub;
+  let userStub: SinonStub;
+  let metaStub: SinonStub;
   beforeEach(function () {
-    apiStub = stub(userApi, 'getCurrentUser');
-    apiStub.resolves(dummy.regularUser);
+    userStub = stub(userApi, 'getCurrentUser');
+    metaStub = stub(metaApi, 'getMetadata');
+    userStub.resolves(dummy.regularUser);
+    metaStub.resolves(dummy.metadata);
   });
   describe('rendering', function () {
     it('creates a div for app content', async function () {
@@ -140,7 +145,8 @@ describe('App', function () {
     });
     context('When userFetch succeeds', function () {
       beforeEach(function () {
-        apiStub.resolves(dummy.regularUser);
+        userStub.resolves(dummy.regularUser);
+        metaStub.resolves(dummy.metadata);
       });
       it('displays the name of the current user', async function () {
         const { findByText } = render(
@@ -148,25 +154,41 @@ describe('App', function () {
             <App />
           </MemoryRouter>
         );
-        strictEqual(apiStub.callCount, 1);
+        strictEqual(userStub.callCount, 1);
         const { fullName } = dummy.regularUser;
-        return findByText(new RegExp(fullName));
+        await findByText(new RegExp(fullName));
       });
     });
     context('When userFetch fails', function () {
       beforeEach(function () {
-        apiStub.rejects(dummy.error);
+        userStub.rejects(dummy.error);
+        metaStub.resolves(dummy.metadata);
       });
       it('displays an error Message', async function () {
-        const { getByText } = render(
+        const { findByText } = render(
           <MemoryRouter>
             <App />
           </MemoryRouter>
         );
-        strictEqual(apiStub.callCount, 1);
-        return waitForElement(() => (
-          getByText('Unable to get user data', { exact: false })
-        ));
+        strictEqual(userStub.callCount, 1);
+        return findByText('Unable to get user data', { exact: false });
+      });
+    });
+    context('When getMetadata fails', function () {
+      beforeEach(function () {
+        userStub.resolves(dummy.regularUser);
+        metaStub.rejects(dummy.error);
+      });
+      it('displays an error Message', async function () {
+        const { findByText } = render(
+          <MemoryRouter>
+            <App />
+          </MemoryRouter>
+        );
+        strictEqual(userStub.callCount, 1);
+        const nextButton = await findByText('next', { exact: false });
+        fireEvent.click(nextButton);
+        return findByText('Unable to get metadata', { exact: false });
       });
     });
   });
