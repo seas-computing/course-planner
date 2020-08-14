@@ -85,7 +85,14 @@ describe('Course controller', function () {
       mockCourseService.save.rejects(new EntityNotFoundError(Area, ''));
       await rejects(
         () => controller.create(dummy.createCourseDtoExample),
-        /Unable to find course area in database/
+        NotFoundException
+      );
+    });
+    it('mentions the the course area in the error', async function () {
+      mockCourseService.save.rejects(new EntityNotFoundError(Area, ''));
+      await rejects(
+        () => controller.create(dummy.createCourseDtoExample),
+        /course area/
       );
     });
     it('re-throws any exceptions other than EntityNotFoundError ', async function () {
