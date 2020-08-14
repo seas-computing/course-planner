@@ -117,7 +117,7 @@ describe('Course API', function () {
           mockCourseRepository.find.resolves(mockCourses);
 
           const response = await request(api).get('/api/courses');
-          const body = response.body as Array<ManageCourseResponseDTO>;
+          const body = response.body as ManageCourseResponseDTO[];
           strictEqual(response.ok, true);
           strictEqual(body.length, mockCourses.length);
           strictEqual(mockCourseRepository.find.callCount, 1);

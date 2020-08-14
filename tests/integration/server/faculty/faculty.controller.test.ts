@@ -153,7 +153,7 @@ describe('Faculty API', function () {
 
           const response = await request(api).get('/api/faculty');
 
-          const body = response.body as Array<Faculty>;
+          const body = response.body as Faculty[];
 
           strictEqual(response.ok, true);
           strictEqual(body.length, mockFaculty.length);
