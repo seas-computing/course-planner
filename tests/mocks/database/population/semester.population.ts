@@ -6,9 +6,11 @@ import { SemesterData } from './data';
 
 export class SemesterPopulationService extends BasePopulationService<Semester> {
   @InjectRepository(Semester)
-  protected repository: Repository<Semester>
+  protected repository: Repository<Semester>;
 
-  public async populate({ semesters }: { semesters: SemesterData[] }) {
+  public async populate(
+    { semesters }: { semesters: SemesterData[] }
+  ): Promise<Semester[]> {
     return this.repository.save(
       semesters.map(({ academicYear, term }) => {
         const semester = new Semester();
@@ -19,7 +21,7 @@ export class SemesterPopulationService extends BasePopulationService<Semester> {
     );
   }
 
-  public async drop() {
-    return this.repository.query('TRUNCATE TABLE semester CASCADE;');
+  public async drop(): Promise<void> {
+    await this.repository.query('TRUNCATE TABLE semester CASCADE;');
   }
 }

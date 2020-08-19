@@ -1,5 +1,6 @@
 import React, { ReactElement, FunctionComponent } from 'react';
 import styled from 'styled-components';
+import { fromTheme } from 'mark-one';
 import HiddenText from './HiddenText';
 
 export interface CampusIconProps {
@@ -9,20 +10,19 @@ export interface CampusIconProps {
   children: string;
 }
 
-
 const StyledCampusIcon = styled.strong`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: ${({ theme }): string => (theme.color.text.dark)};
+  background-color: ${fromTheme('color', 'text', 'dark')};
   text-transform: capitalize;
-  color:  ${({ theme }): string => (theme.color.text.light)};
+  color:  ${fromTheme('color', 'text', 'light')};
   border-radius: 50%;
   width: 1.5em;
   height: 1.5em;
-  font-size: ${({ theme }): string => (theme.font.bold.size)};
-  font-weight: ${({ theme }): string => (theme.font.bold.weight)};
-  font-family: ${({ theme }): string => (theme.font.bold.family)};
+  font-size: ${fromTheme('font', 'bold', 'size')};
+  font-weight: ${fromTheme('font', 'bold', 'weight')};
+  font-family: ${fromTheme('font', 'bold', 'family')};
   user-select: none;
   cursor: default;
 `;

@@ -11,25 +11,25 @@ export class User {
    *
    * @example 4A2849CF119852@harvard.edu
    */
-  public eppn: string = '';
+  public eppn = '';
 
   /**
    * User's first name
    * @example James
    */
-  public firstName: string = '';
+  public firstName = '';
 
   /**
    * User's Last name
    * @example Waldo
    */
-  public lastName: string = '';
+  public lastName = '';
 
   /**
    * User's email address
    * @example waldo@harvard.edu
    */
-  public email: string = '';
+  public email = '';
 
   /**
    * A list of grouper group names that the user belongs to

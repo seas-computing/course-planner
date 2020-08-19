@@ -3,8 +3,8 @@ import { stub, SinonStub } from 'sinon';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import {
   strictEqual,
-  fail,
   deepStrictEqual,
+  rejects,
 } from 'assert';
 import { Semester } from 'server/semester/semester.entity';
 import {
@@ -17,21 +17,23 @@ import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { CourseService } from '../course.service';
 import { Course } from '../course.entity';
 
-const mockAreaRepository = {
-  findOneOrFail: stub(),
-};
-
-const mockCourseRespository = {
-  save: stub(),
-};
-
-const mockSemesterRepository = {
-  find: stub(),
-};
-
 describe('Course service', function () {
+  let mockAreaRepository: Record<string, SinonStub>;
+  let mockCourseRespository : Record<string, SinonStub>;
+  let mockSemesterRepository : Record<string, SinonStub>;
   let courseService: CourseService;
   beforeEach(async function () {
+    mockAreaRepository = {
+      findOneOrFail: stub(),
+    };
+
+    mockCourseRespository = {
+      save: stub(),
+    };
+
+    mockSemesterRepository = {
+      find: stub(),
+    };
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CourseService,
@@ -53,14 +55,6 @@ describe('Course service', function () {
 
     courseService = module.get<CourseService>(CourseService);
   });
-  afterEach(function () {
-    Object.values({
-      ...mockCourseRespository,
-      ...mockSemesterRepository,
-    }).forEach((sinonStub: SinonStub): void => {
-      sinonStub.reset();
-    });
-  });
 
   describe('save', function () {
     beforeEach(function () {
@@ -80,8 +74,10 @@ describe('Course service', function () {
 
       await courseService.save(computerScienceCourse);
 
+      const updatedCourse = mockCourseRespository.save.args[0][0] as Course;
+
       strictEqual(
-        mockCourseRespository.save.args[0][0].instances.length,
+        updatedCourse.instances.length,
         semesters.length
       );
     });
@@ -97,17 +93,7 @@ describe('Course service', function () {
     it('requires that courses be created within valid areas', async function () {
       mockAreaRepository.findOneOrFail.rejects(new EntityNotFoundError(Area, ''));
 
-      try {
-        await courseService.save(computerScienceCourse);
-        fail('No error thrown');
-      } catch (e) {
-        strictEqual(e instanceof EntityNotFoundError, true);
-        strictEqual(e.message.includes('Area'), true);
-        deepStrictEqual(
-          mockAreaRepository.findOneOrFail.args[0][0],
-          computerScienceCourse.area.id
-        );
-      }
+      await rejects(() => courseService.save(computerScienceCourse), /Area/);
     });
   });
 });

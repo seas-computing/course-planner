@@ -12,7 +12,7 @@ import { Semester } from './semester.entity';
 @Injectable()
 export class SemesterService {
   @InjectRepository(Semester)
-  private readonly semesterRepository: Repository<Semester>
+  private readonly semesterRepository: Repository<Semester>;
 
   /**
    * Resolves to an array containing all of the years that currently exist in the
@@ -27,7 +27,9 @@ export class SemesterService {
       .getRawMany()
       .then(
         // raw result is array of e.g. { year: '2020'} so we need to map
-        (results): string[] => results.map(({ year }): string => year)
+        (results): string[] => results.map(
+          ({ year }: { year: string}): string => year
+        )
       );
   }
 
@@ -51,7 +53,10 @@ export class SemesterService {
       .getRawMany()
       .then(
         // raw result is array, so we need to map to get the desired format (e.g. 'FALL 2021')
-        (results): string[] => results.map(({ term, year }): string => `${term} ${year}`)
+        (results): string[] => results.map(
+          ({ term, year }: {term: TERM, year: string}): string => `${term} ${year}`
+        )
+
       );
   }
 }

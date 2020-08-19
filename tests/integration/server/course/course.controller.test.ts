@@ -7,6 +7,7 @@ import {
   HttpServer,
   ForbiddenException,
   UnauthorizedException,
+  BadRequestException,
 } from '@nestjs/common';
 import { strictEqual, deepStrictEqual } from 'assert';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -33,25 +34,29 @@ import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { UpdateCourseDTO } from 'common/dto/courses/UpdateCourse.dto';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
-const mockAreaRepository = {
-  findOneOrFail: stub(),
-};
-
-const mockCourseRepository = {
-  find: stub(),
-  findOneOrFail: stub(),
-  save: stub(),
-};
-
-const mockSemesterRepository = {
-  find: stub(),
-};
-
 describe('Course API', function () {
+  let mockAreaRepository: Record<string, SinonStub>;
+  let mockCourseRepository : Record<string, SinonStub>;
+
+  let mockSemesterRepository : Record<string, SinonStub>;
   let authStub: SinonStub;
   let api: HttpServer;
 
   beforeEach(async function () {
+    mockAreaRepository = {
+      findOneOrFail: stub(),
+    };
+
+    mockCourseRepository = {
+      find: stub(),
+      findOneOrFail: stub(),
+      save: stub(),
+    };
+
+    mockSemesterRepository = {
+      find: stub(),
+    };
+
     authStub = stub(TestingStrategy.prototype, 'login');
 
     const moduleRef: TestingModule = await Test.createTestingModule({
@@ -89,15 +94,9 @@ describe('Course API', function () {
       .useGlobalPipes(new BadRequestExceptionPipe())
       .init();
 
-    api = nestApp.getHttpServer();
+    api = nestApp.getHttpServer() as HttpServer;
   });
-  afterEach(function () {
-    authStub.restore();
-    Object.values(mockCourseRepository)
-      .forEach((sinonStub: SinonStub): void => {
-        sinonStub.reset();
-      });
-  });
+
   describe('GET /courses', function () {
     describe('User is not authenticated', function () {
       it('is inaccessible to unauthenticated users', async function () {
@@ -118,9 +117,9 @@ describe('Course API', function () {
           mockCourseRepository.find.resolves(mockCourses);
 
           const response = await request(api).get('/api/courses');
-
+          const body = response.body as ManageCourseResponseDTO[];
           strictEqual(response.ok, true);
-          strictEqual(response.body.length, mockCourses.length);
+          strictEqual(body.length, mockCourses.length);
           strictEqual(mockCourseRepository.find.callCount, 1);
         });
       });
@@ -189,9 +188,11 @@ describe('Course API', function () {
             .post('/api/courses')
             .send({ title: computerScienceCourse.title });
 
+          const body = response.body as BadRequestException;
+
           deepStrictEqual(response.ok, false);
           deepStrictEqual(response.status, HttpStatus.BAD_REQUEST);
-          strictEqual(response.body.message.includes('prefix'), true);
+          strictEqual(/prefix/.test(body.message), true);
         });
       });
       describe('User is not a member of the admin group', function () {
@@ -224,7 +225,7 @@ describe('Course API', function () {
     });
     describe('User is authenticated', function () {
       describe('User is a member of the admin group', function () {
-        beforeEach(async function () {
+        beforeEach(function () {
           authStub.returns(adminUser);
         });
         it('returns a 404 if the specified course does not exist', async function () {

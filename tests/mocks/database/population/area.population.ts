@@ -11,7 +11,7 @@ export class AreaPopulationService extends BasePopulationService<Area> {
   @InjectRepository(Area)
   protected repository: Repository<Area>;
 
-  public async populate({ areas }: { areas: AreaData[] }) {
+  public async populate({ areas }: { areas: AreaData[] }): Promise<Area[]> {
     return this.repository.save(areas
       .map(({ name }) => {
         const area = new Area();
@@ -20,7 +20,7 @@ export class AreaPopulationService extends BasePopulationService<Area> {
       }));
   }
 
-  public async drop() {
-    return this.repository.query('TRUNCATE TABLE area CASCADE;');
+  public async drop(): Promise<void> {
+    await this.repository.query('TRUNCATE TABLE area CASCADE;');
   }
 }

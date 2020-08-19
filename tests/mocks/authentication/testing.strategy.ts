@@ -26,8 +26,8 @@ class TestingStrategy extends PassportStrategy(Strategy, AUTH_MODE.TEST) {
    * A function that returns a user object. In tests, this can be stubbed with
    * Sinon to control what value the authentication stage will return.
    */
-  public async login(): Promise<User> {
-    return regularUser;
+  public login(): Promise<User> {
+    return Promise.resolve(regularUser);
   }
 }
 

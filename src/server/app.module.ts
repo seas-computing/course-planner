@@ -23,17 +23,17 @@ import { MetadataModule } from './metadata/metadata.module';
     ConfigModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: async (
+      useFactory: (
         config: ConfigService
-      ): Promise<TypeOrmModuleOptions> => (config.dbOptions),
+      ): TypeOrmModuleOptions => (config.dbOptions),
       inject: [ConfigService],
     }),
     SessionModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (
+      useFactory: (
         config: ConfigService
-      ): Promise<NestSessionOptions> => {
+      ): NestSessionOptions => {
         const RedisStore = ConnectRedis(session);
         const store = new RedisStore({
           ...config.redisOptions,

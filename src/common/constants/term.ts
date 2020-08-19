@@ -6,4 +6,6 @@ enum TERM {
   SPRING = 'SPRING',
 }
 
+export type TermKey = 'fall' | 'spring';
+
 export default TERM;

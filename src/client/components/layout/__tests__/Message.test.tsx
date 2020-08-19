@@ -1,25 +1,27 @@
 import React from 'react';
 import { strictEqual } from 'assert';
 import { render, fireEvent } from '@testing-library/react';
-import { stub, SinonStub, useFakeTimers } from 'sinon';
+import { stub, SinonStub } from 'sinon';
+import FakeTimers, { InstalledClock } from '@sinonjs/fake-timers';
 import * as dummy from 'testData';
 import { MESSAGE_TYPE } from 'client/classes';
 import { MessageContext } from 'client/context';
 import { Message, MessageProps } from '../Message';
 
 describe('Message', function () {
+  let clock: InstalledClock;
   const props: MessageProps = {
     messageCount: dummy.int,
     messageText: dummy.string,
     messageType: MESSAGE_TYPE.ERROR,
   };
   describe('rendering', function () {
-    it('Should display the message', async function () {
+    it('Should display the message', function () {
       const { getByText } = render(<Message {...props} />);
       return getByText(dummy.string);
     });
     context('When there are more messages to come', function () {
-      it('Should show the number of messages on the button', async function () {
+      it('Should show the number of messages on the button', function () {
         const { getByText } = render(<Message {...props} />);
         const clearButton = getByText(`Next (${dummy.int})`);
         strictEqual(clearButton.tagName, 'BUTTON');
@@ -27,7 +29,7 @@ describe('Message', function () {
       });
     });
     context('When there are no more messages to come', function () {
-      it('should just display "clear" on the button', async function () {
+      it('should just display "clear" on the button', function () {
         const { getByText } = render(<Message {...props} messageCount={0} />);
         const clearButton = getByText('clear');
         strictEqual(clearButton.tagName, 'BUTTON');
@@ -39,10 +41,10 @@ describe('Message', function () {
     let dispatchStub: SinonStub;
     beforeEach(function () {
       dispatchStub = stub();
-      this.clock = useFakeTimers();
+      clock = FakeTimers.install();
     });
     afterEach(function () {
-      this.clock.restore();
+      clock.uninstall();
     });
     it('Should provide the clearMessage function to the clear button', function () {
       const { getByText } = render(
@@ -64,7 +66,7 @@ describe('Message', function () {
         </MessageContext.Provider>
       );
       strictEqual(dispatchStub.callCount, 0);
-      this.clock.tick(5000);
+      clock.tick(5000);
       strictEqual(dispatchStub.callCount, 1);
     });
 
@@ -79,7 +81,7 @@ describe('Message', function () {
         </MessageContext.Provider>
       );
       strictEqual(dispatchStub.callCount, 0);
-      this.clock.tick(5000000);
+      clock.tick(5000000);
       strictEqual(dispatchStub.callCount, 0);
     });
   });

@@ -24,7 +24,7 @@ describe('Faculty API', function () {
   let result: FacultyResponseDTO;
   let getStub: SinonStub;
   describe('GET /faculty/schedule', function () {
-    beforeEach(async function () {
+    beforeEach(function () {
       getStub = stub(request, 'get');
     });
     afterEach(function () {
@@ -56,7 +56,7 @@ describe('Faculty API', function () {
         });
       });
       context('when data fetch fails', function () {
-        beforeEach(async function () {
+        beforeEach(function () {
           getStub.rejects(error);
         });
         it('should throw an error', async function () {
@@ -75,7 +75,7 @@ describe('Faculty Admin API', function () {
   let result: ManageFacultyResponseDTO[];
   let getStub: SinonStub;
   describe('GET /faculty', function () {
-    beforeEach(async function () {
+    beforeEach(function () {
       getStub = stub(request, 'get');
     });
     afterEach(function () {
@@ -108,7 +108,7 @@ describe('Faculty Admin API', function () {
         });
       });
       context('when data fetch fails', function () {
-        beforeEach(async function () {
+        beforeEach(function () {
           getStub.rejects();
         });
         it('should throw an error', async function () {

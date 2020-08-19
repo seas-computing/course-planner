@@ -60,7 +60,7 @@ const FacultySchedule: FunctionComponent = function (): ReactElement {
       .finally((): void => {
         setFetching(false);
       });
-  }, []);
+  }, [dispatchMessage]);
 
   return (
     <div className="faculty-schedule-table">
