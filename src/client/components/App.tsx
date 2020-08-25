@@ -54,27 +54,6 @@ const App: FunctionComponent = (): ReactElement => {
   );
 
   /**
-   * Get the currently authenticated user from the server on launch.
-   * If it fails, display a message for the user
-   */
-
-  useEffect((): void => {
-    getCurrentUser()
-      .then((user: User): void => {
-        setUser(user);
-      })
-      .catch((): void => {
-        dispatchMessage({
-          message: new AppMessage(
-            'Unable to get user data from server. If the problem persists, contact SEAS Computing',
-            MESSAGE_TYPE.ERROR
-          ),
-          type: MESSAGE_ACTION.PUSH,
-        });
-      });
-  }, [setUser, dispatchMessage]);
-
-  /**
    * Set up the current metadata containing the current academic year, currently
    * existing areas, and currently existing semesters in the database.
    * The current metadata will be passed down through the Metadata Context
@@ -86,15 +65,35 @@ const App: FunctionComponent = (): ReactElement => {
     semesters: [],
   });
 
+  /**
+   * Get the currently authenticated user from the server on launch.
+   * If it fails, display a message for the user
+   */
+
   useEffect((): void => {
-    getMetadata()
-      .then((metadata): void => {
-        setMetadata(metadata);
+    getCurrentUser()
+      .then((user: User): void => {
+        if (user) {
+          setUser(user);
+          getMetadata()
+            .then((metadata: MetadataResponse): void => {
+              setMetadata(metadata);
+            })
+            .catch((): void => {
+              dispatchMessage({
+                message: new AppMessage(
+                  'Unable to get metadata from server. If the problem persists, contact SEAS Computing',
+                  MESSAGE_TYPE.ERROR
+                ),
+                type: MESSAGE_ACTION.PUSH,
+              });
+            });
+        }
       })
       .catch((): void => {
         dispatchMessage({
           message: new AppMessage(
-            'Unable to get metadata from server. If the problem persists, contact SEAS Computing',
+            'Unable to get user data from server. If the problem persists, contact SEAS Computing',
             MESSAGE_TYPE.ERROR
           ),
           type: MESSAGE_ACTION.PUSH,
