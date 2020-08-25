@@ -21,6 +21,7 @@ import {
   MessageContext,
   messageReducer,
   UserContext,
+  MetadataContext,
 } from 'client/context';
 import {
   MarkOneWrapper,
@@ -33,7 +34,6 @@ import {
   Link,
 } from 'mark-one';
 import { getCurrentUser } from 'client/api';
-import { MetadataContext } from 'client/context/MetadataContext';
 import { getMetadata } from 'client/api/metadata';
 import { User } from 'common/classes';
 import { Message } from './layout';
