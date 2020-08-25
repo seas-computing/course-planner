@@ -114,7 +114,7 @@ export class FacultyController {
     isArray: false,
   })
   @ApiNotFoundResponse({
-    description: 'Not Found: The requested entity could not be found',
+    description: 'Not Found: The requested area entity could not be found',
   })
   @ApiBadRequestResponse({
     description: 'Bad Request: the request is not in accordance with the createFaculty DTO',
