@@ -43,7 +43,7 @@ describe('Faculty Admin', function () {
       );
       return waitForElement(() => container.querySelector('.faculty-admin-table'));
     });
-    it('creates the "create faculty" button', async function () {
+    it('displays the "create faculty" button', async function () {
       const { container } = render(
         <FacultyAdmin />,
         dispatchMessage,
