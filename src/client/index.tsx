@@ -1,7 +1,10 @@
 import React from 'react';
+import { hot } from 'react-hot-loader/root';
 import { render } from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
-import App from './components/App';
+import ColdApp from './components/App';
+
+const App = hot(ColdApp);
 
 render(
   <BrowserRouter basename="/courses">

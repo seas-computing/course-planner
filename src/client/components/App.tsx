@@ -4,7 +4,7 @@ import React, {
   useEffect,
   useReducer,
   ReactElement,
-  SFC,
+  FunctionComponent,
 } from 'react';
 import {
   Switch,
@@ -50,7 +50,7 @@ import MultiYearPlan from './pages/MultiYearPlan';
  * mounts, then saves it to the UserContext to pass down to other components
  */
 
-export const ColdApp: SFC = (): ReactElement => {
+const App: FunctionComponent = (): ReactElement => {
   /**
    * Hook for maintaining the currently selected user
    * */
@@ -192,4 +192,4 @@ export const ColdApp: SFC = (): ReactElement => {
   );
 };
 
-export default hot(ColdApp);
+export default App;

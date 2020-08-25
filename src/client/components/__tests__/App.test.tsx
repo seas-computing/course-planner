@@ -10,7 +10,7 @@ import { stub, SinonStub } from 'sinon';
 import * as dummy from 'testData';
 import * as userApi from 'client/api/users';
 import * as metaApi from 'client/api/metadata';
-import { ColdApp as App } from '../App';
+import App from '../App';
 
 describe('App', function () {
   let userStub: SinonStub;
