@@ -3,11 +3,11 @@ import { strictEqual, deepStrictEqual } from 'assert';
 import { stub, SinonStub } from 'sinon';
 import {
   render, BoundFunction, QueryByText, FindByText, wait,
-} from 'test-utils';
+} from 'common/utils';
 import { CourseAPI } from 'client/api';
 import { AppMessage, MESSAGE_TYPE, MESSAGE_ACTION } from 'client/classes';
-import { cs50CourseInstance } from 'testData';
 import { MessageReducerAction } from 'client/context';
+import { cs50CourseInstance } from 'common/data';
 import CoursesPage from '../CoursesPage';
 
 describe('Course Instances List', function () {

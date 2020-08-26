@@ -12,7 +12,7 @@ import {
   testFourYearPlan,
   testMultiYearPlanStartYear,
   testFourYearPlanAcademicYears,
-} from 'testData';
+} from 'common/data';
 import { CourseInstanceService } from '../courseInstance.service';
 import { CourseInstanceController } from '../courseInstance.controller';
 import { MultiYearPlanView } from '../MultiYearPlanView.entity';

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { stub } from 'sinon';
-import { regularUser } from 'testData';
+import { regularUser } from 'common/data';
 import { deepStrictEqual, strictEqual } from 'assert';
 import { UnauthorizedException } from '@nestjs/common';
 import { SAMLStrategy, HarvardKeyProfile } from '../saml.strategy';

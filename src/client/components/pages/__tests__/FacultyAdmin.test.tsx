@@ -16,9 +16,9 @@ import {
   bioengineeringFacultyMemberResponse,
   newAreaFacultyMemberResponse,
   error,
-} from 'testData';
-import { render } from 'test-utils';
-import { testMetadata } from 'common/__tests__/data/metadata';
+} from 'common/data';
+import { render } from 'common/utils';
+import { testMetadata } from 'common/data/metadata';
 import FacultyAdmin from '../FacultyAdmin';
 
 describe('Faculty Admin', function () {

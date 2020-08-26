@@ -3,7 +3,7 @@ import {
   absenceEnumToTitleCase,
   facultyTypeEnumToTitleCase,
   facultyTypeTitleCaseToEnum,
-} from 'common/__tests__/utils/facultyHelperFunctions';
+} from 'common/utils/facultyHelperFunctions';
 import { FACULTY_TYPE } from 'common/constants';
 
 describe('Faculty Helper Functions', function () {

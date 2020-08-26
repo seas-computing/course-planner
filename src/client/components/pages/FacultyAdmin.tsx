@@ -30,10 +30,8 @@ import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyRespon
 import { MetadataContext } from 'client/context/MetadataContext';
 import { POSITION } from 'mark-one/lib/Forms/Label';
 import { FACULTY_TYPE } from 'common/constants';
-import {
-  sortFaculty,
-} from 'common/__tests__/utils/facultyHelperFunctions';
 import { getAreaColor } from '../../../common/constants';
+import { sortFaculty } from 'common/utils/facultyHelperFunctions';
 import { FacultyAPI } from '../../api/faculty';
 import FacultyModal from './FacultyModal';
 

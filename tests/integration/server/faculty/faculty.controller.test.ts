@@ -39,7 +39,7 @@ import {
   appliedMathFacultyMember,
   appliedMathFacultyMemberResponse,
   newAreaFacultyMemberRequest,
-} from 'common/__tests__/data';
+} from 'common/data';
 import { SessionModule } from 'nestjs-session';
 import { FacultyService } from 'server/faculty/faculty.service';
 import { FacultyScheduleCourseView } from 'server/faculty/FacultyScheduleCourseView.entity';
@@ -52,7 +52,6 @@ import { TestingStrategy } from '../../../mocks/authentication/testing.strategy'
 describe('Faculty API', function () {
   let authStub: SinonStub;
   let api: HttpServer;
-  let mockFacultyService: Record<string, SinonStub>;
   let mockFacultyRepository: Record<string, SinonStub> = {};
   let mockAreaRepository: Record<string, SinonStub> = {};
   let mockAbsenceRepository: Record<string, SinonStub> = {};

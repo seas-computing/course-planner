@@ -25,7 +25,7 @@ import { FACULTY_TYPE, getAreaColor } from 'common/constants';
 import {
   absenceEnumToTitleCase,
   facultyTypeEnumToTitleCase,
-} from 'common/__tests__/utils/facultyHelperFunctions';
+} from 'common/utils/facultyHelperFunctions';
 
 interface FacultyScheduleTableProps {
   /**

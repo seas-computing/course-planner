@@ -7,7 +7,7 @@ import {
   rawAreaList,
   rawSemesterList,
   error,
-} from 'testData';
+} from 'common/data';
 import * as api from 'client/api';
 import {
   strictEqual,

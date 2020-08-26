@@ -9,7 +9,7 @@ import {
   appliedMathFacultyScheduleResponse,
   newAppliedPhysicsFacultyMember,
   bioengineeringFacultyMember,
-} from 'testData';
+} from 'common/data';
 import { FacultyAPI } from 'client/api';
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
 import {

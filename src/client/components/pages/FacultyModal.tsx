@@ -22,7 +22,7 @@ import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyRespon
 import {
   validHUID,
   facultyTypeEnumToTitleCase,
-} from 'common/__tests__/utils/facultyHelperFunctions';
+} from 'common/utils/facultyHelperFunctions';
 import { POSITION } from 'mark-one/lib/Forms/Label';
 import { FACULTY_TYPE } from 'common/constants';
 import { FacultyAPI } from 'client/api';

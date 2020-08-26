@@ -2,7 +2,7 @@ import {
   strictEqual,
   deepStrictEqual,
 } from 'assert';
-import { validHUID } from 'common/__tests__/utils/facultyHelperFunctions';
+import { validHUID } from 'common/utils/facultyHelperFunctions';
 import {
   waitForElement,
   fireEvent,
@@ -16,15 +16,15 @@ import {
   SinonStub,
   stub,
 } from 'sinon';
-import { render } from 'test-utils';
-import { testMetadata } from 'common/__tests__/data/metadata';
+import { render } from 'common/utils';
+import { testMetadata } from 'common/data/metadata';
 import { FacultyAPI } from 'client/api';
 import {
   bioengineeringFacultyMemberResponse,
   appliedMathFacultyMemberResponse,
   physicsFacultyMemberResponse,
   anotherPhysicsFacultyMemberResponse,
-} from 'testData';
+} from 'common/data';
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
 import { FACULTY_TYPE } from 'common/constants';
 import { CreateFacultyDTO } from 'common/dto/faculty/CreateFaculty.dto';

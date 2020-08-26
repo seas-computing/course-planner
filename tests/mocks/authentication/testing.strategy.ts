@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { AUTH_MODE } from 'common/constants';
 import { Request } from 'express';
-import { regularUser } from '../../../src/common/__tests__/data';
+import { regularUser } from '../../../src/common/data';
 import { User } from '../../../src/server/user/user.entity';
 
 /**

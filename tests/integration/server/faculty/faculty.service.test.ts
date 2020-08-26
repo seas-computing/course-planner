@@ -7,7 +7,7 @@ import { FacultyModule } from 'server/faculty/faculty.module';
 import { deepStrictEqual, strictEqual } from 'assert';
 import { Repository } from 'typeorm';
 import { Faculty } from 'server/faculty/faculty.entity';
-import { appliedMathFacultyMemberRequest, bioengineeringFacultyMember } from 'testData';
+import { appliedMathFacultyMemberRequest, bioengineeringFacultyMember } from 'common/data';
 import { Area } from 'server/area/area.entity';
 import { AuthModule } from 'server/auth/auth.module';
 import { AUTH_MODE } from 'common/constants';

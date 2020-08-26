@@ -7,16 +7,18 @@ import {
 } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { stub, SinonStub } from 'sinon';
-import * as dummy from 'testData';
-import * as userApi from 'client/api/users';
 import * as metaApi from 'client/api/metadata';
 import { ColdApp as App } from '../App';
+import { AxiosResponse } from 'axios';
+import { UserResponse } from 'common/dto/users/userResponse.dto';
+import * as dummy from 'common/data';
+import { UserAPI } from 'client/api';
 
 describe('App', function () {
   let userStub: SinonStub;
   let metaStub: SinonStub;
   beforeEach(function () {
-    userStub = stub(userApi, 'getCurrentUser');
+    userStub = stub(UserAPI, 'getCurrentUser');
     metaStub = stub(metaApi, 'getMetadata');
     userStub.resolves(dummy.regularUser);
     metaStub.resolves(dummy.metadata);

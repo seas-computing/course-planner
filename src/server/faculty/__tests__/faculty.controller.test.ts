@@ -5,14 +5,13 @@ import { strictEqual, deepStrictEqual, rejects } from 'assert';
 import { FACULTY_TYPE } from 'common/constants';
 import { Authentication } from 'server/auth/authentication.guard';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
-import * as dummy from 'testData';
 import { TimeoutError } from 'rxjs';
 import {
   appliedMathFacultyMemberRequest,
   appliedMathFacultyMember,
   appliedMathFacultyMemberResponse,
   newAreaFacultyMemberRequest,
-} from 'testData';
+} from 'common/data';
 import { Semester } from 'server/semester/semester.entity';
 import { SemesterService } from 'server/semester/semester.service';
 import { FacultyController } from '../faculty.controller';
@@ -97,7 +96,7 @@ describe('Faculty controller', function () {
 
   describe('getAll', function () {
     it('returns all faculty in the database', async function () {
-      const databaseFaculty = Array(10).fill(dummy.appliedMathFacultyMember);
+      const databaseFaculty = Array(10).fill(appliedMathFacultyMember);
 
       mockFacultyService.find.resolves(databaseFaculty);
 
@@ -227,12 +226,13 @@ describe('Faculty controller', function () {
 
       mockFacultyRepository
         .findOneOrFail
-        .rejects(dummy.error);
-
-      await rejects(
-        () => controller.update('1636efd9-6b3e-4c44-ba38-4e0e788dba54', newFacultyMemberInfo),
-        dummy.error
-      );
+        .rejects(new TimeoutError());
+      try {
+        await controller.update('1636efd9-6b3e-4c44-ba38-4e0e788dba54', newFacultyMemberInfo);
+      } catch (e) {
+        strictEqual(e instanceof Error, true);
+        strictEqual(e instanceof NotFoundException, false);
+      }
     });
     it('allows other error types to bubble when finding area', async function () {
       const newFacultyMemberInfo = {
@@ -245,12 +245,13 @@ describe('Faculty controller', function () {
       };
       mockAreaRepository
         .findOneOrFail
-        .rejects(dummy.error);
-
-      await rejects(
-        () => controller.update('1636efd9-6b3e-4c44-ba38-4e0e788dba54', newFacultyMemberInfo),
-        dummy.error
-      );
+        .rejects(new TimeoutError());
+      try {
+        await controller.update('1636efd9-6b3e-4c44-ba38-4e0e788dba54', newFacultyMemberInfo);
+      } catch (e) {
+        strictEqual(e instanceof Error, true);
+        strictEqual(e instanceof NotFoundException, false);
+      }
     });
   });
 });

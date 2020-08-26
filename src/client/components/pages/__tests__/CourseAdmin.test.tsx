@@ -22,7 +22,7 @@ import {
   physicsCourseResponse,
   newAreaCourseResponse,
   error,
-} from 'testData';
+} from 'common/data';
 import {
   MessageContext,
 } from 'client/context';

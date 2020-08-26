@@ -1,10 +1,10 @@
 import React from 'react';
 import {
   cs50CourseInstance, ac209aCourseInstance,
-} from 'testData';
+} from 'common/data';
 import { strictEqual, deepStrictEqual } from 'assert';
 import { TERM, COURSE_TABLE_COLUMN } from 'common/constants';
-import { render } from 'test-utils';
+import { render } from 'common/utils';
 import { dayEnumToString } from 'common/constants/day';
 import { offeredEnumToString } from 'common/constants/offered';
 import {
