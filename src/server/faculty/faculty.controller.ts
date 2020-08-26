@@ -137,21 +137,21 @@ export class FacultyController {
     }
     const HUID = facultyDto.HUID && facultyDto.HUID.trim();
     if (!HUID) {
-      throw new BadRequestException('HUID is required')
+      throw new BadRequestException('HUID is required');
     }
     const lastName = facultyDto.lastName && facultyDto.lastName.trim();
     if (!lastName) {
-      throw new BadRequestException('Last name is required')
+      throw new BadRequestException('Last name is required');
     }
     const category = facultyDto.category && facultyDto.category.trim();
     if (!category) {
-      throw new BadRequestException('Faculty category is required')
+      throw new BadRequestException('Faculty category is required');
     }
-    let facultyToCreate: Faculty = Object.assign(new Faculty(), {
-      HUID: HUID,
+    const facultyToCreate: Faculty = Object.assign(new Faculty(), {
+      HUID,
       firstName: facultyDto.firstName,
-      lastName: lastName,
-      category: category,
+      lastName,
+      category,
       area: existingArea,
       jointWith: facultyDto.jointWith,
       notes: facultyDto.notes,
