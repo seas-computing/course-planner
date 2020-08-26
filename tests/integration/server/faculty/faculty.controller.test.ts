@@ -242,10 +242,9 @@ describe('Faculty API', function () {
           strictEqual(response.status, HttpStatus.CREATED);
           deepStrictEqual(response.body, appliedMathFacultyMemberResponse);
         });
-        it('reports validation errors', async function () {
+        it('reports a validation error when HUID is missing', async function () {
           mockAreaRepository.findOne.resolves(appliedMathFacultyMember.area);
           mockAreaRepository.save.resolves(appliedMathFacultyMember.area);
-          mockFacultyRepository.save.resolves(appliedMathFacultyMember);
           const response = await request(api)
             .post('/api/faculty')
             .send({
@@ -257,6 +256,20 @@ describe('Faculty API', function () {
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.BAD_REQUEST);
           strictEqual(/HUID/.test(body.message), true);
+        });
+        it('reports a validation error when category is missing', async function () {
+          mockAreaRepository.findOne.resolves(appliedMathFacultyMember.area);
+          mockAreaRepository.save.resolves(appliedMathFacultyMember.area);
+          const response = await request(api)
+            .post('/api/faculty')
+            .send({
+              firstName: appliedMathFacultyMember.lastName,
+              HUID: '12345678',
+              area: appliedMathFacultyMember.area.name,
+            });
+          strictEqual(response.ok, false);
+          strictEqual(response.status, HttpStatus.BAD_REQUEST);
+          strictEqual(response.body.message.includes('category'), true);
         });
         it('allows you to create a faculty member with a last name and no first name', async function () {
           mockAreaRepository.findOne.resolves(appliedMathFacultyMember.area);
@@ -273,7 +286,7 @@ describe('Faculty API', function () {
           strictEqual(response.ok, true);
           strictEqual(response.status, HttpStatus.CREATED);
         });
-        it('allows you to create a faculty member with a first name and no last name', async function () {
+        it('does not allow you to create a faculty member with a first name and no last name', async function () {
           mockAreaRepository.findOne.resolves(appliedMathFacultyMember.area);
           mockAreaRepository.save.resolves(appliedMathFacultyMember.area);
           mockFacultyRepository.save.resolves(appliedMathFacultyMember);
@@ -285,8 +298,8 @@ describe('Faculty API', function () {
               category: appliedMathFacultyMember.category,
               area: appliedMathFacultyMember.area.name,
             });
-          strictEqual(response.ok, true);
-          strictEqual(response.status, HttpStatus.CREATED);
+          strictEqual(response.ok, false);
+          strictEqual(response.status, HttpStatus.BAD_REQUEST);
         });
         it('does not allow you to create a faculty member with both no first name and no last name', async function () {
           mockAreaRepository.findOne.resolves(appliedMathFacultyMember.area);

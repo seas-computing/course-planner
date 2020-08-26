@@ -9,6 +9,7 @@ import {
   NotFoundException,
   Inject,
   Query,
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -134,16 +135,28 @@ export class FacultyController {
         throw new NotFoundException('The entered Area does not exist');
       }
     }
-    let faculty: Faculty = Object.assign(new Faculty(), {
-      HUID: facultyDto.HUID,
+    const HUID = facultyDto.HUID && facultyDto.HUID.trim();
+    if (!HUID) {
+      throw new BadRequestException('HUID is required')
+    }
+    const lastName = facultyDto.lastName && facultyDto.lastName.trim();
+    if (!lastName) {
+      throw new BadRequestException('Last name is required')
+    }
+    const category = facultyDto.category && facultyDto.category.trim();
+    if (!category) {
+      throw new BadRequestException('Faculty category is required')
+    }
+    let facultyToCreate: Faculty = Object.assign(new Faculty(), {
+      HUID: HUID,
       firstName: facultyDto.firstName,
-      lastName: facultyDto.lastName,
-      category: facultyDto.category,
+      lastName: lastName,
+      category: category,
       area: existingArea,
       jointWith: facultyDto.jointWith,
       notes: facultyDto.notes,
     });
-    faculty = await this.facultyRepository.save(faculty);
+    const faculty = await this.facultyRepository.save(facultyToCreate);
     return {
       id: faculty.id,
       HUID: faculty.HUID,
