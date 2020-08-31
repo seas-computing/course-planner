@@ -425,7 +425,7 @@ describe('Faculty API', function () {
           strictEqual(response.ok, true);
           strictEqual(response.status, HttpStatus.OK);
         });
-        it('allows you to update a faculty member so that the entry has a first name but no last name', async function () {
+        it('does not allow you to update a faculty member so that the entry has a first name but no last name', async function () {
           const newFacultyMemberInfo = {
             id: '69694326-4d12-4c32-8a26-b2c28352ba31',
             HUID: '87654321',
@@ -439,8 +439,8 @@ describe('Faculty API', function () {
           const response = await request(api)
             .put(`/api/faculty/${newFacultyMemberInfo.id}`)
             .send(newFacultyMemberInfo);
-          strictEqual(response.ok, true);
-          strictEqual(response.status, HttpStatus.OK);
+          strictEqual(response.ok, false);
+          strictEqual(response.status, HttpStatus.BAD_REQUEST);
         });
         it('does not allow you to update faculty member so that the entry has neither first nor last name', async function () {
           const newFacultyMemberInfo = {
