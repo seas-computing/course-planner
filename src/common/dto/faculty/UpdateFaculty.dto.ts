@@ -30,16 +30,15 @@ export abstract class UpdateFacultyDTO {
   @ApiModelProperty({
     example: 'Ada',
   })
-  @ValidateIf(({ lastName }): boolean => lastName === undefined)
-  @IsNotEmpty()
+  @IsOptional()
+  @IsString()
   public firstName?: string;
 
   @ApiModelProperty({
     example: 'Lovelace',
   })
-  @ValidateIf(({ firstName }): boolean => firstName === undefined)
   @IsNotEmpty()
-  public lastName?: string;
+  public lastName: string;
 
   @ApiModelProperty({
     example: FACULTY_TYPE.NON_SEAS_LADDER,
