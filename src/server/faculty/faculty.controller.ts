@@ -135,23 +135,11 @@ export class FacultyController {
         throw new NotFoundException('The entered Area does not exist');
       }
     }
-    const HUID = facultyDto.HUID && facultyDto.HUID.trim();
-    if (!HUID) {
-      throw new BadRequestException('HUID is required');
-    }
-    const lastName = facultyDto.lastName && facultyDto.lastName.trim();
-    if (!lastName) {
-      throw new BadRequestException('Last name is required');
-    }
-    const category = facultyDto.category && facultyDto.category.trim();
-    if (!category) {
-      throw new BadRequestException('Faculty category is required');
-    }
     const facultyToCreate: Faculty = Object.assign(new Faculty(), {
-      HUID,
+      HUID: facultyDto.HUID,
       firstName: facultyDto.firstName,
-      lastName,
-      category,
+      lastName: facultyDto.lastName,
+      category: facultyDto.category,
       area: existingArea,
       jointWith: facultyDto.jointWith,
       notes: facultyDto.notes,
