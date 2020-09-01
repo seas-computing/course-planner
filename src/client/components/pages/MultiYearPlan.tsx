@@ -112,7 +112,6 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
           <Table>
             <TableHead>
               <TableRow isStriped>
-                <TableHeadingCell scope="col">Area</TableHeadingCell>
                 <TableHeadingCell scope="col">CatalogNumber</TableHeadingCell>
                 <TableHeadingCell scope="col">Title</TableHeadingCell>
                 <>
@@ -124,12 +123,7 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
               {multiYearPlan
                 .map((course, courseIndex): TableRow => (
                   <TableRow isStriped={courseIndex % 2 === 1} key={course.id}>
-                    <TableCell
-                      verticalAlignment={VALIGN.TOP}
-                      backgroundColor={getAreaColor(course.area)}
-                    >
-                      {course.area}
-                    </TableCell>
+
                     <TableRowHeadingCell verticalAlignment={VALIGN.TOP} scope="row">
                       {course.catalogNumber}
                     </TableRowHeadingCell>

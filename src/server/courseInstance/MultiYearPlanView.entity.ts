@@ -16,11 +16,12 @@ import { SemesterView } from 'server/semester/SemesterView.entity';
   expression: (connection: Connection):
   SelectQueryBuilder<Course> => connection.createQueryBuilder()
     .select('c.id', 'id')
-    .addSelect('a.name', 'area')
-    .addSelect("CONCAT_WS(' ', c.prefix, c.number)", 'catalogNumber')
+    .addSelect('c.prefix', 'catalogprefix')
+    .addSelect('c.number', 'catalogNumber')
+    //.addSelect("CONCAT_WS(' ', c.prefix, c.number)", 'catalogNumber')
     .addSelect('c.title', 'title')
     .from(Course, 'c')
-    .leftJoin(Area, 'a', 'c."areaId" = a.id'),
+    //.leftJoin(Area, 'a', 'c."areaId" = a.id'),
 })
 export class MultiYearPlanView {
   /**
@@ -29,12 +30,6 @@ export class MultiYearPlanView {
   @ViewColumn()
   public id: string;
 
-  /**
-   * From [[Area]]
-   * Only the name of the course's associated academic area
-   */
-  @ViewColumn()
-  public area: string;
 
   /**
    * From [[Course]]
