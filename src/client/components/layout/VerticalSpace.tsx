@@ -18,6 +18,7 @@ const VerticalSpace: FunctionComponent<VerticalSpaceProps> = (props): ReactEleme
   return (
     <StyledVerticalSpace
       height={height == null ? theme.ws.xsmall : height}
+      data-testid={props['data-testid']}
     />
   )
 };
