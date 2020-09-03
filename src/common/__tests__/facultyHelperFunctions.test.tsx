@@ -4,12 +4,15 @@ import {
   facultyTypeEnumToTitleCase,
   facultyTypeTitleCaseToEnum,
 } from 'common/utils/facultyHelperFunctions';
-import { FACULTY_TYPE } from 'common/constants';
+import {
+  FACULTY_TYPE,
+  ABSENCE_TYPE,
+} from 'common/constants';
 
 describe('Faculty Helper Functions', function () {
   describe('absenceEnumToTitleCase', function () {
     it('should remove the underscore(s) and capitalize the first letter of each word', function () {
-      const formattedAbsence = absenceEnumToTitleCase('SABBATICAL_ELIGIBLE');
+      const formattedAbsence = absenceEnumToTitleCase(ABSENCE_TYPE.SABBATICAL_ELIGIBLE);
       strictEqual(formattedAbsence, 'Sabbatical Eligible');
     });
   });
