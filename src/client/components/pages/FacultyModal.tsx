@@ -68,32 +68,32 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
    * The currently selected value of the area dropdown in the Faculty Modal
    */
   const [
-    editFacultyArea,
-    setEditFacultyArea,
+    facultyArea,
+    setFacultyArea,
   ] = useState('');
 
   /**
    * The current value of the HUID text field in the Faculty modal
    */
   const [
-    editFacultyHUID,
-    setEditFacultyHUID,
+    facultyHUID,
+    setFacultyHUID,
   ] = useState('');
 
   /**
    * The current value of the first name field in the Faculty modal
    */
   const [
-    editFacultyFirstName,
-    setEditFacultyFirstName,
+    facultyFirstName,
+    setFacultyFirstName,
   ] = useState('');
 
   /**
    * The current value of the last name field in the Faculty modal
    */
   const [
-    editFacultyLastName,
-    setEditFacultyLastName,
+    facultyLastName,
+    setFacultyLastName,
   ] = useState('');
 
   /**
@@ -101,61 +101,61 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
    * Faculty modal
    */
   const [
-    editFacultyCategory,
-    setEditFacultyCategory,
+    facultyCategory,
+    setFacultyCategory,
   ] = useState('');
 
   /**
    * The current value of the joint with field in the Faculty modal
    */
   const [
-    editFacultyJointWith,
-    setEditFacultyJointWith,
+    facultyJointWith,
+    setFacultyJointWith,
   ] = useState('');
 
   /**
    * The current value of the notes field in the Faculty modal
    */
   const [
-    editFacultyNotes,
-    setEditFacultyNotes,
+    facultyNotes,
+    setFacultyNotes,
   ] = useState('');
 
   /**
    * The current value of the error message for the Faculty Area field
    */
   const [
-    editFacultyAreaErrorMessage,
-    setEditFacultyAreaErrorMessage,
+    facultyAreaErrorMessage,
+    setFacultyAreaErrorMessage,
   ] = useState('');
   /**
    * The current value of the error message for the Faculty HUID field
    */
   const [
-    editFacultyHUIDErrorMessage,
-    setEditFacultyHUIDErrorMessage,
+    facultyHUIDErrorMessage,
+    setFacultyHUIDErrorMessage,
   ] = useState('');
   /**
    * The current value of the error message for the Faculty Last Name field
    */
   const [
-    editFacultyLastNameErrorMessage,
-    setEditFacultyLastNameErrorMessage,
+    facultyLastNameErrorMessage,
+    setFacultyLastNameErrorMessage,
   ] = useState('');
   /**
    * The current value of the error message for the Faculty Category field
    */
   const [
-    editFacultyCategoryErrorMessage,
-    setEditFacultyCategoryErrorMessage,
+    facultyCategoryErrorMessage,
+    setFacultyCategoryErrorMessage,
   ] = useState('');
 
   /**
    * The current value of the error message within the Faculty modal
    */
   const [
-    editFacultyErrorMessage,
-    setEditFacultyErrorMessage,
+    facultyErrorMessage,
+    setFacultyErrorMessage,
   ] = useState('');
 
   /**
@@ -179,25 +179,25 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
   Promise<ManageFacultyResponseDTO> => {
     let isValid = true;
     // Make sure only errors that have not been fixed are shown.
-    setEditFacultyAreaErrorMessage('');
-    setEditFacultyHUIDErrorMessage('');
-    setEditFacultyLastNameErrorMessage('');
-    setEditFacultyCategoryErrorMessage('');
-    setEditFacultyErrorMessage('');
-    if (!editFacultyArea) {
-      setEditFacultyAreaErrorMessage('Area is required to submit this form.');
+    setFacultyAreaErrorMessage('');
+    setFacultyHUIDErrorMessage('');
+    setFacultyLastNameErrorMessage('');
+    setFacultyCategoryErrorMessage('');
+    setFacultyErrorMessage('');
+    if (!facultyArea) {
+      setFacultyAreaErrorMessage('Area is required to submit this form.');
       isValid = false;
     }
-    if (!validHUID(editFacultyHUID)) {
-      setEditFacultyHUIDErrorMessage('HUID is required and must contain 8 digits.');
+    if (!validHUID(facultyHUID)) {
+      setFacultyHUIDErrorMessage('HUID is required and must contain 8 digits.');
       isValid = false;
     }
-    if (!editFacultyLastName) {
-      setEditFacultyLastNameErrorMessage('Last name is required to submit this form.');
+    if (!facultyLastName) {
+      setFacultyLastNameErrorMessage('Last name is required to submit this form.');
       isValid = false;
     }
-    if (!editFacultyCategory) {
-      setEditFacultyCategoryErrorMessage('Category is required to submit this form.');
+    if (!facultyCategory) {
+      setFacultyCategoryErrorMessage('Category is required to submit this form.');
       isValid = false;
     }
     if (!isValid) {
@@ -207,41 +207,41 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
     if (currentFaculty) {
       result = await FacultyAPI.editFaculty({
         id: currentFaculty.id,
-        area: editFacultyArea,
-        HUID: editFacultyHUID,
-        firstName: editFacultyFirstName,
-        lastName: editFacultyLastName,
-        jointWith: editFacultyJointWith,
-        category: editFacultyCategory as FACULTY_TYPE,
-        notes: editFacultyNotes,
+        area: facultyArea,
+        HUID: facultyHUID,
+        firstName: facultyFirstName,
+        lastName: facultyLastName,
+        jointWith: facultyJointWith,
+        category: facultyCategory as FACULTY_TYPE,
+        notes: facultyNotes,
       });
     } else {
       result = await FacultyAPI.createFaculty({
-        area: editFacultyArea,
-        HUID: editFacultyHUID,
-        firstName: editFacultyFirstName,
-        lastName: editFacultyLastName,
-        jointWith: editFacultyJointWith,
-        category: editFacultyCategory as FACULTY_TYPE,
-        notes: editFacultyNotes,
+        area: facultyArea,
+        HUID: facultyHUID,
+        firstName: facultyFirstName,
+        lastName: facultyLastName,
+        jointWith: facultyJointWith,
+        category: facultyCategory as FACULTY_TYPE,
+        notes: facultyNotes,
       });
     }
     return result;
   };
   useEffect((): void => {
     if (isVisible) {
-      setEditFacultyArea(currentFaculty ? currentFaculty.area.name : '');
-      setEditFacultyHUID(currentFaculty ? currentFaculty.HUID : '');
-      setEditFacultyFirstName(currentFaculty ? (currentFaculty.firstName || '') : '');
-      setEditFacultyLastName(currentFaculty ? currentFaculty.lastName : '');
-      setEditFacultyJointWith(currentFaculty ? (currentFaculty.jointWith || '') : '');
-      setEditFacultyCategory(currentFaculty ? currentFaculty.category : '');
-      setEditFacultyNotes(currentFaculty ? currentFaculty.notes : '');
-      setEditFacultyAreaErrorMessage('');
-      setEditFacultyHUIDErrorMessage('');
-      setEditFacultyLastNameErrorMessage('');
-      setEditFacultyCategoryErrorMessage('');
-      setEditFacultyErrorMessage('');
+      setFacultyArea(currentFaculty ? currentFaculty.area.name : '');
+      setFacultyHUID(currentFaculty ? currentFaculty.HUID : '');
+      setFacultyFirstName(currentFaculty ? (currentFaculty.firstName || '') : '');
+      setFacultyLastName(currentFaculty ? currentFaculty.lastName : '');
+      setFacultyJointWith(currentFaculty ? (currentFaculty.jointWith || '') : '');
+      setFacultyCategory(currentFaculty ? currentFaculty.category : '');
+      setFacultyNotes(currentFaculty ? currentFaculty.notes : '');
+      setFacultyAreaErrorMessage('');
+      setFacultyHUIDErrorMessage('');
+      setFacultyLastNameErrorMessage('');
+      setFacultyCategoryErrorMessage('');
+      setFacultyErrorMessage('');
       setFacultyModalFocus();
     }
   }, [isVisible]);
@@ -274,11 +274,11 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
                   label: area,
                 })))
             }
-            onChange={(event): void => setEditFacultyArea(
+            onChange={(event): void => setFacultyArea(
               (event.target as HTMLSelectElement).value
             )}
-            value={editFacultyArea}
-            errorMessage={editFacultyAreaErrorMessage}
+            value={facultyArea}
+            errorMessage={facultyAreaErrorMessage}
             isRequired
           />
           <TextInput
@@ -287,11 +287,11 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
             label="HUID"
             labelPosition={POSITION.TOP}
             placeholder="e.g. 12345678"
-            onChange={(event): void => setEditFacultyHUID(
+            onChange={(event): void => setFacultyHUID(
               (event.target as HTMLInputElement).value.trim()
             )}
-            value={editFacultyHUID}
-            errorMessage={editFacultyHUIDErrorMessage}
+            value={facultyHUID}
+            errorMessage={facultyHUIDErrorMessage}
             isRequired
           />
           <TextInput
@@ -300,10 +300,10 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
             label="First name"
             labelPosition={POSITION.TOP}
             placeholder="e.g. Jane"
-            onChange={(event): void => setEditFacultyFirstName(
+            onChange={(event): void => setFacultyFirstName(
               (event.target as HTMLInputElement).value
             )}
-            value={editFacultyFirstName}
+            value={facultyFirstName}
           />
           <TextInput
             id="editFacultyLastName"
@@ -311,11 +311,11 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
             label="Last name"
             labelPosition={POSITION.TOP}
             placeholder="e.g. Smith"
-            onChange={(event): void => setEditFacultyLastName(
+            onChange={(event): void => setFacultyLastName(
               (event.target as HTMLInputElement).value
             )}
-            value={editFacultyLastName}
-            errorMessage={editFacultyLastNameErrorMessage}
+            value={facultyLastName}
+            errorMessage={facultyLastNameErrorMessage}
             isRequired
           />
           <Dropdown
@@ -335,11 +335,11 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
                     label: categoryTitle,
                   };
                 }))}
-            onChange={(event): void => setEditFacultyCategory(
+            onChange={(event): void => setFacultyCategory(
               (event.target as HTMLSelectElement).value
             )}
-            value={editFacultyCategory}
-            errorMessage={editFacultyCategoryErrorMessage}
+            value={facultyCategory}
+            errorMessage={facultyCategoryErrorMessage}
             isRequired
           />
           <TextInput
@@ -348,10 +348,10 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
             label="Joint with..."
             labelPosition={POSITION.TOP}
             placeholder="Add 'Joint With' entry"
-            onChange={(event): void => setEditFacultyJointWith(
+            onChange={(event): void => setFacultyJointWith(
               (event.target as HTMLInputElement).value
             )}
-            value={editFacultyJointWith}
+            value={facultyJointWith}
           />
           <TextInput
             id="editFacultyNotes"
@@ -359,16 +359,16 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
             label="Notes"
             labelPosition={POSITION.TOP}
             placeholder="e.g. Prefers Room X"
-            onChange={(event): void => setEditFacultyNotes(
+            onChange={(event): void => setFacultyNotes(
               (event.target as HTMLInputElement).value
             )}
-            value={editFacultyNotes}
+            value={facultyNotes}
           />
-          {editFacultyErrorMessage && (
+          {facultyErrorMessage && (
             <ValidationErrorMessage
               id="editFacultyModalErrorMessage"
             >
-              {editFacultyErrorMessage}
+              {facultyErrorMessage}
             </ValidationErrorMessage>
           )}
         </form>
@@ -381,7 +381,7 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
               const editedFacultyMember = await submitEditFacultyForm();
               onSuccess(editedFacultyMember);
             } catch (error) {
-              setEditFacultyErrorMessage(error.message);
+              setFacultyErrorMessage(error.message);
               // leave the modal visible after an error
               return;
             }
