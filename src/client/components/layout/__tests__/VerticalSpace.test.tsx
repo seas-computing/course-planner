@@ -12,7 +12,7 @@ describe('VerticalSpace Component', function () {
   let getByTestId: BoundFunction<GetByBoundAttribute>;
   beforeEach(function () {
     ({ getByTestId } = render(
-      <VerticalSpace data-testid="test-component" />,
+      <VerticalSpace testId="test-component" />,
       () => {}
     ));
   });
