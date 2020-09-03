@@ -7,16 +7,42 @@ import {
   render,
 } from 'test-utils';
 import { VerticalSpace } from '../VerticalSpace';
+import { strictEqual } from 'assert';
 
 describe('VerticalSpace Component', function () {
   let getByTestId: BoundFunction<GetByBoundAttribute>;
-  beforeEach(function () {
-    ({ getByTestId } = render(
-      <VerticalSpace testId="test-component" />,
-      () => {}
-    ));
+  context('when the height is not specified', function () {
+    beforeEach(function () {
+      ({ getByTestId } = render(
+        <VerticalSpace testId="test-component" />,
+        () => {}
+      ));
+    });
+    it('creates a div', function () {
+      getByTestId('test-component');
+    });
+    it('sets the height to the default value', function () {
+      const style = window.getComputedStyle(getByTestId('test-component') as HTMLDivElement);
+      strictEqual(style.height, '5px');
+    });
   });
-  it('creates a div', function () {
-    getByTestId('test-component');
+  context('when the height is specified', function () {
+    let customHeight = '20px'
+    beforeEach(function () {
+      ({ getByTestId } = render(
+        <VerticalSpace
+          testId="test-specified-height"
+          height={customHeight}
+        />,
+        () => {}
+      ));
+    });
+    it('creates a div', function () {
+      getByTestId('test-specified-height');
+    });
+    it('the height is set accordingly', function () {
+      const style = window.getComputedStyle(getByTestId('test-specified-height') as HTMLDivElement);
+      strictEqual(style.height, customHeight);
+    });
   });
 });
