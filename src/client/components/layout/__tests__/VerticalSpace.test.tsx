@@ -7,7 +7,7 @@ import {
   render,
 } from 'test-utils';
 import { strictEqual } from 'assert';
-import VerticalSpace from '../VerticalSpace';
+import { VerticalSpace } from '../VerticalSpace';
 
 describe('VerticalSpace Component', function () {
   let getByTestId: BoundFunction<GetByBoundAttribute>;
