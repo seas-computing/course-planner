@@ -6,7 +6,6 @@ import {
 import {
   render,
 } from 'test-utils';
-import { VerticalSpace } from '../VerticalSpace';
 import { strictEqual } from 'assert';
 import VerticalSpace from '../VerticalSpace';
 
