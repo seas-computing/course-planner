@@ -271,7 +271,7 @@ describe('Faculty API', function () {
           strictEqual(response.status, HttpStatus.BAD_REQUEST);
           strictEqual(response.body.message.includes('category'), true);
         });
-        it('allows you to create a faculty member with no first name', async function () {
+        it('does not require a first name', async function () {
           mockAreaRepository.findOne.resolves(appliedMathFacultyMember.area);
           mockAreaRepository.save.resolves(appliedMathFacultyMember.area);
           mockFacultyRepository.save.resolves(appliedMathFacultyMember);
@@ -286,7 +286,7 @@ describe('Faculty API', function () {
           strictEqual(response.ok, true);
           strictEqual(response.status, HttpStatus.CREATED);
         });
-        it('does not allow you to create a faculty member with no last name', async function () {
+        it('requires a last name', async function () {
           mockAreaRepository.findOne.resolves(appliedMathFacultyMember.area);
           mockAreaRepository.save.resolves(appliedMathFacultyMember.area);
           mockFacultyRepository.save.resolves(appliedMathFacultyMember);
@@ -394,7 +394,7 @@ describe('Faculty API', function () {
           strictEqual(response.status, HttpStatus.BAD_REQUEST);
           strictEqual(/category/.test(body.message), true);
         });
-        it('allows you to update a faculty member with no first name', async function () {
+        it('does not require a first name', async function () {
           const newFacultyMemberInfo = {
             id: '69694326-4d12-4c32-8a26-b2c28352ba31',
             HUID: '87654321',
@@ -411,7 +411,7 @@ describe('Faculty API', function () {
           strictEqual(response.ok, true);
           strictEqual(response.status, HttpStatus.OK);
         });
-        it('does not allow you to update a faculty member with no last name', async function () {
+        it('requires a last name', async function () {
           const newFacultyMemberInfo = {
             id: '69694326-4d12-4c32-8a26-b2c28352ba31',
             HUID: '87654321',
