@@ -8,6 +8,7 @@ import {
 } from 'test-utils';
 import { VerticalSpace } from '../VerticalSpace';
 import { strictEqual } from 'assert';
+import VerticalSpace from '../VerticalSpace';
 
 describe('VerticalSpace Component', function () {
   let getByTestId: BoundFunction<GetByBoundAttribute>;
@@ -27,7 +28,7 @@ describe('VerticalSpace Component', function () {
     });
   });
   context('when the height is specified', function () {
-    let customHeight = '20px'
+    const customHeight = '20px';
     beforeEach(function () {
       ({ getByTestId } = render(
         <VerticalSpace
