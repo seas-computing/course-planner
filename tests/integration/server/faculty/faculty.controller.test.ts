@@ -271,7 +271,7 @@ describe('Faculty API', function () {
           strictEqual(response.status, HttpStatus.BAD_REQUEST);
           strictEqual(response.body.message.includes('category'), true);
         });
-        it('allows you to create a faculty member with a last name and no first name', async function () {
+        it('allows you to create a faculty member with no first name', async function () {
           mockAreaRepository.findOne.resolves(appliedMathFacultyMember.area);
           mockAreaRepository.save.resolves(appliedMathFacultyMember.area);
           mockFacultyRepository.save.resolves(appliedMathFacultyMember);
@@ -286,7 +286,7 @@ describe('Faculty API', function () {
           strictEqual(response.ok, true);
           strictEqual(response.status, HttpStatus.CREATED);
         });
-        it('does not allow you to create a faculty member with a first name and no last name', async function () {
+        it('does not allow you to create a faculty member with no last name', async function () {
           mockAreaRepository.findOne.resolves(appliedMathFacultyMember.area);
           mockAreaRepository.save.resolves(appliedMathFacultyMember.area);
           mockFacultyRepository.save.resolves(appliedMathFacultyMember);
@@ -295,20 +295,6 @@ describe('Faculty API', function () {
             .send({
               HUID: appliedMathFacultyMember.HUID,
               firstName: appliedMathFacultyMember.firstName,
-              category: appliedMathFacultyMember.category,
-              area: appliedMathFacultyMember.area.name,
-            });
-          strictEqual(response.ok, false);
-          strictEqual(response.status, HttpStatus.BAD_REQUEST);
-        });
-        it('does not allow you to create a faculty member with both no first name and no last name', async function () {
-          mockAreaRepository.findOne.resolves(appliedMathFacultyMember.area);
-          mockAreaRepository.save.resolves(appliedMathFacultyMember.area);
-          mockFacultyRepository.save.resolves(appliedMathFacultyMember);
-          const response = await request(api)
-            .post('/api/faculty')
-            .send({
-              HUID: appliedMathFacultyMember.HUID,
               category: appliedMathFacultyMember.category,
               area: appliedMathFacultyMember.area.name,
             });
@@ -408,7 +394,7 @@ describe('Faculty API', function () {
           strictEqual(response.status, HttpStatus.BAD_REQUEST);
           strictEqual(/category/.test(body.message), true);
         });
-        it('allows you to update a faculty member so that the entry has a last name but no first name', async function () {
+        it('allows you to update a faculty member with no first name', async function () {
           const newFacultyMemberInfo = {
             id: '69694326-4d12-4c32-8a26-b2c28352ba31',
             HUID: '87654321',
@@ -425,29 +411,13 @@ describe('Faculty API', function () {
           strictEqual(response.ok, true);
           strictEqual(response.status, HttpStatus.OK);
         });
-        it('does not allow you to update a faculty member so that the entry has a first name but no last name', async function () {
+        it('does not allow you to update a faculty member with no last name', async function () {
           const newFacultyMemberInfo = {
             id: '69694326-4d12-4c32-8a26-b2c28352ba31',
             HUID: '87654321',
             firstName: 'Grace',
             category: FACULTY_TYPE.NON_SEAS_LADDER,
             area: 'ACS',
-          };
-          mockAreaRepository.findOneOrFail.resolves(newFacultyMemberInfo.area);
-          mockFacultyRepository.findOneOrFail.resolves(newFacultyMemberInfo);
-          mockFacultyRepository.save.resolves(newFacultyMemberInfo);
-          const response = await request(api)
-            .put(`/api/faculty/${newFacultyMemberInfo.id}`)
-            .send(newFacultyMemberInfo);
-          strictEqual(response.ok, false);
-          strictEqual(response.status, HttpStatus.BAD_REQUEST);
-        });
-        it('does not allow you to update faculty member so that the entry has neither first nor last name', async function () {
-          const newFacultyMemberInfo = {
-            id: 'g12gaa52-1gj5-ha21-1123-hn625632n123',
-            HUID: '87654321',
-            category: FACULTY_TYPE.NON_SEAS_LADDER,
-            area: 'AP',
           };
           mockAreaRepository.findOneOrFail.resolves(newFacultyMemberInfo.area);
           mockFacultyRepository.findOneOrFail.resolves(newFacultyMemberInfo);
