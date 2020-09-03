@@ -12,8 +12,8 @@ import {
 describe('Faculty Helper Functions', function () {
   describe('absenceEnumToTitleCase', function () {
     it('should remove the underscore(s) and capitalize the first letter of each word', function () {
-      const formattedAbsence = absenceEnumToTitleCase(ABSENCE_TYPE.SABBATICAL_ELIGIBLE);
-      strictEqual(formattedAbsence, 'Sabbatical Eligible');
+      const absence = absenceEnumToTitleCase(ABSENCE_TYPE.SABBATICAL_ELIGIBLE);
+      strictEqual(absence, 'Sabbatical Eligible');
     });
   });
   describe('facultyTypeEnumToTitleCase', function () {

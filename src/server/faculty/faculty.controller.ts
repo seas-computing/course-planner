@@ -9,7 +9,6 @@ import {
   NotFoundException,
   Inject,
   Query,
-  BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
