@@ -6,7 +6,7 @@ import {
 import {
   render,
 } from 'test-utils';
-import VerticalSpace from '../VerticalSpace';
+import { VerticalSpace } from '../VerticalSpace';
 
 describe('VerticalSpace Component', function () {
   let getByTestId: BoundFunction<GetByBoundAttribute>;
@@ -16,7 +16,7 @@ describe('VerticalSpace Component', function () {
       () => {}
     ));
   });
-  it('creates a div', async function () {
+  it('creates a div', function () {
     getByTestId('test-component');
   });
 });
