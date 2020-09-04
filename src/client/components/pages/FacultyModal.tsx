@@ -5,6 +5,7 @@ import React, {
   useState,
   useRef,
   useEffect,
+  ChangeEvent,
 } from 'react';
 import {
   VARIANT,
@@ -64,90 +65,54 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
    */
   const metadata = useContext(MetadataContext);
 
-  /**
-   * The currently selected value of the area dropdown in the Faculty Modal
-   */
-  const [
-    facultyArea,
-    setFacultyArea,
-  ] = useState('');
+  const [form, setFormFields] = useState({
+    courseArea: '',
+    HUID: '',
+    firstName: '',
+    lastName: '',
+    category: '',
+    jointWith: '',
+    notes: '',
+  });
 
-  /**
-   * The current value of the HUID text field in the Faculty modal
-   */
-  const [
-    facultyHUID,
-    setFacultyHUID,
-  ] = useState('');
+  type FormField = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
-  /**
-   * The current value of the first name field in the Faculty modal
-   */
-  const [
-    facultyFirstName,
-    setFacultyFirstName,
-  ] = useState('');
-
-  /**
-   * The current value of the last name field in the Faculty modal
-   */
-  const [
-    facultyLastName,
-    setFacultyLastName,
-  ] = useState('');
-
-  /**
-   * The current value of the faculty category dropdown in the
-   * Faculty modal
-   */
-  const [
-    facultyCategory,
-    setFacultyCategory,
-  ] = useState('');
-
-  /**
-   * The current value of the joint with field in the Faculty modal
-   */
-  const [
-    facultyJointWith,
-    setFacultyJointWith,
-  ] = useState('');
-
-  /**
-   * The current value of the notes field in the Faculty modal
-   */
-  const [
-    facultyNotes,
-    setFacultyNotes,
-  ] = useState('');
+  const updateFormFields = (event: ChangeEvent): void => {
+    const target = event.target as FormField;
+    setFormFields({
+      ...form,
+      [target.name]:
+      target.value,
+    });
+  };
 
   /**
    * The current value of the error message for the Faculty Area field
    */
   const [
-    facultyAreaErrorMessage,
-    setFacultyAreaErrorMessage,
+    areaErrorMessage,
+    setAreaErrorMessage,
   ] = useState('');
   /**
    * The current value of the error message for the Faculty HUID field
    */
   const [
-    facultyHUIDErrorMessage,
-    setFacultyHUIDErrorMessage,
+    HUIDErrorMessage,
+    setHUIDErrorMessage,
   ] = useState('');
   /**
    * The current value of the error message for the Faculty Last Name field
    */
   const [
-    facultyLastNameErrorMessage,
-    setFacultyLastNameErrorMessage,
+    lastNameErrorMessage,
+    setLastNameErrorMessage,
   ] = useState('');
   /**
    * The current value of the error message for the Faculty Category field
    */
   const [
-    facultyCategoryErrorMessage,
-    setFacultyCategoryErrorMessage,
+    categoryErrorMessage,
+    setCategoryErrorMessage,
   ] = useState('');
 
   /**
@@ -179,25 +144,25 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
   Promise<ManageFacultyResponseDTO> => {
     let isValid = true;
     // Make sure only errors that have not been fixed are shown.
-    setFacultyAreaErrorMessage('');
-    setFacultyHUIDErrorMessage('');
-    setFacultyLastNameErrorMessage('');
-    setFacultyCategoryErrorMessage('');
+    setAreaErrorMessage('');
+    setHUIDErrorMessage('');
+    setLastNameErrorMessage('');
+    setCategoryErrorMessage('');
     setFacultyErrorMessage('');
-    if (!facultyArea) {
-      setFacultyAreaErrorMessage('Area is required to submit this form.');
+    if (!form.courseArea) {
+      setAreaErrorMessage('Area is required to submit this form.');
       isValid = false;
     }
-    if (!validHUID(facultyHUID)) {
-      setFacultyHUIDErrorMessage('HUID is required and must contain 8 digits.');
+    if (!validHUID(form.HUID)) {
+      setHUIDErrorMessage('HUID is required and must contain 8 digits.');
       isValid = false;
     }
-    if (!facultyLastName) {
-      setFacultyLastNameErrorMessage('Last name is required to submit this form.');
+    if (!form.lastName) {
+      setLastNameErrorMessage('Last name is required to submit this form.');
       isValid = false;
     }
-    if (!facultyCategory) {
-      setFacultyCategoryErrorMessage('Category is required to submit this form.');
+    if (!form.category) {
+      setCategoryErrorMessage('Category is required to submit this form.');
       isValid = false;
     }
     if (!isValid) {
@@ -207,40 +172,42 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
     if (currentFaculty) {
       result = await FacultyAPI.editFaculty({
         id: currentFaculty.id,
-        area: facultyArea,
-        HUID: facultyHUID,
-        firstName: facultyFirstName,
-        lastName: facultyLastName,
-        jointWith: facultyJointWith,
-        category: facultyCategory as FACULTY_TYPE,
-        notes: facultyNotes,
+        area: form.courseArea,
+        HUID: form.HUID,
+        firstName: form.firstName,
+        lastName: form.lastName,
+        jointWith: form.jointWith,
+        category: form.category as FACULTY_TYPE,
+        notes: form.notes,
       });
     } else {
       result = await FacultyAPI.createFaculty({
-        area: facultyArea,
-        HUID: facultyHUID,
-        firstName: facultyFirstName,
-        lastName: facultyLastName,
-        jointWith: facultyJointWith,
-        category: facultyCategory as FACULTY_TYPE,
-        notes: facultyNotes,
+        area: form.courseArea,
+        HUID: form.HUID,
+        firstName: form.firstName,
+        lastName: form.lastName,
+        jointWith: form.jointWith,
+        category: form.category as FACULTY_TYPE,
+        notes: form.notes,
       });
     }
     return result;
   };
   useEffect((): void => {
     if (isVisible) {
-      setFacultyArea(currentFaculty ? currentFaculty.area.name : '');
-      setFacultyHUID(currentFaculty ? currentFaculty.HUID : '');
-      setFacultyFirstName(currentFaculty ? (currentFaculty.firstName || '') : '');
-      setFacultyLastName(currentFaculty ? currentFaculty.lastName : '');
-      setFacultyJointWith(currentFaculty ? (currentFaculty.jointWith || '') : '');
-      setFacultyCategory(currentFaculty ? currentFaculty.category : '');
-      setFacultyNotes(currentFaculty ? currentFaculty.notes : '');
-      setFacultyAreaErrorMessage('');
-      setFacultyHUIDErrorMessage('');
-      setFacultyLastNameErrorMessage('');
-      setFacultyCategoryErrorMessage('');
+      setFormFields({
+        courseArea: currentFaculty ? currentFaculty.area.name : '',
+        HUID: currentFaculty ? (currentFaculty.HUID || '') : '',
+        firstName: currentFaculty ? (currentFaculty.firstName || '') : '',
+        lastName: currentFaculty ? (currentFaculty.lastName || '') : '',
+        jointWith: currentFaculty ? (currentFaculty.jointWith || '') : '',
+        category: currentFaculty ? currentFaculty.category : '',
+        notes: currentFaculty ? (currentFaculty.notes || '') : '',
+      });
+      setAreaErrorMessage('');
+      setHUIDErrorMessage('');
+      setLastNameErrorMessage('');
+      setCategoryErrorMessage('');
       setFacultyErrorMessage('');
       setFacultyModalFocus();
     }
@@ -261,8 +228,8 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
         <NoteText>Note: * denotes a required field</NoteText>
         <form id="editFacultyForm">
           <Dropdown
-            id="editFacultyCourseArea"
-            name="editFacultyCourseArea"
+            id="courseArea"
+            name="courseArea"
             label="Area"
             // Insert an empty option so that no area is pre-selected in dropdown
             options={
@@ -274,53 +241,45 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
                   label: area,
                 })))
             }
-            onChange={(event): void => setFacultyArea(
-              (event.target as HTMLSelectElement).value
-            )}
-            value={facultyArea}
-            errorMessage={facultyAreaErrorMessage}
+            onChange={updateFormFields}
+            value={form.courseArea}
+            errorMessage={areaErrorMessage}
             isRequired
           />
           <TextInput
-            id="editFacultyHUID"
-            name="editFacultyHUID"
+            id="HUID"
+            name="HUID"
             label="HUID"
             labelPosition={POSITION.TOP}
             placeholder="e.g. 12345678"
-            onChange={(event): void => setFacultyHUID(
-              (event.target as HTMLInputElement).value.trim()
-            )}
-            value={facultyHUID}
-            errorMessage={facultyHUIDErrorMessage}
+            onChange={updateFormFields}
+            value={form.HUID}
+            errorMessage={HUIDErrorMessage}
             isRequired
           />
           <TextInput
-            id="editFacultyFirstName"
-            name="editFacultyFirstName"
+            id="firstName"
+            name="firstName"
             label="First name"
             labelPosition={POSITION.TOP}
             placeholder="e.g. Jane"
-            onChange={(event): void => setFacultyFirstName(
-              (event.target as HTMLInputElement).value
-            )}
-            value={facultyFirstName}
+            onChange={updateFormFields}
+            value={form.firstName}
           />
           <TextInput
-            id="editFacultyLastName"
-            name="editFacultyLastName"
+            id="lastName"
+            name="lastName"
             label="Last name"
             labelPosition={POSITION.TOP}
             placeholder="e.g. Smith"
-            onChange={(event): void => setFacultyLastName(
-              (event.target as HTMLInputElement).value
-            )}
-            value={facultyLastName}
-            errorMessage={facultyLastNameErrorMessage}
+            onChange={updateFormFields}
+            value={form.lastName}
+            errorMessage={lastNameErrorMessage}
             isRequired
           />
           <Dropdown
-            id="editFacultyCategory"
-            name="editFacultyCategory"
+            id="category"
+            name="category"
             label="Category"
             /**
              * Insert an empty option so that no category is pre-selected in dropdown
@@ -335,34 +294,28 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
                     label: categoryTitle,
                   };
                 }))}
-            onChange={(event): void => setFacultyCategory(
-              (event.target as HTMLSelectElement).value
-            )}
-            value={facultyCategory}
-            errorMessage={facultyCategoryErrorMessage}
+            onChange={updateFormFields}
+            value={form.category}
+            errorMessage={categoryErrorMessage}
             isRequired
           />
           <TextInput
-            id="editFacultyJointWith"
-            name="editFacultyJointWith"
+            id="jointWith"
+            name="jointWith"
             label="Joint with..."
             labelPosition={POSITION.TOP}
             placeholder="Add 'Joint With' entry"
-            onChange={(event): void => setFacultyJointWith(
-              (event.target as HTMLInputElement).value
-            )}
-            value={facultyJointWith}
+            onChange={updateFormFields}
+            value={form.jointWith}
           />
           <TextInput
-            id="editFacultyNotes"
-            name="editFacultyNotes"
+            id="notes"
+            name="notes"
             label="Notes"
             labelPosition={POSITION.TOP}
             placeholder="e.g. Prefers Room X"
-            onChange={(event): void => setFacultyNotes(
-              (event.target as HTMLInputElement).value
-            )}
-            value={facultyNotes}
+            onChange={updateFormFields}
+            value={form.notes}
           />
           {facultyErrorMessage && (
             <ValidationErrorMessage
