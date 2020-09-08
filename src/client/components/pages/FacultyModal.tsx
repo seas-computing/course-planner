@@ -332,7 +332,7 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
           onClick={async (): Promise<void> => {
             try {
               const editedFacultyMember = await submitEditFacultyForm();
-              onSuccess(editedFacultyMember);
+              await onSuccess(editedFacultyMember);
             } catch (error) {
               setFacultyErrorMessage(error.message);
               // leave the modal visible after an error

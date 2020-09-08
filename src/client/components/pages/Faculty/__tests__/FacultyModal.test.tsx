@@ -1,6 +1,5 @@
 import {
   strictEqual,
-  deepStrictEqual,
 } from 'assert';
 import { validHUID } from 'common/utils/facultyHelperFunctions';
 import {
@@ -36,7 +35,6 @@ describe('Faculty Modal', function () {
     let getStub: SinonStub;
     let postStub: SinonStub;
     let getByText: BoundFunction<GetByText>;
-    let getAllByRole: BoundFunction<AllByRole>;
     let queryAllByRole: BoundFunction<AllByRole>;
     let newFacultyInfo: CreateFacultyDTO;
     let courseAreaSelect: HTMLSelectElement;
@@ -63,7 +61,7 @@ describe('Faculty Modal', function () {
         },
       }));
       dispatchMessage = stub();
-      ({ getByText, getAllByRole, queryAllByRole } = render(
+      ({ getByText, queryAllByRole } = render(
         <FacultyAdmin />,
         dispatchMessage,
         testMetadata
@@ -232,34 +230,12 @@ describe('Faculty Modal', function () {
         });
       });
     });
-    describe('Resulting display', function () {
-      it('sorts the updated list of faculty by area, last name, and first name ascending on modal submission', async function () {
-        const submitButton = getByText('Submit');
-        fireEvent.click(submitButton);
-        await waitForElement(() => getByText(
-          newFacultyInfo.lastName, { exact: false }
-        ));
-        const ids = getAllByRole('button')
-          .filter((button) => button.id && button.id.startsWith('editFaculty'))
-          .map((button) => button.id);
-        const idsInExpectedOrder = [
-          // area: AM, last name: Lee
-          appliedMathFacultyMemberResponse.id,
-          // area: AM, last name: Townson
-          newFacultyInfoId,
-          // area: BE, last name: Su
-          bioengineeringFacultyMemberResponse.id,
-        ].map((id) => `editFaculty${id}`);
-        deepStrictEqual(ids, idsInExpectedOrder);
-      });
-    });
   });
   context('When editing an existing faculty member', function () {
     let dispatchMessage: SinonStub;
     let getStub: SinonStub;
     let editStub: SinonStub;
     let getByText: BoundFunction<GetByText>;
-    let getAllByRole: BoundFunction<AllByRole>;
     let queryAllByRole: BoundFunction<AllByRole>;
     let newLastName: string;
     beforeEach(async function () {
@@ -277,7 +253,7 @@ describe('Faculty Modal', function () {
         lastName: newLastName,
       });
       dispatchMessage = stub();
-      ({ getByText, getAllByRole, queryAllByRole } = render(
+      ({ getByText, queryAllByRole } = render(
         <FacultyAdmin />,
         dispatchMessage,
         testMetadata
@@ -429,29 +405,6 @@ describe('Faculty Modal', function () {
           fireEvent.click(submitButton);
           strictEqual(queryAllByRole('alert').length, 0);
         });
-      });
-    });
-    describe('Resulting display', function () {
-      it('sorts the updated list of faculty by area, last name, and first name ascending on modal submission', async function () {
-        const submitButton = getByText('Submit');
-        fireEvent.click(submitButton);
-        await waitForElement(() => getByText(
-          newLastName, { exact: false }
-        ));
-        const ids = getAllByRole('button')
-          .filter((button) => button.id && button.id.startsWith('editFaculty'))
-          .map((button) => button.id);
-        const idsInExpectedOrder = [
-          // area: AM, last name: Lee
-          appliedMathFacultyMemberResponse.id,
-          // area: AP, last name: Hudson
-          physicsFacultyMemberResponse.id,
-          // area: AP, last name: Kenney
-          anotherPhysicsFacultyMemberResponse.id,
-          // area: BE, last name: Su
-          bioengineeringFacultyMemberResponse.id,
-        ].map((id) => `editFaculty${id}`);
-        deepStrictEqual(ids, idsInExpectedOrder);
       });
     });
   });

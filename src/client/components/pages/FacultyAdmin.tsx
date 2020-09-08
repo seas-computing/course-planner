@@ -31,7 +31,6 @@ import { MetadataContext } from 'client/context/MetadataContext';
 import { POSITION } from 'mark-one/lib/Forms/Label';
 import { FACULTY_TYPE } from 'common/constants';
 import { getAreaColor } from '../../../common/constants';
-import { sortFaculty } from 'common/utils/facultyHelperFunctions';
 import { FacultyAPI } from '../../api/faculty';
 import FacultyModal from './FacultyModal';
 
@@ -85,12 +84,8 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
    */
   const dispatchMessage = useContext(MessageContext);
 
-  /**
-   * Gets the faculty data from the server
-   * If it fails, display a message for the user
-   */
-  useEffect((): void => {
-    FacultyAPI.getAllFacultyMembers()
+  const loadFaculty = async (): Promise<void> => {
+    await FacultyAPI.getAllFacultyMembers()
       .then((facultyMembers): ManageFacultyResponseDTO[] => {
         setFacultyMembers(facultyMembers);
         return facultyMembers;
@@ -104,6 +99,14 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
           type: MESSAGE_ACTION.PUSH,
         });
       });
+  };
+
+  /**
+   * Gets the faculty data from the server
+   * If it fails, display a message for the user
+   */
+  useEffect((): void => {
+    loadFaculty();
   }, []);
 
   /**
@@ -172,12 +175,9 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
             setCreateFacultyModalVisible(false);
             document.getElementById('createFaculty').focus();
           }}
-          onSuccess={(newFacultyEntry: ManageFacultyResponseDTO): void => {
-            // Sort the new list of faculty
-            setFacultyMembers(sortFaculty([
-              ...currentFacultyMembers,
-              newFacultyEntry,
-            ]));
+          onSuccess={async (): Promise<void> => {
+            // wait for the faculty to load before allowing the dialog to close
+            await loadFaculty();
           }}
         />
         <FacultyModal
@@ -186,17 +186,13 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
           onClose={(): void => {
             setEditFacultyModalVisible(false);
             const buttonId = computeEditFacultyButtonId(currentFaculty);
-            document.getElementById(buttonId).focus();
+            const button = document.getElementById(buttonId);
+            // this will run after the data is loaded, so no delay is necessary
+            button.focus();
+            button.scrollIntoView();
           }}
-          onSuccess={(editedFacultyMember: ManageFacultyResponseDTO): void => {
-            setFacultyMembers(sortFaculty(
-              currentFacultyMembers.map((faculty):
-              ManageFacultyResponseDTO => (
-                faculty.id === editedFacultyMember.id
-                  ? editedFacultyMember
-                  : faculty
-              ))
-            ));
+          onSuccess={async (): Promise<void> => {
+            await loadFaculty();
           }}
         />
       </div>
