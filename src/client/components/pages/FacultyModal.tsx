@@ -47,7 +47,7 @@ interface FacultyModalProps {
   /**
    * Handler to be invoked when the edit is successful
    */
-  onSuccess?: (faculty: ManageFacultyResponseDTO) => void;
+  onSuccess?: (faculty: ManageFacultyResponseDTO) => Promise<void>;
 }
 
 /**
