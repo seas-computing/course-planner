@@ -29,7 +29,7 @@ import { FACULTY_TYPE } from 'common/constants';
 import { CreateFacultyDTO } from 'common/dto/faculty/CreateFaculty.dto';
 import FacultyAdmin from '../../FacultyAdmin';
 
-describe('Faculty Modal', function () {
+describe.only('Faculty Modal', function () {
   context('When creating a new faculty member', function () {
     let dispatchMessage: SinonStub;
     let getStub: SinonStub;
@@ -37,13 +37,6 @@ describe('Faculty Modal', function () {
     let getByText: BoundFunction<GetByText>;
     let queryAllByRole: BoundFunction<AllByRole>;
     let newFacultyInfo: CreateFacultyDTO;
-    let courseAreaSelect: HTMLSelectElement;
-    let huidInput: HTMLInputElement;
-    let firstNameInput: HTMLInputElement;
-    let lastNameInput: HTMLInputElement;
-    let facultyCategorySelect: HTMLSelectElement;
-    let jointWithInput: HTMLInputElement;
-    let notesInput: HTMLInputElement;
     const newFacultyInfoId = '5c8e015f-eae6-4586-9eb0-fc7d243403bf';
     beforeEach(async function () {
       getStub = stub(FacultyAPI, 'getAllFacultyMembers');
@@ -78,25 +71,25 @@ describe('Faculty Modal', function () {
         jointWith: 'CS 350',
         notes: 'Prefers Allston campus',
       };
-      courseAreaSelect = document.getElementById('courseArea') as HTMLSelectElement;
-      huidInput = document.getElementById('HUID') as HTMLInputElement;
-      firstNameInput = document.getElementById('firstName') as HTMLInputElement;
-      lastNameInput = document.getElementById('lastName') as HTMLInputElement;
-      facultyCategorySelect = document.getElementById('category') as HTMLSelectElement;
-      jointWithInput = document.getElementById('jointWith') as HTMLInputElement;
-      notesInput = document.getElementById('notes') as HTMLInputElement;
+      const courseAreaSelect = document.getElementById('editFacultyCourseArea') as HTMLSelectElement;
       fireEvent.change(courseAreaSelect,
         { target: { value: newFacultyInfo.area } });
+      const huidInput = document.getElementById('editFacultyHUID') as HTMLInputElement;
       fireEvent.change(huidInput,
         { target: { value: newFacultyInfo.HUID } });
+      const firstNameInput = document.getElementById('editFacultyFirstName') as HTMLInputElement;
       fireEvent.change(firstNameInput,
         { target: { value: newFacultyInfo.firstName } });
+      const lastNameInput = document.getElementById('editFacultyLastName') as HTMLInputElement;
       fireEvent.change(lastNameInput,
         { target: { value: newFacultyInfo.lastName } });
+      const facultyCategorySelect = document.getElementById('editFacultyCategory') as HTMLSelectElement;
       fireEvent.change(facultyCategorySelect,
         { target: { value: newFacultyInfo.category } });
+      const jointWithInput = document.getElementById('editFacultyJointWith') as HTMLInputElement;
       fireEvent.change(jointWithInput,
         { target: { value: newFacultyInfo.jointWith } });
+      const notesInput = document.getElementById('editFacultyNotes') as HTMLInputElement;
       fireEvent.change(notesInput,
         { target: { value: newFacultyInfo.notes } });
     });
@@ -107,13 +100,13 @@ describe('Faculty Modal', function () {
         const createFacultyButtonText = 'Create New Faculty';
         await waitForElement(() => getByText(createFacultyButtonText));
         fireEvent.click(getByText(createFacultyButtonText));
-        courseAreaSelect = document.getElementById('courseArea') as HTMLSelectElement;
-        huidInput = document.getElementById('HUID') as HTMLInputElement;
-        firstNameInput = document.getElementById('firstName') as HTMLInputElement;
-        lastNameInput = document.getElementById('lastName') as HTMLInputElement;
-        facultyCategorySelect = document.getElementById('category') as HTMLSelectElement;
-        jointWithInput = document.getElementById('jointWith') as HTMLInputElement;
-        notesInput = document.getElementById('notes') as HTMLInputElement;
+        const courseAreaSelect = document.getElementById('courseArea') as HTMLSelectElement;
+        const huidInput = document.getElementById('HUID') as HTMLInputElement;
+        const firstNameInput = document.getElementById('firstName') as HTMLInputElement;
+        const lastNameInput = document.getElementById('lastName') as HTMLInputElement;
+        const facultyCategorySelect = document.getElementById('category') as HTMLSelectElement;
+        const jointWithInput = document.getElementById('jointWith') as HTMLInputElement;
+        const notesInput = document.getElementById('notes') as HTMLInputElement;
         strictEqual(courseAreaSelect.value, '');
         strictEqual(huidInput.value, '');
         strictEqual(firstNameInput.value, '');
@@ -129,7 +122,7 @@ describe('Faculty Modal', function () {
     describe('Field Validation', function () {
       describe('Area', function () {
         it('is a required field', async function () {
-          courseAreaSelect = document.getElementById('courseArea') as HTMLSelectElement;
+          const courseAreaSelect = document.getElementById('courseArea') as HTMLSelectElement;
           fireEvent.change(courseAreaSelect, { target: { value: '' } });
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
@@ -141,7 +134,7 @@ describe('Faculty Modal', function () {
       });
       describe('HUID', function () {
         it('is a required field', async function () {
-          huidInput = document.getElementById('HUID') as HTMLInputElement;
+          const huidInput = document.getElementById('HUID') as HTMLInputElement;
           fireEvent.change(huidInput, { target: { value: '' } });
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
@@ -151,7 +144,7 @@ describe('Faculty Modal', function () {
           );
         });
         it('raises an appropriate error message when not valid', async function () {
-          huidInput = document.getElementById('HUID') as HTMLInputElement;
+          const huidInput = document.getElementById('HUID') as HTMLInputElement;
           fireEvent.change(huidInput, { target: { value: '123' } });
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
@@ -180,7 +173,7 @@ describe('Faculty Modal', function () {
       });
       describe('First name', function () {
         it('is not a required field', async function () {
-          firstNameInput = document.getElementById('firstName') as HTMLInputElement;
+          const firstNameInput = document.getElementById('firstName') as HTMLInputElement;
           fireEvent.change(firstNameInput, { target: { value: '' } });
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
@@ -189,7 +182,7 @@ describe('Faculty Modal', function () {
       });
       describe('Last name', function () {
         it('is a required field', async function () {
-          lastNameInput = document.getElementById('lastName') as HTMLInputElement;
+          const lastNameInput = document.getElementById('lastName') as HTMLInputElement;
           fireEvent.change(lastNameInput, { target: { value: '' } });
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
@@ -201,7 +194,7 @@ describe('Faculty Modal', function () {
       });
       describe('Category', function () {
         it('is a required field', async function () {
-          facultyCategorySelect = document.getElementById('category') as HTMLSelectElement;
+          const facultyCategorySelect = document.getElementById('category') as HTMLSelectElement;
           fireEvent.change(facultyCategorySelect, { target: { value: '' } });
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
@@ -213,7 +206,7 @@ describe('Faculty Modal', function () {
       });
       describe('Joint With', function () {
         it('is not a required field', async function () {
-          jointWithInput = document.getElementById('jointWith') as HTMLInputElement;
+          const jointWithInput = document.getElementById('jointWith') as HTMLInputElement;
           fireEvent.change(jointWithInput, { target: { value: '' } });
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
@@ -222,7 +215,7 @@ describe('Faculty Modal', function () {
       });
       describe('Notes', function () {
         it('is not a required field', async function () {
-          notesInput = document.getElementById('notes') as HTMLInputElement;
+          const notesInput = document.getElementById('notes') as HTMLInputElement;
           fireEvent.change(notesInput, { target: { value: '' } });
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
