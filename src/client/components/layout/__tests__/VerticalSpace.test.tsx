@@ -1,48 +1,33 @@
 import React from 'react';
 import {
   BoundFunction,
-  GetByBoundAttribute,
+  GetByText,
 } from '@testing-library/react';
 import {
   render,
 } from 'test-utils';
 import { strictEqual } from 'assert';
-import { VerticalSpace } from '../VerticalSpace';
+import { VerticalSpace } from '..';
 
-describe('VerticalSpace Component', function () {
-  let getByTestId: BoundFunction<GetByBoundAttribute>;
-  context('when the height is not specified', function () {
-    beforeEach(function () {
-      ({ getByTestId } = render(
-        <VerticalSpace testId="test-component" />,
-        () => {}
-      ));
-    });
-    it('creates a div', function () {
-      getByTestId('test-component');
-    });
-    it('sets the height to the default value', function () {
-      const style = window.getComputedStyle(getByTestId('test-component') as HTMLDivElement);
-      strictEqual(style.height, '5px');
-    });
+describe.only('VerticalSpace Component', function () {
+  let getByText: BoundFunction<GetByText>;
+  let testText = 'Vertical Space Text';
+  beforeEach(function () {
+    ({ getByText } = render(
+      <VerticalSpace>
+        {testText}
+      </VerticalSpace>,
+      () => {}
+    ));
   });
-  context('when the height is specified', function () {
-    const customHeight = '20px';
-    beforeEach(function () {
-      ({ getByTestId } = render(
-        <VerticalSpace
-          testId="test-specified-height"
-          height={customHeight}
-        />,
-        () => {}
-      ));
-    });
-    it('creates a div', function () {
-      getByTestId('test-specified-height');
-    });
-    it('the height is set accordingly', function () {
-      const style = window.getComputedStyle(getByTestId('test-specified-height') as HTMLDivElement);
-      strictEqual(style.height, customHeight);
-    });
+  it('renders', function () {
+    getByText(testText);
+  });
+  it('sets the margin to the correct value', function () {
+    const element = getByText(testText) as HTMLDivElement;
+    const style = window.getComputedStyle(element);
+    console.log(element.nodeType, element.innerHTML);
+    console.log(style);
+    // strictEqual(style.margin, '5px');
   });
 });

@@ -1,2 +1,2 @@
 export * from './Message';
-export * from './VerticalSpace';
+export { default as VerticalSpace } from './VerticalSpace';

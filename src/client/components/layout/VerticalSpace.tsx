@@ -1,28 +1,14 @@
-import React, { FunctionComponent, ReactElement, useContext } from 'react';
-import styled, { ThemeContext } from 'styled-components';
+import { ReactNode } from 'react';
+import { fromTheme } from 'mark-one';
+import styled from 'styled-components';
 
 interface VerticalSpaceProps {
-  /** Specifies the height of the vertical space */
-  height?: string;
-  /** Specifies the test id of the component for testing purposes */
-  testId?: string
+  /** Specifies the content around which the VerticalSpace will wrap */
+  children?: ReactNode;
 }
 
 const StyledVerticalSpace = styled.div<VerticalSpaceProps>`
-  height: ${({ height }) => height};
+  margin: ${fromTheme('ws', 'xsmall')};
 `;
 
-export const VerticalSpace: FunctionComponent<VerticalSpaceProps> = (props):
-ReactElement => {
-  const {
-    height,
-    testId,
-  } = props;
-  const theme = useContext(ThemeContext);
-  return (
-    <StyledVerticalSpace
-      height={height == null ? theme.ws.xsmall : height}
-      data-testid={testId}
-    />
-  );
-};
+export default StyledVerticalSpace;
