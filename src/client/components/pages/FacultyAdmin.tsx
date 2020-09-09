@@ -54,21 +54,12 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
   );
 
   /**
-   * Keeps track of whether the create faculty modal is currently visible.
+   * Keeps track of whether the faculty modal is currently visible.
    * By default, the modal is not visible.
    */
   const [
-    createFacultyModalVisible,
-    setCreateFacultyModalVisible,
-  ] = useState(false);
-
-  /**
-   * Keeps track of whether the edit faculty modal is currently visible.
-   * By default, the modal is not visible.
-   */
-  const [
-    editFacultyModalVisible,
-    setEditFacultyModalVisible,
+    facultyModalVisible,
+    setFacultyModalVisible,
   ] = useState(false);
 
   /**
@@ -120,7 +111,10 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
         <Button
           id="createFaculty"
           onClick={
-            (): void => { setCreateFacultyModalVisible(true); }
+            (): void => {
+              setCurrentFaculty(null);
+              setFacultyModalVisible(true);
+            }
           }
           variant={VARIANT.INFO}
         >
@@ -158,7 +152,7 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
                       onClick={
                         (): void => {
                           setCurrentFaculty(faculty);
-                          setEditFacultyModalVisible(true);
+                          setFacultyModalVisible(true);
                         }
                       }
                     >
@@ -170,28 +164,23 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
           </TableBody>
         </Table>
         <FacultyModal
-          isVisible={createFacultyModalVisible}
+          isVisible={facultyModalVisible}
+          currentFaculty={currentFaculty}
           onClose={(): void => {
-            setCreateFacultyModalVisible(false);
-            document.getElementById('createFaculty').focus();
+            if (currentFaculty) {
+              setFacultyModalVisible(false);
+              const buttonId = computeEditFacultyButtonId(currentFaculty);
+              const button = document.getElementById(buttonId);
+              // this will run after the data is loaded, so no delay is necessary
+              button.focus();
+              button.scrollIntoView();
+            } else {
+              setFacultyModalVisible(false);
+              document.getElementById('createFaculty').focus();
+            }
           }}
           onSuccess={async (): Promise<void> => {
             // wait for the faculty to load before allowing the dialog to close
-            await loadFaculty();
-          }}
-        />
-        <FacultyModal
-          isVisible={editFacultyModalVisible}
-          currentFaculty={currentFaculty}
-          onClose={(): void => {
-            setEditFacultyModalVisible(false);
-            const buttonId = computeEditFacultyButtonId(currentFaculty);
-            const button = document.getElementById(buttonId);
-            // this will run after the data is loaded, so no delay is necessary
-            button.focus();
-            button.scrollIntoView();
-          }}
-          onSuccess={async (): Promise<void> => {
             await loadFaculty();
           }}
         />
