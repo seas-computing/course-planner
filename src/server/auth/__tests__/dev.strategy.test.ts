@@ -23,7 +23,7 @@ describe('Dev Strategy', function () {
 
     const dev = moduleRef.get<DevStrategy>(DevStrategy);
 
-    const result = dev.validate();
+    const result = dev.validate({} as Express.Request);
 
     const {
       eppn,
