@@ -1,13 +1,11 @@
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
 import { stub, SinonStub } from 'sinon';
-import { strictEqual, deepStrictEqual } from 'assert';
+import { strictEqual, deepStrictEqual, rejects } from 'assert';
 import { FACULTY_TYPE } from 'common/constants';
 import { Authentication } from 'server/auth/authentication.guard';
-import { NotFoundException } from '@nestjs/common';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
-import { TimeoutError } from 'rxjs';
-import { appliedMathFacultyMember } from 'testData';
+import * as dummy from 'testData';
 import { Semester } from 'server/semester/semester.entity';
 import { SemesterService } from 'server/semester/semester.service';
 import { FacultyController } from '../faculty.controller';
@@ -16,31 +14,37 @@ import { Area } from '../../area/area.entity';
 import { FacultyService } from '../faculty.service';
 import { FacultyScheduleService } from '../facultySchedule.service';
 
-const mockFacultyService = {
-  find: stub(),
-};
-
-const mockFacultyScheduleService = {};
-
-const mockSemesterService = {};
-
-const mockFacultyRepository = {
-  find: stub(),
-  save: stub(),
-  create: stub(),
-  findOneOrFail: stub(),
-};
-
-const mockAreaRepository = {
-  findOneOrFail: stub(),
-};
-
-const mockSemesterRepository = {};
-
 describe('Faculty controller', function () {
+  let mockFacultyService : Record<string, SinonStub>;
+  let mockFacultyScheduleService : Record<string, SinonStub>;
+  let mockSemesterService : Record<string, SinonStub>;
+  let mockFacultyRepository : Record<string, SinonStub>;
+  let mockAreaRepository : Record<string, SinonStub>;
+
+  let mockSemesterRepository : Record<string, SinonStub>;
   let controller: FacultyController;
 
   beforeEach(async function () {
+    mockFacultyService = {
+      find: stub(),
+    };
+
+    mockFacultyScheduleService = {};
+
+    mockSemesterService = {};
+
+    mockFacultyRepository = {
+      find: stub(),
+      save: stub(),
+      findOneOrFail: stub(),
+    };
+
+    mockAreaRepository = {
+      findOneOrFail: stub(),
+    };
+
+    mockSemesterRepository = {};
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
@@ -73,20 +77,10 @@ describe('Faculty controller', function () {
 
     controller = module.get<FacultyController>(FacultyController);
   });
-  afterEach(function () {
-    Object.values({
-      ...mockFacultyRepository,
-      ...mockAreaRepository,
-      ...mockSemesterRepository,
-    })
-      .forEach((sinonStub: SinonStub): void => {
-        sinonStub.reset();
-      });
-  });
 
   describe('getAll', function () {
     it('returns all faculty in the database', async function () {
-      const databaseFaculty = Array(10).fill(appliedMathFacultyMember);
+      const databaseFaculty = Array(10).fill(dummy.appliedMathFacultyMember);
 
       mockFacultyService.find.resolves(databaseFaculty);
 
@@ -106,7 +100,7 @@ describe('Faculty controller', function () {
         area: new Area(),
       });
 
-      strictEqual(mockFacultyRepository.create.callCount, 1);
+      strictEqual(mockFacultyRepository.save.callCount, 1);
     });
     it('returns the newly created faculty member', async function () {
       const facultyMember = {
@@ -116,7 +110,7 @@ describe('Faculty controller', function () {
         category: FACULTY_TYPE.LADDER,
         area: new Area(),
       };
-      mockFacultyRepository.create.resolves({
+      mockFacultyRepository.save.resolves({
         ...facultyMember,
         id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
       });
@@ -166,12 +160,10 @@ describe('Faculty controller', function () {
         .rejects(new EntityNotFoundError(Area, {
           where: { id: newArea.id },
         }));
-      try {
-        await controller.update('8636efc3-6b3e-4c44-ba38-4e0e788dba43', newFacultyMemberInfo);
-      } catch (e) {
-        strictEqual(e instanceof NotFoundException, true);
-        strictEqual(e.message.message.includes('entered Area'), true);
-      }
+      await rejects(
+        () => controller.update('8636efc3-6b3e-4c44-ba38-4e0e788dba43', newFacultyMemberInfo),
+        /entered Area/
+      );
     });
     it('throws a Not Found Error if the faculty does not exist', async function () {
       const newArea = new Area();
@@ -188,12 +180,11 @@ describe('Faculty controller', function () {
         .rejects(new EntityNotFoundError(Faculty, {
           where: { id: newFacultyMemberInfo.id },
         }));
-      try {
-        await controller.update('1636efd9-6b3e-4c44-ba38-4e0e788dba54', newFacultyMemberInfo);
-      } catch (e) {
-        strictEqual(e instanceof NotFoundException, true);
-        strictEqual(e.message.message.includes('Faculty'), true);
-      }
+
+      await rejects(
+        () => controller.update('1636efd9-6b3e-4c44-ba38-4e0e788dba54', newFacultyMemberInfo),
+        /Faculty/
+      );
     });
     it('allows other error types to bubble when finding faculty', async function () {
       const newFacultyMemberInfo = {
@@ -204,15 +195,15 @@ describe('Faculty controller', function () {
         category: FACULTY_TYPE.LADDER,
         area: new Area(),
       };
+
       mockFacultyRepository
         .findOneOrFail
-        .rejects(new TimeoutError());
-      try {
-        await controller.update('1636efd9-6b3e-4c44-ba38-4e0e788dba54', newFacultyMemberInfo);
-      } catch (e) {
-        strictEqual(e instanceof Error, true);
-        strictEqual(e instanceof NotFoundException, false);
-      }
+        .rejects(dummy.error);
+
+      await rejects(
+        () => controller.update('1636efd9-6b3e-4c44-ba38-4e0e788dba54', newFacultyMemberInfo),
+        dummy.error
+      );
     });
     it('allows other error types to bubble when finding area', async function () {
       const newFacultyMemberInfo = {
@@ -225,13 +216,12 @@ describe('Faculty controller', function () {
       };
       mockAreaRepository
         .findOneOrFail
-        .rejects(new TimeoutError());
-      try {
-        await controller.update('1636efd9-6b3e-4c44-ba38-4e0e788dba54', newFacultyMemberInfo);
-      } catch (e) {
-        strictEqual(e instanceof Error, true);
-        strictEqual(e instanceof NotFoundException, false);
-      }
+        .rejects(dummy.error);
+
+      await rejects(
+        () => controller.update('1636efd9-6b3e-4c44-ba38-4e0e788dba54', newFacultyMemberInfo),
+        dummy.error
+      );
     });
   });
 });

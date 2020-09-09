@@ -32,7 +32,9 @@ export class CoursePopulationService
   @InjectRepository(Faculty)
   protected facultyRepository: Repository<Faculty>;
 
-  public async populate({ courses }: { courses: CourseData[] }) {
+  public async populate(
+    { courses }: { courses: CourseData[] }
+  ): Promise<Course[]> {
     const allAreas = await this.areaRepository.find(
       {
         order: {
@@ -124,7 +126,7 @@ export class CoursePopulationService
     );
   }
 
-  public async drop() {
-    return this.repository.query('TRUNCATE TABLE course, course_instance, meeting, faculty_course_instances_course_instance CASCADE;');
+  public async drop(): Promise<void> {
+    await this.repository.query('TRUNCATE TABLE course, course_instance, meeting, faculty_course_instances_course_instance CASCADE;');
   }
 }

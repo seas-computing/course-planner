@@ -1,8 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class CourseListingViews1583524438353 implements MigrationInterface {
-  public name = 'CourseListingViews1583524438353'
-
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query('CREATE TABLE IF NOT EXISTS "typeorm_metadata" ("type" varchar NOT NULL, "database" varchar, "schema" varchar, "table" varchar, "name" varchar, "value" text)', undefined);
     await queryRunner.query('CREATE VIEW "CourseListingView" AS SELECT "c"."id" AS "id", "c"."notes" AS "notes", "a"."name" AS "area", c."isUndergraduate" AS "isUndergraduate", CONCAT_WS(\' \', "c"."prefix", "c"."number") AS "catalogNumber", c."sameAs" AS "sameAs", c."isSEAS" AS "isSEAS", c."termPattern" AS "termPattern" FROM "course" "c" LEFT JOIN "area" "a" ON c."areaId" = "a"."id"', undefined);

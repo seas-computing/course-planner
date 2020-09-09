@@ -3,25 +3,23 @@ import { strictEqual } from 'assert';
 import {
   render,
   waitForElement,
+  fireEvent,
 } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { stub, SinonStub } from 'sinon';
-import { AxiosResponse } from 'axios';
-import { UserResponse } from 'common/dto/users/userResponse.dto';
 import * as dummy from 'testData';
-import * as api from 'client/api';
-import { App } from '../App';
+import * as userApi from 'client/api/users';
+import * as metaApi from 'client/api/metadata';
+import { ColdApp as App } from '../App';
 
 describe('App', function () {
-  let apiStub: SinonStub;
+  let userStub: SinonStub;
+  let metaStub: SinonStub;
   beforeEach(function () {
-    apiStub = stub(api, 'getCurrentUser');
-    apiStub.resolves({
-      data: dummy.regularUser,
-    } as AxiosResponse<UserResponse>);
-  });
-  afterEach(function () {
-    apiStub.restore();
+    userStub = stub(userApi, 'getCurrentUser');
+    metaStub = stub(metaApi, 'getMetadata');
+    userStub.resolves(dummy.regularUser);
+    metaStub.resolves(dummy.metadata);
   });
   describe('rendering', function () {
     it('creates a div for app content', async function () {
@@ -66,7 +64,7 @@ describe('App', function () {
         </MemoryRouter>
       );
       await waitForElement(() => getByText('Courses'));
-      const link = getByText('Course Admin') as HTMLElement;
+      const link = getByText('Course Admin');
       const tab = link.parentNode as HTMLElement;
       const style = window.getComputedStyle(tab);
       const actual = [
@@ -90,7 +88,7 @@ describe('App', function () {
         </MemoryRouter>
       );
       await waitForElement(() => getByText('Courses'));
-      const link = getByText('Non class meetings') as HTMLElement;
+      const link = getByText('Non class meetings');
       fireEvent.click(link);
       const tab = link.parentNode as HTMLElement;
       const style = window.getComputedStyle(tab);
@@ -135,47 +133,62 @@ describe('App', function () {
     });
     */
     it('only renders one active tab at a time', async function () {
-      const { getByText, getAllByRole } = render(
+      const { getAllByRole, findByText } = render(
         <MemoryRouter>
           <App />
         </MemoryRouter>
       );
-      await waitForElement(() => getByText('Courses'));
+      await findByText('Courses');
       const tabs = getAllByRole('listitem').map((listItem) => listItem.getElementsByTagName('div')[0]);
       const activeTabs = tabs.filter((tabItem) => window.getComputedStyle(tabItem)['border-bottom'] === '1px solid transparent');
       strictEqual(activeTabs.length, 1);
     });
     context('When userFetch succeeds', function () {
       beforeEach(function () {
-        apiStub.resolves({
-          data: dummy.regularUser,
-        } as AxiosResponse<UserResponse>);
+        userStub.resolves(dummy.regularUser);
+        metaStub.resolves(dummy.metadata);
       });
       it('displays the name of the current user', async function () {
-        const { getByText } = render(
+        const { findByText } = render(
           <MemoryRouter>
             <App />
           </MemoryRouter>
         );
-        strictEqual(apiStub.callCount, 1);
+        strictEqual(userStub.callCount, 1);
         const { fullName } = dummy.regularUser;
-        return waitForElement(() => getByText(fullName, { exact: false }));
+        await findByText(new RegExp(fullName));
       });
     });
     context('When userFetch fails', function () {
       beforeEach(function () {
-        apiStub.rejects(dummy.error);
+        userStub.rejects(dummy.error);
+        metaStub.resolves(dummy.metadata);
       });
       it('displays an error Message', async function () {
-        const { getByText } = render(
+        const { findByText } = render(
           <MemoryRouter>
             <App />
           </MemoryRouter>
         );
-        strictEqual(apiStub.callCount, 1);
-        return waitForElement(() => (
-          getByText('Unable to get user data', { exact: false })
-        ));
+        strictEqual(userStub.callCount, 1);
+        return findByText('Unable to get user data', { exact: false });
+      });
+    });
+    context('When getMetadata fails', function () {
+      beforeEach(function () {
+        userStub.resolves(dummy.regularUser);
+        metaStub.rejects(dummy.error);
+      });
+      it('displays an error Message', async function () {
+        const { findByText } = render(
+          <MemoryRouter>
+            <App />
+          </MemoryRouter>
+        );
+        strictEqual(userStub.callCount, 1);
+        const nextButton = await findByText('next', { exact: false });
+        fireEvent.click(nextButton);
+        return findByText('Unable to get metadata', { exact: false });
       });
     });
   });

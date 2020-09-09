@@ -4,6 +4,7 @@ import { strictEqual } from 'assert';
 import { DevStrategy } from 'server/auth/dev.strategy';
 import { SessionModule } from 'nestjs-session';
 import { Request } from 'express';
+import { HarvardKeyProfile } from '../saml.strategy';
 
 describe('Dev Strategy', function () {
   it('adds a dummy user to the session', async function () {
@@ -28,14 +29,14 @@ describe('Dev Strategy', function () {
       session: {},
     } as Request;
 
-    const result = await dev.validate(request);
+    const result = dev.validate(request);
 
     const {
       eppn,
       firstName,
       lastName,
       email,
-    } = result.session.user;
+    } = result.session.user as HarvardKeyProfile;
 
     strictEqual(eppn, 'abc123@harvard.edu');
     strictEqual(firstName, 'Test');

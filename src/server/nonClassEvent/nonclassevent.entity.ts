@@ -60,7 +60,7 @@ export class NonClassEvent extends BaseEntity {
     type: 'boolean',
     default: true,
   })
-  public private: boolean = true;
+  public private = true;
 
   /**
    * One [[NonClassEvent]] has many [[Meeting]]s

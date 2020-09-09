@@ -9,8 +9,8 @@ import React, {
 import {
   Switch,
   Route,
-  useRouteMatch,
   Redirect,
+  useLocation,
 } from 'react-router-dom';
 import {
   MESSAGE_TYPE,
@@ -50,12 +50,12 @@ import MultiYearPlan from './pages/MultiYearPlan';
  * mounts, then saves it to the UserContext to pass down to other components
  */
 
-const ColdApp: SFC = (): ReactElement => {
+export const ColdApp: SFC = (): ReactElement => {
   /**
    * Hook for maintaining the currently selected user
    * */
 
-  const [currentUser, setUser] = useState<UserResponse | null>(null);
+  const [currentUser, setUser] = useState<UserResponse>(null);
 
   /**
    * Set up the local reducer for maintaining the current app-wide message
@@ -78,7 +78,7 @@ const ColdApp: SFC = (): ReactElement => {
 
   useEffect((): void => {
     getCurrentUser()
-      .then(({ data: user }): UserResponse => {
+      .then((user): UserResponse => {
         setUser(user);
         return user;
       })
@@ -97,7 +97,7 @@ const ColdApp: SFC = (): ReactElement => {
           type: MESSAGE_ACTION.PUSH,
         });
       });
-  }, []);
+  }, [setUser, dispatchMessage]);
 
   /**
    * Set up the current metadata containing the current academic year, currently
@@ -127,6 +127,8 @@ const ColdApp: SFC = (): ReactElement => {
       });
   }, []);
 
+  const { pathname: currentPath } = useLocation();
+
   const tabs: { link: string; text: string }[] = [
     { link: '/courses', text: 'Courses' },
     { link: '/non-class-meetings', text: 'Non class meetings' },
@@ -152,7 +154,7 @@ const ColdApp: SFC = (): ReactElement => {
                   <TabList>
                     {tabs.map((tab): ReactElement => (
                       <TabListItem
-                        isActive={Boolean(useRouteMatch({ path: tab.link }))}
+                        isActive={tab.link === currentPath}
                         key={tab.text}
                       >
                         <Link to={tab.link}>
@@ -190,4 +192,4 @@ const ColdApp: SFC = (): ReactElement => {
   );
 };
 
-export const App = hot(ColdApp);
+export default hot(ColdApp);

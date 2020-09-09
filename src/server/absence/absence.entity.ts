@@ -6,7 +6,6 @@ import { BaseEntity } from '../base/base.entity';
 import { Semester } from '../semester/semester.entity';
 import { Faculty } from '../faculty/faculty.entity';
 
-
 @Entity()
 export class Absence extends BaseEntity {
   /**

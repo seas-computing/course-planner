@@ -65,7 +65,7 @@ export class Course extends BaseEntity {
     type: 'boolean',
     default: false,
   })
-  public isUndergraduate: boolean = false;
+  public isUndergraduate = false;
 
   /**
    * Free text for administrators to record notes against a course
@@ -88,7 +88,7 @@ export class Course extends BaseEntity {
     default: true,
     comment: 'Allows admin staff to hide courses and prevent their publication either because the courses are non-SEAS courses and should not be displayed on the SEAS course schedule, or because they are still finalizing the course details',
   })
-  public private: boolean = true;
+  public private = true;
 
   /**
    * A free text field for admin staff to record any other courses that this
@@ -98,7 +98,7 @@ export class Course extends BaseEntity {
     type: 'text',
     default: '',
   })
-  public sameAs: string = '';
+  public sameAs = '';
 
   /**
    * The term this course is being delivered in. See [[TERM_PATTERN]] for

@@ -1,22 +1,8 @@
-import {
-  strictEqual,
-  deepStrictEqual,
-  fail,
-  rejects,
-} from 'assert';
+import { strictEqual, deepStrictEqual, rejects } from 'assert';
 import { TestingModule, Test } from '@nestjs/testing';
 import { stub, SinonStub } from 'sinon';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import {
-  emptyCourse,
-  computerScienceCourse,
-  createCourseDtoExample,
-  string,
-  computerScienceCourseResponse,
-  updateCourseExample,
-  safeString,
-  error,
-} from 'testData';
+import * as dummy from 'testData';
 import { Authentication } from 'server/auth/authentication.guard';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { Area } from 'server/area/area.entity';
@@ -25,20 +11,22 @@ import { CourseController } from '../course.controller';
 import { Course } from '../course.entity';
 import { CourseService } from '../course.service';
 
-const mockCourseRepository = {
-  find: stub(),
-  findOneOrFail: stub(),
-  save: stub(),
-};
-
-const mockCourseService = {
-  save: stub(),
-};
-
 describe('Course controller', function () {
   let controller: CourseController;
+  let mockCourseRepository: Record<string, SinonStub>;
+  let mockCourseService: Record<string, SinonStub>;
 
   beforeEach(async function () {
+    mockCourseRepository = {
+      find: stub(),
+      findOneOrFail: stub(),
+      save: stub(),
+    };
+
+    mockCourseService = {
+      save: stub(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
@@ -59,16 +47,9 @@ describe('Course controller', function () {
     controller = module.get<CourseController>(CourseController);
   });
 
-  afterEach(function () {
-    Object.values(mockCourseRepository)
-      .forEach((sinonStub: SinonStub): void => {
-        sinonStub.reset();
-      });
-  });
-
   describe('getAll', function () {
     it('returns all courses in the database', async function () {
-      const databaseCourses = Array(10).fill(emptyCourse);
+      const databaseCourses = Array(10).fill(dummy.emptyCourse);
 
       mockCourseRepository.find.resolves(databaseCourses);
 
@@ -80,112 +61,128 @@ describe('Course controller', function () {
 
   describe('create', function () {
     it('creates a course', async function () {
-      mockCourseService.save.resolves(computerScienceCourse);
+      mockCourseService.save.resolves(dummy.computerScienceCourse);
 
-      await controller.create(createCourseDtoExample);
+      await controller.create(dummy.createCourseDtoExample);
 
       strictEqual(mockCourseService.save.callCount, 1);
       strictEqual(mockCourseService.save.args[0].length, 1);
       deepStrictEqual(
         mockCourseService.save.args[0][0],
-        createCourseDtoExample
+        dummy.createCourseDtoExample
       );
     });
     it('returns the newly created course', async function () {
-      mockCourseService.save.resolves(computerScienceCourse);
+      mockCourseService.save.resolves(dummy.computerScienceCourse);
 
-      const createdCourse = await controller.create(createCourseDtoExample);
+      const createdCourse = await controller.create(
+        dummy.createCourseDtoExample
+      );
 
-      deepStrictEqual(createdCourse, computerScienceCourseResponse);
+      deepStrictEqual(createdCourse, dummy.computerScienceCourseResponse);
     });
     it('throws a NotFoundException if the course area does not exist', async function () {
       mockCourseService.save.rejects(new EntityNotFoundError(Area, ''));
-
-      try {
-        await controller.create(createCourseDtoExample);
-        fail('No error thrown');
-      } catch (e) {
-        strictEqual(e instanceof NotFoundException, true);
-        strictEqual(e.response.message.includes('area'), true);
-      }
+      await rejects(
+        () => controller.create(dummy.createCourseDtoExample),
+        NotFoundException
+      );
+    });
+    it('mentions the the course area in the error', async function () {
+      mockCourseService.save.rejects(new EntityNotFoundError(Area, ''));
+      await rejects(
+        () => controller.create(dummy.createCourseDtoExample),
+        /course area/
+      );
     });
     it('re-throws any exceptions other than EntityNotFoundError ', async function () {
-      mockCourseService.save.rejects(new Error(string));
+      mockCourseService.save.rejects(dummy.error);
 
-      try {
-        await controller.create(createCourseDtoExample);
-        fail('No error thrown');
-      } catch (e) {
-        strictEqual(e instanceof NotFoundException, false);
-        strictEqual(e.message.includes('area'), false);
-      }
+      await rejects(
+        () => controller.create(dummy.createCourseDtoExample),
+        dummy.error
+      );
     });
   });
 
   describe('update', function () {
     it('updates a course in the database', async function () {
       mockCourseRepository.findOneOrFail.resolves();
-      mockCourseRepository.save.resolves(computerScienceCourse);
+      mockCourseRepository.save.resolves(dummy.computerScienceCourse);
 
-      await controller.update(computerScienceCourse.id, updateCourseExample);
+      await controller.update(
+        dummy.computerScienceCourse.id,
+        dummy.updateCourseExample
+      );
 
       strictEqual(mockCourseRepository.save.callCount, 1);
       deepStrictEqual(
         mockCourseRepository.save.args[0][0],
-        { ...computerScienceCourse }
+        { ...dummy.computerScienceCourse }
       );
     });
     it('updates the course specified', async function () {
       mockCourseRepository.findOneOrFail.resolves();
-      mockCourseRepository.save.resolves(computerScienceCourse);
+      mockCourseRepository.save.resolves(dummy.computerScienceCourse);
 
-      await controller.update(computerScienceCourse.id, updateCourseExample);
+      await controller.update(
+        dummy.computerScienceCourse.id,
+        dummy.updateCourseExample
+      );
+
+      const updatedCourse = mockCourseRepository.save.args[0][0] as Course;
 
       deepStrictEqual(
-        mockCourseRepository.save.args[0][0].id,
-        computerScienceCourse.id
+        updatedCourse.id,
+        dummy.computerScienceCourse.id
       );
     });
     it('throws a NotFoundException if the course being udpated doesn\'t exist', async function () {
       mockCourseRepository.findOneOrFail.rejects(new EntityNotFoundError(Course, ''));
 
       await rejects(
-        controller.update(computerScienceCourse.id, updateCourseExample),
+        () => controller.update(
+          dummy.computerScienceCourse.id,
+          dummy.updateCourseExample
+        ),
         NotFoundException
       );
     });
     it('re-throws any exceptions other than EntityNotFoundError', async function () {
-      mockCourseRepository.findOneOrFail.rejects(error);
+      mockCourseRepository.findOneOrFail.rejects(dummy.error);
 
       await rejects(
-        controller.update(computerScienceCourse.id, updateCourseExample),
+        () => controller.update(
+          dummy.computerScienceCourse.id,
+          dummy.updateCourseExample
+        ),
         Error
       );
     });
     it('returns the updated course', async function () {
       mockCourseRepository.findOneOrFail.resolves();
-      mockCourseRepository.save.resolves(computerScienceCourse);
+      mockCourseRepository.save.resolves(dummy.computerScienceCourse);
 
       const course = await controller.update(
-        computerScienceCourse.id,
-        updateCourseExample
+        dummy.computerScienceCourse.id,
+        dummy.updateCourseExample
       );
 
-      deepStrictEqual(course, computerScienceCourseResponse);
+      deepStrictEqual(course, dummy.computerScienceCourseResponse);
     });
     it('allows a partial record update', async function () {
       mockCourseRepository.findOneOrFail.resolves();
       mockCourseRepository.save.resolves({
-        ...computerScienceCourse,
-        title: safeString,
+        ...dummy.computerScienceCourse,
+        title: dummy.safeString,
       });
 
       const { title } = await controller.update(
-        computerScienceCourse.id,
-        { title: safeString }
+        dummy.computerScienceCourse.id,
+        { title: dummy.safeString }
       );
 
-      deepStrictEqual(title, safeString);
+      deepStrictEqual(title, dummy.safeString);
     });
   });
 });

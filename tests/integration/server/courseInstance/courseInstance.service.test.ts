@@ -21,6 +21,7 @@ import {
   MultiYearPlanInstance,
 } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import { testFourYearPlanAcademicYears } from 'testData';
+import { Repository } from 'typeorm';
 import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 
@@ -28,6 +29,9 @@ describe('Course Instance Service', function () {
   let testModule: TestingModule;
   let db: MockDB;
   let ciService: CourseInstanceService;
+  let courseRepository: Repository<Course>;
+  let instanceRepository: Repository<CourseInstance>;
+  let meetingRepository: Repository<Meeting>;
   before(async function () {
     db = new MockDB();
     await db.init();
@@ -41,9 +45,9 @@ describe('Course Instance Service', function () {
         ConfigModule,
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
-          useFactory: async (
+          useFactory: (
             config: ConfigService
-          ): Promise<TypeOrmModuleOptions> => ({
+          ): TypeOrmModuleOptions => ({
             ...config.dbOptions,
             synchronize: true,
             autoLoadEntities: true,
@@ -63,6 +67,11 @@ describe('Course Instance Service', function () {
       .compile();
     ciService = testModule.get(CourseInstanceService);
     await testModule.createNestApplication().init();
+    courseRepository = testModule.get(getRepositoryToken(Course));
+    instanceRepository = testModule
+      .get(getRepositoryToken(CourseInstance));
+    meetingRepository = testModule
+      .get(getRepositoryToken(Meeting));
   });
   afterEach(async function () {
     await testModule.close();
@@ -73,20 +82,19 @@ describe('Course Instance Service', function () {
     beforeEach(async function () {
       result = await ciService.getAllByYear(testYear);
     });
-    it('should return instances from spring of that year', async function () {
+    it('should return instances from spring of that year', function () {
       notStrictEqual(result.length, 0);
       result.forEach(({ spring }) => {
         strictEqual(spring.calendarYear, testYear.toString());
       });
     });
-    it('Should return instances from fall of the previous year', async function () {
+    it('Should return instances from fall of the previous year', function () {
       notStrictEqual(result.length, 0);
       result.forEach(({ fall }) => {
         strictEqual(fall.calendarYear, (testYear - 1).toString());
       });
     });
     it('Should provide a concatenated catalog number', async function () {
-      const courseRepository = testModule.get(getRepositoryToken(Course));
       const dbCourses = await courseRepository.find();
       notStrictEqual(result.length, 0);
       result.forEach(({ id, catalogNumber }) => {
@@ -97,8 +105,6 @@ describe('Course Instance Service', function () {
       });
     });
     it('Should list the instructors for each offered instance in the correct order', async function () {
-      const instanceRepository = testModule
-        .get(getRepositoryToken(CourseInstance));
       const dbInstances = await instanceRepository.find({
         relations: ['facultyCourseInstances', 'facultyCourseInstances.faculty'],
       });
@@ -127,8 +133,6 @@ describe('Course Instance Service', function () {
     describe('Meetings', function () {
       let dbMeetings: Meeting[];
       beforeEach(async function () {
-        const meetingRepository = testModule
-          .get(getRepositoryToken(Meeting));
         dbMeetings = await meetingRepository.find({
           relations: ['room', 'room.building'],
         });
@@ -260,7 +264,7 @@ describe('Course Instance Service', function () {
       });
       deepStrictEqual(result, sorted);
     });
-    it('should return the semesters in chronological order', async function () {
+    it('should return the semesters in chronological order', function () {
       const sorted = result.map((course) => ({
         ...course,
         semesters: course
@@ -280,9 +284,9 @@ describe('Course Instance Service', function () {
             return 0;
           }),
       }));
-      deepStrictEqual(
-        JSON.parse(JSON.stringify(result)),
-        JSON.parse(JSON.stringify(sorted))
+      strictEqual(
+        JSON.stringify(result),
+        JSON.stringify(sorted)
       );
     });
   });

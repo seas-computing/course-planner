@@ -1,10 +1,11 @@
 import styled from 'styled-components';
+import { fromTheme } from 'mark-one';
 
 const CellLayout = styled.div`
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  padding: ${({ theme }): string => (theme.ws.xsmall)};
+  padding: ${fromTheme('ws', 'xsmall')};
 `;
 
 /**

@@ -1,7 +1,4 @@
-import {
-  SinonStub,
-  stub,
-} from 'sinon';
+import { SinonStub, stub } from 'sinon';
 import { Test } from '@nestjs/testing';
 import { SemesterService } from 'server/semester/semester.service';
 import { AreaService } from 'server/area/area.service';
@@ -73,14 +70,14 @@ describe('Metadata Controller', function () {
         getSemesterListStub.resolves(expectedSemesters);
         metadata = await mdController.getMetadata();
       });
-      it('should return the correct academic year', async function () {
+      it('should return the correct academic year', function () {
         strictEqual(metadata.currentAcademicYear, expectedAcademicYear);
       });
-      it('should return the correct areas', async function () {
+      it('should return the correct areas', function () {
         strictEqual(findAreaStub.callCount, 1);
         strictEqual(metadata.areas, expectedAreas);
       });
-      it('should return the correct semesters', async function () {
+      it('should return the correct semesters', function () {
         strictEqual(getSemesterListStub.callCount, 1);
         strictEqual(metadata.semesters, expectedSemesters);
       });

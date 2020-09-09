@@ -40,10 +40,10 @@ import { FacultyScheduleService } from './facultySchedule.service';
 @ApiUnauthorizedResponse({ description: 'Thrown if the user is not authenticated' })
 export class FacultyController {
   @InjectRepository(Faculty)
-  private facultyRepository: Repository<Faculty>
+  private facultyRepository: Repository<Faculty>;
 
   @InjectRepository(Area)
-  private areaRepository: Repository<Area>
+  private areaRepository: Repository<Area>;
 
   @Inject(FacultyService)
   private facultyService: FacultyService;
@@ -116,9 +116,9 @@ export class FacultyController {
   @ApiBadRequestResponse({
     description: 'Bad Request: the request is not in accordance with the createFaculty DTO',
   })
-  public async create(@Body() faculty: CreateFacultyDTO):
+  public create(@Body() faculty: CreateFacultyDTO):
   Promise<ManageFacultyResponseDTO> {
-    return this.facultyRepository.create({
+    return this.facultyRepository.save({
       HUID: faculty.HUID,
       firstName: faculty.firstName,
       lastName: faculty.lastName,
@@ -150,6 +150,7 @@ export class FacultyController {
       if (e instanceof EntityNotFoundError) {
         throw new NotFoundException('The entered Area does not exist');
       }
+      throw e;
     }
     try {
       await this.facultyRepository.findOneOrFail(id);
@@ -157,6 +158,7 @@ export class FacultyController {
       if (e instanceof EntityNotFoundError) {
         throw new NotFoundException('Could not find any entity of type Faculty in any Area with the supplied ID');
       }
+      throw e;
     }
     const existingArea = await this.areaRepository.findOneOrFail(faculty.area);
     const validFaculty = {

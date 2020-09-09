@@ -5,6 +5,7 @@ import {
   TableCellList,
   TableCellListItem,
   VARIANT,
+  fromTheme,
 } from 'mark-one';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStickyNote as withNotes, faFolderOpen, faEdit } from '@fortawesome/free-solid-svg-icons';
@@ -20,6 +21,7 @@ import {
 import { CampusIcon } from 'client/components/general';
 import { dayEnumToString } from 'common/constants/day';
 import { offeredEnumToString } from 'common/constants/offered';
+import { TermKey } from 'common/constants/term';
 import styled from 'styled-components';
 
 /**
@@ -32,7 +34,8 @@ import styled from 'styled-components';
  */
 
 export const retrieveValue = (
-  prop: string,
+  prop: keyof CourseInstanceResponseDTO
+  | keyof CourseInstanceResponseDTO[TermKey],
   sem?: TERM
 ): (arg0: CourseInstanceResponseDTO
   ) => ReactNode => (
@@ -40,9 +43,12 @@ export const retrieveValue = (
 ): ReactText => {
   let rawValue: ReactText;
   if (sem) {
-    rawValue = course[sem.toLowerCase()][prop];
-  } else {
-    rawValue = course[prop];
+    const semKey = sem.toLowerCase() as TermKey;
+    if (semKey in course && prop in course[semKey]) {
+      rawValue = course[semKey][prop] as ReactText;
+    }
+  } else if (prop && prop in course) {
+    rawValue = course[prop] as ReactText;
   }
   if (typeof rawValue === 'boolean') {
     return rawValue ? 'Yes' : 'No';
@@ -67,7 +73,8 @@ export const formatInstructors = (
   ) => ReactNode => (
   course: CourseInstanceResponseDTO
 ): ReactNode => {
-  const { instructors } = course[sem.toLowerCase()];
+  const semKey = sem.toLowerCase() as TermKey;
+  const { instructors } = course[semKey];
   return instructors.length === 0
     ? null
     : (
@@ -98,7 +105,7 @@ const MeetingGrid = styled.div`
   display: grid;
   grid-template-areas: "time campus room";
   grid-template-columns: 2fr 2em 3fr 2em;
-  column-gap: ${({ theme }): string => (theme.ws.xsmall)};
+  column-gap: ${fromTheme('ws', 'xsmall')};
   align-items: baseline;
 `;
 
@@ -123,7 +130,8 @@ export const formatMeetings = (
   ) => ReactNode => (
   course: CourseInstanceResponseDTO
 ): ReactNode => {
-  const { meetings } = course[sem.toLowerCase()];
+  const semKey = sem.toLowerCase() as TermKey;
+  const { meetings } = course[semKey];
   return meetings[0].day === null
     ? null
     : (
@@ -325,7 +333,7 @@ export const tableFields: CourseInstanceListColumn[] = [
     key: 'notes',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.META,
     viewColumn: COURSE_TABLE_COLUMN.NOTES,
-    getValue: ({ notes }): ReactElement => {
+    getValue: ({ notes }: CourseInstanceResponseDTO): ReactElement => {
       const hasNotes = notes && notes.trim().length > 0;
       const titleText = hasNotes ? 'View/Edit Notes' : 'Add Notes';
       return (

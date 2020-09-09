@@ -12,7 +12,6 @@ import { FacultyCourseInstance } from './facultycourseinstance.entity';
 import { Semester } from '../semester/semester.entity';
 import { Meeting } from '../meeting/meeting.entity';
 
-
 /**
  * [[CourseInstance]]s are instances of a [[Course]] that are scheduled for a
  * semester. One [[Course]] can have many [[CourseInstance]]s that are used

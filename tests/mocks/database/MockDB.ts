@@ -18,7 +18,6 @@ export interface MockDBOptions {
   containerName: string;
 }
 
-
 /**
  * Reasonable defaults for creating a testing db container. In cases where you
  * would need multiple containers running, each would need a different name and
@@ -41,7 +40,6 @@ enum CONTAINER_STATE {
   DEAD,
   RUNNING,
 }
-
 
 /**
  * Provides a simple API for starting and stopping a single database container,
@@ -71,6 +69,12 @@ export default class MockDB {
   /** A reference to the running child_process attached to the container */
   private container: ChildProcess;
 
+  /** expose a public stop function bound to this */
+  public stop: () => Promise<void>;
+
+  /** expose a public init function bound to this */
+  public init: () => Promise<void>;
+
   public constructor(options: MockDBOptions = defaultOptions) {
     this.name = options.containerName;
     this.databaseName = options.databaseName;
@@ -78,11 +82,13 @@ export default class MockDB {
     this.password = options.password;
     this.port = options.port;
     this.state = CONTAINER_STATE.DEAD;
+    this.stop = this._stop.bind(this) as () => Promise<void>;
+    this.init = this._init.bind(this) as () => Promise<void>;
     // Adds listeners for the Node process events to clean up the container
     // if the test run stops unexpectedly.
-    process.on('beforeExit', this.stop);
-    process.on('SIGINT', this.stop);
-    process.on('SIGTERM', this.stop);
+    process.on('beforeExit', () => { void this.stop(); });
+    process.on('SIGINT', () => { void this.stop(); });
+    process.on('SIGTERM', () => { void this.stop(); });
   }
 
   /**
@@ -108,7 +114,7 @@ export default class MockDB {
    * @returns {Promise} resolves once the container is running, or rejects
    *                    if there is an error.
    */
-  public async init(): Promise<void> {
+  private _init(): Promise<void> {
     return new Promise((resolve, reject) => {
       if (this.state === CONTAINER_STATE.RUNNING) {
         reject(new Error(`Container "${this.name}" is already running.`));
@@ -136,17 +142,21 @@ export default class MockDB {
         }
       );
 
-      this.container.stdout.on('data', (data) => {
+      this.container.stdout.on('data', (data: Buffer): void => {
         // The postgres container will stop and restart once after setting up
         // the initial user and database. So we need to wait for this message
         // to appear before it's ready to accept connections
-        if (data.toString().includes('PostgreSQL init process complete')) {
-          this.state = CONTAINER_STATE.RUNNING;
-          resolve();
+        if (/PostgreSQL init process complete/.test(data.toString())) {
+          // Pause briefly after container is booted to prevent errors
+          // in output
+          setTimeout(() => {
+            this.state = CONTAINER_STATE.RUNNING;
+            resolve();
+          }, 100);
         }
       });
 
-      this.container.stderr.on('data', (data) => {
+      this.container.stderr.on('data', (data: Buffer): void => {
         // Errors from the postgres process inside the container will be
         // written to stderr, but won't be flagged as Error events, so we need
         // to watch for them here and reject
@@ -155,7 +165,7 @@ export default class MockDB {
         }
       });
 
-      this.container.on('error', (err) => {
+      this.container.on('error', (err: Error): void => {
         // Handles errors thrown by the docker command, rather than the postgres process
         this.state = CONTAINER_STATE.DEAD;
         reject(new Error(`Failed to create database with docker. Error: ${err.message}`));
@@ -168,24 +178,28 @@ export default class MockDB {
    * @returns {Promise} resolves once the container is stopped, or rejects
    *                    if there is an error stopping it
    */
-  public async stop(): Promise<void> {
+  private async _stop(): Promise<void> {
     if (this.state === CONTAINER_STATE.DEAD) {
       return;
     }
     try {
-      await exec(
+      const { stdout, stderr } = await exec(
         [
           'docker',
           'container',
           'rm',
           '--force',
+          '--volumes',
           this.name,
         ].join(' ')
       );
-      this.state = CONTAINER_STATE.DEAD;
-      return;
-    } catch ({ stderr }) {
-      throw new Error(`Failed to remove container with docker. Error: ${stderr}`);
+      if (stdout.trim() === this.name) {
+        this.state = CONTAINER_STATE.DEAD;
+        return;
+      }
+      throw new Error(stderr);
+    } catch ({ message }) {
+      throw new Error(`Failed to remove container with docker. Error: ${message as string}`);
     }
   }
 }

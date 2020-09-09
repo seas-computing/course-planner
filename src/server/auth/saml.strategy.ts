@@ -57,7 +57,6 @@ export interface HarvardKeyProfile extends Profile {
   displayName: string;
 }
 
-
 /**
  * Implements passport-saml to connect to Harvard Key for authentication
  */
@@ -72,7 +71,7 @@ class SAMLStrategy extends PassportStrategy(Strategy, AUTH_MODE.HKEY) {
     });
   }
 
-  public async validate(profile?: HarvardKeyProfile): Promise<User> {
+  public validate(profile?: HarvardKeyProfile): User {
     if (!profile) {
       throw new UnauthorizedException('You are not authorized to use this application. Please contact SEAS computing');
     }

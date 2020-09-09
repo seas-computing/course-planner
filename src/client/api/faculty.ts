@@ -8,7 +8,7 @@ import request from './request';
 export const getAllFacultyMembers = async ():
 Promise<ManageFacultyResponseDTO[]> => {
   const response = await request.get('/api/faculty/');
-  return response.data;
+  return response.data as ManageFacultyResponseDTO[];
 };
 
 /**
@@ -18,8 +18,8 @@ Promise<ManageFacultyResponseDTO[]> => {
 export const getFacultySchedulesForYear = async (
   acadYears: number
 ):
-Promise<{ [key: string]: FacultyResponseDTO[] }> => {
+Promise<Record<string, FacultyResponseDTO[]>> => {
   const response = await request
     .get(`/api/faculty/schedule?acadYears=${acadYears}`);
-  return response.data;
+  return response.data as Record<string, FacultyResponseDTO[]>;
 };

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule, getRepositoryToken, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { createConnection, getRepository } from 'typeorm';
+import { createConnection, getRepository, Repository } from 'typeorm';
 import { Area } from 'server/area/area.entity';
 import { strictEqual, notStrictEqual, deepStrictEqual } from 'assert';
 import { Semester } from 'server/semester/semester.entity';
@@ -25,13 +25,23 @@ import { nonClassParents, nonClassEvents } from '../data';
 describe('Population Service', function () {
   let testModule: TestingModule;
   let db: MockDB;
+  let areaRepository: Repository<Area>;
+  let semesterRepository: Repository<Semester>;
+  let roomRepository: Repository<Room>;
+  let buildingRepository: Repository<Building>;
+  let campusRepository: Repository<Campus>;
+  let facultyRepository: Repository<Faculty>;
+  let fciRepository: Repository<FacultyCourseInstance>;
+  let meetingRepository: Repository<Meeting>;
+  let courseRepository: Repository<Course>;
+  let courseInstanceRepository: Repository<CourseInstance>;
 
   before(async function () {
     // Our test database needs to be set up before any of our tests run
     db = new MockDB();
     await db.init();
   });
-  after(async function () {
+  after(function () {
     // we need to stop the container after test suite finishes, in case any
     // other suites will be using the back end.
     return db.stop();
@@ -44,9 +54,9 @@ describe('Population Service', function () {
           ConfigModule,
           TypeOrmModule.forRootAsync({
             imports: [ConfigModule],
-            useFactory: async (
+            useFactory: (
               config: ConfigService
-            ): Promise<TypeOrmModuleOptions> => ({
+            ): TypeOrmModuleOptions => ({
               ...config.dbOptions,
               synchronize: true,
               autoLoadEntities: true,
@@ -65,7 +75,7 @@ describe('Population Service', function () {
       await testModule.createNestApplication().init();
     });
     it('Should populate the area table', async function () {
-      const areaRepository = testModule.get(getRepositoryToken(Area));
+      areaRepository = testModule.get(getRepositoryToken(Area));
       const dbAreas = await areaRepository.find();
       strictEqual(dbAreas.length, testData.areas.length);
       testData.areas.forEach(({ name: area }) => {
@@ -74,7 +84,7 @@ describe('Population Service', function () {
       });
     });
     it('Should populate the semesters table', async function () {
-      const semesterRepository = testModule.get(getRepositoryToken(Semester));
+      semesterRepository = testModule.get(getRepositoryToken(Semester));
       const dbSemesters = await semesterRepository.find();
       strictEqual(dbSemesters.length, testData.semesters.length);
       testData.semesters.forEach((semester) => {
@@ -87,7 +97,7 @@ describe('Population Service', function () {
       });
     });
     it('Should populate the room table', async function () {
-      const roomRepository = testModule.get(getRepositoryToken(Room));
+      roomRepository = testModule.get(getRepositoryToken(Room));
       const dbRooms = await roomRepository.find({
         relations: ['building'],
       });
@@ -102,7 +112,7 @@ describe('Population Service', function () {
       });
     });
     it('Should populate the building table', async function () {
-      const buildingRepository = testModule.get(getRepositoryToken(Building));
+      buildingRepository = testModule.get(getRepositoryToken(Building));
       const dbBuildings = await buildingRepository.find({
         relations: ['campus'],
       });
@@ -117,7 +127,7 @@ describe('Population Service', function () {
       });
     });
     it('Should populate the campus table', async function () {
-      const campusRepository = testModule.get(getRepositoryToken(Campus));
+      campusRepository = testModule.get(getRepositoryToken(Campus));
       const dbCampuses = await campusRepository.find();
       strictEqual(dbCampuses.length, testData.campuses.length);
       testData.campuses.forEach(({ name: campus }) => {
@@ -126,7 +136,7 @@ describe('Population Service', function () {
       });
     });
     it('Should populate the faculty table', async function () {
-      const facultyRepository = testModule.get(getRepositoryToken(Faculty));
+      facultyRepository = testModule.get(getRepositoryToken(Faculty));
       const dbFaculty = await facultyRepository.find();
       strictEqual(dbFaculty.length, testData.faculty.length);
       testData.faculty.forEach((faculty) => {
@@ -136,7 +146,7 @@ describe('Population Service', function () {
       });
     });
     it('Should populate the course table', async function () {
-      const courseRepository = testModule.get(getRepositoryToken(Course));
+      courseRepository = testModule.get(getRepositoryToken(Course));
       const dbCourses = await courseRepository.find();
       strictEqual(dbCourses.length, testData.courses.length);
       testData.courses.forEach((course) => {
@@ -150,7 +160,7 @@ describe('Population Service', function () {
       });
     });
     it('Should populate the course_instance table', async function () {
-      const courseInstanceRepository = testModule.get(
+      courseInstanceRepository = testModule.get(
         getRepositoryToken(CourseInstance)
       );
       const dbInstances = await courseInstanceRepository.find(
@@ -181,7 +191,7 @@ describe('Population Service', function () {
       });
     });
     it('Should populate the faculty_course_instance_course_instances table', async function () {
-      const fciRepository = testModule.get(
+      fciRepository = testModule.get(
         getRepositoryToken(FacultyCourseInstance)
       );
       const dbInstances = await fciRepository.find(
@@ -206,7 +216,7 @@ describe('Population Service', function () {
       });
     });
     it('Should populate the meeting table', async function () {
-      const meetingRepository = testModule.get(
+      meetingRepository = testModule.get(
         getRepositoryToken(Meeting)
       );
       const dbMeetings = await meetingRepository.find({
@@ -276,52 +286,52 @@ describe('Population Service', function () {
       });
     });
     it('Should truncate the area table', async function () {
-      const areaRepository = getRepository(Area);
+      areaRepository = getRepository(Area);
       const dbAreas = await areaRepository.find();
       strictEqual(dbAreas.length, 0);
     });
     it('Should truncate the semester table', async function () {
-      const semesterRepository = getRepository(Semester);
+      semesterRepository = getRepository(Semester);
       const dbSemesters = await semesterRepository.find();
       strictEqual(dbSemesters.length, 0);
     });
     it('Should truncate the room table', async function () {
-      const roomRepository = getRepository(Room);
+      roomRepository = getRepository(Room);
       const dbRooms = await roomRepository.find();
       strictEqual(dbRooms.length, 0);
     });
     it('Should truncate the building table', async function () {
-      const buildingRepository = getRepository(Building);
+      buildingRepository = getRepository(Building);
       const dbBuildings = await buildingRepository.find();
       strictEqual(dbBuildings.length, 0);
     });
     it('Should truncate the campus table', async function () {
-      const campusRepository = getRepository(Campus);
+      campusRepository = getRepository(Campus);
       const dbCampuss = await campusRepository.find();
       strictEqual(dbCampuss.length, 0);
     });
     it('Should truncate the faculty table', async function () {
-      const facultyRepository = getRepository(Faculty);
+      facultyRepository = getRepository(Faculty);
       const dbFaculty = await facultyRepository.find();
       strictEqual(dbFaculty.length, 0);
     });
     it('Should truncate the faculty_course_instance_course_instances table', async function () {
-      const fciRepository = getRepository(FacultyCourseInstance);
+      fciRepository = getRepository(FacultyCourseInstance);
       const fciInstances = await fciRepository.find();
       strictEqual(fciInstances.length, 0);
     });
     it('Should truncate the course_instance table', async function () {
-      const courseInstanceRepository = getRepository(CourseInstance);
+      courseInstanceRepository = getRepository(CourseInstance);
       const dbCourseInstances = await courseInstanceRepository.find();
       strictEqual(dbCourseInstances.length, 0);
     });
     it('Should truncate the meeting table', async function () {
-      const meetingRepository = getRepository(Meeting);
+      meetingRepository = getRepository(Meeting);
       const dbMeetings = await meetingRepository.find();
       strictEqual(dbMeetings.length, 0);
     });
     it('Should truncate the course table', async function () {
-      const courseRepository = getRepository(Course);
+      courseRepository = getRepository(Course);
       const dbCourses = await courseRepository.find();
       strictEqual(dbCourses.length, 0);
     });

@@ -5,6 +5,8 @@ import {
   HttpStatus,
   HttpServer,
   ForbiddenException,
+  BadRequestException,
+  NotFoundException,
 } from '@nestjs/common';
 import { strictEqual } from 'assert';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -27,36 +29,51 @@ import { Absence } from 'server/absence/absence.entity';
 import { Semester } from 'server/semester/semester.entity';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
-const mockFacultyRepository = {
-  create: stub(),
-  save: stub(),
-  findOneOrFail: stub(),
-  find: stub(),
-};
-
-const mockFacultyService = {
-  find: stub(),
-};
-
-const mockAreaRepository = {
-  findOneOrFail: stub(),
-};
-
-const mockAbsenceRepository = {};
-
-const mockSemesterRepository = {};
-
-const mockFacultyScheduleCourseViewRepository = {};
-
-const mockFacultyScheduleSemesterViewRepository = {};
-
-const mockFacultyScheduleViewRepository = {};
-
 describe('Faculty API', function () {
+  let mockFacultyRepository: Record<string, SinonStub>;
+
+  let mockFacultyService: Record<string, SinonStub>;
+
+  let mockAreaRepository: Record<string, SinonStub>;
+
+  let mockAbsenceRepository: Record<string, SinonStub>;
+
+  let mockSemesterRepository: Record<string, SinonStub>;
+
+  let mockFacultyScheduleCourseViewRepository: Record<string, SinonStub>;
+
+  let mockFacultyScheduleSemesterViewRepository: Record<string, SinonStub>;
+
+  let mockFacultyScheduleViewRepository: Record<string, SinonStub>;
+
   let authStub: SinonStub;
   let api: HttpServer;
 
   beforeEach(async function () {
+    mockFacultyRepository = {
+      create: stub(),
+      save: stub(),
+      findOneOrFail: stub(),
+      find: stub(),
+    };
+
+    mockFacultyService = {
+      find: stub(),
+    };
+
+    mockAreaRepository = {
+      findOneOrFail: stub(),
+    };
+
+    mockAbsenceRepository = {};
+
+    mockSemesterRepository = {};
+
+    mockFacultyScheduleCourseViewRepository = {};
+
+    mockFacultyScheduleSemesterViewRepository = {};
+
+    mockFacultyScheduleViewRepository = {};
     authStub = stub(TestingStrategy.prototype, 'login');
 
     const module: TestingModule = await Test.createTestingModule({
@@ -109,24 +126,9 @@ describe('Faculty API', function () {
       .useGlobalPipes(new BadRequestExceptionPipe())
       .init();
 
-    api = nestApp.getHttpServer();
+    api = nestApp.getHttpServer() as HttpServer;
   });
-  afterEach(function () {
-    authStub.restore();
-    Object.values({
-      ...mockFacultyRepository,
-      ...mockAreaRepository,
-      ...mockFacultyService,
-      ...mockAbsenceRepository,
-      ...mockSemesterRepository,
-      ...mockFacultyScheduleCourseViewRepository,
-      ...mockFacultyScheduleSemesterViewRepository,
-      ...mockFacultyScheduleViewRepository,
-    })
-      .forEach((sinonStub: SinonStub): void => {
-        sinonStub.reset();
-      });
-  });
+
   describe('GET /', function () {
     describe('User is not authenticated', function () {
       it('is inaccessible to unauthenticated users', async function () {
@@ -151,8 +153,10 @@ describe('Faculty API', function () {
 
           const response = await request(api).get('/api/faculty');
 
+          const body = response.body as Faculty[];
+
           strictEqual(response.ok, true);
-          strictEqual(response.body.length, mockFaculty.length);
+          strictEqual(body.length, mockFaculty.length);
           strictEqual(mockFacultyService.find.callCount, 1);
         });
       });
@@ -195,7 +199,7 @@ describe('Faculty API', function () {
 
     describe('User is authenticated', function () {
       describe('User is a member of the admin group', function () {
-        beforeEach(async function () {
+        beforeEach(function () {
           authStub.returns(adminUser);
         });
         it('creates a new faculty member in the database', async function () {
@@ -223,9 +227,10 @@ describe('Faculty API', function () {
               category: FACULTY_TYPE.LADDER,
               area: new Area(),
             });
+          const body = response.body as BadRequestException;
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.BAD_REQUEST);
-          strictEqual(response.body.message.includes('HUID'), true);
+          strictEqual(/HUID/.test(body.message), true);
         });
         it('allows you to create a faculty member with a last name and no first name', async function () {
           const response = await request(api)
@@ -287,7 +292,7 @@ describe('Faculty API', function () {
   });
   describe('PUT /:id', function () {
     describe('User is not authenticated', function () {
-      beforeEach(async function () {
+      beforeEach(function () {
         authStub.rejects(new ForbiddenException());
       });
       it('cannot update a faculty entry', async function () {
@@ -311,7 +316,7 @@ describe('Faculty API', function () {
     });
     describe('User is authenticated', function () {
       describe('User is a member of the admin group', function () {
-        beforeEach(async function () {
+        beforeEach(function () {
           authStub.returns(adminUser);
         });
         it('updates a faculty member entry in the database', async function () {
@@ -346,9 +351,10 @@ describe('Faculty API', function () {
               lastName: 'Lovelace',
               area: new Area(),
             });
+          const body = response.body as BadRequestException;
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.BAD_REQUEST);
-          strictEqual(response.body.message.includes('category'), true);
+          strictEqual(/category/.test(body.message), true);
         });
         it('allows you to update a faculty member so that the entry has a last name but no first name', async function () {
           const newArea = {
@@ -430,9 +436,11 @@ describe('Faculty API', function () {
           const response = await request(api)
             .put(`/api/faculty/${newFacultyMemberInfo.id}`)
             .send(newFacultyMemberInfo);
+          const body = response.body as NotFoundException;
+          const message = body.message as string;
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.NOT_FOUND);
-          strictEqual(response.body.message.includes('Faculty', 'ID'), true);
+          strictEqual(message.includes('Faculty'), true);
         });
         it('throws a Not Found exception if area does not exist', async function () {
           const newArea = {
@@ -451,9 +459,11 @@ describe('Faculty API', function () {
           const response = await request(api)
             .put(`/api/faculty/${newArea.id}`)
             .send(newFacultyMemberInfo);
+          const body = response.body as NotFoundException;
+          const message = body.message as string;
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.NOT_FOUND);
-          strictEqual(response.body.message.includes('Area', 'ID'), true);
+          strictEqual(message.includes('Area'), true);
         });
       });
       describe('User is not a member of the admin group', function () {

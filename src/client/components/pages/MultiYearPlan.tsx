@@ -18,7 +18,6 @@ import {
   TableCellListItem,
   VALIGN,
 } from 'mark-one';
-import { ThemeContext } from 'styled-components';
 import {
   MESSAGE_TYPE,
   AppMessage,
@@ -30,6 +29,7 @@ import {
   MultiYearPlanSemester,
 } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import { getMultiYearPlan } from '../../api/multiYearPlan';
+import { getAreaColor } from '../../../common/constants';
 
 /**
  * The component represents the Multi Year Plan page, which will be rendered at
@@ -43,14 +43,12 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
   const [fetching, setFetching] = useState(false);
 
   const dispatchMessage = useContext(MessageContext);
-  const theme = useContext(ThemeContext);
 
   useEffect((): void => {
     setFetching(true);
     getMultiYearPlan()
-      .then((multiYearPlanList): MultiYearPlanResponseDTO[] => {
+      .then((multiYearPlanList) => {
         setMultiYearPlan(multiYearPlanList);
-        return multiYearPlanList;
       })
       .catch((): void => {
         dispatchMessage({
@@ -61,7 +59,7 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
       .finally((): void => {
         setFetching(false);
       });
-  }, []);
+  }, [dispatchMessage]);
 
   /**
   * yearsHeaders function take the multi year plan list and create
@@ -96,8 +94,7 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
                 {faculty.displayName}
               </TableCellListItem>
             ))
-            : null
-          }
+            : null}
         </TableCellList>
       </TableCell>
     ))
@@ -118,9 +115,9 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
                 <TableHeadingCell scope="col">Area</TableHeadingCell>
                 <TableHeadingCell scope="col">CatalogNumber</TableHeadingCell>
                 <TableHeadingCell scope="col">Title</TableHeadingCell>
-                <React.Fragment>
+                <>
                   {yearsHeaders(multiYearPlan)}
-                </React.Fragment>
+                </>
               </TableRow>
             </TableHead>
             <TableBody isScrollable>
@@ -129,10 +126,7 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
                   <TableRow isStriped={courseIndex % 2 === 1} key={course.id}>
                     <TableCell
                       verticalAlignment={VALIGN.TOP}
-                      backgroundColor={
-                        (course.area
-                          && theme.color.area[course.area.toLowerCase()])
-                      }
+                      backgroundColor={getAreaColor(course.area)}
                     >
                       {course.area}
                     </TableCell>
@@ -142,9 +136,9 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
                     <TableCell verticalAlignment={VALIGN.TOP}>
                       {course.title}
                     </TableCell>
-                    <React.Fragment>
+                    <>
                       {courseInstance(course)}
-                    </React.Fragment>
+                    </>
                   </TableRow>
                 ))}
             </TableBody>

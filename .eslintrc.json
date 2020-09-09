@@ -1,4 +1,5 @@
 {
+  "root": true,
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaFeatures": {
@@ -7,9 +8,11 @@
     "project": "./tsconfig.json"
   },
   "extends": [
-    "plugin:react/recommended",
-    "airbnb",
-    "plugin:@typescript-eslint/recommended"
+    "airbnb-typescript",
+    "airbnb/hooks",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "plugin:testing-library/react"
   ],
   "env": {
     "browser": true,
@@ -19,10 +22,29 @@
   "plugins": [
     "react",
     "mocha",
-    "@typescript-eslint"
+    "@typescript-eslint",
+    "testing-library"
   ],
   "rules": {
-    "@typescript-eslint/indent": ["error", 2],
+    "@typescript-eslint/indent": [
+      "error",
+      2
+    ],
+    "@typescript-eslint/naming-convention": [
+      "error",
+      {
+        "selector": "enum",
+        "format": [
+          "UPPER_CASE"
+        ]
+      },
+      {
+        "selector": "enumMember",
+        "format": [
+          "UPPER_CASE"
+        ]
+      }
+    ],
     "arrow-parens": [
       "warn",
       "always"
@@ -44,12 +66,16 @@
       "as-needed"
     ],
     "id-length": "off",
-    "import/extensions": ["error", "ignorePackages", {
-      "js": "never",
-      "jsx": "never",
-      "ts": "never",
-      "tsx": "never"
-    }],
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "js": "never",
+        "jsx": "never",
+        "ts": "never",
+        "tsx": "never"
+      }
+    ],
     "import/no-extraneous-dependencies": [
       "error",
       {
@@ -65,6 +91,7 @@
       }
     ],
     "jsx-a11y/label-has-for": "off",
+    "max-classes-per-file": "off",
     "max-len": [
       "error",
       {
@@ -89,11 +116,18 @@
     "mocha/no-skipped-tests": "warn",
     "no-console": "off",
     "no-plusplus": [
-      "warn", {
+      "warn",
+      {
         "allowForLoopAfterthoughts": true
       }
     ],
     "no-underscore-dangle": "off",
+    "no-void": [
+      "error",
+      {
+        "allowAsStatement": true
+      }
+    ],
     "prefer-arrow-callback": 0,
     "mocha/prefer-arrow-callback": 2,
     "prefer-template": "off",
@@ -101,8 +135,8 @@
       "error",
       {
         "VariableDeclarator": {
-         "array": false,
-         "object": true
+          "array": false,
+          "object": true
         },
         "AssignmentExpression": {
           "array": false,
@@ -133,7 +167,20 @@
     "react/jsx-filename-extension": "off",
     "react/no-did-update-set-state": "warn",
     "react/prefer-stateless-function": "off",
-    "react/prop-types": "off"
+    "react/prop-types": "off",
+    "testing-library/no-manual-cleanup": "error"
+  },
+  "settings": {
+    "import/extensions": [
+      "ts",
+      "js",
+      "tsx",
+      "jsx"
+    ],
+    "import/resolver": {
+      "node": {},
+      "webpack": {}
+    }
   },
   "overrides": [
     {
@@ -144,25 +191,27 @@
       "rules": {
         "func-names": 0,
         "@typescript-eslint/explicit-function-return-type": 0,
-        "@typescript-eslint/no-object-literal-type-assertion": 0
+        "@typescript-eslint/no-object-literal-type-assertion": 0,
+        "react/jsx-props-no-spreading": 0
+      }
+    },
+    {
+      "files": [
+        "src/server/**/*.entity.ts"
+      ],
+      "rules": {
+        "import/no-cycle": 0
+      }
+    },
+    {
+      "files": [
+        "src/server/**/*",
+        "src/common/**/*"
+      ],
+      "rules": {
+        "react/display-name": 0,
+        "react/static-property-placement": 0
       }
     }
-  ],
-  "settings": {
-    "import/resolver": {
-      "node": {},
-      "webpack": {
-        "config": {
-          "resolve":{
-            "extensions": [
-              ".js",
-              ".ts",
-              ".tsx",
-              ".jsx"
-            ]
-          }
-        }
-      }
-    }
-  }
+  ]
 }
