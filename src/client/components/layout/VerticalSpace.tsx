@@ -3,7 +3,8 @@ import { fromTheme } from 'mark-one';
 import styled from 'styled-components';
 
 const StyledVerticalSpace = styled.div`
-  margin: ${fromTheme('ws', 'xsmall')};
+  margin-top: ${fromTheme('ws', 'xsmall')};
+  margin-bottom: ${fromTheme('ws', 'xsmall')};
 `;
 
 export default StyledVerticalSpace;
