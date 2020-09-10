@@ -13,6 +13,8 @@ import { ConfigService } from 'server/config/config.service';
 import { TestingStrategy } from '../../../../tests/mocks/authentication/testing.strategy';
 
 describe('AuthModule', function () {
+  const CAS_URL = 'https://cas.example.com';
+  const SERVER_URL = 'https://server.example.com';
   let resolvedMod: DynamicModule;
   let strategies: Type<Strategy>[];
   let defaultStrategy: AUTH_MODE;
@@ -56,7 +58,11 @@ describe('AuthModule', function () {
           ],
         })
           .overrideProvider(ConfigService)
-          .useValue(new ConfigService({ NODE_ENV: 'testing' }))
+          .useValue(new ConfigService({
+            NODE_ENV: 'testing',
+            CAS_URL,
+            SERVER_URL,
+          }))
           .compile();
       });
       it('Should use that strategy instead of config.authMode', function () {
@@ -83,7 +89,11 @@ describe('AuthModule', function () {
           ],
         })
           .overrideProvider(ConfigService)
-          .useValue(new ConfigService({ NODE_ENV: 'testing' }))
+          .useValue(new ConfigService({
+            NODE_ENV: 'testing',
+            CAS_URL,
+            SERVER_URL,
+          }))
           .compile();
       });
       afterEach(function () {
