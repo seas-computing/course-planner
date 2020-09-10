@@ -7,6 +7,7 @@ import { Strategy } from 'passport';
 import { ConfigModule } from 'server/config/config.module';
 import { ConfigService } from 'server/config/config.service';
 import { AUTH_MODE } from 'common/constants';
+import { AuthController } from './auth.controller';
 
 /**
  * A dynamic module that creates a custom Authentication module depending on
@@ -35,7 +36,6 @@ class AuthModule {
           inject: [ConfigService],
           useFactory: (config: ConfigService): IAuthModuleOptions => ({
             session: true,
-            property: 'user',
             defaultStrategy: defaultStrategy || config.authMode,
           }),
         }),
@@ -51,6 +51,7 @@ class AuthModule {
         },
       ],
       exports: [PassportModule, Authentication],
+      controllers: [AuthController],
     };
   }
 }
