@@ -17,112 +17,105 @@ import {
 } from 'sinon';
 import { render } from 'common/utils';
 import { testMetadata } from 'common/data/metadata';
-import { FacultyAPI } from 'client/api';
-import {
-  bioengineeringFacultyMemberResponse,
-  appliedMathFacultyMemberResponse,
-  physicsFacultyMemberResponse,
-  anotherPhysicsFacultyMemberResponse,
-} from 'common/data';
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
 import { FACULTY_TYPE } from 'common/constants';
-import { CreateFacultyDTO } from 'common/dto/faculty/CreateFaculty.dto';
-import FacultyAdmin from '../../FacultyAdmin';
+import FacultyModal from '../../FacultyModal';
 
 describe.only('Faculty Modal', function () {
   context('When creating a new faculty member', function () {
-    let dispatchMessage: SinonStub;
-    let getStub: SinonStub;
-    let postStub: SinonStub;
+    const onSuccessStub: SinonStub = stub();
     let getByText: BoundFunction<GetByText>;
     let queryAllByRole: BoundFunction<AllByRole>;
-    let newFacultyInfo: CreateFacultyDTO;
-    const newFacultyInfoId = '5c8e015f-eae6-4586-9eb0-fc7d243403bf';
-    beforeEach(async function () {
-      getStub = stub(FacultyAPI, 'getAllFacultyMembers');
-      getStub.resolves([
-        bioengineeringFacultyMemberResponse,
-        appliedMathFacultyMemberResponse,
-      ] as ManageFacultyResponseDTO[]);
-      postStub = stub(FacultyAPI, 'createFaculty');
-      postStub.callsFake((facultyInfo: CreateFacultyDTO) => ({
-        ...facultyInfo,
-        id: newFacultyInfoId,
-        area: {
-          id: '464e1579-70e4-43e9-afa0-4d94392b6d9d',
-          name: facultyInfo.area,
-        },
-      }));
-      dispatchMessage = stub();
-      ({ getByText, queryAllByRole } = render(
-        <FacultyAdmin />,
-        dispatchMessage,
-        testMetadata
-      ));
-      const createFacultyButtonText = 'Create New Faculty';
-      await waitForElement(() => getByText(createFacultyButtonText));
-      fireEvent.click(getByText(createFacultyButtonText));
-      newFacultyInfo = {
-        area: 'AM',
-        HUID: '12345678',
-        lastName: 'Townson',
-        firstName: 'Olive',
-        category: FACULTY_TYPE.LADDER,
-        jointWith: 'CS 350',
-        notes: 'Prefers Allston campus',
-      };
-      const courseAreaSelect = document.getElementById('editFacultyCourseArea') as HTMLSelectElement;
-      fireEvent.change(courseAreaSelect,
-        { target: { value: newFacultyInfo.area } });
-      const huidInput = document.getElementById('editFacultyHUID') as HTMLInputElement;
-      fireEvent.change(huidInput,
-        { target: { value: newFacultyInfo.HUID } });
-      const firstNameInput = document.getElementById('editFacultyFirstName') as HTMLInputElement;
-      fireEvent.change(firstNameInput,
-        { target: { value: newFacultyInfo.firstName } });
-      const lastNameInput = document.getElementById('editFacultyLastName') as HTMLInputElement;
-      fireEvent.change(lastNameInput,
-        { target: { value: newFacultyInfo.lastName } });
-      const facultyCategorySelect = document.getElementById('editFacultyCategory') as HTMLSelectElement;
-      fireEvent.change(facultyCategorySelect,
-        { target: { value: newFacultyInfo.category } });
-      const jointWithInput = document.getElementById('editFacultyJointWith') as HTMLInputElement;
-      fireEvent.change(jointWithInput,
-        { target: { value: newFacultyInfo.jointWith } });
-      const notesInput = document.getElementById('editFacultyNotes') as HTMLInputElement;
-      fireEvent.change(notesInput,
-        { target: { value: newFacultyInfo.notes } });
-    });
+    let getByLabelText: BoundFunction<GetByText>;
+    const dispatchMessage: SinonStub = stub();
+    const facultyInfo: ManageFacultyResponseDTO = {
+      id: '5c8e015f-eae6-4586-9eb0-fc7d243403bf',
+      area: {
+        id: '464e1579-70e4-43e9-afa0-4d94392b6d9d',
+        name: 'AM',
+      },
+      HUID: '12345678',
+      lastName: 'Townson',
+      firstName: 'Olive',
+      category: FACULTY_TYPE.LADDER,
+      jointWith: 'CS 350',
+      notes: 'Prefers Allston campus',
+    };
     describe('On Open Behavior', function () {
-      it('clears all form fields', async function () {
-        const cancelButton = getByText('Cancel');
-        fireEvent.click(cancelButton);
-        const createFacultyButtonText = 'Create New Faculty';
-        await waitForElement(() => getByText(createFacultyButtonText));
-        fireEvent.click(getByText(createFacultyButtonText));
-        const courseAreaSelect = document.getElementById('courseArea') as HTMLSelectElement;
-        const huidInput = document.getElementById('HUID') as HTMLInputElement;
-        const firstNameInput = document.getElementById('firstName') as HTMLInputElement;
-        const lastNameInput = document.getElementById('lastName') as HTMLInputElement;
-        const facultyCategorySelect = document.getElementById('category') as HTMLSelectElement;
-        const jointWithInput = document.getElementById('jointWith') as HTMLInputElement;
-        const notesInput = document.getElementById('notes') as HTMLInputElement;
-        strictEqual(courseAreaSelect.value, '');
-        strictEqual(huidInput.value, '');
-        strictEqual(firstNameInput.value, '');
-        strictEqual(lastNameInput.value, '');
-        strictEqual(facultyCategorySelect.value, '');
-        strictEqual(jointWithInput.value, '');
-        strictEqual(notesInput.value, '');
+      context('when currentFaculty is null', function () {
+        beforeEach(async function () {
+          ({ getByLabelText, queryAllByRole } = render(
+            <FacultyModal isVisible />,
+            dispatchMessage,
+            testMetadata
+          ));
+        });
+        it('renders a modal with all empty form fields', async function () {
+          const courseAreaSelect = getByLabelText('Area', { exact: false }) as HTMLSelectElement;
+          const huidInput = getByLabelText('HUID', { exact: false }) as HTMLInputElement;
+          const firstNameInput = getByLabelText('First name', { exact: false }) as HTMLInputElement;
+          const lastNameInput = getByLabelText('Last name', { exact: false }) as HTMLInputElement;
+          const facultyCategorySelect = getByLabelText('Category', { exact: false }) as HTMLSelectElement;
+          const jointWithInput = getByLabelText('Joint with', { exact: false }) as HTMLInputElement;
+          const notesInput = getByLabelText('Notes', { exact: false }) as HTMLInputElement;
+          strictEqual(courseAreaSelect.value, '');
+          strictEqual(huidInput.value, '');
+          strictEqual(firstNameInput.value, '');
+          strictEqual(lastNameInput.value, '');
+          strictEqual(facultyCategorySelect.value, '');
+          strictEqual(jointWithInput.value, '');
+          strictEqual(notesInput.value, '');
+        });
+        it('renders no error messages prior to initial form submission', async function () {
+          strictEqual(queryAllByRole('alert').length, 0);
+        });
       });
-      it('renders no error messages prior to initial form submission', async function () {
-        strictEqual(queryAllByRole('alert').length, 0);
+      context('when currentFaculty is not null', function () {
+        beforeEach(async function () {
+          ({ getByLabelText, queryAllByRole } = render(
+            <FacultyModal
+              isVisible
+              currentFaculty={facultyInfo}
+            />,
+            dispatchMessage,
+            testMetadata
+          ));
+        });
+        it('populates the modal fields according to the current faculty selected', async function () {
+          const courseAreaSelect = getByLabelText('Area', { exact: false }) as HTMLSelectElement;
+          const huidInput = getByLabelText('HUID', { exact: false }) as HTMLInputElement;
+          const firstNameInput = getByLabelText('First name', { exact: false }) as HTMLInputElement;
+          const lastNameInput = getByLabelText('Last name', { exact: false }) as HTMLInputElement;
+          const facultyCategorySelect = getByLabelText('Category', { exact: false }) as HTMLSelectElement;
+          const jointWithInput = getByLabelText('Joint with', { exact: false }) as HTMLInputElement;
+          const notesInput = getByLabelText('Notes', { exact: false }) as HTMLInputElement;
+          strictEqual(courseAreaSelect.value, facultyInfo.area.name);
+          strictEqual(huidInput.value, facultyInfo.HUID);
+          strictEqual(firstNameInput.value, facultyInfo.firstName);
+          strictEqual(lastNameInput.value, facultyInfo.lastName);
+          strictEqual(facultyCategorySelect.value, facultyInfo.category);
+          strictEqual(jointWithInput.value, facultyInfo.jointWith);
+          strictEqual(notesInput.value, facultyInfo.notes);
+        });
+        it('renders no error messages prior to initial form submission', async function () {
+          strictEqual(queryAllByRole('alert').length, 0);
+        });
       });
     });
     describe('Field Validation', function () {
+      beforeEach(async function () {
+        ({ getByLabelText, queryAllByRole, getByText } = render(
+          <FacultyModal
+            isVisible
+            currentFaculty={facultyInfo}
+          />,
+          dispatchMessage,
+          testMetadata
+        ));
+      });
       describe('Area', function () {
         it('is a required field', async function () {
-          const courseAreaSelect = document.getElementById('courseArea') as HTMLSelectElement;
+          const courseAreaSelect = getByLabelText('Area', { exact: false }) as HTMLSelectElement;
           fireEvent.change(courseAreaSelect, { target: { value: '' } });
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
@@ -134,7 +127,7 @@ describe.only('Faculty Modal', function () {
       });
       describe('HUID', function () {
         it('is a required field', async function () {
-          const huidInput = document.getElementById('HUID') as HTMLInputElement;
+          const huidInput = getByLabelText('HUID', { exact: false }) as HTMLInputElement;
           fireEvent.change(huidInput, { target: { value: '' } });
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
@@ -144,7 +137,7 @@ describe.only('Faculty Modal', function () {
           );
         });
         it('raises an appropriate error message when not valid', async function () {
-          const huidInput = document.getElementById('HUID') as HTMLInputElement;
+          const huidInput = getByLabelText('HUID', { exact: false }) as HTMLInputElement;
           fireEvent.change(huidInput, { target: { value: '123' } });
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
@@ -173,7 +166,7 @@ describe.only('Faculty Modal', function () {
       });
       describe('First name', function () {
         it('is not a required field', async function () {
-          const firstNameInput = document.getElementById('firstName') as HTMLInputElement;
+          const firstNameInput = getByLabelText('First name', { exact: false }) as HTMLInputElement;
           fireEvent.change(firstNameInput, { target: { value: '' } });
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
@@ -182,7 +175,7 @@ describe.only('Faculty Modal', function () {
       });
       describe('Last name', function () {
         it('is a required field', async function () {
-          const lastNameInput = document.getElementById('lastName') as HTMLInputElement;
+          const lastNameInput = getByLabelText('Last name', { exact: false }) as HTMLInputElement;
           fireEvent.change(lastNameInput, { target: { value: '' } });
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
@@ -194,7 +187,7 @@ describe.only('Faculty Modal', function () {
       });
       describe('Category', function () {
         it('is a required field', async function () {
-          const facultyCategorySelect = document.getElementById('category') as HTMLSelectElement;
+          const facultyCategorySelect = getByLabelText('Category', { exact: false }) as HTMLSelectElement;
           fireEvent.change(facultyCategorySelect, { target: { value: '' } });
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
@@ -206,7 +199,7 @@ describe.only('Faculty Modal', function () {
       });
       describe('Joint With', function () {
         it('is not a required field', async function () {
-          const jointWithInput = document.getElementById('jointWith') as HTMLInputElement;
+          const jointWithInput = getByLabelText('Joint with', { exact: false }) as HTMLInputElement;
           fireEvent.change(jointWithInput, { target: { value: '' } });
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
@@ -215,188 +208,32 @@ describe.only('Faculty Modal', function () {
       });
       describe('Notes', function () {
         it('is not a required field', async function () {
-          const notesInput = document.getElementById('notes') as HTMLInputElement;
+          const notesInput = getByLabelText('Notes', { exact: false }) as HTMLInputElement;
           fireEvent.change(notesInput, { target: { value: '' } });
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
-          strictEqual(queryAllByRole('alert').length, 0);
+          await wait(() => strictEqual(queryAllByRole('alert').length, 0));
+          console.log(queryAllByRole('alert'));
         });
       });
     });
-  });
-  context('When editing an existing faculty member', function () {
-    let dispatchMessage: SinonStub;
-    let getStub: SinonStub;
-    let editStub: SinonStub;
-    let getByText: BoundFunction<GetByText>;
-    let queryAllByRole: BoundFunction<AllByRole>;
-    let newLastName: string;
-    beforeEach(async function () {
-      getStub = stub(FacultyAPI, 'getAllFacultyMembers');
-      getStub.resolves([
-        physicsFacultyMemberResponse,
-        bioengineeringFacultyMemberResponse,
-        appliedMathFacultyMemberResponse,
-        anotherPhysicsFacultyMemberResponse,
-      ] as ManageFacultyResponseDTO[]);
-      newLastName = 'Hudson';
-      editStub = stub(FacultyAPI, 'editFaculty');
-      editStub.resolves({
-        ...physicsFacultyMemberResponse,
-        lastName: newLastName,
+    describe('Submit Behavior', function () {
+      beforeEach(async function () {
+        ({ getByLabelText, queryAllByRole, getByText } = render(
+          <FacultyModal
+            isVisible
+            currentFaculty={facultyInfo}
+            onSuccess={onSuccessStub}
+          />,
+          dispatchMessage,
+          testMetadata
+        ));
       });
-      dispatchMessage = stub();
-      ({ getByText, queryAllByRole } = render(
-        <FacultyAdmin />,
-        dispatchMessage,
-        testMetadata
-      ));
-      await waitForElement(
-        () => getByText(physicsFacultyMemberResponse.lastName)
-      );
-      const physicsFacultyEditButton = document
-        .getElementById('editFaculty' + physicsFacultyMemberResponse.id);
-      fireEvent.click(physicsFacultyEditButton);
-      const areaDropdown = await waitForElement(() => document.getElementById('courseArea') as HTMLSelectElement);
-      await wait(() => (
-        areaDropdown.value === physicsFacultyMemberResponse.area.name
-      ));
-    });
-    describe('On Open Behavior', function () {
-      it('populates the modal with the existing faculty information', async function () {
-        const courseAreaSelect = document.getElementById('courseArea') as HTMLSelectElement;
-        const huidInput = document.getElementById('HUID') as HTMLInputElement;
-        const firstNameInput = document.getElementById('firstName') as HTMLInputElement;
-        const lastNameInput = document.getElementById('lastName') as HTMLInputElement;
-        const jointWithInput = document.getElementById('jointWith') as HTMLInputElement;
-        const categorySelect = document.getElementById('category') as HTMLSelectElement;
-        const notesInput = document.getElementById('notes') as HTMLInputElement;
-        strictEqual(
-          courseAreaSelect.value,
-          physicsFacultyMemberResponse.area.name,
-          'Area'
-        );
-        strictEqual(
-          huidInput.value,
-          physicsFacultyMemberResponse.HUID,
-          'HUID'
-        );
-        strictEqual(
-          firstNameInput.value,
-          physicsFacultyMemberResponse.firstName || '',
-          'first name'
-        );
-        strictEqual(
-          lastNameInput.value,
-          physicsFacultyMemberResponse.lastName,
-          'last name'
-        );
-        strictEqual(
-          jointWithInput.value,
-          physicsFacultyMemberResponse.jointWith || '',
-          'joint with'
-        );
-        strictEqual(
-          categorySelect.value,
-          physicsFacultyMemberResponse.category,
-          'category'
-        );
-        strictEqual(
-          notesInput.value,
-          physicsFacultyMemberResponse.notes || '',
-          'notes'
-        );
-      });
-      it('renders no error messages prior to initial form submission', async function () {
-        strictEqual(queryAllByRole('alert').length, 0);
-      });
-    });
-    describe('Field Validation', function () {
-      describe('Area', function () {
-        it('is a required field', async function () {
-          const courseAreaSelect = document.getElementById('courseArea') as HTMLSelectElement;
-          fireEvent.change(courseAreaSelect, { target: { value: '' } });
+      context('when required fields are provided', function () {
+        it('calls the onSuccess handler once', async function () {
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
-          const errorMessage = 'area is required to submit';
-          return waitForElement(
-            () => getByText(errorMessage, { exact: false })
-          );
-        });
-      });
-      describe('HUID', function () {
-        it('is a required field', async function () {
-          const huidInput = document.getElementById('HUID') as HTMLInputElement;
-          fireEvent.change(huidInput, { target: { value: '' } });
-          const submitButton = getByText('Submit');
-          fireEvent.click(submitButton);
-          const errorMessage = 'HUID is required';
-          return waitForElement(
-            () => getByText(errorMessage, { exact: false })
-          );
-        });
-        it('raises an appropriate error message when not valid', async function () {
-          const huidInput = document.getElementById('HUID') as HTMLInputElement;
-          fireEvent.change(huidInput, { target: { value: '123' } });
-          const submitButton = getByText('Submit');
-          fireEvent.click(submitButton);
-          const errorMessage = 'HUID is required and must contain 8 digits';
-          return waitForElement(
-            () => getByText(errorMessage, { exact: false })
-          );
-        });
-      });
-      describe('First Name', function () {
-        it('is not a required field', function () {
-          const firstNameInput = document.getElementById('firstName') as HTMLInputElement;
-          fireEvent.change(firstNameInput, { target: { value: '' } });
-          const submitButton = getByText('Submit');
-          fireEvent.click(submitButton);
-          strictEqual(queryAllByRole('alert').length, 0);
-        });
-      });
-      describe('Last Name', function () {
-        it('is a required field', function () {
-          const lastNameInput = document.getElementById('lastName') as HTMLInputElement;
-          fireEvent.change(lastNameInput, { target: { value: '' } });
-          const submitButton = getByText('Submit');
-          fireEvent.click(submitButton);
-          const errorMessage = 'Last name is required';
-          return waitForElement(
-            () => getByText(errorMessage, { exact: false })
-          );
-        });
-      });
-      describe('Category', function () {
-        it('is a required field', function () {
-          it('displays the appropriate validation error when the faculty category is not supplied', async function () {
-            const facultyCategorySelect = document.getElementById('category') as HTMLSelectElement;
-            fireEvent.change(facultyCategorySelect, { target: { value: '' } });
-            const submitButton = getByText('Submit');
-            fireEvent.click(submitButton);
-            const errorMessage = 'category is required';
-            return waitForElement(
-              () => getByText(errorMessage, { exact: false })
-            );
-          });
-        });
-      });
-      describe('Joint With', function () {
-        it('is not a required field', async function () {
-          const jointWithInput = document.getElementById('jointWith') as HTMLInputElement;
-          fireEvent.change(jointWithInput, { target: { value: '' } });
-          const submitButton = getByText('Submit');
-          fireEvent.click(submitButton);
-          strictEqual(queryAllByRole('alert').length, 0);
-        });
-      });
-      describe('Notes', function () {
-        it('is not a required field', async function () {
-          const notesInput = document.getElementById('notes') as HTMLInputElement;
-          fireEvent.change(notesInput, { target: { value: '' } });
-          const submitButton = getByText('Submit');
-          fireEvent.click(submitButton);
-          strictEqual(queryAllByRole('alert').length, 0);
+          await wait(() => strictEqual(onSuccessStub.callCount, 1));
         });
       });
     });
