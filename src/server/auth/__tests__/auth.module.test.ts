@@ -2,7 +2,7 @@ import { strictEqual, deepStrictEqual } from 'assert';
 import { spy, SinonSpy } from 'sinon';
 import { AuthModule } from 'server/auth/auth.module';
 import { DynamicModule, Type } from '@nestjs/common';
-import { SAMLStrategy } from 'server/auth/saml.strategy';
+import { HarvardKeyStrategy } from 'server/auth/harvardkey.strategy';
 import { DevStrategy } from 'server/auth/dev.strategy';
 import { AUTH_MODE } from 'common/constants';
 import { Strategy } from 'passport';
@@ -19,7 +19,7 @@ describe('AuthModule', function () {
   describe('strategy injection', function () {
     beforeEach(function () {
       strategies = [
-        SAMLStrategy,
+        HarvardKeyStrategy,
         DevStrategy,
       ];
       resolvedMod = AuthModule.register({ strategies });
@@ -44,7 +44,7 @@ describe('AuthModule', function () {
       beforeEach(async function () {
         ppspy = spy(PassportModule, 'registerAsync');
         strategies = [
-          SAMLStrategy,
+          HarvardKeyStrategy,
           DevStrategy,
           TestingStrategy,
         ];
@@ -71,7 +71,7 @@ describe('AuthModule', function () {
     context('When a defaultStrategy is NOT provided', function () {
       beforeEach(async function () {
         strategies = [
-          SAMLStrategy,
+          HarvardKeyStrategy,
           DevStrategy,
           TestingStrategy,
         ];

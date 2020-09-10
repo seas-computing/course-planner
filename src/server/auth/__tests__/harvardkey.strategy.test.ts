@@ -3,10 +3,12 @@ import { stub } from 'sinon';
 import { regularUser } from 'testData';
 import { deepStrictEqual, strictEqual } from 'assert';
 import { UnauthorizedException } from '@nestjs/common';
-import { SAMLStrategy, HarvardKeyProfile } from '../saml.strategy';
+import { HarvardKeyProfile } from '@seas-computing/passport-harvardkey';
+import { Request } from 'express';
+import { HarvardKeyStrategy } from '../harvardkey.strategy';
 import { ConfigService } from '../../config/config.service';
 
-describe('SAML Strategy', function () {
+describe('HarvardKey Strategy', function () {
   const config = {
     isProduction: null,
     get: stub(),
@@ -18,31 +20,35 @@ describe('SAML Strategy', function () {
 
   it('re-maps harvard key user info to a user object', async function () {
     config.isProduction = true;
+    config.get.withArgs('CAS_URL').returns('https://cas-example.com/cas');
+    config.get.withArgs('SERVER_URL').returns('https://server-example.com');
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
           provide: ConfigService,
           useValue: config,
         },
-        SAMLStrategy,
+        HarvardKeyStrategy,
       ],
     }).compile();
 
-    const saml = module.get<SAMLStrategy>(SAMLStrategy);
+    const hkey = module.get<HarvardKeyStrategy>(HarvardKeyStrategy);
 
     const {
       eppn,
       lastName,
       firstName,
-      email,
     } = regularUser;
 
-    const user = saml.validate({
-      eppn,
-      givenName: firstName,
-      sn: lastName,
-      email,
-    } as HarvardKeyProfile);
+    const user = hkey.validate(
+      {
+        eppn,
+        givenName: firstName,
+        sn: lastName,
+        displayName: `${lastName}, ${firstName}`,
+      } as HarvardKeyProfile,
+      {} as Request
+    );
 
     deepStrictEqual(user, regularUser);
   });
@@ -54,14 +60,17 @@ describe('SAML Strategy', function () {
           provide: ConfigService,
           useValue: config,
         },
-        SAMLStrategy,
+        HarvardKeyStrategy,
       ],
     }).compile();
 
-    const saml = module.get<SAMLStrategy>(SAMLStrategy);
+    const hkey = module.get<HarvardKeyStrategy>(HarvardKeyStrategy);
 
     try {
-      saml.validate();
+      hkey.validate(
+        null,
+        {} as Request
+      );
     } catch (error) {
       strictEqual(error instanceof UnauthorizedException, true);
     }
