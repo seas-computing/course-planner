@@ -45,9 +45,11 @@ import { UserController } from './user/user.controller';
             secret: config.get('SESSION_SECRET'),
             cookie: {
               maxAge: 1000 * 60 * 60 * 24 * 7,
+              domain: config.get('COOKIE_DOMAIN'),
+              secure: config.isProduction,
             },
             store,
-            resave: true,
+            resave: false,
             saveUninitialized: false,
             unset: 'destroy',
           },
