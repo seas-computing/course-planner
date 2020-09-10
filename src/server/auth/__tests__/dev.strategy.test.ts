@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Request } from 'express';
 import { string } from 'testData';
 import { strictEqual } from 'assert';
 import { DevStrategy } from 'server/auth/dev.strategy';
@@ -23,7 +24,9 @@ describe('Dev Strategy', function () {
 
     const dev = moduleRef.get<DevStrategy>(DevStrategy);
 
-    const result = dev.validate({} as Express.Request);
+    const result = dev.validate({
+      session: {},
+    } as Request);
 
     const {
       eppn,

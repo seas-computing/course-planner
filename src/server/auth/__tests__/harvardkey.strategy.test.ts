@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { stub } from 'sinon';
 import { regularUser } from 'testData';
-import { deepStrictEqual, strictEqual } from 'assert';
+import { strictEqual, throws } from 'assert';
 import { UnauthorizedException } from '@nestjs/common';
 import { HarvardKeyProfile } from '@seas-computing/passport-harvardkey';
 import { Request } from 'express';
@@ -47,10 +47,14 @@ describe('HarvardKey Strategy', function () {
         sn: lastName,
         displayName: `${lastName}, ${firstName}`,
       } as HarvardKeyProfile,
-      {} as Request
+      {
+        session: {},
+      } as Request
     );
 
-    deepStrictEqual(user, regularUser);
+    strictEqual(user.eppn, eppn);
+    strictEqual(user.firstName, firstName);
+    strictEqual(user.lastName, lastName);
   });
   it('rejects failed auth attempts with an exception', async function () {
     config.isProduction = true;
@@ -66,13 +70,13 @@ describe('HarvardKey Strategy', function () {
 
     const hkey = module.get<HarvardKeyStrategy>(HarvardKeyStrategy);
 
-    try {
+    throws(() => {
       hkey.validate(
         null,
-        {} as Request
+        {
+          session: {},
+        } as Request
       );
-    } catch (error) {
-      strictEqual(error instanceof UnauthorizedException, true);
-    }
+    }, UnauthorizedException);
   });
 });
