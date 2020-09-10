@@ -19,15 +19,17 @@ import { render } from 'common/utils';
 import { testMetadata } from 'common/data/metadata';
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
 import { FACULTY_TYPE } from 'common/constants';
+import request from 'client/api/request';
 import FacultyModal from '../../FacultyModal';
 
-describe.only('Faculty Modal', function () {
+describe('Faculty Modal', function () {
   context('When creating a new faculty member', function () {
-    const onSuccessStub: SinonStub = stub();
     let getByText: BoundFunction<GetByText>;
     let queryAllByRole: BoundFunction<AllByRole>;
     let getByLabelText: BoundFunction<GetByText>;
     const dispatchMessage: SinonStub = stub();
+    let onSuccessStub: SinonStub;
+    let putStub: SinonStub;
     const facultyInfo: ManageFacultyResponseDTO = {
       id: '5c8e015f-eae6-4586-9eb0-fc7d243403bf',
       area: {
@@ -212,28 +214,59 @@ describe.only('Faculty Modal', function () {
           fireEvent.change(notesInput, { target: { value: '' } });
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
-          await wait(() => strictEqual(queryAllByRole('alert').length, 0));
-          console.log(queryAllByRole('alert'));
+          strictEqual(queryAllByRole('alert').length, 0);
         });
       });
     });
     describe('Submit Behavior', function () {
-      beforeEach(async function () {
-        ({ getByLabelText, queryAllByRole, getByText } = render(
-          <FacultyModal
-            isVisible
-            currentFaculty={facultyInfo}
-            onSuccess={onSuccessStub}
-          />,
-          dispatchMessage,
-          testMetadata
-        ));
-      });
-      context('when required fields are provided', function () {
+      context('when required form fields are provided', function () {
+        beforeEach(async function () {
+          putStub = stub(request, 'put');
+          putStub.resolves({ data: facultyInfo });
+          onSuccessStub = stub();
+          ({ getByLabelText, queryAllByRole, getByText } = render(
+            <FacultyModal
+              isVisible
+              currentFaculty={facultyInfo}
+              onSuccess={onSuccessStub}
+            />,
+            dispatchMessage,
+            testMetadata
+          ));
+        });
         it('calls the onSuccess handler once', async function () {
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
           await wait(() => strictEqual(onSuccessStub.callCount, 1));
+        });
+        it('calls the onSuccess handler with the provided arguments', async function () {
+          const submitButton = getByText('Submit');
+          fireEvent.click(submitButton);
+          await wait(() => strictEqual(onSuccessStub.callCount, 1));
+          await wait(() => strictEqual(onSuccessStub.args[0][0], facultyInfo));
+        });
+      });
+      context('when required form fields are not provided', function () {
+        beforeEach(async function () {
+          putStub = stub(request, 'put');
+          onSuccessStub = stub();
+          ({ getByLabelText, queryAllByRole, getByText } = render(
+            <FacultyModal
+              isVisible
+              currentFaculty={{
+                ...facultyInfo,
+                HUID: '',
+              }}
+              onSuccess={onSuccessStub}
+            />,
+            dispatchMessage,
+            testMetadata
+          ));
+        });
+        it('does not call the onSuccess handler', async function () {
+          const submitButton = getByText('Submit');
+          fireEvent.click(submitButton);
+          await wait(() => strictEqual(onSuccessStub.callCount, 0));
         });
       });
     });
