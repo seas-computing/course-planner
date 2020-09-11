@@ -172,11 +172,13 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
               const buttonId = computeEditFacultyButtonId(currentFaculty);
               const button = document.getElementById(buttonId);
               // this will run after the data is loaded, so no delay is necessary
-              button.focus();
-              button.scrollIntoView();
+              window.setTimeout((): void => {
+                button.focus();
+                button.scrollIntoView();
+              }, 0);
             } else {
               setFacultyModalVisible(false);
-              document.getElementById('createFaculty').focus();
+              window.setTimeout((): void => document.getElementById('createFaculty').focus(), 0);
             }
           }}
           onSuccess={async (): Promise<void> => {
