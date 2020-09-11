@@ -30,6 +30,7 @@ describe('Faculty Modal', function () {
     const dispatchMessage: SinonStub = stub();
     let onSuccessStub: SinonStub;
     let putStub: SinonStub;
+    let postStub: SinonStub;
     const facultyInfo: ManageFacultyResponseDTO = {
       id: '5c8e015f-eae6-4586-9eb0-fc7d243403bf',
       area: {
@@ -219,54 +220,128 @@ describe('Faculty Modal', function () {
       });
     });
     describe('Submit Behavior', function () {
-      context('when required form fields are provided', function () {
-        beforeEach(async function () {
-          putStub = stub(request, 'put');
-          putStub.resolves({ data: facultyInfo });
-          onSuccessStub = stub();
-          ({ getByLabelText, queryAllByRole, getByText } = render(
-            <FacultyModal
-              isVisible
-              currentFaculty={facultyInfo}
-              onSuccess={onSuccessStub}
-            />,
-            dispatchMessage,
-            testMetadata
-          ));
+      context('when current faculty is not null', function () {
+        context('when required form fields are provided', function () {
+          beforeEach(async function () {
+            putStub = stub(request, 'put');
+            putStub.resolves({ data: facultyInfo });
+            onSuccessStub = stub();
+            ({ getByLabelText, getByText } = render(
+              <FacultyModal
+                isVisible
+                currentFaculty={facultyInfo}
+                onSuccess={onSuccessStub}
+              />,
+              dispatchMessage,
+              testMetadata
+            ));
+          });
+          it('calls the onSuccess handler once on submit', async function () {
+            const submitButton = getByText('Submit');
+            fireEvent.click(submitButton);
+            await wait(() => strictEqual(onSuccessStub.callCount, 1));
+          });
+          it('calls the onSuccess handler with the provided arguments', async function () {
+            const submitButton = getByText('Submit');
+            fireEvent.click(submitButton);
+            await wait(() => strictEqual(
+              onSuccessStub.args[0][0],
+              facultyInfo
+            ));
+          });
         });
-        it('calls the onSuccess handler once', async function () {
-          const submitButton = getByText('Submit');
-          fireEvent.click(submitButton);
-          await wait(() => strictEqual(onSuccessStub.callCount, 1));
-        });
-        it('calls the onSuccess handler with the provided arguments', async function () {
-          const submitButton = getByText('Submit');
-          fireEvent.click(submitButton);
-          await wait(() => strictEqual(onSuccessStub.callCount, 1));
-          await wait(() => strictEqual(onSuccessStub.args[0][0], facultyInfo));
+        context('when required form fields are not provided', function () {
+          beforeEach(async function () {
+            putStub = stub(request, 'put');
+            onSuccessStub = stub();
+            ({ getByLabelText, getByText } = render(
+              <FacultyModal
+                isVisible
+                currentFaculty={{
+                  ...facultyInfo,
+                  HUID: '',
+                }}
+                onSuccess={onSuccessStub}
+              />,
+              dispatchMessage,
+              testMetadata
+            ));
+          });
+          it('does not call the onSuccess handler on submit', async function () {
+            const submitButton = getByText('Submit');
+            fireEvent.click(submitButton);
+            await wait(() => strictEqual(onSuccessStub.callCount, 0));
+          });
         });
       });
-      context('when required form fields are not provided', function () {
-        beforeEach(async function () {
-          putStub = stub(request, 'put');
-          onSuccessStub = stub();
-          ({ getByLabelText, queryAllByRole, getByText } = render(
-            <FacultyModal
-              isVisible
-              currentFaculty={{
-                ...facultyInfo,
-                HUID: '',
-              }}
-              onSuccess={onSuccessStub}
-            />,
-            dispatchMessage,
-            testMetadata
-          ));
+      context('when current faculty is null', function () {
+        context('when required form fields are provided', function () {
+          beforeEach(async function () {
+            postStub = stub(request, 'post');
+            postStub.resolves({ data: facultyInfo });
+            onSuccessStub = stub();
+            ({ getByLabelText, getByText } = render(
+              <FacultyModal
+                isVisible
+                onSuccess={onSuccessStub}
+              />,
+              dispatchMessage,
+              testMetadata
+            ));
+            const courseAreaSelect = getByLabelText('Area', { exact: false }) as HTMLSelectElement;
+            fireEvent.change(
+              courseAreaSelect,
+              { target: { value: facultyInfo.area.name } }
+            );
+            const huidInput = getByLabelText('HUID', { exact: false }) as HTMLInputElement;
+            fireEvent.change(
+              huidInput,
+              { target: { value: facultyInfo.HUID } }
+            );
+            const lastNameInput = getByLabelText('Last name', { exact: false }) as HTMLInputElement;
+            fireEvent.change(
+              lastNameInput,
+              { target: { value: facultyInfo.lastName } }
+            );
+            const facultyCategorySelect = getByLabelText('Category', { exact: false }) as HTMLSelectElement;
+            fireEvent.change(
+              facultyCategorySelect,
+              { target: { value: facultyInfo.category } }
+            );
+            const submitButton = getByText('Submit');
+            fireEvent.click(submitButton);
+          });
+          it('calls the onSuccess handler on submit', async function () {
+            await wait(() => strictEqual(onSuccessStub.callCount, 1));
+          });
+          it('calls the onSuccess handler with the provided arguments', async function () {
+            await wait(() => strictEqual(
+              onSuccessStub.args[0][0],
+              facultyInfo
+            ));
+          });
         });
-        it('does not call the onSuccess handler', async function () {
-          const submitButton = getByText('Submit');
-          fireEvent.click(submitButton);
-          await wait(() => strictEqual(onSuccessStub.callCount, 0));
+        context('when required form fields are not provided', function () {
+          beforeEach(async function () {
+            postStub = stub(request, 'post');
+            postStub.resolves({ data: facultyInfo });
+            onSuccessStub = stub();
+            ({ getByLabelText, getByText } = render(
+              <FacultyModal
+                isVisible
+                onSuccess={onSuccessStub}
+              />,
+              dispatchMessage,
+              testMetadata
+            ));
+            const submitButton = getByText('Submit');
+            fireEvent.click(submitButton);
+          });
+          it('does not call the onSuccess handler on submit', async function () {
+            const submitButton = getByText('Submit');
+            fireEvent.click(submitButton);
+            await wait(() => strictEqual(onSuccessStub.callCount, 0));
+          });
         });
       });
     });
