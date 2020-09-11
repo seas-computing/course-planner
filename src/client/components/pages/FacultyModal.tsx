@@ -338,9 +338,7 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
               // leave the modal visible after an error
               return;
             }
-            if (onClose != null) {
-              onClose();
-            }
+            onClose();
           }}
           variant={VARIANT.PRIMARY}
         >
