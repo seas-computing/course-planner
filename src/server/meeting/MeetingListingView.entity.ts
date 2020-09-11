@@ -83,7 +83,6 @@ export class MeetingListingView {
   )
   public courseInstanceId: string;
 
-
   /**
    * Many [[MeetingListingView]]s can have one [[NonClassEventView]]
    */
