@@ -15,6 +15,11 @@ export class NonClassEventController {
   @Inject(NonClassEventService)
   private service: NonClassEventService;
 
+  /**
+   * Retrieves all non class meetings for the specified (or current) academic year.
+   *
+   * @param acyr The academic year to query by. Defaults to the current academic year if not specified
+   */
   @Get('/')
   public async find(
     @Query('acyr') acyr?: number
