@@ -1,7 +1,7 @@
 import {
   Controller, Get, Inject, Query, UseGuards,
 } from '@nestjs/common';
-import NonClassMeetingResponseDTO from 'common/dto/nonclassmeetings/NonClassMeeting.dto';
+import NonClassMeetingResponseDTO from 'common/dto/nonClassMeetings/NonClassMeeting.dto';
 import { ConfigService } from 'server/config/config.service';
 import { Authentication } from 'server/auth/authentication.guard';
 import { NonClassEventService } from './nonClassEvent.service';
