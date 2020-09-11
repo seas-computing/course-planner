@@ -91,7 +91,7 @@ abstract class NonClassEvent {
   public id: string;
 
   @ApiModelProperty({
-    description: 'Denotes wether this NonClassEvent occurs in'
+    description: 'Denotes whether this NonClassEvent occurs in'
       + ` ${TERM.SPRING} or ${TERM.FALL}`,
     type: 'enum',
     enum: TERM,
