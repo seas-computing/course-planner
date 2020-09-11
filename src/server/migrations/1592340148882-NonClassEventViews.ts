@@ -1,5 +1,12 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
+/**
+ * This migration creates two views (`NonClassParentview` and
+ * `NonClassEventView`) which are aggregated from other tables. This is because
+ * the [[NonClassParent]] and [[NonclassEvent]] tables do not have the concept
+ * of an acedemic year, and instead get this information via the relation to
+ * [[Course]], and then [[Semester]]
+ */
 export class NonClassEventViews1592340148882 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query('DELETE FROM "typeorm_metadata" WHERE "type" = \'VIEW\' AND "schema" = $1 AND "name" = $2', ['public', 'MeetingListingView']);
