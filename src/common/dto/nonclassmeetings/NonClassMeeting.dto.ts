@@ -4,6 +4,9 @@ import {
 import { ApiModelProperty } from '@nestjs/swagger';
 
 abstract class Course {
+  @ApiModelProperty({
+    example: 'CS',
+  })
   public area: string;
 
   @ApiModelProperty({
