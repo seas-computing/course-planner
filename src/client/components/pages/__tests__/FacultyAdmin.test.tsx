@@ -18,8 +18,8 @@ import {
   newAreaFacultyMemberResponse,
   error,
 } from 'common/data';
-import { render } from 'common/utils';
-import { testMetadata } from 'common/data/metadata';
+import { render } from 'test-utils';
+import { metadata } from 'common/data/metadata';
 import FacultyAdmin from '../FacultyAdmin';
 
 describe('Faculty Admin', function () {
@@ -40,7 +40,7 @@ describe('Faculty Admin', function () {
       const { container } = render(
         <FacultyAdmin />,
         dispatchMessage,
-        testMetadata
+        metadata
       );
       return waitForElement(() => container.querySelector('.faculty-admin-table'));
     });
@@ -48,7 +48,7 @@ describe('Faculty Admin', function () {
       const { container } = render(
         <FacultyAdmin />,
         dispatchMessage,
-        testMetadata
+        metadata
       );
       return waitForElement(() => container.querySelector('.create-faculty-button'));
     });
@@ -57,7 +57,7 @@ describe('Faculty Admin', function () {
         const { getByText } = render(
           <FacultyAdmin />,
           dispatchMessage,
-          testMetadata
+          metadata
         );
         strictEqual(getStub.callCount, 1);
         const { lastName } = bioengineeringFacultyMemberResponse;
@@ -67,7 +67,7 @@ describe('Faculty Admin', function () {
         const { getAllByRole } = render(
           <FacultyAdmin />,
           dispatchMessage,
-          testMetadata
+          metadata
         );
         await wait(() => getAllByRole('row').length > 1);
         const rows = getAllByRole('row');
@@ -77,7 +77,7 @@ describe('Faculty Admin', function () {
         const { getAllByRole } = render(
           <FacultyAdmin />,
           dispatchMessage,
-          testMetadata
+          metadata
         );
         await wait(() => getAllByRole('row').length > 1);
         const rows = Array.from(getAllByRole('row')) as HTMLTableRowElement[];
@@ -120,7 +120,7 @@ describe('Faculty Admin', function () {
         const { getAllByRole, getByText } = render(
           <FacultyAdmin />,
           dispatchMessage,
-          testMetadata
+          metadata
         );
         await wait(() => getAllByRole('row').length > 1);
         const newAreaStyle = window.getComputedStyle(getByText('NA'));
@@ -129,16 +129,16 @@ describe('Faculty Admin', function () {
       context('when the create faculty button has been clicked and the modal is up', function () {
         context('when the modal is closed', function () {
           it('returns focus to the create faculty button', async function () {
-            const { getByText, queryByText } = render(
+            const { findByText, queryByText } = render(
               <FacultyAdmin />,
               dispatchMessage,
-              testMetadata
+              metadata
             );
             // show the create faculty modal
-            const createFacultyButton = await waitForElement(() => getByText('Create New Faculty', { exact: false }));
+            const createFacultyButton = await waitForElement(() => findByText('Create New Faculty', { exact: false }));
             fireEvent.click(createFacultyButton);
-            await waitForElement(() => getByText('required field', { exact: false }));
-            const cancelButton = await waitForElement(() => getByText('Cancel', { exact: false }));
+            await waitForElement(() => findByText('required field', { exact: false }));
+            const cancelButton = await waitForElement(() => findByText('Cancel', { exact: false }));
             // close the modal
             fireEvent.click(cancelButton);
             await wait(() => !queryByText('required field', { exact: false }));
@@ -152,16 +152,16 @@ describe('Faculty Admin', function () {
       context('when an edit faculty button has been clicked and the modal is up', function () {
         context('when the modal is closed', function () {
           it('returns focus to the original edit faculty button', async function () {
-            const { getByText, queryByText } = render(
+            const { findByText, queryByText } = render(
               <FacultyAdmin />,
               dispatchMessage,
-              testMetadata
+              metadata
             );
             // show the edit faculty modal
             const editPhysicsFacultyButton = await waitForElement(() => document.getElementById('editFaculty' + physicsFacultyMemberResponse.id));
             fireEvent.click(editPhysicsFacultyButton);
-            await waitForElement(() => getByText('required field', { exact: false }));
-            const cancelButton = await waitForElement(() => getByText('Cancel', { exact: false }));
+            await waitForElement(() => findByText('required field', { exact: false }));
+            const cancelButton = await waitForElement(() => findByText('Cancel', { exact: false }));
             // close the modal
             fireEvent.click(cancelButton);
             await wait(() => !queryByText('required field', { exact: false }));
@@ -182,7 +182,7 @@ describe('Faculty Admin', function () {
         const { getAllByRole } = render(
           <FacultyAdmin />,
           dispatchMessage,
-          testMetadata
+          metadata
         );
         await wait(() => getAllByRole('row').length === emptyTestData.length + 1);
         const rows = getAllByRole('row');
@@ -198,7 +198,7 @@ describe('Faculty Admin', function () {
         const { getAllByRole } = render(
           <FacultyAdmin />,
           dispatchMessage,
-          testMetadata
+          metadata
         );
         await wait(() => getAllByRole('row').length === emptyTestData.length + 1);
         strictEqual(dispatchMessage.callCount, 1);

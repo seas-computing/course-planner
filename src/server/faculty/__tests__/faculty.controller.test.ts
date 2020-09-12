@@ -14,12 +14,12 @@ import {
 } from 'common/data';
 import { Semester } from 'server/semester/semester.entity';
 import { SemesterService } from 'server/semester/semester.service';
+import { NotFoundException } from '@nestjs/common';
 import { FacultyController } from '../faculty.controller';
 import { Faculty } from '../faculty.entity';
 import { Area } from '../../area/area.entity';
 import { FacultyService } from '../faculty.service';
 import { FacultyScheduleService } from '../facultySchedule.service';
-import { NotFoundException } from '@nestjs/common';
 
 describe('Faculty controller', function () {
   let mockFacultyService : Record<string, SinonStub>;

@@ -1,9 +1,6 @@
 import { strictEqual } from 'assert';
 import { ABSENCE_TYPE, FACULTY_TYPE } from 'common/constants';
-import {
-  absenceEnumToTitleCase,
-  facultyTypeEnumToTitleCase,
-} from 'common/__tests__/utils/facultyHelperFunctions';
+import { absenceEnumToTitleCase, facultyTypeEnumToTitleCase } from 'common/utils/facultyHelperFunctions';
 
 describe('Faculty Schedule Table Fields', function () {
   describe('helper functions', function () {

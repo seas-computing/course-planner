@@ -15,8 +15,8 @@ import {
   SinonStub,
   stub,
 } from 'sinon';
-import { render } from 'common/utils';
-import { testMetadata } from 'common/data/metadata';
+import { render } from 'test-utils';
+import { metadata } from 'common/data/metadata';
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
 import { FACULTY_TYPE } from 'common/constants';
 import request from 'client/api/request';
@@ -46,14 +46,14 @@ describe('Faculty Modal', function () {
     };
     describe('On Open Behavior', function () {
       context('when currentFaculty is null', function () {
-        beforeEach(async function () {
+        beforeEach(function () {
           ({ getByLabelText, queryAllByRole } = render(
             <FacultyModal isVisible />,
             dispatchMessage,
-            testMetadata
+            metadata
           ));
         });
-        it('renders a modal with all empty form fields', async function () {
+        it('renders a modal with all empty form fields', function () {
           const courseAreaSelect = getByLabelText('Area', { exact: false }) as HTMLSelectElement;
           const huidInput = getByLabelText('HUID', { exact: false }) as HTMLInputElement;
           const firstNameInput = getByLabelText('First name', { exact: false }) as HTMLInputElement;
@@ -69,22 +69,22 @@ describe('Faculty Modal', function () {
           strictEqual(jointWithInput.value, '');
           strictEqual(notesInput.value, '');
         });
-        it('renders no error messages prior to initial form submission', async function () {
+        it('renders no error messages prior to initial form submission', function () {
           strictEqual(queryAllByRole('alert').length, 0);
         });
       });
       context('when currentFaculty is not null', function () {
-        beforeEach(async function () {
+        beforeEach(function () {
           ({ getByLabelText, queryAllByRole } = render(
             <FacultyModal
               isVisible
               currentFaculty={facultyInfo}
             />,
             dispatchMessage,
-            testMetadata
+            metadata
           ));
         });
-        it('populates the modal fields according to the current faculty selected', async function () {
+        it('populates the modal fields according to the current faculty selected', function () {
           const courseAreaSelect = getByLabelText('Area', { exact: false }) as HTMLSelectElement;
           const huidInput = getByLabelText('HUID', { exact: false }) as HTMLInputElement;
           const firstNameInput = getByLabelText('First name', { exact: false }) as HTMLInputElement;
@@ -100,20 +100,20 @@ describe('Faculty Modal', function () {
           strictEqual(jointWithInput.value, facultyInfo.jointWith);
           strictEqual(notesInput.value, facultyInfo.notes);
         });
-        it('renders no error messages prior to initial form submission', async function () {
+        it('renders no error messages prior to initial form submission', function () {
           strictEqual(queryAllByRole('alert').length, 0);
         });
       });
     });
     describe('Field Validation', function () {
-      beforeEach(async function () {
+      beforeEach(function () {
         ({ getByLabelText, queryAllByRole, getByText } = render(
           <FacultyModal
             isVisible
             currentFaculty={facultyInfo}
           />,
           dispatchMessage,
-          testMetadata
+          metadata
         ));
       });
       describe('Area', function () {
@@ -168,7 +168,7 @@ describe('Faculty Modal', function () {
         });
       });
       describe('First name', function () {
-        it('is not a required field', async function () {
+        it('is not a required field', function () {
           const firstNameInput = getByLabelText('First name', { exact: false }) as HTMLInputElement;
           fireEvent.change(firstNameInput, { target: { value: '' } });
           const submitButton = getByText('Submit');
@@ -201,7 +201,7 @@ describe('Faculty Modal', function () {
         });
       });
       describe('Joint With', function () {
-        it('is not a required field', async function () {
+        it('is not a required field', function () {
           const jointWithInput = getByLabelText('Joint with', { exact: false }) as HTMLInputElement;
           fireEvent.change(jointWithInput, { target: { value: '' } });
           const submitButton = getByText('Submit');
@@ -210,7 +210,7 @@ describe('Faculty Modal', function () {
         });
       });
       describe('Notes', function () {
-        it('is not a required field', async function () {
+        it('is not a required field', function () {
           const notesInput = getByLabelText('Notes', { exact: false }) as HTMLInputElement;
           fireEvent.change(notesInput, { target: { value: '' } });
           const submitButton = getByText('Submit');
@@ -222,7 +222,7 @@ describe('Faculty Modal', function () {
     describe('Submit Behavior', function () {
       context('when current faculty is not null', function () {
         context('when required form fields are provided', function () {
-          beforeEach(async function () {
+          beforeEach(function () {
             putStub = stub(request, 'put');
             putStub.resolves({ data: facultyInfo });
             onSuccessStub = stub();
@@ -233,7 +233,7 @@ describe('Faculty Modal', function () {
                 onSuccess={onSuccessStub}
               />,
               dispatchMessage,
-              testMetadata
+              metadata
             ));
           });
           it('calls the onSuccess handler once on submit', async function () {
@@ -251,7 +251,7 @@ describe('Faculty Modal', function () {
           });
         });
         context('when required form fields are not provided', function () {
-          beforeEach(async function () {
+          beforeEach(function () {
             putStub = stub(request, 'put');
             onSuccessStub = stub();
             ({ getByLabelText, getByText } = render(
@@ -264,7 +264,7 @@ describe('Faculty Modal', function () {
                 onSuccess={onSuccessStub}
               />,
               dispatchMessage,
-              testMetadata
+              metadata
             ));
           });
           it('does not call the onSuccess handler on submit', async function () {
@@ -276,7 +276,7 @@ describe('Faculty Modal', function () {
       });
       context('when current faculty is null', function () {
         context('when required form fields are provided', function () {
-          beforeEach(async function () {
+          beforeEach(function () {
             postStub = stub(request, 'post');
             postStub.resolves({ data: facultyInfo });
             onSuccessStub = stub();
@@ -286,7 +286,7 @@ describe('Faculty Modal', function () {
                 onSuccess={onSuccessStub}
               />,
               dispatchMessage,
-              testMetadata
+              metadata
             ));
             const courseAreaSelect = getByLabelText('Area', { exact: false }) as HTMLSelectElement;
             fireEvent.change(
@@ -322,7 +322,7 @@ describe('Faculty Modal', function () {
           });
         });
         context('when required form fields are not provided', function () {
-          beforeEach(async function () {
+          beforeEach(function () {
             postStub = stub(request, 'post');
             postStub.resolves({ data: facultyInfo });
             onSuccessStub = stub();
@@ -332,7 +332,7 @@ describe('Faculty Modal', function () {
                 onSuccess={onSuccessStub}
               />,
               dispatchMessage,
-              testMetadata
+              metadata
             ));
             const submitButton = getByText('Submit');
             fireEvent.click(submitButton);

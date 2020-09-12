@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from 'common/utils';
+import { render } from 'test-utils';
 import { strictEqual } from 'assert';
 import { HiddenText } from '..';
 

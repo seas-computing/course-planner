@@ -2,7 +2,7 @@ import React from 'react';
 import { strictEqual } from 'assert';
 import { render, fireEvent } from '@testing-library/react';
 import FakeTimers, { InstalledClock } from '@sinonjs/fake-timers';
-import { stub, SinonStub, useFakeTimers } from 'sinon';
+import { stub, SinonStub } from 'sinon';
 import * as dummy from 'common/data';
 import { MESSAGE_TYPE } from 'client/classes';
 import { MessageContext } from 'client/context';

@@ -17,6 +17,7 @@ import {
   ALIGN,
   Button,
 } from 'mark-one';
+import { ThemeContext } from 'styled-components';
 import {
   MESSAGE_TYPE,
   AppMessage,
@@ -27,9 +28,6 @@ import { TableRowProps } from 'mark-one/lib/Tables/TableRow';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
-import { MetadataContext } from 'client/context/MetadataContext';
-import { POSITION } from 'mark-one/lib/Forms/Label';
-import { FACULTY_TYPE } from 'common/constants';
 import { getAreaColor } from '../../../common/constants';
 import { FacultyAPI } from '../../api/faculty';
 import FacultyModal from './FacultyModal';
