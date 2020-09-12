@@ -28,7 +28,7 @@ import {
   MultiYearPlanResponseDTO,
   MultiYearPlanSemester,
 } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
-import { getMultiYearPlan } from '../../api/multiYearPlan';
+import { MultiYearPlanAPI } from 'client/api/multiYearPlan';
 import { getAreaColor } from '../../../common/constants';
 
 /**
@@ -46,7 +46,7 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
 
   useEffect((): void => {
     setFetching(true);
-    getMultiYearPlan()
+    MultiYearPlanAPI.getMultiYearPlan()
       .then((multiYearPlanList) => {
         setMultiYearPlan(multiYearPlanList);
       })

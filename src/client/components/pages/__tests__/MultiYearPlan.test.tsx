@@ -3,8 +3,8 @@ import { strictEqual } from 'assert';
 import { wait } from '@testing-library/react';
 import { stub, SinonStub } from 'sinon';
 import { testFourYearPlan, error } from 'common/data';
-import { render } from 'common/utils';
-import * as mypAPI from 'client/api/multiYearPlan';
+import { render } from 'test-utils';
+import { MultiYearPlanAPI } from 'client/api/multiYearPlan';
 import MultiYearPlan from '../MultiYearPlan';
 
 describe('MultYearPlan', function () {
@@ -14,7 +14,7 @@ describe('MultYearPlan', function () {
   const testData = testFourYearPlan;
 
   beforeEach(function () {
-    getStub = stub(mypAPI, 'getMultiYearPlan');
+    getStub = stub(MultiYearPlanAPI, 'getMultiYearPlan');
     dispatchMessage = stub();
     getStub.resolves(testData);
   });
