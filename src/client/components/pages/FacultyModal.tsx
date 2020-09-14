@@ -211,7 +211,7 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
       setFacultyErrorMessage('');
       setFacultyModalFocus();
     }
-  }, [isVisible]);
+  }, [isVisible, currentFaculty]);
   return (
     <Modal
       ariaLabelledBy="editFaculty"
@@ -338,7 +338,9 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
               // leave the modal visible after an error
               return;
             }
-            onClose();
+            if (onClose != null) {
+              onClose();
+            }
           }}
           variant={VARIANT.PRIMARY}
         >
