@@ -8,7 +8,7 @@ import {
   rawSemesterList,
   error,
 } from 'common/data';
-import * as api from 'client/api';
+import { MetadataAPI } from 'client/api/metadata';
 import {
   strictEqual,
   deepStrictEqual,
@@ -39,7 +39,7 @@ describe('Metadata API', function () {
                 .map(({ term, year }): string => `${term} ${year}`),
             },
           } as AxiosResponse<MetadataResponse>);
-          result = await api.getMetadata();
+          result = await MetadataAPI.getMetadata();
         });
         it('should call getMetadata', function () {
           strictEqual(getStub.callCount, 1);
@@ -64,7 +64,7 @@ describe('Metadata API', function () {
         });
         it('should throw an error', async function () {
           try {
-            await api.getMetadata();
+            await MetadataAPI.getMetadata();
             fail('Did not throw an error');
           } catch (err) {
             deepStrictEqual(err, error);

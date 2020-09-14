@@ -8,7 +8,7 @@ import {
 import { render as customRender } from 'test-utils';
 import { metadata } from 'common/data/metadata';
 import { stub, SinonStub } from 'sinon';
-import * as metaApi from 'client/api/metadata';
+import { MetadataAPI } from 'client/api/metadata';
 import * as dummy from 'common/data';
 import { UserAPI } from 'client/api';
 import { MemoryRouter } from 'react-router-dom';
@@ -20,7 +20,7 @@ describe('App', function () {
   let dispatchMessage: SinonStub;
   beforeEach(function () {
     userStub = stub(UserAPI, 'getCurrentUser');
-    metaStub = stub(metaApi, 'getMetadata');
+    metaStub = stub(MetadataAPI, 'getMetadata');
     dispatchMessage = stub();
     userStub.resolves(dummy.regularUser);
     metaStub.resolves(dummy.metadata);
