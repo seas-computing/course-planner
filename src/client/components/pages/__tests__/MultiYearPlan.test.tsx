@@ -5,9 +5,10 @@ import { stub, SinonStub } from 'sinon';
 import { testFourYearPlan, error } from 'common/data';
 import { render } from 'test-utils';
 import { MultiYearPlanAPI } from 'client/api/multiYearPlan';
+import { metadata } from 'common/data/metadata';
 import MultiYearPlan from '../MultiYearPlan';
 
-describe('MultYearPlan', function () {
+describe('MultiYearPlan', function () {
   let getStub: SinonStub;
   let dispatchMessage: SinonStub;
 
@@ -35,7 +36,8 @@ describe('MultYearPlan', function () {
     it('displays the MYP area information', async function () {
       const { findByText } = render(
         <MultiYearPlan />,
-        dispatchMessage
+        dispatchMessage,
+        metadata
       );
       strictEqual(getStub.callCount, 1);
       const { area } = testData[0];
