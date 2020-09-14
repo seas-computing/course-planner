@@ -21,7 +21,7 @@ import {
   faEdit,
 } from '@fortawesome/free-solid-svg-icons';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
-import { FACULTY_TYPE, getAreaColor } from 'common/constants';
+import { getAreaColor } from 'common/constants';
 import {
   absenceEnumToTitleCase,
   facultyTypeEnumToTitleCase,
@@ -98,7 +98,9 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
             </TableCell>
             <TableCell>{faculty.lastName}</TableCell>
             <TableCell>{faculty.firstName}</TableCell>
-            <TableCell>{facultyTypeEnumToTitleCase(faculty.category)}</TableCell>
+            <TableCell>
+              {facultyTypeEnumToTitleCase(faculty.category)}
+            </TableCell>
             <TableCell>{faculty.jointWith}</TableCell>
             <TableCell>
               {absenceEnumToTitleCase(
