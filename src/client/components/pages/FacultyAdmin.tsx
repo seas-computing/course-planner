@@ -74,20 +74,17 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
   const dispatchMessage = useContext(MessageContext);
 
   const loadFaculty = async (): Promise<void> => {
-    await FacultyAPI.getAllFacultyMembers()
-      .then((facultyMembers): ManageFacultyResponseDTO[] => {
-        setFacultyMembers(facultyMembers);
-        return facultyMembers;
-      })
-      .catch((): void => {
-        dispatchMessage({
-          message: new AppMessage(
-            'Unable to get faculty data from server. If the problem persists, contact SEAS Computing',
-            MESSAGE_TYPE.ERROR
-          ),
-          type: MESSAGE_ACTION.PUSH,
-        });
+    try {
+      setFacultyMembers(await FacultyAPI.getAllFacultyMembers());
+    } catch (e) {
+      dispatchMessage({
+        message: new AppMessage(
+          'Unable to get faculty data from server. If the problem persists, contact SEAS Computing',
+          MESSAGE_TYPE.ERROR
+        ),
+        type: MESSAGE_ACTION.PUSH,
       });
+    }
   };
 
   /**
@@ -95,8 +92,8 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
    * If it fails, display a message for the user
    */
   useEffect((): void => {
-    loadFaculty();
-  }, []);
+    void loadFaculty();
+  });
 
   /**
    * Provides the Mark-One theme using styled component's ThemeContext
