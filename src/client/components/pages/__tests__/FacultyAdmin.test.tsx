@@ -135,10 +135,10 @@ describe('Faculty Admin', function () {
               metadata
             );
             // show the create faculty modal
-            const createFacultyButton = await waitForElement(() => findByText('Create New Faculty', { exact: false }));
+            const createFacultyButton = await findByText('Create New Faculty', { exact: false });
             fireEvent.click(createFacultyButton);
-            await waitForElement(() => findByText('required field', { exact: false }));
-            const cancelButton = await waitForElement(() => findByText('Cancel', { exact: false }));
+            await findByText('required field', { exact: false });
+            const cancelButton = await findByText('Cancel', { exact: false });
             // close the modal
             fireEvent.click(cancelButton);
             await wait(() => !queryByText('required field', { exact: false }));
@@ -160,8 +160,8 @@ describe('Faculty Admin', function () {
             // show the edit faculty modal
             const editPhysicsFacultyButton = await waitForElement(() => document.getElementById('editFaculty' + physicsFacultyMemberResponse.id));
             fireEvent.click(editPhysicsFacultyButton);
-            await waitForElement(() => findByText('required field', { exact: false }));
-            const cancelButton = await waitForElement(() => findByText('Cancel', { exact: false }));
+            await findByText('required field', { exact: false });
+            const cancelButton = await findByText('Cancel', { exact: false });
             // close the modal
             fireEvent.click(cancelButton);
             await wait(() => !queryByText('required field', { exact: false }));
