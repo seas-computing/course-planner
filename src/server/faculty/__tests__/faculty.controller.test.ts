@@ -131,6 +131,7 @@ describe('Faculty controller', function () {
     });
     context('when area does not exist', function () {
       it('throws a Not Found Error', async function () {
+        const errorMessage = 'The entered Area does not exist';
         const facultyMemberInfo = {
           area: newAreaFacultyMemberRequest.area,
           HUID: newAreaFacultyMemberRequest.HUID,
@@ -149,7 +150,10 @@ describe('Faculty controller', function () {
           await controller.create(facultyMemberInfo);
         } catch (e) {
           strictEqual(e instanceof NotFoundException, true);
-          strictEqual((e as Error).message.includes('entered Area'), true);
+          const error = e as NotFoundException;
+          strictEqual(error.message && 'message' in error.message, true);
+          const errorMessageObject = error.message as { message : string; };
+          strictEqual(errorMessageObject.message, errorMessage);
         }
       });
     });
