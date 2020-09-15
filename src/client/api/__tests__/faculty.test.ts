@@ -131,7 +131,7 @@ describe('Faculty Admin API', function () {
     });
   });
   describe('createFaculty', function () {
-    beforeEach(async function () {
+    beforeEach(function () {
       postStub = stub(request, 'post');
     });
     afterEach(function () {
@@ -156,7 +156,7 @@ describe('Faculty Admin API', function () {
     });
     context('when POST request fails', function () {
       const errorMessage = 'There was a problem with creating a faculty.';
-      beforeEach(async function () {
+      beforeEach(function () {
         postStub.rejects(new Error(errorMessage));
       });
       it('should throw an error', async function () {
@@ -164,13 +164,13 @@ describe('Faculty Admin API', function () {
           await FacultyAPI.createFaculty(newAppliedPhysicsFacultyMember);
           fail('Did not throw an error');
         } catch (err) {
-          deepStrictEqual((err as Error), errorMessage);
+          strictEqual((err as Error).message, errorMessage);
         }
       });
     });
   });
   describe('editFaculty', function () {
-    beforeEach(async function () {
+    beforeEach(function () {
       putStub = stub(request, 'put');
     });
     afterEach(function () {
@@ -207,7 +207,7 @@ describe('Faculty Admin API', function () {
     });
     context('when PUT request fails', function () {
       const errorMessage = 'There was a problem with editing a faculty entry.';
-      beforeEach(async function () {
+      beforeEach(function () {
         putStub.rejects(new Error(errorMessage));
       });
       it('should throw an error', async function () {
@@ -215,7 +215,7 @@ describe('Faculty Admin API', function () {
           await FacultyAPI.editFaculty(bioengineeringFacultyMember);
           fail('Did not throw an error');
         } catch (err) {
-          deepStrictEqual(err.message, errorMessage);
+          strictEqual((err as Error).message, errorMessage);
         }
       });
     });
