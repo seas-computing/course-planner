@@ -19,7 +19,7 @@ Promise<ManageFacultyResponseDTO[]> => {
 const createFaculty = async (facultyInfo: CreateFacultyDTO):
 Promise<ManageFacultyResponseDTO> => {
   const response = await request.post('/api/faculty', facultyInfo);
-  return response.data;
+  return response.data as ManageFacultyResponseDTO;
 };
 
 /**
@@ -28,7 +28,7 @@ Promise<ManageFacultyResponseDTO> => {
 const editFaculty = async (facultyInfo: UpdateFacultyDTO):
 Promise<ManageFacultyResponseDTO> => {
   const response = await request.put(`/api/faculty/${facultyInfo.id}`, facultyInfo);
-  return response.data;
+  return response.data as ManageFacultyResponseDTO;
 };
 
 /**

@@ -6,6 +6,7 @@ import React, {
   useRef,
   useEffect,
   ChangeEvent,
+  Ref,
 } from 'react';
 import {
   VARIANT,
@@ -126,7 +127,7 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
   /**
    * The current value of the Create Faculty Modal ref
    */
-  const modalHeaderRef = useRef(null);
+  const modalHeaderRef: Ref<HTMLHeadingElement> = useRef(null);
 
   /**
    * Set the ref focus.

@@ -164,7 +164,7 @@ describe('Faculty Admin API', function () {
           await FacultyAPI.createFaculty(newAppliedPhysicsFacultyMember);
           fail('Did not throw an error');
         } catch (err) {
-          deepStrictEqual(err.message, errorMessage);
+          deepStrictEqual((err as Error), errorMessage);
         }
       });
     });

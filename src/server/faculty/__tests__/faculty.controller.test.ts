@@ -149,7 +149,7 @@ describe('Faculty controller', function () {
           await controller.create(facultyMemberInfo);
         } catch (e) {
           strictEqual(e instanceof NotFoundException, true);
-          strictEqual(e.message.message.includes('entered Area'), true);
+          strictEqual((e as Error).message.includes('entered Area'), true);
         }
       });
     });

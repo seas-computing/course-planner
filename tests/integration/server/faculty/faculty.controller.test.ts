@@ -267,9 +267,11 @@ describe('Faculty API', function () {
               HUID: '12345678',
               area: appliedMathFacultyMember.area.name,
             });
+          const body = response.body as BadRequestException;
+          const message = body.message as string;
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.BAD_REQUEST);
-          strictEqual(response.body.message.includes('category'), true);
+          strictEqual(message.includes('category'), true);
         });
         it('does not require a first name', async function () {
           mockAreaRepository.findOne.resolves(appliedMathFacultyMember.area);
@@ -313,9 +315,11 @@ describe('Faculty API', function () {
           const response = await request(api)
             .post('/api/faculty')
             .send(newFacultyMemberInfo);
+          const body = response.body as NotFoundException;
+          const message = body.message as string;
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.NOT_FOUND);
-          strictEqual(response.body.message.includes('Area'), true);
+          strictEqual(message.includes('Area'), true);
         });
       });
       describe('User is not a member of the admin group', function () {
@@ -465,7 +469,7 @@ describe('Faculty API', function () {
           const message = body.message as string;
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.NOT_FOUND);
-          strictEqual(response.body.message.includes('Area'), true);
+          strictEqual(message.includes('Area'), true);
         });
       });
       describe('User is not a member of the admin group', function () {

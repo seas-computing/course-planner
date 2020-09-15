@@ -54,5 +54,5 @@ const facultyTypeTitleCaseToEnumMap = {
  */
 export const facultyTypeTitleCaseToEnum = function (facultyType: string):
 FACULTY_TYPE {
-  return facultyTypeTitleCaseToEnumMap[facultyType];
+  return facultyTypeTitleCaseToEnumMap[facultyType] as FACULTY_TYPE;
 };
