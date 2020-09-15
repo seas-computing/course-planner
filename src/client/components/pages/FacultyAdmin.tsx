@@ -164,7 +164,6 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
               // this will run after the data is loaded, so no delay is necessary
               window.setTimeout((): void => {
                 button.focus();
-                button.scrollIntoView();
               }, 0);
             } else {
               setFacultyModalVisible(false);
