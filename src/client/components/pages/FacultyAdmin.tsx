@@ -17,7 +17,6 @@ import {
   ALIGN,
   Button,
 } from 'mark-one';
-import { ThemeContext } from 'styled-components';
 import {
   MESSAGE_TYPE,
   AppMessage,
@@ -93,12 +92,7 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
    */
   useEffect((): void => {
     void loadFaculty();
-  });
-
-  /**
-   * Provides the Mark-One theme using styled component's ThemeContext
-   */
-  const theme = useContext(ThemeContext);
+  }, []);
 
   return (
     <>
