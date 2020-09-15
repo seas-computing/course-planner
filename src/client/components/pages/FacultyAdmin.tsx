@@ -4,6 +4,7 @@ import React, {
   useContext,
   useState,
   useEffect,
+  useCallback,
 } from 'react';
 import {
   Table,
@@ -72,7 +73,7 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
    */
   const dispatchMessage = useContext(MessageContext);
 
-  const loadFaculty = async (): Promise<void> => {
+  const loadFaculty = useCallback(async (): Promise<void> => {
     try {
       setFacultyMembers(await FacultyAPI.getAllFacultyMembers());
     } catch (e) {
@@ -84,7 +85,7 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
         type: MESSAGE_ACTION.PUSH,
       });
     }
-  };
+  }, [dispatchMessage]);
 
   /**
    * Gets the faculty data from the server
@@ -92,7 +93,7 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
    */
   useEffect((): void => {
     void loadFaculty();
-  }, []);
+  }, [loadFaculty]);
 
   return (
     <>
