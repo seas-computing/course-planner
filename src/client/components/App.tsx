@@ -78,7 +78,7 @@ export const ColdApp: SFC = (): ReactElement => {
 
   useEffect((): void => {
     UserAPI.getCurrentUser()
-      .then(({ data: user }): UserResponse => {
+      .then((user): UserResponse => {
         setUser(user);
         return user;
       })

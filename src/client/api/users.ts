@@ -4,8 +4,10 @@ import request, { AxiosPromise } from './request';
 /**
  * Get the currently authenticated user
  */
-
-const getCurrentUser = (): AxiosPromise<UserResponse> => request.get('/api/users/current');
+const getCurrentUser = async (): Promise<UserResponse> => {
+  const response = await request.get('/api/users/current');
+  return response.data as UserResponse;
+};
 
 /**
  * Export the methods as part of an object so that they are stubbable.
