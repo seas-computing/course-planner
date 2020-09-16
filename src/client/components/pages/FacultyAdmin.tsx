@@ -31,6 +31,7 @@ import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyRespon
 import { getAreaColor } from '../../../common/constants';
 import { FacultyAPI } from '../../api/faculty';
 import FacultyModal from './FacultyModal';
+import { VerticalSpace } from '../layout';
 
 /**
  * Computes the id of the faculty button for the faculty being edited
@@ -97,20 +98,22 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
 
   return (
     <>
-      <div className="create-faculty-button">
-        <Button
-          id="createFaculty"
-          onClick={
-            (): void => {
-              setCurrentFaculty(null);
-              setFacultyModalVisible(true);
+      <VerticalSpace>
+        <div className="create-faculty-button">
+          <Button
+            id="createFaculty"
+            onClick={
+              (): void => {
+                setCurrentFaculty(null);
+                setFacultyModalVisible(true);
+              }
             }
-          }
-          variant={VARIANT.INFO}
-        >
-          Create New Faculty
-        </Button>
-      </div>
+            variant={VARIANT.INFO}
+          >
+            Create New Faculty
+          </Button>
+        </div>
+      </VerticalSpace>
       <div className="faculty-admin-table">
         <Table>
           <TableHead>
