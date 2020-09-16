@@ -16,7 +16,7 @@ import { SemesterView } from 'server/semester/SemesterView.entity';
   expression: (connection: Connection):
   SelectQueryBuilder<Course> => connection.createQueryBuilder()
     .select('c.id', 'id')
-    .addSelect('c.prefix', 'catalogprefix')
+    .addSelect('c.prefix', 'catalogPrefix')
     .addSelect('c.number', 'catalogNumber')
     //.addSelect("CONCAT_WS(' ', c.prefix, c.number)", 'catalogNumber')
     .addSelect('c.title', 'title')
@@ -37,6 +37,14 @@ export class MultiYearPlanView {
    */
   @ViewColumn()
   public catalogNumber: string;
+
+    /**
+   * From [[Course]]
+   * Combines the course prefix and number, e.g. `CS 50`
+   */
+  @ViewColumn()
+  public catalogPrefix: string;
+
 
   /**
    * From [[Course]]

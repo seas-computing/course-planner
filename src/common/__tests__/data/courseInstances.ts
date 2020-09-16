@@ -237,7 +237,8 @@ export const testFourYearPlanAcademicYears = [2020, 2021, 2022, 2023];
  */
 export const testFourYearPlan: MultiYearPlanResponseDTO[] = [{
   id: '37b66373-5000-43f2-9c14-8c2426273785',
-  catalogNumber: 'AP 275',
+  catalogNumber: '275',
+  catalogPrefix: 'AP',
   title: 'Computational Design of Materials',
   semesters: [
     {
@@ -390,7 +391,8 @@ export const testFourYearPlan: MultiYearPlanResponseDTO[] = [{
 },
 {
   id: '9a07e8a3-d6d5-4e89-9d32-8ad04785b9ab',
-  catalogNumber: 'ES 115',
+  catalogNumber: '115',
+  catalogPrefix: 'ES',
   title: 'Mathematical Modeling',
   semesters: [
     {
@@ -560,7 +562,8 @@ export const testFourYearPlan: MultiYearPlanResponseDTO[] = [{
 },
 {
   id: 'b7dfe6fa-668a-4b89-912a-520c8aac8e6a',
-  catalogNumber: 'CS 223',
+  catalogNumber: '223',
+  catalogPrefix: 'CS',
   title: 'Probabilistic Analysis and Algorithms',
   semesters: [
     {
@@ -751,7 +754,8 @@ export const testThreeYearPlanAcademicYears = [2020, 2021, 2022];
  */
 export const testThreeYearPlan: MultiYearPlanResponseDTO[] = [{
   id: '37b66373-5000-43f2-9c14-8c2426273785',
-  catalogNumber: 'AP 275',
+  catalogNumber: '275',
+  catalogPrefix: 'AP',
   title: 'Computational Design of Materials',
   semesters: [
     {
@@ -884,7 +888,8 @@ export const testThreeYearPlan: MultiYearPlanResponseDTO[] = [{
 },
 {
   id: '9a07e8a3-d6d5-4e89-9d32-8ad04785b9ab',
-  catalogNumber: 'ES 115',
+  catalogNumber: '115',
+  catalogPrefix: 'ES',
   title: 'Mathematical Modeling',
   semesters: [
     {
@@ -1012,7 +1017,8 @@ export const testThreeYearPlan: MultiYearPlanResponseDTO[] = [{
 },
 {
   id: 'b7dfe6fa-668a-4b89-912a-520c8aac8e6a',
-  catalogNumber: 'CS 223',
+  catalogNumber: '223',
+  catalogPrefix: 'CS',
   title: 'Probabilistic Analysis and Algorithms',
   semesters: [
     {

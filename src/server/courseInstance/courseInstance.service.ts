@@ -128,7 +128,8 @@ export class CourseInstanceService {
       // the calendar year, academicYear is truly the academic year and has
       // been calculated by the SemesterView
       .where('s."academicYear" IN (:...academicYears)', { academicYears })
-      .orderBy('"catalogNumber"', 'ASC')
+      //.orderBy('"catalogNumber"', 'ASC')
+      .orderBy('"catalogPrefix"', 'ASC')
       .addOrderBy('s."academicYear"', 'ASC')
       .addOrderBy('s."termOrder"', 'ASC')
       .addOrderBy('instructors."instructorOrder"', 'ASC')
