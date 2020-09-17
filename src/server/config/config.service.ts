@@ -1,5 +1,4 @@
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
-import { RedisStoreOptions } from 'connect-redis';
 import { AUTH_MODE } from 'common/constants';
 import { Absence } from 'server/absence/absence.entity';
 import { Area } from 'server/area/area.entity';
@@ -26,6 +25,8 @@ import { NonClassParent } from 'server/nonClassParent/nonclassparent.entity';
 import { Semester } from 'server/semester/semester.entity';
 import { SemesterView } from 'server/semester/SemesterView.entity';
 import { View } from 'server/view/view.entity';
+import { NestSessionOptions } from 'nestjs-session';
+import { RedisStore } from 'connect-redis';
 
 /**
  * Parses process.env to create a clean configuration interface
@@ -100,21 +101,51 @@ class ConfigService {
   }
 
   /**
-   * Return connection parameters for the Redis Module
+   * Return the redis connection string
+   * NOTE: This is needed to properly connect to redis over TLS
    */
 
-  public get redisOptions(): RedisStoreOptions {
+  public get redisURL(): string {
     const {
       REDIS_HOST,
       REDIS_PORT,
       REDIS_PASSWORD,
-      REDIS_PREFIX,
+      NODE_ENV,
+    } = this.env;
+    const redis = new URL(`redis://${REDIS_HOST}:${REDIS_PORT}`);
+    if (NODE_ENV === 'production') {
+      redis.protocol = 'rediss:';
+    }
+    if (REDIS_PASSWORD) {
+      redis.password = REDIS_PASSWORD;
+    }
+    return redis.toString();
+  }
+
+  /**
+   * Return the configuration for the session module
+   */
+
+  public getSessionSettings(store: RedisStore): NestSessionOptions {
+    const {
+      SESSION_SECRET,
+      COOKIE_DOMAIN,
     } = this.env;
     return {
-      host: REDIS_HOST,
-      port: parseInt(REDIS_PORT),
-      pass: REDIS_PASSWORD,
-      prefix: REDIS_PREFIX + '_',
+      session: {
+        store,
+        secret: SESSION_SECRET,
+        resave: false,
+        saveUninitialized: false,
+        unset: 'destroy',
+        cookie: {
+          // 12 hours
+          maxAge: 1000 * 60 * 60 * 12,
+          domain: COOKIE_DOMAIN,
+          sameSite: 'none',
+          secure: true,
+        },
+      },
     };
   }
 

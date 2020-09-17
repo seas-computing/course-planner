@@ -1,9 +1,11 @@
 import { strictEqual } from 'assert';
 import { int, safeString } from 'testData';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
-import { RedisStoreOptions } from 'connect-redis';
 import { AUTH_MODE } from 'common/constants';
 import FakeTimers from '@sinonjs/fake-timers';
+import { NestSessionOptions } from 'nestjs-session';
+import { RedisStore } from 'connect-redis';
+import { SessionOptions } from 'express-session';
 import { ConfigService } from '../config.service';
 
 /**
@@ -123,38 +125,152 @@ describe('Configuration Service', function () {
     });
   });
 
-  describe('redis options', function () {
+  describe('redis URL', function () {
     const REDIS_HOST = 'hostname';
     const REDIS_PORT = int.toString();
     const REDIS_PASSWORD = 'password';
     const REDIS_PREFIX = safeString;
 
-    let redisOptions: RedisStoreOptions;
+    let redisURL: URL;
+    context('In Production', function () {
+      context('With a Password', function () {
+        beforeEach(function () {
+          const config = new ConfigService({
+            REDIS_HOST,
+            REDIS_PORT,
+            REDIS_PASSWORD,
+            REDIS_PREFIX,
+            NODE_ENV: 'production',
+          });
+          redisURL = new URL(config.redisURL);
+        });
 
+        it('provides the redis hostname', function () {
+          strictEqual(redisURL.hostname, REDIS_HOST);
+        });
+
+        it('provides the redis port', function () {
+          strictEqual(redisURL.port.toString(), REDIS_PORT);
+        });
+
+        it('provides the redis password', function () {
+          strictEqual(redisURL.password, REDIS_PASSWORD);
+        });
+
+        it('Sets the protocol to "rediss:"', function () {
+          strictEqual(redisURL.protocol, 'rediss:');
+        });
+      });
+      context('Without a Password', function () {
+        beforeEach(function () {
+          const config = new ConfigService({
+            REDIS_HOST,
+            REDIS_PORT,
+            REDIS_PREFIX,
+            NODE_ENV: 'production',
+          });
+          redisURL = new URL(config.redisURL);
+        });
+
+        it('provides the redis hostname', function () {
+          strictEqual(redisURL.hostname, REDIS_HOST);
+        });
+
+        it('provides the redis port', function () {
+          strictEqual(redisURL.port.toString(), REDIS_PORT);
+        });
+
+        it('does not provide a redis password', function () {
+          strictEqual(redisURL.password, '');
+        });
+
+        it('Sets the protocol to "rediss:"', function () {
+          strictEqual(redisURL.protocol, 'rediss:');
+        });
+      });
+    });
+    context('In Development', function () {
+      context('With a Password', function () {
+        beforeEach(function () {
+          const config = new ConfigService({
+            REDIS_HOST,
+            REDIS_PORT,
+            REDIS_PASSWORD,
+            REDIS_PREFIX,
+            NODE_ENV: 'development',
+          });
+          redisURL = new URL(config.redisURL);
+        });
+
+        it('provides the redis hostname', function () {
+          strictEqual(redisURL.hostname, REDIS_HOST);
+        });
+
+        it('provides the redis port', function () {
+          strictEqual(redisURL.port.toString(), REDIS_PORT);
+        });
+
+        it('provides the redis password', function () {
+          strictEqual(redisURL.password, REDIS_PASSWORD);
+        });
+
+        it('Sets the protocol to "redis:"', function () {
+          strictEqual(redisURL.protocol, 'redis:');
+        });
+      });
+      context('Without a Password', function () {
+        beforeEach(function () {
+          const config = new ConfigService({
+            REDIS_HOST,
+            REDIS_PORT,
+            REDIS_PREFIX,
+            NODE_ENV: 'development',
+          });
+          redisURL = new URL(config.redisURL);
+        });
+
+        it('provides the redis hostname', function () {
+          strictEqual(redisURL.hostname, REDIS_HOST);
+        });
+
+        it('provides the redis port', function () {
+          strictEqual(redisURL.port.toString(), REDIS_PORT);
+        });
+
+        it('does not provide a redis password', function () {
+          strictEqual(redisURL.password, '');
+        });
+
+        it('Sets the protocol to "redis:"', function () {
+          strictEqual(redisURL.protocol, 'redis:');
+        });
+      });
+    });
+  });
+  describe('Session Settings', function () {
+    const COOKIE_DOMAIN = 'seas.harvard.edu';
+    const SESSION_SECRET = safeString;
+    let sessionSettings: SessionOptions;
+    let testStore: RedisStore;
     beforeEach(function () {
       const config = new ConfigService({
-        REDIS_HOST,
-        REDIS_PORT,
-        REDIS_PASSWORD,
-        REDIS_PREFIX,
+        COOKIE_DOMAIN,
+        SESSION_SECRET,
       });
-      ({ redisOptions } = config);
+      testStore = {} as RedisStore;
+      ({ session: sessionSettings } = config.getSessionSettings(testStore));
     });
-
-    it('provides the redis hostname', function () {
-      strictEqual(redisOptions.host, REDIS_HOST);
+    it('Should return the store parameter as "store"', function () {
+      strictEqual(sessionSettings.store, testStore);
     });
-
-    it('provides the redis port', function () {
-      strictEqual(redisOptions.port.toString(), REDIS_PORT);
+    it('Should provide the session secret', function () {
+      strictEqual(sessionSettings.secret, SESSION_SECRET);
     });
-
-    it('provides the redis password', function () {
-      strictEqual(redisOptions.pass, REDIS_PASSWORD);
+    it('Should provide the cookie domain', function () {
+      strictEqual(sessionSettings.cookie.domain, COOKIE_DOMAIN);
     });
-
-    it('provides the redis prefix', function () {
-      strictEqual(redisOptions.prefix, REDIS_PREFIX + '_');
+    it('Should provide a cookie maxAge of 12 hours', function () {
+      strictEqual(sessionSettings.cookie.maxAge, 1000 * 60 * 60 * 12);
     });
   });
   describe('Authentication Mode', function () {

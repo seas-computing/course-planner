@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import session from 'express-session';
 import ConnectRedis from 'connect-redis';
+import redis from 'redis';
 import { HarvardKeyStrategy } from 'server/auth/harvardkey.strategy';
 import { DevStrategy } from 'server/auth/dev.strategy';
 import { SessionModule, NestSessionOptions } from 'nestjs-session';
@@ -35,25 +36,14 @@ import { UserController } from './user/user.controller';
       useFactory: (
         config: ConfigService
       ): NestSessionOptions => {
+        const client = redis.createClient(config.redisURL);
         const RedisStore = ConnectRedis(session);
         const store = new RedisStore({
-          ...config.redisOptions,
+          client,
+          prefix: config.get('REDIS_PREFIX'),
           logErrors: config.isDevelopment,
         });
-        return {
-          session: {
-            secret: config.get('SESSION_SECRET'),
-            cookie: {
-              maxAge: 1000 * 60 * 60 * 24 * 7,
-              domain: config.get('COOKIE_DOMAIN'),
-              secure: config.isProduction,
-            },
-            store,
-            resave: false,
-            saveUninitialized: false,
-            unset: 'destroy',
-          },
-        };
+        return config.getSessionSettings(store);
       },
     }),
     AuthModule.register({
