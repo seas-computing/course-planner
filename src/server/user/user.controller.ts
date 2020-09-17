@@ -3,6 +3,7 @@ import {
   Get,
   UnauthorizedException,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { Request } from 'express';
 import {
@@ -11,6 +12,7 @@ import {
   ApiUseTags,
 } from '@nestjs/swagger';
 import { UserResponse } from 'common/dto/users/userResponse.dto';
+import { Authentication } from '../auth/authentication.guard';
 
 @ApiUseTags('User')
 @Controller('api/users')
@@ -29,6 +31,7 @@ export class UserController {
     description: 'Details about the currently logged-in user',
     isArray: false,
   })
+  @UseGuards(Authentication)
   public getCurrentUser(
     @Req() req: Request
   ): UserResponse | Record<string, unknown> {
