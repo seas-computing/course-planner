@@ -126,52 +126,6 @@ describe('Faculty Admin', function () {
         const newAreaStyle = window.getComputedStyle(getByText('NA'));
         strictEqual(newAreaStyle.backgroundColor, '');
       });
-      context('when the create faculty button has been clicked and the modal is up', function () {
-        context('when the modal is closed', function () {
-          it('returns focus to the create faculty button', async function () {
-            const { findByText, queryByText } = render(
-              <FacultyAdmin />,
-              dispatchMessage,
-              metadata
-            );
-            // show the create faculty modal
-            const createFacultyButton = await findByText('Create New Faculty', { exact: false });
-            fireEvent.click(createFacultyButton);
-            await findByText('required field', { exact: false });
-            const cancelButton = await findByText('Cancel', { exact: false });
-            // close the modal
-            fireEvent.click(cancelButton);
-            await wait(() => !queryByText('required field', { exact: false }));
-            strictEqual(
-              document.activeElement as HTMLElement,
-              createFacultyButton
-            );
-          });
-        });
-      });
-      context('when an edit faculty button has been clicked and the modal is up', function () {
-        context('when the modal is closed', function () {
-          it('returns focus to the original edit faculty button', async function () {
-            const { findByText, queryByText } = render(
-              <FacultyAdmin />,
-              dispatchMessage,
-              metadata
-            );
-            // show the edit faculty modal
-            const editPhysicsFacultyButton = await waitForElement(() => document.getElementById('editFaculty' + physicsFacultyMemberResponse.id));
-            fireEvent.click(editPhysicsFacultyButton);
-            await findByText('required field', { exact: false });
-            const cancelButton = await findByText('Cancel', { exact: false });
-            // close the modal
-            fireEvent.click(cancelButton);
-            await wait(() => !queryByText('required field', { exact: false }));
-            strictEqual(
-              document.activeElement as HTMLElement,
-              editPhysicsFacultyButton
-            );
-          });
-        });
-      });
     });
     context('when there are no faculty records', function () {
       const emptyTestData = [];
