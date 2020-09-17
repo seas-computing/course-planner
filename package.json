@@ -17,7 +17,6 @@
     "@nestjs/platform-express": "^6.3.1",
     "@nestjs/swagger": "^3.1.0",
     "@nestjs/typeorm": "^6.1.2",
-    "@seas-computing/passport-harvardkey": "0.0.1-develop.2",
     "@sinonjs/fake-timers": "^6.0.1",
     "axios": "^0.19.0",
     "class-serializer": "0.0.1",

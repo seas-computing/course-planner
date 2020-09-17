@@ -1,28 +1,22 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { stub } from 'sinon';
-import { regularUser } from 'testData';
-import { strictEqual, throws } from 'assert';
+import * as dummy from 'testData';
+import { throws, deepStrictEqual } from 'assert';
 import { UnauthorizedException } from '@nestjs/common';
-import { HarvardKeyProfile } from '@seas-computing/passport-harvardkey';
 import { Request } from 'express';
 import { HarvardKeyStrategy } from '../harvardkey.strategy';
 import { ConfigService } from '../../config/config.service';
 
-describe('HarvardKey Strategy', function () {
+describe('HarvardKeyStrategy', function () {
+  let hkey: HarvardKeyStrategy;
+
   const config = {
     isProduction: null,
     get: stub(),
   };
 
-  afterEach(function () {
-    config.get.resetHistory();
-  });
-
-  it('re-maps harvard key user info to a user object', async function () {
-    config.isProduction = true;
-    config.get.withArgs('CAS_URL').returns('https://cas-example.com/cas');
-    config.get.withArgs('SERVER_URL').returns('https://server-example.com');
-    const module: TestingModule = await Test.createTestingModule({
+  beforeEach(async function () {
+    const moduleRef: TestingModule = await Test.createTestingModule({
       providers: [
         {
           provide: ConfigService,
@@ -30,53 +24,31 @@ describe('HarvardKey Strategy', function () {
         },
         HarvardKeyStrategy,
       ],
-    }).compile();
+    })
+      .compile();
 
-    const hkey = module.get<HarvardKeyStrategy>(HarvardKeyStrategy);
-
-    const {
-      eppn,
-      lastName,
-      firstName,
-    } = regularUser;
-
-    const user = hkey.validate(
-      {
-        eppn,
-        givenName: firstName,
-        sn: lastName,
-        displayName: `${lastName}, ${firstName}`,
-      } as HarvardKeyProfile,
-      {
-        session: {},
-      } as Request
-    );
-
-    strictEqual(user.eppn, eppn);
-    strictEqual(user.firstName, firstName);
-    strictEqual(user.lastName, lastName);
+    hkey = moduleRef.get<HarvardKeyStrategy>(HarvardKeyStrategy);
   });
-  it('rejects failed auth attempts with an exception', async function () {
-    config.isProduction = true;
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        {
-          provide: ConfigService,
-          useValue: config,
-        },
-        HarvardKeyStrategy,
-      ],
-    }).compile();
 
-    const hkey = module.get<HarvardKeyStrategy>(HarvardKeyStrategy);
-
-    throws(() => {
-      hkey.validate(
-        null,
-        {
-          session: {},
-        } as Request
-      );
-    }, UnauthorizedException);
+  context('When there is a user saved in session', function () {
+    it('returns the user', function () {
+      const testSession = {
+        user: dummy.regularUser,
+      } as unknown as Express.Session;
+      const result = hkey.validate({
+        session: testSession,
+      } as Request);
+      deepStrictEqual(result, dummy.regularUser);
+    });
+  });
+  context('When there is no user in session', function () {
+    it('throws an UnauthorizedException', function () {
+      const testSession = {} as Express.Session;
+      throws((): void => {
+        hkey.validate({
+          session: testSession,
+        } as Request);
+      }, UnauthorizedException);
+    });
   });
 });
