@@ -78,13 +78,34 @@ describe('Faculty Modal', function () {
           const facultyCategorySelect = getByLabelText('Category', { exact: false }) as HTMLSelectElement;
           const jointWithInput = getByLabelText('Joint with', { exact: false }) as HTMLInputElement;
           const notesInput = getByLabelText('Notes', { exact: false }) as HTMLInputElement;
-          strictEqual(courseAreaSelect.value, appliedMathFacultyMemberResponse.area.name);
-          strictEqual(huidInput.value, appliedMathFacultyMemberResponse.HUID);
-          strictEqual(firstNameInput.value, appliedMathFacultyMemberResponse.firstName);
-          strictEqual(lastNameInput.value, appliedMathFacultyMemberResponse.lastName);
-          strictEqual(facultyCategorySelect.value, appliedMathFacultyMemberResponse.category);
-          strictEqual(jointWithInput.value, appliedMathFacultyMemberResponse.jointWith);
-          strictEqual(notesInput.value, appliedMathFacultyMemberResponse.notes);
+          strictEqual(
+            courseAreaSelect.value,
+            appliedMathFacultyMemberResponse.area.name
+          );
+          strictEqual(
+            huidInput.value,
+            appliedMathFacultyMemberResponse.HUID
+          );
+          strictEqual(
+            firstNameInput.value,
+            appliedMathFacultyMemberResponse.firstName
+          );
+          strictEqual(
+            lastNameInput.value,
+            appliedMathFacultyMemberResponse.lastName
+          );
+          strictEqual(
+            facultyCategorySelect.value,
+            appliedMathFacultyMemberResponse.category
+          );
+          strictEqual(
+            jointWithInput.value,
+            appliedMathFacultyMemberResponse.jointWith
+          );
+          strictEqual(
+            notesInput.value,
+            appliedMathFacultyMemberResponse.notes
+          );
         });
         it('renders no error messages prior to initial form submission', function () {
           strictEqual(queryAllByRole('alert').length, 0);
