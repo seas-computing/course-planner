@@ -234,6 +234,7 @@ describe('Faculty Modal', function () {
             putStub = stub(request, 'put');
             putStub.resolves({ data: appliedMathFacultyMemberResponse });
             onSuccessStub = stub();
+            onCloseStub = stub();
             ({ getByLabelText, getByText } = render(
               <FacultyModal
                 isVisible
@@ -250,11 +251,6 @@ describe('Faculty Modal', function () {
             fireEvent.click(submitButton);
             await wait(() => strictEqual(onSuccessStub.callCount, 1));
           });
-          it('calls the onClose handler once', async function () {
-            const submitButton = getByText('Submit');
-            fireEvent.click(submitButton);
-            await wait(() => strictEqual(onCloseStub.callCount, 1));
-          });
           it('calls the onSuccess handler with the provided arguments', async function () {
             const submitButton = getByText('Submit');
             fireEvent.click(submitButton);
@@ -263,11 +259,17 @@ describe('Faculty Modal', function () {
               appliedMathFacultyMemberResponse
             ));
           });
+          it('calls the onClose handler once', async function () {
+            const submitButton = getByText('Submit');
+            fireEvent.click(submitButton);
+            await wait(() => strictEqual(onCloseStub.callCount, 1));
+          });
         });
         context('when required form fields are not provided', function () {
           beforeEach(function () {
             putStub = stub(request, 'put');
             onSuccessStub = stub();
+            onCloseStub = stub();
             ({ getByLabelText, getByText } = render(
               <FacultyModal
                 isVisible
