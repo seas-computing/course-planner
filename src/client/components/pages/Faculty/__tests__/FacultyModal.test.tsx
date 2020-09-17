@@ -28,6 +28,7 @@ describe('Faculty Modal', function () {
     let getByLabelText: BoundFunction<GetByText>;
     const dispatchMessage: SinonStub = stub();
     let onSuccessStub: SinonStub;
+    let onCloseStub: SinonStub;
     let putStub: SinonStub;
     let postStub: SinonStub;
     describe('On Open Behavior', function () {
@@ -238,6 +239,7 @@ describe('Faculty Modal', function () {
                 isVisible
                 currentFaculty={appliedMathFacultyMemberResponse}
                 onSuccess={onSuccessStub}
+                onClose={onCloseStub}
               />,
               dispatchMessage,
               metadata
@@ -247,6 +249,11 @@ describe('Faculty Modal', function () {
             const submitButton = getByText('Submit');
             fireEvent.click(submitButton);
             await wait(() => strictEqual(onSuccessStub.callCount, 1));
+          });
+          it('calls the onClose handler once', async function () {
+            const submitButton = getByText('Submit');
+            fireEvent.click(submitButton);
+            await wait(() => strictEqual(onCloseStub.callCount, 1));
           });
           it('calls the onSuccess handler with the provided arguments', async function () {
             const submitButton = getByText('Submit');
@@ -269,6 +276,7 @@ describe('Faculty Modal', function () {
                   HUID: '',
                 }}
                 onSuccess={onSuccessStub}
+                onClose={onCloseStub}
               />,
               dispatchMessage,
               metadata
@@ -278,6 +286,11 @@ describe('Faculty Modal', function () {
             const submitButton = getByText('Submit');
             fireEvent.click(submitButton);
             await wait(() => strictEqual(onSuccessStub.callCount, 0));
+          });
+          it('does not call the onClose handler on submit', async function () {
+            const submitButton = getByText('Submit');
+            fireEvent.click(submitButton);
+            await wait(() => strictEqual(onCloseStub.callCount, 0));
           });
         });
       });
