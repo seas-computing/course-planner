@@ -6,7 +6,7 @@ import {
   computerScienceCourseResponse,
   physicsCourseResponse,
   error,
-} from 'common/data';
+} from 'testData';
 import { CourseAPI } from 'client/api';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import {

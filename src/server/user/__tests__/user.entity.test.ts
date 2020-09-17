@@ -1,5 +1,5 @@
 import { strictEqual, deepStrictEqual } from 'assert';
-import { regularUser } from 'common/data';
+import { regularUser } from 'testData';
 import { GROUP } from 'common/constants';
 import { User } from '../user.entity';
 

@@ -5,7 +5,6 @@ import {
 import {
   waitForElement,
   wait,
-  fireEvent,
 } from '@testing-library/react';
 import {
   stub,
@@ -17,9 +16,9 @@ import {
   bioengineeringFacultyMemberResponse,
   newAreaFacultyMemberResponse,
   error,
-} from 'common/data';
+  metadata,
+} from 'testData';
 import { render } from 'test-utils';
-import { metadata } from 'common/data/metadata';
 import FacultyAdmin from '../FacultyAdmin';
 
 describe('Faculty Admin', function () {

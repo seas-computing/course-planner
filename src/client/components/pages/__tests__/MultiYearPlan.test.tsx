@@ -2,10 +2,9 @@ import React from 'react';
 import { strictEqual } from 'assert';
 import { wait } from '@testing-library/react';
 import { stub, SinonStub } from 'sinon';
-import { testFourYearPlan, error } from 'common/data';
 import { render } from 'test-utils';
 import { MultiYearPlanAPI } from 'client/api/multiYearPlan';
-import { metadata } from 'common/data/metadata';
+import { testFourYearPlan, error, metadata } from 'testData';
 import MultiYearPlan from '../MultiYearPlan';
 
 describe('MultiYearPlan', function () {

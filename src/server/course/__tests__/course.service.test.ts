@@ -11,7 +11,7 @@ import {
   spring,
   fall,
   computerScienceCourse,
-} from 'common/data';
+} from 'testData';
 import { Area } from 'server/area/area.entity';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { CourseService } from '../course.service';

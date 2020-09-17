@@ -17,7 +17,7 @@ import {
   newAreaCourseResponse,
   error,
   metadata,
-} from 'common/data';
+} from 'testData';
 import { render } from 'test-utils';
 import CourseAdmin from '../CourseAdmin';
 

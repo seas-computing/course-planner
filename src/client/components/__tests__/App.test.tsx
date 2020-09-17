@@ -6,10 +6,10 @@ import {
   render,
 } from '@testing-library/react';
 import { render as customRender } from 'test-utils';
-import { metadata } from 'common/data/metadata';
+import { metadata } from 'testData';
 import { stub, SinonStub } from 'sinon';
 import { MetadataAPI } from 'client/api/metadata';
-import * as dummy from 'common/data';
+import * as dummy from 'testData';
 import { UserAPI } from 'client/api';
 import { MemoryRouter } from 'react-router-dom';
 import { ColdApp as App } from '../App';

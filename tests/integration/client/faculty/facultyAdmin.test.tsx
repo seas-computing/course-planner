@@ -16,9 +16,9 @@ import {
   physicsFacultyMemberResponse,
   bioengineeringFacultyMemberResponse,
   newAreaFacultyMemberResponse,
-} from 'common/data';
+  metadata,
+} from 'testData';
 import { render } from 'test-utils';
-import { metadata } from 'common/data/metadata';
 import FacultyAdmin from 'client/components/pages/FacultyAdmin';
 
 describe('Faculty Admin Modal Behavior', function () {

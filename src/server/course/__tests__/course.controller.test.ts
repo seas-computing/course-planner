@@ -10,7 +10,7 @@ import {
   updateCourseExample,
   safeString,
   error,
-} from 'common/data';
+} from 'testData';
 import { Authentication } from 'server/auth/authentication.guard';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { Area } from 'server/area/area.entity';

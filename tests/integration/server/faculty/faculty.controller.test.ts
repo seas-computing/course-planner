@@ -39,7 +39,7 @@ import {
   appliedMathFacultyMember,
   appliedMathFacultyMemberResponse,
   newAreaFacultyMemberRequest,
-} from 'common/data';
+} from 'testData';
 import { SessionModule } from 'nestjs-session';
 import { FacultyService } from 'server/faculty/faculty.service';
 import { FacultyScheduleCourseView } from 'server/faculty/FacultyScheduleCourseView.entity';

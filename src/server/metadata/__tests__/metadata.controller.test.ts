@@ -5,7 +5,7 @@ import { AreaService } from 'server/area/area.service';
 import { ConfigService } from 'server/config/config.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Authentication } from 'server/auth/authentication.guard';
-import { rawAreaList, rawSemesterList } from 'common/data';
+import { rawAreaList, rawSemesterList } from 'testData';
 import { strictEqual } from 'assert';
 import { Area } from 'server/area/area.entity';
 import { Semester } from 'server/semester/semester.entity';

@@ -15,7 +15,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import {
   rawYearList,
   rawSemesterList,
-} from 'common/data';
+} from 'testData';
 import { SemesterService } from '../semester.service';
 
 describe('Semester Service', function () {

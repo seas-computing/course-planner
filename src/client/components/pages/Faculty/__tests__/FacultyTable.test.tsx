@@ -3,13 +3,14 @@ import {
   appliedMathFacultyScheduleResponse,
   electricalEngineeringFacultyScheduleResponse,
   newAreaFacultyScheduleResponse,
-} from 'common/data/faculty';
+  error,
+} from 'testData';
 import {
   render,
   BoundFunction,
   AllByRole,
   getRoles,
-} from 'common/utils';
+} from 'test-utils';
 import { strictEqual } from 'assert';
 import {
   waitForElement,
@@ -22,7 +23,6 @@ import {
   stub,
 } from 'sinon';
 import request from 'axios';
-import { error } from 'common/data';
 import {
   absenceEnumToTitleCase,
   facultyTypeEnumToTitleCase,
