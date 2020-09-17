@@ -17,9 +17,8 @@ import {
 } from 'sinon';
 import { render } from 'test-utils';
 import { metadata } from 'common/data/metadata';
-import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
-import { FACULTY_TYPE } from 'common/constants';
 import request from 'client/api/request';
+import { appliedMathFacultyMemberResponse } from 'testData';
 import FacultyModal from '../../FacultyModal';
 
 describe('Faculty Modal', function () {
@@ -31,19 +30,6 @@ describe('Faculty Modal', function () {
     let onSuccessStub: SinonStub;
     let putStub: SinonStub;
     let postStub: SinonStub;
-    const facultyInfo: ManageFacultyResponseDTO = {
-      id: '5c8e015f-eae6-4586-9eb0-fc7d243403bf',
-      area: {
-        id: '464e1579-70e4-43e9-afa0-4d94392b6d9d',
-        name: 'AM',
-      },
-      HUID: '12345678',
-      lastName: 'Townson',
-      firstName: 'Olive',
-      category: FACULTY_TYPE.LADDER,
-      jointWith: 'CS 350',
-      notes: 'Prefers Allston campus',
-    };
     describe('On Open Behavior', function () {
       context('when currentFaculty is null', function () {
         beforeEach(function () {
@@ -78,7 +64,7 @@ describe('Faculty Modal', function () {
           ({ getByLabelText, queryAllByRole } = render(
             <FacultyModal
               isVisible
-              currentFaculty={facultyInfo}
+              currentFaculty={appliedMathFacultyMemberResponse}
             />,
             dispatchMessage,
             metadata
@@ -92,13 +78,13 @@ describe('Faculty Modal', function () {
           const facultyCategorySelect = getByLabelText('Category', { exact: false }) as HTMLSelectElement;
           const jointWithInput = getByLabelText('Joint with', { exact: false }) as HTMLInputElement;
           const notesInput = getByLabelText('Notes', { exact: false }) as HTMLInputElement;
-          strictEqual(courseAreaSelect.value, facultyInfo.area.name);
-          strictEqual(huidInput.value, facultyInfo.HUID);
-          strictEqual(firstNameInput.value, facultyInfo.firstName);
-          strictEqual(lastNameInput.value, facultyInfo.lastName);
-          strictEqual(facultyCategorySelect.value, facultyInfo.category);
-          strictEqual(jointWithInput.value, facultyInfo.jointWith);
-          strictEqual(notesInput.value, facultyInfo.notes);
+          strictEqual(courseAreaSelect.value, appliedMathFacultyMemberResponse.area.name);
+          strictEqual(huidInput.value, appliedMathFacultyMemberResponse.HUID);
+          strictEqual(firstNameInput.value, appliedMathFacultyMemberResponse.firstName);
+          strictEqual(lastNameInput.value, appliedMathFacultyMemberResponse.lastName);
+          strictEqual(facultyCategorySelect.value, appliedMathFacultyMemberResponse.category);
+          strictEqual(jointWithInput.value, appliedMathFacultyMemberResponse.jointWith);
+          strictEqual(notesInput.value, appliedMathFacultyMemberResponse.notes);
         });
         it('renders no error messages prior to initial form submission', function () {
           strictEqual(queryAllByRole('alert').length, 0);
@@ -110,7 +96,7 @@ describe('Faculty Modal', function () {
         ({ getByLabelText, queryAllByRole, getByText } = render(
           <FacultyModal
             isVisible
-            currentFaculty={facultyInfo}
+            currentFaculty={appliedMathFacultyMemberResponse}
           />,
           dispatchMessage,
           metadata
@@ -224,12 +210,12 @@ describe('Faculty Modal', function () {
         context('when required form fields are provided', function () {
           beforeEach(function () {
             putStub = stub(request, 'put');
-            putStub.resolves({ data: facultyInfo });
+            putStub.resolves({ data: appliedMathFacultyMemberResponse });
             onSuccessStub = stub();
             ({ getByLabelText, getByText } = render(
               <FacultyModal
                 isVisible
-                currentFaculty={facultyInfo}
+                currentFaculty={appliedMathFacultyMemberResponse}
                 onSuccess={onSuccessStub}
               />,
               dispatchMessage,
@@ -246,7 +232,7 @@ describe('Faculty Modal', function () {
             fireEvent.click(submitButton);
             await wait(() => strictEqual(
               onSuccessStub.args[0][0],
-              facultyInfo
+              appliedMathFacultyMemberResponse
             ));
           });
         });
@@ -258,7 +244,7 @@ describe('Faculty Modal', function () {
               <FacultyModal
                 isVisible
                 currentFaculty={{
-                  ...facultyInfo,
+                  ...appliedMathFacultyMemberResponse,
                   HUID: '',
                 }}
                 onSuccess={onSuccessStub}
@@ -278,7 +264,7 @@ describe('Faculty Modal', function () {
         context('when required form fields are provided', function () {
           beforeEach(function () {
             postStub = stub(request, 'post');
-            postStub.resolves({ data: facultyInfo });
+            postStub.resolves({ data: appliedMathFacultyMemberResponse });
             onSuccessStub = stub();
             ({ getByLabelText, getByText } = render(
               <FacultyModal
@@ -291,22 +277,22 @@ describe('Faculty Modal', function () {
             const courseAreaSelect = getByLabelText('Area', { exact: false }) as HTMLSelectElement;
             fireEvent.change(
               courseAreaSelect,
-              { target: { value: facultyInfo.area.name } }
+              { target: { value: appliedMathFacultyMemberResponse.area.name } }
             );
             const huidInput = getByLabelText('HUID', { exact: false }) as HTMLInputElement;
             fireEvent.change(
               huidInput,
-              { target: { value: facultyInfo.HUID } }
+              { target: { value: appliedMathFacultyMemberResponse.HUID } }
             );
             const lastNameInput = getByLabelText('Last name', { exact: false }) as HTMLInputElement;
             fireEvent.change(
               lastNameInput,
-              { target: { value: facultyInfo.lastName } }
+              { target: { value: appliedMathFacultyMemberResponse.lastName } }
             );
             const facultyCategorySelect = getByLabelText('Category', { exact: false }) as HTMLSelectElement;
             fireEvent.change(
               facultyCategorySelect,
-              { target: { value: facultyInfo.category } }
+              { target: { value: appliedMathFacultyMemberResponse.category } }
             );
             const submitButton = getByText('Submit');
             fireEvent.click(submitButton);
@@ -317,14 +303,14 @@ describe('Faculty Modal', function () {
           it('calls the onSuccess handler with the provided arguments', async function () {
             await wait(() => strictEqual(
               onSuccessStub.args[0][0],
-              facultyInfo
+              appliedMathFacultyMemberResponse
             ));
           });
         });
         context('when required form fields are not provided', function () {
           beforeEach(function () {
             postStub = stub(request, 'post');
-            postStub.resolves({ data: facultyInfo });
+            postStub.resolves({ data: appliedMathFacultyMemberResponse });
             onSuccessStub = stub();
             ({ getByLabelText, getByText } = render(
               <FacultyModal
