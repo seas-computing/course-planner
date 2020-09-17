@@ -2,8 +2,8 @@ import React from 'react';
 import { strictEqual, deepStrictEqual, notStrictEqual } from 'assert';
 import {
   render, BoundFunction, AllByRole, getRoles,
-} from 'test-utils';
-import { cs50CourseInstance, es095CourseInstance } from 'testData';
+} from 'common/utils';
+import { cs50CourseInstance, es095CourseInstance } from 'common/data';
 import { COURSE_TABLE_COLUMN } from 'common/constants';
 import CourseInstanceTable from '../CourseInstanceTable';
 import { tableFields } from '../tableFields';

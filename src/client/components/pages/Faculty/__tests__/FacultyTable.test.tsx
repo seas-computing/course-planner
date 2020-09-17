@@ -3,13 +3,13 @@ import {
   appliedMathFacultyScheduleResponse,
   electricalEngineeringFacultyScheduleResponse,
   newAreaFacultyScheduleResponse,
-} from 'common/__tests__/data/faculty';
+} from 'common/data/faculty';
 import {
   render,
   BoundFunction,
   AllByRole,
   getRoles,
-} from 'test-utils';
+} from 'common/utils';
 import { strictEqual } from 'assert';
 import {
   waitForElement,
@@ -22,12 +22,13 @@ import {
   stub,
 } from 'sinon';
 import request from 'axios';
-import { error } from 'testData';
-import FacultyScheduleTable, {
-  categoryEnumToTitleCase,
+import { error } from 'common/data';
+import {
   absenceEnumToTitleCase,
-} from '../FacultyScheduleTable';
+  facultyTypeEnumToTitleCase,
+} from 'common/utils/facultyHelperFunctions';
 import FacultySchedule from '../FacultyPage';
+import FacultyScheduleTable from '../FacultyScheduleTable';
 
 /**
  * Helper function used to compare table row contents with faculty schedule data
@@ -50,7 +51,7 @@ const assertRowMatchesResponse = function (
   strictEqual(area, response.area);
   strictEqual(lastName, response.lastName);
   strictEqual(firstName, response.firstName);
-  strictEqual(category, categoryEnumToTitleCase(response.category));
+  strictEqual(category, facultyTypeEnumToTitleCase(response.category));
   strictEqual(jointWith, response.jointWith);
   strictEqual(fallAbsence, absenceEnumToTitleCase(
     response.fall.absence.type

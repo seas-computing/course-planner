@@ -5,7 +5,7 @@ import {
 } from '@testing-library/react';
 import {
   render,
-} from 'test-utils';
+} from 'common/utils';
 import { VerticalSpace } from '..';
 
 describe('VerticalSpace Component', function () {

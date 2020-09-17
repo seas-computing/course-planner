@@ -2,38 +2,72 @@ import { Faculty } from 'server/faculty/faculty.entity';
 import { ABSENCE_TYPE, FACULTY_TYPE } from 'common/constants';
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
+import { CreateFacultyDTO } from 'common/dto/faculty/CreateFaculty.dto';
+import { Area } from 'server/area/area.entity';
 
 /**
  * An example [[Faculty]] entry representing an applied math faculty member
  */
-
 export const appliedMathFacultyMember = Object.assign(new Faculty(), {
   id: '01ac81d4-9644-4d6b-9daa-022b26903130',
-  area: {
-    id: 'a035245a-9237-4346-9c8a-e8532022215d',
+  area: Object.assign(new Area(), {
+    id: 'ee5d2d73-801e-44a2-8e89-45942bf2de43',
     name: 'AM',
-  },
+  }),
   firstName: 'Susan',
   lastName: 'Lee',
   HUID: '90132717',
   jointWith: 'PHYS (0.5 FTE SEAS)',
+  notes: 'Prefers Allston campus',
   category: FACULTY_TYPE.LADDER,
 });
+
+/**
+ * An example request to create an applied math faculty member
+ */
+export const appliedMathFacultyMemberRequest: CreateFacultyDTO = {
+  firstName: appliedMathFacultyMember.firstName,
+  lastName: appliedMathFacultyMember.lastName,
+  HUID: appliedMathFacultyMember.HUID,
+  jointWith: appliedMathFacultyMember.jointWith,
+  notes: appliedMathFacultyMember.notes,
+  category: appliedMathFacultyMember.category,
+  area: appliedMathFacultyMember.area.name,
+};
 
 /**
  * An example [[Faculty]] entry representing an bio engineering faculty member
  */
 export const bioengineeringFacultyMember = Object.assign(new Faculty(), {
   id: '38ae66ec-7589-4948-8e21-41d142db4d3b',
-  area: {
-    id: '29b70622-271b-4d1c-b70a-306e217758e9',
-    name: 'BE',
-  },
+  area: 'BE',
   firstName: 'Amanda',
   lastName: 'Su',
   HUID: '50602117',
   category: FACULTY_TYPE.LADDER,
 });
+
+/**
+ * An example [[CreateFacultyDTO]] representing an applied physics faculty member
+ */
+export const newAppliedPhysicsFacultyMember: CreateFacultyDTO = {
+  HUID: '41297905',
+  firstName: 'Sam',
+  lastName: 'Conwell',
+  category: FACULTY_TYPE.NON_LADDER,
+  area: 'AP',
+};
+
+/**
+ * An example [[ManageFacultyResponseDTO]] response representing an applied math
+ * faculty member
+ */
+export const appliedMathFacultyMemberResponse: ManageFacultyResponseDTO = {
+  ...appliedMathFacultyMember,
+  area: {
+    ...appliedMathFacultyMember.area,
+  },
+};
 
 /**
  * An example [[ManageFacultyResponseDTO]] response representing a physics faculty
@@ -48,6 +82,22 @@ export const physicsFacultyMemberResponse: ManageFacultyResponseDTO = {
   firstName: 'Sam',
   lastName: 'Conwell',
   HUID: '41297905',
+  category: FACULTY_TYPE.NON_LADDER,
+};
+
+/**
+ * An [[ManageFacultyResponseDTO]] response representing a physics faculty
+ * member
+ */
+export const anotherPhysicsFacultyMemberResponse: ManageFacultyResponseDTO = {
+  id: '1f31a245-e069-407c-a8f5-449245e6a18e',
+  area: {
+    id: '140bd70d-08e2-4164-ab8e-29934f315760',
+    name: 'AP',
+  },
+  firstName: 'Michelle',
+  lastName: 'Kenney',
+  HUID: '84938288',
   category: FACULTY_TYPE.NON_LADDER,
 };
 
@@ -68,6 +118,19 @@ export const bioengineeringFacultyMemberResponse: ManageFacultyResponseDTO = {
 };
 
 /**
+ * An example [[CreateFacultyDTO]] representing a faculty member in a new area
+ */
+export const newAreaFacultyMemberRequest: CreateFacultyDTO = {
+  area: 'NA',
+  firstName: 'Jessie',
+  lastName: 'Lawson',
+  HUID: '80598351',
+  category: FACULTY_TYPE.NON_SEAS_LADDER,
+  jointWith: 'AM 110',
+  notes: 'Prefers Cambridge campus',
+};
+
+/**
  * An example [[ManageFacultyResponseDTO]] response representing a faculty member
  * categorized under a new area
  */
@@ -81,6 +144,8 @@ export const newAreaFacultyMemberResponse: ManageFacultyResponseDTO = {
   lastName: 'Lawson',
   HUID: '80598351',
   category: FACULTY_TYPE.NON_SEAS_LADDER,
+  jointWith: 'AM 110',
+  notes: 'Prefers Cambridge campus',
 };
 
 /**

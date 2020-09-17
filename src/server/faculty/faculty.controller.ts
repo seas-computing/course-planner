@@ -113,19 +113,50 @@ export class FacultyController {
     description: 'An object with the newly created faculty member\'s information.',
     isArray: false,
   })
+  @ApiNotFoundResponse({
+    description: 'Not Found: The requested area entity could not be found',
+  })
   @ApiBadRequestResponse({
     description: 'Bad Request: the request is not in accordance with the createFaculty DTO',
   })
-  public create(@Body() faculty: CreateFacultyDTO):
+  public async create(@Body() facultyDto: CreateFacultyDTO):
   Promise<ManageFacultyResponseDTO> {
-    return this.facultyRepository.save({
+    let existingArea: Area;
+    try {
+      existingArea = await this.areaRepository
+        .findOneOrFail({
+          where: {
+            name: facultyDto.area,
+          },
+        });
+    } catch (e) {
+      if (e instanceof EntityNotFoundError) {
+        throw new NotFoundException('The entered Area does not exist');
+      }
+    }
+    const facultyToCreate: Faculty = Object.assign(new Faculty(), {
+      HUID: facultyDto.HUID,
+      firstName: facultyDto.firstName,
+      lastName: facultyDto.lastName,
+      category: facultyDto.category,
+      area: existingArea,
+      jointWith: facultyDto.jointWith,
+      notes: facultyDto.notes,
+    });
+    const faculty = await this.facultyRepository.save(facultyToCreate);
+    return {
+      id: faculty.id,
       HUID: faculty.HUID,
       firstName: faculty.firstName,
       lastName: faculty.lastName,
       category: faculty.category,
-      area: faculty.area,
+      area: {
+        id: faculty.area.id,
+        name: faculty.area.name,
+      },
       jointWith: faculty.jointWith,
-    });
+      notes: faculty.notes,
+    };
   }
 
   @UseGuards(new RequireGroup(GROUP.ADMIN))
@@ -144,8 +175,14 @@ export class FacultyController {
   })
   public async update(@Param('id') id: string, @Body() faculty: UpdateFacultyDTO):
   Promise<ManageFacultyResponseDTO> {
+    let existingArea: Area;
     try {
-      await this.areaRepository.findOneOrFail(faculty.area);
+      existingArea = await this.areaRepository
+        .findOneOrFail({
+          where: {
+            name: faculty.area,
+          },
+        });
     } catch (e) {
       if (e instanceof EntityNotFoundError) {
         throw new NotFoundException('The entered Area does not exist');
@@ -160,7 +197,6 @@ export class FacultyController {
       }
       throw e;
     }
-    const existingArea = await this.areaRepository.findOneOrFail(faculty.area);
     const validFaculty = {
       ...faculty,
       area: existingArea,

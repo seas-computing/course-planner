@@ -37,6 +37,16 @@ export class Faculty extends BaseEntity {
   })
   public jointWith: string;
 
+  /**
+   * Notes specific to the faculty member outlining preferences and additional information
+   */
+  @Column({
+    type: 'varchar',
+    comment: 'Notes specific to the faculty member outlining preferences and additional information',
+    nullable: true,
+  })
+  public notes: string;
+
   @Column({
     type: 'enum',
     enum: Object.values(FACULTY_TYPE),

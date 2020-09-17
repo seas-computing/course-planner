@@ -8,7 +8,7 @@ import React, {
 import { LoadSpinner } from 'mark-one';
 import { MessageContext } from 'client/context';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
-import { getCourseInstancesForYear } from 'client/api';
+import { CourseAPI } from 'client/api';
 import { MESSAGE_TYPE, MESSAGE_ACTION, AppMessage } from 'client/classes';
 import { OFFERED, COURSE_TABLE_COLUMN } from 'common/constants';
 import CourseInstanceTable from './CourseInstanceTable';
@@ -62,7 +62,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
 
   useEffect((): void => {
     setFetching(true);
-    getCourseInstancesForYear(acadYear)
+    CourseAPI.getCourseInstancesForYear(acadYear)
       .then((courses: CourseInstanceResponseDTO[][]): void => {
         setCourses(courses[0]);
       })

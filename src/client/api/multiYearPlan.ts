@@ -4,8 +4,12 @@ import request from './request';
 /**
  * Retrieves Multi Year Plan
  */
-export const getMultiYearPlan = async ():
+const getMultiYearPlan = async ():
 Promise<MultiYearPlanResponseDTO[]> => {
   const response = await request.get('/api/course-instances/multi-year-plan');
   return response.data as MultiYearPlanResponseDTO[];
+};
+
+export const MultiYearPlanAPI = {
+  getMultiYearPlan,
 };

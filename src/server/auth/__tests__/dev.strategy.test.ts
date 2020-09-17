@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { string } from 'testData';
+import { string } from 'common/data';
 import { strictEqual } from 'assert';
 import { DevStrategy } from 'server/auth/dev.strategy';
 import { SessionModule } from 'nestjs-session';

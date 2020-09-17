@@ -1,53 +1,25 @@
-import React, {
-  FunctionComponent,
-  ReactElement,
-} from 'react';
+import React from 'react';
 import {
-  ok,
   strictEqual,
 } from 'assert';
 import {
-  render,
   waitForElement,
   wait,
 } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
 import {
   stub,
   SinonStub,
 } from 'sinon';
-import * as courseAPI from 'client/api/courses';
+import { CourseAPI } from 'client/api/courses';
 import {
   computerScienceCourseResponse,
   physicsCourseResponse,
   newAreaCourseResponse,
   error,
-} from 'testData';
-import {
-  MessageContext,
-} from 'client/context';
-import { MarkOneWrapper } from 'mark-one';
-import { DispatchMessage } from '../../../context/MessageContext';
+  metadata,
+} from 'common/data';
+import { render } from 'test-utils';
 import CourseAdmin from '../CourseAdmin';
-
-interface AppStubProps {
-  /** A function that passes down the message, if any */
-  dispatchMessage: DispatchMessage;
-}
-
-const AppStub: FunctionComponent<AppStubProps> = function (
-  { dispatchMessage, children }
-): ReactElement {
-  return (
-    <MemoryRouter>
-      <MarkOneWrapper>
-        <MessageContext.Provider value={dispatchMessage}>
-          {children}
-        </MessageContext.Provider>
-      </MarkOneWrapper>
-    </MemoryRouter>
-  );
-};
 
 describe('Course Admin', function () {
   let getStub: SinonStub;
@@ -58,25 +30,25 @@ describe('Course Admin', function () {
     newAreaCourseResponse,
   ];
   beforeEach(function () {
-    getStub = stub(courseAPI, 'getAllCourses');
+    getStub = stub(CourseAPI, 'getAllCourses');
     getStub.resolves(testData);
     dispatchMessage = stub();
   });
   describe('rendering', function () {
     it('creates a table', async function () {
       const { container } = render(
-        <AppStub dispatchMessage={dispatchMessage}>
-          <CourseAdmin />
-        </AppStub>
+        <CourseAdmin />,
+        dispatchMessage,
+        metadata
       );
       return waitForElement(() => container.querySelector('.course-admin-table'));
     });
     context('when course data fetch succeeds', function () {
       it('displays the correct course information', async function () {
         const { getByText } = render(
-          <AppStub dispatchMessage={dispatchMessage}>
-            <CourseAdmin />
-          </AppStub>
+          <CourseAdmin />,
+          dispatchMessage,
+          metadata
         );
         strictEqual(getStub.callCount, 1);
         const { title } = computerScienceCourseResponse;
@@ -84,9 +56,9 @@ describe('Course Admin', function () {
       });
       it('displays the correct number of rows in the table', async function () {
         const { getAllByRole } = render(
-          <AppStub dispatchMessage={dispatchMessage}>
-            <CourseAdmin />
-          </AppStub>
+          <CourseAdmin />,
+          dispatchMessage,
+          metadata
         );
         await wait(() => getAllByRole('row').length > 1);
         const rows = getAllByRole('row');
@@ -94,9 +66,9 @@ describe('Course Admin', function () {
       });
       it('displays the correct content in the table cells', async function () {
         const { getAllByRole } = render(
-          <AppStub dispatchMessage={dispatchMessage}>
-            <CourseAdmin />
-          </AppStub>
+          <CourseAdmin />,
+          dispatchMessage,
+          metadata
         );
         await wait(() => getAllByRole('row').length > 1);
         const rows = Array.from(getAllByRole('row')) as HTMLTableRowElement[];
@@ -123,17 +95,15 @@ describe('Course Admin', function () {
           physicsCourseResponse.title
         );
       });
-      it('passes the backgroundColor prop only when area exists', async function () {
+      it('does not pass the backgroundColor prop when area does not exist', async function () {
         const { getAllByRole, getByText } = render(
-          <AppStub dispatchMessage={dispatchMessage}>
-            <CourseAdmin />
-          </AppStub>
+          <CourseAdmin />,
+          dispatchMessage,
+          metadata
         );
         await wait(() => getAllByRole('row').length > 1);
-        const physicsCourseStyle = window.getComputedStyle(getByText('AP'));
         const newAreaCourseStyle = window.getComputedStyle(getByText('NA'));
-        ok(physicsCourseStyle.backgroundColor);
-        ok(!newAreaCourseStyle.backgroundColor);
+        strictEqual(newAreaCourseStyle.backgroundColor, '');
       });
       context('when there are no course records', function () {
         const emptyTestData = [];
@@ -142,9 +112,9 @@ describe('Course Admin', function () {
         });
         it('displays the correct number of rows in the table (only the header row)', async function () {
           const { getAllByRole } = render(
-            <AppStub dispatchMessage={dispatchMessage}>
-              <CourseAdmin />
-            </AppStub>
+            <CourseAdmin />,
+            dispatchMessage,
+            metadata
           );
           await wait(() => getAllByRole('row').length > 0);
           const rows = getAllByRole('row');
@@ -158,9 +128,9 @@ describe('Course Admin', function () {
       });
       it('should throw an error', async function () {
         const { getAllByRole } = render(
-          <AppStub dispatchMessage={dispatchMessage}>
-            <CourseAdmin />
-          </AppStub>
+          <CourseAdmin />,
+          dispatchMessage,
+          metadata
         );
         await wait(() => getAllByRole('row').length > 0);
         strictEqual(dispatchMessage.callCount, 1);

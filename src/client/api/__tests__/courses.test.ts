@@ -6,8 +6,8 @@ import {
   computerScienceCourseResponse,
   physicsCourseResponse,
   error,
-} from 'testData';
-import * as api from 'client/api';
+} from 'common/data';
+import { CourseAPI } from 'client/api';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import {
   strictEqual,
@@ -37,7 +37,7 @@ describe('Course Admin API', function () {
               physicsCourseResponse,
             ],
           } as AxiosResponse<ManageCourseResponseDTO[]>);
-          result = await api.getAllCourses();
+          result = await CourseAPI.getAllCourses();
         });
         it('should call getAllCourses', function () {
           strictEqual(getStub.callCount, 1);
@@ -60,7 +60,7 @@ describe('Course Admin API', function () {
         });
         it('should throw an error', async function () {
           try {
-            await api.getAllCourses();
+            await CourseAPI.getAllCourses();
             fail('Did not throw an error');
           } catch (err) {
             deepStrictEqual(err, error);

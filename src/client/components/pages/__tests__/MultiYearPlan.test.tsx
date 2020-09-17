@@ -2,19 +2,20 @@ import React from 'react';
 import { strictEqual } from 'assert';
 import { wait } from '@testing-library/react';
 import { stub, SinonStub } from 'sinon';
-import { testFourYearPlan, error } from 'testData';
+import { testFourYearPlan, error } from 'common/data';
 import { render } from 'test-utils';
-import * as mypAPI from 'client/api/multiYearPlan';
+import { MultiYearPlanAPI } from 'client/api/multiYearPlan';
+import { metadata } from 'common/data/metadata';
 import MultiYearPlan from '../MultiYearPlan';
 
-describe('MultYearPlan', function () {
+describe('MultiYearPlan', function () {
   let getStub: SinonStub;
   let dispatchMessage: SinonStub;
 
   const testData = testFourYearPlan;
 
   beforeEach(function () {
-    getStub = stub(mypAPI, 'getMultiYearPlan');
+    getStub = stub(MultiYearPlanAPI, 'getMultiYearPlan');
     dispatchMessage = stub();
     getStub.resolves(testData);
   });
@@ -35,7 +36,8 @@ describe('MultYearPlan', function () {
     it('displays the MYP area information', async function () {
       const { findByText } = render(
         <MultiYearPlan />,
-        dispatchMessage
+        dispatchMessage,
+        metadata
       );
       strictEqual(getStub.callCount, 1);
       const { area } = testData[0];
