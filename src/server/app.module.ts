@@ -14,6 +14,7 @@ import { FacultyModule } from './faculty/faculty.module';
 import { CourseInstanceModule } from './courseInstance/courseInstance.module';
 import { MetadataModule } from './metadata/metadata.module';
 import { UserController } from './user/user.controller';
+import { HealthCheckController } from './healthCheck/healthCheck.controller';
 
 /**
  * Base application module that configures the database connections and other
@@ -56,6 +57,7 @@ import { UserController } from './user/user.controller';
   ],
   controllers: [
     UserController,
+    HealthCheckController,
   ],
   providers: [],
 })
