@@ -150,10 +150,10 @@ describe('Faculty Modal', function () {
           );
         });
         describe('validHUID', function () {
-          it('should return false when the provided string contains at least one letter', function () {
+          it('should return false when the provided string contains alphabetical characters', function () {
             strictEqual(validHUID('a1234567'), false);
           });
-          it('should return false when the provided string contains at least one symbol', function () {
+          it('should return false when the provided string contains special characters', function () {
             strictEqual(validHUID('12$45678'), false);
           });
           it('should return false when the HUID has a length shorter than 8 characters', function () {
@@ -162,7 +162,7 @@ describe('Faculty Modal', function () {
           it('should return false when the HUID has a length longer than 8 characters', function () {
             strictEqual(validHUID('123456789'), false);
           });
-          it('should return true when the provided string contains 8 digits', function () {
+          it('should return true when the provided string contains 8 numeric characters', function () {
             strictEqual(validHUID('12345678'), true);
           });
         });
