@@ -1,4 +1,3 @@
-import { ReactNode } from 'react';
 import { fromTheme } from 'mark-one';
 import styled from 'styled-components';
 

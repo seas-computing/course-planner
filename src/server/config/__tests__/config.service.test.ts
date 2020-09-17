@@ -3,7 +3,6 @@ import { int, safeString } from 'testData';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { AUTH_MODE } from 'common/constants';
 import FakeTimers from '@sinonjs/fake-timers';
-import { NestSessionOptions } from 'nestjs-session';
 import { RedisStore } from 'connect-redis';
 import { SessionOptions } from 'express-session';
 import { ConfigService } from '../config.service';
