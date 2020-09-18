@@ -5,7 +5,6 @@ import {
   SelectQueryBuilder,
 } from 'typeorm';
 import { Course } from 'server/course/course.entity';
-import { Area } from 'server/area/area.entity';
 import { SemesterView } from 'server/semester/SemesterView.entity';
 
 /**
