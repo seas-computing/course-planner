@@ -142,8 +142,8 @@ class ConfigService {
           // 12 hours
           maxAge: 1000 * 60 * 60 * 12,
           domain: COOKIE_DOMAIN,
-          sameSite: 'none',
-          secure: true,
+          sameSite: 'strict',
+          secure: false,
         },
       },
     };
