@@ -3,20 +3,22 @@ import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { MarkOneWrapper } from 'mark-one';
 import * as dummy from 'testData';
-import { UserContext, MessageContext } from 'client/context';
+import { UserContext, MessageContext, MetadataContext } from 'client/context';
 import { User } from 'common/classes';
 import AppRouter from '../AppRouter';
 
 describe('App Router', function () {
   const renderRoute = (user: User) => (path: string) => render(
     <MemoryRouter initialEntries={[path]}>
-      <MessageContext.Provider value={() => {}}>
-        <UserContext.Provider value={user}>
-          <MarkOneWrapper>
-            <AppRouter />
-          </MarkOneWrapper>
-        </UserContext.Provider>
-      </MessageContext.Provider>
+      <MarkOneWrapper>
+        <MessageContext.Provider value={() => {}}>
+          <UserContext.Provider value={user}>
+            <MetadataContext.Provider value={dummy.metadata}>
+              <AppRouter />
+            </MetadataContext.Provider>
+          </UserContext.Provider>
+        </MessageContext.Provider>
+      </MarkOneWrapper>
     </MemoryRouter>
   );
 
