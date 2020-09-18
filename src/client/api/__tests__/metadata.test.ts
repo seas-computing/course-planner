@@ -7,7 +7,7 @@ import {
   rawAreaList,
   rawSemesterList,
   error,
-} from 'common/data';
+} from 'testData';
 import { MetadataAPI } from 'client/api/metadata';
 import {
   strictEqual,

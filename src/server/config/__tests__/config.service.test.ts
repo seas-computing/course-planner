@@ -1,5 +1,5 @@
 import { strictEqual } from 'assert';
-import { int, safeString } from 'common/data';
+import { int, safeString } from 'testData';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { RedisStoreOptions } from 'connect-redis';
 import { AUTH_MODE } from 'common/constants';

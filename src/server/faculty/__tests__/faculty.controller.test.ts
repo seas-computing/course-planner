@@ -11,7 +11,7 @@ import {
   appliedMathFacultyMember,
   appliedMathFacultyMemberResponse,
   newAreaFacultyMemberRequest,
-} from 'common/data';
+} from 'testData';
 import { Semester } from 'server/semester/semester.entity';
 import { SemesterService } from 'server/semester/semester.service';
 import { NotFoundException } from '@nestjs/common';

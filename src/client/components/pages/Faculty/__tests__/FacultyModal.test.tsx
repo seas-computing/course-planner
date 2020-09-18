@@ -16,9 +16,8 @@ import {
   stub,
 } from 'sinon';
 import { render } from 'test-utils';
-import { metadata } from 'common/data/metadata';
 import request from 'client/api/request';
-import { appliedMathFacultyMemberResponse } from 'testData';
+import { appliedMathFacultyMemberResponse, metadata } from 'testData';
 import FacultyModal from '../../FacultyModal';
 
 describe('Faculty Modal', function () {

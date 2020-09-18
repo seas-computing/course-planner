@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   cs50CourseInstance, ac209aCourseInstance,
-} from 'common/data';
+} from 'testData';
 import { strictEqual, deepStrictEqual } from 'assert';
 import { TERM, COURSE_TABLE_COLUMN } from 'common/constants';
 import { render } from 'test-utils';

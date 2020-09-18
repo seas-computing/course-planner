@@ -7,7 +7,7 @@ import {
 import { SelectQueryBuilder } from 'typeorm';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { rawAreaList } from 'common/data';
+import { rawAreaList } from 'testData';
 import {
   strictEqual,
   deepStrictEqual,

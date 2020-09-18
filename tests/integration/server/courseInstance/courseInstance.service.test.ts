@@ -21,7 +21,7 @@ import {
   MultiYearPlanInstance,
 } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import { Repository } from 'typeorm';
-import { testFourYearPlanAcademicYears } from 'common/data';
+import { testFourYearPlanAcademicYears } from 'testData';
 import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 

@@ -1,5 +1,5 @@
 import { strictEqual } from 'assert';
-import * as dummy from 'common/data';
+import * as dummy from 'testData';
 import { messageReducer, MessageReducerState } from '../MessageContext';
 import { AppMessage, MESSAGE_ACTION } from '../../classes';
 
