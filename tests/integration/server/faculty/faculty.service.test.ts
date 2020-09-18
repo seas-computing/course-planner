@@ -7,7 +7,7 @@ import { FacultyModule } from 'server/faculty/faculty.module';
 import { deepStrictEqual, strictEqual } from 'assert';
 import { Repository } from 'typeorm';
 import { Faculty } from 'server/faculty/faculty.entity';
-import { appliedMathFacultyMember, bioengineeringFacultyMember } from 'testData';
+import { appliedMathFacultyMemberRequest, bioengineeringFacultyMember } from 'testData';
 import { Area } from 'server/area/area.entity';
 import { AuthModule } from 'server/auth/auth.module';
 import { AUTH_MODE } from 'common/constants';
@@ -88,10 +88,10 @@ describe('Faculty service', function () {
       bioengineering,
     ] = await areaRepository.save([
       {
-        name: appliedMathFacultyMember.area.name,
+        name: appliedMathFacultyMemberRequest.area,
       },
       {
-        name: bioengineeringFacultyMember.area.name,
+        name: bioengineeringFacultyMember.area,
       },
     ]);
 
@@ -103,7 +103,7 @@ describe('Faculty service', function () {
         area: bioengineering,
       },
       {
-        ...appliedMathFacultyMember,
+        ...appliedMathFacultyMemberRequest,
         area: appliedMath,
       },
     ]);
@@ -122,7 +122,7 @@ describe('Faculty service', function () {
     await facultyRepository.query(`TRUNCATE ${Faculty.name} CASCADE`);
     const [appliedMath] = await areaRepository.save([
       {
-        name: appliedMathFacultyMember.area.name,
+        name: appliedMathFacultyMemberRequest.area,
       },
     ]);
     // Save two example faculty members in the database, deliberately not
@@ -132,7 +132,7 @@ describe('Faculty service', function () {
       faculty2,
     ] = await facultyRepository.save([
       {
-        ...appliedMathFacultyMember,
+        ...appliedMathFacultyMemberRequest,
         // Slightly weird lastName to force the sorting and prove that it's
         // working
         lastName: 'zzzzzzzzz',
@@ -164,7 +164,7 @@ describe('Faculty service', function () {
     await facultyRepository.query(`TRUNCATE ${Faculty.name} CASCADE`);
     const [appliedMath] = await areaRepository.save([
       {
-        name: appliedMathFacultyMember.area.name,
+        name: appliedMathFacultyMemberRequest.area,
       },
     ]);
     // Save two example faculty members in the database, deliberately not
@@ -174,7 +174,7 @@ describe('Faculty service', function () {
       faculty2,
     ] = await facultyRepository.save([
       {
-        ...appliedMathFacultyMember,
+        ...appliedMathFacultyMemberRequest,
         // Slightly weird first and last names to force the sorting and prove
         // that it's working
         firstName: 'zzzzzzzzz',

@@ -17,3 +17,11 @@ export const getCurrentUser = async (): Promise<User> => {
     }
   }
 };
+
+/**
+ * Export the methods as part of an object so that they are stubbable.
+ * See: https://github.com/sinonjs/sinon/issues/562
+ */
+export const UserAPI = {
+  getCurrentUser,
+};

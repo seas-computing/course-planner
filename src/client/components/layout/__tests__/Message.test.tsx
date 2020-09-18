@@ -1,8 +1,8 @@
 import React from 'react';
 import { strictEqual } from 'assert';
 import { render, fireEvent } from '@testing-library/react';
-import { stub, SinonStub } from 'sinon';
 import FakeTimers, { InstalledClock } from '@sinonjs/fake-timers';
+import { stub, SinonStub } from 'sinon';
 import * as dummy from 'testData';
 import { MESSAGE_TYPE } from 'client/classes';
 import { MessageContext } from 'client/context';

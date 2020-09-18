@@ -1,19 +1,19 @@
 import React from 'react';
 import { strictEqual } from 'assert';
 import {
-  render,
   waitForElement,
   BoundFunction,
   FindByText,
   wait,
+  render,
 } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
 import { stub, SinonStub } from 'sinon';
 import * as dummy from 'testData';
 import * as userApi from 'client/api/users';
 import * as metaApi from 'client/api/metadata';
 import { User } from 'common/classes';
 import { MetadataResponse } from 'common/dto/metadata/MetadataResponse.dto';
+import { MemoryRouter } from 'react-router-dom';
 import App from '../App';
 
 describe('App', function () {

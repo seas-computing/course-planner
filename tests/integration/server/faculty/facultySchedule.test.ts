@@ -34,7 +34,7 @@ import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 import {
   string,
   readOnlyUser,
-} from 'common/__tests__/data';
+} from 'testData';
 import { SessionModule } from 'nestjs-session';
 import { Repository } from 'typeorm';
 import {

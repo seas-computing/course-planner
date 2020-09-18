@@ -21,7 +21,11 @@ import {
   faEdit,
 } from '@fortawesome/free-solid-svg-icons';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
-import { FACULTY_TYPE, getAreaColor } from 'common/constants';
+import { getAreaColor } from 'common/constants';
+import {
+  absenceEnumToTitleCase,
+  facultyTypeEnumToTitleCase,
+} from 'common/utils/facultyHelperFunctions';
 
 interface FacultyScheduleTableProps {
   /**
@@ -33,33 +37,6 @@ interface FacultyScheduleTableProps {
    */
   facultySchedules: FacultyResponseDTO[];
 }
-
-/**
- * A helper function that converts the faculty absence enum into the desired
- * format for the Faculty table
- * The string is split on the hyphen and joined with a space. Only the first
- * letter of each word is capitalized.
- * (e.g. 'SABBATICAL_INELIGIBLE' becomes 'Sabbatical Ineligible')
- */
-export const absenceEnumToTitleCase = function (str: string): string {
-  const words = str.split('_');
-  return words.map(
-    (word): string => word.charAt(0) + word.slice(1).toLowerCase()
-  ).join(' ');
-};
-
-/**
- * A helper function that converts the faculty category enum into the desired
- * format for the Faculty table
- */
-export const categoryEnumToTitleCase = function (str: FACULTY_TYPE): string {
-  const result: string = {
-    [FACULTY_TYPE.LADDER]: 'Ladder',
-    [FACULTY_TYPE.NON_SEAS_LADDER]: 'Non-SEAS Ladder',
-    [FACULTY_TYPE.NON_LADDER]: 'Non-Ladder',
-  }[str];
-  return result;
-};
 
 /**
  * Component representing the Faculty Schedules for a given academic year
@@ -121,7 +98,9 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
             </TableCell>
             <TableCell>{faculty.lastName}</TableCell>
             <TableCell>{faculty.firstName}</TableCell>
-            <TableCell>{categoryEnumToTitleCase(faculty.category)}</TableCell>
+            <TableCell>
+              {facultyTypeEnumToTitleCase(faculty.category)}
+            </TableCell>
             <TableCell>{faculty.jointWith}</TableCell>
             <TableCell>
               {absenceEnumToTitleCase(

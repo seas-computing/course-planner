@@ -5,9 +5,16 @@ import { strictEqual, deepStrictEqual, rejects } from 'assert';
 import { FACULTY_TYPE } from 'common/constants';
 import { Authentication } from 'server/auth/authentication.guard';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
-import * as dummy from 'testData';
+import { TimeoutError } from 'rxjs';
+import {
+  appliedMathFacultyMemberRequest,
+  appliedMathFacultyMember,
+  appliedMathFacultyMemberResponse,
+  newAreaFacultyMemberRequest,
+} from 'testData';
 import { Semester } from 'server/semester/semester.entity';
 import { SemesterService } from 'server/semester/semester.service';
+import { NotFoundException } from '@nestjs/common';
 import { FacultyController } from '../faculty.controller';
 import { Faculty } from '../faculty.entity';
 import { Area } from '../../area/area.entity';
@@ -20,7 +27,6 @@ describe('Faculty controller', function () {
   let mockSemesterService : Record<string, SinonStub>;
   let mockFacultyRepository : Record<string, SinonStub>;
   let mockAreaRepository : Record<string, SinonStub>;
-
   let mockSemesterRepository : Record<string, SinonStub>;
   let controller: FacultyController;
 
@@ -36,10 +42,20 @@ describe('Faculty controller', function () {
     mockFacultyRepository = {
       find: stub(),
       save: stub(),
+      create: stub(),
       findOneOrFail: stub(),
     };
 
     mockAreaRepository = {
+      findOneOrFail: stub(),
+      findOne: stub(),
+      create: stub(),
+      save: stub(),
+    };
+
+    mockFacultyRepository = {
+      find: stub(),
+      save: stub(),
       findOneOrFail: stub(),
     };
 
@@ -80,7 +96,7 @@ describe('Faculty controller', function () {
 
   describe('getAll', function () {
     it('returns all faculty in the database', async function () {
-      const databaseFaculty = Array(10).fill(dummy.appliedMathFacultyMember);
+      const databaseFaculty = Array(10).fill(appliedMathFacultyMember);
 
       mockFacultyService.find.resolves(databaseFaculty);
 
@@ -91,42 +107,61 @@ describe('Faculty controller', function () {
   });
 
   describe('create', function () {
-    it('creates a single faculty member', async function () {
-      await controller.create({
-        HUID: '12345678',
-        firstName: 'Sam',
-        lastName: 'Johnston',
-        category: FACULTY_TYPE.LADDER,
-        area: new Area(),
+    context('when area exists', function () {
+      beforeEach(function () {
+        mockAreaRepository
+          .findOne
+          .resolves(appliedMathFacultyMember.area);
+        mockAreaRepository.save.resolves(appliedMathFacultyMember.area);
       });
-
-      strictEqual(mockFacultyRepository.save.callCount, 1);
+      it('creates a single faculty member', async function () {
+        mockFacultyRepository.save.resolves(appliedMathFacultyMember);
+        await controller.create(appliedMathFacultyMemberRequest);
+        strictEqual(mockFacultyRepository.save.callCount, 1);
+      });
+      it('returns the newly created faculty member', async function () {
+        mockFacultyRepository.save.resolves(appliedMathFacultyMember);
+        const newlyCreatedFaculty = await controller
+          .create(appliedMathFacultyMemberRequest);
+        deepStrictEqual(
+          newlyCreatedFaculty,
+          appliedMathFacultyMemberResponse
+        );
+      });
     });
-    it('returns the newly created faculty member', async function () {
-      const facultyMember = {
-        HUID: '12345678',
-        firstName: 'Sam',
-        lastName: 'Johnston',
-        category: FACULTY_TYPE.LADDER,
-        area: new Area(),
-      };
-      mockFacultyRepository.save.resolves({
-        ...facultyMember,
-        id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
+    context('when area does not exist', function () {
+      it('throws a Not Found Error', async function () {
+        const errorMessage = 'The entered Area does not exist';
+        const facultyMemberInfo = {
+          area: newAreaFacultyMemberRequest.area,
+          HUID: newAreaFacultyMemberRequest.HUID,
+          firstName: newAreaFacultyMemberRequest.firstName,
+          lastName: newAreaFacultyMemberRequest.lastName,
+          category: newAreaFacultyMemberRequest.category,
+          jointWith: newAreaFacultyMemberRequest.jointWith,
+          notes: newAreaFacultyMemberRequest.notes,
+        };
+        mockAreaRepository
+          .findOneOrFail
+          .rejects(new EntityNotFoundError(Area, {
+            where: { name: newAreaFacultyMemberRequest.area },
+          }));
+        try {
+          await controller.create(facultyMemberInfo);
+        } catch (e) {
+          strictEqual(e instanceof NotFoundException, true);
+          const error = e as NotFoundException;
+          strictEqual(error.message && 'message' in error.message, true);
+          const errorMessageObject = error.message as { message : string; };
+          strictEqual(errorMessageObject.message, errorMessage);
+        }
       });
-      const {
-        id,
-        ...newlyCreatedFaculty
-      } = await controller.create(facultyMember);
-
-      strictEqual(id, 'a49edd11-0f2d-4d8f-9096-a4062955a11a');
-      deepStrictEqual(newlyCreatedFaculty, facultyMember);
     });
   });
 
   describe('update', function () {
     it('returns the updated faculty member', async function () {
-      const newArea = new Area();
+      const newArea = 'NA';
       const newFacultyMemberInfo = {
         id: '8636efc3-6b3e-4c44-ba38-4e0e788dba43',
         HUID: '87654321',
@@ -143,10 +178,7 @@ describe('Faculty controller', function () {
       deepStrictEqual(updatedFacultyMember, newFacultyMemberInfo);
     });
     it('throws a Not Found Error if the area does not exist', async function () {
-      const newArea = {
-        id: 'abc32sdf-84923-fm32-1111-72jshckddiws',
-        name: 'Juggling',
-      };
+      const newArea = 'NA';
       const newFacultyMemberInfo = {
         id: '8636efc3-6b3e-4c44-ba38-4e0e788dba43',
         HUID: '87654321',
@@ -158,7 +190,7 @@ describe('Faculty controller', function () {
       mockAreaRepository
         .findOneOrFail
         .rejects(new EntityNotFoundError(Area, {
-          where: { id: newArea.id },
+          where: { name: newArea },
         }));
       await rejects(
         () => controller.update('8636efc3-6b3e-4c44-ba38-4e0e788dba43', newFacultyMemberInfo),
@@ -166,7 +198,7 @@ describe('Faculty controller', function () {
       );
     });
     it('throws a Not Found Error if the faculty does not exist', async function () {
-      const newArea = new Area();
+      const newArea = 'NA';
       const newFacultyMemberInfo = {
         id: '1636efd9-6b3e-4c44-ba38-4e0e788dba54',
         HUID: '87654321',
@@ -193,17 +225,18 @@ describe('Faculty controller', function () {
         firstName: 'Bob',
         lastName: 'Lovelace',
         category: FACULTY_TYPE.LADDER,
-        area: new Area(),
+        area: 'AM',
       };
 
       mockFacultyRepository
         .findOneOrFail
-        .rejects(dummy.error);
-
-      await rejects(
-        () => controller.update('1636efd9-6b3e-4c44-ba38-4e0e788dba54', newFacultyMemberInfo),
-        dummy.error
-      );
+        .rejects(new TimeoutError());
+      try {
+        await controller.update('1636efd9-6b3e-4c44-ba38-4e0e788dba54', newFacultyMemberInfo);
+      } catch (e) {
+        strictEqual(e instanceof Error, true);
+        strictEqual(e instanceof NotFoundException, false);
+      }
     });
     it('allows other error types to bubble when finding area', async function () {
       const newFacultyMemberInfo = {
@@ -212,16 +245,17 @@ describe('Faculty controller', function () {
         firstName: 'Bob',
         lastName: 'Lovelace',
         category: FACULTY_TYPE.LADDER,
-        area: new Area(),
+        area: 'NA',
       };
       mockAreaRepository
         .findOneOrFail
-        .rejects(dummy.error);
-
-      await rejects(
-        () => controller.update('1636efd9-6b3e-4c44-ba38-4e0e788dba54', newFacultyMemberInfo),
-        dummy.error
-      );
+        .rejects(new TimeoutError());
+      try {
+        await controller.update('1636efd9-6b3e-4c44-ba38-4e0e788dba54', newFacultyMemberInfo);
+      } catch (e) {
+        strictEqual(e instanceof Error, true);
+        strictEqual(e instanceof NotFoundException, false);
+      }
     });
   });
 });
