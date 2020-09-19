@@ -1,5 +1,10 @@
 import { TestingModule, Test } from '@nestjs/testing';
-import { stub, SinonStub } from 'sinon';
+import {
+  stub,
+  SinonStub,
+  createStubInstance,
+  SinonStubbedInstance,
+} from 'sinon';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import {
   strictEqual,
@@ -11,23 +16,36 @@ import {
   spring,
   fall,
   computerScienceCourse,
+  physicsCourse,
 } from 'testData';
 import { Area } from 'server/area/area.entity';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
+import { SelectQueryBuilder } from 'typeorm';
 import { CourseService } from '../course.service';
 import { Course } from '../course.entity';
 
 describe('Course service', function () {
   let mockAreaRepository: Record<string, SinonStub>;
-  let mockCourseRespository : Record<string, SinonStub>;
+  let mockCourseRepository : Record<string, SinonStub>;
   let mockSemesterRepository : Record<string, SinonStub>;
   let courseService: CourseService;
+  let mockCourseQueryBuilder: SinonStubbedInstance<SelectQueryBuilder<Course>>;
   beforeEach(async function () {
+    mockCourseQueryBuilder = createStubInstance(SelectQueryBuilder);
+    mockCourseQueryBuilder.addSelect.returnsThis();
+    mockCourseQueryBuilder.leftJoinAndSelect.returnsThis();
+    mockCourseQueryBuilder.orderBy.returnsThis();
+    mockCourseQueryBuilder.addOrderBy.returnsThis();
+    mockCourseQueryBuilder.getMany.resolves([
+      computerScienceCourse,
+      physicsCourse,
+    ]);
     mockAreaRepository = {
       findOneOrFail: stub(),
     };
 
-    mockCourseRespository = {
+    mockCourseRepository = {
+      createQueryBuilder: stub().returns(mockCourseQueryBuilder),
       save: stub(),
     };
 
@@ -43,7 +61,7 @@ describe('Course service', function () {
         },
         {
           provide: getRepositoryToken(Course),
-          useValue: mockCourseRespository,
+          useValue: mockCourseRepository,
         },
         {
           provide: getRepositoryToken(Semester),
@@ -55,7 +73,12 @@ describe('Course service', function () {
 
     courseService = module.get<CourseService>(CourseService);
   });
-
+  describe('findCourses', function () {
+    it('returns all courses from the database', async function () {
+      const results = await courseService.findCourses();
+      deepStrictEqual(results, [computerScienceCourse, physicsCourse]);
+    });
+  });
   describe('save', function () {
     beforeEach(function () {
       mockSemesterRepository.find.resolves([]);
@@ -64,7 +87,7 @@ describe('Course service', function () {
     it('creates a new course in the database', async function () {
       await courseService.save(computerScienceCourse);
 
-      strictEqual(mockCourseRespository.save.callCount, 1);
+      strictEqual(mockCourseRepository.save.callCount, 1);
     });
 
     it('schedules one CourseInstance per semester in the database', async function () {
@@ -74,7 +97,7 @@ describe('Course service', function () {
 
       await courseService.save(computerScienceCourse);
 
-      const updatedCourse = mockCourseRespository.save.args[0][0] as Course;
+      const updatedCourse = mockCourseRepository.save.args[0][0] as Course;
 
       strictEqual(
         updatedCourse.instances.length,
@@ -83,7 +106,7 @@ describe('Course service', function () {
     });
 
     it('returns the newly created course', async function () {
-      mockCourseRespository.save.resolves(computerScienceCourse);
+      mockCourseRepository.save.resolves(computerScienceCourse);
 
       const createdCourse = await courseService.save(computerScienceCourse);
 

@@ -26,6 +26,22 @@ export const computerScienceCourse = Object.assign(new Course(), {
 });
 
 /**
+ * An example [[Course]] representing AP 295a.
+ */
+export const physicsCourse = Object.assign(new Course(), {
+  id: 'a1a13689-a925-4d0b-a4fc-21c93263c6d2',
+  area: {
+    id: '2213e1f8-31be-4e67-be06-a1eabd32ee0a',
+    name: 'AP',
+  },
+  title: 'Introduction to Quantum Theory of Solids',
+  prefix: 'AP',
+  number: '295a',
+  termPattern: TERM_PATTERN.SPRING,
+  isUndergraduate: true,
+});
+
+/**
  * An example of [[CreateCourse]] representing CS 50
  */
 export const createCourseDtoExample: CreateCourse = Object.assign(

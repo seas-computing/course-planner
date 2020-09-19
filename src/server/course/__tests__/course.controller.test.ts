@@ -33,6 +33,7 @@ describe('Course controller', function () {
 
     mockCourseService = {
       save: stub(),
+      findCourses: stub(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -59,11 +60,13 @@ describe('Course controller', function () {
     it('returns all courses in the database', async function () {
       const databaseCourses = Array(10).fill(emptyCourse);
 
-      mockCourseRepository.find.resolves(databaseCourses);
+      mockCourseService.findCourses.resolves(databaseCourses);
 
       const courses = await controller.getAll();
 
-      strictEqual(courses.length, databaseCourses.length);
+      strictEqual(mockCourseService.findCourses.callCount, 1);
+      strictEqual(mockCourseService.findCourses.args[0].length, 0);
+      deepStrictEqual(courses, databaseCourses);
     });
   });
 

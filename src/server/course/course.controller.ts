@@ -46,14 +46,7 @@ export class CourseController {
     isArray: true,
   })
   public async getAll(): Promise<ManageCourseResponseDTO[]> {
-    const courses = await this.courseRepository.find({
-      relations: ['area'],
-    });
-
-    return courses.map((course: Course): ManageCourseResponseDTO => ({
-      ...course,
-      catalogNumber: `${course.prefix} ${course.number}`,
-    }));
+    return this.courseService.findCourses();
   }
 
   @Post('/')

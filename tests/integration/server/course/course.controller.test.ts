@@ -1,6 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SessionModule } from 'nestjs-session';
-import { stub, SinonStub } from 'sinon';
+import {
+  stub,
+  SinonStub,
+  SinonStubbedInstance,
+  createStubInstance,
+} from 'sinon';
 import request from 'supertest';
 import {
   HttpStatus,
@@ -25,6 +30,7 @@ import {
   createCourseDtoExample,
   computerScienceCourseResponse,
   updateCourseExample,
+  physicsCourseResponse,
 } from 'testData';
 import { Semester } from 'server/semester/semester.entity';
 import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
@@ -32,22 +38,35 @@ import { Area } from 'server/area/area.entity';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { UpdateCourseDTO } from 'common/dto/courses/UpdateCourse.dto';
+import { SelectQueryBuilder } from 'typeorm';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 describe('Course API', function () {
   let mockAreaRepository: Record<string, SinonStub>;
   let mockCourseRepository : Record<string, SinonStub>;
-
   let mockSemesterRepository : Record<string, SinonStub>;
   let authStub: SinonStub;
   let api: HttpServer;
+  let mockCourseQueryBuilder: SinonStubbedInstance<SelectQueryBuilder<Course>>;
+  const mockCourses: ManageCourseResponseDTO[] = [
+    computerScienceCourseResponse,
+    physicsCourseResponse,
+  ];
 
   beforeEach(async function () {
+    mockCourseQueryBuilder = createStubInstance(SelectQueryBuilder);
+    mockCourseQueryBuilder.addSelect.returnsThis();
+    mockCourseQueryBuilder.leftJoinAndSelect.returnsThis();
+    mockCourseQueryBuilder.orderBy.returnsThis();
+    mockCourseQueryBuilder.addOrderBy.returnsThis();
+    mockCourseQueryBuilder.getMany.resolves(mockCourses as unknown as Course[]);
+
     mockAreaRepository = {
       findOneOrFail: stub(),
     };
 
     mockCourseRepository = {
+      createQueryBuilder: stub().returns(mockCourseQueryBuilder),
       find: stub(),
       findOneOrFail: stub(),
       save: stub(),
@@ -106,21 +125,19 @@ describe('Course API', function () {
 
         strictEqual(response.ok, false);
         strictEqual(response.status, HttpStatus.FORBIDDEN);
-        strictEqual(mockCourseRepository.find.callCount, 0);
+        strictEqual(mockCourseRepository.createQueryBuilder.callCount, 0);
       });
     });
     describe('User is authenticated', function () {
       describe('User is a member of the admin group', function () {
         it('returns all the courses in the database', async function () {
           authStub.resolves(adminUser);
-          const mockCourses = Array(10).fill(new Course());
-          mockCourseRepository.find.resolves(mockCourses);
 
           const response = await request(api).get('/api/courses');
           const body = response.body as ManageCourseResponseDTO[];
           strictEqual(response.ok, true);
           strictEqual(body.length, mockCourses.length);
-          strictEqual(mockCourseRepository.find.callCount, 1);
+          strictEqual(mockCourseRepository.createQueryBuilder.callCount, 1);
         });
       });
       describe('User is not a member of the admin group', function () {
@@ -131,7 +148,7 @@ describe('Course API', function () {
 
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.FORBIDDEN);
-          strictEqual(mockCourseRepository.find.callCount, 0);
+          strictEqual(mockCourseRepository.createQueryBuilder.callCount, 0);
         });
       });
     });
