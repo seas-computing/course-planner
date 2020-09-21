@@ -14,6 +14,7 @@ import {
   TableCell,
   BorderlessButton,
   VARIANT,
+  Button,
 } from 'mark-one';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import { MESSAGE_TYPE, AppMessage, MESSAGE_ACTION } from 'client/classes';
@@ -23,6 +24,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { getAreaColor } from '../../../common/constants';
 import { CourseAPI } from '../../api/courses';
+import { VerticalSpace } from '../layout';
 
 /**
  * The component represents the Course Admin page, which will be rendered at
@@ -61,39 +63,57 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
   }, [dispatchMessage]);
 
   return (
-    <div className="course-admin-table">
-      <Table>
-        <TableHead>
-          <TableRow isStriped>
-            <TableHeadingCell scope="col">Course Prefix</TableHeadingCell>
-            <TableHeadingCell scope="col">Course</TableHeadingCell>
-            <TableHeadingCell scope="col">Title</TableHeadingCell>
-            <TableHeadingCell scope="col">Edit</TableHeadingCell>
-          </TableRow>
-        </TableHead>
-        <TableBody isScrollable>
-          {currentCourses.map((course, i): ReactElement<TableRowProps> => (
-            <TableRow isStriped={i % 2 === 1} key={course.id}>
-              <TableCell
-                backgroundColor={getAreaColor(course.area.name)}
-              >
-                {course.area.name}
-              </TableCell>
-              <TableCell>{course.catalogNumber}</TableCell>
-              <TableCell>{course.title}</TableCell>
-              <TableCell>
-                <BorderlessButton
-                  variant={VARIANT.INFO}
-                  onClick={(): void => {}}
-                >
-                  <FontAwesomeIcon icon={faEdit} />
-                </BorderlessButton>
-              </TableCell>
+    <>
+      <VerticalSpace>
+        <div className="create-course-button">
+          <Button
+            id="createCourse"
+            onClick={
+              (): void => {
+                setCurrentCourse(null);
+                setCourseModalVisible(true);
+              }
+            }
+            variant={VARIANT.INFO}
+          >
+            Create New Course
+          </Button>
+        </div>
+      </VerticalSpace>
+      <div className="course-admin-table">
+        <Table>
+          <TableHead>
+            <TableRow isStriped>
+              <TableHeadingCell scope="col">Course Prefix</TableHeadingCell>
+              <TableHeadingCell scope="col">Course</TableHeadingCell>
+              <TableHeadingCell scope="col">Title</TableHeadingCell>
+              <TableHeadingCell scope="col">Edit</TableHeadingCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+          </TableHead>
+          <TableBody isScrollable>
+            {currentCourses.map((course, i): ReactElement<TableRowProps> => (
+              <TableRow isStriped={i % 2 === 1} key={course.id}>
+                <TableCell
+                  backgroundColor={getAreaColor(course.area.name)}
+                >
+                  {course.area.name}
+                </TableCell>
+                <TableCell>{course.catalogNumber}</TableCell>
+                <TableCell>{course.title}</TableCell>
+                <TableCell>
+                  <BorderlessButton
+                    variant={VARIANT.INFO}
+                    onClick={(): void => {}}
+                  >
+                    <FontAwesomeIcon icon={faEdit} />
+                  </BorderlessButton>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </>
   );
 };
 

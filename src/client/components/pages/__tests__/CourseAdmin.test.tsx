@@ -43,6 +43,14 @@ describe('Course Admin', function () {
       );
       return waitForElement(() => container.querySelector('.course-admin-table'));
     });
+    it('displays the "create course" button', async function () {
+      const { container } = render(
+        <CourseAdmin />,
+        dispatchMessage,
+        metadata
+      );
+      return waitForElement(() => container.querySelector('.create-course-button'));
+    });
     context('when course data fetch succeeds', function () {
       it('displays the correct course information', async function () {
         const { getByText } = render(
