@@ -17,7 +17,6 @@ describe('Auth controller', function () {
   const CLIENT_URL = 'https://planning.seas.harvard.edu';
   const CAS_URL = 'https://www.pin1.harvard.edu/cas';
   const SERVER_URL = 'https://computingapps.seas.harvard.edu';
-  const GROUPER_PREFIX = 'harvard:included:group:';
   beforeEach(async function () {
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
@@ -29,7 +28,6 @@ describe('Auth controller', function () {
       .useValue(new ConfigService({
         CLIENT_URL,
         CAS_URL,
-        GROUPER_PREFIX,
         SERVER_URL,
       }))
       .compile();
@@ -101,14 +99,6 @@ describe('Auth controller', function () {
     let testRequest: Request;
     const loginOrigin = `${CLIENT_URL}/origin`;
     const fakeTicket = 'ST-1856339-aA5Yuvrxzpv8Tau1cYQ7';
-    const validGroups = [
-      `${GROUPER_PREFIX}one`,
-      `${GROUPER_PREFIX}two`,
-    ];
-    const invalidGroups = [
-      'harvard:excluded:group:three',
-      'harvard:excluded:group:four',
-    ];
     context('With a ticket query param', function () {
       beforeEach(function () {
         reqStub = stub(axios, 'request');
@@ -122,10 +112,7 @@ describe('Auth controller', function () {
                 eduPersonPrincipalName: [dummy.regularUser.eppn],
                 givenName: [dummy.regularUser.firstName],
                 sn: [dummy.regularUser.lastName],
-                memberOf: [
-                  ...validGroups,
-                  ...invalidGroups,
-                ],
+                memberOf: dummy.regularUser.groups,
               },
             },
           },
@@ -203,10 +190,10 @@ describe('Auth controller', function () {
               dummy.regularUser.lastName
             );
           });
-          it('Should only include groups with the GROUPER_PREFIX', function () {
+          it('Should include all of the user groups', function () {
             deepStrictEqual(
               testRequest.session.user.groups,
-              validGroups
+              dummy.regularUser.groups
             );
           });
         });

@@ -197,13 +197,7 @@ export class AuthController {
           eppn: validUser.eduPersonPrincipalName?.[0],
           lastName: validUser.sn?.[0],
           firstName: validUser.givenName?.[0],
-          groups: Array.isArray(validUser.memberOf)
-            ? validUser
-              .memberOf
-              .filter((group) => group.startsWith(
-                this.config.get('GROUPER_PREFIX')
-              ))
-            : [],
+          groups: validUser.memberOf || [],
         });
         req.session.user = authorizedUser;
         return {
