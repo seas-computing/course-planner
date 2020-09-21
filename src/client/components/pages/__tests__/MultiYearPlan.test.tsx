@@ -32,7 +32,7 @@ describe('MultYearPlan', function () {
   });
 
   context('when multi year plan data fetch succeeds', function () {
-    it('displays the MYP area information', async function () {
+    it('displays the MYP information', async function () {
       const { findByText } = render(
         <MultiYearPlan />,
         dispatchMessage
@@ -61,13 +61,13 @@ describe('MultYearPlan', function () {
         .map(
           (row) => (Array.from(row.cells).map((cell) => cell.textContent))
         );
-      //strictEqual(rowsContent[1][0], testData[0].area);
-      strictEqual(rowsContent[1][0], testData[0].catalogNumber);
-      strictEqual(rowsContent[1][1], testData[0].title);
+      strictEqual(rowsContent[1][0], testData[0].catalogPrefix);
+      strictEqual(rowsContent[1][1], testData[0].catalogNumber);
+      strictEqual(rowsContent[1][2], testData[0].title);
       const facultyNames1 = testData[0].semesters
         .map((semester) => semester.instance.faculty.map((f) => f.displayName).join(''))
         .join();
-      const facultyNames2 = rowsContent[1].slice(2).join();
+      const facultyNames2 = rowsContent[1].slice(3).join();
       strictEqual(facultyNames1, facultyNames2);
     });
   });
