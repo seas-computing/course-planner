@@ -23,7 +23,7 @@ const CATALOGPREFIX_COLORS = {
  * with a given catalogprefix, or else returns '' if there is no color
  * for the given value.
  */
-export const getCatalogPrefixColor = (catalogprefix: string): string => {
+export const getCatPrefixColor = (catalogprefix: string): string => {
   if (catalogprefix in CATALOGPREFIX_COLORS) {
     return CATALOGPREFIX_COLORS[catalogprefix] as string;
   }

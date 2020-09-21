@@ -17,10 +17,8 @@ import { SemesterView } from 'server/semester/SemesterView.entity';
     .select('c.id', 'id')
     .addSelect('c.prefix', 'catalogPrefix')
     .addSelect('c.number', 'catalogNumber')
-    //.addSelect("CONCAT_WS(' ', c.prefix, c.number)", 'catalogNumber')
     .addSelect('c.title', 'title')
-    .from(Course, 'c')
-    //.leftJoin(Area, 'a', 'c."areaId" = a.id'),
+    .from(Course, 'c'),
 })
 export class MultiYearPlanView {
   /**
@@ -29,21 +27,19 @@ export class MultiYearPlanView {
   @ViewColumn()
   public id: string;
 
-
   /**
    * From [[Course]]
-   * Combines the course prefix and number, e.g. `CS 50`
-   */
-  @ViewColumn()
-  public catalogNumber: string;
-
-    /**
-   * From [[Course]]
-   * Combines the course prefix and number, e.g. `CS 50`
+   * Course prefix , e.g. `CS`
    */
   @ViewColumn()
   public catalogPrefix: string;
 
+  /**
+   * From [[Course]]
+   * Course catalog number, e.g. `50`
+   */
+  @ViewColumn()
+  public catalogNumber: string;
 
   /**
    * From [[Course]]
