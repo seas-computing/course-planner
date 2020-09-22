@@ -28,7 +28,7 @@ export const getCatPrefixColor = (catalogprefix: string): string => {
   if (catalogprefix in CATALOGPREFIX_COLORS) {
     return CATALOGPREFIX_COLORS[catalogprefix] as string;
   }
-  return CATALOGPREFIX_COLORS['General'];
+  return CATALOGPREFIX_COLORS.General;
 };
 
 export default CATALOGPREFIX_COLORS;
