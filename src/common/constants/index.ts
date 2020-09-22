@@ -1,5 +1,6 @@
 export { default as ABSENCE_TYPE } from './absenceType';
 export { default as AREA_COLORS, getAreaColor } from './areaColors';
+export { default as CATALOGPREFIX_COLORS, getCatPrefixColor } from './catalogPrefixColors';
 export { default as FACULTY_TYPE } from './facultyType';
 export { default as DAY } from './day';
 export { default as OFFERED } from './offered';
