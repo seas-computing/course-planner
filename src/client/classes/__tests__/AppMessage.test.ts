@@ -1,6 +1,6 @@
 import { strictEqual } from 'assert';
+import * as dummy from 'testData';
 import { AppMessage, MESSAGE_TYPE } from '..';
-import * as dummy from '../../../common/__tests__/data';
 
 describe('AppMessage', function () {
   describe('Constructor', function () {

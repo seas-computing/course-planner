@@ -28,8 +28,13 @@ import {
   MultiYearPlanResponseDTO,
   MultiYearPlanSemester,
 } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
+<<<<<<< HEAD
 import { getMultiYearPlan } from '../../api/multiYearPlan';
 import { getCatPrefixColor } from '../../../common/constants/catalogPrefixColors';
+=======
+import { MultiYearPlanAPI } from 'client/api/multiYearPlan';
+import { getAreaColor } from '../../../common/constants';
+>>>>>>> develop
 
 /**
  * The component represents the Multi Year Plan page, which will be rendered at
@@ -46,7 +51,7 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
 
   useEffect((): void => {
     setFetching(true);
-    getMultiYearPlan()
+    MultiYearPlanAPI.getMultiYearPlan()
       .then((multiYearPlanList) => {
         setMultiYearPlan(multiYearPlanList);
       })

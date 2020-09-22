@@ -25,7 +25,7 @@ import {
   createCourseDtoExample,
   computerScienceCourseResponse,
   updateCourseExample,
-} from 'common/__tests__/data';
+} from 'testData';
 import { Semester } from 'server/semester/semester.entity';
 import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 import { Area } from 'server/area/area.entity';

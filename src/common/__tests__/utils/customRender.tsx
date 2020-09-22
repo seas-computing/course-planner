@@ -11,21 +11,25 @@ import {
   MessageContext,
   DispatchMessage,
 } from 'client/context';
+import { MetadataContext } from 'client/context/MetadataContext';
+import { MetadataResponse } from 'common/dto/metadata/MetadataResponse.dto';
 
 /**
  * In order to streamline our tests, we are redefining the `render` function to
  * include the Memory Router, Theme Provider, and Message Context Provider to
  * avoid having to redefine an App Stub for each test
  */
-
 const customRender = (
   ui: ReactElement,
-  dispatchMessage: DispatchMessage
+  dispatchMessage: DispatchMessage,
+  metadata?: MetadataResponse
 ): RenderResult => render(
   <MemoryRouter>
     <MarkOneWrapper>
       <MessageContext.Provider value={dispatchMessage}>
-        {ui}
+        <MetadataContext.Provider value={metadata}>
+          {ui}
+        </MetadataContext.Provider>
       </MessageContext.Provider>
     </MarkOneWrapper>
   </MemoryRouter>

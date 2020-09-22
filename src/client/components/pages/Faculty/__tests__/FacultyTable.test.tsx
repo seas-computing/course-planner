@@ -3,7 +3,8 @@ import {
   appliedMathFacultyScheduleResponse,
   electricalEngineeringFacultyScheduleResponse,
   newAreaFacultyScheduleResponse,
-} from 'common/__tests__/data/faculty';
+  error,
+} from 'testData';
 import {
   render,
   BoundFunction,
@@ -22,12 +23,12 @@ import {
   stub,
 } from 'sinon';
 import request from 'axios';
-import { error } from 'testData';
-import FacultyScheduleTable, {
-  categoryEnumToTitleCase,
+import {
   absenceEnumToTitleCase,
-} from '../FacultyScheduleTable';
+  facultyTypeEnumToTitleCase,
+} from 'common/utils/facultyHelperFunctions';
 import FacultySchedule from '../FacultyPage';
+import FacultyScheduleTable from '../FacultyScheduleTable';
 
 /**
  * Helper function used to compare table row contents with faculty schedule data
@@ -50,7 +51,7 @@ const assertRowMatchesResponse = function (
   strictEqual(area, response.area);
   strictEqual(lastName, response.lastName);
   strictEqual(firstName, response.firstName);
-  strictEqual(category, categoryEnumToTitleCase(response.category));
+  strictEqual(category, facultyTypeEnumToTitleCase(response.category));
   strictEqual(jointWith, response.jointWith);
   strictEqual(fallAbsence, absenceEnumToTitleCase(
     response.fall.absence.type

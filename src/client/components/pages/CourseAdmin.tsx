@@ -21,8 +21,8 @@ import { MessageContext } from 'client/context';
 import { TableRowProps } from 'mark-one/lib/Tables/TableRow';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
-import { getAllCourses } from '../../api/courses';
 import { getAreaColor } from '../../../common/constants';
+import { CourseAPI } from '../../api/courses';
 
 /**
  * The component represents the Course Admin page, which will be rendered at
@@ -44,9 +44,10 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
    * If it fails, display a message for the user
    */
   useEffect((): void => {
-    getAllCourses()
-      .then((courses): void => {
+    CourseAPI.getAllCourses()
+      .then((courses): ManageCourseResponseDTO[] => {
         setCourses(courses);
+        return courses;
       })
       .catch((): void => {
         dispatchMessage({

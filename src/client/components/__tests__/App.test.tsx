@@ -1,32 +1,36 @@
 import React from 'react';
 import { strictEqual } from 'assert';
 import {
-  render,
   waitForElement,
   fireEvent,
+  render,
 } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { render as customRender } from 'test-utils';
+import { metadata } from 'testData';
 import { stub, SinonStub } from 'sinon';
+import { MetadataAPI } from 'client/api/metadata';
 import * as dummy from 'testData';
-import * as userApi from 'client/api/users';
-import * as metaApi from 'client/api/metadata';
+import { UserAPI } from 'client/api';
+import { MemoryRouter } from 'react-router-dom';
 import { ColdApp as App } from '../App';
 
 describe('App', function () {
   let userStub: SinonStub;
   let metaStub: SinonStub;
+  let dispatchMessage: SinonStub;
   beforeEach(function () {
-    userStub = stub(userApi, 'getCurrentUser');
-    metaStub = stub(metaApi, 'getMetadata');
+    userStub = stub(UserAPI, 'getCurrentUser');
+    metaStub = stub(MetadataAPI, 'getMetadata');
+    dispatchMessage = stub();
     userStub.resolves(dummy.regularUser);
     metaStub.resolves(dummy.metadata);
   });
   describe('rendering', function () {
     it('creates a div for app content', async function () {
-      const { container } = render(
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
+      const { container } = customRender(
+        <App />,
+        dispatchMessage,
+        metadata
       );
       return waitForElement(() => container.querySelector('.app-content'));
     });
@@ -133,10 +137,10 @@ describe('App', function () {
     });
     */
     it('only renders one active tab at a time', async function () {
-      const { getAllByRole, findByText } = render(
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
+      const { getAllByRole, findByText } = customRender(
+        <App />,
+        dispatchMessage,
+        metadata
       );
       await findByText('Courses');
       const tabs = getAllByRole('listitem').map((listItem) => listItem.getElementsByTagName('div')[0]);
@@ -149,10 +153,10 @@ describe('App', function () {
         metaStub.resolves(dummy.metadata);
       });
       it('displays the name of the current user', async function () {
-        const { findByText } = render(
-          <MemoryRouter>
-            <App />
-          </MemoryRouter>
+        const { findByText } = customRender(
+          <App />,
+          dispatchMessage,
+          metadata
         );
         strictEqual(userStub.callCount, 1);
         const { fullName } = dummy.regularUser;
@@ -165,10 +169,10 @@ describe('App', function () {
         metaStub.resolves(dummy.metadata);
       });
       it('displays an error Message', async function () {
-        const { findByText } = render(
-          <MemoryRouter>
-            <App />
-          </MemoryRouter>
+        const { findByText } = customRender(
+          <App />,
+          dispatchMessage,
+          metadata
         );
         strictEqual(userStub.callCount, 1);
         return findByText('Unable to get user data', { exact: false });
@@ -180,10 +184,10 @@ describe('App', function () {
         metaStub.rejects(dummy.error);
       });
       it('displays an error Message', async function () {
-        const { findByText } = render(
-          <MemoryRouter>
-            <App />
-          </MemoryRouter>
+        const { findByText } = customRender(
+          <App />,
+          dispatchMessage,
+          metadata
         );
         strictEqual(userStub.callCount, 1);
         const nextButton = await findByText('next', { exact: false });
