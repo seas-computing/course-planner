@@ -13,9 +13,10 @@ const CATALOGPREFIX_COLORS = {
   EPS: '#946EB7',
   ES: '#f9df57',
   ESE: '#75c3d5',
-  Seminar: '#ec8f9c',
-  Gened: '#c0c0c0',
-  Frsemr: '#c0c0c0',
+  SEMINAR: '#ec8f9c',
+  GenEd: '#c0c0c0',
+  FRSEMR: '#c0c0c0',
+  General: '#95b5df',
 };
 
 /**
@@ -27,7 +28,7 @@ export const getCatPrefixColor = (catalogprefix: string): string => {
   if (catalogprefix in CATALOGPREFIX_COLORS) {
     return CATALOGPREFIX_COLORS[catalogprefix] as string;
   }
-  return '';
+  return CATALOGPREFIX_COLORS['General'];
 };
 
 export default CATALOGPREFIX_COLORS;
