@@ -25,7 +25,7 @@ import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { getAreaColor } from '../../../common/constants';
 import { CourseAPI } from '../../api/courses';
 import { VerticalSpace } from '../layout';
-import CourseModal from './CourseModal';
+import CourseModal from './Courses/CourseModal';
 
 /**
  * Computes the id of the course button for the course being edited
