@@ -10,7 +10,6 @@ import {
   deepStrictEqual,
   rejects,
 } from 'assert';
-import { UnauthorizedException } from '@nestjs/common';
 import request, {
   AxiosResponse,
 } from '../request';
@@ -54,11 +53,16 @@ describe('User API', function () {
       });
     });
     context('when data fetch fails', function () {
-      context('With a 401 error', function () {
+      context('With an Axios 401 error', function () {
         let prevURL: string;
         const SERVER_URL = 'https://computingapps.seas.harvard.edu';
         beforeEach(async function () {
-          getStub.rejects(new UnauthorizedException());
+          const error401 = {
+            response: {
+              status: 401,
+            },
+          };
+          getStub.rejects(error401);
           // replace and restore the SERVER_URL env var
           prevURL = process.env.SERVER_URL;
           process.env.SERVER_URL = SERVER_URL;
