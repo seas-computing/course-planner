@@ -4,7 +4,7 @@
  * capriciously.
  */
 
-const CATALOGPREFIX_COLORS = {
+const CATALOG_PREFIX_COLORS = {
   AC: '#da373e',
   AM: '#4eadab',
   AP: '#cedb51',
@@ -25,10 +25,10 @@ const CATALOGPREFIX_COLORS = {
  * for the given value.
  */
 export const getCatPrefixColor = (catalogprefix: string): string => {
-  if (catalogprefix in CATALOGPREFIX_COLORS) {
-    return CATALOGPREFIX_COLORS[catalogprefix] as string;
+  if (catalogprefix in CATALOG_PREFIX_COLORS) {
+    return CATALOG_PREFIX_COLORS[catalogprefix] as string;
   }
-  return CATALOGPREFIX_COLORS.General;
+  return CATALOG_PREFIX_COLORS.General;
 };
 
-export default CATALOGPREFIX_COLORS;
+export default CATALOG_PREFIX_COLORS;

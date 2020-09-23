@@ -112,8 +112,8 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
           <Table>
             <TableHead>
               <TableRow isStriped>
-                <TableHeadingCell scope="col">CatalogPrefix</TableHeadingCell>
-                <TableHeadingCell scope="col">CatalogNumber</TableHeadingCell>
+                <TableHeadingCell scope="col">Catalog Prefix</TableHeadingCell>
+                <TableHeadingCell scope="col">Catalog Number</TableHeadingCell>
                 <TableHeadingCell scope="col">Title</TableHeadingCell>
                 <>
                   {yearsHeaders(multiYearPlan)}

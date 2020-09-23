@@ -1,7 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class MultiYearPlanViews1600280233828 implements MigrationInterface {
-  name = 'MultiYearPlanViews1600280233828';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query('DELETE FROM "typeorm_metadata" WHERE "type" = \'VIEW\' AND "schema" = $1 AND "name" = $2', ['public', 'MultiYearPlanView']);
