@@ -114,7 +114,14 @@ export interface HarvardKeyResponse {
  * 6. The server sends a request back to Harvard Key, including that ticket
  * 7. Harvard Key verifies the ticket, and responds to the server with the
  *    user data
- * 8. The server redirects the user back to the client application
+ * 8. The server saves the user data in the session, and redirects the user
+ *    back to the client application with the session key in the cookie
+ * 9. On subsequent requests, the cookie is used to retrieve the user data from
+ *    the session.
+ *
+ * If the user has already logged in and their session cookie is still valid
+ * when they initially load the application, the user data stored in session
+ * will be used, bypassing this flow.
  *
  * For more information, see: {@link https://apereo.github.io/cas/4.2.x/protocol/CAS-Protocol-Specification.html#cas-protocol-30-specification}
  */
