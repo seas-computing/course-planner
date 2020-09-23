@@ -56,7 +56,7 @@ export interface HarvardKeyResponse {
         * **Please note:** Whilst [[eppn]] may _look_ the same as an email address -
         * an email addresses can change (for example, if a user changes their
         * name etc.), whilst an EPPN cannot. This means that EPPN is **NOT**
-        * nececcarily the same as `email`(inherited from `Profile`) and the two
+        * necessarily the same as `email`(inherited from `Profile`) and the two
         * should not be considered interchangeable
         *
         * For more information on harvard key and identity management, see
@@ -92,7 +92,6 @@ export interface HarvardKeyResponse {
        * See {@link https://apereo.github.io/cas/4.2.x/protocol/CAS-Protocol-Specification.html#253-error-codes}
        * @example INVALID_REQUEST
        */
-
       code: string,
       /** A longer description for the failure */
       description?: string,
@@ -170,7 +169,7 @@ export class AuthController {
   })
   @ApiResponse({
     status: HttpStatus.FOUND,
-    description: 'if the user data checks out, return the the original page',
+    description: 'if the user data checks out, return the original page',
   })
   @Get('/validate')
   @Redirect('')

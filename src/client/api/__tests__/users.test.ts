@@ -49,7 +49,7 @@ describe('User API', function () {
         const [[path]] = getStub.args;
         strictEqual(path, '/api/users/current');
       });
-      it('should return the metadata', function () {
+      it('should return the user', function () {
         deepStrictEqual(result, dummy.regularUser);
       });
     });
