@@ -18,7 +18,6 @@ import {
   computerScienceCourseQueryResult,
   physicsCourseQueryResult,
   computerScienceCourse,
-  physicsCourse,
   computerScienceCourseResponse,
   physicsCourseResponse,
 } from 'testData';

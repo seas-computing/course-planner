@@ -25,6 +25,13 @@ import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { getAreaColor } from '../../../common/constants';
 import { CourseAPI } from '../../api/courses';
 import { VerticalSpace } from '../layout';
+import CourseModal from './CourseModal';
+
+/**
+ * Computes the id of the course button for the course being edited
+ */
+const computeEditCourseButtonId = (course: ManageCourseResponseDTO):
+string => `editCourse${course.id}`;
 
 /**
  * The component represents the Course Admin page, which will be rendered at
@@ -35,6 +42,23 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
   const [currentCourses, setCourses] = useState(
     [] as ManageCourseResponseDTO[]
   );
+
+  /**
+   * Keeps track of whether the course modal is currently visible.
+   * By default, the modal is not visible.
+   */
+  const [
+    courseModalVisible,
+    setCourseModalVisible,
+  ] = useState(false);
+
+  /**
+   * The currently selected faculty
+   */
+  const [
+    currentCourse,
+    setCurrentCourse,
+  ] = useState(null as ManageCourseResponseDTO);
 
   /**
    * The current value for the message context
@@ -102,8 +126,14 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
                 <TableCell>{course.title}</TableCell>
                 <TableCell>
                   <BorderlessButton
+                    id={computeEditCourseButtonId(course)}
                     variant={VARIANT.INFO}
-                    onClick={(): void => {}}
+                    onClick={
+                      (): void => {
+                        setCurrentCourse(course);
+                        setCourseModalVisible(true);
+                      }
+                    }
                   >
                     <FontAwesomeIcon icon={faEdit} />
                   </BorderlessButton>
@@ -112,6 +142,25 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
             ))}
           </TableBody>
         </Table>
+        <CourseModal
+          isVisible={courseModalVisible}
+          currentCourse={currentCourse}
+          onClose={(): void => {
+            // Sets the focus back to the button that opened the modal
+            if (currentCourse) {
+              setCourseModalVisible(false);
+              const editButtonId = computeEditCourseButtonId(currentCourse);
+              const editButton = document.getElementById(editButtonId);
+              // this will run after the data is loaded, so no delay is necessary
+              window.setTimeout((): void => {
+                editButton.focus();
+              }, 0);
+            } else {
+              setCourseModalVisible(false);
+              window.setTimeout((): void => document.getElementById('createCourse').focus(), 0);
+            }
+          }}
+        />
       </div>
     </>
   );
