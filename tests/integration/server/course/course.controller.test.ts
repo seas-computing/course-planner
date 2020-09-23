@@ -55,11 +55,13 @@ describe('Course API', function () {
 
   beforeEach(async function () {
     mockCourseQueryBuilder = createStubInstance(SelectQueryBuilder);
+    mockCourseQueryBuilder.select.returnsThis();
     mockCourseQueryBuilder.addSelect.returnsThis();
     mockCourseQueryBuilder.leftJoinAndSelect.returnsThis();
     mockCourseQueryBuilder.orderBy.returnsThis();
     mockCourseQueryBuilder.addOrderBy.returnsThis();
-    mockCourseQueryBuilder.getMany.resolves(mockCourses as unknown as Course[]);
+    mockCourseQueryBuilder.getRawMany
+      .resolves(mockCourses as unknown as Course[]);
 
     mockAreaRepository = {
       findOneOrFail: stub(),

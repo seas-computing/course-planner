@@ -15,8 +15,12 @@ import { Semester } from 'server/semester/semester.entity';
 import {
   spring,
   fall,
+  computerScienceCourseQueryResult,
+  physicsCourseQueryResult,
   computerScienceCourse,
   physicsCourse,
+  computerScienceCourseResponse,
+  physicsCourseResponse,
 } from 'testData';
 import { Area } from 'server/area/area.entity';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
@@ -32,13 +36,14 @@ describe('Course service', function () {
   let mockCourseQueryBuilder: SinonStubbedInstance<SelectQueryBuilder<Course>>;
   beforeEach(async function () {
     mockCourseQueryBuilder = createStubInstance(SelectQueryBuilder);
+    mockCourseQueryBuilder.select.returnsThis();
     mockCourseQueryBuilder.addSelect.returnsThis();
     mockCourseQueryBuilder.leftJoinAndSelect.returnsThis();
     mockCourseQueryBuilder.orderBy.returnsThis();
     mockCourseQueryBuilder.addOrderBy.returnsThis();
-    mockCourseQueryBuilder.getMany.resolves([
-      computerScienceCourse,
-      physicsCourse,
+    mockCourseQueryBuilder.getRawMany.resolves([
+      computerScienceCourseQueryResult,
+      physicsCourseQueryResult,
     ]);
     mockAreaRepository = {
       findOneOrFail: stub(),
@@ -76,7 +81,10 @@ describe('Course service', function () {
   describe('findCourses', function () {
     it('returns all courses from the database', async function () {
       const results = await courseService.findCourses();
-      deepStrictEqual(results, [computerScienceCourse, physicsCourse]);
+      deepStrictEqual(
+        results,
+        [computerScienceCourseResponse, physicsCourseResponse]
+      );
     });
   });
   describe('save', function () {

@@ -3,6 +3,7 @@ import { TERM_PATTERN, IS_SEAS } from 'common/constants';
 import { CreateCourse } from 'common/dto/courses/CreateCourse.dto';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import { UpdateCourseDTO } from 'common/dto/courses/UpdateCourse.dto';
+import { FindCoursesQueryResult } from 'server/course/course.service';
 /**
  * Empty instance of a [[Course]] entity with no properties set. Useful for
  * testing that something of type `Course` was returned, or passed to a method
@@ -81,6 +82,22 @@ export const computerScienceCourseResponse: ManageCourseResponseDTO = {
 };
 
 /**
+ * An example [[FindCoursesQueryResult]] response representing CS 50.
+ */
+export const computerScienceCourseQueryResult: FindCoursesQueryResult = {
+  id: computerScienceCourseResponse.id,
+  areaId: computerScienceCourseResponse.area.id,
+  areaName: computerScienceCourseResponse.area.name,
+  title: computerScienceCourseResponse.title,
+  isSEAS: computerScienceCourseResponse.isSEAS,
+  isUndergraduate: computerScienceCourseResponse.isUndergraduate,
+  catalogNumber: computerScienceCourseResponse.catalogNumber,
+  termPattern: computerScienceCourseResponse.termPattern,
+  sameAs: computerScienceCourseResponse.sameAs,
+  private: computerScienceCourseResponse.private,
+};
+
+/**
  * An example [[ManageCourseResponseDTO]] response representing AP 295a.
  */
 export const physicsCourseResponse: ManageCourseResponseDTO = {
@@ -96,6 +113,22 @@ export const physicsCourseResponse: ManageCourseResponseDTO = {
   termPattern: TERM_PATTERN.SPRING,
   sameAs: '',
   private: true,
+};
+
+/**
+ * An example [[FindCoursesQueryResult]] response representing AP 295a.
+ */
+export const physicsCourseQueryResult: FindCoursesQueryResult = {
+  id: physicsCourseResponse.id,
+  areaId: physicsCourseResponse.area.id,
+  areaName: physicsCourseResponse.area.name,
+  title: physicsCourseResponse.title,
+  isSEAS: physicsCourseResponse.isSEAS,
+  isUndergraduate: physicsCourseResponse.isUndergraduate,
+  catalogNumber: physicsCourseResponse.catalogNumber,
+  termPattern: physicsCourseResponse.termPattern,
+  sameAs: physicsCourseResponse.sameAs,
+  private: physicsCourseResponse.private,
 };
 
 /**
