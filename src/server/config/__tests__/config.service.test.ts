@@ -247,13 +247,15 @@ describe('Configuration Service', function () {
     });
   });
   describe('Session Settings', function () {
-    const COOKIE_DOMAIN = 'seas.harvard.edu';
     const SESSION_SECRET = safeString;
+    const SERVER_DOMAIN = 'computingapps.seas.harvard.edu';
+    const SERVER_PATH = '/course-planner';
+    const SERVER_URL = `https://${SERVER_DOMAIN}${SERVER_PATH}`;
     let sessionSettings: SessionOptions;
     let testStore: RedisStore;
     beforeEach(function () {
       const config = new ConfigService({
-        COOKIE_DOMAIN,
+        SERVER_URL,
         SESSION_SECRET,
       });
       testStore = {} as RedisStore;
@@ -265,8 +267,11 @@ describe('Configuration Service', function () {
     it('Should provide the session secret', function () {
       strictEqual(sessionSettings.secret, SESSION_SECRET);
     });
+    it('Should provide the cookie path', function () {
+      strictEqual(sessionSettings.cookie.path, SERVER_PATH);
+    });
     it('Should provide the cookie domain', function () {
-      strictEqual(sessionSettings.cookie.domain, COOKIE_DOMAIN);
+      strictEqual(sessionSettings.cookie.domain, SERVER_DOMAIN);
     });
     it('Should provide a cookie maxAge of 12 hours', function () {
       strictEqual(sessionSettings.cookie.maxAge, 1000 * 60 * 60 * 12);

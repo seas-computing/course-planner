@@ -48,6 +48,19 @@ class ConfigService {
   }
 
   /**
+   * Return a WHATWG URL object for the SERVER URL, thowing an error if
+   * SERVER_URL is not specified
+   *
+   * As URL objects are mutable, we should avoid exposing and/or modifying this
+   * value directly
+   */
+
+  private get serverURL(): URL {
+    const { SERVER_URL } = this.env;
+    return new URL(SERVER_URL);
+  }
+
+  /**
    * Return connection parameters for the TypeORM module
    *
    * The entities property uses a file glob to final all declared entities.
@@ -129,8 +142,11 @@ class ConfigService {
   public getSessionSettings(store: RedisStore): NestSessionOptions {
     const {
       SESSION_SECRET,
-      COOKIE_DOMAIN,
     } = this.env;
+    const {
+      hostname: domain,
+      pathname: path,
+    } = this.serverURL;
     return {
       session: {
         store,
@@ -141,7 +157,8 @@ class ConfigService {
         cookie: {
           // 12 hours
           maxAge: 1000 * 60 * 60 * 12,
-          domain: COOKIE_DOMAIN,
+          domain,
+          path,
           sameSite: 'strict',
           secure: false,
         },
