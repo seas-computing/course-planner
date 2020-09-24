@@ -5,6 +5,8 @@ import {
   IsString,
   IsEnum,
   IsOptional,
+  IsUUID,
+  IsNotEmpty,
 } from 'class-validator';
 import { CourseArea } from './CourseArea.dto';
 
@@ -18,6 +20,13 @@ export abstract class UpdateCourseDTO {
   })
   @IsOptional()
   public area: CourseArea;
+
+  @ApiModelProperty({
+    example: 'df15cfff-0f6f-4769-8841-1ab8a9c335d9',
+  })
+  @IsUUID()
+  @IsNotEmpty()
+  public id: string;
 
   @ApiModelProperty({
     type: 'boolean',
