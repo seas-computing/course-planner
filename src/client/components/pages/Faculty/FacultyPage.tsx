@@ -8,7 +8,7 @@ import React, {
 import { LoadSpinner } from 'mark-one';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { MessageContext } from 'client/context';
-import { getFacultySchedulesForYear } from 'client/api';
+import { FacultyAPI } from 'client/api';
 import {
   AppMessage,
   MESSAGE_TYPE,
@@ -20,7 +20,7 @@ import FacultyScheduleTable from './FacultyScheduleTable';
  * This component represents the Faculty page, which will be rendered at
  * the route '/faculty-schedule'
  */
-const FacultySchedule: FunctionComponent = function (): ReactElement {
+const FacultySchedule: FunctionComponent = (): ReactElement => {
   /**
    * Store the list of faculty schedules to be displayed
    */
@@ -47,7 +47,7 @@ const FacultySchedule: FunctionComponent = function (): ReactElement {
    */
   useEffect((): void => {
     setFetching(true);
-    getFacultySchedulesForYear(acadYear)
+    FacultyAPI.getFacultySchedulesForYear(acadYear)
       .then((facultySchedules): void => {
         setFacultySchedules(facultySchedules[acadYear]);
       })

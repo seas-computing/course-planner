@@ -51,4 +51,9 @@ export abstract class ManageFacultyResponseDTO {
     example: 'EPS (0.5 FTE SEAS)',
   })
   public jointWith?: string;
+
+  @ApiModelProperty({
+    example: 'Prefers classroom near Maxwell-Dworkin',
+  })
+  public notes?: string;
 }

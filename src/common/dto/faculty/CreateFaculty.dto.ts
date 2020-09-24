@@ -4,30 +4,10 @@ import {
   IsEnum,
   IsOptional,
   IsString,
-  IsUUID,
-  ValidateIf,
-  IsNotEmptyObject,
   IsNumberString,
   Length,
 } from 'class-validator';
 import { FACULTY_TYPE } from '../../constants';
-
-export abstract class FacultyArea {
-  @ApiModelProperty({
-    type: 'string',
-    example: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
-  })
-  @IsUUID()
-  public id: string;
-
-  @ApiModelProperty({
-    type: 'string',
-    example: 'ACS',
-  })
-  @IsString()
-  @IsNotEmpty()
-  public name: string;
-}
 
 export abstract class CreateFacultyDTO {
   @ApiModelProperty({
@@ -41,16 +21,15 @@ export abstract class CreateFacultyDTO {
   @ApiModelProperty({
     example: 'Samantha',
   })
-  @ValidateIf(({ lastName }): boolean => lastName === undefined)
-  @IsNotEmpty()
+  @IsOptional()
+  @IsString()
   public firstName?: string;
 
   @ApiModelProperty({
     example: 'Johnston',
   })
-  @ValidateIf(({ firstName }): boolean => firstName === undefined)
   @IsNotEmpty()
-  public lastName?: string;
+  public lastName: string;
 
   @ApiModelProperty({
     example: FACULTY_TYPE.LADDER,
@@ -60,10 +39,12 @@ export abstract class CreateFacultyDTO {
   public category: FACULTY_TYPE;
 
   @ApiModelProperty({
-    type: FacultyArea,
+    type: 'string',
+    example: 'ACS',
   })
-  @IsNotEmptyObject()
-  public area: FacultyArea;
+  @IsString()
+  @IsNotEmpty()
+  public area: string;
 
   @ApiModelProperty({
     example: 'EPS (0.5 FTE SEAS)',
@@ -71,4 +52,11 @@ export abstract class CreateFacultyDTO {
   @IsOptional()
   @IsString()
   public jointWith?: string;
+
+  @ApiModelProperty({
+    example: 'Prefers classroom near Maxwell-Dworkin',
+  })
+  @IsOptional()
+  @IsString()
+  public notes?: string;
 }

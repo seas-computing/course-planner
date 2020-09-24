@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { stub, SinonStub } from 'sinon';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { deepStrictEqual } from 'assert';
-import { appliedMathFacultyMember, bioengineeringFacultyMember } from 'testData';
+import { bioengineeringFacultyMember, appliedMathFacultyMember } from 'testData';
 import { Semester } from 'server/semester/semester.entity';
 import { FacultyService } from '../faculty.service';
 import { Faculty } from '../faculty.entity';

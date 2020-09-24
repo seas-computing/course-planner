@@ -2,19 +2,23 @@ import React from 'react';
 import { strictEqual, deepStrictEqual } from 'assert';
 import { stub, SinonStub } from 'sinon';
 import {
-  render, BoundFunction, QueryByText, FindByText, wait,
+  render,
+  BoundFunction,
+  QueryByText,
+  FindByText,
+  wait,
 } from 'test-utils';
-import * as courseAPI from 'client/api/courses';
+import { CourseAPI } from 'client/api';
 import { AppMessage, MESSAGE_TYPE, MESSAGE_ACTION } from 'client/classes';
-import { cs50CourseInstance } from 'testData';
 import { MessageReducerAction } from 'client/context';
+import { cs50CourseInstance } from 'testData';
 import CoursesPage from '../CoursesPage';
 
 describe('Course Instances List', function () {
   let getStub: SinonStub;
   let dispatchStub: SinonStub;
   beforeEach(function () {
-    getStub = stub(courseAPI, 'getCourseInstancesForYear');
+    getStub = stub(CourseAPI, 'getCourseInstancesForYear');
     dispatchStub = stub();
   });
   describe('fetching data on render', function () {

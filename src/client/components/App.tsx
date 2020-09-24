@@ -32,10 +32,10 @@ import {
   PageTitle,
   Link,
 } from 'mark-one';
-import { getCurrentUser } from 'client/api';
+import { UserAPI } from 'client/api';
 import { UserResponse } from 'common/dto/users/userResponse.dto';
 import { MetadataContext } from 'client/context/MetadataContext';
-import { getMetadata } from 'client/api/metadata';
+import { MetadataAPI } from 'client/api/metadata';
 import { Message } from './layout';
 import NoMatch from './pages/NoMatch';
 import logo from '../img/seas-logo.svg';
@@ -77,7 +77,7 @@ export const ColdApp: SFC = (): ReactElement => {
    */
 
   useEffect((): void => {
-    getCurrentUser()
+    UserAPI.getCurrentUser()
       .then((user): UserResponse => {
         setUser(user);
         return user;
@@ -112,7 +112,7 @@ export const ColdApp: SFC = (): ReactElement => {
   });
 
   useEffect((): void => {
-    getMetadata()
+    MetadataAPI.getMetadata()
       .then((metadata): void => {
         setMetadata(metadata);
       })

@@ -81,6 +81,12 @@ export abstract class FacultyResponseDTO {
 
   @ApiModelProperty({
     type: 'string',
+    example: 'Prefers classroom near Maxwell-Dworkin',
+  })
+  public notes?: string;
+
+  @ApiModelProperty({
+    type: 'string',
     example: 'AM',
   })
   public area: string;
