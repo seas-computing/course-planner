@@ -18,7 +18,6 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { User } from 'common/classes';
-import qs from 'querystring';
 import axios from 'axios';
 import { ConfigService } from '../config/config.service';
 import { GROUP } from '../../common/constants';
@@ -150,16 +149,14 @@ export class AuthController {
     @Req() req: Request
   ): RedirectResponse {
     const referer = req.get('Referer');
-    if (referer && referer.startsWith(this.config.get('CLIENT_URL'))) {
+    if (referer && referer.startsWith(this.config.clientBaseURL)) {
       req.session.loginOrigin = referer;
     }
-    const redirectTo = `${this.config.get('CAS_URL')}/login?${qs.encode(
-      {
-        service: `${this.config.get('SERVER_URL')}/validate`,
-      }
-    )}`;
+    const redirect = new URL(this.config.casBaseURL);
+    redirect.pathname += '/login';
+    redirect.searchParams.set('service', this.config.casServiceURL);
     return {
-      url: redirectTo,
+      url: redirect.toString(),
       statusCode: HttpStatus.SEE_OTHER,
     };
   }
@@ -185,14 +182,12 @@ export class AuthController {
       @Query('ticket') ticket: string
   ): Promise<RedirectResponse> {
     if (ticket) {
-      const response = await axios.request({
-        url: `${this.config.get('CAS_URL')}/serviceValidate`,
-        params: {
-          ticket,
-          service: `${this.config.get('SERVER_URL')}/validate`,
-          format: 'JSON',
-        },
-      });
+      const validateUrl = new URL(this.config.casBaseURL);
+      validateUrl.pathname += '/serviceValidate';
+      validateUrl.searchParams.set('ticket', ticket);
+      validateUrl.searchParams.set('service', this.config.casServiceURL);
+      validateUrl.searchParams.set('format', 'JSON');
+      const response = await axios.get(validateUrl.toString());
       const validation = response.data as HarvardKeyResponse;
       if ('authenticationSuccess' in validation.serviceResponse) {
         const validUser = validation
@@ -207,8 +202,7 @@ export class AuthController {
         });
         req.session.user = authorizedUser;
         return {
-          url: (req.session.loginOrigin as string
-            || `${this.config.get('CLIENT_URL')}/courses`),
+          url: (req.session.loginOrigin as string || this.config.clientBaseURL),
           statusCode: HttpStatus.FOUND,
         };
       }
@@ -239,7 +233,7 @@ export class AuthController {
   ): RedirectResponse {
     delete req.session.user;
     return {
-      url: 'https://key.harvard.edu/logout',
+      url: `${this.config.casBaseURL}/logout`,
       statusCode: HttpStatus.SEE_OTHER,
     };
   }

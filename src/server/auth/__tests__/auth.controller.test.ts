@@ -14,9 +14,9 @@ import { ConfigModule } from '../../config/config.module';
 
 describe('Auth controller', function () {
   let controller: AuthController;
-  const CLIENT_URL = 'https://planning.seas.harvard.edu';
+  const CLIENT_URL = 'https://planning.seas.harvard.edu/courses';
   const CAS_URL = 'https://www.pin1.harvard.edu/cas';
-  const SERVER_URL = 'https://computingapps.seas.harvard.edu';
+  const SERVER_URL = 'https://computingapps.seas.harvard.edu/course-planner';
   beforeEach(async function () {
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
@@ -101,7 +101,7 @@ describe('Auth controller', function () {
     const fakeTicket = 'ST-1856339-aA5Yuvrxzpv8Tau1cYQ7';
     context('With a ticket query param', function () {
       beforeEach(function () {
-        reqStub = stub(axios, 'request');
+        reqStub = stub(axios, 'get');
       });
       context('When the response includes authenticationSuccess', function () {
         const fakeAssertion = {
@@ -156,7 +156,7 @@ describe('Auth controller', function () {
             strictEqual(result.statusCode, HttpStatus.FOUND);
           });
           it('Should return the clientURL + /courses as redirect url', function () {
-            strictEqual(result.url, `${CLIENT_URL}/courses`);
+            strictEqual(result.url, CLIENT_URL);
           });
         });
         context('When the assertion includes all data', function () {
@@ -316,7 +316,7 @@ describe('Auth controller', function () {
       strictEqual(result.statusCode, HttpStatus.SEE_OTHER);
     });
     it('Should return a redirect to the logout path', function () {
-      strictEqual(result.url, 'https://key.harvard.edu/logout');
+      strictEqual(result.url, `${CAS_URL}/logout`);
     });
   });
 });

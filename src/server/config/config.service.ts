@@ -48,6 +48,32 @@ class ConfigService {
   }
 
   /**
+   * Return a WHATWG URL object for the CAS URL, thowing an error if CAS_URL is
+   * not specified
+   *
+   * As URL objects are mutable, we should avoid exposing and/or modifying this
+   * value directly
+   */
+
+  private get casURL(): URL {
+    const { CAS_URL } = this.env;
+    return new URL(CAS_URL);
+  }
+
+  /**
+   * Return a WHATWG URL object for the CLIENT URL, thowing an error if
+   * CLIENT_URL is not specified
+   *
+   * As URL objects are mutable, we should avoid exposing and/or modifying this
+   * value directly
+   */
+
+  private get clientURL(): URL {
+    const { CLIENT_URL } = this.env;
+    return new URL(CLIENT_URL);
+  }
+
+  /**
    * Return a WHATWG URL object for the SERVER URL, thowing an error if
    * SERVER_URL is not specified
    *
@@ -58,6 +84,48 @@ class ConfigService {
   private get serverURL(): URL {
     const { SERVER_URL } = this.env;
     return new URL(SERVER_URL);
+  }
+
+  /**
+   * Return the base URL for HarvardKey's cas authentication process
+   * Should strip out any auth credentials, query strings and hashes, and remove
+   * any trailing slash
+   */
+
+  public get casBaseURL(): string {
+    const {
+      origin,
+      pathname,
+    } = this.casURL;
+    return `${origin}${pathname.slice().replace(/\/$/, '')}`;
+  }
+
+  /**
+   * Return the /validate enpoint for the application, which will be sent to
+   * HarvardKey as the service URL. Should strip out any auth credentials, query
+   * strings and hashes, and remove any trailing slash
+   */
+
+  public get casServiceURL(): string {
+    const {
+      origin,
+      pathname,
+    } = this.serverURL;
+    return `${origin}${pathname.slice().replace(/\/$/, '')}/validate`;
+  }
+
+  /**
+   * Return the base URL for the client application. Used as default return
+   * redirect in the auth process. Should strip out any auth credentials, query
+   * strings and hashes, and remove any trailing slash
+   */
+
+  public get clientBaseURL(): string {
+    const {
+      origin,
+      pathname,
+    } = this.clientURL;
+    return `${origin}${pathname.slice().replace(/\/$/, '')}`;
   }
 
   /**
