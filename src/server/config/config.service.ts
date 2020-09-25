@@ -1,5 +1,5 @@
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
-import { AUTH_MODE } from 'common/constants';
+import { AUTH_MODE, LOG_LEVEL } from 'common/constants';
 import { Absence } from 'server/absence/absence.entity';
 import { Area } from 'server/area/area.entity';
 import { Course } from 'server/course/course.entity';
@@ -280,6 +280,28 @@ class ConfigService {
       ? calendarYear
       : calendarYear + 1;
     return academicYear;
+  }
+
+  /**
+   * Return the maximum level of log message that should be displayed, based on
+   * the current value of NODE_ENV.
+   */
+
+  public get logLevel(): LOG_LEVEL {
+    switch (this.env.NODE_ENV) {
+      case 'production': {
+        return LOG_LEVEL.HTTP;
+      }
+      case 'development': {
+        return LOG_LEVEL.DEBUG;
+      }
+      case 'testing': {
+        return LOG_LEVEL.ERROR;
+      }
+      default: {
+        return LOG_LEVEL.INFO;
+      }
+    }
   }
 }
 
