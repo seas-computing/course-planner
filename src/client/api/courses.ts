@@ -15,7 +15,7 @@ const getAllCourses = async (): Promise<ManageCourseResponseDTO[]> => {
 /**
  * Submits a POST request to create a new course
  */
-const createCourse = async(courseInfo: CreateCourse):
+const createCourse = async (courseInfo: CreateCourse):
 Promise<ManageCourseResponseDTO> => {
   const response = await request.post('/api/course', courseInfo);
   return response.data as ManageCourseResponseDTO;
