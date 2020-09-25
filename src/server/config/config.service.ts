@@ -101,7 +101,7 @@ class ConfigService {
   }
 
   /**
-   * Return the /validate enpoint for the application, which will be sent to
+   * Return the /validate endpoint for the application, which will be sent to
    * HarvardKey as the service URL. Should strip out any auth credentials, query
    * strings and hashes, and remove any trailing slash
    */
