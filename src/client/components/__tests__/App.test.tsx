@@ -2,244 +2,169 @@ import React from 'react';
 import { strictEqual } from 'assert';
 import {
   waitForElement,
-  fireEvent,
+  BoundFunction,
+  FindByText,
+  wait,
   render,
 } from '@testing-library/react';
-import { render as customRender } from 'test-utils';
-import { metadata } from 'testData';
 import { stub, SinonStub } from 'sinon';
-import { MetadataAPI } from 'client/api/metadata';
 import * as dummy from 'testData';
-import { UserAPI } from 'client/api';
+import * as userApi from 'client/api/users';
+import * as metaApi from 'client/api/metadata';
+import { User } from 'common/classes';
+import { MetadataResponse } from 'common/dto/metadata/MetadataResponse.dto';
 import { MemoryRouter } from 'react-router-dom';
-import { ColdApp as App } from '../App';
+import App from '../App';
 
 describe('App', function () {
-  let userStub: SinonStub;
-  let metaStub: SinonStub;
-  let dispatchMessage: SinonStub;
+  let userFetchStub: SinonStub;
+  let metaFetchStub: SinonStub;
+  let setUserStateStub: SinonStub;
+  let setMetaStateStub: SinonStub;
+  let stateStub: SinonStub<(User | MetadataResponse | null)[]>;
   beforeEach(function () {
-    userStub = stub(UserAPI, 'getCurrentUser');
-    metaStub = stub(MetadataAPI, 'getMetadata');
-    dispatchMessage = stub();
-    userStub.resolves(dummy.regularUser);
-    metaStub.resolves(dummy.metadata);
+    userFetchStub = stub(userApi, 'getCurrentUser').resolves(dummy.regularUser);
+    metaFetchStub = stub(metaApi, 'getMetadata').resolves(dummy.metadata);
+    setUserStateStub = stub();
+    setMetaStateStub = stub();
+    stateStub = stub(React, 'useState');
+    stateStub
+      .withArgs(null)
+      .returns(
+        [
+          null,
+          setUserStateStub,
+        ]
+      );
+    stateStub
+      .withArgs(
+        {
+          currentAcademicYear: null,
+          areas: [],
+          semesters: [],
+        }
+      )
+      .returns(
+        [
+          {
+            currentAcademicYear: null,
+            areas: [],
+            semesters: [],
+          },
+          setMetaStateStub,
+        ]
+      );
+    stateStub.callThrough();
   });
   describe('rendering', function () {
     it('creates a div for app content', async function () {
-      const { container } = customRender(
-        <App />,
-        dispatchMessage,
-        metadata
-      );
-      return waitForElement(() => container.querySelector('.app-content'));
-    });
-    /*
-     * THESE TESTS ARE BROKEN. THEY SHOULDN'T REFERNCE THE MARKONETHEME
-     * VALUE DIRECTLY AND SHOULD BE REWRITTEN
-     *
-    it('initially loads the Courses tab with visible top, left, right borders and a transparent bottom border', async function () {
-      const { getByText } = render(
-        <MemoryRouter initialEntries={['/']}>
-          <App />
-        </MemoryRouter>
-      );
-      await waitForElement(() => getByText('Courses'));
-      const tab = getByText('Courses').parentNode as HTMLElement;
-      const style = window.getComputedStyle(tab);
-      const actual = [
-        style['border-bottom'],
-        style['border-top'],
-        style['border-left'],
-        style['border-right'],
-      ];
-      const expected = [
-        '1px solid transparent',
-        `${MarkOneTheme.border.hairline}`,
-        `${MarkOneTheme.border.hairline}`,
-        `${MarkOneTheme.border.hairline}`,
-      ];
-      deepStrictEqual(actual, expected);
-    });
-    it('displays corresponding tab with visible top, left, right borders and transparent bottom border when navigating directly to that section', async function () {
-      const { getByText } = render(
-        <MemoryRouter initialEntries={['/course-admin']}>
-          <App />
-        </MemoryRouter>
-      );
-      await waitForElement(() => getByText('Courses'));
-      const link = getByText('Course Admin');
-      const tab = link.parentNode as HTMLElement;
-      const style = window.getComputedStyle(tab);
-      const actual = [
-        style['border-bottom'],
-        style['border-top'],
-        style['border-left'],
-        style['border-right'],
-      ];
-      const expected = [
-        '1px solid transparent',
-        `${MarkOneTheme.border.hairline}`,
-        `${MarkOneTheme.border.hairline}`,
-        `${MarkOneTheme.border.hairline}`,
-      ];
-      deepStrictEqual(actual, expected);
-    });
-    it('displays tab with visible top, left, right borders and transparent bottom border when clicked', async function () {
-      const { getByText } = render(
+      const { container } = render(
         <MemoryRouter>
           <App />
         </MemoryRouter>
       );
-      await waitForElement(() => getByText('Courses'));
-      const link = getByText('Non class meetings');
-      fireEvent.click(link);
-      const tab = link.parentNode as HTMLElement;
-      const style = window.getComputedStyle(tab);
-      const actual = [
-        style['border-bottom'],
-        style['border-top'],
-        style['border-left'],
-        style['border-right'],
-      ];
-      const expected = [
-        '1px solid transparent',
-        `${MarkOneTheme.border.hairline}`,
-        `${MarkOneTheme.border.hairline}`,
-        `${MarkOneTheme.border.hairline}`,
-      ];
-      deepStrictEqual(actual, expected);
+      return waitForElement(() => container.querySelector('.app-content'));
     });
-    it('displays the correct active tab with visible top, left, right borders and transparent bottom border when clicking the back button', async function () {
-      const { getByText } = render(
-        <MemoryRouter initialEntries={['/course-admin', '/']}>
-          <App />
-        </MemoryRouter>
-      );
-      await waitForElement(() => getByText('Courses'));
-      window.history.back();
-      await waitForElement(() => getByText('Course Admin'));
-      const tab = getByText('Course Admin').parentNode as HTMLElement;
-      const style = window.getComputedStyle(tab);
-      const actual = [
-        style['border-bottom'],
-        style['border-top'],
-        style['border-left'],
-        style['border-right'],
-      ];
-      const expected = [
-        '1px solid transparent',
-        `${MarkOneTheme.border.hairline}`,
-        `${MarkOneTheme.border.hairline}`,
-        `${MarkOneTheme.border.hairline}`,
-      ];
-      deepStrictEqual(actual, expected);
-    });
-    */
-    it('only renders one active tab at a time', async function () {
-      const { getAllByRole, findByText } = customRender(
-        <App />,
-        dispatchMessage,
-        metadata
-      );
-      await findByText('Courses');
-      const tabs = getAllByRole('listitem').map((listItem) => listItem.getElementsByTagName('div')[0]);
-      const activeTabs = tabs.filter((tabItem) => window.getComputedStyle(tabItem)['border-bottom'] === '1px solid transparent');
-      strictEqual(activeTabs.length, 1);
-    });
-    context('When userFetch succeeds', function () {
-      beforeEach(function () {
-        userStub.resolves(dummy.regularUser);
-        metaStub.resolves(dummy.metadata);
+  });
+  describe('Getting user and Metadata', function () {
+    context('When userFetch Succeeds', function () {
+      context('With a valid user', function () {
+        beforeEach(function () {
+          userFetchStub.resolves(dummy.regularUser);
+          metaFetchStub.resolves(dummy.metadata);
+          render(
+            <MemoryRouter>
+              <App />
+            </MemoryRouter>
+          );
+        });
+        it('Calls getCurrentUser', function () {
+          strictEqual(userFetchStub.callCount, 1);
+        });
+        it('Sets the user result in state', async function () {
+          await wait(() => strictEqual(setUserStateStub.callCount, 1));
+          strictEqual(setUserStateStub.args[0][0], dummy.regularUser);
+        });
+        it('calls getMetadata', async function () {
+          return wait(() => strictEqual(metaFetchStub.callCount, 1));
+        });
       });
-      it('displays the name of the current user', async function () {
-        const { findByText } = customRender(
-          <App />,
-          dispatchMessage,
-          metadata
-        );
-        strictEqual(userStub.callCount, 1);
-        const { fullName } = dummy.regularUser;
-        await findByText(new RegExp(fullName));
+      context('Without a user', function () {
+        beforeEach(function () {
+          userFetchStub.resolves(null);
+          metaFetchStub.resolves(dummy.metadata);
+          render(
+            <MemoryRouter>
+              <App />
+            </MemoryRouter>
+          );
+        });
+        it('Calls getCurrentUser', function () {
+          strictEqual(userFetchStub.callCount, 1);
+        });
+        it('Does not set the user result in state', function () {
+          strictEqual(setUserStateStub.callCount, 0);
+        });
+        it('Does not call getMetadata', function () {
+          strictEqual(metaFetchStub.callCount, 0);
+        });
       });
     });
     context('When userFetch fails', function () {
+      let findByText: BoundFunction<FindByText>;
       beforeEach(function () {
-        userStub.rejects(dummy.error);
-        metaStub.resolves(dummy.metadata);
+        userFetchStub.rejects(dummy.error);
+        metaFetchStub.resolves(dummy.metadata);
+        ({ findByText } = render(
+          <MemoryRouter>
+            <App />
+          </MemoryRouter>
+        ));
       });
       it('displays an error Message', async function () {
-        const { findByText } = customRender(
-          <App />,
-          dispatchMessage,
-          metadata
-        );
-        strictEqual(userStub.callCount, 1);
-        return findByText('Unable to get user data', { exact: false });
+        await findByText(/Unable to get user data/);
+        strictEqual(userFetchStub.callCount, 1);
+      });
+      it('does not call getMetadata', async function () {
+        await findByText(/Unable to get user data/);
+        strictEqual(metaFetchStub.callCount, 0);
       });
     });
+    context('When getMetadata succeeds', function () {
+      beforeEach(function () {
+        userFetchStub.resolves(dummy.regularUser);
+        metaFetchStub.resolves(dummy.metadata);
+        render(
+          <MemoryRouter>
+            <App />
+          </MemoryRouter>
+        );
+      });
+      it('calls getMetadata', async function () {
+        return wait(() => strictEqual(metaFetchStub.callCount, 1));
+      });
+      it('Sets the metadata into state', async function () {
+        await wait(() => strictEqual(metaFetchStub.callCount, 1));
+        strictEqual(setMetaStateStub.callCount, 1);
+        strictEqual(setMetaStateStub.args[0][0], dummy.metadata);
+      });
+    });
+
     context('When getMetadata fails', function () {
+      let findByText: BoundFunction<FindByText>;
       beforeEach(function () {
-        userStub.resolves(dummy.regularUser);
-        metaStub.rejects(dummy.error);
+        userFetchStub.resolves(dummy.regularUser);
+        metaFetchStub.rejects(dummy.error);
+        ({ findByText } = render(
+          <MemoryRouter>
+            <App />
+          </MemoryRouter>
+        ));
       });
       it('displays an error Message', async function () {
-        const { findByText } = customRender(
-          <App />,
-          dispatchMessage,
-          metadata
-        );
-        strictEqual(userStub.callCount, 1);
-        const nextButton = await findByText('next', { exact: false });
-        fireEvent.click(nextButton);
-        return findByText('Unable to get metadata', { exact: false });
+        strictEqual(userFetchStub.callCount, 1);
+        return findByText(/Unable to get metadata/);
       });
-    });
-  });
-  describe('routing', function () {
-    it('renders the NoMatch component when URL does not match any pages', function () {
-      const url = '/foobar';
-      const { getByText } = render(
-        <MemoryRouter initialEntries={[url]}>
-          <App />
-        </MemoryRouter>
-      );
-      return waitForElement(() => (
-        getByText('404', { exact: false })
-      ));
-    });
-    it('renders the CourseAdmin component when URL matches the course admin URL', function () {
-      const url = '/course-admin';
-      const { getByText } = render(
-        <MemoryRouter initialEntries={[url]}>
-          <App />
-        </MemoryRouter>
-      );
-      return waitForElement(() => (
-        getByText('Course Prefix')
-      ));
-    });
-    it('renders the FacultyAdmin component when URL matches the faculty admin URL', function () {
-      const url = '/faculty-admin';
-      const { getByText } = render(
-        <MemoryRouter initialEntries={[url]}>
-          <App />
-        </MemoryRouter>
-      );
-      return waitForElement(() => (
-        getByText('HUID')
-      ));
-    });
-    it('renders the Faculty component when URL matches the faculty URL', function () {
-      const url = '/faculty';
-      const { getAllByText } = render(
-        <MemoryRouter initialEntries={[url]}>
-          <App />
-        </MemoryRouter>
-      );
-      return waitForElement(() => (
-        getAllByText('Sabbatical Leave')
-      ));
     });
   });
 });

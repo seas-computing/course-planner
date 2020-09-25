@@ -1,9 +1,8 @@
 import { Strategy } from 'passport-custom';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Request } from '@nestjs/common';
 import { AUTH_MODE, GROUP } from 'common/constants';
-import { Request } from 'express';
-import { User } from '../user/user.entity';
+import { User } from 'common/classes';
 
 /**
  * Uses passport-custom to always authenticate as a specific user
@@ -11,15 +10,18 @@ import { User } from '../user/user.entity';
 
 @Injectable()
 class DevStrategy extends PassportStrategy(Strategy, AUTH_MODE.DEV) {
-  public validate(req: Request): Request {
-    req.session.user = new User({
+  public validate(
+    @Request() req: Express.Request
+  ): User {
+    const devUser = new User({
       eppn: 'abc123@harvard.edu',
       firstName: 'Test',
       lastName: 'User',
       email: 'noreply@seas.harvard.edu',
       groups: [GROUP.ADMIN, GROUP.READ_ONLY],
     });
-    return req;
+    req.session.user = devUser;
+    return devUser;
   }
 }
 
