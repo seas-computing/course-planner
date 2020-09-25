@@ -51,6 +51,7 @@ describe('Course service', function () {
     mockCourseRepository = {
       createQueryBuilder: stub().returns(mockCourseQueryBuilder),
       save: stub(),
+      createQueryBuilder: stub().returns(mockQueryBuilder),
     };
 
     mockSemesterRepository = {
@@ -77,6 +78,16 @@ describe('Course service', function () {
 
     courseService = module.get<CourseService>(CourseService);
   });
+
+  afterEach(function () {
+    Object.values({
+      ...mockQueryBuilder,
+    })
+      .forEach((sinonStub: SinonStub): void => {
+        sinonStub.reset();
+      });
+  });
+
   describe('findCourses', function () {
     it('returns all courses from the database', async function () {
       const results = await courseService.findCourses();
@@ -124,6 +135,21 @@ describe('Course service', function () {
       mockAreaRepository.findOneOrFail.rejects(new EntityNotFoundError(Area, ''));
 
       await rejects(() => courseService.save(computerScienceCourse), /Area/);
+    });
+  });
+  describe('find', function () {
+    it('returns all courses from the database', async function () {
+      mockQueryBuilder.getMany.resolves([
+        computerScienceCourse,
+        physicsCourse,
+      ]);
+
+      const results = await courseService.findCourses();
+
+      deepStrictEqual(results, [
+        computerScienceCourse,
+        physicsCourse,
+      ]);
     });
   });
 });

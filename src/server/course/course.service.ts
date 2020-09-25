@@ -101,4 +101,19 @@ export class CourseService {
       })),
     });
   }
+
+  /**
+   * Retrieve all courses in the database and sort by:
+   * - area ASC
+   * - catalogNumber ASC
+   */
+  public async findCourses(): Promise<ManageCourseResponseDTO[]> {
+    return await this.courseRepository
+      .createQueryBuilder(Course.name.toLowerCase())
+      .addSelect("CONCAT(course.prefix, ' ', course.number)", 'catalogNumber')
+      .leftJoinAndSelect('course.area', 'area')
+      .orderBy('area.name', 'ASC')
+      .addOrderBy('catalogNumber', 'ASC')
+      .getMany() as unknown as ManageCourseResponseDTO[];
+  }
 }
