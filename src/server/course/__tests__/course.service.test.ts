@@ -81,7 +81,7 @@ describe('Course service', function () {
     it('returns all courses from the database', async function () {
       const results = await courseService.findCourses();
       deepStrictEqual(
-        results, 
+        results,
         [computerScienceCourseResponse, physicsCourseResponse]
       );
     });

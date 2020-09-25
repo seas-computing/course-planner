@@ -1,5 +1,5 @@
 import { strictEqual } from 'assert';
-import TERM_PATTERN, {termPatternEnumToString } from '../termPattern';
+import TERM_PATTERN, { termPatternEnumToString } from '../termPattern';
 
 describe('termPatternEnumToString', function () {
   context('TERM_PATTERN.BOTH', function () {
