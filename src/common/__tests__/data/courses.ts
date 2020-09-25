@@ -153,16 +153,17 @@ export const newAreaCourseResponse: ManageCourseResponseDTO = {
  * An example [[UpdateCourseDTO]] response representing CS 50
  */
 export const updateCourseExample: UpdateCourseDTO = {
+  id: computerScienceCourse.id,
   area: {
-    id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
-    name: 'CS',
+    id: computerScienceCourse.area.id,
+    name: computerScienceCourse.area.name,
   },
-  title: 'Introduction to Computer Science',
-  prefix: 'CS',
-  number: '050',
-  termPattern: TERM_PATTERN.FALL,
-  sameAs: '',
-  isUndergraduate: true,
-  isSEAS: IS_SEAS.Y,
-  private: true,
+  title: computerScienceCourse.title,
+  prefix: computerScienceCourse.prefix,
+  number: computerScienceCourse.number,
+  termPattern: computerScienceCourse.termPattern,
+  sameAs: computerScienceCourse.sameAs,
+  isUndergraduate: computerScienceCourse.isUndergraduate,
+  isSEAS: computerScienceCourse.isSEAS,
+  private: computerScienceCourse.private,
 };

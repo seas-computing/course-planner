@@ -15,9 +15,9 @@ import { Semester } from 'server/semester/semester.entity';
 import {
   spring,
   fall,
+  computerScienceCourse,
   computerScienceCourseQueryResult,
   physicsCourseQueryResult,
-  computerScienceCourse,
   computerScienceCourseResponse,
   physicsCourseResponse,
 } from 'testData';
@@ -51,7 +51,6 @@ describe('Course service', function () {
     mockCourseRepository = {
       createQueryBuilder: stub().returns(mockCourseQueryBuilder),
       save: stub(),
-      createQueryBuilder: stub().returns(mockQueryBuilder),
     };
 
     mockSemesterRepository = {
@@ -78,21 +77,11 @@ describe('Course service', function () {
 
     courseService = module.get<CourseService>(CourseService);
   });
-
-  afterEach(function () {
-    Object.values({
-      ...mockQueryBuilder,
-    })
-      .forEach((sinonStub: SinonStub): void => {
-        sinonStub.reset();
-      });
-  });
-
   describe('findCourses', function () {
     it('returns all courses from the database', async function () {
       const results = await courseService.findCourses();
       deepStrictEqual(
-        results,
+        results, 
         [computerScienceCourseResponse, physicsCourseResponse]
       );
     });
@@ -135,21 +124,6 @@ describe('Course service', function () {
       mockAreaRepository.findOneOrFail.rejects(new EntityNotFoundError(Area, ''));
 
       await rejects(() => courseService.save(computerScienceCourse), /Area/);
-    });
-  });
-  describe('find', function () {
-    it('returns all courses from the database', async function () {
-      mockQueryBuilder.getMany.resolves([
-        computerScienceCourse,
-        physicsCourse,
-      ]);
-
-      const results = await courseService.findCourses();
-
-      deepStrictEqual(results, [
-        computerScienceCourse,
-        physicsCourse,
-      ]);
     });
   });
 });

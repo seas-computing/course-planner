@@ -134,9 +134,9 @@ describe('Course Admin API', function () {
           } as AxiosResponse<ManageCourseResponseDTO>);
           editCourseResult = await CourseAPI.editCourse(editedCourse);
         });
-        it('should make a request to /api/course/:id', function () {
+        it('should make a request to api/course/:id', function () {
           const [[path]] = putStub.args;
-          strictEqual(path, `/api/course/${physicsCourse.id}`);
+          strictEqual(path, `api/course/${physicsCourse.id}`);
           strictEqual(putStub.callCount, 1);
         });
         it('should return the updated course', function () {

@@ -1,8 +1,7 @@
-import { ContextIdFactory } from '@nestjs/core';
 import { strictEqual } from 'assert';
 import TERM_PATTERN, {termPatternEnumToString } from '../termPattern';
 
-describe.only('termPatternEnumToString', function () {
+describe('termPatternEnumToString', function () {
   context('TERM_PATTERN.BOTH', function () {
     it('Should return "Both"', function () {
       strictEqual(termPatternEnumToString(TERM_PATTERN.BOTH), 'Both');
