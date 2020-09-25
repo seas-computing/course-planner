@@ -105,6 +105,14 @@ describe('Configuration Service', function () {
         strictEqual(config.casServiceURL, `${SERVER_URL}/validate`);
       });
     });
+    context('When the SERVER_URL has a trailing slash', function () {
+      const trailingURL = `${SERVER_URL}/`;
+      it('Does not return a double-slash (//) before validate', function () {
+        const config = new ConfigService({ SERVER_URL: trailingURL });
+        notStrictEqual(config.casServiceURL, `${SERVER_URL}//validate`);
+        strictEqual(config.casServiceURL, `${SERVER_URL}/validate`);
+      });
+    });
     context('When the SERVER_URL has extra elements', function () {
       const messyURL = 'https://user:password@computingapps.seas.harvard.edu/course-planner?q=abcdefg#anchor';
       it('returns the validation endpoint without those elements', function () {
