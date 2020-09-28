@@ -317,7 +317,6 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
               checked={form.isUndergraduate}
               label="Undergraduate"
               onChange={updateFormFields}
-              isRequired
             />
           </Fieldset>
           <Dropdown
