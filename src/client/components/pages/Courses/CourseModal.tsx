@@ -340,17 +340,18 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
             id="termPattern"
             name="termPattern"
             label="Term Pattern"
-            options={Object.values(TERM_PATTERN)
-              .map((termPatternOption):
-              {value: string; label: string} => {
-                const termPatternDisplayTitle = termPatternEnumToString(
-                  termPatternOption
-                );
-                return {
-                  value: termPatternOption,
-                  label: termPatternDisplayTitle,
-                };
-              })}
+            options={[{ value: '', label: '' }]
+              .concat(Object.values(TERM_PATTERN)
+                .map((termPatternOption):
+                {value: string; label: string} => {
+                  const termPatternDisplayTitle = termPatternEnumToString(
+                    termPatternOption
+                  );
+                  return {
+                    value: termPatternOption,
+                    label: termPatternDisplayTitle,
+                  };
+                }))}
             onChange={updateFormFields}
             value={form.termPattern}
             errorMessage={termPatternErrorMessage}
