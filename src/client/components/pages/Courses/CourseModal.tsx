@@ -21,6 +21,7 @@ import {
   RadioButton,
   Checkbox,
   Dropdown,
+  ValidationErrorMessage,
 } from 'mark-one';
 import { MetadataContext } from 'client/context/MetadataContext';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
@@ -125,6 +126,13 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
     termPatternErrorMessage,
     setTermPatternErrorMessage,
   ] = useState('');
+  /**
+   * The current value of the error message within the Course modal
+   */
+  const [
+    courseErrorMessage,
+    setCourseErrorMessage,
+  ] = useState('');
 
   /**
    * The current value of the Create Course Modal ref
@@ -151,6 +159,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
     setCourseNumberErrorMessage('');
     setCourseTitleErrorMessage('');
     setTermPatternErrorMessage('');
+    setCourseErrorMessage('');
     if (!(form.existingArea && form.newArea)) {
       setAreaErrorMessage('Area is required to submit this form.');
       isValid = false;
@@ -226,6 +235,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
       setCourseNumberErrorMessage('');
       setCourseTitleErrorMessage('');
       setTermPatternErrorMessage('');
+      setCourseErrorMessage('');
       setCourseModalFocus();
     }
   }, [isVisible, currentCourse]);
@@ -372,9 +382,35 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
             errorMessage={termPatternErrorMessage}
             isRequired
           />
+          {courseErrorMessage && (
+            <ValidationErrorMessage
+              id="editCourseModalErrorMessage"
+            >
+              {courseErrorMessage}
+            </ValidationErrorMessage>
+          )}
         </form>
       </ModalBody>
       <ModalFooter>
+        <Button
+          id="editCourseSubmit"
+          onClick={async (): Promise<void> => {
+            try {
+              const editedCourse = await submitCourseForm();
+              await onSuccess(editedCourse);
+            } catch (error) {
+              setCourseErrorMessage((error as Error).message);
+              // leave the modal visible after an error
+              return;
+            }
+            if (onClose != null) {
+              onClose();
+            }
+          }}
+          variant={VARIANT.PRIMARY}
+        >
+          Submit
+        </Button>
         <Button
           onClick={onClose}
           variant={VARIANT.SECONDARY}
