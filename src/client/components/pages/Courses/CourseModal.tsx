@@ -207,6 +207,17 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
   };
   useEffect((): void => {
     if (isVisible) {
+      setFormFields({
+        areaType: 'existingArea',
+        existingArea: currentCourse ? currentCourse.area.name : '',
+        newArea: '',
+        courseNumber: currentCourse ? (currentCourse.catalogNumber || '') : '',
+        courseTitle: currentCourse ? (currentCourse.title || '') : '',
+        sameAs: currentCourse ? (currentCourse.sameAs || '') : '',
+        isUndergraduate: currentCourse ? currentCourse.isUndergraduate : false,
+        isSEAS: currentCourse ? currentCourse.isSEAS : IS_SEAS.Y,
+        termPattern: currentCourse ? (currentCourse.termPattern || '') : '',
+      });
       setAreaErrorMessage('');
       setCourseNumberErrorMessage('');
       setCourseTitleErrorMessage('');
