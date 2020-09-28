@@ -155,6 +155,10 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
       setAreaErrorMessage('Area is required to submit this form.');
       isValid = false;
     }
+    if (form.areaType === 'createArea' && metadata.areas.indexOf(form.newArea) !== -1) {
+      setAreaErrorMessage('Area already exists.');
+      isValid = false;
+    }
     if (!form.courseNumber) {
       setCourseNumberErrorMessage('Course number is required to submit this form.');
       isValid = false;
