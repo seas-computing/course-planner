@@ -39,6 +39,9 @@ string => `editCourse${course.id}`;
  */
 
 const CourseAdmin: FunctionComponent = function (): ReactElement {
+  /**
+   * The current list of courses used to populate the Course Admin tab
+   */
   const [currentCourses, setCourses] = useState(
     [] as ManageCourseResponseDTO[]
   );
