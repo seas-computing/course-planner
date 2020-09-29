@@ -61,7 +61,7 @@ describe('Non Class Event API', function () {
     const nestApp = await moduleRef.createNestApplication()
       .init();
 
-    api = nestApp.getHttpServer();
+    api = nestApp.getHttpServer() as HttpServer;
   });
   afterEach(function () {
     authStub.restore();

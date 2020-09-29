@@ -106,7 +106,7 @@ export class NonClassEventPopulationService
     ]);
   }
 
-  public async drop() {
+  public async drop(): Promise<void> {
     await Promise.all([
       await this.eventRepository.clear(),
       await this.parentRepository.clear(),

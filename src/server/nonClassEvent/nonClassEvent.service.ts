@@ -13,7 +13,7 @@ export class NonClassEventService {
 
   public async find(academicYear: number):
   Promise<NonClassParentView[]> {
-    const nonClassEvents = await this.parentRepository.createQueryBuilder('p')
+    const nonClassEvents = this.parentRepository.createQueryBuilder('p')
       .leftJoinAndMapOne(
         'p.course',
         CourseListingView, 'course',

@@ -245,9 +245,8 @@ describe('Population Service', function () {
         }
       });
     });
-
     it('Should populate the nonClassParents table', async function () {
-      const parentsRepository = testModule.get(
+      const parentsRepository: Repository<NonClassParent> = testModule.get(
         getRepositoryToken(NonClassParent)
       );
       const dbParents = await parentsRepository.find({
@@ -260,7 +259,7 @@ describe('Population Service', function () {
       );
     });
     it('Should populate the nonClassEvents table', async function () {
-      const eventsRepository = testModule.get(
+      const eventsRepository: Repository<NonClassEvent> = testModule.get(
         getRepositoryToken(NonClassEvent)
       );
       const dbEvents = await eventsRepository.find({
@@ -268,7 +267,7 @@ describe('Population Service', function () {
       });
 
       const expectedEvents = [
-        ...new Set(dbEvents.map(({ title }) => title))
+        ...new Set(dbEvents.map(({ title }) => title)),
       ];
 
       deepStrictEqual(nonClassEvents.map(({ title }) => title), expectedEvents);

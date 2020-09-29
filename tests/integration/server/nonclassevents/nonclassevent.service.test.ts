@@ -10,6 +10,7 @@ import { deepStrictEqual, notStrictEqual, strictEqual } from 'assert';
 import { Meeting } from 'server/meeting/meeting.entity';
 import { format, parse } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
+import { Repository } from 'typeorm';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import MockDB from '../../../mocks/database/MockDB';
 
@@ -30,9 +31,9 @@ describe('NonClassEvent Service', function () {
         ConfigModule,
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
-          useFactory: async (
+          useFactory: (
             config: ConfigService
-          ): Promise<TypeOrmModuleOptions> => ({
+          ): TypeOrmModuleOptions => ({
             ...config.dbOptions,
             synchronize: true,
             autoLoadEntities: true,
@@ -93,8 +94,9 @@ describe('NonClassEvent Service', function () {
     });
     describe('Meetings', function () {
       let dbMeetings: Meeting[];
+      let meetingRepository: Repository<Meeting>;
       beforeEach(async function () {
-        const meetingRepository = testModule.get(getRepositoryToken(Meeting));
+        meetingRepository = testModule.get(getRepositoryToken(Meeting));
         dbMeetings = await meetingRepository.find({
           relations: ['room', 'room.building'],
         });
