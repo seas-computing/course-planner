@@ -7,7 +7,7 @@ import request from './request';
 /**
  * Retrieves all faculty for the Faculty Admin tab
  */
-const getAllFacultyMembers = async ():
+export const getAllFacultyMembers = async ():
 Promise<ManageFacultyResponseDTO[]> => {
   const response = await request.get('/api/faculty/');
   return response.data as ManageFacultyResponseDTO[];
@@ -16,7 +16,7 @@ Promise<ManageFacultyResponseDTO[]> => {
 /**
  * Submits a POST request to create a new faculty for the Faculty Admin tab
  */
-const createFaculty = async (facultyInfo: CreateFacultyDTO):
+export const createFaculty = async (facultyInfo: CreateFacultyDTO):
 Promise<ManageFacultyResponseDTO> => {
   const response = await request.post('/api/faculty', facultyInfo);
   return response.data as ManageFacultyResponseDTO;
@@ -25,7 +25,7 @@ Promise<ManageFacultyResponseDTO> => {
 /**
  * Edit an existing faculty member entry
  */
-const editFaculty = async (facultyInfo: UpdateFacultyDTO):
+export const editFaculty = async (facultyInfo: UpdateFacultyDTO):
 Promise<ManageFacultyResponseDTO> => {
   const response = await request.put(`/api/faculty/${facultyInfo.id}`, facultyInfo);
   return response.data as ManageFacultyResponseDTO;
@@ -35,7 +35,7 @@ Promise<ManageFacultyResponseDTO> => {
  * Retrieves faculty schedule information for the Faculty tab for specified
  * academic year(s)
  */
-const getFacultySchedulesForYear = async (
+export const getFacultySchedulesForYear = async (
   acadYears: number
 ):
 Promise<Record<string, FacultyResponseDTO[]>> => {

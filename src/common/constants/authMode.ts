@@ -2,11 +2,11 @@
  * List of valid authentication modes to be passed into Passport */
 
 enum AUTH_MODE {
-  /** Harvard Key * */
+  /** Harvard Key */
   HKEY = 'harvardkey',
-  /** Harvard Key * */
+  /** Dummy authentication for local dev */
   DEV = 'development',
-  /** Harvard Key * */
+  /** An easily stubabble strategy for testing */
   TEST = 'testing',
 }
 

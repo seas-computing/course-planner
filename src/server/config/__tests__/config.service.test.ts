@@ -1,9 +1,10 @@
-import { strictEqual } from 'assert';
+import { strictEqual, throws, notStrictEqual } from 'assert';
 import { int, safeString } from 'testData';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
-import { RedisStoreOptions } from 'connect-redis';
 import { AUTH_MODE } from 'common/constants';
 import FakeTimers from '@sinonjs/fake-timers';
+import { RedisStore } from 'connect-redis';
+import { SessionOptions } from 'express-session';
 import { ConfigService } from '../config.service';
 
 /**
@@ -50,6 +51,138 @@ describe('Configuration Service', function () {
     });
 
     strictEqual(config.get('DB_HOSTNAME'), safeString);
+  });
+
+  describe('clientBaseURL', function () {
+    const CLIENT_URL = 'https://planning.seas.harvard.edu/courses';
+    context('When the CLIENT_URL is perfect', function () {
+      it('returns the CLIENT_URL', function () {
+        const config = new ConfigService({ CLIENT_URL });
+        strictEqual(config.clientBaseURL, CLIENT_URL);
+      });
+    });
+    context('When the CLIENT_URL has a trailing slash', function () {
+      const trailingURL = `${CLIENT_URL}/`;
+      it('returns the CLIENT_URL without the slash', function () {
+        const config = new ConfigService({ CLIENT_URL: trailingURL });
+        notStrictEqual(config.clientBaseURL, trailingURL);
+        strictEqual(config.clientBaseURL, CLIENT_URL);
+      });
+    });
+    context('When the CLIENT_URL has extra elements', function () {
+      const messyURL = 'https://user:password@planning.seas.harvard.edu/courses?q=abcdefg#anchor';
+      it('returns the CLIENT_URL without those elements', function () {
+        const config = new ConfigService({ CLIENT_URL: messyURL });
+        notStrictEqual(config.clientBaseURL, messyURL);
+        strictEqual(config.clientBaseURL, CLIENT_URL);
+      });
+    });
+    context('When the CLIENT_URL is invalid', function () {
+      it('throws an error', function () {
+        const config = new ConfigService({ CLIENT_URL: safeString });
+        throws(
+          () => config.clientBaseURL,
+          new RegExp(`Invalid URL: ${safeString}`)
+        );
+      });
+    });
+    context('When the CLIENT_URL is missing', function () {
+      it('throws an error', function () {
+        const config = new ConfigService({ });
+        throws(
+          () => config.clientBaseURL,
+          /Invalid URL: undefined/
+        );
+      });
+    });
+  });
+
+  describe('casServiceURL', function () {
+    const SERVER_URL = 'https://computingapps.seas.harvard.edu/course-planner';
+    context('When the SERVER_URL is perfect', function () {
+      it('returns the SERVER_URL + /validate', function () {
+        const config = new ConfigService({ SERVER_URL });
+        strictEqual(config.casServiceURL, `${SERVER_URL}/validate`);
+      });
+    });
+    context('When the SERVER_URL has a trailing slash', function () {
+      const trailingURL = `${SERVER_URL}/`;
+      it('Does not return a double-slash (//) before validate', function () {
+        const config = new ConfigService({ SERVER_URL: trailingURL });
+        notStrictEqual(config.casServiceURL, `${SERVER_URL}//validate`);
+        strictEqual(config.casServiceURL, `${SERVER_URL}/validate`);
+      });
+    });
+    context('When the SERVER_URL has extra elements', function () {
+      const messyURL = 'https://user:password@computingapps.seas.harvard.edu/course-planner?q=abcdefg#anchor';
+      it('returns the validation endpoint without those elements', function () {
+        const config = new ConfigService({ SERVER_URL: messyURL });
+        notStrictEqual(config.casServiceURL, messyURL);
+        strictEqual(config.casServiceURL, `${SERVER_URL}/validate`);
+      });
+    });
+    context('When the SERVER_URL is invalid', function () {
+      it('throws an error', function () {
+        const config = new ConfigService({ SERVER_URL: safeString });
+        throws(
+          () => config.casServiceURL,
+          new RegExp(`Invalid URL: ${safeString}`)
+        );
+      });
+    });
+    context('When the SERVER_URL is missing', function () {
+      it('throws an error', function () {
+        const config = new ConfigService({ });
+        throws(
+          () => config.casServiceURL,
+          /Invalid URL: undefined/
+        );
+      });
+    });
+  });
+
+  describe('casBaseURL', function () {
+    const CAS_URL = 'https://auth.harvard.edu/cas';
+    context('When the CAS_URL is perfect', function () {
+      it('returns the CAS_URL', function () {
+        const config = new ConfigService({ CAS_URL });
+        strictEqual(config.casBaseURL, CAS_URL);
+      });
+    });
+    context('When the CAS_URL has a trailing slash', function () {
+      const trailingURL = `${CAS_URL}/`;
+      it('returns the CAS_URL without the slash', function () {
+        const config = new ConfigService({ CAS_URL: trailingURL });
+        notStrictEqual(config.casBaseURL, trailingURL);
+        strictEqual(config.casBaseURL, CAS_URL);
+      });
+    });
+    context('When the CAS_URL has extra elements', function () {
+      const messyURL = 'https://user:password@auth.harvard.edu/cas?q=abcdefg#anchor';
+      it('returns the CAS_URL without those elements', function () {
+        const config = new ConfigService({ CAS_URL: messyURL });
+        notStrictEqual(config.casBaseURL, messyURL);
+        strictEqual(config.casBaseURL, CAS_URL);
+      });
+    });
+    context('When the CAS_URL is invalid', function () {
+      it('throws an error', function () {
+        const config = new ConfigService({ CAS_URL: safeString });
+        throws(
+          () => config.casBaseURL,
+          new RegExp(`Invalid URL: ${safeString}`)
+        );
+      });
+    });
+    context('When the CAS_URL is missing', function () {
+      it('throws an error', function () {
+        const config = new ConfigService({ });
+        throws(
+          () => config.casBaseURL,
+          /Invalid URL: undefined/
+        );
+      });
+    });
   });
 
   describe('database options', function () {
@@ -123,38 +256,157 @@ describe('Configuration Service', function () {
     });
   });
 
-  describe('redis options', function () {
+  describe('redis URL', function () {
     const REDIS_HOST = 'hostname';
     const REDIS_PORT = int.toString();
     const REDIS_PASSWORD = 'password';
     const REDIS_PREFIX = safeString;
 
-    let redisOptions: RedisStoreOptions;
+    let redisURL: URL;
+    context('In Production', function () {
+      context('With a Password', function () {
+        beforeEach(function () {
+          const config = new ConfigService({
+            REDIS_HOST,
+            REDIS_PORT,
+            REDIS_PASSWORD,
+            REDIS_PREFIX,
+            NODE_ENV: 'production',
+          });
+          redisURL = new URL(config.redisURL);
+        });
 
+        it('provides the redis hostname', function () {
+          strictEqual(redisURL.hostname, REDIS_HOST);
+        });
+
+        it('provides the redis port', function () {
+          strictEqual(redisURL.port.toString(), REDIS_PORT);
+        });
+
+        it('provides the redis password', function () {
+          strictEqual(redisURL.password, REDIS_PASSWORD);
+        });
+
+        it('Sets the protocol to "rediss:"', function () {
+          strictEqual(redisURL.protocol, 'rediss:');
+        });
+      });
+      context('Without a Password', function () {
+        beforeEach(function () {
+          const config = new ConfigService({
+            REDIS_HOST,
+            REDIS_PORT,
+            REDIS_PREFIX,
+            NODE_ENV: 'production',
+          });
+          redisURL = new URL(config.redisURL);
+        });
+
+        it('provides the redis hostname', function () {
+          strictEqual(redisURL.hostname, REDIS_HOST);
+        });
+
+        it('provides the redis port', function () {
+          strictEqual(redisURL.port.toString(), REDIS_PORT);
+        });
+
+        it('does not provide a redis password', function () {
+          strictEqual(redisURL.password, '');
+        });
+
+        it('Sets the protocol to "rediss:"', function () {
+          strictEqual(redisURL.protocol, 'rediss:');
+        });
+      });
+    });
+    context('In Development', function () {
+      context('With a Password', function () {
+        beforeEach(function () {
+          const config = new ConfigService({
+            REDIS_HOST,
+            REDIS_PORT,
+            REDIS_PASSWORD,
+            REDIS_PREFIX,
+            NODE_ENV: 'development',
+          });
+          redisURL = new URL(config.redisURL);
+        });
+
+        it('provides the redis hostname', function () {
+          strictEqual(redisURL.hostname, REDIS_HOST);
+        });
+
+        it('provides the redis port', function () {
+          strictEqual(redisURL.port.toString(), REDIS_PORT);
+        });
+
+        it('provides the redis password', function () {
+          strictEqual(redisURL.password, REDIS_PASSWORD);
+        });
+
+        it('Sets the protocol to "redis:"', function () {
+          strictEqual(redisURL.protocol, 'redis:');
+        });
+      });
+      context('Without a Password', function () {
+        beforeEach(function () {
+          const config = new ConfigService({
+            REDIS_HOST,
+            REDIS_PORT,
+            REDIS_PREFIX,
+            NODE_ENV: 'development',
+          });
+          redisURL = new URL(config.redisURL);
+        });
+
+        it('provides the redis hostname', function () {
+          strictEqual(redisURL.hostname, REDIS_HOST);
+        });
+
+        it('provides the redis port', function () {
+          strictEqual(redisURL.port.toString(), REDIS_PORT);
+        });
+
+        it('does not provide a redis password', function () {
+          strictEqual(redisURL.password, '');
+        });
+
+        it('Sets the protocol to "redis:"', function () {
+          strictEqual(redisURL.protocol, 'redis:');
+        });
+      });
+    });
+  });
+  describe('Session Settings', function () {
+    const SESSION_SECRET = safeString;
+    const SERVER_DOMAIN = 'computingapps.seas.harvard.edu';
+    const SERVER_PATH = '/course-planner';
+    const SERVER_URL = `https://${SERVER_DOMAIN}${SERVER_PATH}`;
+    let sessionSettings: SessionOptions;
+    let testStore: RedisStore;
     beforeEach(function () {
       const config = new ConfigService({
-        REDIS_HOST,
-        REDIS_PORT,
-        REDIS_PASSWORD,
-        REDIS_PREFIX,
+        SERVER_URL,
+        SESSION_SECRET,
       });
-      ({ redisOptions } = config);
+      testStore = {} as RedisStore;
+      ({ session: sessionSettings } = config.getSessionSettings(testStore));
     });
-
-    it('provides the redis hostname', function () {
-      strictEqual(redisOptions.host, REDIS_HOST);
+    it('Should return the store parameter as "store"', function () {
+      strictEqual(sessionSettings.store, testStore);
     });
-
-    it('provides the redis port', function () {
-      strictEqual(redisOptions.port.toString(), REDIS_PORT);
+    it('Should provide the session secret', function () {
+      strictEqual(sessionSettings.secret, SESSION_SECRET);
     });
-
-    it('provides the redis password', function () {
-      strictEqual(redisOptions.pass, REDIS_PASSWORD);
+    it('Should provide the cookie path', function () {
+      strictEqual(sessionSettings.cookie.path, SERVER_PATH);
     });
-
-    it('provides the redis prefix', function () {
-      strictEqual(redisOptions.prefix, REDIS_PREFIX + '_');
+    it('Should provide the cookie domain', function () {
+      strictEqual(sessionSettings.cookie.domain, SERVER_DOMAIN);
+    });
+    it('Should provide a cookie maxAge of 12 hours', function () {
+      strictEqual(sessionSettings.cookie.maxAge, 1000 * 60 * 60 * 12);
     });
   });
   describe('Authentication Mode', function () {
