@@ -411,6 +411,28 @@ describe('Course API', function () {
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.BAD_REQUEST);
         });
+        it('does not report a validation error when a new area is provided', async function () {
+          authStub.resolves(adminUser);
+          const newCourseInfo = {
+            id: computerScienceCourse.id,
+            title: computerScienceCourse.title,
+            prefix: computerScienceCourse.prefix,
+            number: computerScienceCourse.number,
+            termPattern: computerScienceCourse.termPattern,
+            isUndergraduate: computerScienceCourse.isUndergraduate,
+            isSEAS: computerScienceCourse.isSEAS,
+            area: 'NA',
+          };
+          mockAreaRepository.findOne.resolves(computerScienceCourse.area);
+          mockCourseRepository.findOneOrFail.resolves(newCourseInfo.id);
+          mockCourseRepository.save.resolves(newCourseInfo);
+          const response = await request(api)
+            .put(`/api/courses/${newCourseInfo.id}`)
+            .send(newCourseInfo);
+          strictEqual(response.ok, true);
+          strictEqual(response.status, HttpStatus.OK);
+          strictEqual(mockCourseRepository.save.callCount, 1);
+        });
         it('reports a validation error when course number is missing', async function () {
           authStub.resolves(adminUser);
           const newCourseInfo = {
