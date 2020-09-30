@@ -165,6 +165,7 @@ export class Course extends BaseEntity {
     ({ courses }): Course[] => courses,
     {
       nullable: false,
+      cascade: ['insert'],
     }
   )
   public area: Area;
