@@ -31,10 +31,7 @@ export const computerScienceCourse = Object.assign(new Course(), {
  */
 export const physicsCourse = Object.assign(new Course(), {
   id: 'a1a13689-a925-4d0b-a4fc-21c93263c6d2',
-  area: {
-    id: '2213e1f8-31be-4e67-be06-a1eabd32ee0a',
-    name: 'AP',
-  },
+  area: 'AP',
   title: 'Introduction to Quantum Theory of Solids',
   prefix: 'AP',
   number: '295a',
@@ -48,10 +45,7 @@ export const physicsCourse = Object.assign(new Course(), {
 export const createCourseDtoExample: CreateCourse = Object.assign(
   new Course(),
   {
-    area: {
-      id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
-      name: 'CS',
-    },
+    area: 'CS',
     title: 'Introduction to Computer Science',
     isSEAS: IS_SEAS.Y,
     isUndergraduate: true,
@@ -70,15 +64,15 @@ export const computerScienceCourseResponse: ManageCourseResponseDTO = {
   id: 'b8bc8456-51fd-48ef-b111-5a5990671cd1',
   area: {
     id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
-    name: 'CS',
+    name: createCourseDtoExample.area,
   },
-  title: 'Introduction to Computer Science',
-  isSEAS: IS_SEAS.Y,
-  isUndergraduate: true,
-  catalogNumber: 'CS 050',
-  termPattern: TERM_PATTERN.FALL,
-  sameAs: '',
-  private: true,
+  title: createCourseDtoExample.title,
+  isSEAS: createCourseDtoExample.isSEAS,
+  isUndergraduate: createCourseDtoExample.isUndergraduate,
+  catalogNumber: `${createCourseDtoExample.prefix} ${createCourseDtoExample.number}`,
+  termPattern: createCourseDtoExample.termPattern,
+  sameAs: createCourseDtoExample.sameAs,
+  private: createCourseDtoExample.private,
 };
 
 /**
@@ -154,10 +148,7 @@ export const newAreaCourseResponse: ManageCourseResponseDTO = {
  */
 export const updateCourseExample: UpdateCourseDTO = {
   id: computerScienceCourse.id,
-  area: {
-    id: computerScienceCourse.area.id,
-    name: computerScienceCourse.area.name,
-  },
+  area: computerScienceCourse.area.name,
   title: computerScienceCourse.title,
   prefix: computerScienceCourse.prefix,
   number: computerScienceCourse.number,

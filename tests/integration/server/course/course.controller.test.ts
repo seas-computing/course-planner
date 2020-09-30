@@ -37,7 +37,6 @@ import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 import { Area } from 'server/area/area.entity';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
-import { UpdateCourseDTO } from 'common/dto/courses/UpdateCourse.dto';
 import { SelectQueryBuilder } from 'typeorm';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
@@ -64,7 +63,7 @@ describe('Course API', function () {
       .resolves(mockCourses as unknown as Course[]);
 
     mockAreaRepository = {
-      findOneOrFail: stub(),
+      findOne: stub(),
     };
 
     mockCourseRepository = {
@@ -173,22 +172,24 @@ describe('Course API', function () {
         it('creates a single course', async function () {
           authStub.resolves(adminUser);
           mockSemesterRepository.find.resolves([]);
+          mockAreaRepository.findOne
+            .resolves(computerScienceCourse.area);
           mockCourseRepository.save.resolves(computerScienceCourse);
 
           const response = await request(api)
             .post('/api/courses')
             .send(createCourseDtoExample);
-
           strictEqual(response.status, HttpStatus.CREATED);
           strictEqual(mockCourseRepository.save.callCount, 1);
           deepStrictEqual(
-            mockCourseRepository.save.args[0][0],
-            { ...createCourseDtoExample, instances: [] }
+            response.body,
+            computerScienceCourseResponse
           );
         });
         it('returns the newly created course', async function () {
           authStub.resolves(adminUser);
           mockSemesterRepository.find.resolves([]);
+          mockAreaRepository.findOne.resolves(computerScienceCourse.area.name);
           mockCourseRepository.save.resolves(computerScienceCourse);
 
           const response = await request(api)
@@ -212,6 +213,114 @@ describe('Course API', function () {
           deepStrictEqual(response.ok, false);
           deepStrictEqual(response.status, HttpStatus.BAD_REQUEST);
           strictEqual(/prefix/.test(body.message), true);
+        });
+        it('reports a validation error when an existing and new area are not provided', async function () {
+          authStub.resolves(adminUser);
+          mockSemesterRepository.find.resolves([]);
+          mockAreaRepository.findOne.resolves(computerScienceCourse.area);
+          mockCourseRepository.save.resolves(computerScienceCourse);
+          const response = await request(api)
+            .post('/api/courses')
+            .send({
+              title: computerScienceCourse.title,
+              prefix: computerScienceCourse.prefix,
+              number: computerScienceCourse.number,
+              termPattern: computerScienceCourse.termPattern,
+              isUndergraduate: computerScienceCourse.isUndergraduate,
+              isSEAS: computerScienceCourse.isSEAS,
+            });
+          strictEqual(response.ok, false);
+          strictEqual(response.status, HttpStatus.BAD_REQUEST);
+        });
+        it('does not report a validation error when a new area is entered', async function () {
+          authStub.resolves(adminUser);
+          mockSemesterRepository.find.resolves([]);
+          mockAreaRepository.findOne.resolves(computerScienceCourse.area);
+          mockCourseRepository.save.resolves(computerScienceCourse);
+          const response = await request(api)
+            .post('/api/courses')
+            .send({
+              area: 'NA',
+              title: computerScienceCourse.title,
+              prefix: computerScienceCourse.prefix,
+              number: computerScienceCourse.number,
+              termPattern: computerScienceCourse.termPattern,
+              isUndergraduate: computerScienceCourse.isUndergraduate,
+              isSEAS: computerScienceCourse.isSEAS,
+            });
+          strictEqual(response.ok, true);
+          strictEqual(response.status, HttpStatus.CREATED);
+        });
+        it('reports a validation error when course number is missing', async function () {
+          authStub.resolves(adminUser);
+          mockSemesterRepository.find.resolves([]);
+          mockAreaRepository.findOne.resolves(computerScienceCourse.area);
+          mockCourseRepository.save.resolves(computerScienceCourse);
+          const response = await request(api)
+            .post('/api/courses')
+            .send({
+              area: computerScienceCourse.area,
+              title: computerScienceCourse.title,
+              termPattern: computerScienceCourse.termPattern,
+              isUndergraduate: computerScienceCourse.isUndergraduate,
+              isSEAS: computerScienceCourse.isSEAS,
+            });
+          strictEqual(response.ok, false);
+          strictEqual(response.status, HttpStatus.BAD_REQUEST);
+        });
+        it('reports a validation error when course title is missing', async function () {
+          authStub.resolves(adminUser);
+          mockSemesterRepository.find.resolves([]);
+          mockAreaRepository.findOne.resolves(computerScienceCourse.area);
+          mockCourseRepository.save.resolves(computerScienceCourse);
+          const response = await request(api)
+            .post('/api/courses')
+            .send({
+              area: computerScienceCourse.area,
+              prefix: computerScienceCourse.prefix,
+              number: computerScienceCourse.number,
+              termPattern: computerScienceCourse.termPattern,
+              isUndergraduate: computerScienceCourse.isUndergraduate,
+              isSEAS: computerScienceCourse.isSEAS,
+            });
+          strictEqual(response.ok, false);
+          strictEqual(response.status, HttpStatus.BAD_REQUEST);
+        });
+        it('reports a validation error when course title is missing', async function () {
+          authStub.resolves(adminUser);
+          mockSemesterRepository.find.resolves([]);
+          mockAreaRepository.findOne.resolves(computerScienceCourse.area);
+          mockCourseRepository.save.resolves(computerScienceCourse);
+          const response = await request(api)
+            .post('/api/courses')
+            .send({
+              area: computerScienceCourse.area,
+              prefix: computerScienceCourse.prefix,
+              number: computerScienceCourse.number,
+              title: computerScienceCourse.title,
+              termPattern: computerScienceCourse.termPattern,
+              isUndergraduate: computerScienceCourse.isUndergraduate,
+            });
+          strictEqual(response.ok, false);
+          strictEqual(response.status, HttpStatus.BAD_REQUEST);
+        });
+        it('reports a validation error when term pattern is missing', async function () {
+          authStub.resolves(adminUser);
+          mockSemesterRepository.find.resolves([]);
+          mockAreaRepository.findOne.resolves(computerScienceCourse.area);
+          mockCourseRepository.save.resolves(computerScienceCourse);
+          const response = await request(api)
+            .post('/api/courses')
+            .send({
+              area: computerScienceCourse.area,
+              title: computerScienceCourse.title,
+              prefix: computerScienceCourse.prefix,
+              number: computerScienceCourse.number,
+              isUndergraduate: computerScienceCourse.isUndergraduate,
+              isSEAS: computerScienceCourse.isSEAS,
+            });
+          strictEqual(response.ok, false);
+          strictEqual(response.status, HttpStatus.BAD_REQUEST);
         });
       });
       describe('User is not a member of the admin group', function () {
@@ -248,6 +357,7 @@ describe('Course API', function () {
           authStub.returns(adminUser);
         });
         it('returns a 404 if the specified course does not exist', async function () {
+          mockAreaRepository.findOne.resolves('');
           mockCourseRepository.findOneOrFail.rejects(new EntityNotFoundError(Course, ''));
 
           const response = await request(api)
@@ -259,18 +369,127 @@ describe('Course API', function () {
           strictEqual(mockCourseRepository.find.callCount, 0);
         });
         it('updates the specified course', async function () {
-          mockCourseRepository.findOneOrFail.resolves(computerScienceCourse);
-          mockCourseRepository.save.resolves(computerScienceCourse);
+          const newCourseInfo = {
+            id: computerScienceCourse.id,
+            area: computerScienceCourse.area.name,
+            title: computerScienceCourse.title,
+            prefix: computerScienceCourse.prefix,
+            number: computerScienceCourse.number,
+            termPattern: computerScienceCourse.termPattern,
+            isUndergraduate: computerScienceCourse.isUndergraduate,
+            isSEAS: computerScienceCourse.isSEAS,
+          };
+          mockCourseRepository.findOneOrFail.resolves(newCourseInfo);
+          mockAreaRepository.findOne.resolves(newCourseInfo.area);
+          mockCourseRepository.save.resolves(newCourseInfo);
 
           const response = await request(api)
-            .put(`/api/courses/${computerScienceCourse.id}`)
-            .send({
-              title: 'Some other course name',
-            } as UpdateCourseDTO);
-
+            .put(`/api/courses/${newCourseInfo.id}`)
+            .send(newCourseInfo);
           strictEqual(response.ok, true);
           strictEqual(response.status, HttpStatus.OK);
           strictEqual(mockCourseRepository.save.callCount, 1);
+        });
+        it('reports a validation error when an existing and new area are not provided', async function () {
+          authStub.resolves(adminUser);
+          const newCourseInfo = {
+            id: computerScienceCourse.id,
+            title: computerScienceCourse.title,
+            prefix: computerScienceCourse.prefix,
+            number: computerScienceCourse.number,
+            termPattern: computerScienceCourse.termPattern,
+            isUndergraduate: computerScienceCourse.isUndergraduate,
+            isSEAS: computerScienceCourse.isSEAS,
+            area: '',
+          };
+          mockAreaRepository.findOne.resolves(computerScienceCourse.area);
+          mockCourseRepository.findOneOrFail.resolves(newCourseInfo.id);
+          mockCourseRepository.save.resolves(newCourseInfo);
+          const response = await request(api)
+            .put(`/api/courses/${newCourseInfo.id}`)
+            .send(newCourseInfo);
+          strictEqual(response.ok, false);
+          strictEqual(response.status, HttpStatus.BAD_REQUEST);
+        });
+        it('reports a validation error when course number is missing', async function () {
+          authStub.resolves(adminUser);
+          const newCourseInfo = {
+            id: computerScienceCourse.id,
+            area: computerScienceCourse.area.name,
+            title: computerScienceCourse.title,
+            prefix: computerScienceCourse.prefix,
+            termPattern: computerScienceCourse.termPattern,
+            isUndergraduate: computerScienceCourse.isUndergraduate,
+            isSEAS: computerScienceCourse.isSEAS,
+          };
+          mockAreaRepository.findOne.resolves(newCourseInfo.area);
+          mockCourseRepository.findOneOrFail.resolves(newCourseInfo);
+          mockCourseRepository.save.resolves(newCourseInfo);
+          const response = await request(api)
+            .put(`/api/courses/${newCourseInfo.id}`)
+            .send(newCourseInfo);
+          strictEqual(response.ok, false);
+          strictEqual(response.status, HttpStatus.BAD_REQUEST);
+        });
+        it('reports a validation error when course title is missing', async function () {
+          authStub.resolves(adminUser);
+          const newCourseInfo = {
+            id: computerScienceCourse.id,
+            area: computerScienceCourse.area.name,
+            prefix: computerScienceCourse.prefix,
+            number: computerScienceCourse.number,
+            termPattern: computerScienceCourse.termPattern,
+            isUndergraduate: computerScienceCourse.isUndergraduate,
+            isSEAS: computerScienceCourse.isSEAS,
+          };
+          mockAreaRepository.findOne.resolves(newCourseInfo.area);
+          mockCourseRepository.findOneOrFail.resolves(newCourseInfo);
+          mockCourseRepository.save.resolves(newCourseInfo);
+          const response = await request(api)
+            .put(`/api/courses/${computerScienceCourse.id}`)
+            .send(newCourseInfo);
+          strictEqual(response.ok, false);
+          strictEqual(response.status, HttpStatus.BAD_REQUEST);
+        });
+        it('reports a validation error when Is SEAS is missing', async function () {
+          authStub.resolves(adminUser);
+          const newCourseInfo = {
+            id: computerScienceCourse.id,
+            area: computerScienceCourse.area.name,
+            prefix: computerScienceCourse.prefix,
+            number: computerScienceCourse.number,
+            title: computerScienceCourse.title,
+            termPattern: computerScienceCourse.termPattern,
+            isUndergraduate: computerScienceCourse.isUndergraduate,
+          };
+          mockAreaRepository.findOne.resolves(newCourseInfo.area);
+          mockCourseRepository.findOneOrFail.resolves(newCourseInfo);
+          mockCourseRepository.save.resolves(newCourseInfo);
+          const response = await request(api)
+            .put(`/api/courses/${computerScienceCourse.id}`)
+            .send(newCourseInfo);
+          strictEqual(response.ok, false);
+          strictEqual(response.status, HttpStatus.BAD_REQUEST);
+        });
+        it('reports a validation error when term pattern is missing', async function () {
+          authStub.resolves(adminUser);
+          const newCourseInfo = {
+            id: computerScienceCourse.id,
+            area: computerScienceCourse.area.name,
+            title: computerScienceCourse.title,
+            number: computerScienceCourse.number,
+            prefix: computerScienceCourse.prefix,
+            isUndergraduate: computerScienceCourse.isUndergraduate,
+            isSEAS: computerScienceCourse.isSEAS,
+          };
+          mockAreaRepository.findOne.resolves(newCourseInfo.area);
+          mockCourseRepository.findOneOrFail.resolves(newCourseInfo);
+          mockCourseRepository.save.resolves(newCourseInfo);
+          const response = await request(api)
+            .put(`/api/courses/${newCourseInfo.id}`)
+            .send(newCourseInfo);
+          strictEqual(response.ok, false);
+          strictEqual(response.status, HttpStatus.BAD_REQUEST);
         });
       });
       describe('User is not a member of the admin group', function () {

@@ -89,7 +89,7 @@ export class CourseService {
   }
 
   public async save(course: DeepPartial<Course>): Promise<Course> {
-    await this.areaRepository.findOneOrFail(course.area.id);
+    await this.areaRepository.findOne(course.area.id);
 
     const semesters = await this.semesterRepository.find({});
 

@@ -19,6 +19,7 @@ import { CreateCourse } from 'common/dto/courses/CreateCourse.dto';
 import { Authentication } from 'server/auth/authentication.guard';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { UpdateCourseDTO } from 'common/dto/courses/UpdateCourse.dto';
+import { Area } from 'server/area/area.entity';
 import { Course } from './course.entity';
 import { CourseService } from './course.service';
 
@@ -37,6 +38,9 @@ export class CourseController {
 
   @InjectRepository(Course)
   private readonly courseRepository: Repository<Course>;
+
+  @InjectRepository(Area)
+  private areaRepository: Repository<Area>;
 
   @Get('/')
   @ApiOperation({ title: 'Retrieve all courses in the database' })
@@ -58,23 +62,33 @@ export class CourseController {
   public async create(
     @Body() course: CreateCourse
   ): Promise<ManageCourseResponseDTO> {
-    try {
-      const {
-        number,
-        prefix,
-        ...newCourse
-      } = await this.courseService.save(course);
-      return {
-        ...newCourse,
-        catalogNumber: `${prefix} ${number}`,
-      };
-    } catch (e) {
-      if (e instanceof EntityNotFoundError) {
-        throw new NotFoundException('Unable to find course area in database');
-      } else {
-        throw e;
-      }
+    let area: Partial<Area> = await this.areaRepository
+      .findOne({
+        where: {
+          name: course.area,
+        },
+      });
+    // If missing, the area will be created
+    // by the cascade insert set on the Course entity
+    if (area == null) {
+      area = { name: course.area };
     }
+
+    const fullCourse = {
+      ...course,
+      area,
+    };
+
+    const {
+      number,
+      prefix,
+      ...newCourse
+    } = await this.courseService.save(fullCourse);
+
+    return {
+      ...newCourse,
+      catalogNumber: `${prefix} ${number}`,
+    };
   }
 
   @Put(':id')
@@ -90,8 +104,19 @@ export class CourseController {
     description: 'The supplied data did not meet validation requirements',
   })
   public async update(
-    @Param('id') id: string, @Body() course: Partial<UpdateCourseDTO>
+    @Param('id') id: string, @Body() course: UpdateCourseDTO
   ): Promise<ManageCourseResponseDTO> {
+    let area: Partial<Area> = await this.areaRepository
+      .findOne({
+        where: {
+          name: course.area,
+        },
+      });
+    // If missing, the area will be created
+    // by the cascade insert set on the Course entity
+    if (area == null) {
+      area = { name: course.area };
+    }
     try {
       await this.courseRepository.findOneOrFail(id);
     } catch (e) {
@@ -102,13 +127,18 @@ export class CourseController {
       }
     }
 
+    const fullCourse = {
+      ...course,
+      area,
+    };
+
     const {
       prefix,
       number,
       ...updatedCourse
     } = await this.courseRepository.save({
       id,
-      ...course,
+      ...fullCourse,
     });
 
     return {

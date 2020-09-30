@@ -7,18 +7,14 @@ import {
   IsEnum,
   IsOptional,
 } from 'class-validator';
-import { CourseArea } from './CourseArea.dto';
 
 /**
  * @module Server.DTOS.Courses
  */
 
 export abstract class CreateCourse {
-  @ApiModelProperty({
-    type: CourseArea,
-  })
   @IsNotEmpty()
-  public area: CourseArea;
+  public area: string;
 
   @ApiModelProperty({
     type: 'boolean',
@@ -81,8 +77,8 @@ export abstract class CreateCourse {
     type: 'boolean',
     example: false,
   })
-  @IsNotEmpty()
   @IsBoolean()
+  @IsOptional()
   public private: boolean;
 
   @ApiModelProperty({

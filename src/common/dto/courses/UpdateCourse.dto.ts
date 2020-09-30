@@ -8,18 +8,14 @@ import {
   IsUUID,
   IsNotEmpty,
 } from 'class-validator';
-import { CourseArea } from './CourseArea.dto';
 
 /**
  * @module Server.DTOS.Courses
  */
 
 export abstract class UpdateCourseDTO {
-  @ApiModelProperty({
-    type: CourseArea,
-  })
-  @IsOptional()
-  public area: CourseArea;
+  @IsNotEmpty()
+  public area: string;
 
   @ApiModelProperty({
     example: 'df15cfff-0f6f-4769-8841-1ab8a9c335d9',
@@ -33,7 +29,6 @@ export abstract class UpdateCourseDTO {
     example: false,
   })
   @IsBoolean()
-  @IsOptional()
   public isUndergraduate: boolean;
 
   @ApiModelProperty({
@@ -41,7 +36,7 @@ export abstract class UpdateCourseDTO {
     example: 'Applied Math for computation',
   })
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   public title: string;
 
   @ApiModelProperty({
@@ -49,7 +44,7 @@ export abstract class UpdateCourseDTO {
     example: 'CS',
   })
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   public prefix: string;
 
   @ApiModelProperty({
@@ -57,7 +52,7 @@ export abstract class UpdateCourseDTO {
     example: '109b',
   })
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   public number: string;
 
   @ApiModelProperty({
@@ -74,7 +69,6 @@ export abstract class UpdateCourseDTO {
     example: true,
   })
   @IsEnum(IS_SEAS)
-  @IsOptional()
   public isSEAS: IS_SEAS;
 
   @ApiModelProperty({
@@ -90,15 +84,14 @@ export abstract class UpdateCourseDTO {
     type: 'boolean',
     example: false,
   })
-  @IsOptional()
   @IsBoolean()
+  @IsOptional()
   public private: boolean;
 
   @ApiModelProperty({
     type: 'string',
     enum: TERM_PATTERN,
   })
-  @IsOptional()
   @IsEnum(TERM_PATTERN)
   public termPattern: TERM_PATTERN;
 }
