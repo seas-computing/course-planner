@@ -286,6 +286,24 @@ describe('Course API', function () {
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.BAD_REQUEST);
         });
+        it('reports a validation error when Undergraduate is missing', async function () {
+          authStub.resolves(adminUser);
+          mockSemesterRepository.find.resolves([]);
+          mockAreaRepository.findOne.resolves(computerScienceCourse.area);
+          mockCourseRepository.save.resolves(computerScienceCourse);
+          const response = await request(api)
+            .post('/api/courses')
+            .send({
+              area: computerScienceCourse.area,
+              prefix: computerScienceCourse.prefix,
+              number: computerScienceCourse.number,
+              title: computerScienceCourse.title,
+              termPattern: computerScienceCourse.termPattern,
+              isSEAS: computerScienceCourse.isSEAS,
+            });
+          strictEqual(response.ok, false);
+          strictEqual(response.status, HttpStatus.BAD_REQUEST);
+        });
         it('reports a validation error when Is SEAS is missing', async function () {
           authStub.resolves(adminUser);
           mockSemesterRepository.find.resolves([]);
