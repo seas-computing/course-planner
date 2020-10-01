@@ -6,18 +6,19 @@ import {
 } from 'typeorm';
 import { Course } from 'server/course/course.entity';
 import { SemesterView } from 'server/semester/SemesterView.entity';
+import { IS_SEAS } from 'common/constants';
 
 /**
  * A subset of fields from the [[Course]]
  */
-
 @ViewEntity('MultiYearPlanView', {
   expression: (connection: Connection):
   SelectQueryBuilder<Course> => connection.createQueryBuilder()
     .select('c.id', 'id')
     .addSelect('c.prefix', 'catalogPrefix')
-    .addSelect('c.number', 'catalogNumber')
+    .addSelect("CONCAT_WS(' ', c.prefix, c.number)", 'catalogNumber')
     .addSelect('c.title', 'title')
+    .where(`c."isSEAS" <> '${IS_SEAS.N}'`)
     .from(Course, 'c'),
 })
 export class MultiYearPlanView {
@@ -36,7 +37,7 @@ export class MultiYearPlanView {
 
   /**
    * From [[Course]]
-   * Course catalog number, e.g. `50`
+   * Merge of catalog prefix and catalog number, e.g. `CS 50`
    */
   @ViewColumn()
   public catalogNumber: string;

@@ -57,7 +57,7 @@ describe('App Router', function () {
     context('/four-year-plan', function () {
       it('renders the MultiYearPlan component', async function () {
         const { findAllByText } = renderWithUser('/four-year-plan');
-        return findAllByText(/Area|catalogNumber|title/);
+        return findAllByText(/Catalog Prefix|Catalog Number|Title/);
       });
     });
     context('Undefined routes', function () {

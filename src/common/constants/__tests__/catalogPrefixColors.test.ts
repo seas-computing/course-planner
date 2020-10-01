@@ -1,5 +1,5 @@
 import { strictEqual } from 'assert';
-import CATALOG_PREFIX_COLORS, {getCatPrefixColor} from '../catalogPrefixColors';
+import CATALOG_PREFIX_COLORS, { getCatPrefixColor } from '../catalogPrefixColors';
 
 describe('getCatPrefixColor', function () {
   context('CATALOG_PREFIX_COLORS.AC', function () {
