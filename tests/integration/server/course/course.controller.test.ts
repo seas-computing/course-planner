@@ -286,7 +286,7 @@ describe('Course API', function () {
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.BAD_REQUEST);
         });
-        it('reports a validation error when course title is missing', async function () {
+        it('reports a validation error when Is SEAS is missing', async function () {
           authStub.resolves(adminUser);
           mockSemesterRepository.find.resolves([]);
           mockAreaRepository.findOne.resolves(computerScienceCourse.area);
