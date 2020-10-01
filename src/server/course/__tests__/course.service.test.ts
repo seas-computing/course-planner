@@ -9,7 +9,6 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import {
   strictEqual,
   deepStrictEqual,
-  rejects,
 } from 'assert';
 import { Semester } from 'server/semester/semester.entity';
 import {
@@ -22,7 +21,6 @@ import {
   physicsCourseResponse,
 } from 'testData';
 import { Area } from 'server/area/area.entity';
-import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { SelectQueryBuilder } from 'typeorm';
 import { CourseService } from '../course.service';
 import { Course } from '../course.entity';
