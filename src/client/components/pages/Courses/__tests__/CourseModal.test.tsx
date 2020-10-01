@@ -290,10 +290,12 @@ describe('Course Modal', function () {
           postStub = stub(request, 'post');
           postStub.resolves({ data: physicsCourseResponse });
           onSuccessStub = stub();
+          onCloseStub = stub();
           ({ getByLabelText, getByText } = render(
             <CourseModal
               isVisible
               onSuccess={onSuccessStub}
+              onClose={onCloseStub}
             />,
             dispatchMessage,
             metadata
@@ -342,16 +344,23 @@ describe('Course Modal', function () {
             physicsCourseResponse
           ));
         });
+        it('calls the onClose handler once', async function () {
+          const submitButton = getByText('Submit');
+          fireEvent.click(submitButton);
+          await wait(() => strictEqual(onCloseStub.callCount, 1));
+        });
       });
       context('when required form fields are not provided', function () {
         beforeEach(function () {
           postStub = stub(request, 'post');
           postStub.resolves({ data: physicsCourseResponse });
           onSuccessStub = stub();
+          onCloseStub = stub();
           ({ getByLabelText, getByText } = render(
             <CourseModal
               isVisible
               onSuccess={onSuccessStub}
+              onClose={onCloseStub}
             />,
             dispatchMessage,
             metadata
@@ -361,6 +370,11 @@ describe('Course Modal', function () {
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
           await wait(() => strictEqual(onSuccessStub.callCount, 0));
+        });
+        it('does not call the onClose handler on submit', async function () {
+          const submitButton = getByText('Submit');
+          fireEvent.click(submitButton);
+          await wait(() => strictEqual(onCloseStub.callCount, 0));
         });
       });
     });
