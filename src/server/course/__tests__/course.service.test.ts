@@ -45,7 +45,7 @@ describe('Course service', function () {
       physicsCourseQueryResult,
     ]);
     mockAreaRepository = {
-      findOneOrFail: stub(),
+      findOne: stub(),
     };
 
     mockCourseRepository = {
@@ -89,6 +89,7 @@ describe('Course service', function () {
   describe('save', function () {
     beforeEach(function () {
       mockSemesterRepository.find.resolves([]);
+      mockAreaRepository.findOne.resolves(computerScienceCourse.area.name);
     });
 
     it('creates a new course in the database', async function () {
@@ -118,12 +119,6 @@ describe('Course service', function () {
       const createdCourse = await courseService.save(computerScienceCourse);
 
       deepStrictEqual(createdCourse, computerScienceCourse);
-    });
-
-    it('requires that courses be created within valid areas', async function () {
-      mockAreaRepository.findOneOrFail.rejects(new EntityNotFoundError(Area, ''));
-
-      await rejects(() => courseService.save(computerScienceCourse), /Area/);
     });
   });
 });

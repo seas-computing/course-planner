@@ -17,7 +17,7 @@ const getAllCourses = async (): Promise<ManageCourseResponseDTO[]> => {
  */
 const createCourse = async (courseInfo: CreateCourse):
 Promise<ManageCourseResponseDTO> => {
-  const response = await request.post('/api/course', courseInfo);
+  const response = await request.post('/api/courses/', courseInfo);
   return response.data as ManageCourseResponseDTO;
 };
 
@@ -26,7 +26,7 @@ Promise<ManageCourseResponseDTO> => {
  */
 const editCourse = async (courseInfo: UpdateCourseDTO):
 Promise<ManageCourseResponseDTO> => {
-  const response = await request.put(`api/course/${courseInfo.id}`, courseInfo);
+  const response = await request.put(`/api/courses/${courseInfo.id}`, courseInfo);
   return response.data as ManageCourseResponseDTO;
 };
 

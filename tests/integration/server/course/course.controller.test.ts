@@ -173,7 +173,7 @@ describe('Course API', function () {
           authStub.resolves(adminUser);
           mockSemesterRepository.find.resolves([]);
           mockAreaRepository.findOne
-            .resolves(computerScienceCourse.area);
+            .resolves(computerScienceCourseResponse.area);
           mockCourseRepository.save.resolves(computerScienceCourse);
 
           const response = await request(api)

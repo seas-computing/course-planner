@@ -31,7 +31,10 @@ export const computerScienceCourse = Object.assign(new Course(), {
  */
 export const physicsCourse = Object.assign(new Course(), {
   id: 'a1a13689-a925-4d0b-a4fc-21c93263c6d2',
-  area: 'AP',
+  area: {
+    id: 'b8bc8456-51fd-48ef-b111-5a5990671cd1',
+    name: 'AP',
+  },
   title: 'Introduction to Quantum Theory of Solids',
   prefix: 'AP',
   number: '295a',
@@ -42,20 +45,17 @@ export const physicsCourse = Object.assign(new Course(), {
 /**
  * An example of [[CreateCourse]] representing CS 50
  */
-export const createCourseDtoExample: CreateCourse = Object.assign(
-  new Course(),
-  {
-    area: 'CS',
-    title: 'Introduction to Computer Science',
-    isSEAS: IS_SEAS.Y,
-    isUndergraduate: true,
-    prefix: 'CS',
-    number: '050',
-    termPattern: TERM_PATTERN.FALL,
-    sameAs: '',
-    private: true,
-  }
-);
+export const createCourseDtoExample: CreateCourse = {
+  area: computerScienceCourse.area.name,
+  title: computerScienceCourse.title,
+  isSEAS: computerScienceCourse.isSEAS,
+  isUndergraduate: computerScienceCourse.isUndergraduate,
+  prefix: computerScienceCourse.prefix,
+  number: computerScienceCourse.number,
+  termPattern: computerScienceCourse.termPattern,
+  sameAs: computerScienceCourse.sameAs,
+  private: computerScienceCourse.private,
+};
 
 /**
  * An example [[ManageCourseResponseDTO]] response representing CS 50.

@@ -40,7 +40,7 @@ export class CourseController {
   private readonly courseRepository: Repository<Course>;
 
   @InjectRepository(Area)
-  private areaRepository: Repository<Area>;
+  private readonly areaRepository: Repository<Area>;
 
   @Get('/')
   @ApiOperation({ title: 'Retrieve all courses in the database' })

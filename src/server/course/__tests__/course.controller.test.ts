@@ -8,7 +8,6 @@ import {
   createCourseDtoExample,
   computerScienceCourseResponse,
   updateCourseExample,
-  safeString,
   error,
 } from 'testData';
 import { Authentication } from 'server/auth/authentication.guard';
@@ -22,9 +21,14 @@ import { CourseService } from '../course.service';
 describe('Course controller', function () {
   let controller: CourseController;
   let mockCourseRepository: Record<string, SinonStub>;
+  let mockAreaRepository: Record<string, SinonStub>;
   let mockCourseService: Record<string, SinonStub>;
 
   beforeEach(async function () {
+    mockAreaRepository = {
+      findOne: stub(),
+    };
+
     mockCourseRepository = {
       find: stub(),
       findOneOrFail: stub(),
@@ -41,6 +45,10 @@ describe('Course controller', function () {
         {
           provide: getRepositoryToken(Course),
           useValue: mockCourseRepository,
+        },
+        {
+          provide: getRepositoryToken(Area),
+          useValue: mockAreaRepository,
         },
         {
           provide: CourseService,
@@ -72,7 +80,8 @@ describe('Course controller', function () {
 
   describe('create', function () {
     it('creates a course', async function () {
-      mockCourseService.save.resolves(computerScienceCourse);
+      mockAreaRepository.findOne.resolves(createCourseDtoExample.area);
+      mockCourseService.save.resolves(computerScienceCourseResponse);
 
       await controller.create(createCourseDtoExample);
 
@@ -84,6 +93,7 @@ describe('Course controller', function () {
       );
     });
     it('returns the newly created course', async function () {
+      mockAreaRepository.findOne.resolves(createCourseDtoExample.area);
       mockCourseService.save.resolves(computerScienceCourse);
 
       const createdCourse = await controller.create(
@@ -91,20 +101,6 @@ describe('Course controller', function () {
       );
 
       deepStrictEqual(createdCourse, computerScienceCourseResponse);
-    });
-    it('throws a NotFoundException if the course area does not exist', async function () {
-      mockCourseService.save.rejects(new EntityNotFoundError(Area, ''));
-      await rejects(
-        () => controller.create(createCourseDtoExample),
-        NotFoundException
-      );
-    });
-    it('mentions the the course area in the error', async function () {
-      mockCourseService.save.rejects(new EntityNotFoundError(Area, ''));
-      await rejects(
-        () => controller.create(createCourseDtoExample),
-        /course area/
-      );
     });
     it('re-throws any exceptions other than EntityNotFoundError ', async function () {
       mockCourseService.save.rejects(error);
@@ -118,6 +114,7 @@ describe('Course controller', function () {
 
   describe('update', function () {
     it('updates a course in the database', async function () {
+      mockAreaRepository.findOne.resolves(computerScienceCourse.area);
       mockCourseRepository.findOneOrFail.resolves();
       mockCourseRepository.save.resolves(computerScienceCourse);
 
@@ -133,6 +130,7 @@ describe('Course controller', function () {
       );
     });
     it('updates the course specified', async function () {
+      mockAreaRepository.findOne.resolves(computerScienceCourse.area);
       mockCourseRepository.findOneOrFail.resolves();
       mockCourseRepository.save.resolves(computerScienceCourse);
 

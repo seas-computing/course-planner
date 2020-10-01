@@ -6,7 +6,9 @@ import {
   computerScienceCourseResponse,
   physicsCourseResponse,
   error,
-  physicsCourse,
+  createCourseDtoExample,
+  updateCourseExample,
+  computerScienceCourse,
 } from 'testData';
 import { CourseAPI } from 'client/api';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
@@ -83,17 +85,18 @@ describe('Course Admin API', function () {
       context('when POST request succeeds', function () {
         beforeEach(async function () {
           postStub.resolves({
-            data: physicsCourseResponse,
+            data: computerScienceCourseResponse,
           } as AxiosResponse<ManageCourseResponseDTO>);
-          createCourseResult = await CourseAPI.createCourse(physicsCourse);
+          createCourseResult = await CourseAPI
+            .createCourse(createCourseDtoExample);
         });
-        it('should make the request to /api/course', function () {
+        it('should make the request to /api/courses/', function () {
           const [[path]] = postStub.args;
-          strictEqual(path, '/api/course');
+          strictEqual(path, '/api/courses/');
           strictEqual(postStub.callCount, 1);
         });
         it('should return the created course', function () {
-          deepStrictEqual(createCourseResult, physicsCourseResponse);
+          deepStrictEqual(createCourseResult, computerScienceCourseResponse);
         });
       });
       context('when POST request fails', function () {
@@ -103,7 +106,7 @@ describe('Course Admin API', function () {
         });
         it('should throw an error', async function () {
           try {
-            await CourseAPI.createCourse(physicsCourse);
+            await CourseAPI.createCourse(createCourseDtoExample);
             fail('Did not throw an error');
           } catch (err) {
             strictEqual((err as Error).message, errorMessage);
@@ -121,11 +124,12 @@ describe('Course Admin API', function () {
       context('when PUT request succeeds', function () {
         const newCourseTitle = 'Intro to Engineering';
         const editedCourse = {
-          ...physicsCourse,
+          ...computerScienceCourse,
+          area: computerScienceCourse.area.name,
           title: newCourseTitle,
         };
         const editedCourseResponse = {
-          ...physicsCourseResponse,
+          ...computerScienceCourseResponse,
           title: newCourseTitle,
         };
         beforeEach(async function () {
@@ -134,9 +138,9 @@ describe('Course Admin API', function () {
           } as AxiosResponse<ManageCourseResponseDTO>);
           editCourseResult = await CourseAPI.editCourse(editedCourse);
         });
-        it('should make a request to api/course/:id', function () {
+        it('should make a request to /api/courses/:id', function () {
           const [[path]] = putStub.args;
-          strictEqual(path, `api/course/${physicsCourse.id}`);
+          strictEqual(path, `/api/courses/${updateCourseExample.id}`);
           strictEqual(putStub.callCount, 1);
         });
         it('should return the updated course', function () {
@@ -150,7 +154,7 @@ describe('Course Admin API', function () {
         });
         it('should throw an error', async function () {
           try {
-            await CourseAPI.editCourse(physicsCourse);
+            await CourseAPI.editCourse(updateCourseExample);
             fail('Did not throw an error');
           } catch (err) {
             strictEqual((err as Error).message, errorMessage);
