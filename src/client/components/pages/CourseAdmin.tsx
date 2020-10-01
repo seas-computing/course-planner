@@ -4,6 +4,7 @@ import React, {
   useContext,
   useState,
   useEffect,
+  useCallback,
 } from 'react';
 import {
   Table,
@@ -68,26 +69,27 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
    */
   const dispatchMessage = useContext(MessageContext);
 
+  const loadCourses = useCallback(async (): Promise<void> => {
+    try {
+      setCourses(await CourseAPI.getAllCourses());
+    } catch (e) {
+      dispatchMessage({
+        message: new AppMessage(
+          'Unable to get course data from server. If the problem persists, contact SEAS Computing',
+          MESSAGE_TYPE.ERROR
+        ),
+        type: MESSAGE_ACTION.PUSH,
+      });
+    }
+  }, [dispatchMessage]);
+
   /**
    * Gets the course data from the server
    * If it fails, display a message for the user
    */
   useEffect((): void => {
-    CourseAPI.getAllCourses()
-      .then((courses): ManageCourseResponseDTO[] => {
-        setCourses(courses);
-        return courses;
-      })
-      .catch((): void => {
-        dispatchMessage({
-          message: new AppMessage(
-            'Unable to get course data from server. If the problem persists, contact SEAS Computing',
-            MESSAGE_TYPE.ERROR
-          ),
-          type: MESSAGE_ACTION.PUSH,
-        });
-      });
-  }, [dispatchMessage]);
+    void loadCourses();
+  }, [loadCourses]);
 
   return (
     <>
@@ -162,6 +164,10 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
               setCourseModalVisible(false);
               window.setTimeout((): void => document.getElementById('createCourse').focus(), 0);
             }
+          }}
+          onSuccess={async (): Promise<void> => {
+            // wait for the faculty to load before allowing the dialog to close
+            await loadCourses();
           }}
         />
       </div>
