@@ -5,11 +5,10 @@
 export const parseCatalogNumberForPrefixNumber = (catalogNumber: string):
 { prefix: string, number: string } => {
   const match = /^(\D+)?[\W]*(\d.*)?$/.exec(catalogNumber);
-  if (!match) return null;
   return (
     {
-      prefix: (match[1] || '').trim(),
-      number: (match[2] || '').trim(),
+      prefix: ((match && match[1]) || '').trim(),
+      number: ((match && match[2]) || '').trim(),
     }
   );
 };

@@ -53,7 +53,7 @@ interface CourseModalProps {
   /**
    * Handler to be invoked when the edit is successful
    */
-  onSuccess?: (faculty: ManageCourseResponseDTO) => Promise<void>;
+  onSuccess?: (course: ManageCourseResponseDTO) => Promise<void>;
 }
 
 /**
@@ -154,13 +154,15 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
   const submitCourseForm = async ():
   Promise<ManageCourseResponseDTO> => {
     let isValid = true;
+    const coursePrefixAndNumber = parseCatalogNumberForPrefixNumber(form
+      .courseNumber);
     // Make sure only errors that have not been fixed are shown.
     setAreaErrorMessage('');
     setCourseNumberErrorMessage('');
     setCourseTitleErrorMessage('');
     setTermPatternErrorMessage('');
     setCourseErrorMessage('');
-    if (!(form.existingArea && form.newArea)) {
+    if (!(form.existingArea || form.newArea)) {
       setAreaErrorMessage('Area is required to submit this form.');
       isValid = false;
     }
@@ -170,6 +172,14 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
     }
     if (!form.courseNumber) {
       setCourseNumberErrorMessage('Course number is required to submit this form.');
+      isValid = false;
+    }
+    if (form.courseNumber && !coursePrefixAndNumber.prefix) {
+      setCourseNumberErrorMessage('Course prefix is required to submit this form.');
+      isValid = false;
+    }
+    if (form.courseNumber && !coursePrefixAndNumber.number) {
+      setCourseNumberErrorMessage('A course number following the prefix entered is required to submit this form.');
       isValid = false;
     }
     if (!form.courseTitle) {
@@ -184,37 +194,28 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
       throw new ValidationException('Please fill in the required fields and try again. If the problem persists, contact SEAS Computing.');
     }
     let result: ManageCourseResponseDTO;
+    const {
+      prefix,
+      number,
+    } = parseCatalogNumberForPrefixNumber(form.courseNumber);
+    const courseInfo = {
+      area: form.areaType === 'createArea' ? form.newArea : form.existingArea,
+      prefix,
+      number,
+      title: form.courseTitle,
+      sameAs: form.sameAs,
+      isUndergraduate: form.isUndergraduate,
+      isSEAS: form.isSEAS as IS_SEAS,
+      termPattern: form.termPattern as TERM_PATTERN,
+      private: true,
+    };
     if (currentCourse) {
       result = await CourseAPI.editCourse({
         id: currentCourse.id,
-        area: {
-          id: 'b8bc8456-51fd-48ef-b111-5a5990671cd1',
-          name: 'AP',
-        },
-        prefix: parseCatalogNumberForPrefixNumber(form.courseNumber).prefix,
-        number: parseCatalogNumberForPrefixNumber(form.courseNumber).number,
-        title: form.courseTitle,
-        sameAs: form.sameAs,
-        isUndergraduate: form.isUndergraduate as unknown as boolean,
-        isSEAS: form.isSEAS as IS_SEAS,
-        termPattern: form.termPattern as TERM_PATTERN,
-        private: true,
+        ...courseInfo,
       });
     } else {
-      result = await CourseAPI.createCourse({
-        area: {
-          id: 'b8bc8456-51fd-48ef-b111-5a5990671cd1',
-          name: 'AP',
-        },
-        prefix: parseCatalogNumberForPrefixNumber(form.courseNumber).prefix,
-        number: parseCatalogNumberForPrefixNumber(form.courseNumber).number,
-        title: form.courseTitle,
-        sameAs: form.sameAs,
-        isUndergraduate: form.isUndergraduate as unknown as boolean,
-        isSEAS: form.isSEAS as IS_SEAS,
-        termPattern: form.termPattern as TERM_PATTERN,
-        private: true,
-      });
+      result = await CourseAPI.createCourse(courseInfo);
     }
     return result;
   };
@@ -256,8 +257,8 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
         <form id="editCourseForm">
           <Fieldset
             legend="Course Area"
-            isBorderVisible={false}
-            isLegendVisible={false}
+            isBorderVisible
+            isLegendVisible
             errorMessage={areaErrorMessage}
             isRequired
           >
