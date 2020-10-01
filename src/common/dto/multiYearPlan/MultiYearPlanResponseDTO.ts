@@ -81,7 +81,7 @@ export abstract class MultiYearPlanResponseDTO {
 
   @ApiModelProperty({
     type: 'string',
-    example: '227',
+    example: 'AP 227',
   })
   public catalogNumber: string;
 
