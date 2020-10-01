@@ -29,7 +29,7 @@ import {
   MultiYearPlanSemester,
 } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import { MultiYearPlanAPI } from 'client/api/multiYearPlan';
-import { getAreaColor } from '../../../common/constants';
+import { getCatPrefixColor } from '../../../common/constants';
 
 /**
  * The component represents the Multi Year Plan page, which will be rendered at
@@ -112,8 +112,8 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
           <Table>
             <TableHead>
               <TableRow isStriped>
-                <TableHeadingCell scope="col">Area</TableHeadingCell>
-                <TableHeadingCell scope="col">CatalogNumber</TableHeadingCell>
+                <TableHeadingCell scope="col">Catalog Prefix</TableHeadingCell>
+                <TableHeadingCell scope="col">Catalog Number</TableHeadingCell>
                 <TableHeadingCell scope="col">Title</TableHeadingCell>
                 <>
                   {yearsHeaders(multiYearPlan)}
@@ -126,9 +126,9 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
                   <TableRow isStriped={courseIndex % 2 === 1} key={course.id}>
                     <TableCell
                       verticalAlignment={VALIGN.TOP}
-                      backgroundColor={getAreaColor(course.area)}
+                      backgroundColor={getCatPrefixColor(course.catalogPrefix)}
                     >
-                      {course.area}
+                      {course.catalogPrefix}
                     </TableCell>
                     <TableRowHeadingCell verticalAlignment={VALIGN.TOP} scope="row">
                       {course.catalogNumber}
