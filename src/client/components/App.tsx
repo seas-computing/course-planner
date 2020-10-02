@@ -110,6 +110,10 @@ export const ColdApp: SFC = (): ReactElement => {
     areas: [],
     semesters: [],
   });
+  const metadataContext = {
+    value: currentMetadata,
+    update: setMetadata,
+  };
 
   useEffect((): void => {
     MetadataAPI.getMetadata()
@@ -144,7 +148,7 @@ export const ColdApp: SFC = (): ReactElement => {
       <MarkOneWrapper>
         <UserContext.Provider value={currentUser}>
           <MessageContext.Provider value={dispatchMessage}>
-            <MetadataContext.Provider value={currentMetadata}>
+            <MetadataContext.Provider value={metadataContext}>
               <div className="app-content">
                 <Header justify="left">
                   <Logo href="/" image={logo}>SEAS Logo</Logo>

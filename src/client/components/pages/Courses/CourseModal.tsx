@@ -35,6 +35,7 @@ import {
 import ValidationException from 'common/errors/ValidationException';
 import { CourseAPI } from 'client/api';
 import { parseCatalogNumberForPrefixNumber } from 'common/utils/courseHelperFunctions';
+import { MetadataResponse } from 'common/dto/metadata/MetadataResponse.dto';
 
 interface CourseModalProps {
   /**
@@ -69,7 +70,9 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
   /**
    * The current value for the metadata context
    */
-  const metadata = useContext(MetadataContext);
+  const metadataContext = useContext(MetadataContext);
+
+  const metadata = metadataContext.value;
 
   const [form, setFormFields] = useState({
     areaType: 'existingArea',
@@ -217,6 +220,15 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
     } else {
       result = await CourseAPI.createCourse(courseInfo);
     }
+    const newAreas = metadata.areas;
+    if (form.areaType === 'createArea' && metadata.areas.indexOf(form.newArea) === -1) {
+      newAreas.push(form.newArea);
+    }
+    const newMetadata: MetadataResponse = {
+      ...metadata,
+      areas: newAreas,
+    };
+    metadataContext.update(newMetadata);
     return result;
   };
   useEffect((): void => {
