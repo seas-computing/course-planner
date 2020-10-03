@@ -34,7 +34,7 @@ import {
 } from 'mark-one';
 import { UserAPI } from 'client/api';
 import { UserResponse } from 'common/dto/users/userResponse.dto';
-import { MetadataContext } from 'client/context/MetadataContext';
+import { MetadataContext, MetadataContextValue } from 'client/context/MetadataContext';
 import { MetadataAPI } from 'client/api/metadata';
 import { Message } from './layout';
 import NoMatch from './pages/NoMatch';
@@ -110,10 +110,8 @@ export const ColdApp: SFC = (): ReactElement => {
     areas: [],
     semesters: [],
   });
-  const metadataContext = {
-    value: currentMetadata,
-    update: setMetadata,
-  };
+  const metadataContext = new MetadataContextValue(currentMetadata,
+    setMetadata);
 
   useEffect((): void => {
     MetadataAPI.getMetadata()

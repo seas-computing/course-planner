@@ -1,5 +1,5 @@
 import React, {
-  ReactElement, useState,
+  ReactElement,
 } from 'react';
 import {
   render,
@@ -11,48 +11,14 @@ import {
   MessageContext,
   DispatchMessage,
 } from 'client/context';
-import { MetadataContext } from 'client/context/MetadataContext';
-import { MetadataResponse } from 'common/dto/metadata/MetadataResponse.dto';
+import { MetadataContext, MetadataContextValue } from 'client/context/MetadataContext';
+import { metadata } from '../data/metadata';
 
-interface AppBlueprintProps {
-  children: React.ReactNode
-  dispatchMessage: DispatchMessage,
-  metadata?: MetadataResponse;
-}
+const currentMetadata = { ...metadata };
 
-/**
- * Create a component so that we can call useState to pass in a metadata value
- */
-const AppBlueprint = ({
-  children,
-  dispatchMessage,
-  metadata,
-}: AppBlueprintProps): ReactElement => {
-  const [currentMetadata, setMetadata] = useState(metadata);
-  const metadataContext = {
-    value: currentMetadata,
-    update: setMetadata,
-  };
-  return (
-    <MemoryRouter>
-      <MarkOneWrapper>
-        <MessageContext.Provider value={dispatchMessage}>
-          <MetadataContext.Provider value={metadataContext}>
-            {children}
-          </MetadataContext.Provider>
-        </MessageContext.Provider>
-      </MarkOneWrapper>
-    </MemoryRouter>
-  );
-};
-
-AppBlueprint.defaultProps = {
-  metadata: {
-    currentAcademicYear: (new Date()).getFullYear(),
-    areas: [],
-    semesters: [],
-  },
-};
+const testMetadata = new MetadataContextValue(currentMetadata, (update) => {
+  Object.assign(currentMetadata, update);
+});
 
 /**
  * In order to streamline our tests, we are redefining the `render` function to
@@ -61,12 +27,17 @@ AppBlueprint.defaultProps = {
  */
 const customRender = (
   ui: ReactElement,
-  dispatchMessage: DispatchMessage,
-  metadata?: MetadataResponse
+  dispatchMessage: DispatchMessage
 ): RenderResult => render(
-  <AppBlueprint dispatchMessage={dispatchMessage} metadata={metadata}>
-    {ui}
-  </AppBlueprint>
+  <MemoryRouter>
+    <MarkOneWrapper>
+      <MessageContext.Provider value={dispatchMessage}>
+        <MetadataContext.Provider value={testMetadata}>
+          {ui}
+        </MetadataContext.Provider>
+      </MessageContext.Provider>
+    </MarkOneWrapper>
+  </MemoryRouter>
 );
 
 export * from '@testing-library/react';

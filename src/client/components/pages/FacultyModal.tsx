@@ -64,9 +64,7 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
   /**
    * The current value for the metadata context
    */
-  const metadataContext = useContext(MetadataContext);
-
-  const metadata = metadataContext.value;
+  const metadata = useContext(MetadataContext);
 
   const [form, setFormFields] = useState({
     courseArea: '',

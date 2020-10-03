@@ -4,7 +4,7 @@ import { wait } from '@testing-library/react';
 import { stub, SinonStub } from 'sinon';
 import { render } from 'test-utils';
 import { MultiYearPlanAPI } from 'client/api/multiYearPlan';
-import { testFourYearPlan, error, metadata } from 'testData';
+import { testFourYearPlan, error } from 'testData';
 import MultiYearPlan from '../MultiYearPlan';
 
 describe('MultiYearPlan', function () {
@@ -35,8 +35,7 @@ describe('MultiYearPlan', function () {
     it('displays the MYP area information', async function () {
       const { findByText } = render(
         <MultiYearPlan />,
-        dispatchMessage,
-        metadata
+        dispatchMessage
       );
       strictEqual(getStub.callCount, 1);
       const { area } = testData[0];

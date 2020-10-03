@@ -16,7 +16,7 @@ import {
 } from 'sinon';
 import { render } from 'test-utils';
 import request from 'client/api/request';
-import { metadata, physicsCourseResponse } from 'testData';
+import { physicsCourseResponse } from 'testData';
 import { IS_SEAS } from 'common/constants';
 import CourseModal from '../CourseModal';
 
@@ -34,8 +34,7 @@ describe('Course Modal', function () {
       beforeEach(function () {
         ({ getByLabelText, queryAllByRole } = render(
           <CourseModal isVisible />,
-          dispatchMessage,
-          metadata
+          dispatchMessage
         ));
       });
       it('renders empty form fields except for the "IS SEAS" dropdown, which defaults to "Yes"', function () {
@@ -67,8 +66,7 @@ describe('Course Modal', function () {
             isVisible
             currentCourse={physicsCourseResponse}
           />,
-          dispatchMessage,
-          metadata
+          dispatchMessage
         ));
       });
       it('populates the modal fields according to the current course selected', function () {
@@ -125,8 +123,7 @@ describe('Course Modal', function () {
           isVisible
           currentCourse={physicsCourseResponse}
         />,
-        dispatchMessage,
-        metadata
+        dispatchMessage
       ));
     });
     describe('Area', function () {
@@ -229,8 +226,7 @@ describe('Course Modal', function () {
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
             />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           ));
         });
         it('calls the onSuccess handler once on submit', async function () {
@@ -268,8 +264,7 @@ describe('Course Modal', function () {
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
             />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           ));
         });
         it('does not call the onSuccess handler on submit', async function () {
@@ -297,8 +292,7 @@ describe('Course Modal', function () {
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
             />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           ));
           const existingAreaSelect = document.getElementById('existingArea') as HTMLSelectElement;
           fireEvent.change(
@@ -362,8 +356,7 @@ describe('Course Modal', function () {
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
             />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           ));
         });
         it('does not call the onSuccess handler on submit', async function () {

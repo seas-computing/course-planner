@@ -14,7 +14,6 @@ import {
 import {
   physicsCourseResponse,
   computerScienceCourseResponse,
-  metadata,
 } from 'testData';
 import { CourseAPI } from 'client/api/courses';
 import { render } from 'test-utils';
@@ -38,8 +37,7 @@ describe('Course Admin Modal Behavior', function () {
         it('returns focus to the create course button', async function () {
           const { findByText, queryByText } = render(
             <CourseAdmin />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           // Show the create course modal
           const createCourseButton = await findByText('Create New Course', { exact: false });
@@ -61,8 +59,7 @@ describe('Course Admin Modal Behavior', function () {
         it('returns focus to the originally clicked edit faculty button', async function () {
           const { findByText, queryByText } = render(
             <CourseAdmin />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           // Show the edit course modal
           const editCourseButton = await waitForElement(

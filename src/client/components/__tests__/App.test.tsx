@@ -6,7 +6,6 @@ import {
   render,
 } from '@testing-library/react';
 import { render as customRender } from 'test-utils';
-import { metadata } from 'testData';
 import { stub, SinonStub } from 'sinon';
 import { MetadataAPI } from 'client/api/metadata';
 import * as dummy from 'testData';
@@ -29,8 +28,7 @@ describe('App', function () {
     it('creates a div for app content', async function () {
       const { container } = customRender(
         <App />,
-        dispatchMessage,
-        metadata
+        dispatchMessage
       );
       return waitForElement(() => container.querySelector('.app-content'));
     });
@@ -139,8 +137,7 @@ describe('App', function () {
     it('only renders one active tab at a time', async function () {
       const { getAllByRole, findByText } = customRender(
         <App />,
-        dispatchMessage,
-        metadata
+        dispatchMessage
       );
       await findByText('Courses');
       const tabs = getAllByRole('listitem').map((listItem) => listItem.getElementsByTagName('div')[0]);
@@ -155,8 +152,7 @@ describe('App', function () {
       it('displays the name of the current user', async function () {
         const { findByText } = customRender(
           <App />,
-          dispatchMessage,
-          metadata
+          dispatchMessage
         );
         strictEqual(userStub.callCount, 1);
         const { fullName } = dummy.regularUser;
@@ -171,8 +167,7 @@ describe('App', function () {
       it('displays an error Message', async function () {
         const { findByText } = customRender(
           <App />,
-          dispatchMessage,
-          metadata
+          dispatchMessage
         );
         strictEqual(userStub.callCount, 1);
         return findByText('Unable to get user data', { exact: false });
@@ -186,8 +181,7 @@ describe('App', function () {
       it('displays an error Message', async function () {
         const { findByText } = customRender(
           <App />,
-          dispatchMessage,
-          metadata
+          dispatchMessage
         );
         strictEqual(userStub.callCount, 1);
         const nextButton = await findByText('next', { exact: false });
