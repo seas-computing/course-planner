@@ -1,4 +1,9 @@
-import { Module } from '@nestjs/common';
+import {
+  Module,
+  NestModule,
+  MiddlewareConsumer,
+  RequestMethod,
+} from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import session from 'express-session';
 import ConnectRedis from 'connect-redis';
@@ -16,6 +21,8 @@ import { MetadataModule } from './metadata/metadata.module';
 import { UserController } from './user/user.controller';
 import { HealthCheckController } from './healthCheck/healthCheck.controller';
 import { LogModule } from './log/log.module';
+import { LogMiddleware } from './log/log.middleware';
+import { AuthController } from './auth/auth.controller';
 
 /**
  * Base application module that configures the database connections and other
@@ -63,6 +70,18 @@ import { LogModule } from './log/log.module';
   ],
   providers: [],
 })
-class AppModule { }
+class AppModule implements NestModule {
+  /**
+   * Apply our logging middleware for all routes except the healthcheck
+   */
+  configure(consumer: MiddlewareConsumer): void {
+    consumer
+      .apply(LogMiddleware)
+      .forRoutes(
+        AuthController,
+        { path: '/api/', method: RequestMethod.ALL }
+      );
+  }
+}
 
 export { AppModule };
