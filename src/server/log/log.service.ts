@@ -3,6 +3,7 @@ import {
 } from '@nestjs/common';
 import winston, { Logger as WinstonLogger } from 'winston';
 import { ConfigService } from 'server/config/config.service';
+import { StreamOptions } from 'morgan';
 
 /**
  * An injectable service that instantiates a Winston logger, and overwrites the
@@ -74,6 +75,18 @@ class LogService extends Logger {
    */
   public http(message: string):void {
     this.logger.http(message);
+  }
+
+  /**
+   * Exposes a writable stream for http messages that can be used by morgan for
+   * generating apache-style logs.
+   */
+  public get httpStream(): StreamOptions {
+    return {
+      write: (message: string): void => {
+        this.http(message);
+      },
+    };
   }
 
   /**
