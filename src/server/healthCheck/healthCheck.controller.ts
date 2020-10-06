@@ -2,7 +2,7 @@ import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiOkResponse, ApiUseTags } from '@nestjs/swagger';
 
 @ApiUseTags('Health Check')
-@Controller('api/health-check')
+@Controller('health-check')
 export class HealthCheckController {
   /**
    * Provide an open endpoint to show that the server is still online
