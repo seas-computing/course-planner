@@ -24,8 +24,17 @@ class LogService extends Logger {
   ) {
     super();
     this.logger = winston.createLogger({
-      level: config.get('LOG_LEVEL'),
-      format: winston.format.simple(),
+      level: config.get('LOG_LEVEL') || 'error',
+      format: winston.format.combine(
+        winston.format.timestamp(),
+        // Define a custom log format
+        winston.format.printf((info) => {
+          const fmtLevel = `[${info.level.toUpperCase()}]`.padStart(10);
+          return `${info.timestamp as string} ${fmtLevel}  ${
+            info.label ? `(${info.label as string}) ` : ''
+          }${info.message}`;
+        })
+      ),
       transports: [
         new winston.transports.Console(),
       ],
