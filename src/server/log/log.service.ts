@@ -6,6 +6,31 @@ import { ConfigService } from 'server/config/config.service';
 import { StreamOptions } from 'morgan';
 
 /**
+ * Represents a value that can be directly written to the logs, without needing
+ * to go through util.inspect
+ */
+type Writable = string | number;
+
+/**
+ *  Represents more complex objects that should be passed through util.inspect
+ *  before they can be meaningfully written to the console.
+ */
+export type Inspectable = Record<string, unknown>
+| Record<string, unknown>[]
+| Writable[]
+| unknown[];
+
+/**
+ * A general type for any data that can be logged by the logger
+ */
+
+export type Loggable<T> = T extends Writable
+  ? Writable
+  : T extends Record<Writable, unknown>
+    ? Inspectable
+    : unknown;
+
+/**
  * An injectable service that instantiates a Winston logger, and overwrites the
  * existing Nest logging methods with Winston's methods.
  *
