@@ -4,6 +4,7 @@ import {
 import winston, { Logger as WinstonLogger } from 'winston';
 import { ConfigService } from 'server/config/config.service';
 import { StreamOptions } from 'morgan';
+import { inspect, InspectOptions } from 'util';
 
 /**
  * Represents a value that can be directly written to the logs, without needing
@@ -44,6 +45,11 @@ class LogService extends Logger {
    */
   private readonly logger: WinstonLogger;
 
+  /**
+   * The options passed to util.inspect to display object values
+   */
+  private readonly inspectOptions: InspectOptions;
+
   public constructor(
   @Inject(ConfigService) config: ConfigService
   ) {
@@ -64,6 +70,18 @@ class LogService extends Logger {
         new winston.transports.Console(),
       ],
     });
+    this.inspectOptions = {
+      depth: Infinity,
+      colors: config.isDevelopment,
+      compact: false,
+    };
+  }
+
+  /**
+   * Helper function that wraps util.inspect and passes in our defined options
+   */
+  private inspect<T>(obj: Loggable<T>): string {
+    return inspect(obj, this.inspectOptions);
   }
 
   /**
