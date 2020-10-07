@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { BadRequestExceptionPipe } from './utils/BadRequestExceptionPipe';
 import { AppModule } from './app.module';
+import { LogService } from './log/log.service';
 
 declare const module: NodeModule & {
   hot: Record<string, (arg1?: () => Promise<void>) => void>
@@ -22,8 +23,11 @@ async function bootstrap(): Promise<void> {
   const clientOrigin = new URL(CLIENT_URL).origin;
   const serverPathname = new URL(SERVER_URL).pathname;
 
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: false,
+  });
 
+  app.useLogger(app.get(LogService));
   app.enableCors({
     origin: clientOrigin,
     credentials: true,
