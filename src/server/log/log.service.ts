@@ -94,12 +94,23 @@ class LogService extends Logger {
 
   /**
    * Log information about errors thrown in the application.
+   * Accepts an optional "trace" argument for compatibility with Nest's built
+   * in logger. Will also accept an Error as its only argument.
    * LOG LEVEL: 0
    */
-  public error(message: string, trace: string): void{
-    this.logger.error(message);
-    this.logger.error('====  STACK TRACE  ====');
-    this.logger.error(trace);
+  public error<T>(
+    message: T extends Error ? Error : Writable,
+    trace?: T extends Error ? never : string
+  ): void {
+    if (message instanceof Error) {
+      this.logger.error(message.message);
+      this.logger.error(message.stack);
+    } else {
+      this.logger.error(message.toString());
+      if (trace) {
+        this.logger.error(trace);
+      }
+    }
   }
 
   /**
