@@ -24,7 +24,7 @@ class LogService extends Logger {
   ) {
     super();
     this.logger = winston.createLogger({
-      level: config.logLevel,
+      level: config.get('LOG_LEVEL'),
       format: winston.format.simple(),
       transports: [
         new winston.transports.Console(),

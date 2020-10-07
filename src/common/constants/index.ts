@@ -8,5 +8,4 @@ export { default as GROUP } from './group';
 export { default as AUTH_MODE } from './authMode';
 export { default as TERM } from './term';
 export { default as IS_SEAS, isSEASEnumToString } from './isSEAS';
-export { default as LOG_LEVEL } from './logLevel';
 export * from './columns';
