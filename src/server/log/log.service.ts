@@ -145,28 +145,35 @@ class LogService extends Logger {
    * Records more detailed information about the running application. Includes:
    *  - ID of user's associated with requests
    *  - Notifications about data read from and written to the database
+   *
+   *  This method will expand objects/arrays passed as arguments, such as:
    *  - Body content of POST/PUT requests
    *  - Body content returned in responses
    * LOG LEVEL: 4
    */
-  public verbose(message: string): void {
-    this.logger.verbose(message);
+  public verbose<T>(message: Loggable<T>, label?: string): void {
+    if (typeof message === 'string') {
+      this.logger.verbose(message, { label });
+    } else if (typeof message === 'number') {
+      this.logger.verbose(message.toString(), { label });
+    } else {
+      this.logger.verbose(this.inspect(message), { label });
+    }
   }
 
   /**
    * Provides more granual data about the execution flow of the app. Only intended for use in development
+   * Like [[verbose]], this method will expand objects/arrays
    * LOG LEVEL: 5
    */
-  public debug(message: string):void {
-    this.logger.debug(message);
-  }
-
-  /**
-   * An unnecessary level of logging detail
-   * LOG LEVEL: 6
-   */
-  public silly(message: string):void {
-    this.logger.silly(message);
+  public debug<T>(message: Loggable<T>, label?: string):void {
+    if (typeof message === 'string') {
+      this.logger.debug(message, { label });
+    } else if (typeof message === 'number') {
+      this.logger.debug(message.toString(), { label });
+    } else {
+      this.logger.debug(this.inspect(message), { label });
+    }
   }
 }
 
