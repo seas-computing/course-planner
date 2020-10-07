@@ -88,8 +88,8 @@ class LogService extends Logger {
    * The base logging level for Nest.
    * In our implementaiton, this will be handled by winston.info
    */
-  public log(message: string): void {
-    this.info(message);
+  public log(message: Writable): void {
+    this.info(message.toString(), 'NestJS');
   }
 
   /**
@@ -118,8 +118,8 @@ class LogService extends Logger {
    * less-desirable results.
    * LOG LEVEL: 1
    */
-  public warn(message: string):void {
-    this.logger.warn(message);
+  public warn(message: Writable, label?: string):void {
+    this.logger.warn(message.toString(), { label });
   }
 
   /**
@@ -127,8 +127,8 @@ class LogService extends Logger {
    * status of the app, e.g. Nest startup messages
    * LOG LEVEL: 2
    */
-  public info(message: string):void {
-    this.logger.info(message);
+  public info(message: Writable, label?: string):void {
+    this.logger.info(message.toString(), { label });
   }
 
   /**
@@ -136,8 +136,8 @@ class LogService extends Logger {
    * Apache/nginx logs
    * LOG LEVEL: 3
    */
-  public http(message: string):void {
-    this.logger.http(message);
+  public http(message: Writable, label?: string):void {
+    this.logger.http(message.toString(), { label });
   }
 
   /**
