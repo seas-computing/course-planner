@@ -147,7 +147,7 @@ class LogService extends Logger {
   public get httpStream(): StreamOptions {
     return {
       write: (message: string): void => {
-        this.http(message);
+        this.http(message, 'Express');
       },
     };
   }
