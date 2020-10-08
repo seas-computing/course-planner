@@ -51,8 +51,10 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
     let initPrefixOptions = courses.map(
       (course) => ({ value: course.area.name, label: course.area.name })
     );
-    const vkey = 'value';
-    initPrefixOptions = [...new Map(initPrefixOptions.map(item => [item[vkey], item])).values()];
+    const vkey:string = 'value';
+    initPrefixOptions = [...new Map(initPrefixOptions.map(
+      item => [item[vkey], item]
+    )).values()];
     initPrefixOptions.push({ value: '', label: '' });
     setPrefixOptions(initPrefixOptions);
     setCoursePrefixValue('');
@@ -75,12 +77,12 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
       courses = courses.filter(
         (course) => course.area.name === coursePrefixValue
       );
-    }  
+    }
     courses = courses.filter(
       (course) => course.catalogNumber.includes(event.target.value)
     );
     setFilterdCourses(courses);
-  }
+  };
 
   /**
    * Filter on the "Title" field.
@@ -99,12 +101,12 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
       courses = courses.filter(
         (course) => course.area.name === coursePrefixValue
       );
-    }  
+    }
     courses = courses.filter(
       (course) => course.title.includes(event.target.value)
     );
     setFilterdCourses(courses);
-  }
+  };
 
   /**
    * Filter on the "Course Prefix" field.
@@ -124,13 +126,13 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
         (course) => course.title.includes(titleValue)
       );
     }
-    if (event.target.value){
+    if (event.target.value) {
       courses = courses.filter(
         (course) => course.area.name === event.target.value
       );
     }
     setFilterdCourses(courses);
-  }
+  };
 
   /**
    * The current value for the message context
@@ -178,7 +180,7 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
                 name="courseprefix"
                 id="coursePrefix"
                 label=""
-                onChange={(event) => { handleCoursePrefixFilter(event) }}
+                onChange={(event) => { handleCoursePrefixFilter(event); }}
               />
             </TableHeadingCell>
             <TableHeadingCell scope="col">
@@ -188,7 +190,7 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
                 name="course"
                 id="course"
                 label=""
-                onChange={(event) => { handleCourseFilter(event) }}
+                onChange={(event) => { handleCourseFilter(event); }}
               />
             </TableHeadingCell>
             <TableHeadingCell scope="col">
@@ -198,7 +200,7 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
                 name="title"
                 id="title"
                 label=""
-                onChange={(event) => { handleTitleFilter(event) }}
+                onChange={(event) => { handleTitleFilter(event); }}
               />
             </TableHeadingCell>
             <TableHeadingCell scope="col"> </TableHeadingCell>
