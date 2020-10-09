@@ -62,7 +62,7 @@ describe('Course Admin', function () {
         );
         await wait(() => getAllByRole('row').length > 1);
         const rows = getAllByRole('row');
-        strictEqual(rows.length, testData.length + 1);
+        strictEqual(rows.length, testData.length + 2);
       });
       it('displays the correct content in the table cells', async function () {
         const { getAllByRole } = render(
@@ -74,10 +74,10 @@ describe('Course Admin', function () {
         const rows = Array.from(getAllByRole('row')) as HTMLTableRowElement[];
         const rowsContent = rows
           .map((x) => (Array.from(x.cells).map((y) => y.textContent)));
-        const computerScienceCourseCatalogNumber = rowsContent[1][1];
-        const computerScienceCourseTitle = rowsContent[1][2];
-        const physicsCourseCatalogNumber = rowsContent[2][1];
-        const physicsCourseTitle = rowsContent[2][2];
+        const computerScienceCourseCatalogNumber = rowsContent[2][1];
+        const computerScienceCourseTitle = rowsContent[2][2];
+        const physicsCourseCatalogNumber = rowsContent[3][1];
+        const physicsCourseTitle = rowsContent[3][2];
         strictEqual(
           computerScienceCourseCatalogNumber,
           computerScienceCourseResponse.catalogNumber
@@ -102,7 +102,7 @@ describe('Course Admin', function () {
           metadata
         );
         await wait(() => getAllByRole('row').length > 1);
-        const newAreaCourseStyle = window.getComputedStyle(getByText('NA'));
+        const newAreaCourseStyle = window.getComputedStyle(getByText('NA', { selector: 'td' }));
         strictEqual(newAreaCourseStyle.backgroundColor, '');
       });
       context('when there are no course records', function () {
@@ -118,7 +118,7 @@ describe('Course Admin', function () {
           );
           await wait(() => getAllByRole('row').length > 0);
           const rows = getAllByRole('row');
-          strictEqual(rows.length, emptyTestData.length + 1);
+          strictEqual(rows.length, emptyTestData.length + 2);
         });
       });
     });

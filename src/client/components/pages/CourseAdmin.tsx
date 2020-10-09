@@ -35,9 +35,6 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
   const [currentCourses, setCourses] = useState(
     [] as ManageCourseResponseDTO[]
   );
-  const [filterdCourses, setFilterdCourses] = useState(
-    [] as ManageCourseResponseDTO[]
-  );
   const [prefixOptions, setPrefixOptions] = useState([]);
   const [courseValue, setCourseValue] = useState('');
   const [titleValue, setTitleValue] = useState('');
@@ -47,13 +44,12 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
    * Extract the "Course Prefix" unique values
    * from the course DTO area name
    */
-  const coursePrefixSetup = (courses) => {
+  const coursePrefixSetup = (courses: ManageCourseResponseDTO[]) => {
     let initPrefixOptions = courses.map(
       (course) => ({ value: course.area.name, label: course.area.name })
     );
-    const vkey:string = 'value';
     initPrefixOptions = [...new Map(initPrefixOptions.map(
-      item => [item[vkey], item]
+      (item) => [item.value, item]
     )).values()];
     initPrefixOptions.push({ value: '', label: '' });
     setPrefixOptions(initPrefixOptions);
@@ -61,14 +57,19 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
   };
 
   /**
-   * Filter on the "Course" field.
-   * Include "Course Prefix" and "Title" filters if
-   * filter on those fields present.
+   * Return filtered course based on the "Course Prefix",
+   * "Course" and "Title" fileds filter.
+   * Note: .trim() is to check string is not all whitespaces.
+   * Need to ask Vittorio about the .trim()
    */
-  const handleCourseFilter = (event) => {
+  const filteredCourses = (): ManageCourseResponseDTO[] => {
     let courses = [...currentCourses];
-    setCourseValue(event.target.value);
-    if (titleValue) {
+    if (courseValue && courseValue.trim()) {
+      courses = courses.filter(
+        (course) => course.catalogNumber.includes(courseValue)
+      );
+    }
+    if (titleValue && titleValue.trim()) {
       courses = courses.filter(
         (course) => course.title.includes(titleValue)
       );
@@ -78,60 +79,7 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
         (course) => course.area.name === coursePrefixValue
       );
     }
-    courses = courses.filter(
-      (course) => course.catalogNumber.includes(event.target.value)
-    );
-    setFilterdCourses(courses);
-  };
-
-  /**
-   * Filter on the "Title" field.
-   * Include "Course Prefix" and "Course" filters if
-   * filter on those fields present.
-   */
-  const handleTitleFilter = (event) => {
-    let courses = [...currentCourses];
-    setTitleValue(event.target.value);
-    if (courseValue) {
-      courses = courses.filter(
-        (course) => course.catalogNumber.includes(courseValue)
-      );
-    }
-    if (coursePrefixValue) {
-      courses = courses.filter(
-        (course) => course.area.name === coursePrefixValue
-      );
-    }
-    courses = courses.filter(
-      (course) => course.title.includes(event.target.value)
-    );
-    setFilterdCourses(courses);
-  };
-
-  /**
-   * Filter on the "Course Prefix" field.
-   * Include "Course" and "Title" filters if
-   * filter on those fields present.
-   */
-  const handleCoursePrefixFilter = (event) => {
-    let courses = [...currentCourses];
-    setCoursePrefixValue(event.target.value);
-    if (courseValue) {
-      courses = courses.filter(
-        (course) => course.catalogNumber.includes(courseValue)
-      );
-    }
-    if (titleValue) {
-      courses = courses.filter(
-        (course) => course.title.includes(titleValue)
-      );
-    }
-    if (event.target.value) {
-      courses = courses.filter(
-        (course) => course.area.name === event.target.value
-      );
-    }
-    setFilterdCourses(courses);
+    return (courses);
   };
 
   /**
@@ -147,7 +95,6 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
     CourseAPI.getAllCourses()
       .then((courses): ManageCourseResponseDTO[] => {
         setCourses(courses);
-        setFilterdCourses(courses);
         coursePrefixSetup(courses);
         return courses;
       })
@@ -180,7 +127,9 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
                 name="courseprefix"
                 id="coursePrefix"
                 label=""
-                onChange={(event) => { handleCoursePrefixFilter(event); }}
+                onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
+                  setCoursePrefixValue(event.currentTarget.value);
+                }}
               />
             </TableHeadingCell>
             <TableHeadingCell scope="col">
@@ -190,7 +139,9 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
                 name="course"
                 id="course"
                 label=""
-                onChange={(event) => { handleCourseFilter(event); }}
+                onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
+                  setCourseValue(event.currentTarget.value);
+                }}
               />
             </TableHeadingCell>
             <TableHeadingCell scope="col">
@@ -200,14 +151,16 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
                 name="title"
                 id="title"
                 label=""
-                onChange={(event) => { handleTitleFilter(event); }}
+                onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
+                  setTitleValue(event.currentTarget.value);
+                }}
               />
             </TableHeadingCell>
             <TableHeadingCell scope="col"> </TableHeadingCell>
           </TableRow>
         </TableHead>
         <TableBody isScrollable>
-          {filterdCourses.map((course, i): ReactElement<TableRowProps> => (
+          {filteredCourses().map((course, i): ReactElement<TableRowProps> => (
             <TableRow isStriped={i % 2 === 1} key={course.id}>
               <TableCell
                 backgroundColor={getAreaColor(course.area.name)}
