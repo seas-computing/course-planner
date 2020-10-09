@@ -200,21 +200,24 @@ class LogService extends NestLogger implements TypeORMLogger {
    * The base logging function used by Nest and TypeORM. They use different
    * formats, so if the first arugment is one of TypeORM's log levels it will
    * expect the log message to be the second argument. Otherwise, the first
-   * argument will be treated as the log message.
+   * argument will be treated as the log message, and the second argument as
+   * the nest component generating the message.
    * In our implementaiton, log/info messages will go to the info stream, and
    * warnings will go to the warn stream
    */
-  public log<T>(
-    messageOrLevel: T extends TYPEORM_LOG_LEVEL ? TYPEORM_LOG_LEVEL : Writable,
-    message?: T extends TYPEORM_LOG_LEVEL ? Writable : never
-  ): void {
+  public log(messageOrLevel: Writable, classOrMessage: Writable): void
+  public log(messageOrLevel: TYPEORM_LOG_LEVEL, classOrMessage: Writable): void
+  public log(messageOrLevel: unknown, classOrMessage?: unknown):void {
     if (messageOrLevel === TYPEORM_LOG_LEVEL.LOG
         || messageOrLevel === TYPEORM_LOG_LEVEL.INFO) {
-      this.info(message.toString(), 'TypeORM');
+      this.info(classOrMessage.toString(), LABEL.TYPEORM);
     } else if (messageOrLevel === TYPEORM_LOG_LEVEL.WARN) {
-      this.warn(message.toString(), 'TypeORM');
+      this.warn(classOrMessage.toString(), LABEL.TYPEORM);
     } else {
-      this.info(messageOrLevel.toString(), 'NestJS');
+      this.info(
+        messageOrLevel.toString(),
+        `${LABEL.NEST}#${classOrMessage.toString()}`
+      );
     }
   }
 
