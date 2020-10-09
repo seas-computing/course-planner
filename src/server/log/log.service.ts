@@ -37,8 +37,26 @@ export type Loggable<T> = T extends Writable
     : unknown;
 
 /**
+ * Describes the info object expected by Winston's transform functions, adding
+ * the timestamp and label fields
  */
+interface WinstonInfo extends winston.Logform.TransformableInfo {
+  /** The ISO timestamp provided by winston.format.timestamp() */
+  timestamp: string,
+  /** An optional label indicating the source of the message */
+  label?: string,
 }
+
+/**
+ * Computes the longest log level to use in padding out the log messages
+ * Defined outside the service since this should not change at runtime
+ *
+ */
+const widestLog = Math.max(
+  ...Object.values(LOG_LEVEL).map(
+    (lvl: string): number => lvl.length
+  )
+);
 
 /**
  * An injectable service that instantiates a Winston logger, and overwrites the
@@ -64,22 +82,29 @@ class LogService extends NestLogger implements TypeORMLogger {
   ) {
     super();
     this.config = config;
+
+    const logFormat = this.logFormat
+      .bind(this) as (info: WinstonInfo) => string;
+
     this.logger = winston.createLogger({
       level: config.logLevel,
       format: winston.format.combine(
         winston.format.timestamp(),
-        // Define a custom log format
-        winston.format.printf((info) => {
-          const fmtLevel = `[${info.level.toUpperCase()}]`.padStart(10);
-          return `${info.timestamp as string} ${fmtLevel}  ${
-            info.label ? `(${info.label as string}) ` : ''
-          }${info.message}`;
-        })
+        winston.format.printf(logFormat)
       ),
       transports: [
         new winston.transports.Console(),
       ],
     });
+  }
+
+  /**
+     * Define a custom log format:
+     * TIMESTAMP [LEVEL]    (LABEL) MESSAGE
+   */
+  public logFormat(info: WinstonInfo): string {
+    const fmtLevel = `[${info.level.toUpperCase()}]`.padEnd(widestLog + 2);
+    return `${info.timestamp} ${fmtLevel} (${info.label}) ${info.message}`;
   }
 
   /**
