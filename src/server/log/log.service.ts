@@ -129,24 +129,23 @@ class LogService extends NestLogger implements TypeORMLogger {
 
   /**
    * Log errors thrown in the application.
-   * Accepts an optional "trace" argument for compatibility with Nest's
-   * built-in logger.
-   * Will also accept an Error as its only argument.
+   * For compatibility with Nest, this method can accept a stack trace as the
+   * second argument, and a label as its third.
+   * Will also accept an Error as the first argument, and will print the stack
+   * trace separately.
    * LOG LEVEL: 0
    */
-  public error<T>(
-    message: T extends Error ? Error : Writable,
-    trace?: T extends Error ? never : string,
-    label?: Writable
-  ): void {
+  public error(message: Error, trace?: null, label?: Writable): void
+  public error(message: Writable, trace?: string, label?: Writable): void
+  public error(message: unknown, trace?: string, label?: Writable): void {
     if (message instanceof Error) {
       this.logger.error(message.message, { label });
       this.logger.error(message.stack, { label });
+    } else if (trace) {
+      this.logger.error(message.toString(), { label: label || LABEL.NEST });
+      this.logger.error(trace, { label: label || LABEL.NEST });
     } else {
       this.logger.error(message.toString(), { label });
-      if (trace) {
-        this.logger.error(trace, { label });
-      }
     }
   }
 
