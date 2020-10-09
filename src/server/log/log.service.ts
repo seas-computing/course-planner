@@ -48,6 +48,15 @@ interface WinstonInfo extends winston.Logform.TransformableInfo {
 }
 
 /**
+ * Provides predefined labels for the major libraries in the project, for use
+ */
+export enum LABEL {
+  NEST = 'NestJS',
+  TYPEORM = 'TypeORM',
+  EXPRESS = 'Express',
+}
+
+/**
  * Computes the longest log level to use in padding out the log messages
  * Defined outside the service since this should not change at runtime
  *
