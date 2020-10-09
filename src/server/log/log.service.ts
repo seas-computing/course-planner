@@ -158,10 +158,10 @@ class LogService extends NestLogger implements TypeORMLogger {
     query: Writable,
     parameters?: Inspectable
   ): void {
-    this.error(error, null, 'TypeORM');
-    this.error(query, null, 'TypeORM');
+    this.error(error, null, LABEL.TYPEORM);
+    this.error(query, null, LABEL.TYPEORM);
     if (Array.isArray(parameters) && parameters.length > 0) {
-      this.error(this.inspect(parameters), null, 'TypeORM');
+      this.error(this.inspect(parameters), null, LABEL.TYPEORM);
     }
   }
 
@@ -183,8 +183,8 @@ class LogService extends NestLogger implements TypeORMLogger {
    */
 
   public logQuerySlow(time: number, query: Writable): void {
-    this.warn(`The following query took ${time}ms to run`, 'TypeORM');
-    this.warn(query, 'TypeORM');
+    this.warn(`The following query took ${time}ms to run`, LABEL.TYPEORM);
+    this.warn(query, LABEL.TYPEORM);
   }
 
   /**
@@ -237,7 +237,7 @@ class LogService extends NestLogger implements TypeORMLogger {
   public get httpStream(): StreamOptions {
     return {
       write: (message: string): void => {
-        this.http(message, 'Express');
+        this.http(message, LABEL.EXPRESS);
       },
     };
   }
@@ -283,10 +283,10 @@ class LogService extends NestLogger implements TypeORMLogger {
    * Will write the query and parameters to the debug stream
    */
   public logQuery(query: Writable, parameters?: Inspectable): void {
-    this.verbose('Running query against database', 'TypeORM');
-    this.debug(query, 'TypeORM');
+    this.verbose('Running query against database', LABEL.TYPEORM);
+    this.debug(query, LABEL.TYPEORM);
     if (Array.isArray(parameters) && parameters.length > 0) {
-      this.debug(this.inspect(parameters), 'TypeORM');
+      this.debug(this.inspect(parameters), LABEL.TYPEORM);
     }
   }
 
@@ -296,8 +296,8 @@ class LogService extends NestLogger implements TypeORMLogger {
    * Will log the full migration message to our debug stream
    */
   public logMigration(message: Writable): void {
-    this.verbose('Running migration process', 'TypeORM');
-    this.debug(message, 'TypeORM');
+    this.verbose('Running migration process', LABEL.TYPEORM);
+    this.debug(message, LABEL.TYPEORM);
   }
 
   /**
@@ -306,8 +306,8 @@ class LogService extends NestLogger implements TypeORMLogger {
    * Will log the full schema build message to our debug stream
    */
   public logSchemaBuild(message: Writable): void {
-    this.verbose('Running Schema build process', 'TypeORM');
-    this.debug(message, 'TypeORM');
+    this.verbose('Running schema build process', LABEL.TYPEORM);
+    this.debug(message, LABEL.TYPEORM);
   }
 }
 
