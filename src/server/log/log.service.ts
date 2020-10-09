@@ -8,8 +8,8 @@ import { Logger as TypeORMLogger } from 'typeorm';
 import winston, { Logger as WinstonLogger } from 'winston';
 import { ConfigService } from 'server/config/config.service';
 import { StreamOptions } from 'morgan';
-import { inspect, InspectOptions } from 'util';
 import { TYPEORM_LOG_LEVEL, LOG_LEVEL } from 'common/constants';
+import util from 'util';
 
 /**
  * Represents a value that can be directly written to the logs, without needing
@@ -55,14 +55,15 @@ class LogService extends NestLogger implements TypeORMLogger {
   private readonly logger: WinstonLogger;
 
   /**
-   * The options passed to util.inspect to display object values
+   * The config service
    */
-  private readonly inspectOptions: InspectOptions;
+  private readonly config: ConfigService;
 
   public constructor(
   @Inject(ConfigService) config: ConfigService
   ) {
     super();
+    this.config = config;
     this.logger = winston.createLogger({
       level: config.logLevel,
       format: winston.format.combine(
@@ -79,18 +80,17 @@ class LogService extends NestLogger implements TypeORMLogger {
         new winston.transports.Console(),
       ],
     });
-    this.inspectOptions = {
-      depth: Infinity,
-      colors: config.isDevelopment,
-      compact: false,
-    };
   }
 
   /**
    * Helper function that wraps util.inspect and passes in our defined options
    */
   private inspect<T>(obj: Loggable<T>): string {
-    return inspect(obj, this.inspectOptions);
+    return util.inspect(obj, {
+      depth: Infinity,
+      colors: this.config.isDevelopment,
+      compact: false,
+    });
   }
 
   /**
