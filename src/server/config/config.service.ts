@@ -27,6 +27,7 @@ import { SemesterView } from 'server/semester/SemesterView.entity';
 import { View } from 'server/view/view.entity';
 import { NestSessionOptions } from 'nestjs-session';
 import { RedisStore } from 'connect-redis';
+import LOG_LEVEL from '../../common/constants/logLevels';
 
 /**
  * Parses process.env to create a clean configuration interface
@@ -280,6 +281,19 @@ class ConfigService {
       ? calendarYear
       : calendarYear + 1;
     return academicYear;
+  }
+
+  /**
+   * Ensures that the log level in the environment variable is a valid value.
+   * If it's not, or if it's undefined, then return `error` as our default.
+   */
+  public get logLevel(): string {
+    const { LOG_LEVEL: logLevel } = this.env;
+    if (logLevel
+      && Object.values(LOG_LEVEL).includes(logLevel as LOG_LEVEL)) {
+      return logLevel;
+    }
+    return LOG_LEVEL.ERROR;
   }
 }
 

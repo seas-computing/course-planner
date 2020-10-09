@@ -9,6 +9,7 @@ import winston, { Logger as WinstonLogger } from 'winston';
 import { ConfigService } from 'server/config/config.service';
 import { StreamOptions } from 'morgan';
 import { inspect, InspectOptions } from 'util';
+import { TYPEORM_LOG_LEVEL, LOG_LEVEL } from 'common/constants';
 
 /**
  * Represents a value that can be directly written to the logs, without needing
@@ -36,13 +37,7 @@ export type Loggable<T> = T extends Writable
     : unknown;
 
 /**
- * TypeORM uses a different signature for the `log` function, so we need to
- * provide an overload that uses their log levels
  */
-enum TYPEORM_LOG_LEVEL {
-  LOG = 'log',
-  INFO = 'info',
-  WARN = 'warn'
 }
 
 /**
@@ -69,7 +64,7 @@ class LogService extends NestLogger implements TypeORMLogger {
   ) {
     super();
     this.logger = winston.createLogger({
-      level: config.get('LOG_LEVEL') || 'error',
+      level: config.logLevel,
       format: winston.format.combine(
         winston.format.timestamp(),
         // Define a custom log format
