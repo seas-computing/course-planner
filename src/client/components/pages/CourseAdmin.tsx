@@ -126,7 +126,8 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
                 value={coursePrefixValue}
                 name="courseprefix"
                 id="coursePrefix"
-                label=""
+                label="The table will be filtered as characters are typed in this course prefix filter field"
+                isLabelVisible={false}
                 onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
                   setCoursePrefixValue(event.currentTarget.value);
                 }}
