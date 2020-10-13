@@ -51,9 +51,9 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
     initPrefixOptions = [...new Map(initPrefixOptions.map(
       (item) => [item.value, item]
     )).values()];
-    initPrefixOptions.push({ value: '', label: '' });
+    initPrefixOptions.push({ value: 'All', label: 'All' });
     setPrefixOptions(initPrefixOptions);
-    setCoursePrefixValue('');
+    setCoursePrefixValue('All');
   };
 
   /**
@@ -74,7 +74,7 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
         (course) => course.title.includes(titleValue)
       );
     }
-    if (coursePrefixValue) {
+    if (coursePrefixValue !== 'All') {
       courses = courses.filter(
         (course) => course.area.name === coursePrefixValue
       );
@@ -134,11 +134,13 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
             </TableHeadingCell>
             <TableHeadingCell scope="col">
               <TextInput
-                value={courseValue}
-                placeholder="Filter by course"
-                name="course"
                 id="course"
-                label=""
+                name="course"
+                value={courseValue}
+                placeholder="Filter by Course"
+                label="The table will be filtered as characters are typed in this course filter field"
+                isLabelVisible={false}
+                aria-describedby="coursenote"
                 onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
                   setCourseValue(event.currentTarget.value);
                 }}
@@ -146,11 +148,12 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
             </TableHeadingCell>
             <TableHeadingCell scope="col">
               <TextInput
+                id="title"
+                name="title"
                 value={titleValue}
                 placeholder="Filter by Title"
-                name="title"
-                id="title"
-                label=""
+                label="The table will be filtered as characters are typed in this title filter field"
+                isLabelVisible={false}
                 onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
                   setTitleValue(event.currentTarget.value);
                 }}
