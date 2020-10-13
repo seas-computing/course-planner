@@ -22,6 +22,7 @@ export const computerScienceCourse = Object.assign(new Course(), {
   title: 'Introduction to Computer Science',
   prefix: 'CS',
   number: '050',
+  isSEAS: IS_SEAS.Y,
   termPattern: TERM_PATTERN.FALL,
   isUndergraduate: true,
 });
@@ -38,6 +39,7 @@ export const physicsCourse = Object.assign(new Course(), {
   title: 'Introduction to Quantum Theory of Solids',
   prefix: 'AP',
   number: '295a',
+  isSEAS: IS_SEAS.Y,
   termPattern: TERM_PATTERN.SPRING,
   isUndergraduate: true,
 });
