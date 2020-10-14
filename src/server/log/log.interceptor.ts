@@ -44,15 +44,17 @@ class LogInterceptor<T extends Inspectable> implements NestInterceptor<T> {
       const userData = new User(req.session.user);
       this.log.verbose(userData, logLabel);
     } else {
-      this.log.warn('Request made by anonymous user', logLabel);
+      this.log.verbose('Request made by anonymous user', logLabel);
     }
 
     // Log whether there's any payload associated with the request
-    if (Object.keys(req.body).length > 0) {
-      this.log.verbose('Request includes data', logLabel);
-      this.log.debug(req.body as Inspectable, logLabel);
-    } else if (req.method !== 'GET') {
-      this.log.verbose('Request does not include any data', logLabel);
+    if (req.method !== 'GET') {
+      if (Object.keys(req.body).length > 0) {
+        this.log.verbose('Request includes data', logLabel);
+        this.log.debug(req.body as Inspectable, logLabel);
+      } else {
+        this.log.verbose('Request does not include any data', logLabel);
+      }
     }
 
     // Log any data sent back with the response
