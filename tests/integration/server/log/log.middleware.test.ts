@@ -71,7 +71,7 @@ describe('LogMiddleware', function () {
     let message: string;
     beforeEach(async function () {
       await request(api).get('/api/mock/one');
-      ([message] = mockLogService.httpStream.write.args[0]);
+      ([[message]] = mockLogService.httpStream.write.args);
     });
     it('Should log the request to the httpStream', function () {
       strictEqual(mockLogService.httpStream.write.callCount, 1);
