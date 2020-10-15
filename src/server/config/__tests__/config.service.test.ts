@@ -6,6 +6,7 @@ import FakeTimers from '@sinonjs/fake-timers';
 import { RedisStore } from 'connect-redis';
 import { SessionOptions } from 'express-session';
 import { ConfigService } from '../config.service';
+import { LOG_LEVEL } from '../../../common/constants';
 
 /**
  * The months of the year starting at 0.
@@ -499,6 +500,32 @@ describe('Configuration Service', function () {
         const testYear = 2050;
         clock.setSystemTime(new Date(testYear, MONTH.DEC, 31, 23, 59, 59));
         strictEqual(config.academicYear, (testYear + 1));
+      });
+    });
+  });
+  describe('logLevel', function () {
+    context('Valid Values', function () {
+      Object.values(LOG_LEVEL).forEach((level: string) => {
+        context(`When LOG_LEVEL is ${level}`, function () {
+          it(`returns "${level}"`, function () {
+            const config = new ConfigService({ LOG_LEVEL: level });
+            strictEqual(config.logLevel, level);
+          });
+        });
+      });
+    });
+    context('Invalid Values', function () {
+      context('When LOG_LEVEL is not a valid log level', function () {
+        it('Returns LOG_LEVEL.ERROR', function () {
+          const config = new ConfigService({ LOG_LEVEL: 'foo' });
+          strictEqual(config.logLevel, LOG_LEVEL.ERROR);
+        });
+      });
+      context('When LOG_LEVEL is undefined', function () {
+        it('Returns LOG_LEVEL.ERROR', function () {
+          const config = new ConfigService({ });
+          strictEqual(config.logLevel, LOG_LEVEL.ERROR);
+        });
       });
     });
   });

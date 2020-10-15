@@ -24,7 +24,7 @@ describe('Health Check API', function () {
   });
   context('When server is running', function () {
     it('Should return a status of "OK"', async function () {
-      const result = await request(api).get('/api/health-check/');
+      const result = await request(api).get('/health-check/');
       strictEqual(result.status, HttpStatus.OK);
       strictEqual(result.body.status, 'OK');
     });
