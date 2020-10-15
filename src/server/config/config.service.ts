@@ -293,6 +293,7 @@ class ConfigService {
       && Object.values(LOG_LEVEL).includes(logLevel as LOG_LEVEL)) {
       return logLevel;
     }
+    console.warn(`"${logLevel}" is not a valid LOG_LEVEL. Defaulting to "error"`);
     return LOG_LEVEL.ERROR;
   }
 }
