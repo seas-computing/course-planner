@@ -198,6 +198,15 @@ describe('Course Modal', function () {
         );
       });
     });
+    describe('Same as', function () {
+      it('is not a required field', function () {
+        const sameAsInput = getByLabelText('Same as', { exact: false }) as HTMLInputElement;
+        fireEvent.change(sameAsInput, { target: { value: '' } });
+        const submitButton = getByText('Submit');
+        fireEvent.click(submitButton);
+        strictEqual(queryAllByRole('alert').length, 0);
+      });
+    });
     describe('Term Pattern', function () {
       it('is a required field', async function () {
         const courseTitleInput = getByLabelText('Term Pattern', { exact: false }) as HTMLSelectElement;
