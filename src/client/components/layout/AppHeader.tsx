@@ -2,19 +2,12 @@ import React, { FunctionComponent, ReactElement } from 'react';
 import {
   Header, Logo, PageTitle, TabList, TabListItem, Link,
 } from 'mark-one';
-import styled from 'styled-components';
 import { useLocation } from 'react-router-dom';
 import logo from 'client/img/seas-logo.svg';
+import { HeaderFlex } from 'client/components/general';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 
-const HeaderFlex = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: baseline;
-  align-self: center;
-`;
 
 const AppHeader: FunctionComponent = (): ReactElement => {
   /**
