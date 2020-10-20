@@ -19,13 +19,13 @@ import {
   TextInput,
   ValidationErrorMessage,
   NoteText,
+  POSITION,
 } from 'mark-one';
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
 import {
   validHUID,
   facultyTypeEnumToTitleCase,
 } from 'common/utils/facultyHelperFunctions';
-import { POSITION } from 'mark-one/lib/Forms/Label';
 import { FACULTY_TYPE } from 'common/constants';
 import { FacultyAPI } from 'client/api';
 import { MetadataContext } from 'client/context/MetadataContext';
