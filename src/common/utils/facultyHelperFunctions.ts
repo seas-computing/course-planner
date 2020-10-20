@@ -1,4 +1,4 @@
-import { FACULTY_TYPE } from 'common/constants';
+import { ABSENCE_TYPE, FACULTY_TYPE } from 'common/constants';
 
 /**
   * Verifies whether the HUID provided meets the formatting requirements
@@ -20,6 +20,28 @@ export const absenceEnumToTitleCase = (str: string): string => {
     (word): string => word.charAt(0) + word.slice(1).toLowerCase()
   ).join(' ');
 };
+
+/**
+ * Define the map here to avoid a new object being created on each call to
+ * [[absenceTitleCaseToEnum]]
+ */
+const absenceTitleCaseToEnumMap = {
+  Sabbatical: ABSENCE_TYPE.SABBATICAL,
+  'Sabbatical Eligible': ABSENCE_TYPE.SABBATICAL_ELIGIBLE,
+  'Sabbatical Ineligible': ABSENCE_TYPE.SABBATICAL_INELIGIBLE,
+  'Teaching Relief': ABSENCE_TYPE.TEACHING_RELIEF,
+  'Research Leave': ABSENCE_TYPE.RESEARCH_LEAVE,
+  'Parental Leave': ABSENCE_TYPE.PARENTAL_LEAVE,
+  'No Longer Active': ABSENCE_TYPE.NO_LONGER_ACTIVE,
+  Present: ABSENCE_TYPE.PRESENT,
+};
+
+/**
+ * A helper function that converts the faculty absence from the title case format
+ * to the absence enum format
+ */
+export const absenceTitleCaseToEnum = (absence: string):
+ABSENCE_TYPE => absenceTitleCaseToEnumMap[absence] as ABSENCE_TYPE;
 
 /**
  * Define the map here to avoid a new object being created on each call to
