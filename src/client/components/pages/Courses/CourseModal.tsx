@@ -22,10 +22,10 @@ import {
   Checkbox,
   Dropdown,
   ValidationErrorMessage,
+  POSITION,
 } from 'mark-one';
 import { MetadataContext } from 'client/context/MetadataContext';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
-import { POSITION } from 'mark-one/lib/Forms/Label';
 import {
   isSEASEnumToString,
   IS_SEAS,
