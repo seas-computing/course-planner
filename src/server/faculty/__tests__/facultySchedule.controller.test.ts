@@ -11,6 +11,7 @@ import {
 import { SemesterService } from 'server/semester/semester.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Area } from 'server/area/area.entity';
+import { Absence } from 'server/absence/absence.entity';
 import { FacultyController } from '../faculty.controller';
 import { FacultyScheduleService } from '../facultySchedule.service';
 import { Faculty } from '../faculty.entity';
@@ -58,6 +59,10 @@ describe('Faculty Schedule Controller', function () {
         },
         {
           provide: getRepositoryToken(Area),
+          useValue: mockRepository,
+        },
+        {
+          provide: getRepositoryToken(Absence),
           useValue: mockRepository,
         },
       ],
