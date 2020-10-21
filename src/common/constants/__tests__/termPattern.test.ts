@@ -17,4 +17,9 @@ describe('termPatternEnumToString', function () {
       strictEqual(termPatternEnumToString(TERM_PATTERN.SPRING), 'Spring');
     });
   });
+  context('null', function () {
+    it('should return null by default', function () {
+      strictEqual(termPatternEnumToString(null), null);
+    });
+  });
 });
