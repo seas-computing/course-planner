@@ -29,7 +29,8 @@ import { Authentication } from 'server/auth/authentication.guard';
 import { Area } from 'server/area/area.entity';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { SemesterService } from 'server/semester/semester.service';
-import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
+import { FacultyAbsence, FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
+import { Absence } from 'server/absence/absence.entity';
 import { Faculty } from './faculty.entity';
 import { FacultyService } from './faculty.service';
 import { FacultyScheduleService } from './facultySchedule.service';
@@ -44,6 +45,9 @@ export class FacultyController {
 
   @InjectRepository(Area)
   private areaRepository: Repository<Area>;
+
+  @InjectRepository(Absence)
+  private absenceRepository: Repository<Absence>;
 
   @Inject(FacultyService)
   private facultyService: FacultyService;
@@ -103,6 +107,34 @@ export class FacultyController {
       return {};
     }
     return this.facultyScheduleService.getAllByYear(acadYearNums);
+  }
+
+  @UseGuards(new RequireGroup(GROUP.ADMIN))
+  @Put('/absence/:id')
+  @ApiOperation({ title: 'Edit an existing faculty\'s absence entry in the database' })
+  @ApiOkResponse({
+    type: FacultyResponseDTO,
+    description: 'An object with the edited absence entry\'s information.',
+    isArray: false,
+  })
+  @ApiNotFoundResponse({
+    description: 'Not Found: The requested entity with the ID supplied could not be found',
+  })
+  public async updateFacultyAbsence(@Param('id') id: string, @Body() update: FacultyAbsence):
+  Promise<FacultyAbsence> {
+    let absence: Absence;
+    try {
+      absence = await this.absenceRepository.findOneOrFail(update.id);
+    } catch (e) {
+      if (e instanceof EntityNotFoundError) {
+        throw new NotFoundException('The entered Absence does not exist');
+      }
+    }
+    absence.type = update.type;
+    absence = await this.absenceRepository.save(absence);
+    return {
+      ...absence,
+    };
   }
 
   @UseGuards(new RequireGroup(GROUP.ADMIN))
