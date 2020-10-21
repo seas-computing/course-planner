@@ -105,23 +105,25 @@ const App: FunctionComponent = (): ReactElement => {
   }, []);
 
   return (
-    <div className="app-content">
+    <div className="app">
       <MarkOneWrapper>
         <UserContext.Provider value={currentUser}>
           <MessageContext.Provider value={dispatchMessage}>
             <MetadataContext.Provider value={metadataContext}>
-              <PageBody>
+              <div className="app-content">
                 <AppHeader />
-                {currentMessage
-                  && (
-                    <Message
-                      messageCount={queue.length}
-                      messageText={currentMessage.text}
-                      messageType={currentMessage.variant}
-                    />
-                  )}
-                <AppRouter />
-              </PageBody>
+                <PageBody>
+                  {currentMessage
+                    && (
+                      <Message
+                        messageCount={queue.length}
+                        messageText={currentMessage.text}
+                        messageType={currentMessage.variant}
+                      />
+                    )}
+                  <AppRouter />
+                </PageBody>
+              </div>
             </MetadataContext.Provider>
           </MessageContext.Provider>
         </UserContext.Provider>
