@@ -1,31 +1,61 @@
 import { ApiModelProperty } from '@nestjs/swagger';
 import { DAY } from 'common/constants';
 
+abstract class ScheduleEntry {
+  @ApiModelProperty({
+    example: 'c7b1fa3f-c5b0-478d-a29c-7f85a4d80109',
+  })
+  id: string;
+
+  @ApiModelProperty({
+    example: '109A',
+  })
+  courseNumber: string;
+
+  @ApiModelProperty({
+    example: 'Cambridge',
+  })
+  campus: string;
+
+  @ApiModelProperty({
+    example: 'Maxwell Dworkin 115',
+  })
+  room: string;
+
+  @ApiModelProperty({
+    example: true,
+  })
+  isUndergraduate: boolean;
+}
+
 export abstract class ScheduleViewResponseDTO {
   @ApiModelProperty({
-    example: {
-      hour: 12,
-      minute: 0,
-    },
+    example: 'CSTUE12301400FALL2020',
   })
-  public startTime: {
-    hour: number;
-    minute: number;
-  };
+  public id: string;
 
   @ApiModelProperty({
-    example: {
-      hour: 13,
-      minute: 30,
-    },
+    example: 12,
   })
-  public endTime: {
-    hour: number;
-    minute: number;
-  };
+  public startHour: number;
 
   @ApiModelProperty({
-    example: { duration: 90 },
+    example: 30,
+  })
+  public startMinute: number;
+
+  @ApiModelProperty({
+    example: 14,
+  })
+  public endHour: number;
+
+  @ApiModelProperty({
+    example: 0,
+  })
+  public endMinute: number;
+
+  @ApiModelProperty({
+    example: 90,
   })
   public duration: number;
 
@@ -40,22 +70,5 @@ export abstract class ScheduleViewResponseDTO {
   })
   public coursePrefix: string;
 
-  @ApiModelProperty({
-    example: {
-      id: 'c7b1fa3f-c5b0-478d-a29c-7f85a4d80109',
-      courseNumber: '051',
-      campus: 'Cambridge',
-      room: 'Maxwell Dworkin 119',
-      isUndergraduate: true,
-    },
-  })
-  public courses: [
-    {
-      id: string;
-      courseNumber: string;
-      campus: string;
-      room: string;
-      isUndergraduate: boolean;
-    }
-  ];
+  public courses: ScheduleEntry[];
 }
