@@ -7,7 +7,6 @@ import {
   wait,
   render,
 } from '@testing-library/react';
-import { render as customRender } from 'test-utils';
 import { stub, SinonStub } from 'sinon';
 import * as dummy from 'testData';
 import * as userApi from 'client/api/users';

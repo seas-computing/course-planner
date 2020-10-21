@@ -15,6 +15,7 @@ import {
   messageReducer,
   UserContext,
   MetadataContext,
+  MetadataContextValue,
 } from 'client/context';
 import { MarkOneWrapper, PageBody } from 'mark-one';
 import { getCurrentUser } from 'client/api';
@@ -22,31 +23,10 @@ import { getMetadata } from 'client/api/metadata';
 import { User } from 'common/classes';
 import { MetadataResponse } from 'common/dto/metadata/MetadataResponse.dto';
 import {
-  MarkOneWrapper,
-  Header,
-  TabList,
-  TabListItem,
-  PageBody,
-  Logo,
-  PageTitle,
-  Link,
-} from 'mark-one';
-import { UserAPI } from 'client/api';
-import { UserResponse } from 'common/dto/users/userResponse.dto';
-import { MetadataContext, MetadataContextValue } from 'client/context/MetadataContext';
-import { MetadataAPI } from 'client/api/metadata';
-import {
   Message,
   AppRouter,
   AppHeader,
 } from './layout';
-import NoMatch from './pages/NoMatch';
-import logo from '../img/seas-logo.svg';
-import CourseAdmin from './pages/CourseAdmin';
-import FacultyAdmin from './pages/FacultyAdmin';
-import FacultyPage from './pages/Faculty/FacultyPage';
-import CourseInstanceList from './pages/Courses/CoursesPage';
-import MultiYearPlan from './pages/MultiYearPlan';
 
 /**
  * The primary app component. Fetches the current user from the server when it
@@ -130,34 +110,16 @@ const App: FunctionComponent = (): ReactElement => {
         <UserContext.Provider value={currentUser}>
           <MessageContext.Provider value={dispatchMessage}>
             <MetadataContext.Provider value={metadataContext}>
-              <div className="app-content">
-                <Header justify="left">
-                  <Logo href="/" image={logo}>SEAS Logo</Logo>
-                  <PageTitle>Course Planning</PageTitle>
-                </Header>
-                <nav>
-                  <TabList>
-                    {tabs.map((tab): ReactElement => (
-                      <TabListItem
-                        isActive={tab.link === currentPath}
-                        key={tab.text}
-                      >
-                        <Link to={tab.link}>
-                          {tab.text}
-                        </Link>
-                      </TabListItem>
-                    ))}
-                  </TabList>
-                </nav>
-                <PageBody>
-                  {currentMessage
-                    && (
-                      <Message
-                        messageCount={queue.length}
-                        messageText={currentMessage.text}
-                        messageType={currentMessage.variant}
-                      />
-                    )}
+              <PageBody>
+                <AppHeader />
+                {currentMessage
+                  && (
+                    <Message
+                      messageCount={queue.length}
+                      messageText={currentMessage.text}
+                      messageType={currentMessage.variant}
+                    />
+                  )}
                 <AppRouter />
               </PageBody>
             </MetadataContext.Provider>
