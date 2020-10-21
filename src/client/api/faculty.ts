@@ -1,5 +1,5 @@
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
-import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
+import { FacultyAbsence, FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { CreateFacultyDTO } from 'common/dto/faculty/CreateFaculty.dto';
 import { UpdateFacultyDTO } from 'common/dto/faculty/UpdateFaculty.dto';
 import request from './request';
@@ -44,9 +44,17 @@ Promise<Record<string, FacultyResponseDTO[]>> => {
   return response.data as Record<string, FacultyResponseDTO[]>;
 };
 
+export const updateFacultyAbsence = async (
+  absence: FacultyAbsence
+): Promise<FacultyAbsence> => {
+  const response = await request.put(`/api/faculty/absence/${absence.id}`, absence);
+  return response.data as FacultyAbsence;
+};
+
 export const FacultyAPI = {
   getAllFacultyMembers,
   createFaculty,
   editFaculty,
   getFacultySchedulesForYear,
+  updateFacultyAbsence,
 };
