@@ -1,7 +1,7 @@
 import { strictEqual, deepStrictEqual } from 'assert';
 import { regularUser } from 'testData';
 import { GROUP } from 'common/constants';
-import { User } from '../user.entity';
+import User from '../User';
 
 describe('User', function () {
   describe('constructor', function () {

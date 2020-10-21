@@ -4,7 +4,7 @@ import { GROUP } from 'common/constants';
  * Basic user representing the format of user data within this application.
  *
  */
-export class User {
+class User {
   /**
    * Unique ID representing a user.
    * See [[HarvardKeyProfile.eppn]] for more information
@@ -64,3 +64,5 @@ export class User {
     return `${this.lastName}, ${this.firstName}`;
   }
 }
+
+export default User;

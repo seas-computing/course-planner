@@ -192,6 +192,8 @@
         "func-names": 0,
         "@typescript-eslint/explicit-function-return-type": 0,
         "@typescript-eslint/no-object-literal-type-assertion": 0,
+        "@typescript-eslint/no-unsafe-member-access": 0,
+        "@typescript-eslint/no-unsafe-assignment": 0,
         "react/jsx-props-no-spreading": 0
       }
     },

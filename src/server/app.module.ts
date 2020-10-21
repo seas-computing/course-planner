@@ -1,8 +1,14 @@
-import { Module } from '@nestjs/common';
+import {
+  Module,
+  NestModule,
+  MiddlewareConsumer,
+  RequestMethod,
+} from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import session from 'express-session';
 import ConnectRedis from 'connect-redis';
-import { SAMLStrategy } from 'server/auth/saml.strategy';
+import redis from 'redis';
+import { HarvardKeyStrategy } from 'server/auth/harvardkey.strategy';
 import { DevStrategy } from 'server/auth/dev.strategy';
 import { SessionModule, NestSessionOptions } from 'nestjs-session';
 import { ConfigModule } from './config/config.module';
@@ -12,6 +18,12 @@ import { CourseModule } from './course/course.module';
 import { FacultyModule } from './faculty/faculty.module';
 import { CourseInstanceModule } from './courseInstance/courseInstance.module';
 import { MetadataModule } from './metadata/metadata.module';
+import { UserController } from './user/user.controller';
+import { HealthCheckController } from './healthCheck/healthCheck.controller';
+import { LogModule } from './log/log.module';
+import { LogMiddleware } from './log/log.middleware';
+import { AuthController } from './auth/auth.controller';
+import { LogService } from './log/log.service';
 
 /**
  * Base application module that configures the database connections and other
@@ -21,12 +33,19 @@ import { MetadataModule } from './metadata/metadata.module';
 @Module({
   imports: [
     ConfigModule,
+    LogModule,
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
+      imports: [ConfigModule, LogModule],
+      inject: [ConfigService, LogService],
       useFactory: (
-        config: ConfigService
-      ): TypeOrmModuleOptions => (config.dbOptions),
-      inject: [ConfigService],
+        config: ConfigService,
+        logger: LogService
+      ): TypeOrmModuleOptions => ({
+        ...config.dbOptions,
+        logger,
+        logging: 'all',
+        maxQueryExecutionTime: 1000,
+      }),
     }),
     SessionModule.forRootAsync({
       imports: [ConfigModule],
@@ -34,35 +53,42 @@ import { MetadataModule } from './metadata/metadata.module';
       useFactory: (
         config: ConfigService
       ): NestSessionOptions => {
+        const client = redis.createClient(config.redisURL);
         const RedisStore = ConnectRedis(session);
         const store = new RedisStore({
-          ...config.redisOptions,
+          client,
+          prefix: config.get('REDIS_PREFIX'),
           logErrors: config.isDevelopment,
         });
-        return {
-          session: {
-            secret: config.get('SESSION_SECRET'),
-            cookie: {
-              maxAge: 1000 * 60 * 60 * 24 * 7,
-            },
-            store,
-            resave: true,
-            saveUninitialized: false,
-          },
-        };
+        return config.getSessionSettings(store);
       },
     }),
     AuthModule.register({
-      strategies: [SAMLStrategy, DevStrategy],
+      strategies: [HarvardKeyStrategy, DevStrategy],
     }),
     CourseModule,
     FacultyModule,
     CourseInstanceModule,
     MetadataModule,
   ],
-  controllers: [],
+  controllers: [
+    UserController,
+    HealthCheckController,
+  ],
   providers: [],
 })
-class AppModule { }
+class AppModule implements NestModule {
+  /**
+   * Apply our logging middleware for all routes except the healthcheck
+   */
+  configure(consumer: MiddlewareConsumer): void {
+    consumer
+      .apply(LogMiddleware)
+      .forRoutes(
+        AuthController,
+        { path: '/api/', method: RequestMethod.ALL }
+      );
+  }
+}
 
 export { AppModule };

@@ -32,14 +32,14 @@ describe('MultiYearPlan', function () {
   });
 
   context('when multi year plan data fetch succeeds', function () {
-    it('displays the MYP area information', async function () {
+    it('displays the MYP information', async function () {
       const { findByText } = render(
         <MultiYearPlan />,
         dispatchMessage
       );
       strictEqual(getStub.callCount, 1);
-      const { area } = testData[0];
-      return findByText(area);
+      const { title } = testData[0];
+      return findByText(title);
     });
     it('displays the correct number of rows in the table', async function () {
       const { getAllByRole } = render(
@@ -61,7 +61,7 @@ describe('MultiYearPlan', function () {
         .map(
           (row) => (Array.from(row.cells).map((cell) => cell.textContent))
         );
-      strictEqual(rowsContent[1][0], testData[0].area);
+      strictEqual(rowsContent[1][0], testData[0].catalogPrefix);
       strictEqual(rowsContent[1][1], testData[0].catalogNumber);
       strictEqual(rowsContent[1][2], testData[0].title);
       const facultyNames1 = testData[0].semesters

@@ -3,8 +3,8 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { AUTH_MODE } from 'common/constants';
 import { Request } from 'express';
+import { User } from 'common/classes';
 import { regularUser } from 'testData';
-import { User } from '../../../src/server/user/user.entity';
 
 /**
  * A stubbable PassportStrategy for use in testing.

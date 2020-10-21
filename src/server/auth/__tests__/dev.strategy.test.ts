@@ -1,10 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Request } from 'express';
 import { string } from 'testData';
 import { strictEqual } from 'assert';
 import { DevStrategy } from 'server/auth/dev.strategy';
 import { SessionModule } from 'nestjs-session';
-import { Request } from 'express';
-import { HarvardKeyProfile } from '../saml.strategy';
 
 describe('Dev Strategy', function () {
   it('adds a dummy user to the session', async function () {
@@ -25,18 +24,16 @@ describe('Dev Strategy', function () {
 
     const dev = moduleRef.get<DevStrategy>(DevStrategy);
 
-    const request = {
+    const result = dev.validate({
       session: {},
-    } as Request;
-
-    const result = dev.validate(request);
+    } as Request);
 
     const {
       eppn,
       firstName,
       lastName,
       email,
-    } = result.session.user as HarvardKeyProfile;
+    } = result;
 
     strictEqual(eppn, 'abc123@harvard.edu');
     strictEqual(firstName, 'Test');

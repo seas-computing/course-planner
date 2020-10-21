@@ -7,7 +7,7 @@ import { ManageCourseResponseDTO } from '../../common/dto/courses/ManageCourseRe
 /**
  * Retrieves all courses
  */
-const getAllCourses = async (): Promise<ManageCourseResponseDTO[]> => {
+export const getAllCourses = async (): Promise<ManageCourseResponseDTO[]> => {
   const response = await request.get('/api/courses/');
   return response.data as ManageCourseResponseDTO[];
 };
@@ -30,7 +30,7 @@ Promise<ManageCourseResponseDTO> => {
   return response.data as ManageCourseResponseDTO;
 };
 
-const getCourseInstancesForYear = async (
+export const getCourseInstancesForYear = async (
   acadYear: number
 ): Promise<CourseInstanceResponseDTO[][]> => {
   const response = await request

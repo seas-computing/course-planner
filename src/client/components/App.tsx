@@ -1,17 +1,10 @@
-import { hot } from 'react-hot-loader/root';
 import React, {
   useState,
   useEffect,
   useReducer,
   ReactElement,
-  SFC,
+  FunctionComponent,
 } from 'react';
-import {
-  Switch,
-  Route,
-  Redirect,
-  useLocation,
-} from 'react-router-dom';
 import {
   MESSAGE_TYPE,
   MESSAGE_ACTION,
@@ -21,7 +14,13 @@ import {
   MessageContext,
   messageReducer,
   UserContext,
+  MetadataContext,
 } from 'client/context';
+import { MarkOneWrapper, PageBody } from 'mark-one';
+import { getCurrentUser } from 'client/api';
+import { getMetadata } from 'client/api/metadata';
+import { User } from 'common/classes';
+import { MetadataResponse } from 'common/dto/metadata/MetadataResponse.dto';
 import {
   MarkOneWrapper,
   Header,
@@ -36,7 +35,11 @@ import { UserAPI } from 'client/api';
 import { UserResponse } from 'common/dto/users/userResponse.dto';
 import { MetadataContext, MetadataContextValue } from 'client/context/MetadataContext';
 import { MetadataAPI } from 'client/api/metadata';
-import { Message } from './layout';
+import {
+  Message,
+  AppRouter,
+  AppHeader,
+} from './layout';
 import NoMatch from './pages/NoMatch';
 import logo from '../img/seas-logo.svg';
 import CourseAdmin from './pages/CourseAdmin';
@@ -50,12 +53,12 @@ import MultiYearPlan from './pages/MultiYearPlan';
  * mounts, then saves it to the UserContext to pass down to other components
  */
 
-export const ColdApp: SFC = (): ReactElement => {
+const App: FunctionComponent = (): ReactElement => {
   /**
    * Hook for maintaining the currently selected user
    * */
 
-  const [currentUser, setUser] = useState<UserResponse>(null);
+  const [currentUser, setUser] = useState<User | null>(null);
 
   /**
    * Set up the local reducer for maintaining the current app-wide message
@@ -72,34 +75,6 @@ export const ColdApp: SFC = (): ReactElement => {
   );
 
   /**
-   * Get the currently authenticated user from the server on launch.
-   * If it fails, display a message for the user
-   */
-
-  useEffect((): void => {
-    UserAPI.getCurrentUser()
-      .then((user): UserResponse => {
-        setUser(user);
-        return user;
-      })
-      .then((user): void => {
-        dispatchMessage({
-          message: new AppMessage(`Current User: ${user.fullName}`),
-          type: MESSAGE_ACTION.PUSH,
-        });
-      })
-      .catch((): void => {
-        dispatchMessage({
-          message: new AppMessage(
-            'Unable to get user data from server. If the problem persists, contact SEAS Computing',
-            MESSAGE_TYPE.ERROR
-          ),
-          type: MESSAGE_ACTION.PUSH,
-        });
-      });
-  }, [setUser, dispatchMessage]);
-
-  /**
    * Set up the current metadata containing the current academic year, currently
    * existing areas, and currently existing semesters in the database.
    * The current metadata will be passed down through the Metadata Context
@@ -113,15 +88,35 @@ export const ColdApp: SFC = (): ReactElement => {
   const metadataContext = new MetadataContextValue(currentMetadata,
     setMetadata);
 
+  /**
+   * Get the currently authenticated user from the server on launch.
+   * If it fails, display a message for the user
+   */
+
   useEffect((): void => {
-    MetadataAPI.getMetadata()
-      .then((metadata): void => {
-        setMetadata(metadata);
+    getCurrentUser()
+      .then((user: User): void => {
+        if (user) {
+          setUser(user);
+          getMetadata()
+            .then((metadata: MetadataResponse): void => {
+              setMetadata(metadata);
+            })
+            .catch((): void => {
+              dispatchMessage({
+                message: new AppMessage(
+                  'Unable to get metadata from server. If the problem persists, contact SEAS Computing',
+                  MESSAGE_TYPE.ERROR
+                ),
+                type: MESSAGE_ACTION.PUSH,
+              });
+            });
+        }
       })
       .catch((): void => {
         dispatchMessage({
           message: new AppMessage(
-            'Unable to get metadata from server. If the problem persists, contact SEAS Computing',
+            'Unable to get user data from server. If the problem persists, contact SEAS Computing',
             MESSAGE_TYPE.ERROR
           ),
           type: MESSAGE_ACTION.PUSH,
@@ -129,20 +124,8 @@ export const ColdApp: SFC = (): ReactElement => {
       });
   }, []);
 
-  const { pathname: currentPath } = useLocation();
-
-  const tabs: { link: string; text: string }[] = [
-    { link: '/courses', text: 'Courses' },
-    { link: '/non-class-meetings', text: 'Non class meetings' },
-    { link: '/faculty', text: 'Faculty' },
-    { link: '/schedule', text: 'Schedule' },
-    { link: '/four-year-plan', text: '4 Year Plan' },
-    { link: '/course-admin', text: 'Course Admin' },
-    { link: '/faculty-admin', text: 'Faculty Admin' },
-  ];
-
   return (
-    <div className="app">
+    <div className="app-content">
       <MarkOneWrapper>
         <UserContext.Provider value={currentUser}>
           <MessageContext.Provider value={dispatchMessage}>
@@ -175,17 +158,8 @@ export const ColdApp: SFC = (): ReactElement => {
                         messageType={currentMessage.variant}
                       />
                     )}
-                  <Switch>
-                    <Redirect from="/" exact to="/courses" />
-                    <Route path="/courses" component={CourseInstanceList} />
-                    <Route path="/course-admin" component={CourseAdmin} />
-                    <Route exact path="/faculty" component={FacultyPage} />
-                    <Route path="/faculty-admin" component={FacultyAdmin} />
-                    <Route path="/four-year-plan" component={MultiYearPlan} />
-                    <Route component={NoMatch} />
-                  </Switch>
-                </PageBody>
-              </div>
+                <AppRouter />
+              </PageBody>
             </MetadataContext.Provider>
           </MessageContext.Provider>
         </UserContext.Provider>
@@ -194,4 +168,4 @@ export const ColdApp: SFC = (): ReactElement => {
   );
 };
 
-export default hot(ColdApp);
+export default App;
