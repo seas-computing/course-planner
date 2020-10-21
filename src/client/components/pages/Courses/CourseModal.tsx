@@ -277,7 +277,8 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
               value={form.existingArea}
               name="existingArea"
               onChange={updateFormFields}
-              label=""
+              label="Area"
+              isLabelVisible={false}
               // Insert an empty option so that no area is pre-selected in dropdown
               options={
                 [{ value: '', label: '' }]
@@ -301,7 +302,9 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
               value={form.newArea}
               name="newArea"
               onChange={updateFormFields}
-              label=""
+              label="Area"
+              isLabelVisible={false}
+              labelPosition={POSITION.TOP}
             />
           </Fieldset>
           <TextInput
@@ -335,19 +338,14 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
             onChange={updateFormFields}
             value={form.sameAs}
           />
-          <Fieldset
-            legend="Undergraduate"
-            isBorderVisible={false}
-            isLegendVisible={false}
-          >
-            <Checkbox
-              id="isUndergraduate"
-              name="isUndergraduate"
-              checked={form.isUndergraduate}
-              label="Undergraduate"
-              onChange={updateFormFields}
-            />
-          </Fieldset>
+          <Checkbox
+            id="isUndergraduate"
+            name="isUndergraduate"
+            checked={form.isUndergraduate}
+            label="Undergraduate"
+            onChange={updateFormFields}
+            labelPosition={POSITION.RIGHT}
+          />
           <Dropdown
             id="isSEAS"
             name="isSEAS"
