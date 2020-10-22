@@ -63,7 +63,10 @@ describe('Faculty controller', function () {
 
     mockSemesterRepository = {};
 
-    mockAbsenceRepository = {};
+    mockAbsenceRepository = {
+      findOneOrFail: stub(),
+      save: stub(),
+    };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [

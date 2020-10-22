@@ -12,6 +12,11 @@ import { SemesterService } from 'server/semester/semester.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Area } from 'server/area/area.entity';
 import { Absence } from 'server/absence/absence.entity';
+import { facultyAbsence } from 'testData';
+import { ABSENCE_TYPE } from 'common/constants';
+import { NotFoundException } from '@nestjs/common';
+import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
+import { FacultyAbsence } from 'common/dto/faculty/FacultyResponse.dto';
 import { FacultyController } from '../faculty.controller';
 import { FacultyScheduleService } from '../facultySchedule.service';
 import { Faculty } from '../faculty.entity';
@@ -23,6 +28,7 @@ describe('Faculty Schedule Controller', function () {
   let getYearListStub: SinonStub;
   let findStub: SinonStub;
   const mockRepository: Record<string, SinonStub> = {};
+  let mockAbsenceRepository: Record<string, SinonStub>;
   const fakeYearList = [
     2018,
     2019,
@@ -32,6 +38,10 @@ describe('Faculty Schedule Controller', function () {
   beforeEach(async function () {
     getAllByYearStub = stub();
     getYearListStub = stub();
+    mockAbsenceRepository = {
+      findOneOrFail: stub(),
+      save: stub(),
+    };
     const testModule = await Test.createTestingModule({
       controllers: [FacultyController],
       providers: [
@@ -63,7 +73,7 @@ describe('Faculty Schedule Controller', function () {
         },
         {
           provide: getRepositoryToken(Absence),
-          useValue: mockRepository,
+          useValue: mockAbsenceRepository,
         },
       ],
     })
@@ -128,6 +138,47 @@ describe('Faculty Schedule Controller', function () {
           await fsController.getAllFaculty([...validYearArgs, ...invalidYearArgs].join(','));
           strictEqual(getAllByYearStub.callCount, 1);
           deepStrictEqual(getAllByYearStub.args[0][0], validYearArgs);
+        });
+      });
+    });
+    describe('Update faculty absence', function () {
+      const updatedAbsence: FacultyAbsence = {
+        ...facultyAbsence,
+        type: ABSENCE_TYPE.NO_LONGER_ACTIVE,
+      };
+      context('when absence record exists', function () {
+        beforeEach(function () {
+          mockAbsenceRepository
+            .findOneOrFail
+            .resolves(facultyAbsence);
+          mockAbsenceRepository.save.resolves(updatedAbsence);
+        });
+        it('updates the absence record', async function () {
+          await fsController
+            .updateFacultyAbsence(facultyAbsence.id, updatedAbsence);
+          strictEqual(mockAbsenceRepository.save.callCount, 1);
+        });
+        it('returns the updated absence record', async function () {
+          const newlyUpdatedAbsence = await fsController
+            .updateFacultyAbsence(facultyAbsence.id, updatedAbsence);
+          deepStrictEqual(newlyUpdatedAbsence, updatedAbsence);
+        });
+      });
+      context('when absence record does not exist', function () {
+        it('throws a Not Found Error', async function () {
+          mockAbsenceRepository
+            .findOneOrFail
+            .rejects(new EntityNotFoundError(Absence, {
+              where: { id: facultyAbsence.id },
+            }));
+          try {
+            await fsController
+              .updateFacultyAbsence(facultyAbsence.id, updatedAbsence);
+          } catch (e) {
+            strictEqual(e instanceof NotFoundException, true);
+            const error = e as NotFoundException;
+            strictEqual(error.message && 'message' in error.message, true);
+          }
         });
       });
     });
