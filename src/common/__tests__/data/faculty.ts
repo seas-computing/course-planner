@@ -1,7 +1,7 @@
 import { Faculty } from 'server/faculty/faculty.entity';
 import { ABSENCE_TYPE, FACULTY_TYPE } from 'common/constants';
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
-import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
+import { FacultyAbsence, FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { CreateFacultyDTO } from 'common/dto/faculty/CreateFaculty.dto';
 import { Area } from 'server/area/area.entity';
 
@@ -160,6 +160,7 @@ export const appliedMathFacultyScheduleResponse: FacultyResponseDTO = {
   area: 'AM',
   jointWith: '',
   fall: {
+    id: '677143a4-314f-4d85-aac7-e446b9bf5eca',
     academicYear: 2021,
     courses: [
       {
@@ -177,6 +178,7 @@ export const appliedMathFacultyScheduleResponse: FacultyResponseDTO = {
     },
   },
   spring: {
+    id: 'cc6b661b-b423-4da7-9248-88a56e070905',
     academicYear: 2021,
     courses: [
       {
@@ -205,6 +207,7 @@ FacultyResponseDTO = {
   area: 'EE',
   jointWith: '',
   fall: {
+    id: 'cc6b661b-b423-4da7-9248-88a56e070905',
     academicYear: 2021,
     courses: [
       {
@@ -226,6 +229,7 @@ FacultyResponseDTO = {
     },
   },
   spring: {
+    id: 'a2b0c918-04ea-4629-8e43-5a1b9f02ea6b',
     academicYear: 2021,
     courses: [
       {
@@ -265,6 +269,7 @@ export const newAreaFacultyScheduleResponse: FacultyResponseDTO = {
   area: 'NA',
   jointWith: '',
   fall: {
+    id: 'a2b0c918-04ea-4629-8e43-5a1b9f02ea6b',
     academicYear: 2021,
     courses: [
       {
@@ -282,6 +287,7 @@ export const newAreaFacultyScheduleResponse: FacultyResponseDTO = {
     },
   },
   spring: {
+    id: '677143a4-314f-4d85-aac7-e446b9bf5eca',
     academicYear: 2021,
     courses: [
       {
@@ -294,4 +300,9 @@ export const newAreaFacultyScheduleResponse: FacultyResponseDTO = {
       type: ABSENCE_TYPE.SABBATICAL_ELIGIBLE,
     },
   },
+};
+
+export const facultyAbsence: FacultyAbsence = {
+  id: 'a2b0c918-04ea-4629-8e43-5a1b9f02ea6b',
+  type: ABSENCE_TYPE.RESEARCH_LEAVE,
 };

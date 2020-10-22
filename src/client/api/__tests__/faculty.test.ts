@@ -9,6 +9,7 @@ import {
   appliedMathFacultyScheduleResponse,
   newAppliedPhysicsFacultyMember,
   bioengineeringFacultyMember,
+  facultyAbsence,
 } from 'testData';
 import { FacultyAPI } from 'client/api';
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
@@ -18,7 +19,8 @@ import {
   fail,
   notDeepStrictEqual,
 } from 'assert';
-import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
+import { FacultyAbsence, FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
+import { ABSENCE_TYPE, FACULTY_TYPE } from 'common/constants';
 import request, {
   AxiosResponse,
 } from '../request';
@@ -26,6 +28,7 @@ import request, {
 describe('Faculty API', function () {
   let result: FacultyResponseDTO;
   let getStub: SinonStub;
+  let putStub: SinonStub;
   describe('GET /faculty/schedule', function () {
     beforeEach(function () {
       getStub = stub(request, 'get');
@@ -71,6 +74,58 @@ describe('Faculty API', function () {
             strictEqual(err, error);
           }
         });
+      });
+    });
+  });
+  describe('PUT /api/faculty/absence/:id', function () {
+    let editAbsenceResult: FacultyAbsence;
+    beforeEach(function () {
+      putStub = stub(request, 'put');
+    });
+    afterEach(function () {
+      putStub.restore();
+    });
+    context('when PUT request succeeds', function () {
+      const newAbsenceType = ABSENCE_TYPE.SABBATICAL_ELIGIBLE;
+      const editedAbsence = {
+        ...facultyAbsence,
+        type: newAbsenceType,
+      };
+      beforeEach(async function () {
+        putStub.resolves({
+          data: editedAbsence,
+        } as AxiosResponse<FacultyAbsence>);
+        editAbsenceResult = await FacultyAPI
+          .updateFacultyAbsence(editedAbsence);
+      });
+      it('should make a request to /api/faculty/absence/:id', function () {
+        const [[path]] = putStub.args;
+        strictEqual(path, `/api/faculty/absence/${facultyAbsence.id}`);
+        strictEqual(putStub.callCount, 1);
+      });
+      it('should return the updated absence entry', function () {
+        // verify that the object is different from the original
+        notDeepStrictEqual(facultyAbsence, editAbsenceResult);
+        // and then verify that we received back the edited object
+        deepStrictEqual(editAbsenceResult, editedAbsence);
+      });
+    });
+    context('when PUT request fails', function () {
+      const newAbsenceType = ABSENCE_TYPE.PARENTAL_LEAVE;
+      const errorMessage = 'There was a problem with editing an absence entry.';
+      beforeEach(function () {
+        putStub.rejects(new Error(errorMessage));
+      });
+      it('should throw an error', async function () {
+        try {
+          await FacultyAPI.updateFacultyAbsence({
+            ...facultyAbsence,
+            type: newAbsenceType,
+          });
+          fail('Did not throw an error');
+        } catch (err) {
+          strictEqual((err as Error).message, errorMessage);
+        }
       });
     });
   });
