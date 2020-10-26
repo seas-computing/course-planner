@@ -227,12 +227,8 @@ describe('CourseInstance API', function () {
                   'HH:m',
                   new Date(2020, 0, 1)
                 );
-                const zonedStartDate = utcToZonedTime(
-                  startDate,
-                  'America/New_York'
-                );
                 const blockStartTime = format(
-                  zonedStartDate,
+                  startDate,
                   'HH:mm:ssx',
                   { timeZone: 'America/New_York' }
                 );
@@ -241,12 +237,8 @@ describe('CourseInstance API', function () {
                   'HH:m',
                   new Date(2020, 0, 1)
                 );
-                const zonedEndDate = utcToZonedTime(
-                  endDate,
-                  'America/New_York'
-                );
                 const blockEndTime = format(
-                  zonedEndDate,
+                  endDate,
                   'HH:mm:ssx'
                 );
                 return Promise.all(courses.map(async ({ id }) => {
