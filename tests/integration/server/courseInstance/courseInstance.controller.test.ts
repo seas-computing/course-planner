@@ -239,7 +239,8 @@ describe('CourseInstance API', function () {
                 );
                 const blockEndTime = format(
                   endDate,
-                  'HH:mm:ssx'
+                  'HH:mm:ssx',
+                  { timeZone: 'America/New_York' }
                 );
                 return Promise.all(courses.map(async ({ id }) => {
                   const {
