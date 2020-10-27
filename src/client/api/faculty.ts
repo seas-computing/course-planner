@@ -1,10 +1,10 @@
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
-import { FacultyAbsence, FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
+import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { CreateFacultyDTO } from 'common/dto/faculty/CreateFaculty.dto';
 import { UpdateFacultyDTO } from 'common/dto/faculty/UpdateFaculty.dto';
-import request from './request';
 import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
 import { AbsenceRequestDTO } from 'common/dto/faculty/AbsenceRequest.dto';
+import request from './request';
 
 /**
  * Retrieves all faculty for the Faculty Admin tab

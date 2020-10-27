@@ -29,13 +29,13 @@ import { Authentication } from 'server/auth/authentication.guard';
 import { Area } from 'server/area/area.entity';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { SemesterService } from 'server/semester/semester.service';
-import { FacultyAbsence, FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
+import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { Absence } from 'server/absence/absence.entity';
+import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
+import { AbsenceRequestDTO } from 'common/dto/faculty/AbsenceRequest.dto';
 import { Faculty } from './faculty.entity';
 import { FacultyService } from './faculty.service';
 import { FacultyScheduleService } from './facultySchedule.service';
-import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
-import { AbsenceRequestDTO } from 'common/dto/faculty/AbsenceRequest.dto';
 
 @ApiUseTags('Faculty')
 @UseGuards(Authentication)
