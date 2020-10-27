@@ -265,7 +265,8 @@ describe('CourseInstance API', function () {
                     'HH:mm:ssx',
                     new Date(2020, 0, 1)
                   ),
-                  'k'
+                  'k',
+                  { timeZone: 'America/New_York' }
                 );
                 strictEqual(startHour, parseInt(hour, 10), id);
               })
@@ -283,7 +284,8 @@ describe('CourseInstance API', function () {
                     'HH:mm:ssx',
                     new Date(2020, 0, 1)
                   ),
-                  'k'
+                  'k',
+                  { timeZone: 'America/New_York' }
                 );
                 strictEqual(endHour, parseInt(hour, 10));
               })
