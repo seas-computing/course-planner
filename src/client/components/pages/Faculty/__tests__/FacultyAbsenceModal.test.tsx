@@ -70,23 +70,24 @@ describe('Faculty Absence Modal', function () {
         dispatchMessage,
         metadata
       ));
-    });
-    it('calls the onSuccess handler once on submit', async function () {
+      const absenceSelect = getByLabelText('Sabbatical/Leave', { exact: false }) as HTMLSelectElement;
+      fireEvent.change(
+        absenceSelect,
+        { target: { value: facultyAbsence.type } }
+      );
       const submitButton = getByText('Submit');
       fireEvent.click(submitButton);
+    });
+    it('calls the onSuccess handler once on submit', async function () {
       await wait(() => strictEqual(onSuccessStub.callCount, 1));
     });
     it('calls the onSuccess handler with the provided arguments', async function () {
-      const submitButton = getByText('Submit');
-      fireEvent.click(submitButton);
       await wait(() => strictEqual(
         onSuccessStub.args[0][0],
         facultyAbsence
       ));
     });
     it('calls the onClose handler once', async function () {
-      const submitButton = getByText('Submit');
-      fireEvent.click(submitButton);
       await wait(() => strictEqual(onCloseStub.callCount, 1));
     });
   });
