@@ -23,16 +23,6 @@ abstract class ScheduleEntry {
   room: string;
 
   @ApiModelProperty({
-    example: '12:30 p.m.',
-  })
-  startTime: string;
-
-  @ApiModelProperty({
-    example: '2:00 p.m.',
-  })
-  endTime: string;
-
-  @ApiModelProperty({
     example: true,
   })
   isUndergraduate: boolean;

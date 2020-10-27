@@ -30,8 +30,6 @@ import { RoomListingView } from '../location/RoomListingView.entity';
     .addSelect('c.isUndergraduate', 'isUndergraduate')
     .addSelect('r.name', 'room')
     .addSelect('r.campus', 'campus')
-    .addSelect('m."startTime"', 'startTime')
-    .addSelect('m."endTime"', 'endTime')
     .addSelect('CONCAT(c.prefix, m.day, TO_CHAR(m."startTime"::TIME, \'HH24MI\'), TO_CHAR(m."endTime"::TIME, \'HH24MI\'), s.term, s."academicYear")', 'blockId')
     .from(CourseInstance, 'ci')
     .leftJoin(Course, 'c', 'ci."courseId" = c.id')
@@ -61,20 +59,6 @@ export class ScheduleEntryView {
    */
   @ViewColumn()
   public isUndergraduate: boolean;
-
-  /**
-   * From [[Meeting]]
-   * The formatted starting time of the class meeting
-   */
-  @ViewColumn()
-  public startTime: string;
-
-  /**
-    * From [[Meeting]]
-    * The formatted ending time of the class meeting
-    */
-  @ViewColumn()
-  public endTime: string;
 
   /**
    * From [[Meeting]]

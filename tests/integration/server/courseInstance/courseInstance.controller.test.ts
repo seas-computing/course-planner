@@ -260,13 +260,10 @@ describe('CourseInstance API', function () {
                 const { id } = courses[0];
                 const { startTime } = await meetingRepository.findOne(id);
                 const hour = format(
-                  utcToZonedTime(
-                    parse(
-                      startTime,
-                      'HH:mm:ssx',
-                      new Date(2020, 0, 1)
-                    ),
-                    'America/New_York'
+                  parse(
+                    startTime,
+                    'HH:mm:ssx',
+                    new Date(2020, 0, 1)
                   ),
                   'k'
                 );
@@ -275,23 +272,37 @@ describe('CourseInstance API', function () {
             );
           });
 
-          it('Should provide the endHour in 24-hour format', function () {
-            result.forEach(({ endHour, courses }) => {
-              const { endTime } = courses[0];
-              const hour = format(parse(endTime, 'hh:mm aa', new Date()), 'k');
-              strictEqual(endHour, parseInt(hour, 10));
-            });
+          it('Should provide the endHour in 24-hour format', async function () {
+            return Promise.all(
+              result.map(async ({ endHour, courses }) => {
+                const { id } = courses[0];
+                const { endTime } = await meetingRepository.findOne(id);
+                const hour = format(
+                  parse(
+                    endTime,
+                    'HH:mm:ssx',
+                    new Date(2020, 0, 1)
+                  ),
+                  'k'
+                );
+                strictEqual(endHour, parseInt(hour, 10));
+              })
+            );
           });
 
-          it('Should calculate the duration', function () {
-            result.forEach(({ courses, duration }) => {
-              const { startTime, endTime } = courses[0];
-              const expected = differenceInMinutes(
-                parse(endTime, 'hh:mm aa', new Date()),
-                parse(startTime, 'hh:mm aa', new Date())
-              );
-              strictEqual(duration, expected);
-            });
+          it('Should calculate the duration', async function () {
+            return Promise.all(
+              result.map(async ({ courses, duration }) => {
+                const { id } = courses[0];
+                const { startTime, endTime } = await meetingRepository
+                  .findOne(id);
+                const expected = differenceInMinutes(
+                  parse(endTime, 'HH:mm:ssx', new Date()),
+                  parse(startTime, 'HH:mm:ssx', new Date())
+                );
+                strictEqual(duration, expected);
+              })
+            );
           });
 
           it('Should generate a unique id', function () {
