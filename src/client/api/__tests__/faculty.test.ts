@@ -20,7 +20,7 @@ import {
   notDeepStrictEqual,
 } from 'assert';
 import { FacultyAbsence, FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
-import { ABSENCE_TYPE, FACULTY_TYPE } from 'common/constants';
+import { ABSENCE_TYPE } from 'common/constants';
 import request, {
   AxiosResponse,
 } from '../request';
@@ -49,7 +49,7 @@ describe('Faculty API', function () {
           });
           const response = await FacultyAPI
             .getFacultySchedulesForYear(acadYear);
-          result = response[acadYear][0];
+          result = response[0];
         });
         it('should call getAllFacultySchedules', function () {
           strictEqual(getStub.callCount, 1);

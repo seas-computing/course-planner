@@ -3,6 +3,8 @@ import { FacultyAbsence, FacultyResponseDTO } from 'common/dto/faculty/FacultyRe
 import { CreateFacultyDTO } from 'common/dto/faculty/CreateFaculty.dto';
 import { UpdateFacultyDTO } from 'common/dto/faculty/UpdateFaculty.dto';
 import request from './request';
+import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
+import { AbsenceRequestDTO } from 'common/dto/faculty/AbsenceRequest.dto';
 
 /**
  * Retrieves all faculty for the Faculty Admin tab
@@ -36,19 +38,20 @@ Promise<ManageFacultyResponseDTO> => {
  * academic year(s)
  */
 export const getFacultySchedulesForYear = async (
-  acadYears: number
+  acadYear: number
 ):
-Promise<Record<string, FacultyResponseDTO[]>> => {
+Promise<FacultyResponseDTO[]> => {
   const response = await request
-    .get(`/api/faculty/schedule?acadYears=${acadYears}`);
-  return response.data as Record<string, FacultyResponseDTO[]>;
+    .get(`/api/faculty/schedule?acadYears=${acadYear}`);
+  const map = response.data as Record<string, FacultyResponseDTO[]>;
+  return map[acadYear];
 };
 
 export const updateFacultyAbsence = async (
-  absence: FacultyAbsence
-): Promise<FacultyAbsence> => {
+  absence: AbsenceRequestDTO
+): Promise<AbsenceResponseDTO> => {
   const response = await request.put(`/api/faculty/absence/${absence.id}`, absence);
-  return response.data as FacultyAbsence;
+  return response.data as AbsenceResponseDTO;
 };
 
 export const FacultyAPI = {
