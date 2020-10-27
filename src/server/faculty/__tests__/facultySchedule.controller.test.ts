@@ -141,6 +141,8 @@ describe('Faculty Schedule Controller', function () {
         });
       });
     });
+  });
+  describe('/faculty/absence/:id', function () {
     describe('Update faculty absence', function () {
       const updatedAbsence: FacultyAbsence = {
         ...facultyAbsence,
