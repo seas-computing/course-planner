@@ -108,7 +108,7 @@ const App: FunctionComponent = (): ReactElement => {
           <MessageContext.Provider value={dispatchMessage}>
             <MetadataContext.Provider value={currentMetadata}>
               <PageBody>
-                <AppHeader />
+                <AppHeader currentUser={currentUser} />
                 {currentMessage
                     && (
                       <Message
