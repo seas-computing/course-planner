@@ -29,7 +29,7 @@ import { SemesterModule } from 'server/semester/semester.module';
 import * as dummy from 'testData';
 import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
-import { utcToZonedTime, format } from 'date-fns-tz';
+import { format } from 'date-fns-tz';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
