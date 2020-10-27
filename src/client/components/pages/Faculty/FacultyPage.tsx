@@ -49,7 +49,7 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
     setFetching(true);
     FacultyAPI.getFacultySchedulesForYear(acadYear)
       .then((facultySchedules): void => {
-        setFacultySchedules(facultySchedules[acadYear]);
+        setFacultySchedules(facultySchedules);
       })
       .catch((err: Error): void => {
         dispatchMessage({
