@@ -8,6 +8,7 @@ import {
   ObjectType,
 } from 'typeorm';
 import { Semester } from 'server/semester/semester.entity';
+import { IS_SEAS } from 'common/constants';
 import { CourseInstance } from './courseinstance.entity';
 import { MeetingListingView } from '../meeting/MeetingListingView.entity';
 import { Course } from '../course/course.entity';
@@ -37,7 +38,7 @@ import { RoomListingView } from '../location/RoomListingView.entity';
     .innerJoin(Semester, 's', 's.id = ci."semesterId"')
     .innerJoin(MeetingListingView, 'm', 'm."courseInstanceId" = ci.id')
     .leftJoin(RoomListingView, 'r', 'r.id = m."roomId"')
-    .where('c."isSEAS" <> \'N\''),
+    .where(`c."isSEAS" <> '${IS_SEAS.N}'`),
 })
 export class ScheduleEntryView {
   /**
