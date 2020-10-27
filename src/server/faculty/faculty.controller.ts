@@ -34,6 +34,8 @@ import { Absence } from 'server/absence/absence.entity';
 import { Faculty } from './faculty.entity';
 import { FacultyService } from './faculty.service';
 import { FacultyScheduleService } from './facultySchedule.service';
+import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
+import { AbsenceRequestDTO } from 'common/dto/faculty/AbsenceRequest.dto';
 
 @ApiUseTags('Faculty')
 @UseGuards(Authentication)
@@ -113,28 +115,34 @@ export class FacultyController {
   @Put('/absence/:id')
   @ApiOperation({ title: 'Edit an existing faculty\'s absence entry in the database' })
   @ApiOkResponse({
-    type: FacultyResponseDTO,
+    type: AbsenceResponseDTO,
     description: 'An object with the edited absence entry\'s information.',
     isArray: false,
   })
   @ApiNotFoundResponse({
     description: 'Not Found: The requested entity with the ID supplied could not be found',
   })
-  public async updateFacultyAbsence(@Param('id') id: string, @Body() update: FacultyAbsence):
-  Promise<FacultyAbsence> {
-    let absence: Absence;
+  public async updateFacultyAbsence(@Param('id') id: string, @Body() absenceInfo: AbsenceRequestDTO):
+  Promise<AbsenceResponseDTO> {
+    let existingAbsence: Absence;
     try {
-      absence = await this.absenceRepository.findOneOrFail(update.id);
+      existingAbsence = await this.absenceRepository
+        .findOneOrFail({
+          where: {
+            id: absenceInfo.id,
+          },
+        });
     } catch (e) {
       if (e instanceof EntityNotFoundError) {
         throw new NotFoundException('The entered Absence does not exist');
       }
+      throw e;
     }
-    absence.type = update.type;
-    absence = await this.absenceRepository.save(absence);
-    return {
-      ...absence,
+    const validAbsence = {
+      ...absenceInfo,
+      id: existingAbsence.id,
     };
+    return this.absenceRepository.save(validAbsence);
   }
 
   @UseGuards(new RequireGroup(GROUP.ADMIN))
