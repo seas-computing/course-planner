@@ -1,4 +1,4 @@
-import { deepStrictEqual, strictEqual } from 'assert';
+import { deepStrictEqual, strictEqual, rejects } from 'assert';
 import { stub, SinonStub } from 'sinon';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -12,11 +12,17 @@ import {
   testFourYearPlan,
   testMultiYearPlanStartYear,
   testFourYearPlanAcademicYears,
+  testCourseScheduleData,
 } from 'testData';
+import { BadRequestException } from '@nestjs/common';
 import { CourseInstanceService } from '../courseInstance.service';
 import { CourseInstanceController } from '../courseInstance.controller';
 import { MultiYearPlanView } from '../MultiYearPlanView.entity';
 import { MultiYearPlanInstanceView } from '../MultiYearPlanInstanceView.entity';
+import { ScheduleBlockView } from '../ScheduleBlockView.entity';
+import { ScheduleEntryView } from '../ScheduleEntryView.entity';
+import { ScheduleViewResponseDTO } from '../../../common/dto/schedule/schedule.dto';
+import { TERM } from '../../../common/constants';
 
 describe('Course Instance Controller', function () {
   let ciController: CourseInstanceController;
@@ -48,6 +54,14 @@ describe('Course Instance Controller', function () {
         },
         {
           provide: getRepositoryToken(MultiYearPlanInstanceView),
+          useValue: mockRepository,
+        },
+        {
+          provide: getRepositoryToken(ScheduleBlockView),
+          useValue: mockRepository,
+        },
+        {
+          provide: getRepositoryToken(ScheduleEntryView),
           useValue: mockRepository,
         },
         {
@@ -155,6 +169,45 @@ describe('Course Instance Controller', function () {
     it('should return a 4 year list starting with the current academic year when numYears is equal to 4', function () {
       const actual = ciController.computeAcademicYears(4);
       deepStrictEqual(actual, testFourYearPlanAcademicYears);
+    });
+  });
+  describe('/schedule', function () {
+    let getStub: SinonStub;
+    beforeEach(function () {
+      getStub = stub(ciService, 'getCourseSchedule').resolves(testCourseScheduleData);
+      stub(semesterService, 'getYearList').resolves(fakeYearList);
+    });
+    context('With valid semester data', function () {
+      let result: ScheduleViewResponseDTO[];
+      beforeEach(async function () {
+        result = await ciController.getScheduleData(TERM.FALL, fakeYearList[0]);
+      });
+      it('Should call the service method', function () {
+        strictEqual(getStub.callCount, 1);
+      });
+      it('Should pass in the term and year', function () {
+        const [[term, year]] = getStub.args;
+        strictEqual(term, TERM.FALL);
+        strictEqual(year, fakeYearList[0]);
+      });
+      it('Should return the value from the service', function () {
+        strictEqual(result, testCourseScheduleData);
+      });
+    });
+    context('With invalid term value', function () {
+      it('Should throw an error', function () {
+        return rejects(
+          ciController.getScheduleData('foo' as TERM, fakeYearList[0]),
+          BadRequestException
+        );
+      });
+    });
+    context('With invalid year value', function () {
+      it('Should return an empty array', async function () {
+        const result = await ciController
+          .getScheduleData(TERM.FALL, '1920');
+        deepStrictEqual(result, []);
+      });
     });
   });
 });

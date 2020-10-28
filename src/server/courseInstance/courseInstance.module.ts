@@ -9,6 +9,8 @@ import { Course } from 'server/course/course.entity';
 import { ConfigService } from 'server/config/config.service';
 import { CourseInstanceService } from './courseInstance.service';
 import { CourseInstanceController } from './courseInstance.controller';
+import { ScheduleBlockView } from './ScheduleBlockView.entity';
+import { ScheduleEntryView } from './ScheduleEntryView.entity';
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { CourseInstanceController } from './courseInstance.controller';
       CourseListingView,
       MultiYearPlanInstanceView,
       MultiYearPlanView,
+      ScheduleBlockView,
+      ScheduleEntryView,
     ]),
     SemesterModule,
   ],

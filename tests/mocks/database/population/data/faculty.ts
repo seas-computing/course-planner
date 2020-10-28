@@ -131,4 +131,22 @@ export const faculty = [
     category: FACULTY_TYPE.NON_LADDER,
     area: 'Applied Computation',
   },
+  {
+    firstName: 'Boris',
+    lastName: 'Kozinsky',
+    email: 'bkozinsky@seas.harvard.edu',
+    HUID: '24242424',
+    jointWith: null,
+    category: FACULTY_TYPE.LADDER,
+    area: 'EE',
+  },
+  {
+    firstName: 'Jennifer',
+    lastName: 'Lewis',
+    email: 'jlewis@seas.harvard.edu',
+    HUID: '25252525',
+    jointWith: null,
+    category: FACULTY_TYPE.LADDER,
+    area: 'AP',
+  },
 ];

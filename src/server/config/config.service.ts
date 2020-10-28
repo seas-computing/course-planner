@@ -28,6 +28,8 @@ import { View } from 'server/view/view.entity';
 import { NestSessionOptions } from 'nestjs-session';
 import { RedisStore } from 'connect-redis';
 import LOG_LEVEL from '../../common/constants/logLevels';
+import { ScheduleBlockView } from '../courseInstance/ScheduleBlockView.entity';
+import { ScheduleEntryView } from '../courseInstance/ScheduleEntryView.entity';
 
 /**
  * Parses process.env to create a clean configuration interface
@@ -175,6 +177,8 @@ class ConfigService {
         MeetingListingView,
         NonClassEvent,
         NonClassParent,
+        ScheduleBlockView,
+        ScheduleEntryView,
         Semester,
         SemesterView,
         View,

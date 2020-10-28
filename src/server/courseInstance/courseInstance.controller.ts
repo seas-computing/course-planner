@@ -3,6 +3,7 @@ import {
   Get,
   Query,
   Inject,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiOkResponse,
@@ -12,8 +13,10 @@ import {
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import { ConfigService } from 'server/config/config.service';
+import { TERM } from 'common/constants';
+import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
+import { SemesterService } from 'server/semester/semester.service';
 import { CourseInstanceService } from './courseInstance.service';
-import { SemesterService } from '../semester/semester.service';
 
 @Controller('api/course-instances')
 export class CourseInstanceController {
@@ -97,5 +100,31 @@ export class CourseInstanceController {
     const numYears = 4;
     const academicYears = this.computeAcademicYears(numYears);
     return this.ciService.getMultiYearPlan(academicYears);
+  }
+
+  /**
+   * Retrieves the schedule data for all SEAS courses offered in a given term
+   */
+
+  @ApiUseTags('Course Instance')
+  @ApiOperation({ title: 'Retrieve Course Schedule Data' })
+  @ApiOkResponse({
+    type: ScheduleViewResponseDTO,
+    description: 'An array of the schedule data for a given term',
+    isArray: true,
+  })
+  @Get('/schedule')
+  public async getScheduleData(
+    @Query('term') term: TERM, @Query('year') year: string
+  ): Promise<ScheduleViewResponseDTO[]> {
+    const validTerms = Object.values(TERM);
+    if (!validTerms.includes(term)) {
+      throw new BadRequestException(`"term" must be "${validTerms.join('" or "')}"`);
+    }
+    const validYears = await this.semesterService.getYearList();
+    if (!validYears.includes(year)) {
+      return [];
+    }
+    return this.ciService.getCourseSchedule(term, year);
   }
 }
