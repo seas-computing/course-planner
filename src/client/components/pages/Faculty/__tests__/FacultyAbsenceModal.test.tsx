@@ -1,4 +1,4 @@
-import {
+import assert, {
   strictEqual,
 } from 'assert';
 import React from 'react';
@@ -11,6 +11,7 @@ import {
   BoundFunction,
   fireEvent,
   GetByText,
+  QueryByText,
   render,
   wait,
 } from 'test-utils';
@@ -26,13 +27,14 @@ describe('Faculty Absence Modal', function () {
   let queryAllByRole: BoundFunction<AllByRole>;
   let getByLabelText: BoundFunction<GetByText>;
   let getByText: BoundFunction<GetByText>;
+  let queryByText: BoundFunction<QueryByText>;
   const dispatchMessage: SinonStub = stub();
   let onSuccessStub: SinonStub;
   let onCloseStub: SinonStub;
   let putStub: SinonStub;
   describe('On Open Behavior', function () {
     beforeEach(function () {
-      ({ getByLabelText, queryAllByRole } = render(
+      ({ getByLabelText, queryAllByRole, queryByText } = render(
         <FacultyAbsenceModal
           isVisible
           currentFaculty={appliedMathFacultyScheduleResponse}
@@ -51,6 +53,13 @@ describe('Faculty Absence Modal', function () {
     });
     it('renders no error messages prior to initial form submission', function () {
       strictEqual(queryAllByRole('alert').length, 0);
+    });
+    it('does not render "Present" as an option in the absence dropdown', function () {
+      strictEqual(queryByText('Present'), null);
+    });
+    it('renders "None" as an option in the absence dropdown', function () {
+      const noneOption = queryByText('None');
+      assert(noneOption);
     });
   });
   describe('Submit Behavior', function () {

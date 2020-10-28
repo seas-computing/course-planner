@@ -141,7 +141,7 @@ FunctionComponent<AbsenceModalProps> = function ({
                 const absenceTitle = absenceEnumToTitleCase(absence);
                 return {
                   value: absence,
-                  label: absenceTitle,
+                  label: absenceTitle === 'Present' ? 'None' : absenceTitle,
                 };
               }))}
             onChange={updateFormFields}
