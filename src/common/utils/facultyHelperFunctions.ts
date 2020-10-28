@@ -59,22 +59,3 @@ const facultyTypeEnumToTitleCaseMap = {
  */
 export const facultyTypeEnumToTitleCase = (facultyType: FACULTY_TYPE):
 string => facultyTypeEnumToTitleCaseMap[facultyType];
-
-/**
- * Define the map here to avoid a new object being created on each call to
- * [[facultyTypeTitleCaseToEnum]]
- */
-const facultyTypeTitleCaseToEnumMap = {
-  Ladder: FACULTY_TYPE.LADDER,
-  'Non-SEAS Ladder': FACULTY_TYPE.NON_SEAS_LADDER,
-  'Non-Ladder': FACULTY_TYPE.NON_LADDER,
-};
-
-/**
- * A helper function that converts from the faculty from the title case format
- * to the category enum format
- */
-export const facultyTypeTitleCaseToEnum = function (facultyType: string):
-FACULTY_TYPE {
-  return facultyTypeTitleCaseToEnumMap[facultyType] as FACULTY_TYPE;
-};
