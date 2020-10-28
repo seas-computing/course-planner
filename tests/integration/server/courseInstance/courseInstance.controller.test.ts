@@ -29,7 +29,7 @@ import { SemesterModule } from 'server/semester/semester.module';
 import * as dummy from 'testData';
 import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
-import { format } from 'date-fns-tz';
+import { utcToZonedTime, format } from 'date-fns-tz';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
@@ -259,16 +259,20 @@ describe('CourseInstance API', function () {
               result.map(async ({ startHour, courses }) => {
                 const { id } = courses[0];
                 const { startTime } = await meetingRepository.findOne(id);
+                const startDate = parse(
+                  startTime,
+                  'HH:mm:ssx',
+                  new Date(2020, 0, 1)
+                );
                 const hour = format(
-                  parse(
-                    startTime,
-                    'HH:mm:ssx',
-                    new Date(2020, 0, 1)
+                  utcToZonedTime(
+                    startDate,
+                    'America/New_York'
                   ),
                   'k',
                   { timeZone: 'America/New_York' }
                 );
-                strictEqual(startHour, parseInt(hour, 10), id);
+                strictEqual(startHour, parseInt(hour, 10));
               })
             );
           });
@@ -278,11 +282,15 @@ describe('CourseInstance API', function () {
               result.map(async ({ endHour, courses }) => {
                 const { id } = courses[0];
                 const { endTime } = await meetingRepository.findOne(id);
+                const endDate = parse(
+                  endTime,
+                  'HH:mm:ssx',
+                  new Date(2020, 0, 1)
+                );
                 const hour = format(
-                  parse(
-                    endTime,
-                    'HH:mm:ssx',
-                    new Date(2020, 0, 1)
+                  utcToZonedTime(
+                    endDate,
+                    'America/New_York'
                   ),
                   'k',
                   { timeZone: 'America/New_York' }
