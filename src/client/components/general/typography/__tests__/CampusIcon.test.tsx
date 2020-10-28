@@ -12,14 +12,6 @@ describe('CampusIcon', function () {
     const campusStyle = window.getComputedStyle(getByText('A'));
     strictEqual(campusStyle.visibility, 'visible');
   });
-  it('Does not render the other characters', function () {
-    const { getByText } = render(
-      <CampusIcon>Allston</CampusIcon>,
-      () => {}
-    );
-    const hiddenStyle = window.getComputedStyle(getByText('llston'));
-    strictEqual(hiddenStyle.display, 'none');
-  });
   it('Keeps the full text hidden in the DOM content', function () {
     const { container } = render(
       <CampusIcon>Allston</CampusIcon>,
