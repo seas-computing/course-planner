@@ -14,6 +14,7 @@ import {
   QueryByText,
   render,
   wait,
+  waitForElement,
 } from 'test-utils';
 import request from 'client/api/request';
 import {
@@ -108,7 +109,7 @@ describe('Faculty Absence Modal', function () {
         putStub.rejects(new Error(errorMessage));
         onSuccessStub = stub();
         onCloseStub = stub();
-        render(
+        ({ getByText } = render(
           <FacultyAbsenceModal
             isVisible
             currentFaculty={appliedMathFacultyScheduleResponse}
@@ -118,13 +119,20 @@ describe('Faculty Absence Modal', function () {
           />,
           dispatchMessage,
           metadata
-        );
+        ));
+        const submitButton = getByText('Submit');
+        fireEvent.click(submitButton);
       });
       it('does not call the onSuccess handler on submit', async function () {
         await wait(() => strictEqual(onSuccessStub.callCount, 0));
       });
       it('does not call the onClose handler', async function () {
         await wait(() => strictEqual(onCloseStub.callCount, 0));
+      });
+      it('renders the error message', async function () {
+        return waitForElement(
+          () => getByText(errorMessage, { exact: false })
+        );
       });
     });
   });
