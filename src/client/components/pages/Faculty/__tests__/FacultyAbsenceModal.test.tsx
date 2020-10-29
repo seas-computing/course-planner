@@ -63,41 +63,69 @@ describe('Faculty Absence Modal', function () {
     });
   });
   describe('Submit Behavior', function () {
-    beforeEach(function () {
-      putStub = stub(request, 'put');
-      putStub.resolves({ data: facultyAbsence });
-      onSuccessStub = stub();
-      onCloseStub = stub();
-      ({ getByLabelText, getByText } = render(
-        <FacultyAbsenceModal
-          isVisible
-          currentFaculty={appliedMathFacultyScheduleResponse}
-          currentAbsence={facultyAbsence}
-          onSuccess={onSuccessStub}
-          onClose={onCloseStub}
-        />,
-        dispatchMessage,
-        metadata
-      ));
-      const absenceSelect = getByLabelText('Sabbatical/Leave', { exact: false }) as HTMLSelectElement;
-      fireEvent.change(
-        absenceSelect,
-        { target: { value: facultyAbsence.type } }
-      );
-      const submitButton = getByText('Submit');
-      fireEvent.click(submitButton);
+    context('when there are no errors', function () {
+      beforeEach(function () {
+        putStub = stub(request, 'put');
+        putStub.resolves({ data: facultyAbsence });
+        onSuccessStub = stub();
+        onCloseStub = stub();
+        ({ getByLabelText, getByText } = render(
+          <FacultyAbsenceModal
+            isVisible
+            currentFaculty={appliedMathFacultyScheduleResponse}
+            currentAbsence={facultyAbsence}
+            onSuccess={onSuccessStub}
+            onClose={onCloseStub}
+          />,
+          dispatchMessage,
+          metadata
+        ));
+        const absenceSelect = getByLabelText('Sabbatical/Leave', { exact: false }) as HTMLSelectElement;
+        fireEvent.change(
+          absenceSelect,
+          { target: { value: facultyAbsence.type } }
+        );
+        const submitButton = getByText('Submit');
+        fireEvent.click(submitButton);
+      });
+      it('calls the onSuccess handler once on submit', async function () {
+        await wait(() => strictEqual(onSuccessStub.callCount, 1));
+      });
+      it('calls the onSuccess handler with the provided arguments', async function () {
+        await wait(() => strictEqual(
+          onSuccessStub.args[0][0],
+          facultyAbsence
+        ));
+      });
+      it('calls the onClose handler once', async function () {
+        await wait(() => strictEqual(onCloseStub.callCount, 1));
+      });
     });
-    it('calls the onSuccess handler once on submit', async function () {
-      await wait(() => strictEqual(onSuccessStub.callCount, 1));
-    });
-    it('calls the onSuccess handler with the provided arguments', async function () {
-      await wait(() => strictEqual(
-        onSuccessStub.args[0][0],
-        facultyAbsence
-      ));
-    });
-    it('calls the onClose handler once', async function () {
-      await wait(() => strictEqual(onCloseStub.callCount, 1));
+    context('when there is an error', function () {
+      const errorMessage = 'There was a problem with editing an absence entry.';
+      beforeEach(function () {
+        putStub = stub(request, 'put');
+        putStub.rejects(new Error(errorMessage));
+        onSuccessStub = stub();
+        onCloseStub = stub();
+        render(
+          <FacultyAbsenceModal
+            isVisible
+            currentFaculty={appliedMathFacultyScheduleResponse}
+            currentAbsence={facultyAbsence}
+            onSuccess={onSuccessStub}
+            onClose={onCloseStub}
+          />,
+          dispatchMessage,
+          metadata
+        );
+      });
+      it('does not call the onSuccess handler on submit', async function () {
+        await wait(() => strictEqual(onSuccessStub.callCount, 0));
+      });
+      it('does not call the onClose handler', async function () {
+        await wait(() => strictEqual(onCloseStub.callCount, 0));
+      });
     });
   });
 });
