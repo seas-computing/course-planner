@@ -42,26 +42,73 @@ describe('Faculty Schedule Modal Behavior', function () {
     getStub.resolves(testData);
   });
   describe('rendering', function () {
-    context('when an edit faculty button has been clicked', function () {
-      let findByText: BoundFunction<FindByText>;
-      let queryByText: BoundFunction<QueryByText>;
-      let getByLabelText: BoundFunction<GetByText>;
-      let editAppliedMathSpringAbsenceButton: HTMLElement;
+    let findByText: BoundFunction<FindByText>;
+    let queryByText: BoundFunction<QueryByText>;
+    let getByLabelText: BoundFunction<GetByText>;
+    let editAppliedMathFallAbsenceButton: HTMLElement;
+    let editAppliedMathSpringAbsenceButton: HTMLElement;
+    beforeEach(function () {
+      putStub = stub(FacultyAPI, 'updateFacultyAbsence');
+      putStub.resolves({ data: appliedMathFacultyMemberResponse });
+      ({ findByText, queryByText, getByLabelText } = render(
+        <FacultyScheduleTable
+          academicYear={acadYear}
+          facultySchedules={testData}
+        />,
+        (): void => {}
+      )
+      );
+    });
+    context('when a Fall semester edit faculty button has been clicked', function () {
       beforeEach(async function () {
-        putStub = stub(FacultyAPI, 'updateFacultyAbsence');
-        putStub.resolves({ data: appliedMathFacultyMemberResponse });
-        ({ findByText, queryByText, getByLabelText } = render(
-          <FacultyScheduleTable
-            academicYear={acadYear}
-            facultySchedules={testData}
-          />,
-          (): void => {}
-        )
+        // show the edit faculty modal
+        editAppliedMathFallAbsenceButton = await waitForElement(
+          () => document
+            .getElementById(`editAbsence${appliedMathFacultyScheduleResponse.id}FALL`)
         );
+        fireEvent.click(editAppliedMathFallAbsenceButton);
+        await findByText('Sabbatical/Leave');
+      });
+      context('when the absence modal is opened', function () {
+        it('sets the focus on the modal header', function () {
+          strictEqual((document.activeElement as HTMLElement).textContent.includes('Sabbatical/Leave'), true);
+        });
+      });
+      context('when the "Present" absence value option is selected and the form is submitted', function () {
+        it('renders in the dropdown with the label "None"', async function () {
+          const absenceSelect = getByLabelText('Sabbatical/Leave', { exact: false }) as HTMLSelectElement;
+          fireEvent.change(absenceSelect, { target: { value: `${ABSENCE_TYPE.PRESENT}` } });
+          const submitButton = await findByText('Submit', { exact: false });
+          fireEvent.click(submitButton);
+          await wait(() => !queryByText('Sabbatical/Leave', { exact: false }));
+          // Reopen the modal to check the dropdown selected item
+          fireEvent.click(editAppliedMathFallAbsenceButton);
+          await findByText('Sabbatical/Leave');
+          strictEqual(
+            absenceSelect.selectedOptions[0].text,
+            'None'
+          );
+        });
+      });
+      context('when the absence modal is closed', function () {
+        it('returns focus to the original edit faculty button', async function () {
+          const cancelButton = await findByText('Cancel', { exact: false });
+          // close the modal
+          fireEvent.click(cancelButton);
+          await wait(() => !queryByText('Sabbatical/Leave', { exact: false }));
+          strictEqual(
+            document.activeElement as HTMLElement,
+            editAppliedMathFallAbsenceButton
+          );
+        });
+      });
+    });
+    context('when a Spring semester edit faculty button has been clicked', function () {
+      beforeEach(async function () {
         // show the edit faculty modal
         editAppliedMathSpringAbsenceButton = await waitForElement(
           () => document
-            .getElementById(`editAbsence${appliedMathFacultyScheduleResponse.id}SPRING`)
+            .getElementById(`editAbsence${appliedMathFacultyScheduleResponse.id}FALL`)
         );
         fireEvent.click(editAppliedMathSpringAbsenceButton);
         await findByText('Sabbatical/Leave');
