@@ -17,11 +17,11 @@ import { ABSENCE_TYPE } from 'common/constants';
 import { NotFoundException } from '@nestjs/common';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { FacultyAbsence } from 'common/dto/faculty/FacultyResponse.dto';
+import { TimeoutError } from 'rxjs';
 import { FacultyController } from '../faculty.controller';
 import { FacultyScheduleService } from '../facultySchedule.service';
 import { Faculty } from '../faculty.entity';
 import { FacultyService } from '../faculty.service';
-import { TimeoutError } from 'rxjs';
 
 describe('Faculty Schedule Controller', function () {
   let fsController: FacultyController;
