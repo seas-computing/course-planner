@@ -108,7 +108,7 @@ describe('Faculty Schedule Modal Behavior', function () {
         // show the edit faculty modal
         editAppliedMathSpringAbsenceButton = await waitForElement(
           () => document
-            .getElementById(`editAbsence${appliedMathFacultyScheduleResponse.id}FALL`)
+            .getElementById(`editAbsence${appliedMathFacultyScheduleResponse.id}SPRING`)
         );
         fireEvent.click(editAppliedMathSpringAbsenceButton);
         await findByText('Sabbatical/Leave');
