@@ -21,6 +21,7 @@ import { FacultyController } from '../faculty.controller';
 import { FacultyScheduleService } from '../facultySchedule.service';
 import { Faculty } from '../faculty.entity';
 import { FacultyService } from '../faculty.service';
+import { TimeoutError } from 'rxjs';
 
 describe('Faculty Schedule Controller', function () {
   let fsController: FacultyController;
@@ -180,6 +181,21 @@ describe('Faculty Schedule Controller', function () {
             strictEqual(e instanceof NotFoundException, true);
             const error = e as NotFoundException;
             strictEqual(error.message && 'message' in error.message, true);
+          }
+        });
+      });
+      context('when there are other errors', function () {
+        it('allows other error types to bubble up', async function () {
+          mockAbsenceRepository
+            .findOneOrFail
+            .resolves(facultyAbsence);
+          mockAbsenceRepository.save.rejects(new TimeoutError());
+          try {
+            await fsController
+              .updateFacultyAbsence(facultyAbsence.id, updatedAbsence);
+          } catch (e) {
+            strictEqual(e instanceof Error, true);
+            strictEqual(e instanceof NotFoundException, false);
           }
         });
       });
