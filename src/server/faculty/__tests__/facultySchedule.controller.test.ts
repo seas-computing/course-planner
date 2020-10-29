@@ -14,7 +14,7 @@ import { Area } from 'server/area/area.entity';
 import { Absence } from 'server/absence/absence.entity';
 import { facultyAbsence } from 'testData';
 import { ABSENCE_TYPE } from 'common/constants';
-import { NotFoundException } from '@nestjs/common';
+import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { FacultyAbsence } from 'common/dto/faculty/FacultyResponse.dto';
 import { TimeoutError } from 'rxjs';
@@ -189,13 +189,16 @@ describe('Faculty Schedule Controller', function () {
           mockAbsenceRepository
             .findOneOrFail
             .resolves(facultyAbsence);
-          mockAbsenceRepository.save.rejects(new TimeoutError());
+          mockAbsenceRepository
+            .save
+            .rejects(new InternalServerErrorException());
           try {
             await fsController
               .updateFacultyAbsence(facultyAbsence.id, updatedAbsence);
           } catch (e) {
             strictEqual(e instanceof Error, true);
             strictEqual(e instanceof NotFoundException, false);
+            strictEqual((e.message.error as string).includes('Internal Server Error'), true);
           }
         });
       });
