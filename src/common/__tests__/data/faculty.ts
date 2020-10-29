@@ -174,7 +174,7 @@ export const appliedMathFacultyScheduleResponse: FacultyResponseDTO = {
     ],
     absence: {
       id: 'e8a7f24e-d6d0-4c9d-bfb6-89d070d21091',
-      type: ABSENCE_TYPE.SABBATICAL_ELIGIBLE,
+      type: ABSENCE_TYPE.PRESENT,
     },
   },
   spring: {
@@ -251,7 +251,7 @@ FacultyResponseDTO = {
     ],
     absence: {
       id: '5f700cd5-9ff9-48a7-875d-2a7b7dc290ea',
-      type: ABSENCE_TYPE.SABBATICAL_INELIGIBLE,
+      type: ABSENCE_TYPE.PRESENT,
     },
   },
 };

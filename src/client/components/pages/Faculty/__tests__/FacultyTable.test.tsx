@@ -27,6 +27,7 @@ import {
   absenceEnumToTitleCase,
   facultyTypeEnumToTitleCase,
 } from 'common/utils/facultyHelperFunctions';
+import { ABSENCE_TYPE } from 'common/constants';
 import FacultySchedule from '../FacultyPage';
 import FacultyScheduleTable from '../FacultyScheduleTable';
 
@@ -157,10 +158,43 @@ describe('FacultyScheduleTable', function () {
           .map(
             (row) => (Array.from(row.cells).map((cell) => cell.textContent))
           );
-        assertRowMatchesResponse(rowsContent[2],
-          appliedMathFacultyScheduleResponse);
-        assertRowMatchesResponse(rowsContent[3],
-          electricalEngineeringFacultyScheduleResponse);
+          // When the absence type is ABSENCE_TYPE.PRESENT, the absence should
+          // not display in the table cell. This function updates the expected
+          // response to match the cell content.
+        const filterOutPresentAbsences = (faculty: FacultyResponseDTO) => {
+          const fallAbsence = faculty.fall.absence.type === ABSENCE_TYPE.PRESENT
+            ? '' : faculty.fall.absence.type;
+          const springAbsence = faculty.spring.absence.type
+          === ABSENCE_TYPE.PRESENT
+            ? '' : faculty.spring.absence.type;
+          return {
+            ...faculty,
+            fall: {
+              ...faculty.fall,
+              absence: {
+                ...faculty.fall.absence,
+                type: fallAbsence as ABSENCE_TYPE,
+              },
+            },
+            spring: {
+              ...faculty.spring,
+              absence: {
+                ...faculty.spring.absence,
+                type: springAbsence as ABSENCE_TYPE,
+              },
+            },
+          };
+        };
+        assertRowMatchesResponse(
+          rowsContent[2],
+          filterOutPresentAbsences(appliedMathFacultyScheduleResponse)
+        );
+        assertRowMatchesResponse(
+          rowsContent[3],
+          filterOutPresentAbsences(
+            electricalEngineeringFacultyScheduleResponse
+          )
+        );
       });
       it('does not pass the backgroundColor prop when area does not exist', async function () {
         await wait(() => getAllByRole('row').length > 2);

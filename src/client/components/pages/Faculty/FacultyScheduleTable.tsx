@@ -24,7 +24,7 @@ import {
   faEdit,
 } from '@fortawesome/free-solid-svg-icons';
 import { FacultyAbsence, FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
-import { getAreaColor, TERM } from 'common/constants';
+import { ABSENCE_TYPE, getAreaColor, TERM } from 'common/constants';
 import {
   absenceEnumToTitleCase,
   facultyTypeEnumToTitleCase,
@@ -167,6 +167,7 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
                 <TableCell>
                   {absenceEnumToTitleCase(
                     faculty.fall.absence
+                    && faculty.fall.absence.type !== ABSENCE_TYPE.PRESENT
                       ? faculty.fall.absence.type
                       : ''
                   )}
@@ -197,6 +198,7 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
                 <TableCell>
                   {absenceEnumToTitleCase(
                     faculty.spring.absence
+                    && faculty.spring.absence.type !== ABSENCE_TYPE.PRESENT
                       ? faculty.spring.absence.type
                       : ''
                   )}
