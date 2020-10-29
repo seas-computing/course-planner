@@ -17,7 +17,6 @@ import { ABSENCE_TYPE } from 'common/constants';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { FacultyAbsence } from 'common/dto/faculty/FacultyResponse.dto';
-import { TimeoutError } from 'rxjs';
 import { FacultyController } from '../faculty.controller';
 import { FacultyScheduleService } from '../facultySchedule.service';
 import { Faculty } from '../faculty.entity';
@@ -188,9 +187,6 @@ describe('Faculty Schedule Controller', function () {
         it('allows other error types to bubble up', async function () {
           mockAbsenceRepository
             .findOneOrFail
-            .resolves(facultyAbsence);
-          mockAbsenceRepository
-            .save
             .rejects(new InternalServerErrorException());
           try {
             await fsController
