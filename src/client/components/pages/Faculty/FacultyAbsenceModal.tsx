@@ -168,7 +168,7 @@ FunctionComponent<AbsenceModalProps> = function ({
               // leave the modal visible after an error
               return;
             }
-            if (onClose != null) {
+            if (onClose) {
               onClose();
             }
           }}
