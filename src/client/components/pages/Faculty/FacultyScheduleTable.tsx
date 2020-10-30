@@ -263,7 +263,7 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
             }}
           />
         )
-        : (<></>)}
+        : null}
     </>
   );
 };
