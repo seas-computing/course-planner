@@ -17,9 +17,9 @@ import {
 } from 'sinon';
 import { FacultyAPI } from 'client/api/faculty';
 import {
-  appliedMathFacultyMemberResponse,
   appliedMathFacultyScheduleResponse,
   electricalEngineeringFacultyScheduleResponse,
+  facultyAbsenceResponse,
 } from 'testData';
 import { render } from 'test-utils';
 import FacultyScheduleTable from 'client/components/pages/Faculty/FacultyScheduleTable';
@@ -49,7 +49,7 @@ describe('Faculty Schedule Modal Behavior', function () {
     let editAppliedMathSpringAbsenceButton: HTMLElement;
     beforeEach(function () {
       putStub = stub(FacultyAPI, 'updateFacultyAbsence');
-      putStub.resolves({ data: appliedMathFacultyMemberResponse });
+      putStub.resolves({ data: facultyAbsenceResponse });
       ({ findByText, queryByText, getByLabelText } = render(
         <FacultyScheduleTable
           academicYear={acadYear}
