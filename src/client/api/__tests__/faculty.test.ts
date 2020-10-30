@@ -82,9 +82,6 @@ describe('Faculty API', function () {
     beforeEach(function () {
       putStub = stub(request, 'put');
     });
-    afterEach(function () {
-      putStub.restore();
-    });
     context('when PUT request succeeds', function () {
       const newAbsenceType = ABSENCE_TYPE.SABBATICAL_ELIGIBLE;
       const editedAbsence = {
