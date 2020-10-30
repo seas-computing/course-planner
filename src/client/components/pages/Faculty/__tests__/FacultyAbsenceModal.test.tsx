@@ -19,7 +19,8 @@ import {
 import request from 'client/api/request';
 import {
   appliedMathFacultyScheduleResponse,
-  facultyAbsence,
+  facultyAbsenceRequest,
+  facultyAbsenceResponse,
   metadata,
 } from 'testData';
 import FacultyAbsenceModal from '../FacultyAbsenceModal';
@@ -39,7 +40,7 @@ describe('Faculty Absence Modal', function () {
         <FacultyAbsenceModal
           isVisible
           currentFaculty={appliedMathFacultyScheduleResponse}
-          currentAbsence={facultyAbsence}
+          currentAbsence={facultyAbsenceRequest}
         />,
         dispatchMessage,
         metadata
@@ -49,7 +50,7 @@ describe('Faculty Absence Modal', function () {
       const absenceSelect = getByLabelText('Sabbatical/Leave', { exact: false }) as HTMLSelectElement;
       strictEqual(
         absenceSelect.value,
-        facultyAbsence.type
+        facultyAbsenceRequest.type
       );
     });
     it('renders no error messages prior to initial form submission', function () {
@@ -67,14 +68,14 @@ describe('Faculty Absence Modal', function () {
     context('when there are no errors', function () {
       beforeEach(function () {
         putStub = stub(request, 'put');
-        putStub.resolves({ data: facultyAbsence });
+        putStub.resolves({ data: facultyAbsenceResponse });
         onSuccessStub = stub();
         onCloseStub = stub();
         ({ getByLabelText, getByText } = render(
           <FacultyAbsenceModal
             isVisible
             currentFaculty={appliedMathFacultyScheduleResponse}
-            currentAbsence={facultyAbsence}
+            currentAbsence={facultyAbsenceRequest}
             onSuccess={onSuccessStub}
             onClose={onCloseStub}
           />,
@@ -84,7 +85,7 @@ describe('Faculty Absence Modal', function () {
         const absenceSelect = getByLabelText('Sabbatical/Leave', { exact: false }) as HTMLSelectElement;
         fireEvent.change(
           absenceSelect,
-          { target: { value: facultyAbsence.type } }
+          { target: { value: facultyAbsenceResponse.type } }
         );
         const submitButton = getByText('Submit');
         fireEvent.click(submitButton);
@@ -95,7 +96,7 @@ describe('Faculty Absence Modal', function () {
       it('calls the onSuccess handler with the provided arguments', async function () {
         await wait(() => strictEqual(
           onSuccessStub.args[0][0],
-          facultyAbsence
+          facultyAbsenceResponse
         ));
       });
       it('calls the onClose handler once', async function () {
@@ -113,7 +114,7 @@ describe('Faculty Absence Modal', function () {
           <FacultyAbsenceModal
             isVisible
             currentFaculty={appliedMathFacultyScheduleResponse}
-            currentAbsence={facultyAbsence}
+            currentAbsence={facultyAbsenceRequest}
             onSuccess={onSuccessStub}
             onClose={onCloseStub}
           />,

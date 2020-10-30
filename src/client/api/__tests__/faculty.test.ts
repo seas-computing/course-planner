@@ -9,7 +9,8 @@ import {
   appliedMathFacultyScheduleResponse,
   newAppliedPhysicsFacultyMember,
   bioengineeringFacultyMember,
-  facultyAbsence,
+  facultyAbsenceResponse,
+  facultyAbsenceRequest,
 } from 'testData';
 import { FacultyAPI } from 'client/api';
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
@@ -19,8 +20,9 @@ import {
   fail,
   notDeepStrictEqual,
 } from 'assert';
-import { FacultyAbsence, FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
+import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { ABSENCE_TYPE } from 'common/constants';
+import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
 import request, {
   AxiosResponse,
 } from '../request';
@@ -78,31 +80,31 @@ describe('Faculty API', function () {
     });
   });
   describe('PUT /api/faculty/absence/:id', function () {
-    let editAbsenceResult: FacultyAbsence;
+    let editAbsenceResult: AbsenceResponseDTO;
     beforeEach(function () {
       putStub = stub(request, 'put');
     });
     context('when PUT request succeeds', function () {
       const newAbsenceType = ABSENCE_TYPE.SABBATICAL_ELIGIBLE;
       const editedAbsence = {
-        ...facultyAbsence,
+        ...facultyAbsenceResponse,
         type: newAbsenceType,
       };
       beforeEach(async function () {
         putStub.resolves({
           data: editedAbsence,
-        } as AxiosResponse<FacultyAbsence>);
+        } as AxiosResponse<AbsenceResponseDTO>);
         editAbsenceResult = await FacultyAPI
           .updateFacultyAbsence(editedAbsence);
       });
       it('should make a request to /api/faculty/absence/:id', function () {
         const [[path]] = putStub.args;
-        strictEqual(path, `/api/faculty/absence/${facultyAbsence.id}`);
+        strictEqual(path, `/api/faculty/absence/${facultyAbsenceRequest.id}`);
         strictEqual(putStub.callCount, 1);
       });
       it('should return the updated absence entry', function () {
         // verify that the object is different from the original
-        notDeepStrictEqual(facultyAbsence, editAbsenceResult);
+        notDeepStrictEqual(facultyAbsenceResponse, editAbsenceResult);
         // and then verify that we received back the edited object
         deepStrictEqual(editAbsenceResult, editedAbsence);
       });
@@ -116,7 +118,7 @@ describe('Faculty API', function () {
       it('should throw an error', async function () {
         try {
           await FacultyAPI.updateFacultyAbsence({
-            ...facultyAbsence,
+            ...facultyAbsenceResponse,
             type: newAbsenceType,
           });
           fail('Did not throw an error');

@@ -40,7 +40,8 @@ import {
   appliedMathFacultyMember,
   appliedMathFacultyMemberResponse,
   newAreaFacultyMemberRequest,
-  facultyAbsence,
+  facultyAbsenceResponse,
+  facultyAbsenceRequest,
 } from 'testData';
 import { SessionModule } from 'nestjs-session';
 import { FacultyService } from 'server/faculty/faculty.service';
@@ -492,7 +493,7 @@ describe('Faculty API', function () {
   });
   describe('PUT /absence/:id', function () {
     const updatedAbsence = {
-      ...facultyAbsence,
+      ...facultyAbsenceResponse,
       type: ABSENCE_TYPE.TEACHING_RELIEF,
     };
     describe('User is not authenticated', function () {
@@ -500,10 +501,10 @@ describe('Faculty API', function () {
         authStub.rejects(new ForbiddenException());
       });
       it('cannot update an absence entry', async function () {
-        mockAbsenceRepository.findOneOrFail.resolves(facultyAbsence);
-        mockAbsenceRepository.save.resolves(facultyAbsence);
+        mockAbsenceRepository.findOneOrFail.resolves(facultyAbsenceResponse);
+        mockAbsenceRepository.save.resolves(facultyAbsenceResponse);
         const response = await request(api)
-          .put(`/api/faculty/absence/${facultyAbsence.id}`)
+          .put(`/api/faculty/absence/${facultyAbsenceRequest.id}`)
           .send(updatedAbsence);
         strictEqual(response.ok, false);
         strictEqual(response.status, HttpStatus.FORBIDDEN);
@@ -516,19 +517,19 @@ describe('Faculty API', function () {
           authStub.returns(adminUser);
         });
         it('updates a faculty member entry in the database', async function () {
-          mockAbsenceRepository.findOneOrFail.resolves(facultyAbsence);
-          mockAbsenceRepository.save.resolves(facultyAbsence);
+          mockAbsenceRepository.findOneOrFail.resolves(facultyAbsenceResponse);
+          mockAbsenceRepository.save.resolves(facultyAbsenceResponse);
           const response = await request(api)
-            .put(`/api/faculty/absence/${facultyAbsence.id}`)
+            .put(`/api/faculty/absence/${facultyAbsenceRequest.id}`)
             .send(updatedAbsence);
           strictEqual(response.ok, true);
           strictEqual(response.status, HttpStatus.OK);
         });
         it('throws a Not Found exception if absence does not exist', async function () {
-          mockAbsenceRepository.findOneOrFail.rejects(new EntityNotFoundError(Absence, `${facultyAbsence.id}`));
-          mockAbsenceRepository.save.rejects(new EntityNotFoundError(Absence, `${facultyAbsence.id}`));
+          mockAbsenceRepository.findOneOrFail.rejects(new EntityNotFoundError(Absence, `${facultyAbsenceResponse.id}`));
+          mockAbsenceRepository.save.rejects(new EntityNotFoundError(Absence, `${facultyAbsenceResponse.id}`));
           const response = await request(api)
-            .put(`/api/faculty/absence/${facultyAbsence.id}`)
+            .put(`/api/faculty/absence/${facultyAbsenceRequest.id}`)
             .send(updatedAbsence);
           const body = response.body as NotFoundException;
           const message = body.message as string;

@@ -12,11 +12,11 @@ import { SemesterService } from 'server/semester/semester.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Area } from 'server/area/area.entity';
 import { Absence } from 'server/absence/absence.entity';
-import { facultyAbsence } from 'testData';
+import { facultyAbsenceRequest, facultyAbsenceResponse } from 'testData';
 import { ABSENCE_TYPE } from 'common/constants';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
-import { FacultyAbsence } from 'common/dto/faculty/FacultyResponse.dto';
+import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
 import { FacultyController } from '../faculty.controller';
 import { FacultyScheduleService } from '../facultySchedule.service';
 import { Faculty } from '../faculty.entity';
@@ -144,25 +144,25 @@ describe('Faculty Schedule Controller', function () {
   });
   describe('/faculty/absence/:id', function () {
     describe('Update faculty absence', function () {
-      const updatedAbsence: FacultyAbsence = {
-        ...facultyAbsence,
+      const updatedAbsence: AbsenceResponseDTO = {
+        ...facultyAbsenceRequest,
         type: ABSENCE_TYPE.NO_LONGER_ACTIVE,
       };
       context('when absence record exists', function () {
         beforeEach(function () {
           mockAbsenceRepository
             .findOneOrFail
-            .resolves(facultyAbsence);
+            .resolves(facultyAbsenceResponse);
           mockAbsenceRepository.save.resolves(updatedAbsence);
         });
         it('updates the absence record', async function () {
           await fsController
-            .updateFacultyAbsence(facultyAbsence.id, updatedAbsence);
+            .updateFacultyAbsence(facultyAbsenceRequest.id, updatedAbsence);
           strictEqual(mockAbsenceRepository.save.callCount, 1);
         });
         it('returns the updated absence record', async function () {
           const newlyUpdatedAbsence = await fsController
-            .updateFacultyAbsence(facultyAbsence.id, updatedAbsence);
+            .updateFacultyAbsence(facultyAbsenceRequest.id, updatedAbsence);
           deepStrictEqual(newlyUpdatedAbsence, updatedAbsence);
         });
       });
@@ -171,11 +171,11 @@ describe('Faculty Schedule Controller', function () {
           mockAbsenceRepository
             .findOneOrFail
             .rejects(new EntityNotFoundError(Absence, {
-              where: { id: facultyAbsence.id },
+              where: { id: facultyAbsenceRequest.id },
             }));
           try {
             await fsController
-              .updateFacultyAbsence(facultyAbsence.id, updatedAbsence);
+              .updateFacultyAbsence(facultyAbsenceRequest.id, updatedAbsence);
           } catch (e) {
             strictEqual(e instanceof NotFoundException, true);
             const error = e as NotFoundException;
@@ -190,7 +190,7 @@ describe('Faculty Schedule Controller', function () {
             .rejects(new InternalServerErrorException());
           try {
             await fsController
-              .updateFacultyAbsence(facultyAbsence.id, updatedAbsence);
+              .updateFacultyAbsence(facultyAbsenceRequest.id, updatedAbsence);
           } catch (e) {
             strictEqual(e instanceof Error, true);
             strictEqual(e instanceof NotFoundException, false);

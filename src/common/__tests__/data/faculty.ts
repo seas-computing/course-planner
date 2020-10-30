@@ -1,9 +1,11 @@
 import { Faculty } from 'server/faculty/faculty.entity';
 import { ABSENCE_TYPE, FACULTY_TYPE } from 'common/constants';
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
-import { FacultyAbsence, FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
+import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { CreateFacultyDTO } from 'common/dto/faculty/CreateFaculty.dto';
 import { Area } from 'server/area/area.entity';
+import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
+import { AbsenceRequestDTO } from 'common/dto/faculty/AbsenceRequest.dto';
 
 /**
  * An example [[Faculty]] entry representing an applied math faculty member
@@ -302,7 +304,12 @@ export const newAreaFacultyScheduleResponse: FacultyResponseDTO = {
   },
 };
 
-export const facultyAbsence: FacultyAbsence = {
+export const facultyAbsenceResponse: AbsenceResponseDTO = {
   id: 'a2b0c918-04ea-4629-8e43-5a1b9f02ea6b',
   type: ABSENCE_TYPE.RESEARCH_LEAVE,
+};
+
+export const facultyAbsenceRequest: AbsenceRequestDTO = {
+  id: 'a2b0c918-04ea-4629-8e43-5a1b9f02ea6b',
+  type: ABSENCE_TYPE.SABBATICAL,
 };

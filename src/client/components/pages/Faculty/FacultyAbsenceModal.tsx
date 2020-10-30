@@ -17,7 +17,7 @@ import {
   Dropdown,
   ValidationErrorMessage,
 } from 'mark-one';
-import { FacultyAbsence, FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
+import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { FacultyAPI } from 'client/api';
 import { ABSENCE_TYPE } from 'common/constants';
 import { absenceEnumToTitleCase } from 'common/utils/facultyHelperFunctions';
@@ -35,7 +35,7 @@ interface AbsenceModalProps {
   /**
    * The current absence entry being edited.
    */
-  currentAbsence: FacultyAbsence;
+  currentAbsence: AbsenceResponseDTO;
   /**
    * Handler to be invoked when the modal closes
    * e.g. to clear data entered into a form
@@ -44,7 +44,7 @@ interface AbsenceModalProps {
   /**
    * Handler to be invoked when the edit is successful
    */
-  onSuccess?: (absence: FacultyAbsence) => Promise<void>;
+  onSuccess?: (absence: AbsenceResponseDTO) => Promise<void>;
 }
 
 /**
@@ -103,7 +103,7 @@ FunctionComponent<AbsenceModalProps> = function ({
       id: currentAbsence.id,
       type: form.absence as ABSENCE_TYPE,
     };
-    const result: FacultyAbsence = await FacultyAPI
+    const result: AbsenceResponseDTO = await FacultyAPI
       .updateFacultyAbsence(updatedAbsenceInfo);
     return result;
   };

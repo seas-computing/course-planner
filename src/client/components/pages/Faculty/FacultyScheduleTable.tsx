@@ -23,7 +23,7 @@ import {
   faFolderOpen,
   faEdit,
 } from '@fortawesome/free-solid-svg-icons';
-import { FacultyAbsence, FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
+import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { ABSENCE_TYPE, getAreaColor, TERM } from 'common/constants';
 import {
   absenceEnumToTitleCase,
@@ -32,6 +32,7 @@ import {
 import { MessageContext } from 'client/context';
 import { AppMessage, MESSAGE_ACTION, MESSAGE_TYPE } from 'client/classes';
 import { FacultyAPI } from 'client/api';
+import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
 import FacultyAbsenceModal from './FacultyAbsenceModal';
 
 interface FacultyScheduleTableProps {
@@ -78,7 +79,7 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
   /**
    * The currently selected absence
    */
-  const [currentAbsence, setAbsence] = useState(null as FacultyAbsence);
+  const [currentAbsence, setAbsence] = useState(null as AbsenceResponseDTO);
 
   /**
    * Keeps track of whether the absence modal is currently visible.
