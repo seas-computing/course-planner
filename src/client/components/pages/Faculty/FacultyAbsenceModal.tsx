@@ -52,13 +52,13 @@ interface AbsenceModalProps {
  * on the Faculty tab
  */
 const FacultyAbsenceModal:
-FunctionComponent<AbsenceModalProps> = function ({
+FunctionComponent<AbsenceModalProps> = ({
   isVisible,
   currentFaculty,
   currentAbsence,
   onClose,
   onSuccess,
-}): ReactElement {
+}): ReactElement => {
   const [form, setFormFields] = useState({
     absence: '',
   });
