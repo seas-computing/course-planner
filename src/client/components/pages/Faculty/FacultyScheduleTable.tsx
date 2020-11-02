@@ -16,6 +16,9 @@ import {
   TableCell,
   BorderlessButton,
   VARIANT,
+  TableCellList,
+  TableCellListItem,
+  VALIGN,
 } from 'mark-one';
 import { TableRowProps } from 'mark-one/lib/Tables/TableRow';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -33,6 +36,7 @@ import { MessageContext } from 'client/context';
 import { AppMessage, MESSAGE_ACTION, MESSAGE_TYPE } from 'client/classes';
 import { FacultyAPI } from 'client/api';
 import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
+import { CellLayout } from 'client/components/general';
 import FacultyAbsenceModal from './FacultyAbsenceModal';
 
 interface FacultyScheduleTableProps {
@@ -165,14 +169,21 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
                   {facultyTypeEnumToTitleCase(faculty.category)}
                 </TableCell>
                 <TableCell>{faculty.jointWith}</TableCell>
-                <TableCell>
-                  {absenceEnumToTitleCase(
-                    faculty.fall.absence
-                    && faculty.fall.absence.type !== ABSENCE_TYPE.PRESENT
-                      ? faculty.fall.absence.type
-                      : ''
-                  )}
-                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <TableCell
+                  verticalAlignment={VALIGN.TOP}
+                >
+                  <CellLayout>
+                    <TableCellList>
+                      <TableCellListItem>
+                        {absenceEnumToTitleCase(
+                          faculty.fall.absence
+                          && faculty.fall.absence.type
+                          !== ABSENCE_TYPE.PRESENT
+                            ? faculty.fall.absence.type
+                            : ''
+                        )}
+                      </TableCellListItem>
+                    </TableCellList>
                     <BorderlessButton
                       id={computeEditAbsenceButtonId(faculty, TERM.FALL)}
                       variant={VARIANT.INFO}
@@ -187,7 +198,7 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
                     >
                       <FontAwesomeIcon icon={faEdit} />
                     </BorderlessButton>
-                  </div>
+                  </CellLayout>
                 </TableCell>
                 <TableCell>
                   {faculty.fall.courses.map((course): ReactElement => (
@@ -196,14 +207,21 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
                     </div>
                   ))}
                 </TableCell>
-                <TableCell>
-                  {absenceEnumToTitleCase(
-                    faculty.spring.absence
-                    && faculty.spring.absence.type !== ABSENCE_TYPE.PRESENT
-                      ? faculty.spring.absence.type
-                      : ''
-                  )}
-                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <TableCell
+                  verticalAlignment={VALIGN.TOP}
+                >
+                  <CellLayout>
+                    <TableCellList>
+                      <TableCellListItem>
+                        {absenceEnumToTitleCase(
+                          faculty.spring.absence
+                          && faculty.spring.absence.type
+                          !== ABSENCE_TYPE.PRESENT
+                            ? faculty.spring.absence.type
+                            : ''
+                        )}
+                      </TableCellListItem>
+                    </TableCellList>
                     <BorderlessButton
                       id={computeEditAbsenceButtonId(faculty, TERM.SPRING)}
                       variant={VARIANT.INFO}
@@ -218,7 +236,7 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
                     >
                       <FontAwesomeIcon icon={faEdit} />
                     </BorderlessButton>
-                  </div>
+                  </CellLayout>
                 </TableCell>
                 <TableCell>
                   {faculty.spring.courses.map((course): ReactElement => (
