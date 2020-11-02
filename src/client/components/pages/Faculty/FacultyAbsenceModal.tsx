@@ -107,6 +107,11 @@ FunctionComponent<AbsenceModalProps> = ({
       .updateFacultyAbsence(updatedAbsenceInfo);
     return result;
   };
+
+  /**
+   * Sets the absence information for the currently selected absence, clears
+   * any previous errors from the modal, and sets the modal focus to its header
+   */
   useEffect((): void => {
     if (isVisible) {
       setFormFields({
