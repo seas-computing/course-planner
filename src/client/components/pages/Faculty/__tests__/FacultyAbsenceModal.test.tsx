@@ -23,6 +23,7 @@ import {
   facultyAbsenceResponse,
   metadata,
 } from 'testData';
+import { FacultyAPI } from 'client/api';
 import FacultyAbsenceModal from '../FacultyAbsenceModal';
 
 describe('Faculty Absence Modal', function () {
@@ -67,7 +68,7 @@ describe('Faculty Absence Modal', function () {
   describe('Submit Behavior', function () {
     context('when there are no errors', function () {
       beforeEach(function () {
-        putStub = stub(request, 'put');
+        putStub = stub(FacultyAPI, 'updateFacultyAbsence');
         putStub.resolves({ data: facultyAbsenceResponse });
         onSuccessStub = stub();
         onCloseStub = stub();
@@ -95,7 +96,7 @@ describe('Faculty Absence Modal', function () {
       });
       it('calls the onSuccess handler with the provided arguments', async function () {
         await wait(() => strictEqual(
-          onSuccessStub.args[0][0],
+          onSuccessStub.args[0][0].data,
           facultyAbsenceResponse
         ));
       });
@@ -106,7 +107,7 @@ describe('Faculty Absence Modal', function () {
     context('when there is an error', function () {
       const errorMessage = 'There was a problem with editing an absence entry.';
       beforeEach(function () {
-        putStub = stub(request, 'put');
+        putStub = stub(FacultyAPI, 'updateFacultyAbsence');
         putStub.rejects(new Error(errorMessage));
         onSuccessStub = stub();
         onCloseStub = stub();
