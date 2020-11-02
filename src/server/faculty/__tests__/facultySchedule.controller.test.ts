@@ -157,12 +157,12 @@ describe('Faculty Schedule Controller', function () {
         });
         it('updates the absence record', async function () {
           await fsController
-            .updateFacultyAbsence(facultyAbsenceRequest.id, updatedAbsence);
+            .updateFacultyAbsence(updatedAbsence);
           strictEqual(mockAbsenceRepository.save.callCount, 1);
         });
         it('returns the updated absence record', async function () {
           const newlyUpdatedAbsence = await fsController
-            .updateFacultyAbsence(facultyAbsenceRequest.id, updatedAbsence);
+            .updateFacultyAbsence(updatedAbsence);
           deepStrictEqual(newlyUpdatedAbsence, updatedAbsence);
         });
       });
@@ -175,7 +175,7 @@ describe('Faculty Schedule Controller', function () {
             }));
           try {
             await fsController
-              .updateFacultyAbsence(facultyAbsenceRequest.id, updatedAbsence);
+              .updateFacultyAbsence(updatedAbsence);
           } catch (e) {
             strictEqual(e instanceof NotFoundException, true);
             const error = e as NotFoundException;
@@ -190,7 +190,7 @@ describe('Faculty Schedule Controller', function () {
             .rejects(new InternalServerErrorException());
           try {
             await fsController
-              .updateFacultyAbsence(facultyAbsenceRequest.id, updatedAbsence);
+              .updateFacultyAbsence(updatedAbsence);
           } catch (e) {
             strictEqual(e instanceof Error, true);
             strictEqual(e instanceof NotFoundException, false);

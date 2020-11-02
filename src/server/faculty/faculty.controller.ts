@@ -122,7 +122,7 @@ export class FacultyController {
   @ApiNotFoundResponse({
     description: 'Not Found: The requested entity with the ID supplied could not be found',
   })
-  public async updateFacultyAbsence(@Param('id') id: string, @Body() absenceInfo: AbsenceRequestDTO):
+  public async updateFacultyAbsence(@Body() absenceInfo: AbsenceRequestDTO):
   Promise<AbsenceResponseDTO> {
     let existingAbsence: Absence;
     try {
