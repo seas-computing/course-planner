@@ -25,6 +25,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { getAreaColor } from '../../../common/constants';
 import { CourseAPI } from '../../api/courses';
+import listFilter from './Filter';
 
 /**
  * The component represents the Course Admin page, which will be rendered at
@@ -59,24 +60,23 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
   /**
    * Return filtered course based on the "Course Prefix",
    * "Course" and "Title" fileds filter.
-   * Note: .trim() is to check string is not all whitespaces.
+   * Note: .trim() might be used to remove whitespaces.
    * Need to ask Vittorio about the .trim()
    */
   const filteredCourses = (): ManageCourseResponseDTO[] => {
     let courses = [...currentCourses];
-    if (courseValue && courseValue.trim()) {
-      courses = courses.filter(
-        (course) => course.catalogNumber.includes(courseValue)
-      );
-    }
-    if (titleValue && titleValue.trim()) {
-      courses = courses.filter(
-        (course) => course.title.includes(titleValue)
-      );
-    }
+    courses = listFilter(
+      courses,
+      { field: 'catalogNumber', value: courseValue, exact: false }
+    );
+    courses = listFilter(
+      courses,
+      { field: 'title', value: titleValue, exact: false }
+    );
     if (coursePrefixValue !== 'All') {
-      courses = courses.filter(
-        (course) => course.area.name === coursePrefixValue
+      courses = listFilter(
+        courses,
+        { field: 'area.name', value: coursePrefixValue, exact: true }
       );
     }
     return (courses);
@@ -128,6 +128,7 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
                 id="coursePrefix"
                 label="The table will be filtered as characters are typed in this course prefix filter field"
                 isLabelVisible={false}
+                hideError
                 onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
                   setCoursePrefixValue(event.currentTarget.value);
                 }}
@@ -141,7 +142,7 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
                 placeholder="Filter by Course"
                 label="The table will be filtered as characters are typed in this course filter field"
                 isLabelVisible={false}
-                aria-describedby="coursenote"
+                hideError
                 onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
                   setCourseValue(event.currentTarget.value);
                 }}
@@ -155,6 +156,7 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
                 placeholder="Filter by Title"
                 label="The table will be filtered as characters are typed in this title filter field"
                 isLabelVisible={false}
+                hideError
                 onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
                   setTitleValue(event.currentTarget.value);
                 }}
