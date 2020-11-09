@@ -19,6 +19,7 @@ import {
   deepStrictEqual,
   fail,
   notDeepStrictEqual,
+  rejects,
 } from 'assert';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { ABSENCE_TYPE } from 'common/constants';
@@ -116,15 +117,13 @@ describe('Faculty API', function () {
         putStub.rejects(new Error(errorMessage));
       });
       it('should throw an error', async function () {
-        try {
-          await FacultyAPI.updateFacultyAbsence({
-            ...facultyAbsenceResponse,
-            type: newAbsenceType,
-          });
-          fail('Did not throw an error');
-        } catch (err) {
-          strictEqual((err as Error).message, errorMessage);
-        }
+        return rejects(() => (FacultyAPI.updateFacultyAbsence({
+          ...facultyAbsenceResponse,
+          type: newAbsenceType,
+        })), {
+          name: 'Error',
+          message: errorMessage,
+        });
       });
     });
   });
