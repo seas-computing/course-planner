@@ -7,6 +7,7 @@ import { Authentication } from 'server/auth/authentication.guard';
 import {
   deepStrictEqual,
   strictEqual,
+  rejects,
 } from 'assert';
 import { SemesterService } from 'server/semester/semester.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -173,14 +174,15 @@ describe('Faculty Schedule Controller', function () {
             .rejects(new EntityNotFoundError(Absence, {
               where: { id: facultyAbsenceRequest.id },
             }));
-          try {
-            await fsController
-              .updateFacultyAbsence(updatedAbsence);
-          } catch (e) {
-            strictEqual(e instanceof NotFoundException, true);
-            const error = e as NotFoundException;
-            strictEqual(error.message && 'message' in error.message, true);
-          }
+          return rejects(
+            () => (fsController.updateFacultyAbsence(updatedAbsence)), {
+              message: {
+                error: 'Not Found',
+                message: 'The entered Absence does not exist',
+                statusCode: 404,
+              },
+            }
+          );
         });
       });
       context('when there are other errors', function () {
