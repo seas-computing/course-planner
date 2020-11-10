@@ -4,6 +4,7 @@ import React, {
   useState,
   useContext,
   useEffect,
+  useCallback,
 } from 'react';
 import { LoadSpinner } from 'mark-one';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
@@ -14,6 +15,9 @@ import {
   MESSAGE_TYPE,
   MESSAGE_ACTION,
 } from 'client/classes';
+import { TERM } from 'common/constants';
+import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
+import FacultyAbsenceModal from './FacultyAbsenceModal';
 import FacultyScheduleTable from './FacultyScheduleTable';
 
 /**
@@ -29,6 +33,27 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
   );
 
   /**
+   * The currently selected faculty
+   */
+  const [currentFaculty, setFaculty] = useState(null as FacultyResponseDTO);
+
+  /**
+   * The current academic term
+   */
+  const [currentTerm, setTerm] = useState(null as TERM);
+
+  /**
+   * The currently selected absence
+   */
+  const [currentAbsence, setAbsence] = useState(null as AbsenceResponseDTO);
+
+  /**
+   * Keeps track of whether the absence modal is currently visible.
+   * By default, the modal is not visible.
+   */
+  const [absenceModalVisible, setAbsenceModalVisible] = useState(false);
+
+  /**
    * The current value for the message context
    */
   const dispatchMessage = useContext(MessageContext);
@@ -40,6 +65,30 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
 
   // TODO: Get the actual current academic year in future ticket instead of hard coding
   const acadYear = 2021;
+
+  /**
+   * Gets the faculty schedule information for the academic year
+   */
+  const loadSchedules = useCallback(async (): Promise<void> => {
+    try {
+      setFacultySchedules(await FacultyAPI
+        .getFacultySchedulesForYear(acadYear));
+    } catch (e) {
+      dispatchMessage({
+        message: new AppMessage(
+          'Unable to get faculty schedule data from server. If the problem persists, contact SEAS Computing',
+          MESSAGE_TYPE.ERROR
+        ),
+        type: MESSAGE_ACTION.PUSH,
+      });
+    }
+  }, [dispatchMessage, acadYear]);
+
+  /**
+   * Computes the id of the button for the absence being edited
+   */
+  const computeEditAbsenceButtonId = (faculty: FacultyResponseDTO, term: TERM):
+  string => `editAbsence${faculty.id}${term}`;
 
   /**
    * Get faculty schedule data from the server
@@ -71,10 +120,43 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
           </div>
         )
         : (
-          <FacultyScheduleTable
-            academicYear={acadYear}
-            facultySchedules={currentFacultySchedules}
-          />
+          <>
+            <FacultyScheduleTable
+              academicYear={acadYear}
+              facultySchedules={currentFacultySchedules}
+              onEdit={(faculty, term, absence) => {
+                setAbsenceModalVisible(true);
+                setFaculty(faculty);
+                setTerm(term);
+                setAbsence(absence);
+              }}
+            />
+            {(currentFaculty && currentAbsence)
+              ? (
+                <FacultyAbsenceModal
+                  isVisible={absenceModalVisible}
+                  currentFaculty={currentFaculty}
+                  currentAbsence={currentAbsence}
+                  onClose={(): void => {
+                    setAbsenceModalVisible(false);
+                    const buttonId = computeEditAbsenceButtonId(
+                      currentFaculty,
+                      currentTerm
+                    );
+                    const button = document.getElementById(buttonId);
+                    // this will run after the data is loaded, so no delay is necessary
+                    window.setTimeout((): void => {
+                      button.focus();
+                    }, 0);
+                  }}
+                  onSuccess={async (): Promise<void> => {
+                    // wait for the table to load before allowing the dialog to close
+                    await loadSchedules();
+                  }}
+                />
+              )
+              : null}
+          </>
         )}
     </div>
   );

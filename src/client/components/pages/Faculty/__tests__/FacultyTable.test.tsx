@@ -83,6 +83,7 @@ describe('FacultyScheduleTable', function () {
           <FacultyScheduleTable
             academicYear={acadYear}
             facultySchedules={facultyScheduleList}
+            onEdit={(): void => {}}
           />,
           (): void => {}
         )
@@ -137,6 +138,7 @@ describe('FacultyScheduleTable', function () {
           <FacultyScheduleTable
             academicYear={acadYear}
             facultySchedules={facultyScheduleList}
+            onEdit={(): void => {}}
           />,
           (): void => {}
         )
