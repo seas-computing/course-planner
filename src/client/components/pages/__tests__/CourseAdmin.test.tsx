@@ -5,6 +5,7 @@ import {
 import {
   waitForElement,
   wait,
+  within,
 } from '@testing-library/react';
 import {
   stub,
@@ -53,6 +54,22 @@ describe('Course Admin', function () {
         strictEqual(getStub.callCount, 1);
         const { title } = computerScienceCourseResponse;
         return waitForElement(() => getByText(title));
+      });
+      it('display the filters in the first row', async function () {
+        const { getAllByRole } = render(
+          <CourseAdmin />,
+          dispatchMessage,
+          metadata
+        );
+        await wait(() => getAllByRole('row').length > 1);
+        const rows = getAllByRole('row');
+        const utils = within(rows[1]);
+        const cPrefix = utils.getAllByRole('option');
+        const course = utils.getAllByPlaceholderText('Filter by Course');
+        const title = utils.getAllByPlaceholderText('Filter by Title');
+        strictEqual(cPrefix.length, testData.length + 1);
+        strictEqual(course.length, 1);
+        strictEqual(title.length, 1);
       });
       it('displays the correct number of rows in the table', async function () {
         const { getAllByRole } = render(
