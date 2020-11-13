@@ -139,6 +139,17 @@ describe('Course Modal', function () {
           () => getByText(errorMessage, { exact: false })
         );
       });
+      it('cannot be blank when creating a new area', async function () {
+        const newAreaInput = document.getElementById('newArea') as HTMLInputElement;
+        // Set the value of the new area text input field to a space
+        fireEvent.change(newAreaInput, { target: { value: ' ' } });
+        const submitButton = getByText('Submit');
+        fireEvent.click(submitButton);
+        const errorMessage = 'Area is required';
+        return waitForElement(
+          () => getByText(errorMessage, { exact: false })
+        );
+      });
       it('cannot be created if it already exists', async function () {
         const existingAreaSelect = document.getElementById('existingArea') as HTMLSelectElement;
         const newAreaInput = document.getElementById('newArea') as HTMLInputElement;

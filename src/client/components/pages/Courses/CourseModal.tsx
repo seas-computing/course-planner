@@ -71,6 +71,9 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
    */
   const metadata = useContext(MetadataContext);
 
+  /**
+   * Manages the current state of the Course Admin modal form fields
+   */
   const [form, setFormFields] = useState({
     areaType: 'existingArea',
     existingArea: '',
@@ -85,6 +88,9 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
 
   type FormField = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
+  /**
+   * Updates the state of the modal form fields as user edits form fields
+   */
   const updateFormFields = (event: ChangeEvent): void => {
     const target = event.target as FormField;
     // Convert checkbox to true or false
@@ -156,17 +162,18 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
     let isValid = true;
     const coursePrefixAndNumber = parseCatalogNumberForPrefixNumber(form
       .courseNumber);
+    const trimmedNewArea = form.newArea.trim();
     // Make sure only errors that have not been fixed are shown.
     setAreaErrorMessage('');
     setCourseNumberErrorMessage('');
     setCourseTitleErrorMessage('');
     setTermPatternErrorMessage('');
     setCourseErrorMessage('');
-    if (!(form.existingArea || form.newArea)) {
+    if (!(form.existingArea || trimmedNewArea)) {
       setAreaErrorMessage('Area is required to submit this form.');
       isValid = false;
     }
-    if (form.areaType === 'createArea' && metadata.areas.indexOf(form.newArea) !== -1) {
+    if (form.areaType === 'createArea' && metadata.areas.indexOf(trimmedNewArea) !== -1) {
       setAreaErrorMessage('Area already exists.');
       isValid = false;
     }
@@ -198,12 +205,13 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
       prefix,
       number,
     } = parseCatalogNumberForPrefixNumber(form.courseNumber);
+
     const courseInfo = {
-      area: form.areaType === 'createArea' ? form.newArea : form.existingArea,
+      area: form.areaType === 'createArea' ? trimmedNewArea : form.existingArea,
       prefix,
       number,
-      title: form.courseTitle,
-      sameAs: form.sameAs,
+      title: form.courseTitle.trim(),
+      sameAs: form.sameAs.trim(),
       isUndergraduate: form.isUndergraduate,
       isSEAS: form.isSEAS as IS_SEAS,
       termPattern: form.termPattern as TERM_PATTERN,
@@ -218,7 +226,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
       result = await CourseAPI.createCourse(courseInfo);
     }
     if (form.areaType === 'createArea') {
-      metadata.updateAreas(form.newArea);
+      metadata.updateAreas(trimmedNewArea);
     }
     return result;
   };
