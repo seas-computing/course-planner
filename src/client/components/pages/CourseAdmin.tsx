@@ -126,7 +126,7 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
                 value={coursePrefixValue}
                 name="courseprefix"
                 id="coursePrefix"
-                label="The table will be filtered as characters are typed in this course prefix filter field"
+                label="The table will be filtered as selected in this course prefix dropdown filter"
                 isLabelVisible={false}
                 hideError
                 onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
