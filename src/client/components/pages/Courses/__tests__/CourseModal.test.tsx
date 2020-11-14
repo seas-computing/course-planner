@@ -140,7 +140,9 @@ describe('Course Modal', function () {
         );
       });
       it('cannot be blank when creating a new area', async function () {
+        const existingAreaSelect = document.getElementById('existingArea') as HTMLSelectElement;
         const newAreaInput = document.getElementById('newArea') as HTMLInputElement;
+        fireEvent.change(existingAreaSelect, { target: { value: '' } });
         // Set the value of the new area text input field to a space
         fireEvent.change(newAreaInput, { target: { value: ' ' } });
         const submitButton = getByText('Submit');
