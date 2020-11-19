@@ -6,6 +6,7 @@ import {
   waitForElement,
   wait,
   within,
+  fireEvent,
 } from '@testing-library/react';
 import {
   stub,
@@ -70,6 +71,53 @@ describe('Course Admin', function () {
         strictEqual(cPrefix.length, testData.length + 1);
         strictEqual(course.length, 1);
         strictEqual(title.length, 1);
+      });
+      it('dispaly correct number of courses based on the prefix filter', async function () {
+        const { getAllByRole } = render(
+          <CourseAdmin />,
+          dispatchMessage,
+          metadata
+        );
+        await wait(() => getAllByRole('row').length > 1);
+        let rows = getAllByRole('row');
+        const utils = within(rows[1]);
+        const cPrefix = utils.queryByLabelText(
+          'The table will be filtered as selected in this course prefix dropdown filter'
+        );
+        fireEvent.change(cPrefix, { target: { value: 'CS' } });
+        await wait(() => getAllByRole('row').length > 1);
+        rows = getAllByRole('row');
+        strictEqual(rows.length, 1 + 2);
+      });
+      it('dispaly correct number of courses based on the catalog filter', async function () {
+        const { getAllByRole } = render(
+          <CourseAdmin />,
+          dispatchMessage,
+          metadata
+        );
+        await wait(() => getAllByRole('row').length > 1);
+        let rows = getAllByRole('row');
+        const utils = within(rows[1]);
+        const course = utils.getAllByPlaceholderText('Filter by Course') as HTMLSelectElement[];
+        fireEvent.change(course[0], { target: { value: 'CS' } });
+        await wait(() => getAllByRole('row').length > 1);
+        rows = getAllByRole('row');
+        strictEqual(rows.length, 1 + 2);
+      });
+      it('dispaly correct number of courses based on the title filter', async function () {
+        const { getAllByRole } = render(
+          <CourseAdmin />,
+          dispatchMessage,
+          metadata
+        );
+        await wait(() => getAllByRole('row').length > 1);
+        let rows = getAllByRole('row');
+        const utils = within(rows[1]);
+        const title = utils.getAllByPlaceholderText('Filter by Title') as HTMLSelectElement[];
+        fireEvent.change(title[0], { target: { value: 'Introduction to Quantum Theory of Solids' } });
+        await wait(() => getAllByRole('row').length > 1);
+        rows = getAllByRole('row');
+        strictEqual(rows.length, 1 + 2);
       });
       it('displays the correct number of rows in the table', async function () {
         const { getAllByRole } = render(
