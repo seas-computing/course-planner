@@ -3,13 +3,13 @@ import {
   strictEqual,
 } from 'assert';
 import {
-  waitForElement,
   wait,
   fireEvent,
   BoundFunction,
   FindByText,
   QueryByText,
   GetByText,
+  GetByBoundAttribute,
 } from '@testing-library/react';
 import {
   stub,
@@ -34,9 +34,10 @@ describe('Faculty Schedule Modal Behavior', function () {
     electricalEngineeringFacultyScheduleResponse,
   ];
   const acadYear = testData[0].fall.academicYear;
-  // make sure the data is all the same academic year
-  testData.forEach((response) => {
-    strictEqual(response.fall.academicYear, acadYear);
+  it('draws from test data from the same academic year', function () {
+    testData.forEach((response) => {
+      strictEqual(response.fall.academicYear, acadYear);
+    });
   });
   beforeEach(function () {
     getStub = stub(FacultyAPI, 'getFacultySchedulesForYear');
@@ -47,12 +48,18 @@ describe('Faculty Schedule Modal Behavior', function () {
     let findByText: BoundFunction<FindByText>;
     let queryByText: BoundFunction<QueryByText>;
     let getByLabelText: BoundFunction<GetByText>;
+    let getByAltText: BoundFunction<GetByBoundAttribute>;
     let editAppliedMathFallAbsenceButton: HTMLElement;
     let editAppliedMathSpringAbsenceButton: HTMLElement;
     beforeEach(function () {
       putStub = stub(FacultyAPI, 'updateFacultyAbsence');
       putStub.resolves({ data: facultyAbsenceResponse });
-      ({ findByText, queryByText, getByLabelText } = render(
+      ({
+        findByText,
+        queryByText,
+        getByLabelText,
+        getByAltText,
+      } = render(
         <FacultySchedule />,
         dispatchMessage
       )
@@ -61,10 +68,7 @@ describe('Faculty Schedule Modal Behavior', function () {
     context('when a Fall semester edit faculty button has been clicked', function () {
       beforeEach(async function () {
         // show the edit faculty modal
-        editAppliedMathFallAbsenceButton = await waitForElement(
-          () => document
-            .getElementById(`editAbsence${appliedMathFacultyScheduleResponse.id}FALL`)
-        );
+        editAppliedMathFallAbsenceButton = getByAltText('edit faculty fall absence');
         fireEvent.click(editAppliedMathFallAbsenceButton);
         await findByText('Sabbatical/Leave');
       });
@@ -105,10 +109,7 @@ describe('Faculty Schedule Modal Behavior', function () {
     context('when a Spring semester edit faculty button has been clicked', function () {
       beforeEach(async function () {
         // show the edit faculty modal
-        editAppliedMathSpringAbsenceButton = await waitForElement(
-          () => document
-            .getElementById(`editAbsence${appliedMathFacultyScheduleResponse.id}SPRING`)
-        );
+        editAppliedMathSpringAbsenceButton = getByAltText('edit faculty spring absence');
         fireEvent.click(editAppliedMathSpringAbsenceButton);
         await findByText('Sabbatical/Leave');
       });

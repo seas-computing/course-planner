@@ -5,6 +5,8 @@ import React, {
   useContext,
   useEffect,
   useCallback,
+  Ref,
+  useRef,
 } from 'react';
 import { LoadSpinner } from 'mark-one';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
@@ -15,7 +17,6 @@ import {
   MESSAGE_TYPE,
   MESSAGE_ACTION,
 } from 'client/classes';
-import { TERM } from 'common/constants';
 import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
 import FacultyAbsenceModal from './FacultyAbsenceModal';
 import FacultyScheduleTable from './FacultyScheduleTable';
@@ -36,11 +37,6 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
    * The currently selected faculty
    */
   const [currentFaculty, setFaculty] = useState(null as FacultyResponseDTO);
-
-  /**
-   * The current academic term
-   */
-  const [currentTerm, setTerm] = useState(null as TERM);
 
   /**
    * The currently selected absence
@@ -67,6 +63,18 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
   const acadYear = 2021;
 
   /**
+   * The current value of the edit fall absence button
+   */
+  const editButtonRef: Ref<HTMLButtonElement> = useRef(null);
+
+  /**
+   * Set the ref focus for the edit button
+   */
+  const setEditButtonFocus = (): void => {
+    setTimeout((): void => editButtonRef.current.focus());
+  };
+
+  /**
    * Gets the faculty schedule information for the academic year
    */
   const loadSchedules = useCallback(async (): Promise<void> => {
@@ -83,12 +91,6 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
       });
     }
   }, [dispatchMessage, acadYear]);
-
-  /**
-   * Computes the id of the button for the absence being edited
-   */
-  const computeEditAbsenceButtonId = (faculty: FacultyResponseDTO, term: TERM):
-  string => `editAbsence${faculty.id}${term}`;
 
   /**
    * Get faculty schedule data from the server
@@ -127,9 +129,9 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
               onEdit={(faculty, term, absence) => {
                 setAbsenceModalVisible(true);
                 setFaculty(faculty);
-                setTerm(term);
                 setAbsence(absence);
               }}
+              editButtonRef={editButtonRef}
             />
             {(currentFaculty && currentAbsence)
               ? (
@@ -139,15 +141,7 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
                   currentAbsence={currentAbsence}
                   onClose={(): void => {
                     setAbsenceModalVisible(false);
-                    const buttonId = computeEditAbsenceButtonId(
-                      currentFaculty,
-                      currentTerm
-                    );
-                    const button = document.getElementById(buttonId);
-                    // this will run after the data is loaded, so no delay is necessary
-                    window.setTimeout((): void => {
-                      button.focus();
-                    }, 0);
+                    setEditButtonFocus();
                   }}
                   onSuccess={async (): Promise<void> => {
                     // wait for the table to load before allowing the dialog to close
