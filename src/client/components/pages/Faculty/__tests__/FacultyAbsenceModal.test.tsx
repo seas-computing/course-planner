@@ -16,7 +16,6 @@ import {
   wait,
   waitForElement,
 } from 'test-utils';
-import request from 'client/api/request';
 import {
   appliedMathFacultyScheduleResponse,
   facultyAbsenceRequest,
