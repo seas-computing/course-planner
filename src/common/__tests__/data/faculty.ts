@@ -189,7 +189,7 @@ export const appliedMathFacultyScheduleResponse: FacultyResponseDTO = {
       },
     ],
     absence: {
-      id: 'e8a7f24e-d6d0-4c9d-bfb6-89d070d21091',
+      id: '8db77575-7f0a-4c5e-9126-c46c5c99ac33',
       type: ABSENCE_TYPE.SABBATICAL_ELIGIBLE,
     },
   },
