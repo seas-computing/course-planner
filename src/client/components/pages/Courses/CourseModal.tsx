@@ -111,6 +111,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
     areaErrorMessage,
     setAreaErrorMessage,
   ] = useState('');
+
   /**
    * The current value of the error message for the Course Number field
    */
@@ -118,6 +119,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
     courseNumberErrorMessage,
     setCourseNumberErrorMessage,
   ] = useState('');
+
   /**
    * The current value of the error message for the Course Title field
    */
@@ -125,6 +127,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
     courseTitleErrorMessage,
     setCourseTitleErrorMessage,
   ] = useState('');
+
   /**
    * The current value of the error message for the Term Pattern dropdown
    */
@@ -132,6 +135,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
     termPatternErrorMessage,
     setTermPatternErrorMessage,
   ] = useState('');
+
   /**
    * The current value of the error message within the Course modal
    */
@@ -169,7 +173,10 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
     setCourseTitleErrorMessage('');
     setTermPatternErrorMessage('');
     setCourseErrorMessage('');
-    if (!(form.existingArea || trimmedNewArea)) {
+    // The second "or" checks for the case when the "create a new area" radio
+    // button is selected, the create a new area text input is empty, and the
+    // user has selected an existing area from the dropdown
+    if (!(form.existingArea || trimmedNewArea) || (form.areaType === 'createArea' && !trimmedNewArea)) {
       setAreaErrorMessage('Area is required to submit this form.');
       isValid = false;
     }
@@ -285,7 +292,14 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
               value={form.existingArea}
               name="existingArea"
               onChange={updateFormFields}
-              label="Area"
+              onClick={(e): void => {
+                e.preventDefault();
+                setFormFields({
+                  ...form,
+                  areaType: 'existingArea',
+                });
+              }}
+              label="Existing Area"
               isLabelVisible={false}
               // Insert an empty option so that no area is pre-selected in dropdown
               options={
@@ -310,7 +324,11 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
               value={form.newArea}
               name="newArea"
               onChange={updateFormFields}
-              label="Area"
+              onClick={(): void => setFormFields({
+                ...form,
+                areaType: 'createArea',
+              })}
+              label="New Area"
               isLabelVisible={false}
               labelPosition={POSITION.TOP}
             />

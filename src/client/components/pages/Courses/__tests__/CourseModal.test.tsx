@@ -33,13 +33,15 @@ describe('Course Modal', function () {
     context('when currentCourse is null', function () {
       beforeEach(function () {
         ({ getByLabelText, queryAllByRole } = render(
-          <CourseModal isVisible />,
+          <CourseModal
+            isVisible
+          />,
           dispatchMessage
         ));
       });
       it('renders empty form fields except for the "IS SEAS" dropdown, which defaults to "Yes"', function () {
-        const existingAreaSelect = document.getElementById('existingArea') as HTMLSelectElement;
-        const newAreaInput = document.getElementById('newArea') as HTMLInputElement;
+        const existingAreaSelect = getByLabelText('Existing Area', { exact: true }) as HTMLSelectElement;
+        const newAreaInput = getByLabelText('New Area', { exact: true }) as HTMLInputElement;
         const courseNumberInput = getByLabelText('Course Number', { exact: false }) as HTMLInputElement;
         const courseTitleInput = getByLabelText('Course Title', { exact: false }) as HTMLInputElement;
         const sameAsInput = getByLabelText('Same as', { exact: false }) as HTMLInputElement;
@@ -70,8 +72,8 @@ describe('Course Modal', function () {
         ));
       });
       it('populates the modal fields according to the current course selected', function () {
-        const existingAreaSelect = document.getElementById('existingArea') as HTMLSelectElement;
-        const newAreaInput = document.getElementById('newArea') as HTMLInputElement;
+        const existingAreaSelect = getByLabelText('Existing Area', { exact: true }) as HTMLSelectElement;
+        const newAreaInput = getByLabelText('New Area', { exact: true }) as HTMLInputElement;
         const courseNumberInput = getByLabelText('Course Number', { exact: false }) as HTMLInputElement;
         const courseTitleInput = getByLabelText('Course Title', { exact: false }) as HTMLInputElement;
         const sameAsInput = getByLabelText('Same as', { exact: false }) as HTMLInputElement;
@@ -128,8 +130,8 @@ describe('Course Modal', function () {
     });
     describe('Area', function () {
       it('is a required field that should either by selected or created', async function () {
-        const existingAreaSelect = document.getElementById('existingArea') as HTMLSelectElement;
-        const newAreaInput = document.getElementById('newArea') as HTMLInputElement;
+        const existingAreaSelect = getByLabelText('Existing Area', { exact: true }) as HTMLSelectElement;
+        const newAreaInput = getByLabelText('New Area', { exact: true }) as HTMLInputElement;
         fireEvent.change(existingAreaSelect, { target: { value: '' } });
         fireEvent.change(newAreaInput, { target: { value: '' } });
         const submitButton = getByText('Submit');
@@ -140,8 +142,8 @@ describe('Course Modal', function () {
         );
       });
       it('cannot be blank when creating a new area', async function () {
-        const existingAreaSelect = document.getElementById('existingArea') as HTMLSelectElement;
-        const newAreaInput = document.getElementById('newArea') as HTMLInputElement;
+        const existingAreaSelect = getByLabelText('Existing Area', { exact: true }) as HTMLSelectElement;
+        const newAreaInput = getByLabelText('New Area', { exact: true }) as HTMLInputElement;
         fireEvent.change(existingAreaSelect, { target: { value: '' } });
         // Set the value of the new area text input field to a space
         fireEvent.change(newAreaInput, { target: { value: ' ' } });
@@ -152,9 +154,21 @@ describe('Course Modal', function () {
           () => getByText(errorMessage, { exact: false })
         );
       });
+      it('cannot be blank when creating a new area and an area was selected previously from the existing area dropdown', async function () {
+        const existingAreaSelect = getByLabelText('Existing Area', { exact: true }) as HTMLSelectElement;
+        const newAreaRadioButton = getByLabelText('Create a new area', { exact: false }) as HTMLInputElement;
+        fireEvent.change(existingAreaSelect, { target: { value: 'CS' } });
+        fireEvent.click(newAreaRadioButton);
+        const submitButton = getByText('Submit');
+        fireEvent.click(submitButton);
+        const errorMessage = 'Area is required';
+        return waitForElement(
+          () => getByText(errorMessage, { exact: false })
+        );
+      });
       it('cannot be created if it already exists', async function () {
-        const existingAreaSelect = document.getElementById('existingArea') as HTMLSelectElement;
-        const newAreaInput = document.getElementById('newArea') as HTMLInputElement;
+        const existingAreaSelect = getByLabelText('Existing Area', { exact: true }) as HTMLSelectElement;
+        const newAreaInput = getByLabelText('New Area', { exact: true }) as HTMLInputElement;
         const newAreaRadioButton = getByLabelText('Create a new area', { exact: false }) as HTMLInputElement;
         fireEvent.click(newAreaRadioButton);
         fireEvent.change(existingAreaSelect, { target: { value: '' } });
@@ -230,6 +244,36 @@ describe('Course Modal', function () {
         return waitForElement(
           () => getByText(errorMessage, { exact: false })
         );
+      });
+    });
+  });
+  describe('Clicking Behavior', function () {
+    beforeEach(function () {
+      ({ getByLabelText } = render(
+        <CourseModal
+          isVisible
+        />,
+        dispatchMessage
+      ));
+    });
+    context('when the create new area text field is clicked', function () {
+      it('selects the create new area radio button', function () {
+        const newAreaInput = getByLabelText('New Area', { exact: true }) as HTMLInputElement;
+        const newAreaRadioButton = getByLabelText('Create a new area', { exact: false }) as HTMLInputElement;
+        fireEvent.click(newAreaInput);
+        strictEqual(newAreaRadioButton.checked, true);
+      });
+    });
+    context('when the existing area dropdown is clicked', function () {
+      it('selects the existing area radio button', function () {
+        const newAreaRadioButton = getByLabelText('Create a new area', { exact: false }) as HTMLInputElement;
+        // Click the new area radio button first, since the course modal opens
+        // with the existing area radio button checked
+        fireEvent.click(newAreaRadioButton);
+        const existingAreaSelect = getByLabelText('Existing Area', { exact: true }) as HTMLSelectElement;
+        fireEvent.click(existingAreaSelect);
+        const existingAreaRadioButton = getByLabelText('Select an existing area', { exact: false }) as HTMLInputElement;
+        strictEqual(existingAreaRadioButton.checked, true);
       });
     });
   });
@@ -316,7 +360,7 @@ describe('Course Modal', function () {
             />,
             dispatchMessage
           ));
-          const existingAreaSelect = document.getElementById('existingArea') as HTMLSelectElement;
+          const existingAreaSelect = getByLabelText('Existing Area', { exact: true }) as HTMLSelectElement;
           fireEvent.change(
             existingAreaSelect,
             { target: { value: physicsCourseResponse.area.name } }
