@@ -212,7 +212,7 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
                       }
                       forwardRef={
                         editedAbsence
-                          && faculty.fall.absence
+                          && faculty.spring.absence
                           && editedAbsence.id === faculty.spring.absence.id
                           ? editButtonRef
                           : null
