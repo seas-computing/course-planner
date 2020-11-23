@@ -72,7 +72,7 @@ describe('Course Admin', function () {
         strictEqual(course.length, 1);
         strictEqual(title.length, 1);
       });
-      it.only('display correct number of courses based on the prefix filter', async function () {
+      it('display correct number of courses based on the prefix filter', async function () {
         const { getAllByRole } = render(
           <CourseAdmin />,
           dispatchMessage,
