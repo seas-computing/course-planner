@@ -79,7 +79,7 @@ describe('Course Admin', function () {
           metadata
         );
         await wait(() => getAllByRole('row').length > 1);
-        let rows = getAllByRole('row');
+        const rows = getAllByRole('row');
         const utils = within(rows[1]);
         const cPrefix = utils.queryByLabelText(
           'The table will be filtered as selected in this course prefix dropdown filter'
@@ -98,7 +98,7 @@ describe('Course Admin', function () {
           metadata
         );
         await wait(() => getAllByRole('row').length > 1);
-        let rows = getAllByRole('row');
+        const rows = getAllByRole('row');
         const utils = within(rows[1]);
         const course = utils.getAllByPlaceholderText('Filter by Course') as HTMLSelectElement[];
         fireEvent.change(course[0], { target: { value: 'CS' } });
@@ -115,7 +115,7 @@ describe('Course Admin', function () {
           metadata
         );
         await wait(() => getAllByRole('row').length > 1);
-        let rows = getAllByRole('row');
+        const rows = getAllByRole('row');
         const utils = within(rows[1]);
         const title = utils.getAllByPlaceholderText('Filter by Title') as HTMLTableRowElement[];
         fireEvent.change(title[0], { target: { value: 'Introduction to Quantum Theory of Solids' } });
