@@ -41,6 +41,7 @@ describe('Faculty Absence Modal', function () {
           isVisible
           currentFaculty={appliedMathFacultyScheduleResponse}
           currentAbsence={facultyAbsenceRequest}
+          onClose={onCloseStub}
         />,
         dispatchMessage,
         metadata
