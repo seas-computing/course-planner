@@ -22,16 +22,12 @@ const listFilter = <T, > (
   * if filter field is not in the list item return an empty list,
   * otherwise filter the list based on the filter field and value.
   */
-  try {
-    const filteredList = list.filter((item) => (
-      filter.exact
-        ? (get(item, filter.field) as string) === filter.value
-        : (get(item, filter.field) as string).includes(filter.value)
-    ));
-    return filteredList;
-  } catch (error) {
-    return [];
-  }
+  const filteredList = list.filter((item) => (
+    filter.exact
+      ? (get(item, filter.field, '') as string) === filter.value
+      : (get(item, filter.field, '') as string).includes(filter.value)
+  ));
+  return filteredList;
 };
 
 export default listFilter;
