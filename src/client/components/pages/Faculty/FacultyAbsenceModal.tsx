@@ -40,7 +40,7 @@ interface AbsenceModalProps {
    * Handler to be invoked when the modal closes
    * e.g. to clear data entered into a form
    */
-  onClose?: () => void;
+  onClose: () => void;
   /**
    * Handler to be invoked when the edit is successful
    */
@@ -173,9 +173,7 @@ FunctionComponent<AbsenceModalProps> = ({
               // leave the modal visible after an error
               return;
             }
-            if (onClose) {
-              onClose();
-            }
+            onClose();
           }}
           variant={VARIANT.PRIMARY}
         >
