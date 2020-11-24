@@ -126,7 +126,7 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
             <FacultyScheduleTable
               academicYear={acadYear}
               facultySchedules={currentFacultySchedules}
-              onEdit={(faculty, term, absence) => {
+              onEdit={(faculty, absence) => {
                 setAbsenceModalVisible(true);
                 setFaculty(faculty);
                 setAbsence(absence);

@@ -50,10 +50,10 @@ interface FacultyScheduleTableProps {
    */
   facultySchedules: FacultyResponseDTO[];
   /**
-   * The faculty schedule, term, and absence information needed to edit a
+   * The faculty schedule and absence information needed to edit a
    * faculty absence entry
    */
-  onEdit: (FacultyResponseDTO, TERM, AbsenceResponseDTO) => void;
+  onEdit: (FacultyResponseDTO, AbsenceResponseDTO) => void;
   /**
    * The ref value of the edit faculty absence button
    */
@@ -162,7 +162,7 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
                       variant={VARIANT.INFO}
                       onClick={
                         (): void => {
-                          onEdit(faculty, TERM.FALL, faculty.fall.absence);
+                          onEdit(faculty, faculty.fall.absence);
                           setEditedAbsence(faculty.fall.absence);
                         }
                       }
@@ -206,7 +206,7 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
                       variant={VARIANT.INFO}
                       onClick={
                         (): void => {
-                          onEdit(faculty, TERM.SPRING, faculty.spring.absence);
+                          onEdit(faculty, faculty.spring.absence);
                           setEditedAbsence(faculty.spring.absence);
                         }
                       }
