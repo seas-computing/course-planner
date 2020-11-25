@@ -1,4 +1,4 @@
-import get from 'lodash/get';
+import get from 'lodash.get';
 /*
 * Filter a list of items bases on some filter criteria.
 */
