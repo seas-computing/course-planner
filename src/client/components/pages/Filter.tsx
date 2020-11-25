@@ -24,8 +24,8 @@ const listFilter = <T, > (
   */
   const filteredList = list.filter((item) => (
     filter.exact
-      ? (get(item, filter.field, '') as string) === filter.value
-      : (get(item, filter.field, '') as string).includes(filter.value)
+      ? (get(item, filter.field, '') as string).toLowerCase() === filter.value.toLowerCase()
+      : (get(item, filter.field, '') as string).toLowerCase().includes(filter.value.toLowerCase())
   ));
   return filteredList;
 };
