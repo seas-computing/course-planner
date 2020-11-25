@@ -36,10 +36,12 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
   const [currentCourses, setCourses] = useState(
     [] as ManageCourseResponseDTO[]
   );
-  const [prefixOptions, setPrefixOptions] = useState([]);
-  const [courseValue, setCourseValue] = useState('');
-  const [titleValue, setTitleValue] = useState('');
-  const [coursePrefixValue, setCoursePrefixValue] = useState('');
+  const [prefixOptions, setPrefixOptions] = useState<{
+    value: string; label: string
+  }[]>([]);
+  const [courseValue, setCourseValue] = useState<string>('');
+  const [titleValue, setTitleValue] = useState<string>('');
+  const [coursePrefixValue, setCoursePrefixValue] = useState<string>('');
 
   /**
    * Extract the "Course Prefix" unique values
