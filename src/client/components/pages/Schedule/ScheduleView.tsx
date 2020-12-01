@@ -82,7 +82,8 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
               const resolvedStartRow = Math.round(
                 (((startHour - firstHour) * 60) + startMinute)
                 / minuteResolution
-              );
+                // Add one to account for the header row
+              ) + 1;
               const resolvedDuration = Math.round(duration / minuteResolution);
               return [...blocks, (
                 <SessionBlock
