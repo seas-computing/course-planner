@@ -21,9 +21,9 @@ interface WeekBlockProps {
   firstHour: number;
 
   /**
-   * The WeekBlock receive multiple DayBlocks as its children
+   * The WeekBlock receive one or more DayBlocks as its children
    */
-  children: DayBlock[];
+  children: DayBlock | DayBlock[];
 
   /**
    * The height of each row in the grid, which should be consistent with the
