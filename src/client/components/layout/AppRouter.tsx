@@ -12,6 +12,7 @@ import {
   Faculty,
   Courses,
   MultiYearPlan,
+  Schedule,
 } from '../pages';
 import { UserContext } from '../../context';
 
@@ -26,6 +27,7 @@ const AppRouter: FunctionComponent = (): ReactElement => {
         <Route exact path="/faculty" component={Faculty} />
         <Route exact path="/faculty-admin" component={FacultyAdmin} />
         <Route exact path="/four-year-plan" component={MultiYearPlan} />
+        <Route exact path="/schedule" component={Schedule} />
         <Route component={NoMatch} />
       </Switch>
     );
