@@ -23,8 +23,9 @@ interface ScheduleViewProps {
   lastHour: number;
   /**
    * The number of minutes represented by each row of the grid.
+   * The default value of 5 is strongly recommended.
    */
-  minuteResolution?: number;
+  minuteResolution?: 1 | 3 | 5 | 15;
   /**
    * List of the days of the week that should be shown in the schedule.
    */
