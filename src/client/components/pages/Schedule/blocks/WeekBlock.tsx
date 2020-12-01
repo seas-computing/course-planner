@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
-import { DayBlock } from '.';
+import DayBlock from './DayBlock';
 
 interface WeekBlockProps {
   /**
