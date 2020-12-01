@@ -73,7 +73,7 @@ interface TimeRuleProps {
  */
 const HourHead = styled.div<HourHeadProps>`
   grid-column: 1;
-  grid-row: ${({ row }) => row - 1};
+  grid-row: ${({ row }) => row + 2};
 `;
 
 /**
@@ -82,9 +82,9 @@ const HourHead = styled.div<HourHeadProps>`
  */
 
 const TimeRule = styled.div<TimeRuleProps>`
-  grid-row: ${({ row }) => row};
+  grid-row: ${({ row }) => row + 2};
   grid-column: 1 / 7;
-  border-bottom: ${({ rowStyle }) => `2px ${rowStyle} #ccc`};
+  border-top: ${({ rowStyle }) => `2px ${rowStyle} #ccc`};
   margin-left: 3em;
 `;
 
@@ -104,6 +104,22 @@ const WeekBlockWrapper = styled.div<WeekBlockWrapperProps>`
 `;
 
 /**
+ * Convert a 24 numeric representation of the hour into an AM/PM string
+ * representation.
+ *
+ * Using this instead of date manipulation library or the Intl API to avoid any
+ * issues around Daylight Savings Time
+ */
+const hourToAMPM = (hour: number): string => {
+  if (hour < 12) {
+    return `${hour}am`;
+  } if (hour > 12) {
+    return `${hour - 12}pm`;
+  }
+  return '12pm';
+};
+
+/**
  * Represents the view of the entire week. Includes five slots for the days of
  * the week, and uses teh same row grid as each DayBlock to display horizontal
  * rules across the week at fifteen minute intervals.
@@ -120,35 +136,37 @@ const WeekBlock: FunctionComponent<WeekBlockProps> = ({
   const sixty = Math.floor(60 / minuteResolution);
   return (
     <WeekBlockWrapper numRows={numRows} rowHeight={rowHeight}>
-      {Array.from({ length: numRows + 1 }, (_, row: number) => {
-        if (row > 0) {
-          if (row === 1 || row % sixty === 0) {
-            const hour = Math.floor(row / sixty) + firstHour;
-            let hourString = `${hour}am`;
-            if (hour >= 12) {
-              hourString = `${hour === 12 ? hour : hour - 12}pm`;
-            }
+      {Array.from(
+        // Generate a row every 15 minutes
+        { length: Math.floor(numRows / fifteen) },
+        (_, row: number) => {
+          const blockRow = row * fifteen;
+          /// Render an hour heading at every fourth 15-minute mark
+          if (blockRow % (sixty / fifteen) === 0) {
+            // Get the clock hour
+            const hour = Math.floor(blockRow / sixty) + firstHour;
             return (
-              <React.Fragment key={hourString}>
-                <HourHead row={row}>
-                  {hourString}
+              <React.Fragment key={blockRow}>
+                <HourHead row={blockRow}>
+                  {hourToAMPM(hour)}
                 </HourHead>
-                {row !== numRows && [0, 1, 2, 3].map((min:number) => {
-                  const minBlock = min * fifteen;
-                  return (
-                    <TimeRule
-                      row={row + minBlock}
-                      rowStyle={min === 0 ? ROW_STYLE.SOLID : ROW_STYLE.DASHED}
-                      key={`${hour}:${minBlock}`}
-                    />
-                  );
-                })}
+                <TimeRule
+                  row={blockRow}
+                  rowStyle={ROW_STYLE.SOLID}
+                />
               </React.Fragment>
             );
           }
+          // Render a dashed row at every other 15 minute mark
+          return (
+            <TimeRule
+              row={blockRow}
+              rowStyle={ROW_STYLE.DASHED}
+              key={blockRow}
+            />
+          );
         }
-        return null;
-      })}
+      )}
       {children}
     </WeekBlockWrapper>
   );
