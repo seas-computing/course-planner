@@ -60,6 +60,7 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
     <WeekBlock
       firstHour={firstHour}
       numRows={numRows}
+      numColumns={days.length}
       rowHeight={rowHeight}
       minuteResolution={minuteResolution}
     >

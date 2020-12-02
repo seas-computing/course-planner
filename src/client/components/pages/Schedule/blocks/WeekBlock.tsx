@@ -30,18 +30,28 @@ interface WeekBlockProps {
    * value used in the DayBlock
    */
   rowHeight: string;
+
+  /**
+   * The number of day columns (exluding the left-most time column) that should
+   * appear in the WeekView
+   */
+  numColumns: number;
 }
 
 /**
  * Takes the numRows and rowHeight props from the WeekBlock
  */
-type WeekBlockWrapperProps = Pick<WeekBlockProps, 'numRows' | 'rowHeight'>;
+type WeekBlockWrapperProps = Pick<
+WeekBlockProps,
+'numRows' | 'numColumns' | 'rowHeight'
+>;
 
 interface HourHeadProps {
   /**
    * The row within the WeekGrid where the hour should appear
    */
   row: number;
+
   /**
    * The hour to list in the left margin, e.g., "10am"
    */
@@ -62,6 +72,7 @@ interface TimeRuleProps {
   * The row for the block where the time rule should appear
   */
   row: number;
+
   /**
    * Whether the line should be dashed or solid
    */
@@ -83,7 +94,7 @@ const HourHead = styled.div<HourHeadProps>`
 
 const TimeRule = styled.div<TimeRuleProps>`
   grid-row: ${({ row }) => row + 2};
-  grid-column: 1 / 7;
+  grid-column: 1 / -1;
   border-top: ${({ rowStyle }) => `2px ${rowStyle} #ccc`};
   margin-left: 3em;
 `;
@@ -94,8 +105,12 @@ const TimeRule = styled.div<TimeRuleProps>`
 
 const WeekBlockWrapper = styled.div<WeekBlockWrapperProps>`
   display: grid;
-  grid-template-columns: 3em repeat(5, minmax(300px, 1fr));
-  grid-template-rows: ${({ numRows, rowHeight }) => `3em repeat(${numRows}, ${rowHeight})`};
+  grid-template-columns: ${
+  ({ numColumns }) => `3em repeat(${numColumns}, minmax(300px, 1fr))`
+};
+  grid-template-rows: ${
+  ({ numRows, rowHeight }) => `3em repeat(${numRows}, ${rowHeight})`
+};
   grid-gap: 0em;
   padding: 0em;
   width: 100vw;
@@ -128,6 +143,7 @@ const hourToAMPM = (hour: number): string => {
 const WeekBlock: FunctionComponent<WeekBlockProps> = ({
   firstHour,
   numRows,
+  numColumns,
   children,
   minuteResolution,
   rowHeight,
@@ -135,7 +151,11 @@ const WeekBlock: FunctionComponent<WeekBlockProps> = ({
   const fifteen = Math.floor(15 / minuteResolution);
   const sixty = Math.floor(60 / minuteResolution);
   return (
-    <WeekBlockWrapper numRows={numRows} rowHeight={rowHeight}>
+    <WeekBlockWrapper
+      numRows={numRows}
+      rowHeight={rowHeight}
+      numColumns={numColumns}
+    >
       {Array.from(
         // Generate a row every 15 minutes
         { length: Math.floor(numRows / fifteen) },
