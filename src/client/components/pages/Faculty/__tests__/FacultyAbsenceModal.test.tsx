@@ -36,11 +36,14 @@ describe('Faculty Absence Modal', function () {
   let putStub: SinonStub;
   describe('On Open Behavior', function () {
     beforeEach(function () {
+      onSuccessStub = stub();
+      onCancelStub = stub();
       ({ getByLabelText, queryAllByRole, queryByText } = render(
         <FacultyAbsenceModal
           isVisible
           currentFaculty={appliedMathFacultyScheduleResponse}
           currentAbsence={facultyAbsenceRequest}
+          onSuccess={onSuccessStub}
           onCancel={onCancelStub}
         />,
         dispatchMessage,
@@ -67,12 +70,12 @@ describe('Faculty Absence Modal', function () {
   });
   describe('Submit Behavior', function () {
     context('when there are no errors', function () {
-      beforeEach(function () {
+      beforeEach(async function () {
         putStub = stub(FacultyAPI, 'updateFacultyAbsence');
         putStub.resolves({ data: facultyAbsenceResponse });
         onSuccessStub = stub();
         onCancelStub = stub();
-        ({ getByLabelText, getByText } = render(
+        ({ getByLabelText, getByText, queryByText } = render(
           <FacultyAbsenceModal
             isVisible
             currentFaculty={appliedMathFacultyScheduleResponse}
@@ -90,18 +93,14 @@ describe('Faculty Absence Modal', function () {
         );
         const submitButton = getByText('Submit');
         fireEvent.click(submitButton);
+        await wait(
+          () => !queryByText(
+            `Sabbatical/Leave for ${appliedMathFacultyScheduleResponse.firstName}`, { exact: false }
+          )
+        );
       });
-      it('calls the onSuccess handler once on submit', async function () {
-        await wait(() => strictEqual(onSuccessStub.callCount, 1));
-      });
-      it('calls the onSuccess handler with the provided arguments', async function () {
-        await wait(() => strictEqual(
-          onSuccessStub.args[0][0].data,
-          facultyAbsenceResponse
-        ));
-      });
-      it('does not call the onCancel handler', async function () {
-        await wait(() => strictEqual(onCancelStub.callCount, 0));
+      it('calls the onSuccess handler once on submit', function () {
+        strictEqual(onSuccessStub.callCount, 1);
       });
     });
     context('when there is an error', function () {
@@ -125,7 +124,7 @@ describe('Faculty Absence Modal', function () {
         const submitButton = getByText('Submit');
         fireEvent.click(submitButton);
       });
-      it('does not call the onSuccess handler on submit', async function () {
+      it('does not call the onSuccess handler', async function () {
         await wait(() => strictEqual(onSuccessStub.callCount, 0));
       });
       it('does not call the onCancel handler', async function () {
@@ -156,11 +155,11 @@ describe('Faculty Absence Modal', function () {
       const cancelButton = getByText('Cancel');
       fireEvent.click(cancelButton);
     });
+    it('calls the onCancel handler once', async function () {
+      await wait(() => strictEqual(onCancelStub.callCount, 1));
+    });
     it('does not call the onSuccess handler', async function () {
       await wait(() => strictEqual(onSuccessStub.callCount, 0));
-    });
-    it('calls the onCancel handler once on cancel', async function () {
-      await wait(() => strictEqual(onCancelStub.callCount, 1));
     });
   });
 });
