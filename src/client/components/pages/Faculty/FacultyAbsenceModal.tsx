@@ -22,7 +22,6 @@ import { FacultyAPI } from 'client/api';
 import { ABSENCE_TYPE } from 'common/constants';
 import { absenceEnumToTitleCase } from 'common/utils/facultyHelperFunctions';
 import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
-import { wait } from '@testing-library/react';
 
 interface AbsenceModalProps {
   /**

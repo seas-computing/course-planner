@@ -6,6 +6,7 @@ import React, {
   useEffect,
   Ref,
   useRef,
+  useCallback,
 } from 'react';
 import { LoadSpinner } from 'mark-one';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
@@ -84,10 +85,10 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
    */
   const [isInitialized, setIsInitialized] = useState(false);
 
-  const closeAbsenceModal = () => {
+  const closeAbsenceModal = useCallback((): void => {
     setAbsenceModalVisible(false);
     setEditButtonFocus();
-  };
+  }, []);
 
   /**
    * Get faculty schedule data from the server
