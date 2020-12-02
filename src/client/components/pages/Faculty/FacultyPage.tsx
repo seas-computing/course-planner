@@ -77,7 +77,11 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
    * Set the ref focus for the edit button
    */
   const setEditButtonFocus = (): void => {
-    setTimeout((): void => editButtonRef.current.focus());
+    setTimeout((): void => {
+      if (editButtonRef.current) {
+        editButtonRef.current.focus();
+      }
+    });
   };
 
   /**
