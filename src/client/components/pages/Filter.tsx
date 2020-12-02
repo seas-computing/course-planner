@@ -2,7 +2,7 @@ import get from 'lodash.get';
 /*
 * Filter a list of items bases on some filter criteria.
 */
-const listFilter = <T, > (
+export const listFilter = <T, > (
   list: T[],
   filter: { field: string, value: string, exact: boolean | true}
 ): T[] => {

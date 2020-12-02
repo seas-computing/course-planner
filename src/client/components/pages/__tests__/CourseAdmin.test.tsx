@@ -11,6 +11,8 @@ import {
 import {
   stub,
   SinonStub,
+  SinonSpy,
+  spy,
 } from 'sinon';
 import { CourseAPI } from 'client/api/courses';
 import {
@@ -22,10 +24,12 @@ import {
 } from 'testData';
 import { render } from 'test-utils';
 import CourseAdmin from '../CourseAdmin';
+import * as filters from '../Filter';
 
 describe('Course Admin', function () {
   let getStub: SinonStub;
   let dispatchMessage: SinonStub;
+  let filterSpy: SinonSpy;
   const testData = [
     computerScienceCourseResponse,
     physicsCourseResponse,
@@ -34,6 +38,7 @@ describe('Course Admin', function () {
   beforeEach(function () {
     getStub = stub(CourseAPI, 'getAllCourses');
     getStub.resolves(testData);
+    filterSpy = spy(filters, 'listFilter');
     dispatchMessage = stub();
   });
   describe('rendering', function () {
@@ -72,7 +77,7 @@ describe('Course Admin', function () {
         strictEqual(course.length, 1);
         strictEqual(title.length, 1);
       });
-      it('display correct number of courses based on the prefix filter', async function () {
+      it('display correct number of filter calls on changing the prefix filter field', async function () {
         const { getAllByRole } = render(
           <CourseAdmin />,
           dispatchMessage,
@@ -84,14 +89,12 @@ describe('Course Admin', function () {
         const cPrefix = utils.queryByLabelText(
           'The table will be filtered as selected in this course prefix dropdown filter'
         );
+        filterSpy.resetHistory();
         fireEvent.change(cPrefix, { target: { value: 'CS' } });
         await wait(() => getAllByRole('row').length > 1);
-        const filteredrows = Array.from(getAllByRole('row')) as HTMLTableRowElement[];
-        const rowsContent = filteredrows
-          .map((x) => (Array.from(x.cells).map((y) => y.textContent)));
-        strictEqual(rowsContent[2][0], 'CS');
+        strictEqual(filterSpy.callCount, 3);
       });
-      it('display correct number of courses based on the catalog filter', async function () {
+      it('display correct number of filter calls on changing the course field value', async function () {
         const { getAllByRole } = render(
           <CourseAdmin />,
           dispatchMessage,
@@ -101,14 +104,12 @@ describe('Course Admin', function () {
         const rows = getAllByRole('row');
         const utils = within(rows[1]);
         const course = utils.getAllByPlaceholderText('Filter by Course') as HTMLSelectElement[];
+        filterSpy.resetHistory();
         fireEvent.change(course[0], { target: { value: 'CS' } });
         await wait(() => getAllByRole('row').length > 1);
-        const filteredrows = Array.from(getAllByRole('row')) as HTMLTableRowElement[];
-        const rowsContent = filteredrows
-          .map((x) => (Array.from(x.cells).map((y) => y.textContent)));
-        strictEqual(rowsContent[2][0], 'CS');
+        strictEqual(filterSpy.callCount, 2);
       });
-      it('display correct number of courses based on the title filter', async function () {
+      it('display correct number of filter calls on changing the title field value', async function () {
         const { getAllByRole } = render(
           <CourseAdmin />,
           dispatchMessage,
@@ -118,12 +119,10 @@ describe('Course Admin', function () {
         const rows = getAllByRole('row');
         const utils = within(rows[1]);
         const title = utils.getAllByPlaceholderText('Filter by Title') as HTMLTableRowElement[];
+        filterSpy.resetHistory();
         fireEvent.change(title[0], { target: { value: 'Introduction to Quantum Theory of Solids' } });
         await wait(() => getAllByRole('row').length > 1);
-        const filteredrows = Array.from(getAllByRole('row')) as HTMLTableRowElement[];
-        const rowsContent = filteredrows
-          .map((x) => (Array.from(x.cells).map((y) => y.textContent)));
-        strictEqual(rowsContent[2][2], 'Introduction to Quantum Theory of Solids');
+        strictEqual(filterSpy.callCount, 2);
       });
       it('displays the correct number of rows in the table', async function () {
         const { getAllByRole } = render(

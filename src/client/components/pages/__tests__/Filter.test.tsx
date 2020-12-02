@@ -4,7 +4,7 @@ import {
   physicsCourseResponse,
   newAreaCourseResponse,
 } from 'testData';
-import listFilter from '../Filter';
+import { listFilter } from '../Filter';
 
 describe('Filter Functions', function () {
   const testData = [

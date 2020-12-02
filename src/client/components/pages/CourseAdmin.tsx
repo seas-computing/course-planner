@@ -25,7 +25,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { getAreaColor } from '../../../common/constants';
 import { CourseAPI } from '../../api/courses';
-import listFilter from './Filter';
+import { listFilter } from './Filter';
 
 /**
  * The component represents the Course Admin page, which will be rendered at
