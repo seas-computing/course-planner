@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
-import { dayEnumToString } from 'common/constants/day';
+import DAY, { dayEnumToString } from 'common/constants/day';
 import {
   WeekBlock, DayBlock, CourseListing, SessionBlock,
 } from './blocks';
@@ -28,8 +28,10 @@ interface ScheduleViewProps {
   minuteResolution?: 1 | 3 | 5 | 15;
   /**
    * List of the days of the week that should be shown in the schedule.
+   * Making this a prop so that we can potentially use it for day-by-day
+   * pagination in the future
    */
-  days: string[];
+  days?: string[];
   /**
    * How tall each grid row of the schedule should be. The number of minutes
    * represented by each grid row is controller by the minuteResolution prop
@@ -112,6 +114,7 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
 ScheduleView.defaultProps = {
   minuteResolution: 5,
   rowHeight: '0.5em',
+  days: Object.values(DAY).map(dayEnumToString),
 };
 
 export default ScheduleView;

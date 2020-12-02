@@ -15,22 +15,12 @@ import ScheduleView from './ScheduleView';
  *
  * TODO: Consider deriving start and end times from schedule data
  * TODO: Move the calendarYear and term to dropdown in the UI
- * TODO: The days array could also be user controllable, for instance if we
- * wanted to provide a day-by-day view of the schedule or paginate it for
- * mobile view
  */
 
 const FIRST_HOUR = 8;
 const LAST_HOUR = 20;
 const calendarYear = 2019;
 const term = TERM.FALL;
-const days = [
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-];
 
 /**
  * This is the top-level page component for the Schedule. It's responsible for
