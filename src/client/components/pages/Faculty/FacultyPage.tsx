@@ -4,7 +4,6 @@ import React, {
   useState,
   useContext,
   useEffect,
-  useCallback,
   Ref,
   useRef,
 } from 'react';
@@ -59,6 +58,12 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
    */
   const [fetching, setFetching] = useState(false);
 
+  /**
+   * Indicates whether the faculty schedule data is outdated as a result of
+   * updating schedule data by the user
+   */
+  const [isStaleData, setIsStaleData] = useState(false);
+
   // TODO: Get the actual current academic year in future ticket instead of hard coding
   const acadYear = 2021;
 
@@ -75,29 +80,31 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
   };
 
   /**
-   * Gets the faculty schedule information for the academic year
+   * Whether or not the component has been initialized with data from the server.
    */
-  const loadSchedules = useCallback(async (): Promise<void> => {
-    try {
-      setFacultySchedules(await FacultyAPI
-        .getFacultySchedulesForYear(acadYear));
-    } catch (e) {
-      dispatchMessage({
-        message: new AppMessage(
-          'Unable to get faculty schedule data from server. If the problem persists, contact SEAS Computing',
-          MESSAGE_TYPE.ERROR
-        ),
-        type: MESSAGE_ACTION.PUSH,
-      });
-    }
-  }, [dispatchMessage, acadYear]);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  const closeAbsenceModal = () => {
+    setAbsenceModalVisible(false);
+    setEditButtonFocus();
+  };
 
   /**
    * Get faculty schedule data from the server
    * If it fails, display a message for the user
    */
   useEffect((): void => {
-    setFetching(true);
+    // If we have initialized and are not stale, do nothing
+    // This is required to prevent an infinite loop based on the changing
+    // object value of currentFacultySchedules.
+    if (isInitialized && !isStaleData) {
+      return;
+    }
+    // Only set the fetching the first time to avoid replacing elements
+    // after fetching, which causes button refocusing to fail.
+    if (!isInitialized) {
+      setFetching(true);
+    }
     FacultyAPI.getFacultySchedulesForYear(acadYear)
       .then((facultySchedules): void => {
         setFacultySchedules(facultySchedules);
@@ -110,8 +117,11 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
       })
       .finally((): void => {
         setFetching(false);
+        setIsStaleData(false);
+        setIsInitialized(true);
+        closeAbsenceModal();
       });
-  }, [dispatchMessage]);
+  }, [dispatchMessage, isStaleData, isInitialized, closeAbsenceModal]);
 
   return (
     <div className="faculty-schedule-table">
@@ -139,14 +149,10 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
                   isVisible={absenceModalVisible}
                   currentFaculty={currentFaculty}
                   currentAbsence={currentAbsence}
-                  onClose={(): void => {
-                    setAbsenceModalVisible(false);
-                    setEditButtonFocus();
+                  onSuccess={(): void => {
+                    setIsStaleData(true);
                   }}
-                  onSuccess={async (): Promise<void> => {
-                    // wait for the table to load before allowing the dialog to close
-                    await loadSchedules();
-                  }}
+                  onCancel={closeAbsenceModal}
                 />
               )
               : null}

@@ -22,6 +22,7 @@ import { FacultyAPI } from 'client/api';
 import { ABSENCE_TYPE } from 'common/constants';
 import { absenceEnumToTitleCase } from 'common/utils/facultyHelperFunctions';
 import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
+import { wait } from '@testing-library/react';
 
 interface AbsenceModalProps {
   /**
@@ -37,14 +38,13 @@ interface AbsenceModalProps {
    */
   currentAbsence: AbsenceResponseDTO;
   /**
-   * Handler to be invoked when the modal closes
-   * e.g. to clear data entered into a form
-   */
-  onClose: () => void;
-  /**
    * Handler to be invoked when the edit is successful
    */
-  onSuccess?: (absence: AbsenceResponseDTO) => Promise<void>;
+  onSuccess?: () => void;
+  /**
+   * Handler to be invoked when the modal is canceled
+   */
+  onCancel: () => void;
 }
 
 /**
@@ -56,7 +56,7 @@ FunctionComponent<AbsenceModalProps> = ({
   isVisible,
   currentFaculty,
   currentAbsence,
-  onClose,
+  onCancel,
   onSuccess,
 }): ReactElement => {
   const [form, setFormFields] = useState({
@@ -124,7 +124,7 @@ FunctionComponent<AbsenceModalProps> = ({
   return (
     <Modal
       ariaLabelledBy="editFacultySabbaticalLeave"
-      closeHandler={onClose}
+      closeHandler={onCancel}
       isVisible={isVisible}
     >
       <ModalHeader
@@ -166,21 +166,19 @@ FunctionComponent<AbsenceModalProps> = ({
           id="editSabbaticalLeaveSubmit"
           onClick={async (): Promise<void> => {
             try {
-              const editedSabbaticalLeave = await submitAbsenceForm();
-              await onSuccess(editedSabbaticalLeave);
+              await submitAbsenceForm();
+              onSuccess();
             } catch (error) {
               setAbsenceErrorMessage((error as Error).message);
               // leave the modal visible after an error
-              return;
             }
-            onClose();
           }}
           variant={VARIANT.PRIMARY}
         >
           Submit
         </Button>
         <Button
-          onClick={onClose}
+          onClick={onCancel}
           variant={VARIANT.SECONDARY}
         >
           Cancel
