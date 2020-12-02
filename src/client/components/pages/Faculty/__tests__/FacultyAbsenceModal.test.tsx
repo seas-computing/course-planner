@@ -32,7 +32,7 @@ describe('Faculty Absence Modal', function () {
   let queryByText: BoundFunction<QueryByText>;
   const dispatchMessage: SinonStub = stub();
   let onSuccessStub: SinonStub;
-  let onCloseStub: SinonStub;
+  let onCancelStub: SinonStub;
   let putStub: SinonStub;
   describe('On Open Behavior', function () {
     beforeEach(function () {
@@ -41,7 +41,7 @@ describe('Faculty Absence Modal', function () {
           isVisible
           currentFaculty={appliedMathFacultyScheduleResponse}
           currentAbsence={facultyAbsenceRequest}
-          onClose={onCloseStub}
+          onCancel={onCancelStub}
         />,
         dispatchMessage,
         metadata
@@ -71,14 +71,14 @@ describe('Faculty Absence Modal', function () {
         putStub = stub(FacultyAPI, 'updateFacultyAbsence');
         putStub.resolves({ data: facultyAbsenceResponse });
         onSuccessStub = stub();
-        onCloseStub = stub();
+        onCancelStub = stub();
         ({ getByLabelText, getByText } = render(
           <FacultyAbsenceModal
             isVisible
             currentFaculty={appliedMathFacultyScheduleResponse}
             currentAbsence={facultyAbsenceRequest}
             onSuccess={onSuccessStub}
-            onClose={onCloseStub}
+            onCancel={onCancelStub}
           />,
           dispatchMessage,
           metadata
@@ -100,8 +100,8 @@ describe('Faculty Absence Modal', function () {
           facultyAbsenceResponse
         ));
       });
-      it('calls the onClose handler once', async function () {
-        await wait(() => strictEqual(onCloseStub.callCount, 1));
+      it('does not call the onCancel handler', async function () {
+        await wait(() => strictEqual(onCancelStub.callCount, 0));
       });
     });
     context('when there is an error', function () {
@@ -110,14 +110,14 @@ describe('Faculty Absence Modal', function () {
         putStub = stub(FacultyAPI, 'updateFacultyAbsence');
         putStub.rejects(new Error(errorMessage));
         onSuccessStub = stub();
-        onCloseStub = stub();
+        onCancelStub = stub();
         ({ getByText } = render(
           <FacultyAbsenceModal
             isVisible
             currentFaculty={appliedMathFacultyScheduleResponse}
             currentAbsence={facultyAbsenceRequest}
             onSuccess={onSuccessStub}
-            onClose={onCloseStub}
+            onCancel={onCancelStub}
           />,
           dispatchMessage,
           metadata
@@ -128,14 +128,39 @@ describe('Faculty Absence Modal', function () {
       it('does not call the onSuccess handler on submit', async function () {
         await wait(() => strictEqual(onSuccessStub.callCount, 0));
       });
-      it('does not call the onClose handler', async function () {
-        await wait(() => strictEqual(onCloseStub.callCount, 0));
+      it('does not call the onCancel handler', async function () {
+        await wait(() => strictEqual(onCancelStub.callCount, 0));
       });
       it('renders the error message', async function () {
         return waitForElement(
           () => getByText(errorMessage, { exact: false })
         );
       });
+    });
+  });
+  describe('On Cancel Behavior', function () {
+    beforeEach(function () {
+      onSuccessStub = stub();
+      onCancelStub = stub();
+      ({ getByLabelText, getByText } = render(
+        <FacultyAbsenceModal
+          isVisible
+          currentFaculty={appliedMathFacultyScheduleResponse}
+          currentAbsence={facultyAbsenceRequest}
+          onSuccess={onSuccessStub}
+          onCancel={onCancelStub}
+        />,
+        dispatchMessage,
+        metadata
+      ));
+      const cancelButton = getByText('Cancel');
+      fireEvent.click(cancelButton);
+    });
+    it('does not call the onSuccess handler', async function () {
+      await wait(() => strictEqual(onSuccessStub.callCount, 0));
+    });
+    it('calls the onCancel handler once on cancel', async function () {
+      await wait(() => strictEqual(onCancelStub.callCount, 1));
     });
   });
 });
