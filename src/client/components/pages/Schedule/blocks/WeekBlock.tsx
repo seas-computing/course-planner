@@ -113,9 +113,6 @@ const WeekBlockWrapper = styled.div<WeekBlockWrapperProps>`
 };
   grid-gap: 0em;
   padding: 0em;
-  width: 100vw;
-  height: 100vh;
-  overflow: scroll;
 `;
 
 /**
