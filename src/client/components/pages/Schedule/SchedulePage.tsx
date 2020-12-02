@@ -40,10 +40,16 @@ const SchedulePage: FunctionComponent = () => {
   const dispatchMessage = useContext(MessageContext);
 
   /**
+   * Whether an API request is in progress
+   */
+  const [isFetching, setFetching] = useState<boolean>(false);
+
+  /**
    * Fetch the schedule data from the server, store it in state to pass into
    * the ScheduleView
    */
   useEffect(():void => {
+    setFetching(true);
     getCourseScheduleForSemester(calendarYear, term)
       .then((data):void => {
         setSchedule(data);
@@ -56,25 +62,28 @@ const SchedulePage: FunctionComponent = () => {
           ),
           type: MESSAGE_ACTION.PUSH,
         });
+      }).finally(() => {
+        setFetching(false);
       });
-  }, [setSchedule, dispatchMessage]);
+  }, [setSchedule, dispatchMessage, setFetching]);
 
-  return (
-    schedule.length > 0
-      ? (
-        <ScheduleView
-          schedule={schedule}
-          firstHour={FIRST_HOUR}
-          lastHour={LAST_HOUR}
-          days={days}
-        />
-      )
-      : (
-        <LoadSpinner>
-          Fetching Course Schedule
-        </LoadSpinner>
-      )
-  );
+  if (isFetching) {
+    return (
+      <LoadSpinner>
+        Fetching Course Schedule
+      </LoadSpinner>
+    );
+  }
+  if (schedule.length > 0) {
+    return (
+      <ScheduleView
+        schedule={schedule}
+        firstHour={FIRST_HOUR}
+        lastHour={LAST_HOUR}
+      />
+    );
+  }
+  return null;
 };
 
 export default SchedulePage;
