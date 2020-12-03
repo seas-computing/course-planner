@@ -77,53 +77,6 @@ describe('Course Admin', function () {
         strictEqual(course.length, 1);
         strictEqual(title.length, 1);
       });
-      it('display correct number of filter calls on changing the prefix filter field', async function () {
-        const { getAllByRole } = render(
-          <CourseAdmin />,
-          dispatchMessage,
-          metadata
-        );
-        await wait(() => getAllByRole('row').length > 1);
-        const rows = getAllByRole('row');
-        const utils = within(rows[1]);
-        const cPrefix = utils.queryByLabelText(
-          'The table will be filtered as selected in this course prefix dropdown filter'
-        );
-        filterSpy.resetHistory();
-        fireEvent.change(cPrefix, { target: { value: 'CS' } });
-        await wait(() => getAllByRole('row').length > 1);
-        strictEqual(filterSpy.callCount, 3);
-      });
-      it('display correct number of filter calls on changing the course field value', async function () {
-        const { getAllByRole } = render(
-          <CourseAdmin />,
-          dispatchMessage,
-          metadata
-        );
-        await wait(() => getAllByRole('row').length > 1);
-        const rows = getAllByRole('row');
-        const utils = within(rows[1]);
-        const course = utils.getAllByPlaceholderText('Filter by Course') as HTMLSelectElement[];
-        filterSpy.resetHistory();
-        fireEvent.change(course[0], { target: { value: 'CS' } });
-        await wait(() => getAllByRole('row').length > 1);
-        strictEqual(filterSpy.callCount, 2);
-      });
-      it('display correct number of filter calls on changing the title field value', async function () {
-        const { getAllByRole } = render(
-          <CourseAdmin />,
-          dispatchMessage,
-          metadata
-        );
-        await wait(() => getAllByRole('row').length > 1);
-        const rows = getAllByRole('row');
-        const utils = within(rows[1]);
-        const title = utils.getAllByPlaceholderText('Filter by Title') as HTMLTableRowElement[];
-        filterSpy.resetHistory();
-        fireEvent.change(title[0], { target: { value: 'Introduction to Quantum Theory of Solids' } });
-        await wait(() => getAllByRole('row').length > 1);
-        strictEqual(filterSpy.callCount, 2);
-      });
       it('displays the correct number of rows in the table', async function () {
         const { getAllByRole } = render(
           <CourseAdmin />,
@@ -174,6 +127,68 @@ describe('Course Admin', function () {
         await wait(() => getAllByRole('row').length > 1);
         const newAreaCourseStyle = window.getComputedStyle(getByText('NA', { selector: 'td' }));
         strictEqual(newAreaCourseStyle.backgroundColor, '');
+      });
+      context('when the the dropdown and the text input filters called', function () {
+        it('display correct number of filter calls on changing the prefix dropdown filter', async function () {
+          const { getAllByRole } = render(
+            <CourseAdmin />,
+            dispatchMessage,
+            metadata
+          );
+          await wait(() => getAllByRole('row').length > 1);
+          const rows = getAllByRole('row');
+          const utils = within(rows[1]);
+          const cPrefix = utils.queryByLabelText(
+            'The table will be filtered as selected in this course prefix dropdown filter'
+          );
+          filterSpy.resetHistory();
+          fireEvent.change(cPrefix, { target: { value: 'AnyValue' } });
+          strictEqual(filterSpy.callCount, 3);
+        });
+        it('display correct number of filter calls when course prefix dropdown fixed to All', async function () {
+          const { getAllByRole } = render(
+            <CourseAdmin />,
+            dispatchMessage,
+            metadata
+          );
+          await wait(() => getAllByRole('row').length > 1);
+          const rows = getAllByRole('row');
+          const utils = within(rows[1]);
+          const cPrefix = utils.queryByLabelText(
+            'The table will be filtered as selected in this course prefix dropdown filter'
+          );
+          filterSpy.resetHistory();
+          fireEvent.change(cPrefix, { target: { value: 'All' } });
+          strictEqual(filterSpy.callCount, 2);
+        });
+        it('display correct number of filter calls on changing the course filter', async function () {
+          const { getAllByRole } = render(
+            <CourseAdmin />,
+            dispatchMessage,
+            metadata
+          );
+          await wait(() => getAllByRole('row').length > 1);
+          const rows = getAllByRole('row');
+          const utils = within(rows[1]);
+          const course = utils.getAllByPlaceholderText('Filter by Course') as HTMLSelectElement[];
+          filterSpy.resetHistory();
+          fireEvent.change(course[0], { target: { value: 'AnyValue' } });
+          strictEqual(filterSpy.callCount, 2);
+        });
+        it('display correct number of filter calls on changing the title filter', async function () {
+          const { getAllByRole } = render(
+            <CourseAdmin />,
+            dispatchMessage,
+            metadata
+          );
+          await wait(() => getAllByRole('row').length > 1);
+          const rows = getAllByRole('row');
+          const utils = within(rows[1]);
+          const title = utils.getAllByPlaceholderText('Filter by Title') as HTMLTableRowElement[];
+          filterSpy.resetHistory();
+          fireEvent.change(title[0], { target: { value: 'AnyValue' } });
+          strictEqual(filterSpy.callCount, 2);
+        });
       });
       context('when there are no course records', function () {
         const emptyTestData = [];
