@@ -129,7 +129,7 @@ describe('Course Admin', function () {
         strictEqual(newAreaCourseStyle.backgroundColor, '');
       });
       context('when the the dropdown and the text input filters called', function () {
-        it('display correct number of filter calls on changing the prefix dropdown filter', async function () {
+        it('Calls the listFilter function once for each filter', async function () {
           const { getAllByRole } = render(
             <CourseAdmin />,
             dispatchMessage,
@@ -145,7 +145,7 @@ describe('Course Admin', function () {
           fireEvent.change(cPrefix, { target: { value: 'AnyValue' } });
           strictEqual(filterSpy.callCount, 3);
         });
-        it('display correct number of filter calls when course prefix dropdown fixed to All', async function () {
+        it('Calls the listFilter function once for each filter except the dropdown', async function () {
           const { getAllByRole } = render(
             <CourseAdmin />,
             dispatchMessage,
@@ -161,7 +161,7 @@ describe('Course Admin', function () {
           fireEvent.change(cPrefix, { target: { value: 'All' } });
           strictEqual(filterSpy.callCount, 2);
         });
-        it('display correct number of filter calls on changing the course filter', async function () {
+        it('Calls the listFilter function once for each filter except the dropdown', async function () {
           const { getAllByRole } = render(
             <CourseAdmin />,
             dispatchMessage,
@@ -175,7 +175,7 @@ describe('Course Admin', function () {
           fireEvent.change(course[0], { target: { value: 'AnyValue' } });
           strictEqual(filterSpy.callCount, 2);
         });
-        it('display correct number of filter calls on changing the title filter', async function () {
+        it('Calls the listFilter function once for each filter except the dropdown', async function () {
           const { getAllByRole } = render(
             <CourseAdmin />,
             dispatchMessage,
