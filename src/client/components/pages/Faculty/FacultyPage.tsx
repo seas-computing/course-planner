@@ -65,6 +65,11 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
    */
   const [isStaleData, setIsStaleData] = useState(false);
 
+  /**
+   * Whether or not the component has been initialized with data from the server.
+   */
+  const [isInitialized, setIsInitialized] = useState(false);
+
   // TODO: Get the actual current academic year in future ticket instead of hard coding
   const acadYear = 2021;
 
@@ -83,11 +88,6 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
       }
     });
   };
-
-  /**
-   * Whether or not the component has been initialized with data from the server.
-   */
-  const [isInitialized, setIsInitialized] = useState(false);
 
   const closeAbsenceModal = useCallback((): void => {
     setAbsenceModalVisible(false);
