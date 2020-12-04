@@ -40,8 +40,9 @@ const absenceTitleCaseToEnumMap = {
  * A helper function that converts the faculty absence from the title case format
  * to the absence enum format
  */
-export const absenceTitleCaseToEnum = (absence: string):
-ABSENCE_TYPE => absenceTitleCaseToEnumMap[absence] as ABSENCE_TYPE;
+export const absenceTitleCaseToEnum = (
+  absence: keyof typeof absenceTitleCaseToEnumMap
+): ABSENCE_TYPE => absenceTitleCaseToEnumMap[absence];
 
 /**
  * Define the map here to avoid a new object being created on each call to
