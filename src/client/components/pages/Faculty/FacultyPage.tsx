@@ -4,6 +4,9 @@ import React, {
   useState,
   useContext,
   useEffect,
+  Ref,
+  useRef,
+  useCallback,
 } from 'react';
 import { LoadSpinner } from 'mark-one';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
@@ -14,6 +17,8 @@ import {
   MESSAGE_TYPE,
   MESSAGE_ACTION,
 } from 'client/classes';
+import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
+import FacultyAbsenceModal from './FacultyAbsenceModal';
 import FacultyScheduleTable from './FacultyScheduleTable';
 
 /**
@@ -29,6 +34,22 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
   );
 
   /**
+   * The currently selected faculty
+   */
+  const [currentFaculty, setFaculty] = useState<FacultyResponseDTO>(null);
+
+  /**
+   * The currently selected absence
+   */
+  const [currentAbsence, setAbsence] = useState(null as AbsenceResponseDTO);
+
+  /**
+   * Keeps track of whether the absence modal is currently visible.
+   * By default, the modal is not visible.
+   */
+  const [absenceModalVisible, setAbsenceModalVisible] = useState(false);
+
+  /**
    * The current value for the message context
    */
   const dispatchMessage = useContext(MessageContext);
@@ -38,18 +59,60 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
    */
   const [fetching, setFetching] = useState(false);
 
+  /**
+   * Indicates whether the faculty schedule data is outdated as a result of
+   * updating schedule data by the user
+   */
+  const [isStaleData, setIsStaleData] = useState(false);
+
+  /**
+   * Whether or not the component has been initialized with data from the server.
+   */
+  const [isInitialized, setIsInitialized] = useState(false);
+
   // TODO: Get the actual current academic year in future ticket instead of hard coding
   const acadYear = 2021;
+
+  /**
+   * The current value of the edit fall absence button
+   */
+  const editButtonRef: Ref<HTMLButtonElement> = useRef(null);
+
+  /**
+   * Set the ref focus for the edit button
+   */
+  const setEditButtonFocus = (): void => {
+    setTimeout((): void => {
+      if (editButtonRef.current) {
+        editButtonRef.current.focus();
+      }
+    });
+  };
+
+  const closeAbsenceModal = useCallback((): void => {
+    setAbsenceModalVisible(false);
+    setEditButtonFocus();
+  }, []);
 
   /**
    * Get faculty schedule data from the server
    * If it fails, display a message for the user
    */
   useEffect((): void => {
-    setFetching(true);
+    // If we have initialized and are not stale, do nothing
+    // This is required to prevent an infinite loop based on the changing
+    // object value of currentFacultySchedules.
+    if (isInitialized && !isStaleData) {
+      return;
+    }
+    // Only set the fetching the first time to avoid replacing elements
+    // after fetching, which causes button refocusing to fail.
+    if (!isInitialized) {
+      setFetching(true);
+    }
     FacultyAPI.getFacultySchedulesForYear(acadYear)
       .then((facultySchedules): void => {
-        setFacultySchedules(facultySchedules[acadYear]);
+        setFacultySchedules(facultySchedules);
       })
       .catch((err: Error): void => {
         dispatchMessage({
@@ -59,8 +122,11 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
       })
       .finally((): void => {
         setFetching(false);
+        setIsStaleData(false);
+        setIsInitialized(true);
+        closeAbsenceModal();
       });
-  }, [dispatchMessage]);
+  }, [dispatchMessage, isStaleData, isInitialized, closeAbsenceModal]);
 
   return (
     <div className="faculty-schedule-table">
@@ -71,10 +137,31 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
           </div>
         )
         : (
-          <FacultyScheduleTable
-            academicYear={acadYear}
-            facultySchedules={currentFacultySchedules}
-          />
+          <>
+            <FacultyScheduleTable
+              academicYear={acadYear}
+              facultySchedules={currentFacultySchedules}
+              onEdit={(faculty, absence) => {
+                setAbsenceModalVisible(true);
+                setFaculty(faculty);
+                setAbsence(absence);
+              }}
+              editButtonRef={editButtonRef}
+            />
+            {(currentFaculty && currentAbsence)
+              ? (
+                <FacultyAbsenceModal
+                  isVisible={absenceModalVisible}
+                  currentFaculty={currentFaculty}
+                  currentAbsence={currentAbsence}
+                  onSuccess={(): void => {
+                    setIsStaleData(true);
+                  }}
+                  onCancel={closeAbsenceModal}
+                />
+              )
+              : null}
+          </>
         )}
     </div>
   );

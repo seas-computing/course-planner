@@ -23,6 +23,7 @@ import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import {
   FACULTY_TYPE,
   AUTH_MODE,
+  ABSENCE_TYPE,
 } from 'common/constants';
 import { Area } from 'server/area/area.entity';
 import { FacultyModule } from 'server/faculty/faculty.module';
@@ -39,6 +40,8 @@ import {
   appliedMathFacultyMember,
   appliedMathFacultyMemberResponse,
   newAreaFacultyMemberRequest,
+  facultyAbsenceResponse,
+  facultyAbsenceRequest,
 } from 'testData';
 import { SessionModule } from 'nestjs-session';
 import { FacultyService } from 'server/faculty/faculty.service';
@@ -78,7 +81,10 @@ describe('Faculty API', function () {
       findOneOrFail: stub(),
       save: stub(),
     };
-    mockAbsenceRepository = {};
+    mockAbsenceRepository = {
+      findOneOrFail: stub(),
+      save: stub(),
+    };
     mockSemesterRepository = {};
     mockFacultyScheduleCourseViewRepository = {};
     mockFacultyScheduleSemesterViewRepository = {};
@@ -478,6 +484,64 @@ describe('Faculty API', function () {
 
           const response = await request(api).get('/api/faculty');
 
+          strictEqual(response.ok, false);
+          strictEqual(response.status, HttpStatus.FORBIDDEN);
+          strictEqual(mockFacultyRepository.find.callCount, 0);
+        });
+      });
+    });
+  });
+  describe('PUT /absence/:id', function () {
+    const updatedAbsence = {
+      ...facultyAbsenceResponse,
+      type: ABSENCE_TYPE.TEACHING_RELIEF,
+    };
+    describe('User is not authenticated', function () {
+      beforeEach(function () {
+        authStub.rejects(new ForbiddenException());
+      });
+      it('cannot update an absence entry', async function () {
+        mockAbsenceRepository.findOneOrFail.resolves(facultyAbsenceResponse);
+        mockAbsenceRepository.save.resolves(facultyAbsenceResponse);
+        const response = await request(api)
+          .put(`/api/faculty/absence/${facultyAbsenceRequest.id}`)
+          .send(updatedAbsence);
+        strictEqual(response.ok, false);
+        strictEqual(response.status, HttpStatus.FORBIDDEN);
+        strictEqual(mockFacultyRepository.save.callCount, 0);
+      });
+    });
+    describe('User is authenticated', function () {
+      describe('User is a member of the admin group', function () {
+        beforeEach(function () {
+          authStub.returns(adminUser);
+        });
+        it('updates a faculty member entry in the database', async function () {
+          mockAbsenceRepository.findOneOrFail.resolves(facultyAbsenceResponse);
+          mockAbsenceRepository.save.resolves(facultyAbsenceResponse);
+          const response = await request(api)
+            .put(`/api/faculty/absence/${facultyAbsenceRequest.id}`)
+            .send(updatedAbsence);
+          strictEqual(response.ok, true);
+          strictEqual(response.status, HttpStatus.OK);
+        });
+        it('throws a Not Found exception if absence does not exist', async function () {
+          mockAbsenceRepository.findOneOrFail.rejects(new EntityNotFoundError(Absence, `${facultyAbsenceResponse.id}`));
+          mockAbsenceRepository.save.rejects(new EntityNotFoundError(Absence, `${facultyAbsenceResponse.id}`));
+          const response = await request(api)
+            .put(`/api/faculty/absence/${facultyAbsenceRequest.id}`)
+            .send(updatedAbsence);
+          const body = response.body as NotFoundException;
+          const message = body.message as string;
+          strictEqual(response.ok, false);
+          strictEqual(response.status, HttpStatus.NOT_FOUND);
+          strictEqual(message.includes('Absence'), true);
+        });
+      });
+      describe('User is not a member of the admin group', function () {
+        it('is inaccessible to unauthorized users', async function () {
+          authStub.rejects(new ForbiddenException());
+          const response = await request(api).get('/api/faculty');
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.FORBIDDEN);
           strictEqual(mockFacultyRepository.find.callCount, 0);
