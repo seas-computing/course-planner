@@ -36,7 +36,7 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
   /**
    * The currently selected faculty
    */
-  const [currentFaculty, setFaculty] = useState(null as FacultyResponseDTO);
+  const [currentFaculty, setFaculty] = useState<FacultyResponseDTO>(null);
 
   /**
    * The currently selected absence

@@ -82,7 +82,7 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
   const [
     editedAbsence,
     setEditedAbsence,
-  ] = useState(null as FacultyAbsence);
+  ] = useState<FacultyAbsence>(null);
   return (
     <>
       <Table>
