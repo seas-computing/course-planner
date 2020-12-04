@@ -81,7 +81,6 @@ const SessionBlockHeading = styled.h4<SessionBlockHeadingProps>`
  */
 const SessionBlockBody = styled.ul<SessionBlockBodyProps>`
   height: 100%;
-  border-radius: 3px;
   text-align: center;
   color: #fff;
   list-style: none;
