@@ -90,7 +90,11 @@ FunctionComponent<AbsenceModalProps> = ({
    * rendered by letting next task of event queue run first.
    */
   const setAbsenceModalFocus = (): void => {
-    setTimeout((): void => modalHeaderRef.current.focus());
+    setTimeout((): void => {
+      if (modalHeaderRef.current !== null) {
+        modalHeaderRef.current.focus();
+      }
+    });
   };
 
   /**
