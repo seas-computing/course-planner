@@ -13,7 +13,7 @@ interface WeekBlockProps {
    * The number of the minutes represented by each row in the grid, which
    * should be consistent with the other components in the Schedule
    */
-  minuteResolution: number;
+  minuteResolution: 1 | 3 | 5 | 15;
 
   /**
    * The first hour that should be displayed in the schedule
@@ -145,8 +145,8 @@ const WeekBlock: FunctionComponent<WeekBlockProps> = ({
   // Because our grid-rows do not correspond 1:1 with minutes in the day, we
   // divide by our minute resolution value to determine where our hour and
   // 15-minute marks should go
-  const fifteen = Math.floor(15 / minuteResolution);
-  const sixty = Math.floor(60 / minuteResolution);
+  const fifteen = 15 / minuteResolution;
+  const sixty = 60 / minuteResolution;
   return (
     <WeekBlockWrapper
       numRows={numRows}
@@ -155,13 +155,13 @@ const WeekBlock: FunctionComponent<WeekBlockProps> = ({
     >
       {Array.from(
         // Generate a row every 15 minutes
-        { length: Math.floor(numRows / fifteen) },
+        { length: numRows / fifteen },
         (_, row: number) => {
           const blockRow = row * fifteen;
           /// Render an hour heading at every fourth 60-minute mark
           if (blockRow % (sixty / fifteen) === 0) {
             // Get the clock hour
-            const hour = Math.floor(blockRow / sixty) + firstHour;
+            const hour = (blockRow / sixty) + firstHour;
             return (
               <React.Fragment key={blockRow}>
                 <HourHead row={blockRow}>

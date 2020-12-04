@@ -59,10 +59,8 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
 }) => {
   // Convert the range of hours covered by our Schedule to a number of
   // css-grid rows
-  const numRows = Math.round(
-    ((lastHour - firstHour) * 60)
-      / minuteResolution
-  );
+  const numRows = ((lastHour - firstHour) * 60)
+      / minuteResolution;
   return (
     <WeekBlock
       firstHour={firstHour}
