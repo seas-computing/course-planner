@@ -104,13 +104,14 @@ const TimeRule = styled.div<TimeRuleProps>`
 const WeekBlockWrapper = styled.div<WeekBlockWrapperProps>`
   display: grid;
   grid-template-columns: ${
-  ({ numColumns }) => `3em repeat(${numColumns}, minmax(300px, 1fr))`
+  ({ numColumns }) => `3em repeat(${numColumns}, auto)`
 };
   grid-template-rows: ${
   ({ numRows, rowHeight }) => `3em repeat(${numRows}, ${rowHeight})`
 };
   grid-gap: 0em;
   padding: 0em;
+  min-width: max-content;
 `;
 
 /**

@@ -62,6 +62,7 @@ const SessionBlockWrapper = styled.div<SessionBlockWrapperProps>`
   padding-right: 3px;
   border-left: 1px solid #fff;
   border-right: 1px solid #fff;
+  overflow-wrap: anywhere;
 `;
 
 /**
