@@ -124,11 +124,11 @@ describe('Faculty Absence Modal', function () {
         const submitButton = getByText('Submit');
         fireEvent.click(submitButton);
       });
-      it('does not call the onSuccess handler', async function () {
-        await wait(() => strictEqual(onSuccessStub.callCount, 0));
+      it('does not call the onSuccess handler', function () {
+        strictEqual(onSuccessStub.callCount, 0);
       });
-      it('does not call the onCancel handler', async function () {
-        await wait(() => strictEqual(onCancelStub.callCount, 0));
+      it('does not call the onCancel handler', function () {
+        strictEqual(onCancelStub.callCount, 0);
       });
       it('renders the error message', async function () {
         return waitForElement(
@@ -155,11 +155,11 @@ describe('Faculty Absence Modal', function () {
       const cancelButton = getByText('Cancel');
       fireEvent.click(cancelButton);
     });
-    it('calls the onCancel handler once', async function () {
-      await wait(() => strictEqual(onCancelStub.callCount, 1));
+    it('calls the onCancel handler once', function () {
+      strictEqual(onCancelStub.callCount, 1);
     });
-    it('does not call the onSuccess handler', async function () {
-      await wait(() => strictEqual(onSuccessStub.callCount, 0));
+    it('does not call the onSuccess handler', function () {
+      strictEqual(onSuccessStub.callCount, 0);
     });
   });
 });
