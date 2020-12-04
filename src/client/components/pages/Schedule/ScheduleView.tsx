@@ -8,30 +8,35 @@ import {
 interface ScheduleViewProps {
   /**
    * The complete course schedule for the currently chosen year/semester. Must
-   * be organizedby by Day, then startTime, then duration, then prefix.
+   * be organized by Day, then startTime, then duration, then prefix.
    */
   schedule: ScheduleViewResponseDTO[];
+
   /**
    * The first hour that should be shown in the schedule
-   * This is inclusive; we'll see course scheduled during this hour
+   * This is inclusive; we'll see courses scheduled during this hour
    */
   firstHour: number;
+
   /**
    * The last hour that should be shown in the schedule
    * This is exclusive; we won't see any courses scheduled during this hour
    */
   lastHour: number;
+
   /**
    * The number of minutes represented by each row of the grid.
-   * The default value of 5 is strongly recommended.
+   * The default value of 5 is **strongly** recommended.
    */
   minuteResolution?: 1 | 3 | 5 | 15;
+
   /**
    * List of the days of the week that should be shown in the schedule.
    * Making this a prop so that we can potentially use it for day-by-day
    * pagination in the future
    */
   days?: string[];
+
   /**
    * How tall each grid row of the schedule should be. The number of minutes
    * represented by each grid row is controller by the minuteResolution prop
@@ -52,6 +57,8 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
   rowHeight,
   days,
 }) => {
+  // Convert the range of hours covered by our Schedule to a number of
+  // css-grid rows
   const numRows = Math.round(
     ((lastHour - firstHour) * 60)
       / minuteResolution
@@ -84,6 +91,8 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
           }) => {
             if (dayEnumToString(weekday) === day) {
               const resolvedStartRow = Math.round(
+              // Convert the start time and duration of the course to a
+              // css-grid row
                 (((startHour - firstHour) * 60) + startMinute)
                 / minuteResolution
                 // Add one to account for the header row

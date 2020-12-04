@@ -26,7 +26,7 @@ interface DayBlockProps {
   heading: string;
 
   /**
-   * To maintain consistency bewteen the DayBlock and the timerules in the week
+   * To maintain consistency between the DayBlock and the time-rules in the week
    * grid, we'll take a height value from their common parent
    */
   rowHeight: string;
@@ -44,7 +44,7 @@ interface DayBlockProps {
 type DayBlockWrapperProps = Pick<DayBlockProps, 'column'>;
 
 /**
- * The DayBlockHeading should only accept the DayBlock children
+ * The DayBlockHeading should only accept the DayBlock heading as a child
  */
 type DayBlockHeadingProps = {
   children: DayBlockProps['heading'];
@@ -82,7 +82,7 @@ const DayBlockHeading = styled.h3<DayBlockHeadingProps>`
 `;
 
 /**
- * An internal grid wihin the DayBlock, into which the SessionBlocks will be
+ * An internal grid within the DayBlock, into which the SessionBlocks will be
  * placed. For visual consistency, the row height and number of rows should
  * match the WeekBlock.
  */
@@ -98,11 +98,11 @@ const DayBlockBody = styled.div<DayBlockBodyProps>`
 `;
 
 /**
- * Defines and entire Day within the week view of our schedule component.
+ * Defines an entire Day within the week view of our schedule component.
  *
  * The publicly exported component primarily handles props and placement for
- * its subcomponents, the heading and body. The contents of the day, the
- * SessionBlocks, shoudl be defined by the parent component.
+ * its sub-components, the heading and body. The contents of the day, the
+ * SessionBlocks, should be defined by the parent component.
  */
 const DayBlock: FunctionComponent<DayBlockProps> = ({
   children,

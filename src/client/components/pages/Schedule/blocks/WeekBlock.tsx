@@ -5,7 +5,7 @@ import DayBlock from './DayBlock';
 interface WeekBlockProps {
   /**
    * The number of rows in the grid. For consistency, the grid rows should be
-   * set by the parent component to be the same as the DayBlock
+   * set by the parent component and should match the DayBlock
    */
   numRows: number;
 
@@ -21,7 +21,7 @@ interface WeekBlockProps {
   firstHour: number;
 
   /**
-   * The WeekBlock receive one or more DayBlocks as its children
+   * The WeekBlock receives one or more DayBlocks as its children
    */
   children: DayBlock | DayBlock[];
 
@@ -60,7 +60,7 @@ interface HourHeadProps {
 
 /**
  * describes two different options for how the line across the grid should be
- * styled, solid for hours and dashed for 15 minute intervals
+ * styled, "solid" for hours and "dashed" for 15-minute intervals
  */
 enum ROW_STYLE {
   SOLID = 'solid',
@@ -88,10 +88,9 @@ const HourHead = styled.div<HourHeadProps>`
 `;
 
 /**
- * A solid (for hour marks) or dashed (for 15 minute marks) rule that extends
+ * A solid (for hour marks) or dashed (for 15-minute marks) rule that extends
  * across the week display
  */
-
 const TimeRule = styled.div<TimeRuleProps>`
   grid-row: ${({ row }) => row + 2};
   grid-column: 1 / -1;
@@ -100,9 +99,8 @@ const TimeRule = styled.div<TimeRuleProps>`
 `;
 
 /**
- * A wrapper around the entire week, which sets up the time-based grid.
+ * A wrapper around the entire week, which sets up the time-based grid
  */
-
 const WeekBlockWrapper = styled.div<WeekBlockWrapperProps>`
   display: grid;
   grid-template-columns: ${
@@ -116,8 +114,8 @@ const WeekBlockWrapper = styled.div<WeekBlockWrapperProps>`
 `;
 
 /**
- * Convert a 24 numeric representation of the hour into an AM/PM string
- * representation.
+ * Convert a 24-hour numeric representation of the hour into an AM/PM string
+ * representation
  *
  * Using this instead of date manipulation library or the Intl API to avoid any
  * issues around Daylight Savings Time
@@ -132,11 +130,10 @@ const hourToAMPM = (hour: number): string => {
 };
 
 /**
- * Represents the view of the entire week. Includes five slots for the days of
- * the week, and uses teh same row grid as each DayBlock to display horizontal
- * rules across the week at fifteen minute intervals.
+ * Represents the view of the entire week. Includes slots for days of the week,
+ * and uses the same row grid as each DayBlock to display horizontal rules
+ * across the week at 15-minute intervals
  */
-
 const WeekBlock: FunctionComponent<WeekBlockProps> = ({
   firstHour,
   numRows,
@@ -145,6 +142,9 @@ const WeekBlock: FunctionComponent<WeekBlockProps> = ({
   minuteResolution,
   rowHeight,
 }) => {
+  // Because our grid-rows do not correspond 1:1 with minutes in the day, we
+  // divide by our minute resolution value to determine where our hour and
+  // 15-minute marks should go
   const fifteen = Math.floor(15 / minuteResolution);
   const sixty = Math.floor(60 / minuteResolution);
   return (
@@ -158,7 +158,7 @@ const WeekBlock: FunctionComponent<WeekBlockProps> = ({
         { length: Math.floor(numRows / fifteen) },
         (_, row: number) => {
           const blockRow = row * fifteen;
-          /// Render an hour heading at every fourth 15-minute mark
+          /// Render an hour heading at every fourth 60-minute mark
           if (blockRow % (sixty / fifteen) === 0) {
             // Get the clock hour
             const hour = Math.floor(blockRow / sixty) + firstHour;
@@ -174,7 +174,7 @@ const WeekBlock: FunctionComponent<WeekBlockProps> = ({
               </React.Fragment>
             );
           }
-          // Render a dashed row at every other 15 minute mark
+          // Render a dashed row at the other 15-minute marks
           return (
             <TimeRule
               row={blockRow}

@@ -11,7 +11,7 @@ import ScheduleView from './ScheduleView';
 
 /**
  * Parameters for how the schedule view should be displayed. Currently using
- * static valuses.
+ * static values.
  *
  * TODO: Consider deriving start and end times from schedule data
  * TODO: Move the calendarYear and term to dropdown in the UI
@@ -30,13 +30,13 @@ const term = TERM.FALL;
 
 const SchedulePage: FunctionComponent = () => {
   /**
-  * Maintain the complete schedule data from the API in state
-  */
+   * Maintain the complete schedule data from the API in state
+   */
   const [schedule, setSchedule] = useState<ScheduleViewResponseDTO[]>([]);
 
   /**
- * The function for displaying messages in the user interface
- */
+   * The function for displaying messages in the user interface
+   */
   const dispatchMessage = useContext(MessageContext);
 
   /**

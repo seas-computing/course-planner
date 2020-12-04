@@ -3,10 +3,6 @@ import styled from 'styled-components';
 import { getCatPrefixColor } from 'common/constants';
 import CourseListing from './CourseListing';
 
-/**
- * The publicly exposed props of the SessionBlock, which will be passed down
- * into the sub-components
- */
 interface SessionBlockProps {
   /**
   * A SessionBlock can only contain one or more CourseListings, representing
@@ -21,8 +17,9 @@ interface SessionBlockProps {
   prefix: string;
 
   /**
-   * The row within the grid where the SessionBlock should begin. The parent
-   * component should handle scaling the value to the grid
+   * The row within the grid on which the SessionBlock should begin, which
+   * corresponds to the start time of the course, scaled to the values of our
+   * grid by its parent component
    */
   startRow: number;
 
@@ -43,14 +40,14 @@ SessionBlockProps,
 >;
 
 /**
- * Takes a children the prefix prop from the SessionBlock
+ * Takes as children the prefix prop from the SessionBlock
  */
 type SessionBlockHeadingProps = {
   children: SessionBlockProps['prefix']
 };
 
 /**
- * Takes teh children form the SessionBlock
+ * Takes the children from the SessionBlock
  */
 type SessionBlockBodyProps = Pick<SessionBlockProps, 'children'>;
 
@@ -68,9 +65,8 @@ const SessionBlockWrapper = styled.div<SessionBlockWrapperProps>`
 `;
 
 /**
- * The title that appears at the top of the SessionBlocl, representing the
- * course prefix for all courses below
- *
+ * The title that appears at the top of the SessionBlock, representing the
+ * catalog prefix for all courses during the session
  */
 const SessionBlockHeading = styled.h4<SessionBlockHeadingProps>`
   font-size: 1.2em;
@@ -92,10 +88,10 @@ const SessionBlockBody = styled.ul<SessionBlockBodyProps>`
 `;
 
 /**
- * Defines a group of courses that share the same time/day and course prefix
+ * Defines a group of courses that share the same time/day and catalog prefix
  *
  * This publicly exported component mainly handles the placement and props for
- * the individual styled subcomponents
+ * the individual styled sub-components
  */
 const SessionBlock: FunctionComponent<SessionBlockProps> = ({
   prefix,
