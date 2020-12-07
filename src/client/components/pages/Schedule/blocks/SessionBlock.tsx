@@ -81,8 +81,6 @@ const SessionBlockHeading = styled.h4<SessionBlockHeadingProps>`
  * catalog prefix
  */
 const SessionBlockBody = styled.ul<SessionBlockBodyProps>`
-  height: 100%;
-  text-align: center;
   list-style: none;
 `;
 
