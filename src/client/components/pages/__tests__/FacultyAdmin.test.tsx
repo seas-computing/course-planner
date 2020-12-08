@@ -70,7 +70,8 @@ describe('Faculty Admin', function () {
         );
         await wait(() => getAllByRole('row').length > 1);
         const rows = getAllByRole('row');
-        strictEqual(rows.length, testData.length + 1);
+        // With the filter, there are two table header rows
+        strictEqual(rows.length, testData.length + 2);
       });
       it('displays the correct content in the table cells', async function () {
         const { getAllByRole } = render(
@@ -84,12 +85,12 @@ describe('Faculty Admin', function () {
           .map(
             (row) => (Array.from(row.cells).map((cell) => cell.textContent))
           );
-        const physicsFacultyMemberArea = rowsContent[1][0];
-        const physicsFacultyMemberHUID = rowsContent[1][1];
-        const physicsFacultyMemberLastName = rowsContent[1][2];
-        const bioengineeringFacultyMemberArea = rowsContent[2][0];
-        const bioengineeringFacultyMemberHUID = rowsContent[2][1];
-        const bioengineeringFacultyMemberLastName = rowsContent[2][2];
+        const physicsFacultyMemberArea = rowsContent[2][0];
+        const physicsFacultyMemberHUID = rowsContent[2][1];
+        const physicsFacultyMemberLastName = rowsContent[2][2];
+        const bioengineeringFacultyMemberArea = rowsContent[3][0];
+        const bioengineeringFacultyMemberHUID = rowsContent[3][1];
+        const bioengineeringFacultyMemberLastName = rowsContent[3][2];
         strictEqual(
           physicsFacultyMemberArea,
           physicsFacultyMemberResponse.area.name
@@ -115,16 +116,6 @@ describe('Faculty Admin', function () {
           bioengineeringFacultyMemberResponse.lastName
         );
       });
-      it('does not pass the backgroundColor prop when area does not exist', async function () {
-        const { getAllByRole, getByText } = render(
-          <FacultyAdmin />,
-          dispatchMessage,
-          metadata
-        );
-        await wait(() => getAllByRole('row').length > 1);
-        const newAreaStyle = window.getComputedStyle(getByText('NA'));
-        strictEqual(newAreaStyle.backgroundColor, '');
-      });
     });
     context('when there are no faculty records', function () {
       const emptyTestData = [];
@@ -139,7 +130,8 @@ describe('Faculty Admin', function () {
         );
         await wait(() => getAllByRole('row').length === emptyTestData.length + 1);
         const rows = getAllByRole('row');
-        strictEqual(rows.length, emptyTestData.length + 1);
+        // With the filter, there are two table header rows
+        strictEqual(rows.length, emptyTestData.length + 2);
       });
     });
     context('when course data fetch fails', function () {
