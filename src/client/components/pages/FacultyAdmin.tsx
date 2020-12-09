@@ -81,7 +81,7 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
   /**
    * The current area filter value
    */
-  const [facultyAreaValue, setFacultyAreaValue] = useState<string>('');
+  const [facultyAreaValue, setFacultyAreaValue] = useState<string>('All');
 
   /**
    * The current HUID filter value
@@ -119,7 +119,7 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
     if (facultyAreaValue !== 'All') {
       facultyMembers = listFilter(
         facultyMembers,
-        { field: 'area.name', value: facultyAreaValue, exact: false }
+        { field: 'area.name', value: facultyAreaValue, exact: true }
       );
     }
     return facultyMembers;
