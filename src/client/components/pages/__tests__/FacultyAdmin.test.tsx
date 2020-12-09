@@ -6,10 +6,13 @@ import {
   waitForElement,
   wait,
   within,
+  fireEvent,
 } from '@testing-library/react';
 import {
   stub,
   SinonStub,
+  SinonSpy,
+  spy,
 } from 'sinon';
 import { FacultyAPI } from 'client/api/faculty';
 import {
@@ -21,10 +24,12 @@ import {
 } from 'testData';
 import { render } from 'test-utils';
 import FacultyAdmin from '../FacultyAdmin';
+import * as filters from '../Filter';
 
 describe('Faculty Admin', function () {
   let getStub: SinonStub;
   let dispatchMessage: SinonStub;
+  let filterSpy: SinonSpy;
   const testData = [
     physicsFacultyMemberResponse,
     bioengineeringFacultyMemberResponse,
@@ -34,6 +39,7 @@ describe('Faculty Admin', function () {
     getStub = stub(FacultyAPI, 'getAllFacultyMembers');
     dispatchMessage = stub();
     getStub.resolves(testData);
+    filterSpy = spy(filters, 'listFilter');
   });
   describe('rendering', function () {
     it('creates a table', async function () {
@@ -134,6 +140,83 @@ describe('Faculty Admin', function () {
           bioengineeringFacultyMemberLastName,
           bioengineeringFacultyMemberResponse.lastName
         );
+      });
+      context('when the the dropdown and the text input filters are called', function () {
+        it('calls the listFilter function once for each filter', async function () {
+          const { getAllByRole } = render(
+            <FacultyAdmin />,
+            dispatchMessage,
+            metadata
+          );
+          await wait(() => getAllByRole('row').length > 1);
+          const rows = getAllByRole('row');
+          const utils = within(rows[1]);
+          const facultyArea = utils.queryByLabelText(
+            'The table will be filtered as selected in the faculty area dropdown filter'
+          );
+          filterSpy.resetHistory();
+          fireEvent.change(facultyArea, { target: { value: 'AnyValue' } });
+          // The Faculty Admin table contains 4 filters
+          strictEqual(filterSpy.callCount, 4);
+        });
+        it('calls the listFilter once for each filter except the dropdown', async function () {
+          const { getAllByRole } = render(
+            <FacultyAdmin />,
+            dispatchMessage,
+            metadata
+          );
+          await wait(() => getAllByRole('row').length > 1);
+          const rows = getAllByRole('row');
+          const utils = within(rows[1]);
+          const facultyArea = utils.queryByLabelText(
+            'The table will be filtered as selected in the faculty area dropdown filter'
+          );
+          filterSpy.resetHistory();
+          fireEvent.change(facultyArea, { target: { value: 'All' } });
+          strictEqual(filterSpy.callCount, 3);
+        });
+        it('calls the listFilter once for each filter except the dropdown', async function () {
+          const { getAllByRole } = render(
+            <FacultyAdmin />,
+            dispatchMessage,
+            metadata
+          );
+          await wait(() => getAllByRole('row').length > 1);
+          const rows = getAllByRole('row');
+          const utils = within(rows[1]);
+          const huid = utils.getAllByPlaceholderText('Filter by HUID');
+          filterSpy.resetHistory();
+          fireEvent.change(huid[0], { target: { value: 'AnyValue' } });
+          strictEqual(filterSpy.callCount, 3);
+        });
+        it('calls the listFilter once for each filter except the dropdown', async function () {
+          const { getAllByRole } = render(
+            <FacultyAdmin />,
+            dispatchMessage,
+            metadata
+          );
+          await wait(() => getAllByRole('row').length > 1);
+          const rows = getAllByRole('row');
+          const utils = within(rows[1]);
+          const lastName = utils.getAllByPlaceholderText('Filter by Last Name');
+          filterSpy.resetHistory();
+          fireEvent.change(lastName[0], { target: { value: 'AnyValue' } });
+          strictEqual(filterSpy.callCount, 3);
+        });
+        it('calls the listFilter once for each filter except the dropdown', async function () {
+          const { getAllByRole } = render(
+            <FacultyAdmin />,
+            dispatchMessage,
+            metadata
+          );
+          await wait(() => getAllByRole('row').length > 1);
+          const rows = getAllByRole('row');
+          const utils = within(rows[1]);
+          const firstName = utils.getAllByPlaceholderText('Filter by First Name');
+          filterSpy.resetHistory();
+          fireEvent.change(firstName[0], { target: { value: 'AnyValue' } });
+          strictEqual(filterSpy.callCount, 3);
+        });
       });
     });
     context('when there are no faculty records', function () {
