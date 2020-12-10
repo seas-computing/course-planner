@@ -1,6 +1,8 @@
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
+import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
+import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
+import { TERM } from 'common/constants';
 import request from './request';
-import { ManageCourseResponseDTO } from '../../common/dto/courses/ManageCourseResponse.dto';
 
 /**
  * Retrieves all courses
@@ -18,7 +20,17 @@ export const getCourseInstancesForYear = async (
   return response.data as CourseInstanceResponseDTO[][];
 };
 
+export const getCourseScheduleForSemester = async (
+  calendarYear: number,
+  term: TERM
+): Promise<ScheduleViewResponseDTO[]> => {
+  const response = await request
+    .get(`/api/course-instances/schedule?year=${calendarYear}&term=${term}`);
+  return response.data as ScheduleViewResponseDTO[];
+};
+
 export const CourseAPI = {
   getAllCourses,
   getCourseInstancesForYear,
+  getCourseScheduleForSemester,
 };
