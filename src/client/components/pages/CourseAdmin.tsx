@@ -75,7 +75,7 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
     } catch (e) {
       dispatchMessage({
         message: new AppMessage(
-          'Unable to get course data from server. If the problem persists, contact SEAS Computing',
+          `Unable to get course data from server: ${(e as Error).message}. If the problem persists, contact SEAS Computing`,
           MESSAGE_TYPE.ERROR
         ),
         type: MESSAGE_ACTION.PUSH,
