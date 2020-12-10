@@ -150,9 +150,9 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
           isVisible={courseModalVisible}
           currentCourse={currentCourse}
           onClose={(): void => {
+            setCourseModalVisible(false);
             // Sets the focus back to the button that opened the modal
             if (currentCourse) {
-              setCourseModalVisible(false);
               const editButtonId = computeEditCourseButtonId(currentCourse);
               const editButton = document.getElementById(editButtonId);
               // this will run after the data is loaded, so no delay is necessary
@@ -161,7 +161,6 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
               }, 0);
               setCurrentCourse(null);
             } else {
-              setCourseModalVisible(false);
               window.setTimeout((): void => document.getElementById('createCourse').focus(), 0);
             }
           }}
