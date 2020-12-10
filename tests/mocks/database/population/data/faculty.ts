@@ -129,7 +129,7 @@ export const faculty = [
     HUID: '23232323',
     jointWith: null,
     category: FACULTY_TYPE.NON_LADDER,
-    area: 'Applied Computation',
+    area: 'ACS',
   },
   {
     firstName: 'Boris',
