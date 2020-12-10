@@ -99,7 +99,6 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
             id="createCourse"
             onClick={
               (): void => {
-                setCurrentCourse(null);
                 setCourseModalVisible(true);
               }
             }
@@ -160,6 +159,7 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
               window.setTimeout((): void => {
                 editButton.focus();
               }, 0);
+              setCurrentCourse(null);
             } else {
               setCourseModalVisible(false);
               window.setTimeout((): void => document.getElementById('createCourse').focus(), 0);
