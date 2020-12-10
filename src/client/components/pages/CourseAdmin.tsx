@@ -165,7 +165,6 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
             }
           }}
           onSuccess={async (): Promise<void> => {
-            // wait for the faculty to load before allowing the dialog to close
             await loadCourses();
           }}
         />
