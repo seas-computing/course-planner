@@ -28,7 +28,7 @@ describe('Course Admin API', function () {
   let getStub: SinonStub;
   let postStub: SinonStub;
   let putStub: SinonStub;
-  describe('GET /courses', function () {
+  describe('getAllCourses', function () {
     beforeEach(function () {
       getStub = stub(request, 'get');
     });
@@ -82,7 +82,7 @@ describe('Course Admin API', function () {
       afterEach(function () {
         getStub.restore();
       });
-      context('when POST request succeeds', function () {
+      context('when successfully creating a course', function () {
         beforeEach(async function () {
           postStub.resolves({
             data: computerScienceCourseResponse,
@@ -99,7 +99,7 @@ describe('Course Admin API', function () {
           deepStrictEqual(createCourseResult, computerScienceCourseResponse);
         });
       });
-      context('when POST request fails', function () {
+      context('when failing to create a course', function () {
         const errorMessage = 'There was a problem with creating a course.';
         beforeEach(function () {
           postStub.rejects(new Error(errorMessage));
@@ -121,7 +121,7 @@ describe('Course Admin API', function () {
       afterEach(function () {
         putStub.restore();
       });
-      context('when PUT request succeeds', function () {
+      context('when successfully editing a course', function () {
         const newCourseTitle = 'Intro to Engineering';
         const editedCourse = {
           ...computerScienceCourse,
@@ -147,7 +147,7 @@ describe('Course Admin API', function () {
           deepStrictEqual(editCourseResult, editedCourseResponse);
         });
       });
-      context('when PUT request fails', function () {
+      context('when failing to edit a course', function () {
         const errorMessage = 'There was a problem with editing the course entry.';
         beforeEach(function () {
           putStub.rejects(new Error(errorMessage));
