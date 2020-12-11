@@ -76,9 +76,7 @@ describe('Course service', function () {
     await testModule.close();
   });
   it('returns all courses in the database', async function () {
-    const courseCount = await courseRepository.count({
-      relations: ['area'],
-    });
+    const courseCount = await courseRepository.count();
     const returnedCourses = await courseService.findCourses();
     strictEqual(returnedCourses.length, courseCount);
   });
