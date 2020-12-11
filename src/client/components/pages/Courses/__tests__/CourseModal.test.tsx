@@ -87,8 +87,10 @@ describe('Course Modal', function () {
           strictEqual(termPatternSelect.value, '');
         });
       });
-      it('renders no error messages prior to initial form submission', function () {
-        strictEqual(queryAllByRole('alert').length, 0);
+      describe('Error Message', function () {
+        it('renders no error messages prior to initial form submission', function () {
+          strictEqual(queryAllByRole('alert').length, 0);
+        });
       });
     });
     context('when currentCourse is not null', function () {
@@ -143,8 +145,10 @@ describe('Course Modal', function () {
           physicsCourseResponse.termPattern
         );
       });
-      it('renders no error messages prior to initial form submission', function () {
-        strictEqual(queryAllByRole('alert').length, 0);
+      describe('Error Message', function () {
+        it('renders no error messages prior to initial form submission', function () {
+          strictEqual(queryAllByRole('alert').length, 0);
+        });
       });
     });
   });
