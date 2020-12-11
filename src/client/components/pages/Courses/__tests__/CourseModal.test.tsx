@@ -39,23 +39,53 @@ describe('Course Modal', function () {
           dispatchMessage
         ));
       });
-      it('renders empty form fields except for the "IS SEAS" dropdown, which defaults to "Yes"', function () {
-        const existingAreaSelect = getByLabelText('Existing Area', { exact: true }) as HTMLSelectElement;
-        const newAreaInput = getByLabelText('New Area', { exact: true }) as HTMLInputElement;
-        const courseNumberInput = getByLabelText('Course Number', { exact: false }) as HTMLInputElement;
-        const courseTitleInput = getByLabelText('Course Title', { exact: false }) as HTMLInputElement;
-        const sameAsInput = getByLabelText('Same as', { exact: false }) as HTMLInputElement;
-        const undergraduateCheckbox = getByLabelText('Undergraduate', { exact: false }) as HTMLInputElement;
-        const isSEASSelect = getByLabelText('Is SEAS', { exact: false }) as HTMLSelectElement;
-        const termPatternSelect = getByLabelText('Term Pattern', { exact: false }) as HTMLSelectElement;
-        strictEqual(existingAreaSelect.value, '');
-        strictEqual(newAreaInput.value, '');
-        strictEqual(courseNumberInput.value, '');
-        strictEqual(courseTitleInput.value, '');
-        strictEqual(sameAsInput.value, '');
-        strictEqual(undergraduateCheckbox.checked, false);
-        strictEqual(isSEASSelect.value, IS_SEAS.Y);
-        strictEqual(termPatternSelect.value, '');
+      describe('Existing Area Dropdown', function () {
+        it('defaults to empty string', function () {
+          const existingAreaSelect = getByLabelText('Existing Area', { exact: true }) as HTMLSelectElement;
+          strictEqual(existingAreaSelect.value, '');
+        });
+      });
+      describe('New Area Dropdown', function () {
+        it('defaults to empty string', function () {
+          const newAreaInput = getByLabelText('New Area', { exact: true }) as HTMLInputElement;
+          strictEqual(newAreaInput.value, '');
+        });
+      });
+      describe('Course Number Input', function () {
+        it('defaults to empty string', function () {
+          const courseNumberInput = getByLabelText('Course Number', { exact: false }) as HTMLInputElement;
+          strictEqual(courseNumberInput.value, '');
+        });
+      });
+      describe('Course Title Input', function () {
+        it('defaults to empty string', function () {
+          const courseTitleInput = getByLabelText('Course Title', { exact: false }) as HTMLInputElement;
+          strictEqual(courseTitleInput.value, '');
+        });
+      });
+      describe('Same As Input', function () {
+        it('defaults to empty string', function () {
+          const sameAsInput = getByLabelText('Same as', { exact: false }) as HTMLInputElement;
+          strictEqual(sameAsInput.value, '');
+        });
+      });
+      describe('Undergraduate Checkbox', function () {
+        it('defaults to being unchecked', function () {
+          const undergraduateCheckbox = getByLabelText('Undergraduate', { exact: false }) as HTMLInputElement;
+          strictEqual(undergraduateCheckbox.checked, false);
+        });
+      });
+      describe('"Is SEAS" Dropdown', function () {
+        it('defaults to IS_SEAS.Y', function () {
+          const isSEASSelect = getByLabelText('Is SEAS', { exact: false }) as HTMLSelectElement;
+          strictEqual(isSEASSelect.value, IS_SEAS.Y);
+        });
+      });
+      describe('Term Pattern Dropdown', function () {
+        it('defaults to empty string', function () {
+          const termPatternSelect = getByLabelText('Term Pattern', { exact: false }) as HTMLSelectElement;
+          strictEqual(termPatternSelect.value, '');
+        });
       });
       it('renders no error messages prior to initial form submission', function () {
         strictEqual(queryAllByRole('alert').length, 0);
