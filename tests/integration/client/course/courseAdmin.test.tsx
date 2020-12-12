@@ -32,6 +32,7 @@ describe('Course Admin Modal Behavior', function () {
     physicsCourseResponse,
     computerScienceCourseResponse,
   ];
+  let createCourseButton: HTMLElement;
   beforeEach(function () {
     getStub = stub(CourseAPI, 'getAllCourses');
     getStub.resolves(testData);
@@ -44,19 +45,21 @@ describe('Course Admin Modal Behavior', function () {
   describe('rendering', function () {
     context('when the create course button is clicked and the modal is up', function () {
       context('when the modal is closed', function () {
-        it('returns focus to the create course button', async function () {
+        beforeEach(async function () {
           const { findByText, queryByText } = render(
             <CourseAdmin />,
             dispatchMessage
           );
           // Show the create course modal
-          const createCourseButton = await findByText('Create New Course', { exact: false });
+          createCourseButton = await findByText('Create New Course', { exact: false });
           fireEvent.click(createCourseButton);
           await findByText(/required field/);
           const cancelButton = await findByText(/Cancel/);
           // Close the modal
           fireEvent.click(cancelButton);
           await wait(() => !queryByText(/required field/));
+        });
+        it('returns focus to the create course button', function () {
           strictEqual(
             document.activeElement as HTMLElement,
             createCourseButton
@@ -116,7 +119,7 @@ describe('Course Admin Modal Behavior', function () {
           dispatchMessage
         );
         // Show the create course modal
-        const createCourseButton = await findByText('Create New Course', { exact: false });
+        createCourseButton = await findByText('Create New Course', { exact: false });
         fireEvent.click(createCourseButton);
         await findByText(/required field/);
         // Fill in the required fields and create a new area
