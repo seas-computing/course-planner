@@ -105,43 +105,21 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
   };
 
   /**
-   * The current value of the error message for the Course Area
+   * Keeps track of the error messages for various fields in the course admin modal
    */
-  const [
-    areaErrorMessage,
-    setAreaErrorMessage,
-  ] = useState('');
+  const [formErrors, setFormErrors] = useState({
+    area: '',
+    courseNumber: '',
+    courseTitle: '',
+    termPattern: '',
+  });
 
   /**
-   * The current value of the error message for the Course Number field
+   * Keeps track of the overall error message for the course admin modal
    */
   const [
-    courseNumberErrorMessage,
-    setCourseNumberErrorMessage,
-  ] = useState('');
-
-  /**
-   * The current value of the error message for the Course Title field
-   */
-  const [
-    courseTitleErrorMessage,
-    setCourseTitleErrorMessage,
-  ] = useState('');
-
-  /**
-   * The current value of the error message for the Term Pattern dropdown
-   */
-  const [
-    termPatternErrorMessage,
-    setTermPatternErrorMessage,
-  ] = useState('');
-
-  /**
-   * The current value of the error message within the Course modal
-   */
-  const [
-    courseErrorMessage,
-    setCourseErrorMessage,
+    courseModalError,
+    setCourseModalError,
   ] = useState('');
 
   /**
@@ -163,48 +141,46 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
    */
   const submitCourseForm = async ():
   Promise<ManageCourseResponseDTO> => {
-    let isValid = true;
     const coursePrefixAndNumber = parseCatalogNumberForPrefixNumber(form
       .courseNumber);
     const trimmedNewArea = form.newArea.trim();
-    // Make sure only errors that have not been fixed are shown.
-    setAreaErrorMessage('');
-    setCourseNumberErrorMessage('');
-    setCourseTitleErrorMessage('');
-    setTermPatternErrorMessage('');
-    setCourseErrorMessage('');
+    // An intermediary object of modal errors needed as setting the formErrors
+    // state directly after each conditional below clears out existing errors
+    // in the modal, while we want all errors to show at once.
+    // Make sure only errors that have not been fixed are shown by
+    // initializing to ''.
+    const modalError = {
+      area: '',
+      courseNumber: '',
+      courseTitle: '',
+      termPattern: '',
+    };
     // The second "or" checks for the case when the "create a new area" radio
     // button is selected, the create a new area text input is empty, and the
     // user has selected an existing area from the dropdown
     if (!(form.existingArea || trimmedNewArea) || (form.areaType === 'createArea' && !trimmedNewArea)) {
-      setAreaErrorMessage('Area is required to submit this form.');
-      isValid = false;
+      modalError.area = 'Area is required to submit this form.';
     }
     if (form.areaType === 'createArea' && metadata.areas.indexOf(trimmedNewArea) !== -1) {
-      setAreaErrorMessage('Area already exists.');
-      isValid = false;
+      modalError.area = 'Area already exists.';
     }
     if (!form.courseNumber) {
-      setCourseNumberErrorMessage('Course number is required to submit this form.');
-      isValid = false;
+      modalError.courseNumber = 'Course number is required to submit this form.';
     }
     if (form.courseNumber && !coursePrefixAndNumber.prefix) {
-      setCourseNumberErrorMessage('Course prefix is required to submit this form.');
-      isValid = false;
+      modalError.courseNumber = 'Course prefix is required to submit this form.';
     }
     if (form.courseNumber && !coursePrefixAndNumber.number) {
-      setCourseNumberErrorMessage('A course number following the prefix entered is required to submit this form.');
-      isValid = false;
+      modalError.courseNumber = 'A course number following the prefix entered is required to submit this form.';
     }
     if (!form.courseTitle) {
-      setCourseTitleErrorMessage('Course title is required to submit this form.');
-      isValid = false;
+      modalError.courseTitle = 'Course title is required to submit this form.';
     }
     if (!form.termPattern) {
-      setTermPatternErrorMessage('Term pattern is required to submit this form.');
-      isValid = false;
+      modalError.termPattern = 'Term pattern is required to submit this form.';
     }
-    if (!isValid) {
+    setFormErrors(modalError);
+    if (Object.values(modalError).some((err) => err !== '')) {
       throw new ValidationException('Please fill in the required fields and try again. If the problem persists, contact SEAS Computing.');
     }
     let result: ManageCourseResponseDTO;
@@ -250,11 +226,13 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
         isSEAS: currentCourse ? currentCourse.isSEAS : IS_SEAS.Y,
         termPattern: currentCourse ? (currentCourse.termPattern || '') : '',
       });
-      setAreaErrorMessage('');
-      setCourseNumberErrorMessage('');
-      setCourseTitleErrorMessage('');
-      setTermPatternErrorMessage('');
-      setCourseErrorMessage('');
+      setFormErrors({
+        area: '',
+        courseNumber: '',
+        courseTitle: '',
+        termPattern: '',
+      });
+      setCourseModalError('');
       setCourseModalFocus();
     }
   }, [isVisible, currentCourse]);
@@ -277,7 +255,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
             legend="Course Area"
             isBorderVisible
             isLegendVisible
-            errorMessage={areaErrorMessage}
+            errorMessage={formErrors.area}
             isRequired
           >
             <RadioButton
@@ -341,7 +319,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
             placeholder="e.g. AC 209"
             onChange={updateFormFields}
             value={form.courseNumber}
-            errorMessage={courseNumberErrorMessage}
+            errorMessage={formErrors.courseNumber}
             isRequired
           />
           <TextInput
@@ -352,7 +330,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
             placeholder="e.g. Introduction to Data Science"
             onChange={updateFormFields}
             value={form.courseTitle}
-            errorMessage={courseTitleErrorMessage}
+            errorMessage={formErrors.courseTitle}
             isRequired
           />
           <TextInput
@@ -407,14 +385,14 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
                 }))}
             onChange={updateFormFields}
             value={form.termPattern}
-            errorMessage={termPatternErrorMessage}
+            errorMessage={formErrors.termPattern}
             isRequired
           />
-          {courseErrorMessage && (
+          {courseModalError && (
             <ValidationErrorMessage
               id="editCourseModalErrorMessage"
             >
-              {courseErrorMessage}
+              {courseModalError}
             </ValidationErrorMessage>
           )}
         </form>
@@ -427,7 +405,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
               const editedCourse = await submitCourseForm();
               await onSuccess(editedCourse);
             } catch (error) {
-              setCourseErrorMessage((error as Error).message);
+              setCourseModalError((error as Error).message);
               // leave the modal visible after an error
               return;
             }
