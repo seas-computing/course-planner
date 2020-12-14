@@ -71,7 +71,8 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
 
   const loadCourses = useCallback(async (): Promise<void> => {
     try {
-      setCourses(await CourseAPI.getAllCourses());
+      const loadedCourses = await CourseAPI.getAllCourses();
+      setCourses(loadedCourses);
     } catch (e) {
       dispatchMessage({
         message: new AppMessage(
