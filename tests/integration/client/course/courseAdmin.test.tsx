@@ -43,51 +43,53 @@ describe('Course Admin Modal Behavior', function () {
     dispatchMessage = stub();
   });
   describe('rendering', function () {
-    context('when the create course button is clicked and the modal is up', function () {
-      context('when the modal is closed', function () {
-        beforeEach(async function () {
-          const { findByText, queryByText } = render(
-            <CourseAdmin />,
-            dispatchMessage
-          );
-          // Show the create course modal
-          createCourseButton = await findByText('Create New Course', { exact: false });
-          fireEvent.click(createCourseButton);
-          await findByText(/required field/);
-          const cancelButton = await findByText(/Cancel/);
-          // Close the modal
-          fireEvent.click(cancelButton);
-          await wait(() => !queryByText(/required field/));
-        });
-        it('returns focus to the create course button', function () {
-          strictEqual(
-            document.activeElement as HTMLElement,
-            createCourseButton
-          );
+    describe('modal closing behavior', function () {
+      context('when the create course button is clicked and the modal is up', function () {
+        context('when the modal is closed', function () {
+          beforeEach(async function () {
+            const { findByText, queryByText } = render(
+              <CourseAdmin />,
+              dispatchMessage
+            );
+            // Show the create course modal
+            createCourseButton = await findByText('Create New Course', { exact: false });
+            fireEvent.click(createCourseButton);
+            await findByText(/required field/);
+            const cancelButton = await findByText(/Cancel/);
+            // Close the modal
+            fireEvent.click(cancelButton);
+            await wait(() => !queryByText(/required field/));
+          });
+          it('returns focus to the create course button', function () {
+            strictEqual(
+              document.activeElement as HTMLElement,
+              createCourseButton
+            );
+          });
         });
       });
-    });
-    context('when an edit course button has been clicked and the modal is up', function () {
-      context('when the modal is closed', function () {
-        it('returns focus to the originally clicked edit faculty button', async function () {
-          const { findByText, queryByText } = render(
-            <CourseAdmin />,
-            dispatchMessage
-          );
-          // Show the edit course modal
-          const editCourseButton = await waitForElement(
-            () => document.getElementById('editCourse' + physicsCourseResponse.id)
-          );
-          fireEvent.click(editCourseButton);
-          await findByText(/required field/);
-          const cancelButton = await findByText(/Cancel/);
-          // Close the modal
-          fireEvent.click(cancelButton);
-          await wait(() => !queryByText(/required field/));
-          strictEqual(
-            document.activeElement as HTMLElement,
-            editCourseButton
-          );
+      context('when an edit course button has been clicked and the modal is up', function () {
+        context('when the modal is closed', function () {
+          it('returns focus to the originally clicked edit faculty button', async function () {
+            const { findByText, queryByText } = render(
+              <CourseAdmin />,
+              dispatchMessage
+            );
+            // Show the edit course modal
+            const editCourseButton = await waitForElement(
+              () => document.getElementById('editCourse' + physicsCourseResponse.id)
+            );
+            fireEvent.click(editCourseButton);
+            await findByText(/required field/);
+            const cancelButton = await findByText(/Cancel/);
+            // Close the modal
+            fireEvent.click(cancelButton);
+            await wait(() => !queryByText(/required field/));
+            strictEqual(
+              document.activeElement as HTMLElement,
+              editCourseButton
+            );
+          });
         });
       });
     });
