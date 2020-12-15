@@ -132,7 +132,8 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
 
   const loadFaculty = useCallback(async (): Promise<void> => {
     try {
-      setCurrentFacultyMembersList(await FacultyAPI.getAllFacultyMembers());
+      const facultyList = await FacultyAPI.getAllFacultyMembers();
+      setCurrentFacultyMembersList(facultyList);
     } catch (e) {
       dispatchMessage({
         message: new AppMessage(
