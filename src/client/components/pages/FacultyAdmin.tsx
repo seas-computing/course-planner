@@ -186,7 +186,7 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
                   options={
                     [{ value: 'All', label: 'All' }]
                       .concat(metadata.areas.map((area): {
-                        value: string;label: string;
+                        value; label;
                       } => ({
                         value: area,
                         label: area,
