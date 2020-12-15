@@ -159,63 +159,71 @@ describe('Faculty Admin', function () {
           // The Faculty Admin table contains 4 filters
           strictEqual(filterSpy.callCount, 4);
         });
-        it('calls the listFilter once for each filter except the dropdown', async function () {
-          const { getAllByRole } = render(
-            <FacultyAdmin />,
-            dispatchMessage,
-            metadata
-          );
-          await wait(() => getAllByRole('row').length > 1);
-          const rows = getAllByRole('row');
-          const utils = within(rows[1]);
-          const facultyArea = utils.queryByLabelText(
-            'The table will be filtered as selected in the faculty area dropdown filter'
-          );
-          filterSpy.resetHistory();
-          fireEvent.change(facultyArea, { target: { value: 'All' } });
-          strictEqual(filterSpy.callCount, 3);
+        context('when making a selection from the area dropdown filter', function () {
+          it('calls the listFilter once for each filter except the dropdown', async function () {
+            const { getAllByRole } = render(
+              <FacultyAdmin />,
+              dispatchMessage,
+              metadata
+            );
+            await wait(() => getAllByRole('row').length > 1);
+            const rows = getAllByRole('row');
+            const utils = within(rows[1]);
+            const facultyArea = utils.queryByLabelText(
+              'The table will be filtered as selected in the faculty area dropdown filter'
+            );
+            filterSpy.resetHistory();
+            fireEvent.change(facultyArea, { target: { value: 'All' } });
+            strictEqual(filterSpy.callCount, 3);
+          });
         });
-        it('calls the listFilter once for each filter except the dropdown', async function () {
-          const { getAllByRole } = render(
-            <FacultyAdmin />,
-            dispatchMessage,
-            metadata
-          );
-          await wait(() => getAllByRole('row').length > 1);
-          const rows = getAllByRole('row');
-          const utils = within(rows[1]);
-          const huid = utils.getAllByPlaceholderText('Filter by HUID');
-          filterSpy.resetHistory();
-          fireEvent.change(huid[0], { target: { value: 'AnyValue' } });
-          strictEqual(filterSpy.callCount, 3);
+        context('when entering a value in the HUID filter', function () {
+          it('calls the listFilter once for each filter except the dropdown', async function () {
+            const { getAllByRole } = render(
+              <FacultyAdmin />,
+              dispatchMessage,
+              metadata
+            );
+            await wait(() => getAllByRole('row').length > 1);
+            const rows = getAllByRole('row');
+            const utils = within(rows[1]);
+            const huid = utils.getAllByPlaceholderText('Filter by HUID');
+            filterSpy.resetHistory();
+            fireEvent.change(huid[0], { target: { value: 'AnyValue' } });
+            strictEqual(filterSpy.callCount, 3);
+          });
         });
-        it('calls the listFilter once for each filter except the dropdown', async function () {
-          const { getAllByRole } = render(
-            <FacultyAdmin />,
-            dispatchMessage,
-            metadata
-          );
-          await wait(() => getAllByRole('row').length > 1);
-          const rows = getAllByRole('row');
-          const utils = within(rows[1]);
-          const lastName = utils.getAllByPlaceholderText('Filter by Last Name');
-          filterSpy.resetHistory();
-          fireEvent.change(lastName[0], { target: { value: 'AnyValue' } });
-          strictEqual(filterSpy.callCount, 3);
+        context('when entering a value in the last name filter', function () {
+          it('calls the listFilter once for each filter except the dropdown', async function () {
+            const { getAllByRole } = render(
+              <FacultyAdmin />,
+              dispatchMessage,
+              metadata
+            );
+            await wait(() => getAllByRole('row').length > 1);
+            const rows = getAllByRole('row');
+            const utils = within(rows[1]);
+            const lastName = utils.getAllByPlaceholderText('Filter by Last Name');
+            filterSpy.resetHistory();
+            fireEvent.change(lastName[0], { target: { value: 'AnyValue' } });
+            strictEqual(filterSpy.callCount, 3);
+          });
         });
-        it('calls the listFilter once for each filter except the dropdown', async function () {
-          const { getAllByRole } = render(
-            <FacultyAdmin />,
-            dispatchMessage,
-            metadata
-          );
-          await wait(() => getAllByRole('row').length > 1);
-          const rows = getAllByRole('row');
-          const utils = within(rows[1]);
-          const firstName = utils.getAllByPlaceholderText('Filter by First Name');
-          filterSpy.resetHistory();
-          fireEvent.change(firstName[0], { target: { value: 'AnyValue' } });
-          strictEqual(filterSpy.callCount, 3);
+        context('when entering a value in the first name filter', function () {
+          it('calls the listFilter once for each filter except the dropdown', async function () {
+            const { getAllByRole } = render(
+              <FacultyAdmin />,
+              dispatchMessage,
+              metadata
+            );
+            await wait(() => getAllByRole('row').length > 1);
+            const rows = getAllByRole('row');
+            const utils = within(rows[1]);
+            const firstName = utils.getAllByPlaceholderText('Filter by First Name');
+            filterSpy.resetHistory();
+            fireEvent.change(firstName[0], { target: { value: 'AnyValue' } });
+            strictEqual(filterSpy.callCount, 3);
+          });
         });
       });
     });
