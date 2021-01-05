@@ -212,26 +212,6 @@ describe('Course Modal', function () {
           () => getByText(errorMessage, { exact: false })
         );
       });
-      it('must include the course prefix', async function () {
-        const courseNumberInput = getByLabelText('Course Number', { exact: false }) as HTMLInputElement;
-        fireEvent.change(courseNumberInput, { target: { value: '209' } });
-        const submitButton = getByText('Submit');
-        fireEvent.click(submitButton);
-        const errorMessage = 'Course prefix is required';
-        return waitForElement(
-          () => getByText(errorMessage, { exact: false })
-        );
-      });
-      it('must include the number portion of the course number', async function () {
-        const courseNumberInput = getByLabelText('Course Number', { exact: false }) as HTMLInputElement;
-        fireEvent.change(courseNumberInput, { target: { value: 'CS' } });
-        const submitButton = getByText('Submit');
-        fireEvent.click(submitButton);
-        const errorMessage = 'A course number following the prefix entered is required';
-        return waitForElement(
-          () => getByText(errorMessage, { exact: false })
-        );
-      });
     });
     describe('Course Title', function () {
       it('is a required field', async function () {
