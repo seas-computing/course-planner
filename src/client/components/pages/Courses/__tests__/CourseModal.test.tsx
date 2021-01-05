@@ -200,20 +200,6 @@ describe('Course Modal', function () {
           () => getByText(errorMessage, { exact: false })
         );
       });
-      it('cannot be created if it already exists', async function () {
-        const existingAreaSelect = getByLabelText('Existing Area', { exact: true }) as HTMLSelectElement;
-        const newAreaInput = getByLabelText('New Area', { exact: true }) as HTMLInputElement;
-        const newAreaRadioButton = getByLabelText('Create a new area', { exact: false }) as HTMLInputElement;
-        fireEvent.click(newAreaRadioButton);
-        fireEvent.change(existingAreaSelect, { target: { value: '' } });
-        fireEvent.change(newAreaInput, { target: { value: 'AP' } });
-        const submitButton = getByText('Submit');
-        fireEvent.click(submitButton);
-        const errorMessage = 'Area already exists';
-        return waitForElement(
-          () => getByText(errorMessage, { exact: false })
-        );
-      });
     });
     describe('Course Number', function () {
       it('is a required field', async function () {

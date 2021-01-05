@@ -161,9 +161,6 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
     if (!(form.existingArea || trimmedNewArea) || (form.areaType === 'createArea' && !trimmedNewArea)) {
       modalError.area = 'Area is required to submit this form.';
     }
-    if (form.areaType === 'createArea' && metadata.areas.indexOf(trimmedNewArea) !== -1) {
-      modalError.area = 'Area already exists.';
-    }
     if (!form.courseNumber) {
       modalError.courseNumber = 'Course number is required to submit this form.';
     }
@@ -208,7 +205,12 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
     } else {
       result = await CourseAPI.createCourse(courseInfo);
     }
-    if (form.areaType === 'createArea') {
+    // Before adding the new area to the modal's area dropdown, check that it
+    // does not yet exist in the dropdown since we're allowing existing areas
+    // to be entered under the "Create New Area" section.
+    // In the controller, we are using the existing area instead of creating a
+    // new area for this case.
+    if (form.areaType === 'createArea' && metadata.areas.indexOf(trimmedNewArea) === -1) {
       metadata.updateAreas(trimmedNewArea);
     }
     return result;
