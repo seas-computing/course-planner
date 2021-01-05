@@ -141,8 +141,6 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
    */
   const submitCourseForm = async ():
   Promise<ManageCourseResponseDTO> => {
-    const coursePrefixAndNumber = parseCatalogNumberForPrefixNumber(form
-      .courseNumber);
     const trimmedNewArea = form.newArea.trim();
     // An intermediary object of modal errors needed as setting the formErrors
     // state directly after each conditional below clears out existing errors
@@ -163,12 +161,6 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
     }
     if (!form.courseNumber) {
       modalError.courseNumber = 'Course number is required to submit this form.';
-    }
-    if (form.courseNumber && !coursePrefixAndNumber.prefix) {
-      modalError.courseNumber = 'Course prefix is required to submit this form.';
-    }
-    if (form.courseNumber && !coursePrefixAndNumber.number) {
-      modalError.courseNumber = 'A course number following the prefix entered is required to submit this form.';
     }
     if (!form.courseTitle) {
       modalError.courseTitle = 'Course title is required to submit this form.';
