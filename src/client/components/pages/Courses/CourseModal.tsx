@@ -34,7 +34,6 @@ import {
 } from 'common/constants';
 import ValidationException from 'common/errors/ValidationException';
 import { CourseAPI } from 'client/api';
-import { parseCatalogNumberForPrefixNumber } from 'common/utils/courseHelperFunctions';
 
 interface CourseModalProps {
   /**
@@ -78,6 +77,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
     areaType: 'existingArea',
     existingArea: '',
     newArea: '',
+    catalogPrefix: '',
     courseNumber: '',
     courseTitle: '',
     sameAs: '',
@@ -109,7 +109,6 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
    */
   const [formErrors, setFormErrors] = useState({
     area: '',
-    courseNumber: '',
     courseTitle: '',
     termPattern: '',
   });
@@ -149,7 +148,6 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
     // initializing to ''.
     const modalError = {
       area: '',
-      courseNumber: '',
       courseTitle: '',
       termPattern: '',
     };
@@ -158,9 +156,6 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
     // user has selected an existing area from the dropdown
     if (!(form.existingArea || trimmedNewArea) || (form.areaType === 'createArea' && !trimmedNewArea)) {
       modalError.area = 'Area is required to submit this form.';
-    }
-    if (!form.courseNumber) {
-      modalError.courseNumber = 'Course number is required to submit this form.';
     }
     if (!form.courseTitle) {
       modalError.courseTitle = 'Course title is required to submit this form.';
@@ -173,15 +168,11 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
       throw new ValidationException('Please fill in the required fields and try again. If the problem persists, contact SEAS Computing.');
     }
     let result: ManageCourseResponseDTO;
-    const {
-      prefix,
-      number,
-    } = parseCatalogNumberForPrefixNumber(form.courseNumber);
 
     const courseInfo = {
       area: form.areaType === 'createArea' ? trimmedNewArea : form.existingArea,
-      prefix,
-      number,
+      prefix: form.catalogPrefix.trim(),
+      number: form.courseNumber.trim(),
       title: form.courseTitle.trim(),
       sameAs: form.sameAs.trim(),
       isUndergraduate: form.isUndergraduate,
@@ -213,7 +204,8 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
         areaType: 'existingArea',
         existingArea: currentCourse ? currentCourse.area.name : '',
         newArea: '',
-        courseNumber: currentCourse ? (currentCourse.catalogNumber || '') : '',
+        catalogPrefix: currentCourse ? (currentCourse.prefix || '') : '',
+        courseNumber: currentCourse ? (currentCourse.number || '') : '',
         courseTitle: currentCourse ? (currentCourse.title || '') : '',
         sameAs: currentCourse ? (currentCourse.sameAs || '') : '',
         isUndergraduate: currentCourse ? currentCourse.isUndergraduate : false,
@@ -222,7 +214,6 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
       });
       setFormErrors({
         area: '',
-        courseNumber: '',
         courseTitle: '',
         termPattern: '',
       });
@@ -306,15 +297,22 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
             />
           </Fieldset>
           <TextInput
+            id="catalogPrefix"
+            name="catalogPrefix"
+            label="Catalog Prefix"
+            labelPosition={POSITION.TOP}
+            placeholder="e.g. AC"
+            onChange={updateFormFields}
+            value={form.catalogPrefix}
+          />
+          <TextInput
             id="courseNumber"
             name="courseNumber"
             label="Course Number"
             labelPosition={POSITION.TOP}
-            placeholder="e.g. AC 209"
+            placeholder="e.g. 209"
             onChange={updateFormFields}
             value={form.courseNumber}
-            errorMessage={formErrors.courseNumber}
-            isRequired
           />
           <TextInput
             id="courseTitle"
