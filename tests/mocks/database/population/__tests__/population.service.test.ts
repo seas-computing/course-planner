@@ -34,9 +34,11 @@ describe('Population Service', function () {
   let courseInstanceRepository: Repository<CourseInstance>;
 
   before(async function () {
+    // set the test timeout to 0 to prevent errors on Travis
+    this.timeout(0);
     // Our test database needs to be set up before any of our tests run
     db = new MockDB();
-    await db.init();
+    return db.init();
   });
   after(function () {
     // we need to stop the container after test suite finishes, in case any
