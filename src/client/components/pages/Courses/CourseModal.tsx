@@ -140,7 +140,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
    */
   const submitCourseForm = async ():
   Promise<ManageCourseResponseDTO> => {
-    const trimmedNewArea = form.newArea.trim();
+    const area = form.areaType === 'createArea' ? form.newArea : form.existingArea;
     // An intermediary object of modal errors needed as setting the formErrors
     // state directly after each conditional below clears out existing errors
     // in the modal, while we want all errors to show at once.
@@ -154,7 +154,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
     // The second "or" checks for the case when the "create a new area" radio
     // button is selected, the create a new area text input is empty, and the
     // user has selected an existing area from the dropdown
-    if (!(form.existingArea || trimmedNewArea) || (form.areaType === 'createArea' && !trimmedNewArea)) {
+    if (!(area.length > 0)) {
       modalError.area = 'Area is required to submit this form.';
     }
     if (!form.courseTitle) {
@@ -170,7 +170,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
     let result: ManageCourseResponseDTO;
 
     const courseInfo = {
-      area: form.areaType === 'createArea' ? trimmedNewArea : form.existingArea,
+      area,
       prefix: form.catalogPrefix.trim(),
       number: form.courseNumber.trim(),
       title: form.courseTitle.trim(),
@@ -193,8 +193,8 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
     // to be entered under the "Create New Area" section.
     // In the controller, we are using the existing area instead of creating a
     // new area for this case.
-    if (form.areaType === 'createArea' && metadata.areas.indexOf(trimmedNewArea) === -1) {
-      metadata.updateAreas(trimmedNewArea);
+    if (form.areaType === 'createArea' && metadata.areas.indexOf(area) === -1) {
+      metadata.updateAreas(area);
     }
     return result;
   };
