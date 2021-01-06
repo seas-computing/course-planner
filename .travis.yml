@@ -30,7 +30,8 @@ jobs:
         on:
           branch: main
     - stage: build
+      before_deploy: "./.travis_version_bump.sh"
       script: docker build -t $TRAVIS_REPO_SLUG:$TRAVIS_BRANCH .
       deploy:
         provider: script
-        script: bash docker_deploy.sh
+        script: bash .travis_docker_deploy.sh
