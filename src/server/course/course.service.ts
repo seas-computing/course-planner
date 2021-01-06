@@ -25,6 +25,10 @@ export abstract class FindCoursesQueryResult {
 
   public areaName: string;
 
+  public prefix: string;
+
+  public number: string;
+
   public catalogNumber: string;
 
   public termPattern: TERM_PATTERN;
@@ -62,6 +66,8 @@ export class CourseService {
       .addSelect('c.title', 'title')
       .addSelect('a.id', 'areaId')
       .addSelect('a.name', 'areaName')
+      .addSelect('c.prefix', 'prefix')
+      .addSelect('c.number', 'number')
       .addSelect("CONCAT_WS(' ', c.prefix, c.number)", 'catalogNumber')
       .addSelect('c."termPattern"', 'termPattern')
       .addSelect('c."isUndergraduate"', 'isUndergraduate')
@@ -79,6 +85,8 @@ export class CourseService {
         id: result.areaId,
         name: result.areaName,
       },
+      prefix: result.prefix,
+      number: result.number,
       catalogNumber: result.catalogNumber,
       termPattern: result.termPattern,
       isUndergraduate: result.isUndergraduate,

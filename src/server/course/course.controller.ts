@@ -80,12 +80,14 @@ export class CourseController {
     };
 
     const {
-      number,
       prefix,
+      number,
       ...newCourse
     } = await this.courseService.save(fullCourse);
 
     return {
+      prefix,
+      number,
       ...newCourse,
       catalogNumber: `${prefix} ${number}`,
     };
@@ -142,6 +144,8 @@ export class CourseController {
     });
 
     return {
+      prefix,
+      number,
       ...updatedCourse,
       catalogNumber: `${prefix} ${number}`,
     };
