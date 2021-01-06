@@ -51,6 +51,12 @@ describe('Course Modal', function () {
           strictEqual(newAreaInput.value, '');
         });
       });
+      describe('Catalog Prefix Input', function () {
+        it('defaults to empty string', function () {
+          const catalogPrefixInput = getByLabelText('Catalog Prefix', { exact: false }) as HTMLInputElement;
+          strictEqual(catalogPrefixInput.value, '');
+        });
+      });
       describe('Course Number Input', function () {
         it('defaults to empty string', function () {
           const courseNumberInput = getByLabelText('Course Number', { exact: false }) as HTMLInputElement;
@@ -206,6 +212,24 @@ describe('Course Modal', function () {
         );
       });
     });
+    describe('Catalog Prefix', function () {
+      it('is not a required field', function () {
+        const catalogPrefixInput = getByLabelText('Catalog Prefix', { exact: false }) as HTMLInputElement;
+        fireEvent.change(catalogPrefixInput, { target: { value: '' } });
+        const submitButton = getByText('Submit');
+        fireEvent.click(submitButton);
+        strictEqual(queryAllByRole('alert').length, 0);
+      });
+    });
+    describe('Course Number', function () {
+      it('is not a required field', function () {
+        const courseNumberInput = getByLabelText('Course Number', { exact: false }) as HTMLInputElement;
+        fireEvent.change(courseNumberInput, { target: { value: '' } });
+        const submitButton = getByText('Submit');
+        fireEvent.click(submitButton);
+        strictEqual(queryAllByRole('alert').length, 0);
+      });
+    });
     describe('Course Title', function () {
       it('is a required field', async function () {
         const courseTitleInput = getByLabelText('Course Title', { exact: false }) as HTMLInputElement;
@@ -358,10 +382,15 @@ describe('Course Modal', function () {
             existingAreaSelect,
             { target: { value: physicsCourseResponse.area.name } }
           );
+          const catalogPrefixInput = getByLabelText('Catalog Prefix', { exact: false }) as HTMLInputElement;
+          fireEvent.change(
+            catalogPrefixInput,
+            { target: { value: physicsCourseResponse.prefix } }
+          );
           const courseNumberInput = getByLabelText('Course Number', { exact: false }) as HTMLInputElement;
           fireEvent.change(
             courseNumberInput,
-            { target: { value: physicsCourseResponse.catalogNumber } }
+            { target: { value: physicsCourseResponse.number } }
           );
           const courseTitleInput = getByLabelText('Course Title', { exact: false }) as HTMLInputElement;
           fireEvent.change(
