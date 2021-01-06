@@ -4,7 +4,7 @@ DOCKER_TAG=""
 if [ "$TRAVIS_BRANCH" == "develop" ]; then
   DOCKER_TAG=qa
 fi
-if [ "$TRAVIS_BRANCH" == "master" ]; then
+if [ "$TRAVIS_BRANCH" == "main" ]; then
   DOCKER_TAG=stable
 fi
 
