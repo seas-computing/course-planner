@@ -36,16 +36,16 @@ export abstract class CreateCourse {
     example: 'CS',
   })
   @IsString()
-  @IsNotEmpty()
-  public prefix: string;
+  @IsOptional()
+  public prefix?: string;
 
   @ApiModelProperty({
     type: 'string',
     example: '109b',
   })
   @IsString()
-  @IsNotEmpty()
-  public number: string;
+  @IsOptional()
+  public number?: string;
 
   @ApiModelProperty({
     type: 'string',
@@ -58,7 +58,7 @@ export abstract class CreateCourse {
   @ApiModelProperty({
     type: 'string',
     enum: IS_SEAS,
-    example: true,
+    example: IS_SEAS.Y,
   })
   @IsEnum(IS_SEAS)
   @IsNotEmpty()

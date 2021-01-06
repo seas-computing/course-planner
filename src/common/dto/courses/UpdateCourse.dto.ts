@@ -44,16 +44,16 @@ export abstract class UpdateCourseDTO {
     example: 'CS',
   })
   @IsString()
-  @IsNotEmpty()
-  public prefix: string;
+  @IsOptional()
+  public prefix?: string;
 
   @ApiModelProperty({
     type: 'string',
     example: '109b',
   })
   @IsString()
-  @IsNotEmpty()
-  public number: string;
+  @IsOptional()
+  public number?: string;
 
   @ApiModelProperty({
     type: 'string',
