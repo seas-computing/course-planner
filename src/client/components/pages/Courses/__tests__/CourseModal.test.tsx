@@ -106,6 +106,7 @@ describe('Course Modal', function () {
       it('populates the modal fields according to the current course selected', function () {
         const existingAreaSelect = getByLabelText('Existing Area', { exact: true }) as HTMLSelectElement;
         const newAreaInput = getByLabelText('New Area', { exact: true }) as HTMLInputElement;
+        const catalogPrefixInput = getByLabelText('Catalog Prefix', { exact: false }) as HTMLInputElement;
         const courseNumberInput = getByLabelText('Course Number', { exact: false }) as HTMLInputElement;
         const courseTitleInput = getByLabelText('Course Title', { exact: false }) as HTMLInputElement;
         const sameAsInput = getByLabelText('Same as', { exact: false }) as HTMLInputElement;
@@ -121,8 +122,12 @@ describe('Course Modal', function () {
           ''
         );
         strictEqual(
+          catalogPrefixInput.value,
+          physicsCourseResponse.prefix
+        );
+        strictEqual(
           courseNumberInput.value,
-          physicsCourseResponse.catalogNumber
+          physicsCourseResponse.number
         );
         strictEqual(
           courseTitleInput.value,
@@ -196,18 +201,6 @@ describe('Course Modal', function () {
         const submitButton = getByText('Submit');
         fireEvent.click(submitButton);
         const errorMessage = 'Area is required';
-        return waitForElement(
-          () => getByText(errorMessage, { exact: false })
-        );
-      });
-    });
-    describe('Course Number', function () {
-      it('is a required field', async function () {
-        const courseNumberInput = getByLabelText('Course Number', { exact: false }) as HTMLInputElement;
-        fireEvent.change(courseNumberInput, { target: { value: '' } });
-        const submitButton = getByText('Submit');
-        fireEvent.click(submitButton);
-        const errorMessage = 'Course number is required';
         return waitForElement(
           () => getByText(errorMessage, { exact: false })
         );

@@ -212,7 +212,7 @@ describe('Course API', function () {
 
           deepStrictEqual(response.ok, false);
           deepStrictEqual(response.status, HttpStatus.BAD_REQUEST);
-          strictEqual(/prefix/.test(body.message), true);
+          strictEqual(/termPattern/.test(body.message), true);
         });
       });
       describe('User is not a member of the admin group', function () {
