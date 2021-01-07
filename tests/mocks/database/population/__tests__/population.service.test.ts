@@ -34,9 +34,12 @@ describe('Population Service', function () {
   let courseInstanceRepository: Repository<CourseInstance>;
 
   before(async function () {
+    // set the test timeout to 2 minutes to give the database container time to
+    // come online
+    this.timeout(120000);
     // Our test database needs to be set up before any of our tests run
     db = new MockDB();
-    await db.init();
+    return db.init();
   });
   after(function () {
     // we need to stop the container after test suite finishes, in case any
