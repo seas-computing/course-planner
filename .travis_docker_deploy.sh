@@ -15,9 +15,6 @@ case "$TRAVIS_BRANCH" in
     ;;
 esac
 
-# log into our docker-robot account
-echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
-
 # grab a reference to the repo name (without the org name)
 REPO_NAME=$(echo $TRAVIS_REPO_SLUG | gawk -F/ '{print $2}')
 
@@ -38,6 +35,3 @@ if [[ -n $GIT_TAG ]]; then
   docker tag $TRAVIS_REPO_SLUG:$TRAVIS_BRANCH seascomputing/$REPO_NAME:$GIT_TAG
   docker push seascomputing/$REPO_NAME:$GIT_TAG
 fi
-
-# Log out of docker
-docker logout

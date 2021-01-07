@@ -13,12 +13,12 @@ jobs:
   include:
     - stage: test
       before_script: echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
-      after_script: docker logout
       script:
       - npm run typecheck
       - npm run lint
       - npm run test
       - npm run codecov
+      after_script: docker logout
     - stage: documentation
       script:
         - npm run docs
@@ -32,10 +32,12 @@ jobs:
         on:
           branch: main
     - stage: build
-      before_deploy: "./.travis_version_bump.sh"
+      before_script: echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
       script: docker build -t $TRAVIS_REPO_SLUG:$TRAVIS_BRANCH .
+      before_deploy: "./.travis_version_bump.sh"
       deploy:
         provider: script
         script: bash .travis_docker_deploy.sh
         on: 
           all_branches: true
+      after_deploy: docker logout
