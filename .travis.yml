@@ -35,3 +35,5 @@ jobs:
       deploy:
         provider: script
         script: bash .travis_docker_deploy.sh
+        on: 
+          all_branches: true
