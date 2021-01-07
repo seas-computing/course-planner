@@ -35,7 +35,7 @@ describe('Population Service', function () {
 
   before(async function () {
     // set the test timeout to 0 to prevent errors on Travis
-    this.timeout(0);
+    this.timeout(120000);
     // Our test database needs to be set up before any of our tests run
     db = new MockDB();
     return db.init();

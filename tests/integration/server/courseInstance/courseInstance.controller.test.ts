@@ -42,7 +42,7 @@ describe('CourseInstance API', function () {
   let authStub: SinonStub;
 
   before(async function () {
-    this.timeout(0);
+    this.timeout(120000);
     db = new MockDB();
     return db.init();
   });

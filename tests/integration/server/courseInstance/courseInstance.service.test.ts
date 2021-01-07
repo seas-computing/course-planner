@@ -33,7 +33,7 @@ describe('Course Instance Service', function () {
   let instanceRepository: Repository<CourseInstance>;
   let meetingRepository: Repository<Meeting>;
   before(async function () {
-    this.timeout(0);
+    this.timeout(120000);
     db = new MockDB();
     return db.init();
   });

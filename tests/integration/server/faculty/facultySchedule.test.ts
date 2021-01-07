@@ -51,7 +51,7 @@ describe('Faculty Schedule API', function () {
   let testModule: TestingModule;
   let db: MockDB;
   before(async function () {
-    this.timeout(0);
+    this.timeout(120000);
     db = new MockDB();
     return db.init();
   });
