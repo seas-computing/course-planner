@@ -17,6 +17,7 @@ import {
   physicsCourse,
   metadata,
   newAreaCourseResponse,
+  computerScienceCourse,
 } from 'testData';
 import { CourseAPI } from 'client/api/courses';
 import { render } from 'test-utils';
@@ -93,114 +94,223 @@ describe('Course Admin Modal Behavior', function () {
         });
       });
     });
-    context('when a new area is added while creating a course', function () {
-      it('renders the newly added area to its existing area dropdown', async function () {
-        const NewAreaExample = () => {
-          // Define metadata to be linked to the state
-          // so that changes cause the components to rerender.
-          // (The default render function, customRender,
-          // does not use a rerendering metadata update.)
-          const [currentMetadata, setMetadata] = useState(metadata);
-          const metadataContext = new MetadataContextValue(
-            currentMetadata,
-            setMetadata
+    context('when a course is being created', function () {
+      context('when a new area is added', function () {
+        it('renders the newly added area to its existing area dropdown', async function () {
+          const NewAreaExample = () => {
+            // Define metadata to be linked to the state
+            // so that changes cause the components to rerender.
+            // (The default render function, customRender,
+            // does not use a rerendering metadata update.)
+            const [currentMetadata, setMetadata] = useState(metadata);
+            const metadataContext = new MetadataContextValue(
+              currentMetadata,
+              setMetadata
+            );
+            return (
+              <MetadataContext.Provider value={metadataContext}>
+                <CourseAdmin />
+              </MetadataContext.Provider>
+            );
+          };
+          const {
+            findByText,
+            queryByText,
+            getByLabelText,
+            getByText,
+          } = render(
+            <NewAreaExample />,
+            dispatchMessage
           );
-          return (
-            <MetadataContext.Provider value={metadataContext}>
-              <CourseAdmin />
-            </MetadataContext.Provider>
+          // Show the create course modal
+          createCourseButton = await findByText('Create New Course', { exact: false });
+          fireEvent.click(createCourseButton);
+          await findByText(/required field/);
+          // Fill in the required fields and create a new area
+          const newArea = 'NA';
+          const newAreaRadioButton = getByLabelText('Create a new area', { exact: false }) as HTMLInputElement;
+          const newAreaInput = document.getElementById('newArea') as HTMLInputElement;
+          const courseTitleInput = getByLabelText('Course Title', { exact: false }) as HTMLInputElement;
+          const isSEASSelect = getByLabelText('Is SEAS', { exact: false }) as HTMLSelectElement;
+          const termPatternSelect = getByLabelText('Term Pattern', { exact: false }) as HTMLSelectElement;
+          fireEvent.click(newAreaRadioButton);
+          fireEvent.change(newAreaInput, { target: { value: newArea } });
+          fireEvent.change(courseTitleInput, { target: { value: `${physicsCourse.title}` } });
+          fireEvent.change(isSEASSelect, { target: { value: `${physicsCourse.isSEAS}` } });
+          fireEvent.change(termPatternSelect, { target: { value: `${physicsCourse.termPattern}` } });
+          const submitButton = getByText('Submit');
+          fireEvent.click(submitButton);
+          await wait(() => !queryByText(/required field/));
+          // Check that the new area that was created appears in the course admin existing areas dropdown
+          fireEvent.click(createCourseButton);
+          await findByText(/required field/);
+          const existingAreaSelect = document.getElementById('existingArea') as HTMLSelectElement;
+          const existingAreas = Array.from(existingAreaSelect.options);
+          const isNewAreaIncluded = existingAreas
+            .some((area) => area.text === newArea);
+          strictEqual(isNewAreaIncluded, true);
+        });
+      });
+      context('when an existing area is selected', function () {
+        it('does not re-add the existing area to the area dropdown', async function () {
+          const ExistingAreaExample = () => {
+            // Define metadata to be linked to the state
+            // so that changes cause the components to rerender.
+            // (The default render function, customRender,
+            // does not use a rerendering metadata update.)
+            const [currentMetadata, setMetadata] = useState(metadata);
+            const metadataContext = new MetadataContextValue(
+              currentMetadata,
+              setMetadata
+            );
+            return (
+              <MetadataContext.Provider value={metadataContext}>
+                <CourseAdmin />
+              </MetadataContext.Provider>
+            );
+          };
+          const {
+            findByText,
+            queryByText,
+            getByLabelText,
+            getByText,
+          } = render(
+            <ExistingAreaExample />,
+            dispatchMessage
           );
-        };
-        const {
-          findByText,
-          queryByText,
-          getByLabelText,
-          getByText,
-        } = render(
-          <NewAreaExample />,
-          dispatchMessage
-        );
-        // Show the create course modal
-        createCourseButton = await findByText('Create New Course', { exact: false });
-        fireEvent.click(createCourseButton);
-        await findByText(/required field/);
-        // Fill in the required fields and create a new area
-        const newArea = 'NA';
-        const newAreaRadioButton = getByLabelText('Create a new area', { exact: false }) as HTMLInputElement;
-        const newAreaInput = document.getElementById('newArea') as HTMLInputElement;
-        const courseNumberInput = getByLabelText('Course Number', { exact: false }) as HTMLInputElement;
-        const courseTitleInput = getByLabelText('Course Title', { exact: false }) as HTMLInputElement;
-        const isSEASSelect = getByLabelText('Is SEAS', { exact: false }) as HTMLSelectElement;
-        const termPatternSelect = getByLabelText('Term Pattern', { exact: false }) as HTMLSelectElement;
-        fireEvent.click(newAreaRadioButton);
-        fireEvent.change(newAreaInput, { target: { value: newArea } });
-        fireEvent.change(courseNumberInput, { target: { value: `${physicsCourse.prefix} ${physicsCourse.number}` } });
-        fireEvent.change(courseTitleInput, { target: { value: `${physicsCourse.title}` } });
-        fireEvent.change(isSEASSelect, { target: { value: `${physicsCourse.isSEAS}` } });
-        fireEvent.change(termPatternSelect, { target: { value: `${physicsCourse.termPattern}` } });
-        const submitButton = getByText('Submit');
-        fireEvent.click(submitButton);
-        await wait(() => !queryByText(/required field/));
-        // Check that the new area that was created appears in the course admin existing areas dropdown
-        fireEvent.click(createCourseButton);
-        await findByText(/required field/);
-        const existingAreaSelect = document.getElementById('existingArea') as HTMLSelectElement;
-        const existingAreas = Array.from(existingAreaSelect.options);
-        const isNewAreaIncluded = existingAreas
-          .some((area) => area.text === newArea);
-        strictEqual(isNewAreaIncluded, true);
+          // Show the create course modal
+          createCourseButton = await findByText('Create New Course', { exact: false });
+          fireEvent.click(createCourseButton);
+          await findByText(/required field/);
+          const existingAreaRadioButton = getByLabelText('Select an existing area', { exact: false }) as HTMLInputElement;
+          const courseTitleInput = getByLabelText('Course Title', { exact: false }) as HTMLInputElement;
+          const isSEASSelect = getByLabelText('Is SEAS', { exact: false }) as HTMLSelectElement;
+          const termPatternSelect = getByLabelText('Term Pattern', { exact: false }) as HTMLSelectElement;
+          const existingAreaSelect = document.getElementById('existingArea') as HTMLSelectElement;
+          fireEvent.click(existingAreaRadioButton);
+          fireEvent.change(existingAreaSelect, { target: { value: `${physicsCourse.area.name}` } });
+          fireEvent.change(courseTitleInput, { target: { value: `${physicsCourse.title}` } });
+          fireEvent.change(isSEASSelect, { target: { value: `${physicsCourse.isSEAS}` } });
+          fireEvent.change(termPatternSelect, { target: { value: `${physicsCourse.termPattern}` } });
+          const submitButton = getByText('Submit');
+          fireEvent.click(submitButton);
+          await wait(() => !queryByText(/required field/));
+          // Check that the existing area that was selected while creating a course was not added again to the area dropdown
+          fireEvent.click(createCourseButton);
+          await findByText(/required field/);
+          const existingAreas = Array.from(existingAreaSelect.options);
+          let selectedAreaCount = 0;
+          existingAreas.forEach((area) => {
+            if (area.value === physicsCourse.area.name) {
+              selectedAreaCount += 1;
+            }
+          });
+          strictEqual(selectedAreaCount, 1);
+        });
       });
     });
-    context('when a new area is added by editing a course', function () {
-      it('renders the newly added area to its existing area dropdown', async function () {
-        const NewAreaExample = () => {
-          // Define metadata to be linked to the state
-          // so that changes cause the components to rerender.
-          // (The default render function, customRender,
-          // does not use a rerendering metadata update.)
-          const [currentMetadata, setMetadata] = useState(metadata);
-          const metadataContext = new MetadataContextValue(
-            currentMetadata,
-            setMetadata
+    context('when a course is being edited', function () {
+      context('when a new area is added', function () {
+        it('renders the newly added area to its existing area dropdown', async function () {
+          const NewAreaExample = () => {
+            // Define metadata to be linked to the state
+            // so that changes cause the components to rerender.
+            // (The default render function, customRender,
+            // does not use a rerendering metadata update.)
+            const [currentMetadata, setMetadata] = useState(metadata);
+            const metadataContext = new MetadataContextValue(
+              currentMetadata,
+              setMetadata
+            );
+            return (
+              <MetadataContext.Provider value={metadataContext}>
+                <CourseAdmin />
+              </MetadataContext.Provider>
+            );
+          };
+          const {
+            findByText,
+            queryByText,
+            getByLabelText,
+            getByText,
+          } = render(
+            <NewAreaExample />,
+            dispatchMessage
           );
-          return (
-            <MetadataContext.Provider value={metadataContext}>
-              <CourseAdmin />
-            </MetadataContext.Provider>
+          // Show the create course modal
+          const editCourseButton = await waitForElement(
+            () => document.getElementById('editCourse' + physicsCourseResponse.id)
           );
-        };
-        const {
-          findByText,
-          queryByText,
-          getByLabelText,
-          getByText,
-        } = render(
-          <NewAreaExample />,
-          dispatchMessage
-        );
-        // Show the create course modal
-        const editCourseButton = await waitForElement(
-          () => document.getElementById('editCourse' + physicsCourseResponse.id)
-        );
-        fireEvent.click(editCourseButton);
-        await findByText(/required field/);
-        // Fill in the required fields and create a new area
-        const newArea = 'ZZ';
-        const newAreaRadioButton = getByLabelText('Create a new area', { exact: false }) as HTMLInputElement;
-        const newAreaInput = document.getElementById('newArea') as HTMLInputElement;
-        fireEvent.click(newAreaRadioButton);
-        fireEvent.change(newAreaInput, { target: { value: newArea } });
-        const submitButton = getByText('Submit');
-        fireEvent.click(submitButton);
-        await wait(() => !queryByText(/required field/));
-        // Check that the new area that was created appears in the course admin existing areas dropdown
-        fireEvent.click(editCourseButton);
-        await findByText(/required field/);
-        const existingAreaSelect = document.getElementById('existingArea') as HTMLSelectElement;
-        const existingAreas = Array.from(existingAreaSelect.options);
-        const isNewAreaIncluded = existingAreas
-          .some((area) => area.text === newArea);
-        strictEqual(isNewAreaIncluded, true);
+          fireEvent.click(editCourseButton);
+          await findByText(/required field/);
+          // Fill in the required fields and create a new area
+          const newArea = 'ZZ';
+          const newAreaRadioButton = getByLabelText('Create a new area', { exact: false }) as HTMLInputElement;
+          const newAreaInput = document.getElementById('newArea') as HTMLInputElement;
+          fireEvent.click(newAreaRadioButton);
+          fireEvent.change(newAreaInput, { target: { value: newArea } });
+          const submitButton = getByText('Submit');
+          fireEvent.click(submitButton);
+          await wait(() => !queryByText(/required field/));
+          // Check that the new area that was created appears in the course admin existing areas dropdown
+          fireEvent.click(editCourseButton);
+          await findByText(/required field/);
+          const existingAreaSelect = document.getElementById('existingArea') as HTMLSelectElement;
+          const existingAreas = Array.from(existingAreaSelect.options);
+          const isNewAreaIncluded = existingAreas
+            .some((area) => area.text === newArea);
+          strictEqual(isNewAreaIncluded, true);
+        });
+      });
+      context('when an existing area is selected', function () {
+        it('does not re-add the existing area to the area dropdown', async function () {
+          const ExistingAreaExample = () => {
+            // Define metadata to be linked to the state
+            // so that changes cause the components to rerender.
+            // (The default render function, customRender,
+            // does not use a rerendering metadata update.)
+            const [currentMetadata, setMetadata] = useState(metadata);
+            const metadataContext = new MetadataContextValue(
+              currentMetadata,
+              setMetadata
+            );
+            return (
+              <MetadataContext.Provider value={metadataContext}>
+                <CourseAdmin />
+              </MetadataContext.Provider>
+            );
+          };
+          const {
+            findByText,
+            queryByText,
+            getByLabelText,
+            getByText,
+          } = render(
+            <ExistingAreaExample />,
+            dispatchMessage
+          );
+          // Show the create course modal
+          const editCourseButton = await waitForElement(
+            () => document.getElementById('editCourse' + physicsCourseResponse.id)
+          );
+          fireEvent.click(editCourseButton);
+          await findByText(/required field/);
+          const existingAreaRadioButton = getByLabelText('Select an existing area', { exact: false }) as HTMLInputElement;
+          const existingAreaSelect = document.getElementById('existingArea') as HTMLSelectElement;
+          fireEvent.click(existingAreaRadioButton);
+          fireEvent.change(existingAreaSelect, { target: { value: `${computerScienceCourse.area.name}` } });
+          const submitButton = getByText('Submit');
+          fireEvent.click(submitButton);
+          await wait(() => !queryByText(/required field/));
+          const existingAreas = Array.from(existingAreaSelect.options);
+          let selectedAreaCount = 0;
+          existingAreas.forEach((area) => {
+            if (area.value === computerScienceCourse.area.name) {
+              selectedAreaCount += 1;
+            }
+          });
+          strictEqual(selectedAreaCount, 1);
+        });
       });
     });
   });
