@@ -12,6 +12,8 @@ stages:
 jobs:
   include:
     - stage: test
+      before_script: echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
+      after_script: docker logout
       script:
       - npm run typecheck
       - npm run lint
