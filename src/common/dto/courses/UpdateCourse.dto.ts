@@ -8,6 +8,7 @@ import {
   IsUUID,
   IsNotEmpty,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 /**
  * @module Server.DTOS.Courses
@@ -37,6 +38,7 @@ export abstract class UpdateCourseDTO {
   })
   @IsString()
   @IsNotEmpty()
+  @Transform((value: string) => value?.trim())
   public title: string;
 
   @ApiModelProperty({
@@ -45,6 +47,7 @@ export abstract class UpdateCourseDTO {
   })
   @IsString()
   @IsOptional()
+  @Transform((value: string) => value?.trim())
   public prefix?: string;
 
   @ApiModelProperty({
@@ -53,6 +56,7 @@ export abstract class UpdateCourseDTO {
   })
   @IsString()
   @IsOptional()
+  @Transform((value: string) => value?.trim())
   public number?: string;
 
   @ApiModelProperty({
@@ -61,6 +65,7 @@ export abstract class UpdateCourseDTO {
   })
   @IsString()
   @IsOptional()
+  @Transform((value: string) => value?.trim())
   public sameAs?: string;
 
   @ApiModelProperty({
@@ -78,6 +83,7 @@ export abstract class UpdateCourseDTO {
   })
   @IsString()
   @IsOptional()
+  @Transform((value: string) => value?.trim())
   public notes?: string;
 
   @ApiModelProperty({

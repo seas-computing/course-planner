@@ -7,6 +7,7 @@ import {
   IsEnum,
   IsOptional,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 /**
  * @module Server.DTOS.Courses
@@ -14,6 +15,7 @@ import {
 
 export abstract class CreateCourse {
   @IsNotEmpty()
+  @Transform((value: string) => value?.trim())
   public area: string;
 
   @ApiModelProperty({
@@ -29,6 +31,7 @@ export abstract class CreateCourse {
   })
   @IsString()
   @IsNotEmpty()
+  @Transform((value: string) => value?.trim())
   public title: string;
 
   @ApiModelProperty({
@@ -37,6 +40,7 @@ export abstract class CreateCourse {
   })
   @IsString()
   @IsOptional()
+  @Transform((value: string) => value?.trim())
   public prefix?: string;
 
   @ApiModelProperty({
@@ -45,6 +49,7 @@ export abstract class CreateCourse {
   })
   @IsString()
   @IsOptional()
+  @Transform((value: string) => value?.trim())
   public number?: string;
 
   @ApiModelProperty({
@@ -53,6 +58,7 @@ export abstract class CreateCourse {
   })
   @IsString()
   @IsOptional()
+  @Transform((value: string) => value?.trim())
   public sameAs?: string;
 
   @ApiModelProperty({
@@ -71,6 +77,7 @@ export abstract class CreateCourse {
   })
   @IsString()
   @IsOptional()
+  @Transform((value: string) => value?.trim())
   public notes?: string;
 
   @ApiModelProperty({

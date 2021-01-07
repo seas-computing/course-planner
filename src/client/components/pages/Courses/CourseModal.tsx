@@ -171,10 +171,10 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
 
     const courseInfo = {
       area,
-      prefix: form.catalogPrefix.trim(),
-      number: form.courseNumber.trim(),
-      title: form.courseTitle.trim(),
-      sameAs: form.sameAs.trim(),
+      prefix: form.catalogPrefix,
+      number: form.courseNumber,
+      title: form.courseTitle,
+      sameAs: form.sameAs,
       isUndergraduate: form.isUndergraduate,
       isSEAS: form.isSEAS as IS_SEAS,
       termPattern: form.termPattern as TERM_PATTERN,
