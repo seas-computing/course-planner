@@ -77,16 +77,6 @@ export abstract class UpdateCourseDTO {
   public isSEAS: IS_SEAS;
 
   @ApiModelProperty({
-    type: 'string',
-    example: 'Taking place in a larger room this year',
-    default: '',
-  })
-  @IsString()
-  @IsOptional()
-  @Transform((value: string) => value?.trim())
-  public notes?: string;
-
-  @ApiModelProperty({
     type: 'boolean',
     example: false,
   })
