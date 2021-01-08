@@ -18,12 +18,10 @@ export class MetadataContextValue {
 
   updateAreas(area: string): void {
     const { areas } = this.value;
-    if (areas.indexOf(area) === -1) {
-      this.update({
-        ...this.value,
-        areas: [...areas, area].sort(),
-      });
-    }
+    this.update({
+      ...this.value,
+      areas: Array.from(new Set([...areas, area])).sort(),
+    });
   }
 
   get areas(): string[] {
