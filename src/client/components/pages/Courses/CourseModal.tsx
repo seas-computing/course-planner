@@ -32,8 +32,8 @@ import {
   termPatternEnumToString,
   TERM_PATTERN,
 } from 'common/constants';
-import ValidationException from 'common/errors/ValidationException';
 import { CourseAPI } from 'client/api';
+import { AxiosError } from 'client/api/request';
 
 interface CourseModalProps {
   /**
@@ -54,6 +54,39 @@ interface CourseModalProps {
    */
   onSuccess?: (course: ManageCourseResponseDTO) => Promise<void>;
 }
+
+interface FormErrors {
+  area: string;
+  title: string;
+  isSEAS: string;
+  termPattern: string;
+}
+
+const generalErrorMessage = 'Please fill in the required fields and try again. If the problem persists, contact SEAS Computing.';
+
+interface BadRequestErrorProblem {
+  children: unknown[];
+  constraints: Record<string, string>;
+  property: string;
+}
+
+interface BadRequestError {
+  statusCode: string;
+  error: string;
+  message: BadRequestErrorProblem[];
+}
+
+const displayNames: Record<string, string> = {
+  existingArea: 'Existing Area',
+  newArea: 'New Area',
+  catalogPrefix: 'Catalog Prefix',
+  courseNumber: 'Course Number',
+  courseTitle: 'Course Title',
+  sameAs: 'Same As',
+  isUndergraduate: 'Undergraduate',
+  isSEAS: 'Is SEAS',
+  termPattern: 'Term Pattern',
+};
 
 /**
  * This component represents the create and edit course modals, which will be
@@ -109,9 +142,10 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
    */
   const [formErrors, setFormErrors] = useState({
     area: '',
-    courseTitle: '',
+    title: '',
+    isSEAS: '',
     termPattern: '',
-  });
+  } as FormErrors);
 
   /**
    * Keeps track of the overall error message for the course admin modal
@@ -141,34 +175,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
   const submitCourseForm = async ():
   Promise<ManageCourseResponseDTO> => {
     const area = form.areaType === 'createArea' ? form.newArea : form.existingArea;
-    // An intermediary object of modal errors needed as setting the formErrors
-    // state directly after each conditional below clears out existing errors
-    // in the modal, while we want all errors to show at once.
-    // Make sure only errors that have not been fixed are shown by
-    // initializing to ''.
-    const modalError = {
-      area: '',
-      courseTitle: '',
-      termPattern: '',
-    };
-    // The second "or" checks for the case when the "create a new area" radio
-    // button is selected, the create a new area text input is empty, and the
-    // user has selected an existing area from the dropdown
-    if (!(area.length > 0)) {
-      modalError.area = 'Area is required to submit this form.';
-    }
-    if (!form.courseTitle) {
-      modalError.courseTitle = 'Course title is required to submit this form.';
-    }
-    if (!form.termPattern) {
-      modalError.termPattern = 'Term pattern is required to submit this form.';
-    }
-    setFormErrors(modalError);
-    if (Object.values(modalError).some((err) => err !== '')) {
-      throw new ValidationException('Please fill in the required fields and try again. If the problem persists, contact SEAS Computing.');
-    }
     let result: ManageCourseResponseDTO;
-
     const courseInfo = {
       area,
       prefix: form.catalogPrefix,
@@ -214,7 +221,8 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
       });
       setFormErrors({
         area: '',
-        courseTitle: '',
+        title: '',
+        isSEAS: '',
         termPattern: '',
       });
       setCourseModalError('');
@@ -262,7 +270,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
                   areaType: 'existingArea',
                 });
               }}
-              label="Existing Area"
+              label={displayNames.existingArea}
               isLabelVisible={false}
               // Insert an empty option so that no area is pre-selected in dropdown
               options={
@@ -291,7 +299,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
                 ...form,
                 areaType: 'createArea',
               })}
-              label="New Area"
+              label={displayNames.newArea}
               isLabelVisible={false}
               labelPosition={POSITION.TOP}
             />
@@ -299,7 +307,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
           <TextInput
             id="catalogPrefix"
             name="catalogPrefix"
-            label="Catalog Prefix"
+            label={displayNames.catalogPrefix}
             labelPosition={POSITION.TOP}
             placeholder="e.g. AC"
             onChange={updateFormFields}
@@ -308,7 +316,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
           <TextInput
             id="courseNumber"
             name="courseNumber"
-            label="Course Number"
+            label={displayNames.courseNumber}
             labelPosition={POSITION.TOP}
             placeholder="e.g. 209"
             onChange={updateFormFields}
@@ -317,18 +325,18 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
           <TextInput
             id="courseTitle"
             name="courseTitle"
-            label="Course Title"
+            label={displayNames.courseTitle}
             labelPosition={POSITION.TOP}
             placeholder="e.g. Introduction to Data Science"
             onChange={updateFormFields}
             value={form.courseTitle}
-            errorMessage={formErrors.courseTitle}
+            errorMessage={formErrors.title}
             isRequired
           />
           <TextInput
             id="sameAs"
             name="sameAs"
-            label="Same as..."
+            label={displayNames.sameAs}
             labelPosition={POSITION.TOP}
             placeholder="e.g. AC 221"
             onChange={updateFormFields}
@@ -338,31 +346,33 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
             id="isUndergraduate"
             name="isUndergraduate"
             checked={form.isUndergraduate}
-            label="Undergraduate"
+            label={displayNames.isUndergraduate}
             onChange={updateFormFields}
             labelPosition={POSITION.RIGHT}
           />
           <Dropdown
             id="isSEAS"
             name="isSEAS"
-            label="Is SEAS"
-            options={Object.values(IS_SEAS)
-              .map((isSEASOption):
-              {value: string; label: string} => {
-                const isSEASDisplayTitle = isSEASEnumToString(isSEASOption);
-                return {
-                  value: isSEASOption,
-                  label: isSEASDisplayTitle,
-                };
-              })}
+            label={displayNames.isSEAS}
+            options={[{ value: '', label: '' }]
+              .concat(Object.values(IS_SEAS)
+                .map((isSEASOption):
+                {value: string; label: string} => {
+                  const isSEASDisplayTitle = isSEASEnumToString(isSEASOption);
+                  return {
+                    value: isSEASOption,
+                    label: isSEASDisplayTitle,
+                  };
+                }))}
             onChange={updateFormFields}
             value={form.isSEAS}
+            errorMessage={formErrors.isSEAS}
             isRequired
           />
           <Dropdown
             id="termPattern"
             name="termPattern"
-            label="Term Pattern"
+            label={displayNames.termPattern}
             options={[{ value: '', label: '' }]
               .concat(Object.values(TERM_PATTERN)
                 .map((termPatternOption):
@@ -397,7 +407,52 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
               const editedCourse = await submitCourseForm();
               await onSuccess(editedCourse);
             } catch (error) {
-              setCourseModalError((error as Error).message);
+              if ((error as AxiosError).response) {
+                const serverError = error as AxiosError;
+                const { response } = serverError;
+                if (response.data
+                    && (response.data as BadRequestError).message) {
+                  const data = response.data as BadRequestError;
+                  const messages = data.message;
+                  const errors = {};
+                  messages.forEach((problem) => {
+                    const { property } = problem;
+                    // Since the error message returned from the server includes
+                    // the property name in camel case, this converts the property
+                    // name to be more understandable by the user (e.g. 'termPattern'
+                    // becomes 'Term Pattern'). The rest of the error message follows.
+                    let displayName = displayNames[property];
+                    // If we don't know the display name,
+                    // convert the property to title case for user readability.
+                    if (!displayName) {
+                      // Convert from camel case to title case
+                      displayName = property.replace(
+                        /([a-z])([A-Z])/g, '$1 $2'
+                      );
+                      displayName = displayName.charAt(0)
+                        .toUpperCase() + displayName
+                        .slice(1);
+                    }
+                    // We ignore the object keys
+                    // since they don't contain additional info
+                    errors[property] = Object.values(problem.constraints)
+                      // Replace the beginning with the display name
+                      // if the first word of the error is the property name
+                      .map((constraint) => constraint.replace(
+                        new RegExp('^' + property + '\\b'),
+                        displayName
+                      ))
+                      // If we get multiple errors per property, separate them
+                      .join('; ');
+                  });
+                  setFormErrors(errors as FormErrors);
+                  setCourseModalError(generalErrorMessage);
+                } else {
+                  setCourseModalError((error as Error).message);
+                }
+              } else {
+                setCourseModalError((error as Error).message);
+              }
               // leave the modal visible after an error
               return;
             }
