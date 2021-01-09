@@ -12,7 +12,6 @@ import {
   HttpServer,
   ForbiddenException,
   UnauthorizedException,
-  BadRequestException,
 } from '@nestjs/common';
 import { strictEqual, deepStrictEqual } from 'assert';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -38,6 +37,7 @@ import { Area } from 'server/area/area.entity';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { SelectQueryBuilder } from 'typeorm';
+import { BadRequestInfo } from 'client/components/pages/Courses/CourseModal';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 describe('Course API', function () {
@@ -201,18 +201,73 @@ describe('Course API', function () {
             computerScienceCourseResponse
           );
         });
-        it('reports validation errors', async function () {
+        it('reports a validation error when area is missing', async function () {
           authStub.resolves(adminUser);
 
           const response = await request(api)
             .post('/api/courses')
             .send({ title: computerScienceCourse.title });
 
-          const body = response.body as BadRequestException;
+          const body = response.body as BadRequestInfo;
+
+          // Collects all of the field names that contain errors
+          const errorFields = [];
+          body.message.map((errorInfo) => errorFields.push(errorInfo.property));
 
           deepStrictEqual(response.ok, false);
           deepStrictEqual(response.status, HttpStatus.BAD_REQUEST);
-          strictEqual(/termPattern/.test(body.message), true);
+          strictEqual(errorFields.includes('area'), true);
+        });
+        it('reports a validation error when title is missing', async function () {
+          authStub.resolves(adminUser);
+
+          const response = await request(api)
+            .post('/api/courses')
+            .send({ termPattern: computerScienceCourse.termPattern });
+
+          const body = response.body as BadRequestInfo;
+
+          // Collects all of the field names that contain errors
+          const errorFields = [];
+          body.message.map((errorInfo) => errorFields.push(errorInfo.property));
+
+          deepStrictEqual(response.ok, false);
+          deepStrictEqual(response.status, HttpStatus.BAD_REQUEST);
+          strictEqual(errorFields.includes('title'), true);
+        });
+        it('reports a validation error when isSEAS is missing', async function () {
+          authStub.resolves(adminUser);
+
+          const response = await request(api)
+            .post('/api/courses')
+            .send({ title: computerScienceCourse.title });
+
+          const body = response.body as BadRequestInfo;
+
+          // Collects all of the field names that contain errors
+          const errorFields = [];
+          body.message.map((errorInfo) => errorFields.push(errorInfo.property));
+
+          deepStrictEqual(response.ok, false);
+          deepStrictEqual(response.status, HttpStatus.BAD_REQUEST);
+          strictEqual(errorFields.includes('isSEAS'), true);
+        });
+        it('reports a validation error when term pattern is missing', async function () {
+          authStub.resolves(adminUser);
+
+          const response = await request(api)
+            .post('/api/courses')
+            .send({ title: computerScienceCourse.title });
+
+          const body = response.body as BadRequestInfo;
+
+          // Collects all of the field names that contain errors
+          const errorFields = [];
+          body.message.map((errorInfo) => errorFields.push(errorInfo.property));
+
+          deepStrictEqual(response.ok, false);
+          deepStrictEqual(response.status, HttpStatus.BAD_REQUEST);
+          strictEqual(errorFields.includes('termPattern'), true);
         });
       });
       describe('User is not a member of the admin group', function () {
@@ -281,6 +336,74 @@ describe('Course API', function () {
           strictEqual(response.ok, true);
           strictEqual(response.status, HttpStatus.OK);
           strictEqual(mockCourseRepository.save.callCount, 1);
+        });
+        it('reports a validation error when area is missing', async function () {
+          authStub.resolves(adminUser);
+
+          const response = await request(api)
+            .put(`/api/courses/${computerScienceCourse.id}`)
+            .send({ title: computerScienceCourse.title });
+
+          const body = response.body as BadRequestInfo;
+
+          // Collects all of the field names that contain errors
+          const errorFields = [];
+          body.message.map((errorInfo) => errorFields.push(errorInfo.property));
+
+          deepStrictEqual(response.ok, false);
+          deepStrictEqual(response.status, HttpStatus.BAD_REQUEST);
+          strictEqual(errorFields.includes('area'), true);
+        });
+        it('reports a validation error when title is missing', async function () {
+          authStub.resolves(adminUser);
+
+          const response = await request(api)
+            .put(`/api/courses/${computerScienceCourse.id}`)
+            .send({ termPattern: computerScienceCourse.termPattern });
+
+          const body = response.body as BadRequestInfo;
+
+          // Collects all of the field names that contain errors
+          const errorFields = [];
+          body.message.map((errorInfo) => errorFields.push(errorInfo.property));
+
+          deepStrictEqual(response.ok, false);
+          deepStrictEqual(response.status, HttpStatus.BAD_REQUEST);
+          strictEqual(errorFields.includes('title'), true);
+        });
+        it('reports a validation error when isSEAS is missing', async function () {
+          authStub.resolves(adminUser);
+
+          const response = await request(api)
+            .put(`/api/courses/${computerScienceCourse.id}`)
+            .send({ title: computerScienceCourse.title });
+
+          const body = response.body as BadRequestInfo;
+
+          // Collects all of the field names that contain errors
+          const errorFields = [];
+          body.message.map((errorInfo) => errorFields.push(errorInfo.property));
+
+          deepStrictEqual(response.ok, false);
+          deepStrictEqual(response.status, HttpStatus.BAD_REQUEST);
+          strictEqual(errorFields.includes('isSEAS'), true);
+        });
+        it('reports a validation error when term pattern is missing', async function () {
+          authStub.resolves(adminUser);
+
+          const response = await request(api)
+            .put(`/api/courses/${computerScienceCourse.id}`)
+            .send({ title: computerScienceCourse.title });
+
+          const body = response.body as BadRequestInfo;
+
+          // Collects all of the field names that contain errors
+          const errorFields = [];
+          body.message.map((errorInfo) => errorFields.push(errorInfo.property));
+
+          deepStrictEqual(response.ok, false);
+          deepStrictEqual(response.status, HttpStatus.BAD_REQUEST);
+          strictEqual(errorFields.includes('termPattern'), true);
         });
       });
       describe('User is not a member of the admin group', function () {
