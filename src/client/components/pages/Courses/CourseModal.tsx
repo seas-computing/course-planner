@@ -34,6 +34,7 @@ import {
 } from 'common/constants';
 import { CourseAPI } from 'client/api';
 import { AxiosError } from 'client/api/request';
+import { camelCaseToTitleCase } from 'common/utils/util';
 
 interface CourseModalProps {
   /**
@@ -64,16 +65,16 @@ interface FormErrors {
 
 const generalErrorMessage = 'Please fill in the required fields and try again. If the problem persists, contact SEAS Computing.';
 
-interface BadRequestErrorProblem {
+export interface BadRequestMessageInfo {
   children: unknown[];
   constraints: Record<string, string>;
   property: string;
 }
 
-interface BadRequestError {
+export interface BadRequestInfo {
   statusCode: string;
   error: string;
-  message: BadRequestErrorProblem[];
+  message: BadRequestMessageInfo[];
 }
 
 const displayNames: Record<string, string> = {
@@ -411,8 +412,8 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
                 const serverError = error as AxiosError;
                 const { response } = serverError;
                 if (response.data
-                    && (response.data as BadRequestError).message) {
-                  const data = response.data as BadRequestError;
+                    && (response.data as BadRequestInfo).message) {
+                  const data = response.data as BadRequestInfo;
                   const messages = data.message;
                   const errors = {};
                   messages.forEach((problem) => {
@@ -425,13 +426,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
                     // If we don't know the display name,
                     // convert the property to title case for user readability.
                     if (!displayName) {
-                      // Convert from camel case to title case
-                      displayName = property.replace(
-                        /([a-z])([A-Z])/g, '$1 $2'
-                      );
-                      displayName = displayName.charAt(0)
-                        .toUpperCase() + displayName
-                        .slice(1);
+                      displayName = camelCaseToTitleCase(property);
                     }
                     // We ignore the object keys
                     // since they don't contain additional info
