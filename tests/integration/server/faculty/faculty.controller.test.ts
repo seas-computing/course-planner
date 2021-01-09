@@ -253,9 +253,12 @@ describe('Faculty API', function () {
               area: appliedMathFacultyMember.area.name,
             });
           const body = response.body as BadRequestException;
+          // Collects all of the field names that contain errors
+          const errorFields = [];
+          body.message.map((errorInfo) => errorFields.push(errorInfo.property));
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.BAD_REQUEST);
-          strictEqual(/HUID/.test(body.message), true);
+          strictEqual(errorFields.includes('HUID'), true);
         });
         it('reports a validation error when category is missing', async function () {
           mockAreaRepository.findOne.resolves(appliedMathFacultyMember.area);
@@ -268,10 +271,12 @@ describe('Faculty API', function () {
               area: appliedMathFacultyMember.area.name,
             });
           const body = response.body as BadRequestException;
-          const message = body.message as string;
+          // Collects all of the field names that contain errors
+          const errorFields = [];
+          body.message.map((errorInfo) => errorFields.push(errorInfo.property));
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.BAD_REQUEST);
-          strictEqual(message.includes('category'), true);
+          strictEqual(errorFields.includes('category'), true);
         });
         it('does not require a first name', async function () {
           mockAreaRepository.findOne.resolves(appliedMathFacultyMember.area);
@@ -394,9 +399,12 @@ describe('Faculty API', function () {
               area: 'ESE',
             });
           const body = response.body as BadRequestException;
+          // Collects all of the field names that contain errors
+          const errorFields = [];
+          body.message.map((errorInfo) => errorFields.push(errorInfo.property));
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.BAD_REQUEST);
-          strictEqual(/category/.test(body.message), true);
+          strictEqual(errorFields.includes('category'), true);
         });
         it('does not require a first name', async function () {
           const newFacultyMemberInfo = {
