@@ -46,8 +46,8 @@ import { FacultyScheduleSemesterView } from 'server/faculty/FacultyScheduleSemes
 import { FacultyScheduleView } from 'server/faculty/FacultyScheduleView.entity';
 import { Absence } from 'server/absence/absence.entity';
 import { Semester } from 'server/semester/semester.entity';
-import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import { BadRequestInfo } from 'client/components/pages/Courses/CourseModal';
+import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 describe('Faculty API', function () {
   let authStub: SinonStub;
