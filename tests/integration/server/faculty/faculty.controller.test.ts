@@ -11,7 +11,6 @@ import {
   HttpStatus,
   HttpServer,
   ForbiddenException,
-  BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
 import {
@@ -48,6 +47,7 @@ import { FacultyScheduleView } from 'server/faculty/FacultyScheduleView.entity';
 import { Absence } from 'server/absence/absence.entity';
 import { Semester } from 'server/semester/semester.entity';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
+import { BadRequestInfo } from 'client/components/pages/Courses/CourseModal';
 
 describe('Faculty API', function () {
   let authStub: SinonStub;
@@ -252,7 +252,7 @@ describe('Faculty API', function () {
               category: appliedMathFacultyMember.category,
               area: appliedMathFacultyMember.area.name,
             });
-          const body = response.body as BadRequestException;
+          const body = response.body as BadRequestInfo;
           // Collects all of the field names that contain errors
           const errorFields = [];
           body.message.map((errorInfo) => errorFields.push(errorInfo.property));
@@ -270,7 +270,7 @@ describe('Faculty API', function () {
               HUID: '12345678',
               area: appliedMathFacultyMember.area.name,
             });
-          const body = response.body as BadRequestException;
+          const body = response.body as BadRequestInfo;
           // Collects all of the field names that contain errors
           const errorFields = [];
           body.message.map((errorInfo) => errorFields.push(errorInfo.property));
@@ -398,7 +398,7 @@ describe('Faculty API', function () {
               lastName: 'Lovelace',
               area: 'ESE',
             });
-          const body = response.body as BadRequestException;
+          const body = response.body as BadRequestInfo;
           // Collects all of the field names that contain errors
           const errorFields = [];
           body.message.map((errorInfo) => errorFields.push(errorInfo.property));
