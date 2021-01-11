@@ -8,6 +8,7 @@ import {
   IsOptional,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { trimIfString } from '../util';
 
 /**
  * @module Server.DTOS.Courses
@@ -15,7 +16,7 @@ import { Transform } from 'class-transformer';
 
 export abstract class CreateCourse {
   @IsNotEmpty()
-  @Transform((value: string) => value?.trim())
+  @Transform(trimIfString)
   public area: string;
 
   @ApiModelProperty({
@@ -31,7 +32,7 @@ export abstract class CreateCourse {
   })
   @IsString()
   @IsNotEmpty()
-  @Transform((value: string) => value?.trim())
+  @Transform(trimIfString)
   public title: string;
 
   @ApiModelProperty({
@@ -40,7 +41,7 @@ export abstract class CreateCourse {
   })
   @IsString()
   @IsOptional()
-  @Transform((value: string) => value?.trim())
+  @Transform(trimIfString)
   public prefix?: string;
 
   @ApiModelProperty({
@@ -49,7 +50,7 @@ export abstract class CreateCourse {
   })
   @IsString()
   @IsOptional()
-  @Transform((value: string) => value?.trim())
+  @Transform(trimIfString)
   public number?: string;
 
   @ApiModelProperty({
@@ -58,7 +59,7 @@ export abstract class CreateCourse {
   })
   @IsString()
   @IsOptional()
-  @Transform((value: string) => value?.trim())
+  @Transform(trimIfString)
   public sameAs?: string;
 
   @ApiModelProperty({
