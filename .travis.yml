@@ -6,17 +6,19 @@ services:
 stages:
   - test
   - name: documentation
-    if: branch = master
+    if: branch = main
   - name: build
-    if: (branch = master OR branch = develop) AND type != pull_request
+    if: (branch = main OR branch = develop) AND type != pull_request
 jobs:
   include:
     - stage: test
+      before_script: echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
       script:
       - npm run typecheck
       - npm run lint
       - npm run test
       - npm run codecov
+      after_script: docker logout
     - stage: documentation
       script:
         - npm run docs
@@ -28,9 +30,14 @@ jobs:
         local_dir: ./docs
         target_branch: gh-pages
         on:
-          branch: master
+          branch: main
     - stage: build
+      before_script: echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
       script: docker build -t $TRAVIS_REPO_SLUG:$TRAVIS_BRANCH .
+      before_deploy: "./.travis_version_bump.sh"
       deploy:
         provider: script
-        script: bash docker_deploy.sh
+        script: bash .travis_docker_deploy.sh
+        on: 
+          all_branches: true
+      after_deploy: docker logout
