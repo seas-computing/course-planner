@@ -20,5 +20,10 @@ describe('DTO Helper Functions', function () {
         );
       });
     });
+    context('when no value is passed to the function', function () {
+      it('should return undefined', function () {
+        strictEqual(trimIfString(undefined), undefined);
+      });
+    });
   });
 });
