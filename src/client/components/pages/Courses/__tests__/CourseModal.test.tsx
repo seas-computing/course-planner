@@ -7,6 +7,7 @@ import {
   AllByRole,
   fireEvent,
   wait,
+  FindByText,
 } from '@testing-library/react';
 import React from 'react';
 import {
@@ -14,28 +15,30 @@ import {
   stub,
 } from 'sinon';
 import { render } from 'test-utils';
-import request from 'client/api/request';
-import supertest, { SuperTest } from 'supertest';
-import { physicsCourseResponse } from 'testData';
+import supertest from 'supertest';
+import {
+  adminUser,
+  physicsCourseResponse,
+  string,
+} from 'testData';
 import { AUTH_MODE, IS_SEAS } from 'common/constants';
 import { TestingModule, Test } from '@nestjs/testing';
-import { Authentication } from 'server/auth/authentication.guard';
-import { TypeOrmModule, TypeOrmModuleOptions, getRepositoryToken } from '@nestjs/typeorm';
-import { Area } from 'server/area/area.entity';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { AuthModule } from 'server/auth/auth.module';
 import { ConfigModule } from 'server/config/config.module';
 import { ConfigService } from 'server/config/config.service';
 import { CourseModule } from 'server/course/course.module';
-import { Repository } from 'typeorm';
 import { HttpServer } from '@nestjs/common';
 import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
+import request from 'client/api/request';
+import { SessionModule } from 'nestjs-session';
 import CourseModal from '../CourseModal';
 import { TestingStrategy } from '../../../../../../tests/mocks/authentication/testing.strategy';
 import MockDB from '../../../../../../tests/mocks/database/MockDB';
-import { PopulationModule } from '../../../../../../tests/mocks/database/population/population.module';
 
-describe('Course Modal', function () {
+describe.only('Course Modal', function () {
   let getByText: BoundFunction<GetByText>;
+  let findByText: BoundFunction<FindByText>;
   let queryAllByRole: BoundFunction<AllByRole>;
   let getByLabelText: BoundFunction<GetByText>;
   const dispatchMessage: SinonStub = stub();
@@ -43,11 +46,12 @@ describe('Course Modal', function () {
   let onCloseStub: SinonStub;
   let putStub: SinonStub;
   let postStub: SinonStub;
+  let authStub: SinonStub;
 
   let db: MockDB;
   let testModule: TestingModule;
   let api: HttpServer;
-  let testApi: SuperTest<supertest.Test>;
+  let supertestedApi: supertest.SuperTest<supertest.Test>;
 
   before(async function () {
     db = new MockDB();
@@ -57,8 +61,17 @@ describe('Course Modal', function () {
     await db.stop();
   });
   beforeEach(async function () {
+    authStub = stub(TestingStrategy.prototype, 'login');
+    authStub.resolves(adminUser);
     testModule = await Test.createTestingModule({
       imports: [
+        SessionModule.forRoot({
+          session: {
+            secret: string,
+            resave: true,
+            saveUninitialized: true,
+          },
+        }),
         ConfigModule,
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
@@ -77,21 +90,11 @@ describe('Course Modal', function () {
           strategies: [TestingStrategy],
           defaultStrategy: AUTH_MODE.TEST,
         }),
-        PopulationModule,
         CourseModule,
-      ],
-      providers: [
-        {
-          provide: getRepositoryToken(Area),
-          useValue: new Repository<Area>(),
-        },
       ],
     })
       .overrideProvider(ConfigService)
       .useValue(new ConfigService(db.connectionEnv))
-
-      .overrideGuard(Authentication)
-      .useValue(true)
 
       .compile();
 
@@ -100,7 +103,7 @@ describe('Course Modal', function () {
       .init();
 
     api = nestApp.getHttpServer() as HttpServer;
-    testApi = supertest(api);
+    supertestedApi = supertest(api);
   });
   afterEach(async function () {
     await testModule.close();
@@ -309,8 +312,20 @@ describe('Course Modal', function () {
       });
       context('when required form fields are not provided', function () {
         beforeEach(function () {
-          putStub = stub(request, 'put');
-          putStub.callsFake((url, ...args) => testApi.put(url, ...args));
+          try {
+            putStub = putStub.callsFake(async (url, arg) => {
+              console.log('===Put stub args: ===', url, arg);
+              const result = await supertestedApi.put(url, arg);
+              console.log('===Result: ===', result);
+              return {
+                ...result,
+                data: result.body,
+              };
+            });
+          } catch (e) {
+            console.log('===Error from test API post: ===', e);
+            throw e;
+          }
           onSuccessStub = stub();
           onCloseStub = stub();
           ({ getByLabelText, getByText } = render(
@@ -329,7 +344,7 @@ describe('Course Modal', function () {
         it('does not call the onSuccess handler on submit', async function () {
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
-          await wait(() => strictEqual(onSuccessStub.callCount, 1));
+          await wait(() => strictEqual(onSuccessStub.callCount, 0));
         });
         it('does not call the onClose handler on submit', async function () {
           const submitButton = getByText('Submit');
@@ -410,11 +425,23 @@ describe('Course Modal', function () {
       });
       context('when required form fields are not provided', function () {
         beforeEach(function () {
-          postStub = stub(request, 'post');
-          postStub.callsFake((url, ...args) => testApi.post(url, ...args));
+          try {
+            postStub = postStub.callsFake(async (url, arg) => {
+              console.log('===Post stub args: ===', url, arg);
+              const result = await supertestedApi.post(url, arg);
+              console.log('===Result: ===', result);
+              return {
+                ...result,
+                data: result.body,
+              };
+            });
+          } catch (e) {
+            console.log('===Error from test API post: ===', e);
+            throw e;
+          }
           onSuccessStub = stub();
           onCloseStub = stub();
-          ({ getByLabelText, getByText } = render(
+          ({ getByText, findByText } = render(
             <CourseModal
               isVisible
               onSuccess={onSuccessStub}
@@ -426,12 +453,18 @@ describe('Course Modal', function () {
         it('does not call the onSuccess handler on submit', async function () {
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
-          await wait(() => strictEqual(onSuccessStub.callCount, 1));
+          await wait(() => strictEqual(onSuccessStub.callCount, 0));
         });
         it('does not call the onClose handler on submit', async function () {
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
           await wait(() => strictEqual(onCloseStub.callCount, 0));
+        });
+        it('displays validation errors', async function () {
+          const submitButton = getByText('Submit');
+          fireEvent.click(submitButton);
+          await wait(() => {}, { timeout: 10000 }); // Seeing if the issue is related to wait time
+          await findByText('Area should not be empty', { exact: false });
         });
       });
     });
