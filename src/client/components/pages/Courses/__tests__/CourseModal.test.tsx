@@ -8,6 +8,7 @@ import {
   fireEvent,
   wait,
   FindByText,
+  QueryByText,
 } from '@testing-library/react';
 import React from 'react';
 import {
@@ -36,9 +37,26 @@ import CourseModal from '../CourseModal';
 import { TestingStrategy } from '../../../../../../tests/mocks/authentication/testing.strategy';
 import MockDB from '../../../../../../tests/mocks/database/MockDB';
 
-describe.only('Course Modal', function () {
+/**
+ * This class takes a supertest response with an error
+ * and reshapes it into error with the same structure as AxiosError.
+ */
+class AxiosSupertestError extends Error {
+  public response: supertest.Response;
+
+  constructor(response) {
+    super(response.error.message);
+    this.response = {
+      ...response,
+      data: response.body,
+    };
+  }
+}
+
+describe('Course Modal', function () {
   let getByText: BoundFunction<GetByText>;
   let findByText: BoundFunction<FindByText>;
+  let queryByText: BoundFunction<QueryByText>;
   let queryAllByRole: BoundFunction<AllByRole>;
   let getByLabelText: BoundFunction<GetByText>;
   const dispatchMessage: SinonStub = stub();
@@ -312,20 +330,19 @@ describe.only('Course Modal', function () {
       });
       context('when required form fields are not provided', function () {
         beforeEach(function () {
-          try {
-            putStub = putStub.callsFake(async (url, arg) => {
-              console.log('===Put stub args: ===', url, arg);
-              const result = await supertestedApi.put(url, arg);
-              console.log('===Result: ===', result);
-              return {
-                ...result,
-                data: result.body,
-              };
-            });
-          } catch (e) {
-            console.log('===Error from test API post: ===', e);
-            throw e;
-          }
+          putStub = putStub.callsFake(async (url, data) => {
+            const result = await supertestedApi.put(url)
+              .send(data);
+            // An error is not thrown for an error HTTP status,
+            // so we must throw it ourselves.
+            if (result.error) {
+              throw new AxiosSupertestError(result);
+            }
+            return {
+              ...result,
+              data: result.body,
+            };
+          });
           onSuccessStub = stub();
           onCloseStub = stub();
           ({ getByLabelText, getByText } = render(
@@ -354,9 +371,11 @@ describe.only('Course Modal', function () {
       });
     });
     context('when current course is null', function () {
+      beforeEach(function () {
+        postStub = stub(request, 'post');
+      });
       context('when required form fields are provided', function () {
         beforeEach(function () {
-          postStub = stub(request, 'post');
           postStub.resolves({ data: physicsCourseResponse });
           onSuccessStub = stub();
           onCloseStub = stub();
@@ -425,23 +444,22 @@ describe.only('Course Modal', function () {
       });
       context('when required form fields are not provided', function () {
         beforeEach(function () {
-          try {
-            postStub = postStub.callsFake(async (url, arg) => {
-              console.log('===Post stub args: ===', url, arg);
-              const result = await supertestedApi.post(url, arg);
-              console.log('===Result: ===', result);
-              return {
-                ...result,
-                data: result.body,
-              };
-            });
-          } catch (e) {
-            console.log('===Error from test API post: ===', e);
-            throw e;
-          }
+          postStub = postStub.callsFake(async (url, data) => {
+            const result = await supertestedApi.post(url)
+              .send(data);
+            // An error is not thrown for an error HTTP status,
+            // so we must throw it ourselves.
+            if (result.error) {
+              throw new AxiosSupertestError(result);
+            }
+            return {
+              ...result,
+              data: result.body,
+            };
+          });
           onSuccessStub = stub();
           onCloseStub = stub();
-          ({ getByText, findByText } = render(
+          ({ getByText, findByText, queryByText } = render(
             <CourseModal
               isVisible
               onSuccess={onSuccessStub}
@@ -460,11 +478,96 @@ describe.only('Course Modal', function () {
           fireEvent.click(submitButton);
           await wait(() => strictEqual(onCloseStub.callCount, 0));
         });
-        it('displays validation errors', async function () {
-          const submitButton = getByText('Submit');
-          fireEvent.click(submitButton);
-          await wait(() => {}, { timeout: 10000 }); // Seeing if the issue is related to wait time
-          await findByText('Area should not be empty', { exact: false });
+        context('when Area value is missing', function () {
+          it('displays a validation error', async function () {
+            const submitButton = getByText('Submit');
+            fireEvent.click(submitButton);
+            await findByText('Area should not be empty', { exact: false });
+          });
+        });
+        context('when Catalog Prefix value is missing', function () {
+          it('does not display a validation error', function () {
+            const submitButton = getByText('Submit');
+            fireEvent.click(submitButton);
+            const catalogPrefixError = queryByText('Catalog Prefix should not be empty', { exact: false });
+            strictEqual(catalogPrefixError, null);
+          });
+        });
+        context('when Course Number value is missing', function () {
+          it('does not display a validation error', function () {
+            const submitButton = getByText('Submit');
+            fireEvent.click(submitButton);
+            const courseNumberError = queryByText('Course Number should not be empty', { exact: false });
+            strictEqual(courseNumberError, null);
+          });
+        });
+        context('when Course Title value is missing', function () {
+          it('displays a validation error', async function () {
+            const submitButton = getByText('Submit');
+            fireEvent.click(submitButton);
+            await findByText('Title should not be empty', { exact: false });
+          });
+        });
+        context('when Same As value is missing', function () {
+          it('does not display a validation error', function () {
+            const submitButton = getByText('Submit');
+            fireEvent.click(submitButton);
+            const sameAsError = queryByText('Same As should not be empty', { exact: false });
+            strictEqual(sameAsError, null);
+          });
+        });
+        context('when Is Undergraduate value is missing', function () {
+          it('does not display a validation error', function () {
+            const submitButton = getByText('Submit');
+            fireEvent.click(submitButton);
+            const isUndergraduateError = queryByText('Is Undergraduate should not be empty', { exact: false });
+            strictEqual(isUndergraduateError, null);
+          });
+        });
+        context('when Is SEAS value is missing', function () {
+          it('displays a validation error', async function () {
+            const isSEASSelect = getByLabelText('Is SEAS', { exact: false }) as HTMLSelectElement;
+            // Is SEAS dropdown defaults to IS_SEAS.Y
+            fireEvent.change(
+              isSEASSelect,
+              { target: { value: '' } }
+            );
+            const submitButton = getByText('Submit');
+            fireEvent.click(submitButton);
+            await findByText('Is SEAS should not be empty', { exact: false });
+          });
+        });
+        context('when Is SEAS value is not a valid IS_SEAS enum value', function () {
+          it('displays a validation error', async function () {
+            const isSEASSelect = getByLabelText('Is SEAS', { exact: false }) as HTMLSelectElement;
+            fireEvent.change(
+              isSEASSelect,
+              { target: { value: 'invalidValue' } }
+            );
+            const submitButton = getByText('Submit');
+            fireEvent.click(submitButton);
+            await findByText('Is SEAS must be a valid enum value', { exact: false });
+          });
+        });
+        context('when Term Pattern value is missing', function () {
+          it('displays a validation error', function () {
+            const submitButton = getByText('Submit');
+            fireEvent.click(submitButton);
+            const termPatternError = queryByText('Term Pattern should not be empty', { exact: false });
+            strictEqual(termPatternError, null);
+          });
+        });
+        context('when Term Pattern value is not a valid Term Pattern enum value', function () {
+          it('displays a validation error', async function () {
+            const termPatternSelect = getByLabelText('Term Pattern', { exact: false }) as HTMLSelectElement;
+            fireEvent.change(
+              termPatternSelect,
+              { target: { value: 'invalidValue' } }
+            );
+            const submitButton = getByText('Submit');
+            fireEvent.click(submitButton);
+            await findByText('Term Pattern must be a valid enum value', { exact: false });
+          });
         });
       });
     });
