@@ -71,6 +71,12 @@ export interface BadRequestMessageInfo {
   property: string;
 }
 
+export interface ServerErrorInfo {
+  statusCode: string;
+  error: string;
+  message: string;
+}
+
 export interface BadRequestInfo {
   statusCode: string;
   error: string;
@@ -412,7 +418,10 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
                 const serverError = error as AxiosError;
                 const { response } = serverError;
                 if (response.data
-                    && (response.data as BadRequestInfo).message) {
+                    && (response.data as BadRequestInfo).message
+                    && Array.isArray(
+                      (response.data as BadRequestInfo).message
+                    )) {
                   const data = response.data as BadRequestInfo;
                   const messages = data.message;
                   const errors = {};
@@ -442,6 +451,10 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
                   });
                   setFormErrors(errors as FormErrors);
                   setCourseModalError(generalErrorMessage);
+                } else if (response.data
+                  && (response.data as ServerErrorInfo).message) {
+                  setCourseModalError((response.data as ServerErrorInfo)
+                    .message);
                 } else {
                   setCourseModalError((error as Error).message);
                 }
