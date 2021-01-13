@@ -62,7 +62,6 @@ export class CourseController {
   public async create(
     @Body() course: CreateCourse
   ): Promise<ManageCourseResponseDTO> {
-    console.log('Got course', course); // fdo
     let area: Partial<Area> = await this.areaRepository
       .findOne({
         where: {

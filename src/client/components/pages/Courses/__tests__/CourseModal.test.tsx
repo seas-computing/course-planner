@@ -7,29 +7,51 @@ import {
   AllByRole,
   fireEvent,
   wait,
+  FindByText,
+  QueryByText,
+  waitForElement,
 } from '@testing-library/react';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   SinonStub,
   stub,
 } from 'sinon';
 import { render } from 'test-utils';
 import {
+  computerScienceCourse,
+  computerScienceCourseResponse,
+  metadata,
+  physicsCourse,
   physicsCourseResponse,
 } from 'testData';
 import { IS_SEAS } from 'common/constants';
 import request from 'client/api/request';
+import { MetadataContext, MetadataContextValue } from 'client/context';
+import { CourseAPI } from 'client/api';
 import CourseModal from '../CourseModal';
+import CourseAdmin from '../../CourseAdmin';
 
 describe('Course Modal', function () {
+  let createCourseButton: HTMLElement;
   let getByText: BoundFunction<GetByText>;
   let queryAllByRole: BoundFunction<AllByRole>;
   let getByLabelText: BoundFunction<GetByText>;
+  let findByText: BoundFunction<FindByText>;
+  let queryByText: BoundFunction<QueryByText>;
   const dispatchMessage: SinonStub = stub();
+  const testData = [
+    physicsCourseResponse,
+    computerScienceCourseResponse,
+  ];
   let onSuccessStub: SinonStub;
   let onCloseStub: SinonStub;
+  let getStub: SinonStub;
   let putStub: SinonStub;
   let postStub: SinonStub;
+  beforeEach(function () {
+    getStub = stub(CourseAPI, 'getAllCourses');
+    getStub.resolves(testData);
+  });
   describe('On Open Behavior', function () {
     context('when currentCourse is null', function () {
       beforeEach(function () {
@@ -164,6 +186,56 @@ describe('Course Modal', function () {
       });
     });
   });
+  describe('On Close Behavior', function () {
+    context('when the create course button is clicked and the modal is up', function () {
+      context('when the modal is closed', function () {
+        beforeEach(async function () {
+          ({ findByText, queryByText } = render(
+            <CourseAdmin />,
+            dispatchMessage
+          ));
+          // Show the create course modal
+          createCourseButton = await findByText('Create New Course', { exact: false });
+          fireEvent.click(createCourseButton);
+          await findByText(/required field/);
+          const cancelButton = await findByText(/Cancel/);
+          // Close the modal
+          fireEvent.click(cancelButton);
+          await wait(() => !queryByText(/required field/));
+        });
+        it('returns focus to the create course button', function () {
+          strictEqual(
+            document.activeElement as HTMLElement,
+            createCourseButton
+          );
+        });
+      });
+    });
+    context('when an edit course button has been clicked and the modal is up', function () {
+      context('when the modal is closed', function () {
+        it('returns focus to the originally clicked edit faculty button', async function () {
+          ({ findByText, queryByText } = render(
+            <CourseAdmin />,
+            dispatchMessage
+          ));
+          // Show the edit course modal
+          const editCourseButton = await waitForElement(
+            () => document.getElementById('editCourse' + physicsCourseResponse.id)
+          );
+          fireEvent.click(editCourseButton);
+          await findByText(/required field/);
+          const cancelButton = await findByText(/Cancel/);
+          // Close the modal
+          fireEvent.click(cancelButton);
+          await wait(() => !queryByText(/required field/));
+          strictEqual(
+            document.activeElement as HTMLElement,
+            editCourseButton
+          );
+        });
+      });
+    });
+  });
   describe('Clicking Behavior', function () {
     beforeEach(function () {
       ({ getByLabelText } = render(
@@ -191,6 +263,245 @@ describe('Course Modal', function () {
         fireEvent.click(existingAreaSelect);
         const existingAreaRadioButton = getByLabelText('Select an existing area', { exact: false }) as HTMLInputElement;
         strictEqual(existingAreaRadioButton.checked, true);
+      });
+    });
+  });
+  describe('course area dropdown', function () {
+    context('when creating a course', function () {
+      beforeEach(function () {
+        postStub = stub(request, 'post');
+      });
+      context('when a new area is added', function () {
+        it('renders the newly added area to its existing area dropdown', async function () {
+          postStub.resolves({ data: physicsCourseResponse });
+          onSuccessStub = stub();
+          onCloseStub = stub();
+          const NewAreaExample = () => {
+            // Define metadata to be linked to the state
+            // so that changes cause the components to rerender.
+            // (The default render function, customRender,
+            // does not use a rerendering metadata update.)
+            const [currentMetadata, setMetadata] = useState(metadata);
+            const metadataContext = new MetadataContextValue(
+              currentMetadata,
+              setMetadata
+            );
+            return (
+              <MetadataContext.Provider value={metadataContext}>
+                <CourseAdmin />
+              </MetadataContext.Provider>
+            );
+          };
+          ({
+            findByText,
+            queryByText,
+            getByLabelText,
+            getByText,
+          } = render(
+            <NewAreaExample />,
+            dispatchMessage
+          ));
+          // Show the create course modal
+          createCourseButton = await findByText('Create New Course', { exact: false });
+          fireEvent.click(createCourseButton);
+          await findByText(/required field/);
+          // Fill in the required fields and create a new area
+          const newArea = 'NA';
+          const newAreaRadioButton = getByLabelText('Create a new area', { exact: false }) as HTMLInputElement;
+          const newAreaInput = document.getElementById('newArea') as HTMLInputElement;
+          const courseTitleInput = getByLabelText('Course Title', { exact: false }) as HTMLInputElement;
+          const isSEASSelect = getByLabelText('Is SEAS', { exact: false }) as HTMLSelectElement;
+          const termPatternSelect = getByLabelText('Term Pattern', { exact: false }) as HTMLSelectElement;
+          fireEvent.click(newAreaRadioButton);
+          fireEvent.change(newAreaInput, { target: { value: newArea } });
+          fireEvent.change(courseTitleInput, { target: { value: `${physicsCourse.title}` } });
+          fireEvent.change(isSEASSelect, { target: { value: `${physicsCourse.isSEAS}` } });
+          fireEvent.change(termPatternSelect, { target: { value: `${physicsCourse.termPattern}` } });
+          const submitButton = getByText('Submit');
+          fireEvent.click(submitButton);
+          await wait(() => !queryByText(/required field/));
+          // Check that the new area that was created appears in the course admin existing areas dropdown
+          fireEvent.click(createCourseButton);
+          await findByText(/required field/);
+          const existingAreaSelect = document.getElementById('existingArea') as HTMLSelectElement;
+          const existingAreas = Array.from(existingAreaSelect.options);
+          const isNewAreaIncluded = existingAreas
+            .some((area) => area.text === newArea);
+          strictEqual(isNewAreaIncluded, true);
+        });
+      });
+      context('when an existing area is selected', function () {
+        it('does not re-add the existing area to the area dropdown', async function () {
+          postStub.resolves({ data: physicsCourseResponse });
+          onSuccessStub = stub();
+          onCloseStub = stub();
+          const ExistingAreaExample = () => {
+            // Define metadata to be linked to the state
+            // so that changes cause the components to rerender.
+            // (The default render function, customRender,
+            // does not use a rerendering metadata update.)
+            const [currentMetadata, setMetadata] = useState(metadata);
+            const metadataContext = new MetadataContextValue(
+              currentMetadata,
+              setMetadata
+            );
+            return (
+              <MetadataContext.Provider value={metadataContext}>
+                <CourseAdmin />
+              </MetadataContext.Provider>
+            );
+          };
+          ({
+            findByText,
+            queryByText,
+            getByLabelText,
+            getByText,
+          } = render(
+            <ExistingAreaExample />,
+            dispatchMessage
+          ));
+          // Show the create course modal
+          createCourseButton = await findByText('Create New Course', { exact: false });
+          fireEvent.click(createCourseButton);
+          await findByText(/required field/);
+          const existingAreaRadioButton = getByLabelText('Select an existing area', { exact: false }) as HTMLInputElement;
+          const courseTitleInput = getByLabelText('Course Title', { exact: false }) as HTMLInputElement;
+          const isSEASSelect = getByLabelText('Is SEAS', { exact: false }) as HTMLSelectElement;
+          const termPatternSelect = getByLabelText('Term Pattern', { exact: false }) as HTMLSelectElement;
+          const existingAreaSelect = document.getElementById('existingArea') as HTMLSelectElement;
+          fireEvent.click(existingAreaRadioButton);
+          fireEvent.change(existingAreaSelect, { target: { value: `${physicsCourse.area.name}` } });
+          fireEvent.change(courseTitleInput, { target: { value: `${physicsCourse.title}` } });
+          fireEvent.change(isSEASSelect, { target: { value: `${physicsCourse.isSEAS}` } });
+          fireEvent.change(termPatternSelect, { target: { value: `${physicsCourse.termPattern}` } });
+          const submitButton = getByText('Submit');
+          fireEvent.click(submitButton);
+          await wait(() => !queryByText(/required field/));
+          // Check that the existing area that was selected while creating a course was not added again to the area dropdown
+          fireEvent.click(createCourseButton);
+          await findByText(/required field/);
+          const existingAreas = Array.from(existingAreaSelect.options);
+          let selectedAreaCount = 0;
+          existingAreas.forEach((area) => {
+            if (area.value === physicsCourse.area.name) {
+              selectedAreaCount += 1;
+            }
+          });
+          strictEqual(selectedAreaCount, 1);
+        });
+      });
+    });
+    context('when editing a course', function () {
+      beforeEach(function () {
+        putStub = stub(request, 'put');
+      });
+      context('when a new area is added', function () {
+        it('renders the newly added area to its existing area dropdown', async function () {
+          putStub.resolves({ data: physicsCourseResponse });
+          onSuccessStub = stub();
+          onCloseStub = stub();
+          const NewAreaExample = () => {
+            // Define metadata to be linked to the state
+            // so that changes cause the components to rerender.
+            // (The default render function, customRender,
+            // does not use a rerendering metadata update.)
+            const [currentMetadata, setMetadata] = useState(metadata);
+            const metadataContext = new MetadataContextValue(
+              currentMetadata,
+              setMetadata
+            );
+            return (
+              <MetadataContext.Provider value={metadataContext}>
+                <CourseAdmin />
+              </MetadataContext.Provider>
+            );
+          };
+          ({
+            findByText,
+            queryByText,
+            getByLabelText,
+            getByText,
+          } = render(
+            <NewAreaExample />,
+            dispatchMessage
+          ));
+          // Show the create course modal
+          const editCourseButton = await waitForElement(
+            () => document.getElementById('editCourse' + physicsCourseResponse.id)
+          );
+          fireEvent.click(editCourseButton);
+          await findByText(/required field/);
+          // Fill in the required fields and create a new area
+          const newArea = 'ZZ';
+          const newAreaRadioButton = getByLabelText('Create a new area', { exact: false }) as HTMLInputElement;
+          const newAreaInput = document.getElementById('newArea') as HTMLInputElement;
+          fireEvent.click(newAreaRadioButton);
+          fireEvent.change(newAreaInput, { target: { value: newArea } });
+          const submitButton = getByText('Submit');
+          fireEvent.click(submitButton);
+          await wait(() => !queryByText(/required field/));
+          // Check that the new area that was created appears in the course admin existing areas dropdown
+          fireEvent.click(editCourseButton);
+          await findByText(/required field/);
+          const existingAreaSelect = document.getElementById('existingArea') as HTMLSelectElement;
+          const existingAreas = Array.from(existingAreaSelect.options);
+          const isNewAreaIncluded = existingAreas
+            .some((area) => area.text === newArea);
+          strictEqual(isNewAreaIncluded, true);
+        });
+      });
+      context('when an existing area is selected', function () {
+        it('does not re-add the existing area to the area dropdown', async function () {
+          putStub.resolves({ data: computerScienceCourseResponse });
+          onSuccessStub = stub();
+          onCloseStub = stub();
+          const ExistingAreaExample = () => {
+            // Define metadata to be linked to the state
+            // so that changes cause the components to rerender.
+            // (The default render function, customRender,
+            // does not use a rerendering metadata update.)
+            const [currentMetadata, setMetadata] = useState(metadata);
+            const metadataContext = new MetadataContextValue(
+              currentMetadata,
+              setMetadata
+            );
+            return (
+              <MetadataContext.Provider value={metadataContext}>
+                <CourseAdmin />
+              </MetadataContext.Provider>
+            );
+          };
+          ({
+            findByText,
+            queryByText,
+            getByLabelText,
+            getByText,
+          } = render(
+            <ExistingAreaExample />,
+            dispatchMessage
+          ));
+          // Show the create course modal
+          const editCourseButton = await waitForElement(
+            () => document.getElementById('editCourse' + physicsCourseResponse.id)
+          );
+          fireEvent.click(editCourseButton);
+          await findByText(/required field/);
+          const existingAreaRadioButton = getByLabelText('Select an existing area', { exact: false }) as HTMLInputElement;
+          const existingAreaSelect = document.getElementById('existingArea') as HTMLSelectElement;
+          fireEvent.click(existingAreaRadioButton);
+          fireEvent.change(existingAreaSelect, { target: { value: `${computerScienceCourse.area.name}` } });
+          const submitButton = getByText('Submit');
+          fireEvent.click(submitButton);
+          await wait(() => !queryByText(/required field/));
+          const existingAreas = Array.from(existingAreaSelect.options);
+          let selectedAreaCount = 0;
+          existingAreas.forEach((area) => {
+            if (area.value === computerScienceCourse.area.name) {
+              selectedAreaCount += 1;
+            }
+          });
+          strictEqual(selectedAreaCount, 1);
+        });
       });
     });
   });
