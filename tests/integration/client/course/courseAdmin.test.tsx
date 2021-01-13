@@ -8,15 +8,17 @@ import {
   GetByText,
   FindByText,
   QueryByText,
+  wait,
 } from '@testing-library/react';
 import {
   stub,
   SinonStub,
 } from 'sinon';
 import request from 'client/api/request';
-import supertest, { SuperTest } from 'supertest';
+import supertest from 'supertest';
 import { TestingModule, Test } from '@nestjs/testing';
 import {
+  getRepositoryToken,
   TypeOrmModule,
   TypeOrmModuleOptions,
 } from '@nestjs/typeorm';
@@ -30,11 +32,14 @@ import {
   physicsCourseResponse,
   adminUser,
   string,
+  physicsCourse,
 } from 'testData';
 import { AUTH_MODE } from 'common/constants';
 import { render } from 'test-utils';
 import { SessionModule } from 'nestjs-session';
 import CourseModal from 'client/components/pages/Courses/CourseModal';
+import { Repository } from 'typeorm';
+import { Area } from 'server/area/area.entity';
 import MockDB from '../../../mocks/database/MockDB';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
@@ -101,6 +106,7 @@ describe('Course Admin Modal Behavior', function () {
             autoLoadEntities: true,
             retryAttempts: 10,
             retryDelay: 10000,
+            keepConnectionAlive: true,
           }),
           inject: [ConfigService],
         }),
@@ -109,6 +115,12 @@ describe('Course Admin Modal Behavior', function () {
           defaultStrategy: AUTH_MODE.TEST,
         }),
         CourseModule,
+      ],
+      providers: [
+        {
+          provide: getRepositoryToken(Area),
+          useValue: new Repository<Area>(),
+        },
       ],
     })
       .overrideProvider(ConfigService)
@@ -132,38 +144,36 @@ describe('Course Admin Modal Behavior', function () {
       context('when creating a course', function () {
         beforeEach(function () {
           postStub = stub(request, 'post');
+          postStub = postStub.callsFake(async (url, data) => {
+            const result = await supertestedApi.post(url)
+              .send(data);
+            // An error is not thrown for an error HTTP status,
+            // so we must throw it ourselves.
+            if (result.error) {
+              throw new AxiosSupertestError(result);
+            }
+            return {
+              ...result,
+              data: result.body,
+            };
+          });
+          onSuccessStub = stub();
+          onCloseStub = stub();
+          ({
+            getByText,
+            findByText,
+            queryByText,
+            getByLabelText,
+          } = render(
+            <CourseModal
+              isVisible
+              onSuccess={onSuccessStub}
+              onClose={onCloseStub}
+            />,
+            dispatchMessage
+          ));
         });
         context('when required fields are not provided', function () {
-          beforeEach(function () {
-            postStub = postStub.callsFake(async (url, data) => {
-              const result = await supertestedApi.post(url)
-                .send(data);
-              // An error is not thrown for an error HTTP status,
-              // so we must throw it ourselves.
-              if (result.error) {
-                throw new AxiosSupertestError(result);
-              }
-              return {
-                ...result,
-                data: result.body,
-              };
-            });
-            onSuccessStub = stub();
-            onCloseStub = stub();
-            ({
-              getByText,
-              findByText,
-              queryByText,
-              getByLabelText,
-            } = render(
-              <CourseModal
-                isVisible
-                onSuccess={onSuccessStub}
-                onClose={onCloseStub}
-              />,
-              dispatchMessage
-            ));
-          });
           context('when Area value is missing', function () {
             it('displays a validation error', async function () {
               const submitButton = getByText('Submit');
@@ -256,45 +266,67 @@ describe('Course Admin Modal Behavior', function () {
           });
         });
         context('when required fields are provided', function () {
-
+          it('does not display an error', async function () {
+            const existingAreaSelect = document.getElementById('existingArea') as HTMLSelectElement;
+            const courseTitleInput = getByLabelText('Course Title', { exact: false }) as HTMLInputElement;
+            const isSEASSelect = getByLabelText('Is SEAS', { exact: false }) as HTMLSelectElement;
+            const termPatternSelect = getByLabelText('Term Pattern', { exact: false }) as HTMLSelectElement;
+            fireEvent.change(
+              existingAreaSelect,
+              { target: { value: physicsCourse.area.name } }
+            );
+            fireEvent.change(
+              courseTitleInput,
+              { target: { value: physicsCourse.title } }
+            );
+            fireEvent.change(
+              isSEASSelect,
+              { target: { value: physicsCourse.isSEAS } }
+            );
+            fireEvent.change(
+              termPatternSelect,
+              { target: { value: physicsCourse.termPattern } }
+            );
+            const submitButton = getByText('Submit');
+            fireEvent.click(submitButton);
+            await wait(() => !queryByText('required fields', { exact: false }));
+          });
         });
       });
       context('when editing a course', function () {
         beforeEach(function () {
           putStub = stub(request, 'put');
+          putStub = putStub.callsFake(async (url, data) => {
+            const result = await supertestedApi.put(url)
+              .send(data);
+            // An error is not thrown for an error HTTP status,
+            // so we must throw it ourselves.
+            if (result.error) {
+              throw new AxiosSupertestError(result);
+            }
+            return {
+              ...result,
+              data: result.body,
+            };
+          });
+          onSuccessStub = stub();
+          onCloseStub = stub();
+          ({
+            getByText,
+            findByText,
+            queryByText,
+            getByLabelText,
+          } = render(
+            <CourseModal
+              isVisible
+              currentCourse={physicsCourseResponse}
+              onSuccess={onSuccessStub}
+              onClose={onCloseStub}
+            />,
+            dispatchMessage
+          ));
         });
         context('when required fields are not provided', function () {
-          beforeEach(function () {
-            putStub = putStub.callsFake(async (url, data) => {
-              const result = await supertestedApi.put(url)
-                .send(data);
-              // An error is not thrown for an error HTTP status,
-              // so we must throw it ourselves.
-              if (result.error) {
-                throw new AxiosSupertestError(result);
-              }
-              return {
-                ...result,
-                data: result.body,
-              };
-            });
-            onSuccessStub = stub();
-            onCloseStub = stub();
-            ({
-              getByText,
-              findByText,
-              queryByText,
-              getByLabelText,
-            } = render(
-              <CourseModal
-                isVisible
-                currentCourse={physicsCourseResponse}
-                onSuccess={onSuccessStub}
-                onClose={onCloseStub}
-              />,
-              dispatchMessage
-            ));
-          });
           context('when Area value is missing', function () {
             it('displays a validation error', async function () {
               const existingAreaSelect = document.getElementById('existingArea') as HTMLSelectElement;
@@ -308,7 +340,7 @@ describe('Course Admin Modal Behavior', function () {
             });
           });
           context('when Catalog Prefix value is missing', function () {
-            it('does not display a validation error', function () {
+            it('does not display a validation error', async function () {
               const catalogPrefixInput = getByLabelText('Catalog Prefix', { exact: false }) as HTMLInputElement;
               fireEvent.change(
                 catalogPrefixInput,
@@ -316,12 +348,11 @@ describe('Course Admin Modal Behavior', function () {
               );
               const submitButton = getByText('Submit');
               fireEvent.click(submitButton);
-              const catalogPrefixError = queryByText('Catalog Prefix should not be empty', { exact: false });
-              strictEqual(catalogPrefixError, null);
+              await wait(() => !queryByText('Submit', { exact: false }));
             });
           });
           context('when Course Number value is missing', function () {
-            it('does not display a validation error', function () {
+            it('does not display a validation error', async function () {
               const courseNumberInput = getByLabelText('Course Number', { exact: false }) as HTMLInputElement;
               fireEvent.change(
                 courseNumberInput,
@@ -329,8 +360,7 @@ describe('Course Admin Modal Behavior', function () {
               );
               const submitButton = getByText('Submit');
               fireEvent.click(submitButton);
-              const courseNumberError = queryByText('Course Number should not be empty', { exact: false });
-              strictEqual(courseNumberError, null);
+              await wait(() => !queryByText('Submit', { exact: false }));
             });
           });
           context('when Course Title value is missing', function () {
@@ -343,13 +373,12 @@ describe('Course Admin Modal Behavior', function () {
             });
           });
           context('when Same As value is missing', function () {
-            it('does not display a validation error', function () {
+            it('does not display a validation error', async function () {
               const sameAsInput = getByLabelText('Same As', { exact: false }) as HTMLInputElement;
               fireEvent.change(sameAsInput, { target: { value: '' } });
               const submitButton = getByText('Submit');
               fireEvent.click(submitButton);
-              const sameAsError = queryByText('Same As should not be empty', { exact: false });
-              strictEqual(sameAsError, null);
+              await wait(() => !queryByText('Submit', { exact: false }));
             });
           });
           context('when Is Undergraduate value is missing', function () {
@@ -388,7 +417,11 @@ describe('Course Admin Modal Behavior', function () {
           });
         });
         context('when required fields are provided', function () {
-
+          it('does not display an error', async function () {
+            const submitButton = getByText('Submit');
+            fireEvent.click(submitButton);
+            await wait(() => !queryByText('Submit', { exact: false }));
+          });
         });
       });
     });
