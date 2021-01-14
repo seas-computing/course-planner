@@ -26,7 +26,7 @@ import { AuthModule } from 'server/auth/auth.module';
 import { ConfigModule } from 'server/config/config.module';
 import { ConfigService } from 'server/config/config.service';
 import { CourseModule } from 'server/course/course.module';
-import { HttpServer } from '@nestjs/common';
+import { HttpServer, InternalServerErrorException } from '@nestjs/common';
 import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 import {
   physicsCourseResponse,
@@ -421,6 +421,65 @@ describe('Course Admin Modal Behavior', function () {
             const submitButton = getByText('Submit');
             fireEvent.click(submitButton);
             await wait(() => !queryByText('Submit', { exact: false }));
+          });
+        });
+      });
+    });
+    describe('other errors', function () {
+      context('when creating a course', function () {
+        beforeEach(function () {
+          postStub = stub(request, 'post');
+          postStub.rejects(new InternalServerErrorException());
+          onSuccessStub = stub();
+          onCloseStub = stub();
+          ({
+            getByText,
+            findByText,
+            queryByText,
+            getByLabelText,
+          } = render(
+            <CourseModal
+              isVisible
+              onSuccess={onSuccessStub}
+              onClose={onCloseStub}
+            />,
+            dispatchMessage
+          ));
+        });
+        context('when there is an internal server error', function () {
+          it('displays the error', async function () {
+            const submitButton = getByText('Submit');
+            fireEvent.click(submitButton);
+            await findByText('Internal Server Error', { exact: false });
+          });
+        });
+      });
+      context('when editing a course', function () {
+        beforeEach(function () {
+          putStub = stub(request, 'put');
+          putStub.rejects(new InternalServerErrorException());
+          onSuccessStub = stub();
+          onCloseStub = stub();
+          ({
+            getByText,
+            findByText,
+            queryByText,
+            getByLabelText,
+          } = render(
+            <CourseModal
+              isVisible
+              currentCourse={physicsCourseResponse}
+              onSuccess={onSuccessStub}
+              onClose={onCloseStub}
+            />,
+            dispatchMessage
+          ));
+        });
+        context('when there is an internal server error', function () {
+          it('displays the error', async function () {
+            const submitButton = getByText('Submit');
+            fireEvent.click(submitButton);
+            await findByText('Internal Server Error', { exact: false });
           });
         });
       });

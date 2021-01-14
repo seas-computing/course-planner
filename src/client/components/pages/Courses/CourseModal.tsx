@@ -71,16 +71,16 @@ export interface BadRequestMessageInfo {
   property: string;
 }
 
-export interface ServerErrorInfo {
-  statusCode: string;
-  error: string;
-  message: string;
-}
-
 export interface BadRequestInfo {
   statusCode: string;
   error: string;
   message: BadRequestMessageInfo[];
+}
+
+export interface ServerErrorInfo {
+  statusCode: string;
+  error: string;
+  message: Record<string, string>;
 }
 
 const displayNames: Record<string, string> = {
@@ -453,13 +453,15 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
                   setCourseModalError(generalErrorMessage);
                 } else if (response.data
                   && (response.data as ServerErrorInfo).message) {
-                  setCourseModalError((response.data as ServerErrorInfo)
-                    .message);
+                  setCourseModalError(String((response.data as ServerErrorInfo)
+                    .message));
                 } else {
-                  setCourseModalError((error as Error).message);
+                  setCourseModalError(String(
+                    (error as ServerErrorInfo).message.error
+                  ));
                 }
               } else {
-                setCourseModalError((error as Error).message);
+                setCourseModalError(String((error as Error).message));
               }
               // leave the modal visible after an error
               return;
