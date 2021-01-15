@@ -34,13 +34,13 @@ jobs:
         on:
           branch: main
     - stage: build
-      cleanup: false
       before_script: echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
       script: docker build -t $TRAVIS_REPO_SLUG:$TRAVIS_BRANCH .
       before_deploy: bash .travis_version_bump.sh
       after_deploy: docker logout
       deploy:
         provider: script
+        cleanup: false
         script: bash .travis_docker_deploy.sh
         on: 
           all_branches: true
