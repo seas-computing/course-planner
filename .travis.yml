@@ -1,4 +1,6 @@
 language: node_js
+dist: xenial
+os: linux
 node_js:
     - "10"
 services:
@@ -25,19 +27,20 @@ jobs:
         - touch ./docs/.nojekyll
       deploy:
         provider: pages
-        skip_cleanup: true
-        github_token: $GITHUB_TOKEN
+        cleanup: false
+        token: $GITHUB_TOKEN
         local_dir: ./docs
         target_branch: gh-pages
         on:
           branch: main
     - stage: build
+      cleanup: false
       before_script: echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
       script: docker build -t $TRAVIS_REPO_SLUG:$TRAVIS_BRANCH .
-      before_deploy: "./.travis_version_bump.sh"
+      before_deploy: bash .travis_version_bump.sh
+      after_deploy: docker logout
       deploy:
         provider: script
         script: bash .travis_docker_deploy.sh
         on: 
           all_branches: true
-      after_deploy: docker logout
