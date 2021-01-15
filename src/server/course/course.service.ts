@@ -30,4 +30,24 @@ export class CourseService {
       })),
     });
   }
+
+  /**
+   * Resolve an array containing all catalog prefixes that currently exist in the
+   * database, as strings
+   */
+  public async getCatalogPrefixList(): Promise<string[]> {
+    return this.courseRepository
+      .createQueryBuilder('c')
+      .select('c.prefix', 'prefix')
+      .distinct(true)
+      .orderBy('prefix', 'ASC')
+      .getRawMany()
+      .then(
+        // raw result is array of e.g. { prefix: 'CS'} so we are mapping to get
+        // an array of prefixes
+        (results): string[] => results.map(
+          ({ prefix }: {prefix: string}): string => prefix
+        )
+      );
+  }
 }
