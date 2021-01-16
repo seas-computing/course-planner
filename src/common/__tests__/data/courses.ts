@@ -117,3 +117,22 @@ export const updateCourseExample: UpdateCourseDTO = {
   isSEAS: IS_SEAS.Y,
   private: true,
 };
+
+/**
+ * A collection of catalog prefix data, as returned by the database query in
+ * [[CourseService#getCatalogPrefixList]]
+ */
+export const rawCatalogPrefixList = [
+  { name: 'AC' },
+  { name: 'AM' },
+  { name: 'AP' },
+  { name: 'BE' },
+  { name: 'CS' },
+  { name: 'EE' },
+  { name: 'ESE' },
+  { name: 'General' },
+  { name: 'Mat & ME' },
+  { name: 'MDE' },
+  { name: 'MSMBA' },
+  { name: 'SEM' },
+];

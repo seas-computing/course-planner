@@ -46,7 +46,7 @@ export class CourseService {
         // raw result is array of e.g. { prefix: 'CS'} so we are mapping to get
         // an array of prefixes
         (results): string[] => results.map(
-          ({ prefix }: {prefix: string}): string => prefix
+          ({ name }: {name: string}): string => name
         )
       );
   }
