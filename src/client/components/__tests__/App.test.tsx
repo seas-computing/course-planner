@@ -42,6 +42,7 @@ describe('App', function () {
           currentAcademicYear: null,
           areas: [],
           semesters: [],
+          catalogPrefixes: [],
         }
       )
       .returns(
@@ -50,6 +51,7 @@ describe('App', function () {
             currentAcademicYear: null,
             areas: [],
             semesters: [],
+            catalogPrefixes: [],
           },
           setMetaStateStub,
         ]
