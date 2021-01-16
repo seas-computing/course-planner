@@ -7,6 +7,7 @@ import {
   rawAreaList,
   rawSemesterList,
   error,
+  rawCatalogPrefixList,
 } from 'testData';
 import { MetadataAPI } from 'client/api/metadata';
 import {
@@ -37,6 +38,8 @@ describe('Metadata API', function () {
               areas: rawAreaList.map((area) => area.name),
               semesters: rawSemesterList
                 .map(({ term, year }): string => `${term} ${year}`),
+              catalogPrefixes: rawCatalogPrefixList
+                .map((prefix) => prefix.name),
             },
           } as AxiosResponse<MetadataResponse>);
           result = await MetadataAPI.getMetadata();
@@ -55,6 +58,8 @@ describe('Metadata API', function () {
               areas: rawAreaList.map((area) => area.name),
               semesters: rawSemesterList
                 .map(({ term, year }): string => `${term} ${year}`),
+              catalogPrefixes: rawCatalogPrefixList
+                .map((prefix) => prefix.name),
             });
         });
       });
