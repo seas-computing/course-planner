@@ -78,7 +78,7 @@ describe('Metadata Controller', function () {
       const expectedSemesters = rawSemesterList
         .map(({ term, year }): string => `${term} ${year}`);
       const expectedCatalogPrefixes = rawCatalogPrefixList
-        .map((prefix) => prefix.name);
+        .map((record) => record.prefix);
       beforeEach(async function () {
         stub(configService, 'academicYear')
           .get(() => expectedAcademicYear);

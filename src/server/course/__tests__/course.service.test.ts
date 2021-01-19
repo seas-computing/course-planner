@@ -118,7 +118,7 @@ describe('Course service', function () {
       });
       it('returns a list of just the catalog prefixes', async function () {
         const result = await courseService.getCatalogPrefixList();
-        const prefixArray = rawCatalogPrefixList.map((prefix) => prefix.name);
+        const prefixArray = rawCatalogPrefixList.map((record) => record.prefix);
         strictEqual(result.length, rawCatalogPrefixList.length);
         deepStrictEqual(result, prefixArray);
       });

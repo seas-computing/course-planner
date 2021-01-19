@@ -39,7 +39,7 @@ describe('Metadata API', function () {
               semesters: rawSemesterList
                 .map(({ term, year }): string => `${term} ${year}`),
               catalogPrefixes: rawCatalogPrefixList
-                .map((prefix) => prefix.name),
+                .map((record) => record.prefix),
             },
           } as AxiosResponse<MetadataResponse>);
           result = await MetadataAPI.getMetadata();
@@ -59,7 +59,7 @@ describe('Metadata API', function () {
               semesters: rawSemesterList
                 .map(({ term, year }): string => `${term} ${year}`),
               catalogPrefixes: rawCatalogPrefixList
-                .map((prefix) => prefix.name),
+                .map((record) => record.prefix),
             });
         });
       });

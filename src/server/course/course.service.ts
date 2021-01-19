@@ -43,10 +43,10 @@ export class CourseService {
       .orderBy('prefix', 'ASC')
       .getRawMany()
       .then(
-        // raw result is array of e.g. { name: 'CS'} so we are mapping to get
+        // raw result is array of e.g. { prefix: 'CS'} so we are mapping to get
         // an array of prefixes
         (results): string[] => results.map(
-          ({ name }: {name: string}): string => name
+          ({ prefix }: {prefix: string}): string => prefix
         )
       );
   }

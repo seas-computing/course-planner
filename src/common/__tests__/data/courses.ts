@@ -123,16 +123,16 @@ export const updateCourseExample: UpdateCourseDTO = {
  * [[CourseService#getCatalogPrefixList]]
  */
 export const rawCatalogPrefixList = [
-  { name: 'AC' },
-  { name: 'AM' },
-  { name: 'AP' },
-  { name: 'BE' },
-  { name: 'CS' },
-  { name: 'EE' },
-  { name: 'ESE' },
-  { name: 'General' },
-  { name: 'Mat & ME' },
-  { name: 'MDE' },
-  { name: 'MSMBA' },
-  { name: 'SEM' },
+  { prefix: 'AC' },
+  { prefix: 'AM' },
+  { prefix: 'AP' },
+  { prefix: 'BE' },
+  { prefix: 'CS' },
+  { prefix: 'EE' },
+  { prefix: 'ESE' },
+  { prefix: 'General' },
+  { prefix: 'Mat & ME' },
+  { prefix: 'MDE' },
+  { prefix: 'MSMBA' },
+  { prefix: 'SEM' },
 ];
