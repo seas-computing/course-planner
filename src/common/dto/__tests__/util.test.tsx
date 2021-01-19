@@ -1,6 +1,6 @@
 import { strictEqual } from 'assert';
 import { computerScienceCourseResponse, physicsCourseResponse } from 'testData';
-import { trimIfString } from '../util';
+import { trimString } from '../util';
 
 describe('DTO Helper Functions', function () {
   describe('trimIfString', function () {
@@ -8,21 +8,21 @@ describe('DTO Helper Functions', function () {
       it('should remove the surrounding whitespace', function () {
         const stringWithWhitespace = `  ${computerScienceCourseResponse.catalogNumber} `;
         const trimmedString = stringWithWhitespace.trim();
-        strictEqual(trimIfString(stringWithWhitespace), trimmedString);
+        strictEqual(trimString(stringWithWhitespace), trimmedString);
       });
     });
     context('when there is no whitespace surrounding the string', function () {
       it('should return the original string', function () {
         const stringWithoutWhitespace = physicsCourseResponse.catalogNumber;
         strictEqual(
-          trimIfString(stringWithoutWhitespace),
+          trimString(stringWithoutWhitespace),
           physicsCourseResponse.catalogNumber
         );
       });
     });
     context('when no value is passed to the function', function () {
-      it('should return undefined', function () {
-        strictEqual(trimIfString(undefined), undefined);
+      it('should return empty string', function () {
+        strictEqual(trimString(), '');
       });
     });
   });
