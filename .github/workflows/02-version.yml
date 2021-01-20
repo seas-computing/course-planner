@@ -5,7 +5,7 @@ on:
       - main
       - develop
     tags-ignore: 
-      - '*'
+      - "v[0-9]+.[0-9]+.[0-9]+*" 
 jobs:
   update_version:
     runs-on: ubuntu-latest

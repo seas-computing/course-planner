@@ -1,7 +1,9 @@
 name: Testing
 on:
- - push
- - pull_request
+  push:
+    tags-ignore:
+      - "v[0-9]+.[0-9]+.[0-9]+*" 
+  pull_request:
 jobs:
   test:
     name: Run full test suite
