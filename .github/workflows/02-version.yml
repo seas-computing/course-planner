@@ -17,5 +17,12 @@ jobs:
       - name: update patch 
         if: github.ref == 'refs/heads/develop'
         run: echo "SEMVER_LEVEL=patch" >> $GITHUB_ENV
-      - run: npm version ${{ env.SEMVER_LEVEL }} -m "[skip ci] Automatic bump to %s" 
-      - run: git push --tags origin ${{ github.ref }}
+      - run: |
+          git config --local user.name "SEAS COMPUTING ROBOT"
+          git config --local user.email "computing-dev-team@seas.harvard.edu"
+          git config --local push.default matching
+          git config credential.helper "store --file=.git/credentials"
+          echo "https://${GITHUB_TOKEN}:@github.com" > .git/credentials
+          git checkout -- .
+          npm version ${{ env.SEMVER_LEVEL }} -m "[skip ci] Automatic bump to %s" 
+          git push --tags origin ${{ github.ref }}
