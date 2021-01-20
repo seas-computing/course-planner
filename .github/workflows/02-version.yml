@@ -1,0 +1,21 @@
+name: Increment Version
+on:
+  push:
+    branches:
+      - main
+      - develop
+    tags-ignore: 
+      - '*'
+jobs:
+  update_version:
+    runs-on: ubuntu-latest
+    steps: 
+      - uses: actions/checkout@v2
+      - name: update minor 
+        if: github.ref == 'refs/heads/main'
+        run: echo "SEMVER_LEVEL=minor" >> $GITHUB_ENV
+      - name: update patch 
+        if: github.ref == 'refs/heads/develop'
+        run: echo "SEMVER_LEVEL=patch" >> $GITHUB_ENV
+      - run: npm version ${{ SEMVER_LEVEL }} -m "[skip ci] Automatic bump to %s" 
+      - run: git push --tags origin ${{ github.ref }}
