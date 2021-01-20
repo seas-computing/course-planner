@@ -3,6 +3,7 @@ import { Repository, DeepPartial } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { Semester } from 'server/semester/semester.entity';
 import { Area } from 'server/area/area.entity';
+import { IS_SEAS } from 'common/constants';
 import { Course } from './course.entity';
 import { CourseInstance } from '../courseInstance/courseinstance.entity';
 
@@ -40,6 +41,7 @@ export class CourseService {
       .createQueryBuilder('c')
       .select('c.prefix', 'prefix')
       .distinct(true)
+      .where(`"isSEAS" <> '${IS_SEAS.N}'`)
       .orderBy('prefix', 'ASC')
       .getRawMany()
       .then(

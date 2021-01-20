@@ -113,6 +113,7 @@ describe('Course service', function () {
       beforeEach(function () {
         mockCourseQueryBuilder.select.returnsThis();
         mockCourseQueryBuilder.distinct.returnsThis();
+        mockCourseQueryBuilder.where.returnsThis();
         mockCourseQueryBuilder.orderBy.returnsThis();
         mockCourseQueryBuilder.getRawMany.resolves(rawCatalogPrefixList);
       });
@@ -127,6 +128,7 @@ describe('Course service', function () {
       beforeEach(function () {
         mockCourseQueryBuilder.select.returnsThis();
         mockCourseQueryBuilder.distinct.returnsThis();
+        mockCourseQueryBuilder.where.returnsThis();
         mockCourseQueryBuilder.orderBy.returnsThis();
         mockCourseQueryBuilder.getRawMany.resolves([]);
       });
