@@ -14,5 +14,9 @@ jobs:
       - uses: actions/setup-node@v1
         with: 
           node-version: 10
-      - run: npm run docs:generate
-      - run: npm run docs:publish
+      - run: |
+          git config --local user.name "SEAS COMPUTING ROBOT"
+          git config --local user.email "computing-dev-team@seas.harvard.edu"
+          npm ci 
+          npm run docs:generate
+          npm run docs:publish
