@@ -17,5 +17,5 @@ jobs:
       - name: update patch 
         if: github.ref == 'refs/heads/develop'
         run: echo "SEMVER_LEVEL=patch" >> $GITHUB_ENV
-      - run: npm version ${{ SEMVER_LEVEL }} -m "[skip ci] Automatic bump to %s" 
+      - run: npm version ${{ env.SEMVER_LEVEL }} -m "[skip ci] Automatic bump to %s" 
       - run: git push --tags origin ${{ github.ref }}
