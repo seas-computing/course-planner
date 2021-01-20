@@ -23,7 +23,7 @@ const semesters = [
 /**
  * Example of a list of catalog prefixes
  */
-const catalogPrefixes = ['AC', 'AM', 'AP', 'BE', 'CS', 'EE', 'ESE', 'General', 'Mat & ME', 'MDE', 'MSMBA', 'SEM'];
+const catalogPrefixes = ['AC', 'AM', 'AP', 'BE', 'CS', 'ES', 'ESE', 'GENED', 'SEMINAR'];
 
 /**
  * Example of the data returned from the /api/metadata endpoint, used for
