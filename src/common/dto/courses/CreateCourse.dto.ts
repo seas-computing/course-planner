@@ -74,6 +74,7 @@ export abstract class CreateCourse {
   @ApiModelProperty({
     type: 'boolean',
     example: false,
+    default: true,
   })
   @IsBoolean()
   @IsOptional()

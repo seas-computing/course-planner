@@ -81,6 +81,7 @@ export abstract class UpdateCourseDTO {
   @ApiModelProperty({
     type: 'boolean',
     example: false,
+    default: true,
   })
   @IsBoolean()
   @IsOptional()
