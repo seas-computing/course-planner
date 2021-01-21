@@ -1,11 +1,13 @@
 name: Docker Container 
 on: 
-  push:
-    tags: 
-      - "v[0-9]+.[0-9]+.[0-9]+*" 
+  workflow_run:
+    workflows:
+      - Increment Version
     branches:
       - main
       - develop
+    types:
+      - completed
 jobs:
   publish:
     runs-on: ubuntu-latest
