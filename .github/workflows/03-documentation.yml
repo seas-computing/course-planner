@@ -16,11 +16,17 @@ jobs:
       - uses: actions/setup-node@v1
         with: 
           node-version: 10
+      - run: echo "CURRENT_TAG=$(git tag --points-at HEAD)" >> $GITHUB_ENV
       - run: |
+          npm ci
           git config --local user.name "SEAS COMPUTING ROBOT"
           git config --local user.email "computing-dev-team@seas.harvard.edu"
           git config credential.helper "store --file=.git/credentials"
-          echo "https://${GITHUB_TOKEN}:@github.com" > .git/credentials
-          npm ci 
-          npm run docs:generate
-          npm run docs:publish
+          echo "https://${{ GITHUB_TOKEN }}:@github.com" > .git/credentials
+          npm run docs
+          git checkout -B refs/heads/gh-pages
+          git add --force docs
+          git commit -m "Deploy updated documentation for ${{ env.CURRENT_TAG }}"
+          git clean -dfx
+          FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch --force --prune-empty --subdirectory-fiter docs/ gh-pages
+          git push --force origin refs/heads/gh-pages
