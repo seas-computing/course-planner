@@ -9,6 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     steps: 
       - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+          depth: 0
       - name: update minor 
         if: github.ref == 'refs/heads/main'
         run: echo "SEMVER_LEVEL=minor" >> $GITHUB_ENV

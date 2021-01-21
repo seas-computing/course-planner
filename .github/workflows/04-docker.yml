@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps: 
       - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
       - name: stable
         if: github.ref == 'refs/heads/main'
         run: echo "DOCKER_TAG=stable" >> $GITHUB_ENV
