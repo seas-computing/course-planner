@@ -32,6 +32,7 @@ jobs:
       - name: generate docs
         run: npm run docs
       - name: publish to gh-pages
+        run: |
           git checkout -B gh-pages
           git add --force docs
           git commit -m "Deploy updated documentation for ${{ env.VERSION_TAG }}"
