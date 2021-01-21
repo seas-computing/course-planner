@@ -4,6 +4,9 @@ on:
     branches:
       - main
       - develop
+  status:
+    types:
+      success
 jobs:
   update_version:
     runs-on: ubuntu-latest
