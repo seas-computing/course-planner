@@ -19,18 +19,22 @@ jobs:
       - uses: actions/setup-node@v1
         with: 
           node-version: 10
-      - name: version
+      - name: NPM install
+        run: npm ci
+      - name: Find latest version
         run: echo "VERSION_TAG=$(git tag -l v* | tail -n1)" >> $GITHUB_ENV
-      - run: |
-          npm ci
+      - name: git config
+        run: |
           git config --local user.name "SEAS COMPUTING ROBOT"
           git config --local user.email "computing-dev-team@seas.harvard.edu"
           git config credential.helper "store --file=.git/credentials"
           echo "https://${GITHUB_TOKEN}:@github.com" > .git/credentials
-          npm run docs
+      - name: generate docs
+        run: npm run docs
+      - name: publish to gh-pages
           git checkout -B gh-pages
           git add --force docs
-          git commit -m "Deploy updated documentation for ${{ env.CURRENT_TAG }}"
+          git commit -m "Deploy updated documentation for ${{ env.VERSION_TAG }}"
           git clean -dfx
           FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch --force --prune-empty --subdirectory-filter docs/ gh-pages
           git push --force origin gh-pages
