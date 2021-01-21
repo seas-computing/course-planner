@@ -19,6 +19,8 @@ jobs:
       - name: qa 
         if: github.ref == 'refs/heads/develop'
         run: echo "DOCKER_TAG=qa" >> $GITHUB_ENV
+      - name: version
+        run: echo "VERSION_TAG=$(git tag --points-at HEAD)" >> $GITHUB_ENV
       - uses: docker/build-push-action@v1
         with:
           username: ${{ github.actor }}
