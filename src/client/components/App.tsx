@@ -63,6 +63,7 @@ const App: FunctionComponent = (): ReactElement => {
     currentAcademicYear: null,
     areas: [],
     semesters: [],
+    catalogPrefixes: [],
   });
 
   /**

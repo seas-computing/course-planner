@@ -27,4 +27,11 @@ export abstract class MetadataResponse {
     isArray: true,
   })
   public semesters: string[];
+
+  @ApiModelProperty({
+    type: 'string',
+    example: ['AC', 'AP', 'BE'],
+    isArray: true,
+  })
+  public catalogPrefixes: string[];
 }
