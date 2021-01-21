@@ -20,12 +20,9 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: ${{ env.VERSION_TAG }}
-      - name: stable
-        if: github.ref == 'refs/heads/main'
-        run: echo "DOCKER_TAG=stable" >> $GITHUB_ENV
-      - name: qa 
-        if: github.ref == 'refs/heads/develop'
-        run: echo "DOCKER_TAG=qa" >> $GITHUB_ENV
+      - name: docker-version
+        run: |
+          echo "DOCKER_TAG=$(if (git branch --points-at HEAD | grep main); then echo stable; else echo qa; fi)" >> $GITHUB_ENV
         with:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
