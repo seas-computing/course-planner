@@ -179,14 +179,13 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
                 </>
               </TableRow>
               <TableRow isStriped>
-                {/* TODO**** - ****Use prefix metadata instead of area*** */}
                 <TableHeadingCell scope="col">
                   <Dropdown
                     options={
                       [{ value: 'All', label: 'All' }]
-                        .concat(metadata.areas.map((area) => ({
-                          value: area,
-                          label: area,
+                        .concat(metadata.catalogPrefixes.map((prefix) => ({
+                          value: prefix,
+                          label: prefix,
                         })))
                     }
                     value={catalogPrefixValue}
