@@ -206,7 +206,7 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
                     name="catalogNumberValue"
                     value={catalogNumberValue}
                     placeholder="Filter by Catalog Number"
-                    label="The table will be filtered as characters are typed in this Catalog Number filter field"
+                    label="The table will be filtered as characters are typed in this catalog number filter field"
                     isLabelVisible={false}
                     hideError
                     onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
@@ -220,7 +220,7 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
                     name="courseTitleValue"
                     value={courseTitleValue}
                     placeholder="Filter by Course Title"
-                    label="The table will be filtered as characters are typed in this Course Title filter field"
+                    label="The table will be filtered as characters are typed in this course title filter field"
                     isLabelVisible={false}
                     hideError
                     onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
