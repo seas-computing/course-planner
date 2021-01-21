@@ -25,9 +25,6 @@ jobs:
           npm version ${{ env.SEMVER_LEVEL }} -m "Automatic bump to %s"
           git push --tags origin ${{ github.ref }}
       - name: Merge minor versions back into develop
-        run: |
-          git checkout develop
-          git merge main
-          git push --tags origin ${{ github.ref }}
+        run: git push --tags origin main:develop
         if:
           github.ref == 'refs/heads/main'
