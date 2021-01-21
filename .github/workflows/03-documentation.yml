@@ -15,10 +15,12 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: 'refs/heads/main'
+          fetch-depth: 0
       - uses: actions/setup-node@v1
         with: 
           node-version: 10
-      - run: echo "CURRENT_TAG=$(git tag --points-at HEAD)" >> $GITHUB_ENV
+      - name: version
+        run: echo "VERSION_TAG=$(git tag -l v* | tail -n1)" >> $GITHUB_ENV
       - run: |
           npm ci
           git config --local user.name "SEAS COMPUTING ROBOT"
