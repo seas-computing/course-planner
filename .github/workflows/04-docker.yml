@@ -14,16 +14,18 @@ jobs:
     steps: 
       - uses: actions/checkout@v2
         with:
-          ref: ${{ github.ref }}
+          depth: 0
+      - name: version
+        run: echo "VERSION_TAG=$(git tag | tail -n1)" >> $GITHUB_ENV
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ env.VERSION_TAG }}
       - name: stable
         if: github.ref == 'refs/heads/main'
         run: echo "DOCKER_TAG=stable" >> $GITHUB_ENV
       - name: qa 
         if: github.ref == 'refs/heads/develop'
         run: echo "DOCKER_TAG=qa" >> $GITHUB_ENV
-      - name: version
-        run: echo "VERSION_TAG=$(git tag --points-at HEAD)" >> $GITHUB_ENV
-      - uses: docker/build-push-action@v1
         with:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
