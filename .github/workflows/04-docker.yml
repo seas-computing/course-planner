@@ -16,16 +16,23 @@ jobs:
         with:
           depth: 0
       - name: version
-        run: echo "VERSION_TAG=$(git tag | tail -n1)" >> $GITHUB_ENV
+        run: echo "VERSION_TAG=$(git tag -l v* | tail -n1)" >> $GITHUB_ENV
       - uses: actions/checkout@v2
         with:
           ref: ${{ env.VERSION_TAG }}
       - name: docker-version
         run: |
           echo "DOCKER_TAG=$(if (git branch --points-at HEAD | grep main); then echo stable; else echo qa; fi)" >> $GITHUB_ENV
+      - name: login
+        uses: docker/login-action@v1
         with:
-          username: ${{ github.actor }}
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v2
+        with:
+          push: true
           registry: docker.pkg.github.com
-          repository: ${{ github.repository }}/${{ env.DOCKER_TAG }}
-          tag_with_ref: true
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ env.DOCKER_TAG }}
+            ghcr.io/${{ github.repository }}:${{ env.VERSION_TAG }}
