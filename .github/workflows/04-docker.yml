@@ -22,11 +22,9 @@ jobs:
           git checkout develop
           export DEVELOP_VERSION=$(jq -Mr .version package.json)
           echo "VERSION_TAG=v$(npx semver $DEVELOP_VERSION $MAIN_VERSION | tail -n1)" >> $GITHUB_ENV
-      - uses: actions/checkout@v2
-        with:
-          ref: ${{ env.VERSION_TAG }}
       - name: docker-version
         run: |
+          git checkout ${{ VERSION_TAG }}
           git branch --points-at HEAD
           echo "DOCKER_TAG=$(if (git branch --points-at HEAD | grep main); then echo stable; else echo qa; fi)" >> $GITHUB_ENV
       - name: qemu
