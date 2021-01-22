@@ -17,10 +17,10 @@ jobs:
           fetch-depth: 0
       - name: Find latest version
         run: |
-          git checkout refs/heads/main
+          git checkout main
           export MAIN_VERSION=$(jq -Mr .version package.json)
           #echo "MAIN_VERSION=$(jq -Mr .version package.json)" >> $GITHUB_ENV
-          git checkout refs/heads/develop
+          git checkout develop
           export DEVELOP_VERSION=$(jq -Mr .version package.json)
           #echo "DEVELOP_VERSION=$(jq -Mr .version package.json)" >> $GITHUB_ENV
           echo "VERSION_TAG=v$(npx semver $DEVELOP_VERSION $MAIN_VERSION | tail -n1)" >> $GITHUB_ENV
