@@ -27,6 +27,7 @@ jobs:
           ref: ${{ env.VERSION_TAG }}
       - name: docker-version
         run: |
+          git branch --points-at HEAD
           echo "DOCKER_TAG=$(if (git branch --points-at HEAD | grep main); then echo stable; else echo qa; fi)" >> $GITHUB_ENV
       - name: qemu
         uses: docker/setup-qemu-action@v1
