@@ -37,10 +37,16 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
-      - name: Publish image
+      - name: Publish QA image
         uses: docker/build-push-action@v2
         with:
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}:${{ env.DOCKER_TAG }}
+            ghcr.io/${{ github.repository }}:qa
             ghcr.io/${{ github.repository }}:${{ env.VERSION_TAG }}
+      - name: Publish stable image
+        uses: docker/build-push-action@v2
+        if: ${{ env.DOCKER_TAG }} == 'stable'
+        with:
+          push: true
+          tags: ghcr.io/${{ github.repository }}:stable
