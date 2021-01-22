@@ -12,10 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Pass
-        if: github.event.base_ref != 'main' || ( github.event.base_ref == 'main' && github.event.head_ref == 'develop')
+        if: github.base_ref != 'main' || ( github.base_ref == 'main' && github.head_ref == 'develop')
         run: exit 0
       - name: Fail
-        if: github.event.base_ref == 'main' && github.event.head_ref != 'develop'
+        if: github.base_ref == 'main' && github.head_ref != 'develop'
         run: |
           echo "::error::Invalid PR: Only 'develop' can merge into 'main'"
           exit 1
