@@ -56,7 +56,6 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
   /**
    * The current catalog prefix filter value
    */
-  // ***TODO - THIS WILL BE A DROPDOWN OF CATALOG PREFIXES***
   const [catalogPrefixValue, setCatalogPrefixValue] = useState<string>('All');
 
   /**
@@ -74,6 +73,10 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
    */
   const [fetching, setFetching] = useState(false);
 
+  const [instructorValues, setInstructorValues] = useState(
+    {} as Record<number, string>
+  );
+
   /**
    * Returns filtered multi year plans based on the "Catalog Prefix", "Catalog
    * Number", "Course Title", and a varying number "Instructor" fields based on
@@ -89,6 +92,22 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
       multiYearPlans,
       { field: 'title', value: courseTitleValue, exact: false }
     );
+    // We need to filter manually because listFilter
+    // has no way of filtering the array of faculty for each instance.
+    Object.entries(instructorValues)
+      // Skip falsy values or else we will filter out all rows with a blank instructor
+      // because of the .some() call, which returns false for an empty array.
+      .filter(([, value]) => !!value)
+      .forEach(([index, value]) => {
+        const indexNum = parseInt(index, 10);
+        const valueLower = value.toLowerCase();
+        multiYearPlans = multiYearPlans.filter((myp) => myp
+          // Converting index to a number to appease compiler, which thinks index
+          // is a string, but we know that index will be a number.
+          .semesters[indexNum].instance.faculty
+          .some((faculty) => faculty.displayName.toLowerCase()
+            .includes(valueLower)));
+      });
     if (catalogPrefixValue !== 'All') {
       multiYearPlans = listFilter(
         multiYearPlans,
@@ -133,6 +152,36 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
         .map((semester: MultiYearPlanSemester): TableHeadingCell => (
           <TableHeadingCell key={semester.id} scope="col">
             {`${semester.term[0]}'${semester.calendarYear.slice(2)} Instructors`}
+          </TableHeadingCell>
+        ))
+      : null
+  );
+
+  /**
+   * Creates the instructor filters using the multi year plan list
+   */
+  const instructorFilters = (myp: MultiYearPlanResponseDTO[]):
+  TableHeadingCell[] => (
+    myp.length > 0
+      ? myp[0].semesters
+        .map((semester: MultiYearPlanSemester, index: number):
+        TableHeadingCell => (
+          <TableHeadingCell key={semester.id} scope="col">
+            <TextInput
+              id={`instructorValue${semester.term}${semester.academicYear}`}
+              name={`instructorValue${semester.term}${semester.academicYear}`}
+              value={instructorValues[index]}
+              placeholder="Filter by Instructor"
+              label="The table will be filtered as characters are typed in this instructors filter field"
+              isLabelVisible={false}
+              hideError
+              onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
+                setInstructorValues({
+                  ...instructorValues,
+                  [index]: event.currentTarget.value,
+                });
+              }}
+            />
           </TableHeadingCell>
         ))
       : null
@@ -227,6 +276,9 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
                     }}
                   />
                 </TableHeadingCell>
+                <>
+                  {instructorFilters(currentMultiYearPlanList)}
+                </>
               </TableRow>
             </TableHead>
             <TableBody isScrollable>
