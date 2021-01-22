@@ -22,7 +22,7 @@ jobs:
       - name: NPM install
         run: npm ci
       - name: Find latest version
-        run: echo "VERSION_TAG=$(git tag -l v* | tail -n1)" >> $GITHUB_ENV
+        run: echo "VERSION_TAG=v$(jq -Mr .version package.json)" >> $GITHUB_ENV
       - name: git config
         run: |
           git config --local user.name "SEAS COMPUTING ROBOT"

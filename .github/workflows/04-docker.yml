@@ -16,7 +16,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Find latest version
-        run: echo "VERSION_TAG=$(git tag -l v* | tail -n1)" >> $GITHUB_ENV
+        run: echo "VERSION_TAG=v$(jq -Mr .version package.json)" >> $GITHUB_ENV
       - uses: actions/checkout@v2
         with:
           ref: ${{ env.VERSION_TAG }}
