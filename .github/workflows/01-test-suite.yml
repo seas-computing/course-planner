@@ -6,9 +6,9 @@ on:
   pull_request:
 jobs:
   check-branch:
-    name: Quit if PR target is invalid
+    name: Check PR branch validity 
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.base_ref == 'refs/heads/main' && github.head_ref != 'refs/heads/develop'
+    if: github.event_name == 'pull_request' && github.base_ref == 'main' && github.head_ref != 'develop'
     steps:
       - name: Fail
         run: |
