@@ -9,11 +9,7 @@ on:
       version:
         description: Version to increment
         required: true
-        default: 'Major'
-      branch: 
-        description: Branch to update
-        required: true
-        default: 'main'
+        default: 'major'
 jobs:
   update_version:
     runs-on: ubuntu-latest
@@ -21,7 +17,6 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-          ref: ${{ github.events.inputs.branch }}
       - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
