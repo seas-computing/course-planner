@@ -1,4 +1,4 @@
-name: Documentation 
+name: Publish Documentation
 on: 
   workflow_run:
     workflows:
@@ -8,7 +8,7 @@ on:
     types:
       - completed
 jobs:
-  test:
+  publish:
     name: Generate Documentation 
     runs-on: ubuntu-latest
     steps:
