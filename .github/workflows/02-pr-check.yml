@@ -1,6 +1,11 @@
 name: Check PR Branches 
 on:
-  - pull_request
+  pull_request:
+    types:
+      - opened
+      - edited 
+      - reopened 
+      - synchronize
 jobs:
   check:
     name: Only allow develop into main
