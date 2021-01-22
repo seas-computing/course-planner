@@ -24,7 +24,7 @@ jobs:
           echo "VERSION_TAG=v$(npx semver $DEVELOP_VERSION $MAIN_VERSION | tail -n1)" >> $GITHUB_ENV
       - name: docker-version
         run: |
-          git checkout ${{ VERSION_TAG }}
+          git checkout ${{ env.VERSION_TAG }}
           git branch --points-at HEAD
           echo "DOCKER_TAG=$(if (git branch --points-at HEAD | grep main); then echo stable; else echo qa; fi)" >> $GITHUB_ENV
       - name: qemu
