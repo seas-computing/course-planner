@@ -35,7 +35,7 @@ jobs:
         run: npm version patch -m "Automatic bump to %s"
         if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
       - name: Update manual
-        run: npm version ${{ github.events.inputs.version }} -m "Manual bump to %s"
+        run: npm version ${{ github.event.inputs.version }} -m "Manual bump to %s"
         if: github.event_name == 'workflow_dispatch'
       - name: Push back to branch
         run: git push --tags origin ${{ github.ref }}
