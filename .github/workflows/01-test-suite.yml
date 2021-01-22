@@ -5,15 +5,6 @@ on:
       - "**"
   pull_request:
 jobs:
-  check-branch:
-    name: Check PR branch validity 
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.base_ref == 'main' && github.head_ref != 'develop'
-    steps:
-      - name: Fail
-        run: |
-          echo "::error::Invalid PR: Only develop can be merged into main"
-          exit 1
   test:
     name: Run full test suite
     runs-on: ubuntu-latest
