@@ -4,6 +4,16 @@ on:
     branches:
       - main
       - develop
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to increment
+        required: true
+        default: 'Major'
+      branch: 
+        description: Branch to update
+        required: true
+        default: 'main'
 jobs:
   update_version:
     runs-on: ubuntu-latest
@@ -11,6 +21,11 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
+          ref: github.events.inputs.branch
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
+        run: echo "$GITHUB_CONTEXT"
       - name: Git setup
         run: |
           git config --local user.name "SEAS COMPUTING ROBOT"
@@ -20,10 +35,13 @@ jobs:
           echo "https://${GITHUB_TOKEN}:@github.com" > .git/credentials
       - name: update minor 
         run: npm version minor -m "Automatic bump to %s"
-        if: github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       - name: update patch 
         run: npm version patch -m "Automatic bump to %s"
-        if: github.ref == 'refs/heads/develop'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+      - name: Update manual
+        run: npm version ${{ github.events.inputs.version }} -m "Manual bump to %s"
+        if: github.event_name == 'manual_dispatch'
       - name: Push back to branch
         run: git push --tags origin ${{ github.ref }}
       - name: Merge main back into develop
