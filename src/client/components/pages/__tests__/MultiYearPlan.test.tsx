@@ -12,18 +12,21 @@ import { MultiYearPlanAPI } from 'client/api/multiYearPlan';
 import { testFourYearPlan, error, metadata } from 'testData';
 import MultiYearPlan from '../MultiYearPlan';
 import * as filters from '../Filter';
+import * as instructorFilters from '../utils/filterByInstructorValues';
 
 describe('MultiYearPlan', function () {
   let getStub: SinonStub;
   let dispatchMessage: SinonStub;
-  let filterSpy: SinonSpy;
+  let listFilterSpy: SinonSpy;
+  let facultyFilterSpy: SinonSpy;
   const testData = testFourYearPlan;
 
   beforeEach(function () {
     getStub = stub(MultiYearPlanAPI, 'getMultiYearPlan');
     dispatchMessage = stub();
     getStub.resolves(testData);
-    filterSpy = spy(filters, 'listFilter');
+    listFilterSpy = spy(filters, 'listFilter');
+    facultyFilterSpy = spy(instructorFilters, 'filterByInstructorValues');
   });
   describe('rendering', function () {
     it('creates a table', async function () {
@@ -133,9 +136,9 @@ describe('MultiYearPlan', function () {
           const rows = getAllByRole('row');
           const utils = within(rows[1]);
           const catalogPrefixInput = utils.queryByLabelText('The table will be filtered as selected in the catalog prefix dropdown filter');
-          filterSpy.resetHistory();
+          listFilterSpy.resetHistory();
           fireEvent.change(catalogPrefixInput, { target: { value: 'All' } });
-          strictEqual(filterSpy.callCount, 2);
+          strictEqual(listFilterSpy.callCount, 2);
         });
       });
       context('when any other value is selected', function () {
@@ -149,9 +152,9 @@ describe('MultiYearPlan', function () {
           const rows = getAllByRole('row');
           const utils = within(rows[1]);
           const catalogPrefixInput = utils.queryByLabelText('The table will be filtered as selected in the catalog prefix dropdown filter');
-          filterSpy.resetHistory();
+          listFilterSpy.resetHistory();
           fireEvent.change(catalogPrefixInput, { target: { value: 'AnyValue' } });
-          strictEqual(filterSpy.callCount, 3);
+          strictEqual(listFilterSpy.callCount, 3);
         });
       });
     });
@@ -167,9 +170,9 @@ describe('MultiYearPlan', function () {
           const rows = getAllByRole('row');
           const utils = within(rows[1]);
           const catalogNumber = utils.queryByLabelText('The table will be filtered as characters are typed in this catalog number filter field');
-          filterSpy.resetHistory();
+          listFilterSpy.resetHistory();
           fireEvent.change(catalogNumber, { target: { value: 'AnyValue' } });
-          strictEqual(filterSpy.callCount, 2);
+          strictEqual(listFilterSpy.callCount, 2);
         });
       });
       context('when no value is entered', function () {
@@ -180,8 +183,8 @@ describe('MultiYearPlan', function () {
             metadata
           );
           await wait(() => getAllByRole('row').length > 1);
-          filterSpy.resetHistory();
-          strictEqual(filterSpy.callCount, 0);
+          listFilterSpy.resetHistory();
+          strictEqual(listFilterSpy.callCount, 0);
         });
       });
     });
@@ -197,9 +200,9 @@ describe('MultiYearPlan', function () {
           const rows = getAllByRole('row');
           const utils = within(rows[1]);
           const courseTitle = utils.queryByLabelText('The table will be filtered as characters are typed in this course title filter field');
-          filterSpy.resetHistory();
+          listFilterSpy.resetHistory();
           fireEvent.change(courseTitle, { target: { value: 'AnyValue' } });
-          strictEqual(filterSpy.callCount, 2);
+          strictEqual(listFilterSpy.callCount, 2);
         });
       });
       context('when no value is entered', function () {
@@ -210,8 +213,58 @@ describe('MultiYearPlan', function () {
             metadata
           );
           await wait(() => getAllByRole('row').length > 1);
-          filterSpy.resetHistory();
-          strictEqual(filterSpy.callCount, 0);
+          listFilterSpy.resetHistory();
+          strictEqual(listFilterSpy.callCount, 0);
+        });
+      });
+    });
+    describe('Instructors', function () {
+      context('when a value is entered', function () {
+        context('for all instructor fields', function () {
+          it('calls the filterByInstructorValues once per field', async function () {
+            const { getAllByRole } = render(
+              <MultiYearPlan />,
+              dispatchMessage,
+              metadata
+            );
+            await wait(() => getAllByRole('row').length > 1);
+            const rows = getAllByRole('row');
+            const utils = within(rows[1]);
+            const instructorFields = utils.queryAllByLabelText('The table will be filtered as characters are typed in this instructors filter field');
+            facultyFilterSpy.resetHistory();
+            instructorFields.forEach((instructorField) => {
+              fireEvent.change(instructorField, { target: { value: 'AnyValue' } });
+            });
+            strictEqual(facultyFilterSpy.callCount, instructorFields.length);
+          });
+        });
+        context('for one instructor field', function () {
+          it('calls the filterByInstructorValues once', async function () {
+            const { getAllByRole } = render(
+              <MultiYearPlan />,
+              dispatchMessage,
+              metadata
+            );
+            await wait(() => getAllByRole('row').length > 1);
+            const rows = getAllByRole('row');
+            const utils = within(rows[1]);
+            const instructorFields = utils.queryAllByLabelText('The table will be filtered as characters are typed in this instructors filter field');
+            facultyFilterSpy.resetHistory();
+            fireEvent.change(instructorFields[0], { target: { value: 'AnyValue' } });
+            strictEqual(facultyFilterSpy.callCount, 1);
+          });
+        });
+      });
+      context('when no value is entered', function () {
+        it('does not call the filterByInstructorValues function', async function () {
+          const { getAllByRole } = render(
+            <MultiYearPlan />,
+            dispatchMessage,
+            metadata
+          );
+          await wait(() => getAllByRole('row').length > 1);
+          facultyFilterSpy.resetHistory();
+          strictEqual(facultyFilterSpy.callCount, 0);
         });
       });
     });
