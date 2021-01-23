@@ -33,6 +33,7 @@ import {
 import { MultiYearPlanAPI } from 'client/api/multiYearPlan';
 import { getCatPrefixColor } from '../../../common/constants';
 import { listFilter } from './Filter';
+import { filterByInstructorValues } from './utils/filterByInstructorValues';
 
 /**
  * The component represents the Multi Year Plan page, which will be rendered at
@@ -92,22 +93,7 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
       multiYearPlans,
       { field: 'title', value: courseTitleValue, exact: false }
     );
-    // We need to filter manually because listFilter
-    // has no way of filtering the array of faculty for each instance.
-    Object.entries(instructorValues)
-      // Skip falsy values or else we will filter out all rows with a blank instructor
-      // because of the .some() call, which returns false for an empty array.
-      .filter(([, value]) => !!value)
-      .forEach(([index, value]) => {
-        const indexNum = parseInt(index, 10);
-        const valueLower = value.toLowerCase();
-        multiYearPlans = multiYearPlans.filter((myp) => myp
-          // Converting index to a number to appease compiler, which thinks index
-          // is a string, but we know that index will be a number.
-          .semesters[indexNum].instance.faculty
-          .some((faculty) => faculty.displayName.toLowerCase()
-            .includes(valueLower)));
-      });
+    multiYearPlans = filterByInstructorValues(multiYearPlans, instructorValues);
     if (catalogPrefixValue !== 'All') {
       multiYearPlans = listFilter(
         multiYearPlans,
@@ -170,7 +156,7 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
             <TextInput
               id={`instructorValue${semester.term}${semester.academicYear}`}
               name={`instructorValue${semester.term}${semester.academicYear}`}
-              value={instructorValues[index]}
+              value={instructorValues[index] || ''}
               placeholder="Filter by Instructor"
               label="The table will be filtered as characters are typed in this instructors filter field"
               isLabelVisible={false}
