@@ -1,5 +1,5 @@
 name: Publish Docker Image
-on: 
+on:
   workflow_run:
     workflows:
       - Increment Version
@@ -11,7 +11,7 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    steps: 
+    steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0

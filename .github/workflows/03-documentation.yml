@@ -1,15 +1,15 @@
 name: Publish Documentation
-on: 
+on:
   workflow_run:
     workflows:
       - Increment Version
-    branches: 
+    branches:
       - main
     types:
       - completed
 jobs:
   publish:
-    name: Generate Documentation 
+    name: Generate Documentation
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -17,7 +17,7 @@ jobs:
           ref: 'refs/heads/main'
           fetch-depth: 0
       - uses: actions/setup-node@v1
-        with: 
+        with:
           node-version: 10
       - name: NPM install
         run: npm ci
