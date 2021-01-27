@@ -11,7 +11,7 @@ import {
   ApiUseTags,
 } from '@nestjs/swagger';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
-import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
+import { MultiYearPlanResponseDTO, MultiYearPlanSemester } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import { ConfigService } from 'server/config/config.service';
 import { TERM } from 'common/constants';
 import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
@@ -28,6 +28,10 @@ export class CourseInstanceController {
 
   @Inject(ConfigService)
   private readonly configService: ConfigService;
+
+  public static NUM_YEARS = 4;
+
+  public static NUM_SEMESTERS = CourseInstanceController.NUM_YEARS * 2;
 
   /**
    * Responds with an aggregated list of courses and their instances.
@@ -85,7 +89,10 @@ export class CourseInstanceController {
   }
 
   /**
-   * Responds with a list of multiyear plan records
+   * Responds with a list of multiyear plan records.
+   * If the number of semesters worth of multi year plans requested is more than
+   * what exists in the database, this function will create the correct number
+   * of semesters to supplement the missing ones.
    */
   @ApiUseTags('Course Instance')
   @ApiOperation({ title: 'Retrieve the multi-year plan' })
@@ -97,9 +104,58 @@ export class CourseInstanceController {
   @Get('/multi-year-plan')
   public async getMultiYearPlan(): Promise<MultiYearPlanResponseDTO[]> {
     // The number of years specified for the multi year plan
-    const numYears = 4;
+    const numYears = CourseInstanceController.NUM_YEARS;
+    const expectedNumSemesters = CourseInstanceController.NUM_SEMESTERS;
     const academicYears = this.computeAcademicYears(numYears);
-    return this.ciService.getMultiYearPlan(academicYears);
+    let multiYearPlans
+    : MultiYearPlanResponseDTO[] = await this.ciService
+      .getMultiYearPlan(academicYears);
+    const numSemestersReturned = multiYearPlans[0]
+      ? multiYearPlans[0].semesters.length
+      : 0;
+    const missingNumSemesters = expectedNumSemesters - numSemestersReturned;
+    // In cases in which the database does not have sufficient semester rows, we
+    // would like to populate the missing semesters so that we always get the
+    // number of years worth of multi-year plans that is requested.
+    const createMissingSemester = (offset: number) => {
+      const semesterIndex = numSemestersReturned + offset;
+      // E.g. If the first academic year is 2021, numSemestersReturned is 4
+      // and offset is 0, then
+      // firstMissingAcademicYear = 2021 + Math.floor((4 + 0) / 2) = 2023,
+      // and term will be FALL.
+      // If offset is 1, then firstMissingAcademicYear is still 2023,
+      // while term will be SPRING.
+      const firstMissingAcademicYear = academicYears[0]
+        + Math.floor(semesterIndex / 2);
+      const term = semesterIndex % 2 === 0
+        ? TERM.FALL
+        : TERM.SPRING;
+      const calendarYear = term === TERM.FALL
+        ? firstMissingAcademicYear - 1
+        : firstMissingAcademicYear;
+      return {
+        id: `missingSemester${offset}`,
+        academicYear: String(firstMissingAcademicYear),
+        calendarYear: String(calendarYear),
+        term,
+        instance: {
+          id: `missingInstance${offset}`,
+          faculty: [],
+        },
+      };
+    };
+    const missingSemesters: MultiYearPlanSemester[] = Array.from(
+      new Array(missingNumSemesters)
+    ).map((_, index) => (
+      createMissingSemester(index)
+    ));
+    if (missingNumSemesters > 0) {
+      multiYearPlans = multiYearPlans.map((plan) => ({
+        ...plan,
+        semesters: [...plan.semesters, ...missingSemesters],
+      }));
+    }
+    return multiYearPlans;
   }
 
   /**
