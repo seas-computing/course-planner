@@ -13,6 +13,7 @@ import {
   testMultiYearPlanStartYear,
   testFourYearPlanAcademicYears,
   testCourseScheduleData,
+  testThreeYearPlan,
 } from 'testData';
 import { BadRequestException } from '@nestjs/common';
 import { CourseInstanceService } from '../courseInstance.service';
@@ -160,6 +161,22 @@ describe('Course Instance Controller', function () {
       const actual = await ciController.getMultiYearPlan();
       deepStrictEqual(getStub.args, [[testFourYearPlanAcademicYears]]);
       deepStrictEqual(actual, testFourYearPlan);
+    });
+    context('when there exist fewer semesters in the database than requested through the controller', function () {
+      it('should return the requested number of years worth of multi year plans', async function () {
+        getStub = stub(ciService, 'getMultiYearPlan').resolves(testThreeYearPlan);
+        const actual = await ciController.getMultiYearPlan();
+        strictEqual(actual[0].semesters.length,
+          CourseInstanceController.NUM_SEMESTERS);
+      });
+    });
+    context('when there are at least as many semesters in the database as requested by the controller', function () {
+      it('should return the requested number of years worth of multi year plans', async function () {
+        getStub = stub(ciService, 'getMultiYearPlan').resolves(testFourYearPlan);
+        const actual = await ciController.getMultiYearPlan();
+        strictEqual(actual[0].semesters.length,
+          CourseInstanceController.NUM_SEMESTERS);
+      });
     });
   });
   describe('computeAcademicYears', function () {
