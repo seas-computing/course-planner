@@ -10,4 +10,5 @@ export { default as AUTH_MODE } from './authMode';
 export { default as TERM } from './term';
 export { default as IS_SEAS, isSEASEnumToString } from './isSEAS';
 export { default as LOG_LEVEL, TYPEORM_LOG_LEVEL } from './logLevels';
+export { default as NUM_SEMESTERS, NUM_YEARS } from './multiYearPlan';
 export * from './columns';

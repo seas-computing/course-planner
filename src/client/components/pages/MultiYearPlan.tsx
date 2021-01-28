@@ -28,10 +28,11 @@ import {
 import { MessageContext, MetadataContext } from 'client/context';
 import {
   MultiYearPlanResponseDTO,
-  MultiYearPlanSemester,
 } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import { MultiYearPlanAPI } from 'client/api/multiYearPlan';
-import { getCatPrefixColor } from '../../../common/constants';
+import range from 'lodash.range';
+import { getSemestersFromYear, SemesterInfo } from 'common/utils/multiYearPlanHelperFunctions';
+import { getCatPrefixColor, NUM_SEMESTERS } from '../../../common/constants';
 import { listFilter } from './Filter';
 import { filterByInstructorValues } from './utils/filterByInstructorValues';
 
@@ -133,11 +134,12 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
 
   const yearsHeaders = (myp: MultiYearPlanResponseDTO[]):
   TableHeadingCell[] => (
+    // only show headers if we have any rows
     myp.length > 0
-      ? myp[0].semesters
-        .map((semester: MultiYearPlanSemester): TableHeadingCell => (
-          <TableHeadingCell key={semester.id} scope="col">
-            {`${semester.term[0]}'${semester.calendarYear.slice(2)} Instructors`}
+      ? getSemestersFromYear(metadata.currentAcademicYear)
+        .map((semester): TableHeadingCell => (
+          <TableHeadingCell key={semester.key} scope="col">
+            {`${semester.term[0]}'${String(semester.calendarYear).slice(2)} Instructors`}
           </TableHeadingCell>
         ))
       : null
@@ -149,10 +151,10 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
   const instructorFilters = (myp: MultiYearPlanResponseDTO[]):
   TableHeadingCell[] => (
     myp.length > 0
-      ? myp[0].semesters
-        .map((semester: MultiYearPlanSemester, index: number):
+      ? getSemestersFromYear(metadata.currentAcademicYear)
+        .map((semester: SemesterInfo, index: number):
         TableHeadingCell => (
-          <TableHeadingCell key={semester.id} scope="col">
+          <TableHeadingCell key={semester.key} scope="col">
             <TextInput
               id={`instructorValue${semester.term}${semester.academicYear}`}
               name={`instructorValue${semester.term}${semester.academicYear}`}
@@ -179,19 +181,22 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
   */
 
   const courseInstance = (course: MultiYearPlanResponseDTO): TableCell[] => (
-    course.semesters.map((semester): TableCell => (
-      <TableCell verticalAlignment={VALIGN.TOP} key={semester.id}>
-        <TableCellList>
-          {semester.instance.faculty.length > 0
-            ? semester.instance.faculty.map((faculty): TableCellListItem => (
-              <TableCellListItem key={faculty.id}>
-                {faculty.displayName}
-              </TableCellListItem>
-            ))
-            : null}
-        </TableCellList>
-      </TableCell>
-    ))
+    range(NUM_SEMESTERS).map((index: number) => {
+      const semester = course.semesters[index];
+      return (
+        <TableCell verticalAlignment={VALIGN.TOP} key={index}>
+          <TableCellList>
+            {semester && semester.instance.faculty.length > 0
+              ? semester.instance.faculty.map((faculty): TableCellListItem => (
+                <TableCellListItem key={faculty.id}>
+                  {faculty.displayName}
+                </TableCellListItem>
+              ))
+              : null}
+          </TableCellList>
+        </TableCell>
+      );
+    })
   );
 
   return (
