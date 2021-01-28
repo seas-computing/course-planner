@@ -1,4 +1,6 @@
 language: node_js
+dist: xenial
+os: linux
 node_js:
     - "10"
 services:
@@ -6,31 +8,39 @@ services:
 stages:
   - test
   - name: documentation
-    if: branch = master
+    if: branch = main
   - name: build
-    if: (branch = master OR branch = develop) AND type != pull_request
+    if: (branch = main OR branch = develop) AND type != pull_request
 jobs:
   include:
     - stage: test
+      before_script: echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
       script:
       - npm run typecheck
       - npm run lint
       - npm run test
       - npm run codecov
+      after_script: docker logout
     - stage: documentation
       script:
         - npm run docs
         - touch ./docs/.nojekyll
       deploy:
         provider: pages
-        skip_cleanup: true
-        github_token: $GITHUB_TOKEN
+        cleanup: false
+        token: $GITHUB_TOKEN
         local_dir: ./docs
         target_branch: gh-pages
         on:
-          branch: master
+          branch: main
     - stage: build
+      before_script: echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
       script: docker build -t $TRAVIS_REPO_SLUG:$TRAVIS_BRANCH .
+      before_deploy: bash .travis_version_bump.sh
+      after_deploy: docker logout
       deploy:
         provider: script
-        script: bash docker_deploy.sh
+        cleanup: false
+        script: bash .travis_docker_deploy.sh
+        on: 
+          all_branches: true

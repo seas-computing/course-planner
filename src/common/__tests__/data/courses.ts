@@ -170,3 +170,19 @@ export const updateCourseExample: UpdateCourseDTO = {
   isSEAS: computerScienceCourse.isSEAS,
   private: computerScienceCourse.private,
 };
+
+/**
+ * A collection of catalog prefix data, as returned by the database query in
+ * [[CourseService#getCatalogPrefixList]]
+ */
+export const rawCatalogPrefixList = [
+  { prefix: 'AC' },
+  { prefix: 'AM' },
+  { prefix: 'AP' },
+  { prefix: 'BE' },
+  { prefix: 'CS' },
+  { prefix: 'ES' },
+  { prefix: 'ESE' },
+  { prefix: 'GENED' },
+  { prefix: 'SEMINAR' },
+];

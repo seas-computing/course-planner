@@ -4,6 +4,8 @@ import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyRespon
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { CreateFacultyDTO } from 'common/dto/faculty/CreateFaculty.dto';
 import { Area } from 'server/area/area.entity';
+import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
+import { AbsenceRequestDTO } from 'common/dto/faculty/AbsenceRequest.dto';
 
 /**
  * An example [[Faculty]] entry representing an applied math faculty member
@@ -160,6 +162,7 @@ export const appliedMathFacultyScheduleResponse: FacultyResponseDTO = {
   area: 'AM',
   jointWith: '',
   fall: {
+    id: '677143a4-314f-4d85-aac7-e446b9bf5eca',
     academicYear: 2021,
     courses: [
       {
@@ -173,10 +176,11 @@ export const appliedMathFacultyScheduleResponse: FacultyResponseDTO = {
     ],
     absence: {
       id: 'e8a7f24e-d6d0-4c9d-bfb6-89d070d21091',
-      type: ABSENCE_TYPE.SABBATICAL_ELIGIBLE,
+      type: ABSENCE_TYPE.PRESENT,
     },
   },
   spring: {
+    id: 'cc6b661b-b423-4da7-9248-88a56e070905',
     academicYear: 2021,
     courses: [
       {
@@ -185,7 +189,7 @@ export const appliedMathFacultyScheduleResponse: FacultyResponseDTO = {
       },
     ],
     absence: {
-      id: 'e8a7f24e-d6d0-4c9d-bfb6-89d070d21091',
+      id: '8db77575-7f0a-4c5e-9126-c46c5c99ac33',
       type: ABSENCE_TYPE.SABBATICAL_ELIGIBLE,
     },
   },
@@ -205,6 +209,7 @@ FacultyResponseDTO = {
   area: 'EE',
   jointWith: '',
   fall: {
+    id: 'cc6b661b-b423-4da7-9248-88a56e070905',
     academicYear: 2021,
     courses: [
       {
@@ -226,6 +231,7 @@ FacultyResponseDTO = {
     },
   },
   spring: {
+    id: 'a2b0c918-04ea-4629-8e43-5a1b9f02ea6b',
     academicYear: 2021,
     courses: [
       {
@@ -247,7 +253,7 @@ FacultyResponseDTO = {
     ],
     absence: {
       id: '5f700cd5-9ff9-48a7-875d-2a7b7dc290ea',
-      type: ABSENCE_TYPE.SABBATICAL_INELIGIBLE,
+      type: ABSENCE_TYPE.PRESENT,
     },
   },
 };
@@ -265,6 +271,7 @@ export const newAreaFacultyScheduleResponse: FacultyResponseDTO = {
   area: 'NA',
   jointWith: '',
   fall: {
+    id: 'a2b0c918-04ea-4629-8e43-5a1b9f02ea6b',
     academicYear: 2021,
     courses: [
       {
@@ -282,6 +289,7 @@ export const newAreaFacultyScheduleResponse: FacultyResponseDTO = {
     },
   },
   spring: {
+    id: '677143a4-314f-4d85-aac7-e446b9bf5eca',
     academicYear: 2021,
     courses: [
       {
@@ -294,4 +302,14 @@ export const newAreaFacultyScheduleResponse: FacultyResponseDTO = {
       type: ABSENCE_TYPE.SABBATICAL_ELIGIBLE,
     },
   },
+};
+
+export const facultyAbsenceResponse: AbsenceResponseDTO = {
+  id: 'a2b0c918-04ea-4629-8e43-5a1b9f02ea6b',
+  type: ABSENCE_TYPE.RESEARCH_LEAVE,
+};
+
+export const facultyAbsenceRequest: AbsenceRequestDTO = {
+  id: 'a2b0c918-04ea-4629-8e43-5a1b9f02ea6b',
+  type: ABSENCE_TYPE.SABBATICAL,
 };

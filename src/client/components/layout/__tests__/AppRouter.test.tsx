@@ -52,8 +52,8 @@ describe('App Router', function () {
     });
     context('/faculty-admin', function () {
       it('renders the FacultyAdmin component', async function () {
-        const { findByText } = renderWithUser('/faculty-admin');
-        return findByText(/HUID/);
+        const { findAllByText } = renderWithUser('/faculty-admin');
+        return findAllByText(/HUID/);
       });
     });
     context('/faculty', function () {

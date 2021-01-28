@@ -17,6 +17,8 @@ import {
   VARIANT,
   ALIGN,
   Button,
+  Dropdown,
+  TextInput,
 } from 'mark-one';
 import {
   MESSAGE_TYPE,
@@ -28,10 +30,12 @@ import { TableRowProps } from 'mark-one/lib/Tables/TableRow';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
+import { MetadataContext } from 'client/context/MetadataContext';
 import { getAreaColor } from '../../../common/constants';
 import { FacultyAPI } from '../../api/faculty';
 import FacultyModal from './FacultyModal';
 import { VerticalSpace } from '../layout';
+import { listFilter } from './Filter';
 
 /**
  * Computes the id of the faculty button for the faculty being edited
@@ -48,9 +52,14 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
   /**
    * The current list of faculty members used to populate the Faculty Admin table
    */
-  const [currentFacultyMembers, setFacultyMembers] = useState(
+  const [currentFacultyMembersList, setCurrentFacultyMembersList] = useState(
     [] as ManageFacultyResponseDTO[]
   );
+
+  /**
+   * The current value for the metadata context
+   */
+  const metadata = useContext(MetadataContext);
 
   /**
    * Keeps track of whether the faculty modal is currently visible.
@@ -70,13 +79,61 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
   ] = useState(null as ManageFacultyResponseDTO);
 
   /**
+   * The current area filter value
+   */
+  const [facultyAreaValue, setFacultyAreaValue] = useState<string>('All');
+
+  /**
+   * The current HUID filter value
+   */
+  const [HUIDValue, setHUIDValue] = useState<string>('');
+
+  /**
+   * The current last name filter value
+   */
+  const [lastNameValue, setLastNameValue] = useState<string>('');
+
+  /**
+   * The current first name filter value
+   */
+  const [firstNameValue, setFirstNameValue] = useState<string>('');
+
+  /**
+   * Return filtered faculty members based on the "Area", "HUID", "Last Name",
+   * and "First Name" fields filters
+   */
+  const filteredFaculty = (): ManageFacultyResponseDTO[] => {
+    let facultyMembers = [...currentFacultyMembersList];
+    facultyMembers = listFilter(
+      facultyMembers,
+      { field: 'HUID', value: HUIDValue, exact: false }
+    );
+    facultyMembers = listFilter(
+      facultyMembers,
+      { field: 'lastName', value: lastNameValue, exact: false }
+    );
+    facultyMembers = listFilter(
+      facultyMembers,
+      { field: 'firstName', value: firstNameValue, exact: false }
+    );
+    if (facultyAreaValue !== 'All') {
+      facultyMembers = listFilter(
+        facultyMembers,
+        { field: 'area.name', value: facultyAreaValue, exact: true }
+      );
+    }
+    return facultyMembers;
+  };
+
+  /**
    * The current value for the message context
    */
   const dispatchMessage = useContext(MessageContext);
 
   const loadFaculty = useCallback(async (): Promise<void> => {
     try {
-      setFacultyMembers(await FacultyAPI.getAllFacultyMembers());
+      const facultyList = await FacultyAPI.getAllFacultyMembers();
+      setCurrentFacultyMembersList(facultyList);
     } catch (e) {
       dispatchMessage({
         message: new AppMessage(
@@ -124,9 +181,74 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
               <TableHeadingCell scope="col">First Name</TableHeadingCell>
               <TableHeadingCell scope="col">Edit</TableHeadingCell>
             </TableRow>
+            <TableRow isStriped>
+              <TableHeadingCell scope="col">
+                <Dropdown
+                  options={
+                    [{ value: 'All', label: 'All' }]
+                      .concat(metadata.areas.map((area) => ({
+                        value: area,
+                        label: area,
+                      })))
+                  }
+                  value={facultyAreaValue}
+                  name="facultyArea"
+                  id="facultyArea"
+                  label="The table will be filtered as selected in the faculty area dropdown filter"
+                  isLabelVisible={false}
+                  hideError
+                  onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
+                    setFacultyAreaValue(event.currentTarget.value);
+                  }}
+                />
+              </TableHeadingCell>
+              <TableHeadingCell scope="col">
+                <TextInput
+                  id="huid"
+                  name="huid"
+                  value={HUIDValue}
+                  placeholder="Filter by HUID"
+                  label="The table will be filtered as characters are typed in this HUID filter field"
+                  isLabelVisible={false}
+                  hideError
+                  onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
+                    setHUIDValue(event.currentTarget.value);
+                  }}
+                />
+              </TableHeadingCell>
+              <TableHeadingCell scope="col">
+                <TextInput
+                  id="lastName"
+                  name="lastName"
+                  value={lastNameValue}
+                  placeholder="Filter by Last Name"
+                  label="The table will be filtered as characters are typed in this last name filter field"
+                  isLabelVisible={false}
+                  hideError
+                  onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
+                    setLastNameValue(event.currentTarget.value);
+                  }}
+                />
+              </TableHeadingCell>
+              <TableHeadingCell scope="col">
+                <TextInput
+                  id="firstName"
+                  name="firstName"
+                  value={firstNameValue}
+                  placeholder="Filter by First Name"
+                  label="The table will be filtered as characters are typed in this first name filter field"
+                  isLabelVisible={false}
+                  hideError
+                  onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
+                    setFirstNameValue(event.currentTarget.value);
+                  }}
+                />
+              </TableHeadingCell>
+              <TableHeadingCell scope="col"> </TableHeadingCell>
+            </TableRow>
           </TableHead>
           <TableBody isScrollable>
-            {currentFacultyMembers
+            {filteredFaculty()
               .map((faculty, facultyIndex): ReactElement<TableRowProps> => (
                 <TableRow isStriped={facultyIndex % 2 === 1} key={faculty.id}>
                   <TableCell

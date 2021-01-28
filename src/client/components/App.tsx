@@ -64,6 +64,7 @@ const App: FunctionComponent = (): ReactElement => {
     currentAcademicYear: null,
     areas: [],
     semesters: [],
+    catalogPrefixes: [],
   });
   const metadataContext = new MetadataContextValue(currentMetadata,
     setMetadata);
@@ -105,15 +106,14 @@ const App: FunctionComponent = (): ReactElement => {
   }, []);
 
   return (
-    <div className="app">
+    <div className="app-content">
       <MarkOneWrapper>
         <UserContext.Provider value={currentUser}>
           <MessageContext.Provider value={dispatchMessage}>
             <MetadataContext.Provider value={metadataContext}>
-              <div className="app-content">
-                <AppHeader />
-                <PageBody>
-                  {currentMessage
+              <PageBody>
+                <AppHeader currentUser={currentUser} />
+                {currentMessage
                     && (
                       <Message
                         messageCount={queue.length}
@@ -121,9 +121,8 @@ const App: FunctionComponent = (): ReactElement => {
                         messageType={currentMessage.variant}
                       />
                     )}
-                  <AppRouter />
-                </PageBody>
-              </div>
+                <AppRouter />
+              </PageBody>
             </MetadataContext.Provider>
           </MessageContext.Provider>
         </UserContext.Provider>

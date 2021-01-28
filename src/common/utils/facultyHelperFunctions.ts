@@ -1,4 +1,4 @@
-import { FACULTY_TYPE } from 'common/constants';
+import { ABSENCE_TYPE, FACULTY_TYPE } from 'common/constants';
 
 /**
   * Verifies whether the HUID provided meets the formatting requirements
@@ -23,6 +23,29 @@ export const absenceEnumToTitleCase = (str: string): string => {
 
 /**
  * Define the map here to avoid a new object being created on each call to
+ * [[absenceTitleCaseToEnum]]
+ */
+const absenceTitleCaseToEnumMap = {
+  Sabbatical: ABSENCE_TYPE.SABBATICAL,
+  'Sabbatical Eligible': ABSENCE_TYPE.SABBATICAL_ELIGIBLE,
+  'Sabbatical Ineligible': ABSENCE_TYPE.SABBATICAL_INELIGIBLE,
+  'Teaching Relief': ABSENCE_TYPE.TEACHING_RELIEF,
+  'Research Leave': ABSENCE_TYPE.RESEARCH_LEAVE,
+  'Parental Leave': ABSENCE_TYPE.PARENTAL_LEAVE,
+  'No Longer Active': ABSENCE_TYPE.NO_LONGER_ACTIVE,
+  Present: ABSENCE_TYPE.PRESENT,
+};
+
+/**
+ * A helper function that converts the faculty absence from the title case format
+ * to the absence enum format
+ */
+export const absenceTitleCaseToEnum = (
+  absence: keyof typeof absenceTitleCaseToEnumMap
+): ABSENCE_TYPE => absenceTitleCaseToEnumMap[absence];
+
+/**
+ * Define the map here to avoid a new object being created on each call to
  * [[facultyTypeEnumToTitleCase]]
  */
 const facultyTypeEnumToTitleCaseMap = {
@@ -37,22 +60,3 @@ const facultyTypeEnumToTitleCaseMap = {
  */
 export const facultyTypeEnumToTitleCase = (facultyType: FACULTY_TYPE):
 string => facultyTypeEnumToTitleCaseMap[facultyType];
-
-/**
- * Define the map here to avoid a new object being created on each call to
- * [[facultyTypeTitleCaseToEnum]]
- */
-const facultyTypeTitleCaseToEnumMap = {
-  Ladder: FACULTY_TYPE.LADDER,
-  'Non-SEAS Ladder': FACULTY_TYPE.NON_SEAS_LADDER,
-  'Non-Ladder': FACULTY_TYPE.NON_LADDER,
-};
-
-/**
- * A helper function that converts from the faculty from the title case format
- * to the category enum format
- */
-export const facultyTypeTitleCaseToEnum = function (facultyType: string):
-FACULTY_TYPE {
-  return facultyTypeTitleCaseToEnumMap[facultyType] as FACULTY_TYPE;
-};

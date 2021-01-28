@@ -33,8 +33,9 @@ describe('Course Instance Service', function () {
   let instanceRepository: Repository<CourseInstance>;
   let meetingRepository: Repository<Meeting>;
   before(async function () {
+    this.timeout(120000);
     db = new MockDB();
-    await db.init();
+    return db.init();
   });
   after(async function () {
     await db.stop();

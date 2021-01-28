@@ -19,6 +19,7 @@ import {
   physicsCourseQueryResult,
   computerScienceCourseResponse,
   physicsCourseResponse,
+  rawCatalogPrefixList,
 } from 'testData';
 import { Area } from 'server/area/area.entity';
 import { SelectQueryBuilder } from 'typeorm';
@@ -47,13 +48,14 @@ describe('Course service', function () {
     };
 
     mockCourseRepository = {
-      createQueryBuilder: stub().returns(mockCourseQueryBuilder),
       save: stub(),
+      createQueryBuilder: stub().returns(mockCourseQueryBuilder),
     };
 
     mockSemesterRepository = {
       find: stub(),
     };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CourseService,
@@ -117,6 +119,37 @@ describe('Course service', function () {
       const createdCourse = await courseService.save(computerScienceCourse);
 
       deepStrictEqual(createdCourse, computerScienceCourse);
+    });
+  });
+  describe('getCatalogPrefixList', function () {
+    context('When there are records in the database', function () {
+      beforeEach(function () {
+        mockCourseQueryBuilder.select.returnsThis();
+        mockCourseQueryBuilder.distinct.returnsThis();
+        mockCourseQueryBuilder.where.returnsThis();
+        mockCourseQueryBuilder.orderBy.returnsThis();
+        mockCourseQueryBuilder.getRawMany.resolves(rawCatalogPrefixList);
+      });
+      it('returns a list of just the catalog prefixes', async function () {
+        const result = await courseService.getCatalogPrefixList();
+        const prefixArray = rawCatalogPrefixList.map((record) => record.prefix);
+        strictEqual(result.length, rawCatalogPrefixList.length);
+        deepStrictEqual(result, prefixArray);
+      });
+    });
+    context('When there are no records in the database', function () {
+      beforeEach(function () {
+        mockCourseQueryBuilder.select.returnsThis();
+        mockCourseQueryBuilder.distinct.returnsThis();
+        mockCourseQueryBuilder.where.returnsThis();
+        mockCourseQueryBuilder.orderBy.returnsThis();
+        mockCourseQueryBuilder.getRawMany.resolves([]);
+      });
+      it('returns an empty array', async function () {
+        const result = await courseService.getCatalogPrefixList();
+        strictEqual(result.length, 0);
+        deepStrictEqual(result, []);
+      });
     });
   });
 });
