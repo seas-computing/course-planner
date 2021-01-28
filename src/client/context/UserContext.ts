@@ -1,8 +1,8 @@
 import { createContext, Context } from 'react';
-import { UserResponse } from 'common/dto/users/userResponse.dto';
+import { User } from 'common/classes';
 
 /**
  * Manage the currently logged-in user throught Context
  */
 
-export const UserContext: Context<UserResponse> = createContext(null);
+export const UserContext: Context<User> = createContext<User>(null);

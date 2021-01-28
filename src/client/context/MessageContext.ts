@@ -1,10 +1,16 @@
-import { createContext, Context, Reducer } from 'react';
+import { createContext, Reducer, Dispatch } from 'react';
 import { AppMessage, MESSAGE_ACTION } from '../classes';
+
+/**
+ * A function that passes down a message to the queue
+ */
+export type DispatchMessage = Dispatch<MessageReducerAction>;
+
 /**
  * Global message provider
  */
 
-export const MessageContext: Context<Function> = createContext(null);
+export const MessageContext = createContext<DispatchMessage>(null);
 
 /**
  * handles queueing logic for the top-level app component
@@ -27,7 +33,6 @@ export interface MessageReducerAction {
   type: MESSAGE_ACTION;
   message?: AppMessage;
 }
-
 
 export const messageReducer:
 Reducer<MessageReducerState, MessageReducerAction> = (

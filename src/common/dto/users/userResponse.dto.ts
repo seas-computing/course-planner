@@ -2,6 +2,8 @@
  * @module server/dto/users/userResponse
  */
 
+import { GROUP } from 'common/constants';
+
 /**
  * User Response
  *
@@ -19,7 +21,5 @@ export abstract class UserResponse {
 
   public email: string;
 
-  public fullName: string;
-
-  public listName: string;
+  public groups: GROUP[];
 }

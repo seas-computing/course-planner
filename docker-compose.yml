@@ -4,7 +4,7 @@ services:
   postgres:
     image: postgres:10.7
     ports:
-      - "127.0.0.1:5432:5432"
+      - "127.0.0.1:${DB_PORT}:${DB_PORT}"
     environment:
       POSTGRES_DB: ${DB_DATABASE}
       POSTGRES_USER: ${DB_USERNAME}
@@ -15,9 +15,12 @@ services:
     build:
       context: .
       target: base
+      args:
+        OPEN_PORT: ${SERVER_PORT}
     environment:
       - APP_NAME
       - CAS_URL
+      - CLIENT_URL
       - DB_HOSTNAME
       - DB_PORT
       - DB_DATABASE
@@ -27,27 +30,45 @@ services:
       - REDIS_PASSWORD
       - REDIS_PORT
       - REDIS_PREFIX
+      - LOG_LEVEL
       - NODE_ENV
-      - EXTERNAL_URL
+      - SERVER_URL
       - SERVER_PORT
       - SESSION_SECRET
     user: "1000:1000"
     ports:
-      - "127.0.0.1:3000:3000"
+      - "127.0.0.1:${SERVER_PORT}:${SERVER_PORT}"
     volumes:
       - ".:/node:rw"
-    command: ["npm", "run", "start"]
+    command: ["npm", "run", "start:server"]
     links:
       - redis
       - postgres
     depends_on:
       - "postgres"
       - "redis"
+  client:
+    build:
+      context: .
+      target: base
+      args:
+        OPEN_PORT: ${CLIENT_PORT}
+    environment:
+      - APP_NAME
+      - CLIENT_PORT
+      - SERVER_URL
+      - SERVER_PORT
+    user: "1000:1000"
+    ports:
+      - "127.0.0.1:${CLIENT_PORT}:${CLIENT_PORT}"
+    volumes:
+      - ".:/node:rw"
+    command: ["npm", "run", "start:client"]
   redis:
     image: bitnami/redis:5.0.4
     environment:
       - REDIS_PASSWORD
     ports:
-      - "127.0.0.1:6379:6379"
+      - "127.0.0.1:${REDIS_PORT}:${REDIS_PORT}"
 volumes:
   postgres_data:

@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": false,
+    "sourceMap": false,
+    "incremental": false,
+    "outDir": "./build"
+  },
+  "include": [
+    "src/server",
+    "src/common"
+  ],
+  "exclude": [
+    "**/__tests__/*",
+    "src/server/auth/dev.strategy.ts"
+  ]
+}

@@ -1,4 +1,4 @@
-import React, { useContext, ReactElement, SFC } from 'react';
+import React, { useContext, ReactElement, FunctionComponent } from 'react';
 import { MESSAGE_TYPE, MESSAGE_ACTION } from '../../classes';
 import { MessageContext } from '../../context';
 
@@ -8,7 +8,7 @@ export interface MessageProps {
   messageType: MESSAGE_TYPE;
 }
 
-export const Message: SFC<MessageProps> = ({
+const Message: FunctionComponent<MessageProps> = ({
   messageCount,
   messageText,
   messageType,
@@ -45,3 +45,5 @@ export const Message: SFC<MessageProps> = ({
     </div>
   );
 };
+
+export default Message;
