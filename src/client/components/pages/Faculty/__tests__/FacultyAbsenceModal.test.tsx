@@ -20,7 +20,6 @@ import {
   appliedMathFacultyScheduleResponse,
   facultyAbsenceRequest,
   facultyAbsenceResponse,
-  metadata,
 } from 'testData';
 import { FacultyAPI } from 'client/api';
 import FacultyAbsenceModal from '../FacultyAbsenceModal';
@@ -46,8 +45,7 @@ describe('Faculty Absence Modal', function () {
           onSuccess={onSuccessStub}
           onCancel={onCancelStub}
         />,
-        dispatchMessage,
-        metadata
+        dispatchMessage
       ));
     });
     it('populates the absence field according to the current absence selected', function () {
@@ -83,8 +81,7 @@ describe('Faculty Absence Modal', function () {
             onSuccess={onSuccessStub}
             onCancel={onCancelStub}
           />,
-          dispatchMessage,
-          metadata
+          dispatchMessage
         ));
         const absenceSelect = getByLabelText('Sabbatical/Leave', { exact: false }) as HTMLSelectElement;
         fireEvent.change(
@@ -118,8 +115,7 @@ describe('Faculty Absence Modal', function () {
             onSuccess={onSuccessStub}
             onCancel={onCancelStub}
           />,
-          dispatchMessage,
-          metadata
+          dispatchMessage
         ));
         const submitButton = getByText('Submit');
         fireEvent.click(submitButton);
@@ -149,8 +145,7 @@ describe('Faculty Absence Modal', function () {
           onSuccess={onSuccessStub}
           onCancel={onCancelStub}
         />,
-        dispatchMessage,
-        metadata
+        dispatchMessage
       ));
       const cancelButton = getByText('Cancel');
       fireEvent.click(cancelButton);

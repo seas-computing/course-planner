@@ -15,6 +15,7 @@ import {
   messageReducer,
   UserContext,
   MetadataContext,
+  MetadataContextValue,
 } from 'client/context';
 import { MarkOneWrapper, PageBody } from 'mark-one';
 import { getCurrentUser } from 'client/api';
@@ -65,6 +66,8 @@ const App: FunctionComponent = (): ReactElement => {
     semesters: [],
     catalogPrefixes: [],
   });
+  const metadataContext = new MetadataContextValue(currentMetadata,
+    setMetadata);
 
   /**
    * Get the currently authenticated user from the server on launch.
@@ -107,7 +110,7 @@ const App: FunctionComponent = (): ReactElement => {
       <MarkOneWrapper>
         <UserContext.Provider value={currentUser}>
           <MessageContext.Provider value={dispatchMessage}>
-            <MetadataContext.Provider value={currentMetadata}>
+            <MetadataContext.Provider value={metadataContext}>
               <PageBody>
                 <AppHeader currentUser={currentUser} />
                 {currentMessage

@@ -2,24 +2,26 @@ import { TestingModule, Test } from '@nestjs/testing';
 import {
   stub,
   SinonStub,
-  SinonStubbedInstance,
   createStubInstance,
+  SinonStubbedInstance,
 } from 'sinon';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import {
   strictEqual,
   deepStrictEqual,
-  rejects,
 } from 'assert';
 import { Semester } from 'server/semester/semester.entity';
 import {
   spring,
   fall,
   computerScienceCourse,
+  computerScienceCourseQueryResult,
+  physicsCourseQueryResult,
+  computerScienceCourseResponse,
+  physicsCourseResponse,
   rawCatalogPrefixList,
 } from 'testData';
 import { Area } from 'server/area/area.entity';
-import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { SelectQueryBuilder } from 'typeorm';
 import { CourseService } from '../course.service';
 import { Course } from '../course.entity';
@@ -32,9 +34,17 @@ describe('Course service', function () {
   let mockCourseQueryBuilder: SinonStubbedInstance<SelectQueryBuilder<Course>>;
   beforeEach(async function () {
     mockCourseQueryBuilder = createStubInstance(SelectQueryBuilder);
-
+    mockCourseQueryBuilder.select.returnsThis();
+    mockCourseQueryBuilder.addSelect.returnsThis();
+    mockCourseQueryBuilder.leftJoinAndSelect.returnsThis();
+    mockCourseQueryBuilder.orderBy.returnsThis();
+    mockCourseQueryBuilder.addOrderBy.returnsThis();
+    mockCourseQueryBuilder.getRawMany.resolves([
+      computerScienceCourseQueryResult,
+      physicsCourseQueryResult,
+    ]);
     mockAreaRepository = {
-      findOneOrFail: stub(),
+      findOne: stub(),
     };
 
     mockCourseRepository = {
@@ -67,10 +77,19 @@ describe('Course service', function () {
 
     courseService = module.get<CourseService>(CourseService);
   });
-
+  describe('findCourses', function () {
+    it('returns all courses from the database', async function () {
+      const results = await courseService.findCourses();
+      deepStrictEqual(
+        results,
+        [computerScienceCourseResponse, physicsCourseResponse]
+      );
+    });
+  });
   describe('save', function () {
     beforeEach(function () {
       mockSemesterRepository.find.resolves([]);
+      mockAreaRepository.findOne.resolves(computerScienceCourse.area.name);
     });
 
     it('creates a new course in the database', async function () {
@@ -100,12 +119,6 @@ describe('Course service', function () {
       const createdCourse = await courseService.save(computerScienceCourse);
 
       deepStrictEqual(createdCourse, computerScienceCourse);
-    });
-
-    it('requires that courses be created within valid areas', async function () {
-      mockAreaRepository.findOneOrFail.rejects(new EntityNotFoundError(Area, ''));
-
-      await rejects(() => courseService.save(computerScienceCourse), /Area/);
     });
   });
   describe('getCatalogPrefixList', function () {

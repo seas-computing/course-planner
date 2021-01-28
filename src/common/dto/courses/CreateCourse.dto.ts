@@ -7,18 +7,17 @@ import {
   IsEnum,
   IsOptional,
 } from 'class-validator';
-import { CourseArea } from './CourseArea.dto';
+import { Transform } from 'class-transformer';
+import { trimString } from '../util';
 
 /**
  * @module Server.DTOS.Courses
  */
 
 export abstract class CreateCourse {
-  @ApiModelProperty({
-    type: CourseArea,
-  })
   @IsNotEmpty()
-  public area: CourseArea;
+  @Transform(trimString)
+  public area: string;
 
   @ApiModelProperty({
     type: 'boolean',
@@ -33,6 +32,7 @@ export abstract class CreateCourse {
   })
   @IsString()
   @IsNotEmpty()
+  @Transform(trimString)
   public title: string;
 
   @ApiModelProperty({
@@ -40,16 +40,18 @@ export abstract class CreateCourse {
     example: 'CS',
   })
   @IsString()
-  @IsNotEmpty()
-  public prefix: string;
+  @IsOptional()
+  @Transform(trimString)
+  public prefix?: string;
 
   @ApiModelProperty({
     type: 'string',
     example: '109b',
   })
   @IsString()
-  @IsNotEmpty()
-  public number: string;
+  @IsOptional()
+  @Transform(trimString)
+  public number?: string;
 
   @ApiModelProperty({
     type: 'string',
@@ -57,32 +59,25 @@ export abstract class CreateCourse {
   })
   @IsString()
   @IsOptional()
+  @Transform(trimString)
   public sameAs?: string;
 
   @ApiModelProperty({
     type: 'string',
     enum: IS_SEAS,
-    example: true,
+    example: IS_SEAS.Y,
   })
   @IsEnum(IS_SEAS)
   @IsNotEmpty()
   public isSEAS: IS_SEAS;
 
   @ApiModelProperty({
-    type: 'string',
-    example: 'Taking place in a larger room this year',
-    default: '',
-  })
-  @IsString()
-  @IsOptional()
-  public notes?: string;
-
-  @ApiModelProperty({
     type: 'boolean',
     example: false,
+    default: true,
   })
-  @IsNotEmpty()
   @IsBoolean()
+  @IsOptional()
   public private: boolean;
 
   @ApiModelProperty({

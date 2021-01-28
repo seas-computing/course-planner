@@ -20,7 +20,6 @@ import {
   physicsCourseResponse,
   newAreaCourseResponse,
   error,
-  metadata,
 } from 'testData';
 import { render } from 'test-utils';
 import CourseAdmin from '../CourseAdmin';
@@ -45,17 +44,22 @@ describe('Course Admin', function () {
     it('creates a table', async function () {
       const { container } = render(
         <CourseAdmin />,
-        dispatchMessage,
-        metadata
+        dispatchMessage
       );
       return waitForElement(() => container.querySelector('.course-admin-table'));
+    });
+    it('displays the "create course" button', async function () {
+      const { container } = render(
+        <CourseAdmin />,
+        dispatchMessage
+      );
+      return waitForElement(() => container.querySelector('.create-course-button'));
     });
     context('when course data fetch succeeds', function () {
       it('displays the correct course information', async function () {
         const { getByText } = render(
           <CourseAdmin />,
-          dispatchMessage,
-          metadata
+          dispatchMessage
         );
         strictEqual(getStub.callCount, 1);
         const { title } = computerScienceCourseResponse;
@@ -64,8 +68,7 @@ describe('Course Admin', function () {
       it('display the filters in the first row', async function () {
         const { getAllByRole } = render(
           <CourseAdmin />,
-          dispatchMessage,
-          metadata
+          dispatchMessage
         );
         await wait(() => getAllByRole('row').length > 1);
         const rows = getAllByRole('row');
@@ -80,8 +83,7 @@ describe('Course Admin', function () {
       it('displays the correct number of rows in the table', async function () {
         const { getAllByRole } = render(
           <CourseAdmin />,
-          dispatchMessage,
-          metadata
+          dispatchMessage
         );
         await wait(() => getAllByRole('row').length > 1);
         const rows = getAllByRole('row');
@@ -90,8 +92,7 @@ describe('Course Admin', function () {
       it('displays the correct content in the table cells', async function () {
         const { getAllByRole } = render(
           <CourseAdmin />,
-          dispatchMessage,
-          metadata
+          dispatchMessage
         );
         await wait(() => getAllByRole('row').length > 1);
         const rows = Array.from(getAllByRole('row')) as HTMLTableRowElement[];
@@ -121,8 +122,7 @@ describe('Course Admin', function () {
       it('does not pass the backgroundColor prop when area does not exist', async function () {
         const { getAllByRole, getByText } = render(
           <CourseAdmin />,
-          dispatchMessage,
-          metadata
+          dispatchMessage
         );
         await wait(() => getAllByRole('row').length > 1);
         const newAreaCourseStyle = window.getComputedStyle(getByText('NA', { selector: 'td' }));
@@ -132,8 +132,7 @@ describe('Course Admin', function () {
         it('Calls the listFilter function once for each filter', async function () {
           const { getAllByRole } = render(
             <CourseAdmin />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           await wait(() => getAllByRole('row').length > 1);
           const rows = getAllByRole('row');
@@ -148,8 +147,7 @@ describe('Course Admin', function () {
         it('Calls the listFilter function once for each filter except the dropdown', async function () {
           const { getAllByRole } = render(
             <CourseAdmin />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           await wait(() => getAllByRole('row').length > 1);
           const rows = getAllByRole('row');
@@ -164,8 +162,7 @@ describe('Course Admin', function () {
         it('Calls the listFilter function once for each filter except the dropdown', async function () {
           const { getAllByRole } = render(
             <CourseAdmin />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           await wait(() => getAllByRole('row').length > 1);
           const rows = getAllByRole('row');
@@ -178,8 +175,7 @@ describe('Course Admin', function () {
         it('Calls the listFilter function once for each filter except the dropdown', async function () {
           const { getAllByRole } = render(
             <CourseAdmin />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           await wait(() => getAllByRole('row').length > 1);
           const rows = getAllByRole('row');
@@ -198,8 +194,7 @@ describe('Course Admin', function () {
         it('displays the correct number of rows in the table (only the header row)', async function () {
           const { getAllByRole } = render(
             <CourseAdmin />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           await wait(() => getAllByRole('row').length > 0);
           const rows = getAllByRole('row');
@@ -214,8 +209,7 @@ describe('Course Admin', function () {
       it('should throw an error', async function () {
         const { getAllByRole } = render(
           <CourseAdmin />,
-          dispatchMessage,
-          metadata
+          dispatchMessage
         );
         await wait(() => getAllByRole('row').length > 0);
         strictEqual(dispatchMessage.callCount, 1);
