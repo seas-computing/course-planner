@@ -21,11 +21,11 @@ import {
 } from 'mark-one';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import { MESSAGE_TYPE, AppMessage, MESSAGE_ACTION } from 'client/classes';
-import { MessageContext } from 'client/context';
+import { MessageContext, MetadataContext } from 'client/context';
 import { TableRowProps } from 'mark-one/lib/Tables/TableRow';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
-import { getAreaColor } from '../../../common/constants';
+import { getCatPrefixColor } from '../../../common/constants';
 import { CourseAPI } from '../../api/courses';
 import { VerticalSpace } from '../layout';
 import CourseModal from './Courses/CourseModal';
@@ -49,28 +49,15 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
   const [currentCourses, setCourses] = useState(
     [] as ManageCourseResponseDTO[]
   );
-  const [prefixOptions, setPrefixOptions] = useState<{
-    value: string; label: string
-  }[]>([]);
-  const [courseValue, setCourseValue] = useState<string>('');
-  const [titleValue, setTitleValue] = useState<string>('');
-  const [coursePrefixValue, setCoursePrefixValue] = useState<string>('');
 
   /**
-   * Extract the "Course Prefix" unique values
-   * from the course DTO area name
+   * The current value for the metadata context
    */
-  const coursePrefixSetup = (courses: ManageCourseResponseDTO[]) => {
-    let initPrefixOptions = courses.map(
-      (course) => ({ value: course.area.name, label: course.area.name })
-    );
-    initPrefixOptions = [...new Map(initPrefixOptions.map(
-      (item) => [item.value, item]
-    )).values()];
-    initPrefixOptions.push({ value: 'All', label: 'All' });
-    setPrefixOptions(initPrefixOptions);
-    setCoursePrefixValue('All');
-  };
+  const metadata = useContext(MetadataContext);
+
+  const [courseValue, setCourseValue] = useState<string>('');
+  const [titleValue, setTitleValue] = useState<string>('');
+  const [catalogPrefixValue, setCatalogPrefixValue] = useState<string>('All');
 
   /**
    * Return filtered course based on the "Course Prefix",
@@ -88,10 +75,10 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
       courses,
       { field: 'title', value: titleValue, exact: false }
     );
-    if (coursePrefixValue !== 'All') {
+    if (catalogPrefixValue !== 'All') {
       courses = listFilter(
         courses,
-        { field: 'area.name', value: coursePrefixValue, exact: true }
+        { field: 'prefix', value: catalogPrefixValue, exact: true }
       );
     }
     return (courses);
@@ -123,7 +110,6 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
     try {
       const loadedCourses = await CourseAPI.getAllCourses();
       setCourses(loadedCourses);
-      coursePrefixSetup(loadedCourses);
     } catch (e) {
       dispatchMessage({
         message: new AppMessage(
@@ -172,15 +158,21 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
             <TableRow isStriped>
               <TableHeadingCell scope="col">
                 <Dropdown
-                  options={prefixOptions}
-                  value={coursePrefixValue}
-                  name="courseprefix"
-                  id="coursePrefix"
-                  label="The table will be filtered as selected in this course prefix dropdown filter"
+                  options={
+                    [{ value: 'All', label: 'All' }]
+                      .concat(metadata.catalogPrefixes.map((prefix) => ({
+                        value: prefix,
+                        label: prefix,
+                      })))
+                  }
+                  value={catalogPrefixValue}
+                  name="catalogPrefixValue"
+                  id="catalogPrefixValue"
+                  label="The table will be filtered as selected in this catalog prefix dropdown filter"
                   isLabelVisible={false}
                   hideError
                   onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
-                    setCoursePrefixValue(event.currentTarget.value);
+                    setCatalogPrefixValue(event.currentTarget.value);
                   }}
                 />
               </TableHeadingCell>
@@ -219,9 +211,9 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
             {filteredCourses().map((course, i): ReactElement<TableRowProps> => (
               <TableRow isStriped={i % 2 === 1} key={course.id}>
                 <TableCell
-                  backgroundColor={getAreaColor(course.area.name)}
+                  backgroundColor={getCatPrefixColor(course.prefix)}
                 >
-                  {course.area.name}
+                  {course.prefix}
                 </TableCell>
                 <TableCell>{course.catalogNumber}</TableCell>
                 <TableCell>{course.title}</TableCell>
