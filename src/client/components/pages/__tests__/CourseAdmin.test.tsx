@@ -34,6 +34,7 @@ describe('Course Admin', function () {
     physicsCourseResponse,
     newAreaCourseResponse,
   ];
+  const catalogPrefixLabelText = 'The table will be filtered as selected in this catalog prefix dropdown filter';
   beforeEach(function () {
     getStub = stub(CourseAPI, 'getAllCourses');
     getStub.resolves(testData);
@@ -73,10 +74,10 @@ describe('Course Admin', function () {
         await wait(() => getAllByRole('row').length > 1);
         const rows = getAllByRole('row');
         const utils = within(rows[1]);
-        const cPrefix = utils.getAllByRole('option');
+        const cPrefix = utils.getAllByLabelText(catalogPrefixLabelText);
         const course = utils.getAllByPlaceholderText('Filter by Course');
         const title = utils.getAllByPlaceholderText('Filter by Title');
-        strictEqual(cPrefix.length, testData.length + 1);
+        strictEqual(cPrefix.length, 1);
         strictEqual(course.length, 1);
         strictEqual(title.length, 1);
       });
@@ -137,9 +138,7 @@ describe('Course Admin', function () {
           await wait(() => getAllByRole('row').length > 1);
           const rows = getAllByRole('row');
           const utils = within(rows[1]);
-          const cPrefix = utils.queryByLabelText(
-            'The table will be filtered as selected in this course prefix dropdown filter'
-          );
+          const cPrefix = utils.queryByLabelText(catalogPrefixLabelText);
           filterSpy.resetHistory();
           fireEvent.change(cPrefix, { target: { value: 'AnyValue' } });
           strictEqual(filterSpy.callCount, 3);
@@ -152,9 +151,7 @@ describe('Course Admin', function () {
           await wait(() => getAllByRole('row').length > 1);
           const rows = getAllByRole('row');
           const utils = within(rows[1]);
-          const cPrefix = utils.queryByLabelText(
-            'The table will be filtered as selected in this course prefix dropdown filter'
-          );
+          const cPrefix = utils.queryByLabelText(catalogPrefixLabelText);
           filterSpy.resetHistory();
           fireEvent.change(cPrefix, { target: { value: 'All' } });
           strictEqual(filterSpy.callCount, 2);
