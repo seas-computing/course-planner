@@ -45,16 +45,14 @@ describe('Faculty Admin', function () {
     it('creates a table', async function () {
       const { container } = render(
         <FacultyAdmin />,
-        dispatchMessage,
-        metadata
+        dispatchMessage
       );
       return waitForElement(() => container.querySelector('.faculty-admin-table'));
     });
     it('displays the "create faculty" button', async function () {
       const { container } = render(
         <FacultyAdmin />,
-        dispatchMessage,
-        metadata
+        dispatchMessage
       );
       return waitForElement(() => container.querySelector('.create-faculty-button'));
     });
@@ -65,8 +63,7 @@ describe('Faculty Admin', function () {
         it('displays the correct number of rows in the table', async function () {
           const { getAllByRole } = render(
             <FacultyAdmin />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           await wait(() => getAllByRole('row').length > 1);
           const rows = getAllByRole('row');
@@ -76,8 +73,7 @@ describe('Faculty Admin', function () {
         it('displays the filters in the second row', async function () {
           const { getAllByRole } = render(
             <FacultyAdmin />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           await wait(() => getAllByRole('row').length > 1);
           const rows = getAllByRole('row');
@@ -94,8 +90,7 @@ describe('Faculty Admin', function () {
         it('displays the correct content in the table cells', async function () {
           const { getAllByRole } = render(
             <FacultyAdmin />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           await wait(() => getAllByRole('row').length > 1);
           const rows = Array.from(getAllByRole('row')) as HTMLTableRowElement[];
@@ -143,8 +138,7 @@ describe('Faculty Admin', function () {
         it('displays the correct number of rows in the table (only the header and filter rows)', async function () {
           const { getAllByRole } = render(
             <FacultyAdmin />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           await wait(() => getAllByRole('row').length === emptyTestData.length + 1);
           const rows = getAllByRole('row');
@@ -154,8 +148,7 @@ describe('Faculty Admin', function () {
         it('displays the filters in the second row', async function () {
           const { getAllByRole } = render(
             <FacultyAdmin />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           await wait(() => getAllByRole('row').length > 1);
           const rows = getAllByRole('row');
@@ -179,8 +172,7 @@ describe('Faculty Admin', function () {
       it('should throw an error', async function () {
         const { getAllByRole } = render(
           <FacultyAdmin />,
-          dispatchMessage,
-          metadata
+          dispatchMessage
         );
         await wait(() => getAllByRole('row').length === emptyTestData.length + 1);
         strictEqual(dispatchMessage.callCount, 1);
@@ -193,8 +185,7 @@ describe('Faculty Admin', function () {
         it('calls the listFilter once for each filter except the dropdown', async function () {
           const { getAllByRole } = render(
             <FacultyAdmin />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           await wait(() => getAllByRole('row').length > 1);
           const rows = getAllByRole('row');
@@ -211,8 +202,7 @@ describe('Faculty Admin', function () {
         it('calls the listFilter function once for each filter', async function () {
           const { getAllByRole } = render(
             <FacultyAdmin />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           await wait(() => getAllByRole('row').length > 1);
           const rows = getAllByRole('row');
@@ -232,8 +222,7 @@ describe('Faculty Admin', function () {
         it('calls the listFilter once for each filter except the dropdown', async function () {
           const { getAllByRole } = render(
             <FacultyAdmin />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           await wait(() => getAllByRole('row').length > 1);
           const rows = getAllByRole('row');
@@ -248,8 +237,7 @@ describe('Faculty Admin', function () {
         it('does not call the listFilter function', async function () {
           const { getAllByRole } = render(
             <FacultyAdmin />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           await wait(() => getAllByRole('row').length > 1);
           filterSpy.resetHistory();
@@ -262,8 +250,7 @@ describe('Faculty Admin', function () {
         it('calls the listFilter once for each filter except the dropdown', async function () {
           const { getAllByRole } = render(
             <FacultyAdmin />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           await wait(() => getAllByRole('row').length > 1);
           const rows = getAllByRole('row');
@@ -278,8 +265,7 @@ describe('Faculty Admin', function () {
         it('does not call the listFilter function', async function () {
           const { getAllByRole } = render(
             <FacultyAdmin />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           await wait(() => getAllByRole('row').length > 1);
           filterSpy.resetHistory();
@@ -292,8 +278,7 @@ describe('Faculty Admin', function () {
         it('calls the listFilter once for each filter except the dropdown', async function () {
           const { getAllByRole } = render(
             <FacultyAdmin />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           await wait(() => getAllByRole('row').length > 1);
           const rows = getAllByRole('row');
@@ -308,8 +293,7 @@ describe('Faculty Admin', function () {
         it('does not call the listFilter function', async function () {
           const { getAllByRole } = render(
             <FacultyAdmin />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           await wait(() => getAllByRole('row').length > 1);
           filterSpy.resetHistory();

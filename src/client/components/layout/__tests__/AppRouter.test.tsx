@@ -1,25 +1,39 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { MarkOneWrapper } from 'mark-one';
 import * as dummy from 'testData';
-import { UserContext, MessageContext, MetadataContext } from 'client/context';
+import {
+  UserContext, MessageContext, MetadataContext, MetadataContextValue,
+} from 'client/context';
 import { User } from 'common/classes';
 import AppRouter from '../AppRouter';
 
 describe('App Router', function () {
+  const Metadata = ({ user, path }) => {
+    const [currentMetadata, setMetadata] = useState(dummy.metadata);
+    const metadataContext = new MetadataContextValue(
+      currentMetadata, setMetadata
+    );
+    return (
+      <MemoryRouter initialEntries={[path]}>
+        <MarkOneWrapper>
+          <MessageContext.Provider value={() => {}}>
+            <UserContext.Provider value={user}>
+              <MetadataContext.Provider value={metadataContext}>
+                <AppRouter />
+              </MetadataContext.Provider>
+            </UserContext.Provider>
+          </MessageContext.Provider>
+        </MarkOneWrapper>
+      </MemoryRouter>
+    );
+  };
   const renderRoute = (user: User) => (path: string) => render(
-    <MemoryRouter initialEntries={[path]}>
-      <MarkOneWrapper>
-        <MessageContext.Provider value={() => {}}>
-          <UserContext.Provider value={user}>
-            <MetadataContext.Provider value={dummy.metadata}>
-              <AppRouter />
-            </MetadataContext.Provider>
-          </UserContext.Provider>
-        </MessageContext.Provider>
-      </MarkOneWrapper>
-    </MemoryRouter>
+    <Metadata
+      user={user}
+      path={path}
+    />
   );
 
   context('When there is a user in context', function () {

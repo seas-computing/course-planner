@@ -1,13 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SessionModule } from 'nestjs-session';
-import { stub, SinonStub } from 'sinon';
+import {
+  stub,
+  SinonStub,
+  SinonStubbedInstance,
+  createStubInstance,
+} from 'sinon';
 import request from 'supertest';
 import {
   HttpStatus,
   HttpServer,
   ForbiddenException,
   UnauthorizedException,
-  BadRequestException,
 } from '@nestjs/common';
 import { strictEqual, deepStrictEqual } from 'assert';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -25,29 +29,45 @@ import {
   createCourseDtoExample,
   computerScienceCourseResponse,
   updateCourseExample,
+  physicsCourseResponse,
 } from 'testData';
 import { Semester } from 'server/semester/semester.entity';
 import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 import { Area } from 'server/area/area.entity';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
-import { UpdateCourseDTO } from 'common/dto/courses/UpdateCourse.dto';
+import { SelectQueryBuilder } from 'typeorm';
+import { BadRequestInfo } from 'client/components/pages/Courses/CourseModal';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 describe('Course API', function () {
   let mockAreaRepository: Record<string, SinonStub>;
   let mockCourseRepository : Record<string, SinonStub>;
-
   let mockSemesterRepository : Record<string, SinonStub>;
   let authStub: SinonStub;
   let api: HttpServer;
+  let mockCourseQueryBuilder: SinonStubbedInstance<SelectQueryBuilder<Course>>;
+  const mockCourses: ManageCourseResponseDTO[] = [
+    computerScienceCourseResponse,
+    physicsCourseResponse,
+  ];
 
   beforeEach(async function () {
+    mockCourseQueryBuilder = createStubInstance(SelectQueryBuilder);
+    mockCourseQueryBuilder.select.returnsThis();
+    mockCourseQueryBuilder.addSelect.returnsThis();
+    mockCourseQueryBuilder.leftJoinAndSelect.returnsThis();
+    mockCourseQueryBuilder.orderBy.returnsThis();
+    mockCourseQueryBuilder.addOrderBy.returnsThis();
+    mockCourseQueryBuilder.getRawMany
+      .resolves(mockCourses as unknown as Course[]);
+
     mockAreaRepository = {
-      findOneOrFail: stub(),
+      findOne: stub(),
     };
 
     mockCourseRepository = {
+      createQueryBuilder: stub().returns(mockCourseQueryBuilder),
       find: stub(),
       findOneOrFail: stub(),
       save: stub(),
@@ -106,21 +126,19 @@ describe('Course API', function () {
 
         strictEqual(response.ok, false);
         strictEqual(response.status, HttpStatus.FORBIDDEN);
-        strictEqual(mockCourseRepository.find.callCount, 0);
+        strictEqual(mockCourseRepository.createQueryBuilder.callCount, 0);
       });
     });
     describe('User is authenticated', function () {
       describe('User is a member of the admin group', function () {
         it('returns all the courses in the database', async function () {
           authStub.resolves(adminUser);
-          const mockCourses = Array(10).fill(new Course());
-          mockCourseRepository.find.resolves(mockCourses);
 
           const response = await request(api).get('/api/courses');
           const body = response.body as ManageCourseResponseDTO[];
           strictEqual(response.ok, true);
           strictEqual(body.length, mockCourses.length);
-          strictEqual(mockCourseRepository.find.callCount, 1);
+          strictEqual(mockCourseRepository.createQueryBuilder.callCount, 1);
         });
       });
       describe('User is not a member of the admin group', function () {
@@ -131,7 +149,7 @@ describe('Course API', function () {
 
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.FORBIDDEN);
-          strictEqual(mockCourseRepository.find.callCount, 0);
+          strictEqual(mockCourseRepository.createQueryBuilder.callCount, 0);
         });
       });
     });
@@ -154,22 +172,24 @@ describe('Course API', function () {
         it('creates a single course', async function () {
           authStub.resolves(adminUser);
           mockSemesterRepository.find.resolves([]);
+          mockAreaRepository.findOne
+            .resolves(computerScienceCourseResponse.area);
           mockCourseRepository.save.resolves(computerScienceCourse);
 
           const response = await request(api)
             .post('/api/courses')
             .send(createCourseDtoExample);
-
           strictEqual(response.status, HttpStatus.CREATED);
           strictEqual(mockCourseRepository.save.callCount, 1);
           deepStrictEqual(
-            mockCourseRepository.save.args[0][0],
-            { ...createCourseDtoExample, instances: [] }
+            response.body,
+            computerScienceCourseResponse
           );
         });
         it('returns the newly created course', async function () {
           authStub.resolves(adminUser);
           mockSemesterRepository.find.resolves([]);
+          mockAreaRepository.findOne.resolves(computerScienceCourse.area.name);
           mockCourseRepository.save.resolves(computerScienceCourse);
 
           const response = await request(api)
@@ -181,18 +201,73 @@ describe('Course API', function () {
             computerScienceCourseResponse
           );
         });
-        it('reports validation errors', async function () {
+        it('reports a validation error when area is missing', async function () {
           authStub.resolves(adminUser);
 
           const response = await request(api)
             .post('/api/courses')
             .send({ title: computerScienceCourse.title });
 
-          const body = response.body as BadRequestException;
+          const body = response.body as BadRequestInfo;
+
+          // Collects all of the field names that contain errors
+          const errorFields = [];
+          body.message.map((errorInfo) => errorFields.push(errorInfo.property));
 
           deepStrictEqual(response.ok, false);
           deepStrictEqual(response.status, HttpStatus.BAD_REQUEST);
-          strictEqual(/prefix/.test(body.message), true);
+          strictEqual(errorFields.includes('area'), true);
+        });
+        it('reports a validation error when title is missing', async function () {
+          authStub.resolves(adminUser);
+
+          const response = await request(api)
+            .post('/api/courses')
+            .send({ termPattern: computerScienceCourse.termPattern });
+
+          const body = response.body as BadRequestInfo;
+
+          // Collects all of the field names that contain errors
+          const errorFields = [];
+          body.message.map((errorInfo) => errorFields.push(errorInfo.property));
+
+          deepStrictEqual(response.ok, false);
+          deepStrictEqual(response.status, HttpStatus.BAD_REQUEST);
+          strictEqual(errorFields.includes('title'), true);
+        });
+        it('reports a validation error when isSEAS is missing', async function () {
+          authStub.resolves(adminUser);
+
+          const response = await request(api)
+            .post('/api/courses')
+            .send({ title: computerScienceCourse.title });
+
+          const body = response.body as BadRequestInfo;
+
+          // Collects all of the field names that contain errors
+          const errorFields = [];
+          body.message.map((errorInfo) => errorFields.push(errorInfo.property));
+
+          deepStrictEqual(response.ok, false);
+          deepStrictEqual(response.status, HttpStatus.BAD_REQUEST);
+          strictEqual(errorFields.includes('isSEAS'), true);
+        });
+        it('reports a validation error when term pattern is missing', async function () {
+          authStub.resolves(adminUser);
+
+          const response = await request(api)
+            .post('/api/courses')
+            .send({ title: computerScienceCourse.title });
+
+          const body = response.body as BadRequestInfo;
+
+          // Collects all of the field names that contain errors
+          const errorFields = [];
+          body.message.map((errorInfo) => errorFields.push(errorInfo.property));
+
+          deepStrictEqual(response.ok, false);
+          deepStrictEqual(response.status, HttpStatus.BAD_REQUEST);
+          strictEqual(errorFields.includes('termPattern'), true);
         });
       });
       describe('User is not a member of the admin group', function () {
@@ -229,6 +304,7 @@ describe('Course API', function () {
           authStub.returns(adminUser);
         });
         it('returns a 404 if the specified course does not exist', async function () {
+          mockAreaRepository.findOne.resolves('');
           mockCourseRepository.findOneOrFail.rejects(new EntityNotFoundError(Course, ''));
 
           const response = await request(api)
@@ -240,18 +316,94 @@ describe('Course API', function () {
           strictEqual(mockCourseRepository.find.callCount, 0);
         });
         it('updates the specified course', async function () {
-          mockCourseRepository.findOneOrFail.resolves(computerScienceCourse);
-          mockCourseRepository.save.resolves(computerScienceCourse);
+          const newCourseInfo = {
+            id: computerScienceCourse.id,
+            area: computerScienceCourse.area.name,
+            title: computerScienceCourse.title,
+            prefix: computerScienceCourse.prefix,
+            number: computerScienceCourse.number,
+            termPattern: computerScienceCourse.termPattern,
+            isUndergraduate: computerScienceCourse.isUndergraduate,
+            isSEAS: computerScienceCourse.isSEAS,
+          };
+          mockCourseRepository.findOneOrFail.resolves(newCourseInfo);
+          mockAreaRepository.findOne.resolves(newCourseInfo.area);
+          mockCourseRepository.save.resolves(newCourseInfo);
 
           const response = await request(api)
-            .put(`/api/courses/${computerScienceCourse.id}`)
-            .send({
-              title: 'Some other course name',
-            } as UpdateCourseDTO);
-
+            .put(`/api/courses/${newCourseInfo.id}`)
+            .send(newCourseInfo);
           strictEqual(response.ok, true);
           strictEqual(response.status, HttpStatus.OK);
           strictEqual(mockCourseRepository.save.callCount, 1);
+        });
+        it('reports a validation error when area is missing', async function () {
+          authStub.resolves(adminUser);
+
+          const response = await request(api)
+            .put(`/api/courses/${computerScienceCourse.id}`)
+            .send({ title: computerScienceCourse.title });
+
+          const body = response.body as BadRequestInfo;
+
+          // Collects all of the field names that contain errors
+          const errorFields = [];
+          body.message.map((errorInfo) => errorFields.push(errorInfo.property));
+
+          deepStrictEqual(response.ok, false);
+          deepStrictEqual(response.status, HttpStatus.BAD_REQUEST);
+          strictEqual(errorFields.includes('area'), true);
+        });
+        it('reports a validation error when title is missing', async function () {
+          authStub.resolves(adminUser);
+
+          const response = await request(api)
+            .put(`/api/courses/${computerScienceCourse.id}`)
+            .send({ termPattern: computerScienceCourse.termPattern });
+
+          const body = response.body as BadRequestInfo;
+
+          // Collects all of the field names that contain errors
+          const errorFields = [];
+          body.message.map((errorInfo) => errorFields.push(errorInfo.property));
+
+          deepStrictEqual(response.ok, false);
+          deepStrictEqual(response.status, HttpStatus.BAD_REQUEST);
+          strictEqual(errorFields.includes('title'), true);
+        });
+        it('reports a validation error when isSEAS is missing', async function () {
+          authStub.resolves(adminUser);
+
+          const response = await request(api)
+            .put(`/api/courses/${computerScienceCourse.id}`)
+            .send({ title: computerScienceCourse.title });
+
+          const body = response.body as BadRequestInfo;
+
+          // Collects all of the field names that contain errors
+          const errorFields = [];
+          body.message.map((errorInfo) => errorFields.push(errorInfo.property));
+
+          deepStrictEqual(response.ok, false);
+          deepStrictEqual(response.status, HttpStatus.BAD_REQUEST);
+          strictEqual(errorFields.includes('isSEAS'), true);
+        });
+        it('reports a validation error when term pattern is missing', async function () {
+          authStub.resolves(adminUser);
+
+          const response = await request(api)
+            .put(`/api/courses/${computerScienceCourse.id}`)
+            .send({ title: computerScienceCourse.title });
+
+          const body = response.body as BadRequestInfo;
+
+          // Collects all of the field names that contain errors
+          const errorFields = [];
+          body.message.map((errorInfo) => errorFields.push(errorInfo.property));
+
+          deepStrictEqual(response.ok, false);
+          deepStrictEqual(response.status, HttpStatus.BAD_REQUEST);
+          strictEqual(errorFields.includes('termPattern'), true);
         });
       });
       describe('User is not a member of the admin group', function () {

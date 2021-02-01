@@ -5,26 +5,33 @@ import {
   IsString,
   IsEnum,
   IsOptional,
+  IsUUID,
+  IsNotEmpty,
 } from 'class-validator';
-import { CourseArea } from './CourseArea.dto';
+import { Transform } from 'class-transformer';
+import { trimString } from '../util';
 
 /**
  * @module Server.DTOS.Courses
  */
 
 export abstract class UpdateCourseDTO {
+  @IsNotEmpty()
+  @Transform(trimString)
+  public area: string;
+
   @ApiModelProperty({
-    type: CourseArea,
+    example: 'df15cfff-0f6f-4769-8841-1ab8a9c335d9',
   })
-  @IsOptional()
-  public area: CourseArea;
+  @IsUUID()
+  @IsNotEmpty()
+  public id: string;
 
   @ApiModelProperty({
     type: 'boolean',
     example: false,
   })
   @IsBoolean()
-  @IsOptional()
   public isUndergraduate: boolean;
 
   @ApiModelProperty({
@@ -32,7 +39,8 @@ export abstract class UpdateCourseDTO {
     example: 'Applied Math for computation',
   })
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
+  @Transform(trimString)
   public title: string;
 
   @ApiModelProperty({
@@ -41,7 +49,8 @@ export abstract class UpdateCourseDTO {
   })
   @IsString()
   @IsOptional()
-  public prefix: string;
+  @Transform(trimString)
+  public prefix?: string;
 
   @ApiModelProperty({
     type: 'string',
@@ -49,7 +58,8 @@ export abstract class UpdateCourseDTO {
   })
   @IsString()
   @IsOptional()
-  public number: string;
+  @Transform(trimString)
+  public number?: string;
 
   @ApiModelProperty({
     type: 'string',
@@ -57,6 +67,7 @@ export abstract class UpdateCourseDTO {
   })
   @IsString()
   @IsOptional()
+  @Transform(trimString)
   public sameAs?: string;
 
   @ApiModelProperty({
@@ -65,31 +76,21 @@ export abstract class UpdateCourseDTO {
     example: true,
   })
   @IsEnum(IS_SEAS)
-  @IsOptional()
   public isSEAS: IS_SEAS;
-
-  @ApiModelProperty({
-    type: 'string',
-    example: 'Taking place in a larger room this year',
-    default: '',
-  })
-  @IsString()
-  @IsOptional()
-  public notes?: string;
 
   @ApiModelProperty({
     type: 'boolean',
     example: false,
+    default: true,
   })
-  @IsOptional()
   @IsBoolean()
+  @IsOptional()
   public private: boolean;
 
   @ApiModelProperty({
     type: 'string',
     enum: TERM_PATTERN,
   })
-  @IsOptional()
   @IsEnum(TERM_PATTERN)
   public termPattern: TERM_PATTERN;
 }

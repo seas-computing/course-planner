@@ -9,7 +9,7 @@ import {
 } from 'sinon';
 import { render } from 'test-utils';
 import { MultiYearPlanAPI } from 'client/api/multiYearPlan';
-import { testFourYearPlan, error, metadata } from 'testData';
+import { testFourYearPlan, error } from 'testData';
 import MultiYearPlan from '../MultiYearPlan';
 import * as filters from '../Filter';
 import * as instructorFilters from '../utils/filterByInstructorValues';

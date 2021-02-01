@@ -16,7 +16,6 @@ import {
   physicsFacultyMemberResponse,
   bioengineeringFacultyMemberResponse,
   newAreaFacultyMemberResponse,
-  metadata,
 } from 'testData';
 import { render } from 'test-utils';
 import FacultyAdmin from 'client/components/pages/FacultyAdmin';
@@ -40,8 +39,7 @@ describe('Faculty Admin Modal Behavior', function () {
         it('returns focus to the create faculty button', async function () {
           const { findByText, queryByText } = render(
             <FacultyAdmin />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           // show the create faculty modal
           const createFacultyButton = await findByText('Create New Faculty', { exact: false });
@@ -63,8 +61,7 @@ describe('Faculty Admin Modal Behavior', function () {
         it('returns focus to the original edit faculty button', async function () {
           const { findByText, queryByText } = render(
             <FacultyAdmin />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           // show the edit faculty modal
           const editPhysicsFacultyButton = await waitForElement(() => document.getElementById('editFaculty' + physicsFacultyMemberResponse.id));

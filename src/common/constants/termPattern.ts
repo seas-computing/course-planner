@@ -22,3 +22,21 @@ enum TERM_PATTERN {
 }
 
 export default TERM_PATTERN;
+
+/**
+ * Helper function to get a cleaner text version of the enum value
+ */
+
+export const termPatternEnumToString = (termPatternEnum: TERM_PATTERN)
+: string | null => {
+  switch (termPatternEnum) {
+    case TERM_PATTERN.BOTH:
+      return 'Both';
+    case TERM_PATTERN.FALL:
+      return 'Fall';
+    case TERM_PATTERN.SPRING:
+      return 'Spring';
+    default:
+      return null;
+  }
+};
