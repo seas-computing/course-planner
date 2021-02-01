@@ -32,8 +32,7 @@ describe('MultiYearPlan', function () {
     it('creates a table', async function () {
       const { findByRole } = render(
         <MultiYearPlan />,
-        dispatchMessage,
-        metadata
+        dispatchMessage
       );
       return findByRole('table');
     });
@@ -44,8 +43,7 @@ describe('MultiYearPlan', function () {
         it('displays the MYP information', async function () {
           const { findByText } = render(
             <MultiYearPlan />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           strictEqual(getStub.callCount, 1);
           const { title } = testData[0];
@@ -54,8 +52,7 @@ describe('MultiYearPlan', function () {
         it('displays the correct number of rows in the table', async function () {
           const { getAllByRole } = render(
             <MultiYearPlan />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           await wait(() => getAllByRole('row').length > 1);
           const rows = getAllByRole('row');
@@ -64,8 +61,7 @@ describe('MultiYearPlan', function () {
         it('displays the correct content in the table cells', async function () {
           const { getAllByRole } = render(
             <MultiYearPlan />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           await wait(() => getAllByRole('row').length > 1);
           const rows = Array.from(getAllByRole('row')) as HTMLTableRowElement[];
@@ -95,8 +91,7 @@ describe('MultiYearPlan', function () {
         it('only displays the header row', async function () {
           const { getAllByRole } = render(
             <MultiYearPlan />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           await wait(() => getAllByRole('row').length === emptyTestData.length + 1);
           const rows = getAllByRole('row');
@@ -115,8 +110,7 @@ describe('MultiYearPlan', function () {
       it('should throw an error', async function () {
         const { getAllByRole } = render(
           <MultiYearPlan />,
-          dispatchMessage,
-          metadata
+          dispatchMessage
         );
         await wait(() => getAllByRole('row').length === emptyTestData.length + 1);
         strictEqual(dispatchMessage.callCount, 1);
@@ -129,8 +123,7 @@ describe('MultiYearPlan', function () {
         it('calls the listFilter once for each filter except the dropdown', async function () {
           const { getAllByRole } = render(
             <MultiYearPlan />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           await wait(() => getAllByRole('row').length > 1);
           const rows = getAllByRole('row');
@@ -145,8 +138,7 @@ describe('MultiYearPlan', function () {
         it('calls the listFilter function once for each filter', async function () {
           const { getAllByRole } = render(
             <MultiYearPlan />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           await wait(() => getAllByRole('row').length > 1);
           const rows = getAllByRole('row');
@@ -163,8 +155,7 @@ describe('MultiYearPlan', function () {
         it('calls the listFilter function once for each filter except the dropdown', async function () {
           const { getAllByRole } = render(
             <MultiYearPlan />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           await wait(() => getAllByRole('row').length > 1);
           const rows = getAllByRole('row');
@@ -179,8 +170,7 @@ describe('MultiYearPlan', function () {
         it('does not call the listFilter function', async function () {
           const { getAllByRole } = render(
             <MultiYearPlan />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           await wait(() => getAllByRole('row').length > 1);
           listFilterSpy.resetHistory();
@@ -193,8 +183,7 @@ describe('MultiYearPlan', function () {
         it('calls the listFilter function once for each filter except the dropdown', async function () {
           const { getAllByRole } = render(
             <MultiYearPlan />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           await wait(() => getAllByRole('row').length > 1);
           const rows = getAllByRole('row');
@@ -209,8 +198,7 @@ describe('MultiYearPlan', function () {
         it('does not call the listFilter function', async function () {
           const { getAllByRole } = render(
             <MultiYearPlan />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           await wait(() => getAllByRole('row').length > 1);
           listFilterSpy.resetHistory();
@@ -224,8 +212,7 @@ describe('MultiYearPlan', function () {
           it('calls the filterByInstructorValues once per field', async function () {
             const { getAllByRole } = render(
               <MultiYearPlan />,
-              dispatchMessage,
-              metadata
+              dispatchMessage
             );
             await wait(() => getAllByRole('row').length > 1);
             const rows = getAllByRole('row');
@@ -242,8 +229,7 @@ describe('MultiYearPlan', function () {
           it('calls the filterByInstructorValues once', async function () {
             const { getAllByRole } = render(
               <MultiYearPlan />,
-              dispatchMessage,
-              metadata
+              dispatchMessage
             );
             await wait(() => getAllByRole('row').length > 1);
             const rows = getAllByRole('row');
@@ -259,8 +245,7 @@ describe('MultiYearPlan', function () {
         it('does not call the filterByInstructorValues function', async function () {
           const { getAllByRole } = render(
             <MultiYearPlan />,
-            dispatchMessage,
-            metadata
+            dispatchMessage
           );
           await wait(() => getAllByRole('row').length > 1);
           facultyFilterSpy.resetHistory();
