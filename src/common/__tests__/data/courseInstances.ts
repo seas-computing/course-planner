@@ -221,6 +221,76 @@ export const ac209aCourseInstance: CourseInstanceResponseDTO = {
 };
 
 /**
+ * Data representing the graduate intro to data science course, AC 209A, in the
+ * 2019 academic year. This course is offered in the fall, has multiple
+ * meetings and multiple instructors, and has notes and sameAs data.
+ */
+
+export const ac209aCourseInstanceWithoutRooms
+: CourseInstanceResponseDTO = {
+  id: '42a3fb1b-55ff-4d50-9a3f-d637f759119a',
+  title: 'Data Science 1: Introduction to Data Science',
+  area: 'ACS',
+  isUndergraduate: false,
+  catalogNumber: 'AC 209a',
+  sameAs: 'CS 109a, STATS 121a',
+  isSEAS: IS_SEAS.Y,
+  notes: 'Same as CS 109a, STATS 121a',
+  termPattern: TERM_PATTERN.FALL,
+  spring: {
+    id: '62b375fa-f922-406f-bc08-7725edab27ac',
+    calendarYear: '2019',
+    offered: OFFERED.BLANK,
+    preEnrollment: null,
+    studyCardEnrollment: null,
+    actualEnrollment: null,
+    instructors: [],
+    meetings: [
+      {
+        id: null,
+        day: null,
+        startTime: null,
+        endTime: null,
+        room: null,
+      },
+    ],
+  },
+  fall: {
+    id: 'b0aca4ce-e90b-47e4-97be-2187b3b7a621',
+    calendarYear: '2018',
+    offered: OFFERED.Y,
+    preEnrollment: null,
+    studyCardEnrollment: 77,
+    actualEnrollment: 66,
+    instructors: [
+      {
+        id: 'dcf88d99-1b7f-4863-93d3-d0b0bb43c8e7',
+        displayName: 'Rader, Kevin',
+      },
+      {
+        id: '78f75a40-b0bd-43af-84d8-0ec68f313dba',
+        displayName: 'Protopapas, Pavlos',
+      },
+    ],
+    meetings: [
+      {
+        id: '0a3b2708-6191-4e1a-857b-6d3352836955',
+        day: DAY.MON,
+        startTime: '01:30 PM',
+        endTime: '02:45 PM',
+        room: null,
+      },
+      {
+        id: '533bc88d-3652-43c9-9936-56e280b57d6e',
+        day: DAY.WED,
+        startTime: '01:30 PM',
+        endTime: '02:45 PM',
+        room: null,
+      },
+    ],
+  },
+};
+/**
  * The starting academic year for the multi year plan test data
  */
 export const testMultiYearPlanStartYear = 2020;
