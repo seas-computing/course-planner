@@ -35,6 +35,10 @@ export class MetadataContextValue {
   get semesters(): string[] {
     return this.value.semesters;
   }
+
+  get catalogPrefixes(): string[] {
+    return this.value.catalogPrefixes;
+  }
 }
 
 /**

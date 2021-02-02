@@ -13,7 +13,7 @@ import {
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import { ConfigService } from 'server/config/config.service';
-import { TERM } from 'common/constants';
+import { NUM_YEARS, TERM } from 'common/constants';
 import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
 import { SemesterService } from 'server/semester/semester.service';
 import { CourseInstanceService } from './courseInstance.service';
@@ -85,7 +85,7 @@ export class CourseInstanceController {
   }
 
   /**
-   * Responds with a list of multiyear plan records
+   * Responds with a list of multiyear plan records.
    */
   @ApiUseTags('Course Instance')
   @ApiOperation({ title: 'Retrieve the multi-year plan' })
@@ -96,9 +96,9 @@ export class CourseInstanceController {
   })
   @Get('/multi-year-plan')
   public async getMultiYearPlan(): Promise<MultiYearPlanResponseDTO[]> {
-    // The number of years specified for the multi year plan
-    const numYears = 4;
-    const academicYears = this.computeAcademicYears(numYears);
+    // This uses the constant NUM_YEARS to calculate an array of academic years
+    // for which we want multi-year plans.
+    const academicYears = this.computeAcademicYears(NUM_YEARS);
     return this.ciService.getMultiYearPlan(academicYears);
   }
 
