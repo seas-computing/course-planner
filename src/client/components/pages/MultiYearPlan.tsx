@@ -31,7 +31,7 @@ import {
 } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import { MultiYearPlanAPI } from 'client/api/multiYearPlan';
 import { getSemestersFromYear, SemesterInfo } from 'common/utils/multiYearPlanHelperFunctions';
-import { getCatPrefixColor, NUM_SEMESTERS } from '../../../common/constants';
+import { getCatPrefixColor } from '../../../common/constants';
 import { listFilter } from './Filter';
 import { filterByInstructorValues } from './utils/filterByInstructorValues';
 
@@ -131,11 +131,14 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
   * multi year plan list.
   */
 
-  const yearsHeaders = (myp: MultiYearPlanResponseDTO[]):
+  const yearsHeaders = (
+    myp: MultiYearPlanResponseDTO[],
+    semesters: SemesterInfo[]
+  ):
   TableHeadingCell[] => (
     // only show headers if we have any rows
     myp.length > 0
-      ? getSemestersFromYear(metadata.currentAcademicYear)
+      ? semesters
         .map((semester): TableHeadingCell => (
           <TableHeadingCell key={semester.key} scope="col">
             {`${semester.term[0]}'${String(semester.calendarYear).slice(2)} Instructors`}
@@ -147,10 +150,13 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
   /**
    * Creates the instructor filters using the multi year plan list
    */
-  const instructorFilters = (myp: MultiYearPlanResponseDTO[]):
+  const instructorFilters = (
+    myp: MultiYearPlanResponseDTO[],
+    semesters: SemesterInfo[]
+  ):
   TableHeadingCell[] => (
     myp.length > 0
-      ? getSemestersFromYear(metadata.currentAcademicYear)
+      ? semesters
         .map((semester: SemesterInfo, index: number):
         TableHeadingCell => (
           <TableHeadingCell key={semester.key} scope="col">
@@ -178,25 +184,33 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
   * courseInstance function take a multi year plan object and fill up the
   * instructors of the object semesters.
   */
-
-  const courseInstance = (course: MultiYearPlanResponseDTO): TableCell[] => (
-    Array.from({ length: NUM_SEMESTERS }, (_, index: number) => {
-      const semester = course.semesters[index];
-      return (
-        <TableCell verticalAlignment={VALIGN.TOP} key={index}>
-          <TableCellList>
-            {semester && semester.instance.faculty.length > 0
-              ? semester.instance.faculty.map((faculty): TableCellListItem => (
-                <TableCellListItem key={faculty.id}>
-                  {faculty.displayName}
-                </TableCellListItem>
-              ))
-              : null}
-          </TableCellList>
-        </TableCell>
-      );
-    })
+  // Since the list of columns dont change
+  const courseInstance = (
+    course: MultiYearPlanResponseDTO,
+    semesters: SemesterInfo[]
+  ): TableCell[] => (
+    semesters
+      .map((semester: SemesterInfo, index: number): TableCell => {
+        const courseSemester = course.semesters[index];
+        return (
+          <TableCell verticalAlignment={VALIGN.TOP} key={semester.key}>
+            <TableCellList>
+              {courseSemester && courseSemester.instance.faculty.length > 0
+                ? courseSemester.instance.faculty.map((faculty):
+                TableCellListItem => (
+                  <TableCellListItem key={faculty.id}>
+                    {faculty.displayName}
+                  </TableCellListItem>
+                ))
+                : null}
+            </TableCellList>
+          </TableCell>
+        );
+      })
   );
+
+  // Calculate the list of semesters once first to avoid recalculation
+  const semesters = getSemestersFromYear(metadata.currentAcademicYear);
 
   return (
     <div className="multi-year-plan">
@@ -214,7 +228,7 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
                 <TableHeadingCell scope="col">Catalog Number</TableHeadingCell>
                 <TableHeadingCell scope="col">Title</TableHeadingCell>
                 <>
-                  {yearsHeaders(currentMultiYearPlanList)}
+                  {yearsHeaders(currentMultiYearPlanList, semesters)}
                 </>
               </TableRow>
               <TableRow isStriped>
@@ -267,7 +281,7 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
                   />
                 </TableHeadingCell>
                 <>
-                  {instructorFilters(currentMultiYearPlanList)}
+                  {instructorFilters(currentMultiYearPlanList, semesters)}
                 </>
               </TableRow>
             </TableHead>
@@ -288,7 +302,7 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
                       {course.title}
                     </TableCell>
                     <>
-                      {courseInstance(course)}
+                      {courseInstance(course, semesters)}
                     </>
                   </TableRow>
                 ))}
