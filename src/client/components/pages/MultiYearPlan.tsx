@@ -184,7 +184,6 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
   * courseInstance function take a multi year plan object and fill up the
   * instructors of the object semesters.
   */
-  // Since the list of columns dont change
   const courseInstance = (
     course: MultiYearPlanResponseDTO,
     semesters: SemesterInfo[]
