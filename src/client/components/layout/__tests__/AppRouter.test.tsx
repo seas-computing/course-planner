@@ -47,7 +47,7 @@ describe('App Router', function () {
     context('/course-admin', function () {
       it('renders the CourseAdmin component', async function () {
         const { findByText } = renderWithUser('/course-admin');
-        return findByText(/Course Prefix/);
+        return findByText(/Area/);
       });
     });
     context('/faculty-admin', function () {

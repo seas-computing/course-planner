@@ -25,7 +25,7 @@ import { MessageContext, MetadataContext } from 'client/context';
 import { TableRowProps } from 'mark-one/lib/Tables/TableRow';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
-import { getCatPrefixColor } from '../../../common/constants';
+import { getAreaColor } from '../../../common/constants';
 import { CourseAPI } from '../../api/courses';
 import { VerticalSpace } from '../layout';
 import CourseModal from './Courses/CourseModal';
@@ -57,10 +57,10 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
 
   const [courseValue, setCourseValue] = useState<string>('');
   const [titleValue, setTitleValue] = useState<string>('');
-  const [catalogPrefixValue, setCatalogPrefixValue] = useState<string>('All');
+  const [areaValue, setAreaValue] = useState<string>('All');
 
   /**
-   * Return filtered course based on the "Course Prefix",
+   * Return filtered course based on the "Course Area",
    * "Course" and "Title" fileds filter.
    * Note: .trim() might be used to remove whitespaces.
    * Need to ask Vittorio about the .trim()
@@ -75,10 +75,10 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
       courses,
       { field: 'title', value: titleValue, exact: false }
     );
-    if (catalogPrefixValue !== 'All') {
+    if (areaValue !== 'All') {
       courses = listFilter(
         courses,
-        { field: 'prefix', value: catalogPrefixValue, exact: true }
+        { field: 'area.name', value: areaValue, exact: true }
       );
     }
     return (courses);
@@ -150,7 +150,7 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
         <Table>
           <TableHead>
             <TableRow isStriped>
-              <TableHeadingCell scope="col">Course Prefix</TableHeadingCell>
+              <TableHeadingCell scope="col">Area</TableHeadingCell>
               <TableHeadingCell scope="col">Course</TableHeadingCell>
               <TableHeadingCell scope="col">Title</TableHeadingCell>
               <TableHeadingCell scope="col">Edit</TableHeadingCell>
@@ -160,19 +160,19 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
                 <Dropdown
                   options={
                     [{ value: 'All', label: 'All' }]
-                      .concat(metadata.catalogPrefixes.map((prefix) => ({
-                        value: prefix,
-                        label: prefix,
+                      .concat(metadata.areas.map((area) => ({
+                        value: area,
+                        label: area,
                       })))
                   }
-                  value={catalogPrefixValue}
-                  name="catalogPrefixValue"
-                  id="catalogPrefixValue"
-                  label="The table will be filtered as selected in this catalog prefix dropdown filter"
+                  value={areaValue}
+                  name="areaValue"
+                  id="areaValue"
+                  label="The table will be filtered as selected in this area dropdown filter"
                   isLabelVisible={false}
                   hideError
                   onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
-                    setCatalogPrefixValue(event.currentTarget.value);
+                    setAreaValue(event.currentTarget.value);
                   }}
                 />
               </TableHeadingCell>
@@ -211,9 +211,9 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
             {filteredCourses().map((course, i): ReactElement<TableRowProps> => (
               <TableRow isStriped={i % 2 === 1} key={course.id}>
                 <TableCell
-                  backgroundColor={getCatPrefixColor(course.prefix)}
+                  backgroundColor={getAreaColor(course.area.name)}
                 >
-                  {course.prefix}
+                  {course.area.name}
                 </TableCell>
                 <TableCell>{course.catalogNumber}</TableCell>
                 <TableCell>{course.title}</TableCell>

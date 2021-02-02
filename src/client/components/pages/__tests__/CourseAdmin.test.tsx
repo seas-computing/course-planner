@@ -34,7 +34,7 @@ describe('Course Admin', function () {
     physicsCourseResponse,
     newAreaCourseResponse,
   ];
-  const catalogPrefixLabelText = 'The table will be filtered as selected in this catalog prefix dropdown filter';
+  const areaLabelText = 'The table will be filtered as selected in this area dropdown filter';
   beforeEach(function () {
     getStub = stub(CourseAPI, 'getAllCourses');
     getStub.resolves(testData);
@@ -74,10 +74,10 @@ describe('Course Admin', function () {
         await wait(() => getAllByRole('row').length > 1);
         const rows = getAllByRole('row');
         const utils = within(rows[1]);
-        const cPrefix = utils.getAllByLabelText(catalogPrefixLabelText);
+        const area = utils.getAllByLabelText(areaLabelText);
         const course = utils.getAllByPlaceholderText('Filter by Course');
         const title = utils.getAllByPlaceholderText('Filter by Title');
-        strictEqual(cPrefix.length, 1);
+        strictEqual(area.length, 1);
         strictEqual(course.length, 1);
         strictEqual(title.length, 1);
       });
@@ -138,9 +138,9 @@ describe('Course Admin', function () {
           await wait(() => getAllByRole('row').length > 1);
           const rows = getAllByRole('row');
           const utils = within(rows[1]);
-          const cPrefix = utils.queryByLabelText(catalogPrefixLabelText);
+          const area = utils.queryByLabelText(areaLabelText);
           filterSpy.resetHistory();
-          fireEvent.change(cPrefix, { target: { value: 'AnyValue' } });
+          fireEvent.change(area, { target: { value: 'AnyValue' } });
           strictEqual(filterSpy.callCount, 3);
         });
         it('Calls the listFilter function once for each filter except the dropdown', async function () {
@@ -151,9 +151,9 @@ describe('Course Admin', function () {
           await wait(() => getAllByRole('row').length > 1);
           const rows = getAllByRole('row');
           const utils = within(rows[1]);
-          const cPrefix = utils.queryByLabelText(catalogPrefixLabelText);
+          const area = utils.queryByLabelText(areaLabelText);
           filterSpy.resetHistory();
-          fireEvent.change(cPrefix, { target: { value: 'All' } });
+          fireEvent.change(area, { target: { value: 'All' } });
           strictEqual(filterSpy.callCount, 2);
         });
         it('Calls the listFilter function once for each filter except the dropdown', async function () {
