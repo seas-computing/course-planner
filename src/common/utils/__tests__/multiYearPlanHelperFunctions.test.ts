@@ -28,19 +28,36 @@ describe('Multi-Year Plan Helper Functions', function () {
       deepStrictEqual(actualTerms, expectedTerms);
     });
     it('returns the expected academic years', function () {
-      const expectedSemesterAcademicYears = [2021, 2021, 2022, 2022,
-        2023, 2023, 2024, 2024];
+      const numSemesters = 8;
+      const expectedSemesterAcademicYears = [
+        2021,
+        2021,
+        2022,
+        2022,
+        2023,
+        2023,
+        2024,
+        2024,
+      ];
       const actualAcademicYears = multiYearPlan.calculateSemesters(
         metadata.currentAcademicYear,
-        NUM_SEMESTERS
+        numSemesters
       ).map((semester) => semester.academicYear);
       deepStrictEqual(actualAcademicYears, expectedSemesterAcademicYears);
     });
     it('returns the expected calendar years', function () {
       const startingAcademicYear = 2021;
       const numSemesters = 8;
-      const expectedCalendarYears = [2020, 2021, 2021, 2022,
-        2022, 2023, 2023, 2024];
+      const expectedCalendarYears = [
+        2020,
+        2021,
+        2021,
+        2022,
+        2022,
+        2023,
+        2023,
+        2024,
+      ];
 
       const actualCalendarYears = multiYearPlan.calculateSemesters(
         startingAcademicYear,
@@ -51,7 +68,16 @@ describe('Multi-Year Plan Helper Functions', function () {
     it('returns the expected keys', function () {
       const startingAcademicYear = 2021;
       const numYears = 4;
-      const academicYears = [2021, 2021, 2022, 2022, 2023, 2023, 2024, 2024];
+      const academicYears = [
+        2021,
+        2021,
+        2022,
+        2022,
+        2023,
+        2023,
+        2024,
+        2024,
+      ];
       const expectedKeys = academicYears
         .map(
           (year, index) => (index % 2 === 0
