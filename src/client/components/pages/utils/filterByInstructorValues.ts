@@ -20,8 +20,8 @@ export const filterByInstructorValues = (
       const indexNum = parseInt(index, 10);
       // Filter by the instructors
       plans = plans
-        .filter((plan) => plan
-          .semesters[indexNum]
+        .filter((plan) => plan.semesters[indexNum]
+        && plan.semesters[indexNum]
           .instance.faculty.some((instructor) => instructor.displayName
             .toLowerCase()
             .includes(instructorFilterLower)));
