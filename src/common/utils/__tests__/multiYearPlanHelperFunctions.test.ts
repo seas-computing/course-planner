@@ -5,7 +5,6 @@ import {
   TERM,
 } from 'common/constants';
 import { metadata } from 'testData';
-import flatten from 'lodash.flatten';
 import { stub } from 'sinon';
 import * as multiYearPlan from '../multiYearPlanHelperFunctions';
 import { calculateSemesters } from '../multiYearPlanHelperFunctions';
@@ -21,7 +20,7 @@ describe('Multi-Year Plan Helper Functions', function () {
     it('returns the correct terms', function () {
       const years = Array(NUM_YEARS);
       const terms = [TERM.FALL, TERM.SPRING];
-      const expectedTerms = flatten(years.fill(terms));
+      const expectedTerms = [].concat(...years.fill(terms));
       const actualTerms = multiYearPlan.calculateSemesters(
         metadata.currentAcademicYear,
         NUM_SEMESTERS

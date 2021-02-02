@@ -1,5 +1,4 @@
 import { NUM_SEMESTERS, TERM } from 'common/constants';
-import range from 'lodash.range';
 
 export interface SemesterInfo {
   term: TERM;
@@ -18,19 +17,18 @@ export const calculateSemesters = (
   startingAcademicYear: number,
   numSemesters: number
 ):
-SemesterInfo[] => range(numSemesters)
-  .map((i) => {
-    const term = i % 2 === 0 ? TERM.FALL : TERM.SPRING;
-    const academicYear = startingAcademicYear + Math.floor(i / 2);
-    const calendarYear = term === TERM.FALL ? academicYear - 1 : academicYear;
-    const key = `${academicYear}-${term}`;
-    return {
-      term,
-      academicYear,
-      calendarYear,
-      key,
-    };
-  });
+SemesterInfo[] => Array.from({ length: numSemesters }, (_, i: number) => {
+  const term = i % 2 === 0 ? TERM.FALL : TERM.SPRING;
+  const academicYear = startingAcademicYear + Math.floor(i / 2);
+  const calendarYear = term === TERM.FALL ? academicYear - 1 : academicYear;
+  const key = `${academicYear}-${term}`;
+  return {
+    term,
+    academicYear,
+    calendarYear,
+    key,
+  };
+});
 
 /**
  * Gets the list of semesters for the multi-year plan table starting with the

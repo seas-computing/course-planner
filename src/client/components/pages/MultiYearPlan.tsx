@@ -30,7 +30,6 @@ import {
   MultiYearPlanResponseDTO,
 } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import { MultiYearPlanAPI } from 'client/api/multiYearPlan';
-import range from 'lodash.range';
 import { getSemestersFromYear, SemesterInfo } from 'common/utils/multiYearPlanHelperFunctions';
 import { getCatPrefixColor, NUM_SEMESTERS } from '../../../common/constants';
 import { listFilter } from './Filter';
@@ -181,7 +180,7 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
   */
 
   const courseInstance = (course: MultiYearPlanResponseDTO): TableCell[] => (
-    range(NUM_SEMESTERS).map((index: number) => {
+    Array.from({ length: NUM_SEMESTERS }, (_, index: number) => {
       const semester = course.semesters[index];
       return (
         <TableCell verticalAlignment={VALIGN.TOP} key={index}>
