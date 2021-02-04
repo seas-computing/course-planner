@@ -107,19 +107,13 @@ describe('Course Instance Controller', function () {
           deepStrictEqual(getStub.args[0][0], 2019);
         });
       });
-      context('With multiple valid acadYears', function () {
-        it('Should only call the service for first year passed', async function () {
-          const yearArgs = ['2018', '2020'];
+      context('With multiple valid acadYears passed in a comma-separated list', function () {
+        it('Should only call the service for first year in the list', async function () {
+          const yearArgs = ['2020', '2018'];
           await ciController.getInstances(yearArgs.join(','));
           strictEqual(getStub.callCount, 1);
           strictEqual(getStub.args[0][0], parseInt(yearArgs[0], 10));
-        });
-      });
-      context('With duplicate years', function () {
-        it('Should only call each year once', async function () {
-          const yearArgs = ['2020', '2020', '2020', '2020'];
-          await ciController.getInstances(yearArgs.join(','));
-          strictEqual(getStub.callCount, 1);
+          strictEqual(getStub.calledWith(yearArgs[1]), false);
         });
       });
       context('With only an invalid acadYear parameter', function () {
