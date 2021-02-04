@@ -33,8 +33,8 @@ export class CourseInstanceController {
    * Responds with an aggregated list of courses and their instances.
    * If there are no valid years requested, an empty array will be returned
    *
-   * @param acadYear A single academic whose semesters should be included in
-   * the list of course instances.
+   * @param acadYear A single academic year whose semesters should be included
+   * in the list of course instances.
    */
 
   @Get('/')
