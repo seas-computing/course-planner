@@ -70,9 +70,6 @@ describe('Course Admin API', function () {
     beforeEach(function () {
       postStub = stub(request, 'post');
     });
-    afterEach(function () {
-      getStub.restore();
-    });
     context('when successfully creating a course', function () {
       beforeEach(async function () {
         postStub.resolves({
@@ -111,9 +108,6 @@ describe('Course Admin API', function () {
   describe('editCourse', function () {
     beforeEach(function () {
       putStub = stub(request, 'put');
-    });
-    afterEach(function () {
-      putStub.restore();
     });
     context('when successfully editing a course', function () {
       const newCourseTitle = 'Intro to Engineering';
