@@ -139,7 +139,7 @@ export const formatMeetings = (
         <TableCellList>
           {meetings.map(({
             id,
-            room: { name: roomName, campus },
+            room,
             day,
             startTime,
             endTime,
@@ -150,12 +150,16 @@ export const formatMeetings = (
                   <div>{dayEnumToString(day)}</div>
                   <div>{`${startTime}-${endTime}`}</div>
                 </MeetingGridSection>
-                <MeetingGridSection area="room">
-                  {roomName}
-                </MeetingGridSection>
-                <MeetingGridSection area="campus">
-                  <CampusIcon>{campus}</CampusIcon>
-                </MeetingGridSection>
+                {room && (
+                  <>
+                    <MeetingGridSection area="room">
+                      {room.name}
+                    </MeetingGridSection>
+                    <MeetingGridSection area="campus">
+                      <CampusIcon>{room.campus}</CampusIcon>
+                    </MeetingGridSection>
+                  </>
+                )}
               </MeetingGrid>
             </TableCellListItem>
           ))}

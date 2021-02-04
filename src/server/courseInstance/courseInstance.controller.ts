@@ -33,41 +33,22 @@ export class CourseInstanceController {
    * Responds with an aggregated list of courses and their instances.
    * If there are no valid years requested, an empty array will be returned
    *
-   * @param acadYear A list of comma-separated list of four-digit years,
-   * representing the **academic** years for which instances are being
-   * requested. This means a request for 2020 will return a course object with
-   * instances in Fall 2019 and Spring 2020. Omitting the parameter will return
-   * all years (and probably throw an out-of-memory error).
+   * @param acadYear A single academic year whose semesters should be included
+   * in the list of course instances.
    */
 
   @Get('/')
   public async getInstances(
-    @Query('acadYear') years?: string
-  ): Promise<CourseInstanceResponseDTO[][]> {
-    let yearList: string[];
-
+    @Query('acadYear') year?: string
+  ): Promise<CourseInstanceResponseDTO[]> {
     // fetch a list of all valid years
     const allYears = await this.semesterService.getYearList();
 
-    if (years) {
-      // deduplicate requested years
-      yearList = Array.from(new Set(years.trim().split(',')))
-        // filter out anything that's not a valid year
-        .filter((year): boolean => allYears.includes(year))
-        // sort years ascending
-        .sort();
-    } else {
-      // if we didn't get a list of years, send back everything
-      yearList = [...allYears];
+    const requestYear = parseInt(year, 10);
+    if (year && allYears.includes(requestYear.toString())) {
+      return this.ciService.getAllByYear(requestYear);
     }
-    return Promise.all(
-      yearList.map(
-        (year: string): Promise<CourseInstanceResponseDTO[]> => {
-          const requestYear = parseInt(year, 10);
-          return this.ciService.getAllByYear(requestYear);
-        }
-      )
-    );
+    return [];
   }
 
   /**
