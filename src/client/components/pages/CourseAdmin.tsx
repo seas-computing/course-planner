@@ -130,7 +130,7 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
   }, [loadCourses]);
 
   return (
-    <>
+    <div data-testid="courseAdminPage">
       <VerticalSpace>
         <div className="create-course-button">
           <Button
@@ -258,7 +258,7 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
           }}
         />
       </div>
-    </>
+    </div>
   );
 };
 

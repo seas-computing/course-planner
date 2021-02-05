@@ -45,9 +45,9 @@ describe('App Router', function () {
       });
     });
     context('/course-admin', function () {
-      it('renders the CourseAdmin component', async function () {
-        const { findByText } = renderWithUser('/course-admin');
-        return findByText(/Area/);
+      it('renders the CourseAdmin component', function () {
+        const { getByTestId } = renderWithUser('/course-admin');
+        return getByTestId(/courseAdminPage/);
       });
     });
     context('/faculty-admin', function () {
