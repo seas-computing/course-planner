@@ -30,6 +30,9 @@ import { Area } from 'server/area/area.entity';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { SemesterService } from 'server/semester/semester.service';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
+import { Absence } from 'server/absence/absence.entity';
+import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
+import { AbsenceRequestDTO } from 'common/dto/faculty/AbsenceRequest.dto';
 import { Faculty } from './faculty.entity';
 import { FacultyService } from './faculty.service';
 import { FacultyScheduleService } from './facultySchedule.service';
@@ -44,6 +47,9 @@ export class FacultyController {
 
   @InjectRepository(Area)
   private areaRepository: Repository<Area>;
+
+  @InjectRepository(Absence)
+  private absenceRepository: Repository<Absence>;
 
   @Inject(FacultyService)
   private facultyService: FacultyService;
@@ -103,6 +109,40 @@ export class FacultyController {
       return {};
     }
     return this.facultyScheduleService.getAllByYear(acadYearNums);
+  }
+
+  @UseGuards(new RequireGroup(GROUP.ADMIN))
+  @Put('/absence/:id')
+  @ApiOperation({ title: 'Edit an existing faculty\'s absence entry in the database' })
+  @ApiOkResponse({
+    type: AbsenceResponseDTO,
+    description: 'An object with the edited absence entry\'s information.',
+    isArray: false,
+  })
+  @ApiNotFoundResponse({
+    description: 'Not Found: The requested entity with the ID supplied could not be found',
+  })
+  public async updateFacultyAbsence(@Body() absenceInfo: AbsenceRequestDTO):
+  Promise<AbsenceResponseDTO> {
+    let existingAbsence: Absence;
+    try {
+      existingAbsence = await this.absenceRepository
+        .findOneOrFail({
+          where: {
+            id: absenceInfo.id,
+          },
+        });
+    } catch (e) {
+      if (e instanceof EntityNotFoundError) {
+        throw new NotFoundException('The entered Absence does not exist');
+      }
+      throw e;
+    }
+    const validAbsence = {
+      ...absenceInfo,
+      id: existingAbsence.id,
+    };
+    return this.absenceRepository.save(validAbsence);
   }
 
   @UseGuards(new RequireGroup(GROUP.ADMIN))

@@ -6,7 +6,7 @@ import { stub, SinonStub } from 'sinon';
 import * as dummy from 'testData';
 import { MESSAGE_TYPE } from 'client/classes';
 import { MessageContext } from 'client/context';
-import { Message, MessageProps } from '../Message';
+import Message, { MessageProps } from '../Message';
 
 describe('Message', function () {
   let clock: InstalledClock;

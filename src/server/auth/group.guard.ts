@@ -6,7 +6,7 @@ import {
 import { Observable } from 'rxjs';
 import { GROUP } from 'common/constants';
 import { Request } from 'express';
-import { User } from 'server/user/user.entity';
+import { User } from 'common/classes';
 
 @Injectable()
 class RequireGroup implements CanActivate {

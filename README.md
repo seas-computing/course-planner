@@ -33,7 +33,11 @@ This setup uses `docker` and `docker-compose` for local development, as defined 
    ```sh
    docker-compose exec node npm run orm -- migration:run
    ```
-
+1. Run the database migrations generate if you have database schema changes:
+   ```sh
+   docker-compose exec node npm run orm -- migration:generate -n [name-of-the-migration]
+   docker-compose exec node npm run orm -- migration:run
+   ```
 1. switch to course-planner-etl and migrate the data: 
    ```sh
    cd ../course-planner-etl

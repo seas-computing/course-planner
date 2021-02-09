@@ -10,6 +10,8 @@ import { SemesterView } from 'server/semester/SemesterView.entity';
 import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import { FacultyListingView } from 'server/faculty/FacultyListingView.entity';
 import { MultiYearPlanInstanceView } from './MultiYearPlanInstanceView.entity';
+import { ScheduleViewResponseDTO } from '../../common/dto/schedule/schedule.dto';
+import { ScheduleBlockView } from './ScheduleBlockView.entity';
 
 /**
  * @class CourseInstanceService
@@ -27,6 +29,9 @@ export class CourseInstanceService {
 
   @InjectRepository(Course)
   protected courseEntityRepository: Repository<Course>;
+
+  @InjectRepository(ScheduleBlockView)
+  private readonly courseScheduleRepository: Repository<ScheduleBlockView>;
 
   /**
    * Resolves a list of courses, which in turn contain sub-lists of instances
@@ -128,12 +133,37 @@ export class CourseInstanceService {
       // the calendar year, academicYear is truly the academic year and has
       // been calculated by the SemesterView
       .where('s."academicYear" IN (:...academicYears)', { academicYears })
-      .orderBy('c.area', 'ASC')
+      .orderBy('"catalogPrefix"', 'ASC')
       .addOrderBy('"catalogNumber"', 'ASC')
       .addOrderBy('s."academicYear"', 'ASC')
       .addOrderBy('s."termOrder"', 'ASC')
       .addOrderBy('instructors."instructorOrder"', 'ASC')
       .addOrderBy('instructors."displayName"', 'ASC')
       .getMany() as MultiYearPlanResponseDTO[];
+  }
+
+  /**
+   * Generates the data for the schedule view in the front-end app
+   */
+  public async getCourseSchedule(
+    term: TERM, calendarYear: string
+  ): Promise<ScheduleViewResponseDTO[]> {
+    return this.courseScheduleRepository
+      .createQueryBuilder('block')
+      .leftJoinAndMapMany(
+        'block.courses',
+        'ScheduleEntryView',
+        'entry',
+        'block.id=entry."blockId"'
+      )
+      .where('block.term = :term', { term })
+      .andWhere('block."calendarYear" = :calendarYear', { calendarYear })
+      .orderBy('weekday', 'ASC')
+      .addOrderBy('"startHour"', 'ASC')
+      .addOrderBy('"startMinute"', 'ASC')
+      .addOrderBy('duration', 'ASC')
+      .addOrderBy('"coursePrefix"', 'ASC')
+      .addOrderBy('"courseNumber"', 'ASC')
+      .getMany() as Promise<ScheduleViewResponseDTO[]>;
   }
 }

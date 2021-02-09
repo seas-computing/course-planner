@@ -15,6 +15,7 @@ import { SemesterService } from 'server/semester/semester.service';
 import { MetadataResponse } from 'common/dto/metadata/MetadataResponse.dto';
 import { AreaService } from 'server/area/area.service';
 import { ConfigService } from 'server/config/config.service';
+import { CourseService } from 'server/course/course.service';
 
 @ApiUseTags('Metadata')
 @UseGuards(Authentication)
@@ -30,9 +31,12 @@ export class MetadataController {
   @Inject(SemesterService)
   private readonly semesterService: SemesterService;
 
+  @Inject(CourseService)
+  private readonly courseService: CourseService;
+
   /**
    * Responds with an object containing data about the current academic year,
-   * currently existing areas, and the currently existing semesters in
+   * currently existing areas, semesters, and catalog prefixes that exist in
    * the database
    */
   @Get('/')
@@ -46,6 +50,7 @@ export class MetadataController {
       currentAcademicYear: this.configService.academicYear,
       areas: await this.areaService.getAreaList(),
       semesters: await this.semesterService.getSemesterList(),
+      catalogPrefixes: await this.courseService.getCatalogPrefixList(),
     };
   }
 }

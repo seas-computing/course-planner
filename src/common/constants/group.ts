@@ -6,11 +6,12 @@ enum GROUP {
   /**
    * Users who are considered to have administrative privileges in the application
    */
-  ADMIN = 'authorized-admins-seas-course-planning',
+  ADMIN = 'harvard:org:schools:seas:managed:seas-course-planning:roles-admin-seas-course-planning',
+
   /**
    * Users who have read-only privileges
    */
-  READ_ONLY = 'read-only-users-seas-course-planning'
+  READ_ONLY = 'harvard:org:schools:seas:managed:seas-course-planning:authorized-all-users-seas-course-planning',
 }
 
 export default GROUP;

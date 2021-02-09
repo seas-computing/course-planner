@@ -21,9 +21,5 @@ export abstract class UserResponse {
 
   public email: string;
 
-  public fullName: string;
-
-  public listName: string;
-
   public groups: GROUP[];
 }

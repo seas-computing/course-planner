@@ -5,22 +5,21 @@ import {
   SelectQueryBuilder,
 } from 'typeorm';
 import { Course } from 'server/course/course.entity';
-import { Area } from 'server/area/area.entity';
 import { SemesterView } from 'server/semester/SemesterView.entity';
+import { IS_SEAS } from 'common/constants';
 
 /**
  * A subset of fields from the [[Course]]
  */
-
 @ViewEntity('MultiYearPlanView', {
   expression: (connection: Connection):
   SelectQueryBuilder<Course> => connection.createQueryBuilder()
     .select('c.id', 'id')
-    .addSelect('a.name', 'area')
+    .addSelect('c.prefix', 'catalogPrefix')
     .addSelect("CONCAT_WS(' ', c.prefix, c.number)", 'catalogNumber')
     .addSelect('c.title', 'title')
-    .from(Course, 'c')
-    .leftJoin(Area, 'a', 'c."areaId" = a.id'),
+    .where(`c."isSEAS" <> '${IS_SEAS.N}'`)
+    .from(Course, 'c'),
 })
 export class MultiYearPlanView {
   /**
@@ -30,15 +29,15 @@ export class MultiYearPlanView {
   public id: string;
 
   /**
-   * From [[Area]]
-   * Only the name of the course's associated academic area
+   * From [[Course]]
+   * Course prefix , e.g. `CS`
    */
   @ViewColumn()
-  public area: string;
+  public catalogPrefix: string;
 
   /**
    * From [[Course]]
-   * Combines the course prefix and number, e.g. `CS 50`
+   * Merge of catalog prefix and catalog number, e.g. `CS 50`
    */
   @ViewColumn()
   public catalogNumber: string;

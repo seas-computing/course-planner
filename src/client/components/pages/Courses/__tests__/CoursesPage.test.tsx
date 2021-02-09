@@ -26,9 +26,7 @@ describe('Course Instances List', function () {
       let findByText: BoundFunction<FindByText>;
       beforeEach(function () {
         getStub.resolves([
-          [
-            { ...cs50CourseInstance },
-          ],
+          { ...cs50CourseInstance },
         ]);
         ({ findByText } = render(<CoursesPage />, dispatchStub));
       });

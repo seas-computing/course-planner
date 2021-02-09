@@ -21,6 +21,11 @@ const semesters = [
 ];
 
 /**
+ * Example of a list of catalog prefixes
+ */
+const catalogPrefixes = ['AC', 'AM', 'AP', 'BE', 'CS', 'ES', 'ESE', 'GENED', 'SEMINAR'];
+
+/**
  * Example of the data returned from the /api/metadata endpoint, used for
  * populating certain fields throughout the app.
  */
@@ -28,4 +33,5 @@ export const metadata: MetadataResponse = {
   currentAcademicYear,
   areas,
   semesters,
+  catalogPrefixes,
 };

@@ -63,8 +63,8 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   useEffect((): void => {
     setFetching(true);
     CourseAPI.getCourseInstancesForYear(acadYear)
-      .then((courses: CourseInstanceResponseDTO[][]): void => {
-        setCourses(courses[0]);
+      .then((courses: CourseInstanceResponseDTO[]): void => {
+        setCourses(courses);
       })
       .catch((err: Error): void => {
         dispatchMessage({

@@ -1,12 +1,22 @@
-import { UserResponse } from 'common/dto/users/userResponse.dto';
+import { User } from 'common/classes';
+import { AxiosError } from 'axios';
 import request from './request';
 
 /**
  * Get the currently authenticated user
  */
-const getCurrentUser = async (): Promise<UserResponse> => {
-  const response = await request.get('/api/users/current');
-  return response.data as UserResponse;
+
+export const getCurrentUser = async (): Promise<User> => {
+  try {
+    const response = await request.get('/api/users/current');
+    return new User(response.data);
+  } catch (err) {
+    if ((err as AxiosError).response?.status === 401) {
+      window.location.replace(`${process.env.SERVER_URL}/login`);
+    } else {
+      throw err;
+    }
+  }
 };
 
 /**

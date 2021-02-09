@@ -11,8 +11,14 @@ import {
   MessageContext,
   DispatchMessage,
 } from 'client/context';
-import { MetadataContext } from 'client/context/MetadataContext';
-import { MetadataResponse } from 'common/dto/metadata/MetadataResponse.dto';
+import { MetadataContext, MetadataContextValue } from 'client/context/MetadataContext';
+import { metadata } from '../data/metadata';
+
+const currentMetadata = { ...metadata };
+
+const testMetadata = new MetadataContextValue(currentMetadata, (update) => {
+  Object.assign(currentMetadata, update);
+});
 
 /**
  * In order to streamline our tests, we are redefining the `render` function to
@@ -21,13 +27,12 @@ import { MetadataResponse } from 'common/dto/metadata/MetadataResponse.dto';
  */
 const customRender = (
   ui: ReactElement,
-  dispatchMessage: DispatchMessage,
-  metadata?: MetadataResponse
+  dispatchMessage: DispatchMessage
 ): RenderResult => render(
   <MemoryRouter>
     <MarkOneWrapper>
       <MessageContext.Provider value={dispatchMessage}>
-        <MetadataContext.Provider value={metadata}>
+        <MetadataContext.Provider value={testMetadata}>
           {ui}
         </MetadataContext.Provider>
       </MessageContext.Provider>

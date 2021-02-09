@@ -31,6 +31,12 @@ export abstract class FacultyAbsence {
 
 export abstract class FacultySemester {
   @ApiModelProperty({
+    type: 'string',
+    example: '4c15c2bf-7823-47e0-9954-2ce914b73595',
+  })
+  public id: string;
+
+  @ApiModelProperty({
     type: 'number',
     example: 2021,
   })

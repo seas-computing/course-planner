@@ -33,8 +33,9 @@ describe('Course Instance Service', function () {
   let instanceRepository: Repository<CourseInstance>;
   let meetingRepository: Repository<Meeting>;
   before(async function () {
+    this.timeout(120000);
     db = new MockDB();
-    await db.init();
+    return db.init();
   });
   after(async function () {
     await db.stop();
@@ -246,12 +247,12 @@ describe('Course Instance Service', function () {
           deepStrictEqual(faculty, sorted);
         });
     });
-    it('should return the courses ordered by area and catalog number', function () {
+    it('should return the courses ordered by catalog prefix and catalog number', function () {
       const sorted = result.slice().sort((course1, course2): number => {
-        if (course1.area < course2.area) {
+        if (course1.catalogPrefix < course2.catalogPrefix) {
           return -1;
         }
-        if (course1.area > course2.area) {
+        if (course1.catalogPrefix > course2.catalogPrefix) {
           return 1;
         }
         if (course1.catalogNumber < course2.catalogNumber) {

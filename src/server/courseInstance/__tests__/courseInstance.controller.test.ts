@@ -1,4 +1,4 @@
-import { deepStrictEqual, strictEqual } from 'assert';
+import { deepStrictEqual, strictEqual, rejects } from 'assert';
 import { stub, SinonStub } from 'sinon';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -12,11 +12,17 @@ import {
   testFourYearPlan,
   testMultiYearPlanStartYear,
   testFourYearPlanAcademicYears,
+  testCourseScheduleData,
 } from 'testData';
+import { BadRequestException } from '@nestjs/common';
 import { CourseInstanceService } from '../courseInstance.service';
 import { CourseInstanceController } from '../courseInstance.controller';
 import { MultiYearPlanView } from '../MultiYearPlanView.entity';
 import { MultiYearPlanInstanceView } from '../MultiYearPlanInstanceView.entity';
+import { ScheduleBlockView } from '../ScheduleBlockView.entity';
+import { ScheduleEntryView } from '../ScheduleEntryView.entity';
+import { ScheduleViewResponseDTO } from '../../../common/dto/schedule/schedule.dto';
+import { TERM } from '../../../common/constants';
 
 describe('Course Instance Controller', function () {
   let ciController: CourseInstanceController;
@@ -51,6 +57,14 @@ describe('Course Instance Controller', function () {
           useValue: mockRepository,
         },
         {
+          provide: getRepositoryToken(ScheduleBlockView),
+          useValue: mockRepository,
+        },
+        {
+          provide: getRepositoryToken(ScheduleEntryView),
+          useValue: mockRepository,
+        },
+        {
           provide: getRepositoryToken(Course),
           useValue: mockRepository,
         },
@@ -80,9 +94,9 @@ describe('Course Instance Controller', function () {
         stub(semesterService, 'getYearList').resolves(fakeYearList);
       });
       context('With no year parameter', function () {
-        it('Should call the service once for every year in the db', async function () {
-          await ciController.getInstances();
-          strictEqual(getStub.callCount, fakeYearList.length);
+        it('Should return an empty array', async function () {
+          const result = await ciController.getInstances();
+          deepStrictEqual(result, []);
         });
       });
       context('With one valid acadYear parameter', function () {
@@ -93,26 +107,13 @@ describe('Course Instance Controller', function () {
           deepStrictEqual(getStub.args[0][0], 2019);
         });
       });
-      context('With multiple valid acadYears', function () {
-        it('Should call the service once for each year passed', async function () {
-          const yearArgs = ['2018', '2020'];
-          await ciController.getInstances(yearArgs.join(','));
-          strictEqual(getStub.callCount, yearArgs.length);
-        });
-        it('Should call the years in lexigraphical order', async function () {
-          const yearArgs = ['2020', '2019', '2018'];
-          await ciController.getInstances(yearArgs.join(','));
-          strictEqual(getStub.callCount, yearArgs.length);
-          strictEqual(getStub.args[0][0], 2018);
-          strictEqual(getStub.args[1][0], 2019);
-          strictEqual(getStub.args[2][0], 2020);
-        });
-      });
-      context('With duplicate years', function () {
-        it('Should only call each year once', async function () {
-          const yearArgs = ['2020', '2020', '2020', '2020'];
+      context('With multiple valid acadYears passed in a comma-separated list', function () {
+        it('Should only call the service for first year in the list', async function () {
+          const yearArgs = ['2020', '2018'];
           await ciController.getInstances(yearArgs.join(','));
           strictEqual(getStub.callCount, 1);
+          strictEqual(getStub.args[0][0], parseInt(yearArgs[0], 10));
+          strictEqual(getStub.calledWith(yearArgs[1]), false);
         });
       });
       context('With only an invalid acadYear parameter', function () {
@@ -120,18 +121,6 @@ describe('Course Instance Controller', function () {
           await ciController.getInstances('1999');
           strictEqual(getStub.callCount, 0);
           strictEqual(getStub.calledWith(1999), false);
-        });
-      });
-      context('With a mix of valid and invalid acadYear parameters', function () {
-        it('Should only call the valid years', async function () {
-          const validYearArgs = ['2018', '2020'];
-          const invalidYearArgs = ['2049', '1949'];
-          await ciController.getInstances([...validYearArgs, ...invalidYearArgs].join(','));
-          strictEqual(getStub.callCount, validYearArgs.length);
-          invalidYearArgs.forEach((year): void => {
-            const yearArg = parseInt(year, 10);
-            strictEqual(getStub.calledWith(yearArg), false);
-          });
         });
       });
     });
@@ -155,6 +144,45 @@ describe('Course Instance Controller', function () {
     it('should return a 4 year list starting with the current academic year when numYears is equal to 4', function () {
       const actual = ciController.computeAcademicYears(4);
       deepStrictEqual(actual, testFourYearPlanAcademicYears);
+    });
+  });
+  describe('/schedule', function () {
+    let getStub: SinonStub;
+    beforeEach(function () {
+      getStub = stub(ciService, 'getCourseSchedule').resolves(testCourseScheduleData);
+      stub(semesterService, 'getYearList').resolves(fakeYearList);
+    });
+    context('With valid semester data', function () {
+      let result: ScheduleViewResponseDTO[];
+      beforeEach(async function () {
+        result = await ciController.getScheduleData(TERM.FALL, fakeYearList[0]);
+      });
+      it('Should call the service method', function () {
+        strictEqual(getStub.callCount, 1);
+      });
+      it('Should pass in the term and year', function () {
+        const [[term, year]] = getStub.args;
+        strictEqual(term, TERM.FALL);
+        strictEqual(year, fakeYearList[0]);
+      });
+      it('Should return the value from the service', function () {
+        strictEqual(result, testCourseScheduleData);
+      });
+    });
+    context('With invalid term value', function () {
+      it('Should throw an error', function () {
+        return rejects(
+          ciController.getScheduleData('foo' as TERM, fakeYearList[0]),
+          BadRequestException
+        );
+      });
+    });
+    context('With invalid year value', function () {
+      it('Should return an empty array', async function () {
+        const result = await ciController
+          .getScheduleData(TERM.FALL, '1920');
+        deepStrictEqual(result, []);
+      });
     });
   });
 });

@@ -1,4 +1,4 @@
-import { User } from 'server/user/user.entity';
+import { User } from 'common/classes';
 import { GROUP } from 'common/constants';
 
 export const regularUser = new User({

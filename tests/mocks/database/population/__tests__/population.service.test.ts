@@ -1,6 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule, getRepositoryToken, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { createConnection, getRepository, Repository } from 'typeorm';
+import {
+  createConnection,
+  getRepository,
+  Repository,
+  Connection,
+} from 'typeorm';
 import { Area } from 'server/area/area.entity';
 import { strictEqual, notStrictEqual, deepStrictEqual } from 'assert';
 import { Semester } from 'server/semester/semester.entity';
@@ -37,9 +42,12 @@ describe('Population Service', function () {
   let courseInstanceRepository: Repository<CourseInstance>;
 
   before(async function () {
+    // set the test timeout to 2 minutes to give the database container time to
+    // come online
+    this.timeout(120000);
     // Our test database needs to be set up before any of our tests run
     db = new MockDB();
-    await db.init();
+    return db.init();
   });
   after(function () {
     // we need to stop the container after test suite finishes, in case any
@@ -48,7 +56,7 @@ describe('Population Service', function () {
   });
 
   describe('Automatic population', function () {
-    before(async function () {
+    beforeEach(async function () {
       testModule = await Test.createTestingModule({
         imports: [
           ConfigModule,
@@ -73,6 +81,9 @@ describe('Population Service', function () {
         .compile();
       // calling init triggers the onApplicationBootstrap hook
       await testModule.createNestApplication().init();
+    });
+    afterEach(async function () {
+      await testModule.close();
     });
     it('Should populate the area table', async function () {
       areaRepository = testModule.get(getRepositoryToken(Area));
@@ -274,15 +285,44 @@ describe('Population Service', function () {
     });
   });
   describe('Automatic depopulation', function () {
-    before(async function () {
+    let typeormConnection: Connection;
+    beforeEach(async function () {
+      testModule = await Test.createTestingModule({
+        imports: [
+          ConfigModule,
+          TypeOrmModule.forRootAsync({
+            imports: [ConfigModule],
+            useFactory: (
+              config: ConfigService
+            ): TypeOrmModuleOptions => ({
+              ...config.dbOptions,
+              synchronize: true,
+              autoLoadEntities: true,
+              retryAttempts: 10,
+              retryDelay: 10000,
+            }),
+            inject: [ConfigService],
+          }),
+          PopulationModule,
+        ],
+      })
+        .overrideProvider(ConfigService)
+        .useValue(new ConfigService(db.connectionEnv))
+        .compile();
+      // calling init triggers the onApplicationBootstrap hook
+      await testModule.createNestApplication().init();
       // close the module, triggering beforeApplicationShutdown hook
       await testModule.close();
       // Open a direct connection to the db with TypeORM
       const config = new ConfigService(db.connectionEnv);
-      return createConnection({
+      typeormConnection = await createConnection({
         ...config.dbOptions,
         synchronize: true,
       });
+    });
+    afterEach(async function () {
+      // close our direct typeorm connection after each test
+      await typeormConnection.close();
     });
     it('Should truncate the area table', async function () {
       areaRepository = getRepository(Area);
