@@ -1,8 +1,7 @@
 import { NonClassParent } from 'server/nonClassParent/nonclassparent.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
+import { Repository } from 'typeorm';
 import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
-import { Course } from 'server/course/course.entity';
 import { Semester } from 'server/semester/semester.entity';
 import { TERM } from 'common/constants';
 import { Meeting } from 'server/meeting/meeting.entity';
@@ -11,9 +10,6 @@ import { NonClassParentData, NonClassEventData } from './data';
 
 export class NonClassEventPopulationService
   extends BasePopulationService<NonClassEvent> {
-  @InjectRepository(Course)
-  protected courseRepository: Repository<Course>;
-
   @InjectRepository(NonClassParent)
   protected parentRepository: Repository<NonClassParent>;
 
@@ -33,20 +29,6 @@ export class NonClassEventPopulationService
     parents: NonClassParentData[];
     events: NonClassEventData[];
   }): Promise<NonClassEvent[]> {
-    const [
-      dataScience,
-      appliedMath,
-    ] = await this.courseRepository.find({
-      relations: ['area'],
-      where: {
-        prefix: In(['AM', 'CS']),
-      },
-      take: 2,
-      order: {
-        prefix: 'ASC',
-      },
-    });
-
     const [fall, spring] = await this.semesterRepository.find({
       // The usage of an array of objects means typeorm will compile this
       // into
@@ -66,11 +48,9 @@ export class NonClassEventPopulationService
     ] = await this.parentRepository.save([
       {
         ...parents[0],
-        course: dataScience,
       },
       {
         ...parents[1],
-        course: appliedMath,
       },
     ]);
 
