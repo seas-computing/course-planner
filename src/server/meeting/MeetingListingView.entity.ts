@@ -91,5 +91,5 @@ export class MeetingListingView {
     (): ObjectType<NonClassEventView> => NonClassEventView,
     ({ meetings }): MeetingListingView[] => meetings
   )
-  public nonClasseventId: string;
+  public nonClassEventId: string;
 }
