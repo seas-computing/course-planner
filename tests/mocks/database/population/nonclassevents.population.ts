@@ -87,9 +87,6 @@ export class NonClassEventPopulationService
   }
 
   public async drop(): Promise<void> {
-    await Promise.all([
-      await this.eventRepository.clear(),
-      await this.parentRepository.clear(),
-    ]);
+    await this.repository.query('TRUNCATE TABLE nonClassEvents, nonClassParents CASCADE;');
   }
 }
