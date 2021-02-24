@@ -27,6 +27,8 @@ import { SemesterView } from 'server/semester/SemesterView.entity';
 import { View } from 'server/view/view.entity';
 import { NestSessionOptions } from 'nestjs-session';
 import { RedisStore } from 'connect-redis';
+import { NonClassEventView } from 'server/nonClassEvent/NonClassEvent.view.entity';
+import { NonClassParentView } from 'server/nonClassEvent/NonClassParentView.entity';
 import LOG_LEVEL from '../../common/constants/logLevels';
 import { ScheduleBlockView } from '../courseInstance/ScheduleBlockView.entity';
 import { ScheduleEntryView } from '../courseInstance/ScheduleEntryView.entity';
@@ -181,6 +183,8 @@ class ConfigService {
         NonClassParent,
         ScheduleBlockView,
         ScheduleEntryView,
+        NonClassEventView,
+        NonClassParentView,
         Semester,
         SemesterView,
         View,
