@@ -70,6 +70,7 @@ export class PopulationService implements
    * the schemas, after the nest app closes.
    */
   public async beforeApplicationShutdown(): Promise<void> {
+    await this.nonClassEventPopulationService.drop();
     await this.courseService.drop();
     await this.facultyService.drop();
     await this.roomService.drop();
