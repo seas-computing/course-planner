@@ -1,6 +1,6 @@
 import { NonClassParent } from 'server/nonClassParent/nonclassparent.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
+import { Repository } from 'typeorm';
 import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
 import { Semester } from 'server/semester/semester.entity';
 import { TERM } from 'common/constants';
