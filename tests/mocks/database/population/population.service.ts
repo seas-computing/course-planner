@@ -75,5 +75,6 @@ export class PopulationService implements
     await this.roomService.drop();
     await this.semesterService.drop();
     await this.areaService.drop();
+    await this.nonClassEventPopulationService.drop();
   }
 }
