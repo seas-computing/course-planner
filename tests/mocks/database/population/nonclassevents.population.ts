@@ -10,11 +10,11 @@ import { NonClassParentData, NonClassEventData } from './data';
 
 export class NonClassEventPopulationService
   extends BasePopulationService<NonClassEvent> {
-  @InjectRepository(NonClassParent)
-  protected parentRepository: Repository<NonClassParent>;
-
   @InjectRepository(NonClassEvent)
   protected eventRepository: Repository<NonClassEvent>;
+
+  @InjectRepository(NonClassParent)
+  protected parentRepository: Repository<NonClassParent>;
 
   @InjectRepository(Semester)
   protected semesterRepository: Repository<Semester>;
@@ -57,7 +57,6 @@ export class NonClassEventPopulationService
     const meetings = await this.meetingRepository.find({
       take: 4,
     });
-
     return this.eventRepository.save([
       {
         ...events[0],
@@ -87,9 +86,10 @@ export class NonClassEventPopulationService
   }
 
   public async drop(): Promise<void> {
-    await Promise.all([
-      await this.eventRepository.clear(),
-      await this.parentRepository.clear(),
-    ]);
+    // Using code found here: https://github.com/typeorm/typeorm/issues/5934#issuecomment-618334924
+    // to get the table name dynamically, since the spacing/casing is a little weird
+    const nonClassEvent = this.eventRepository.metadata.tableName;
+    const nonClassParent = this.parentRepository.metadata.tableName;
+    await this.eventRepository.query(`TRUNCATE TABLE "${nonClassEvent}", "${nonClassParent}" CASCADE;`);
   }
 }
