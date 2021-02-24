@@ -13,9 +13,6 @@ export class NonClassEventPopulationService
   @InjectRepository(NonClassParent)
   protected parentRepository: Repository<NonClassParent>;
 
-  @InjectRepository(NonClassEvent)
-  protected eventRepository: Repository<NonClassEvent>;
-
   @InjectRepository(Semester)
   protected semesterRepository: Repository<Semester>;
 
@@ -58,7 +55,7 @@ export class NonClassEventPopulationService
       take: 4,
     });
 
-    return this.eventRepository.save([
+    return this.repository.save([
       {
         ...events[0],
         nonClassParent: dataScienceParent,
