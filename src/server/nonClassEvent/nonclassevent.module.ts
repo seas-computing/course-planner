@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Course } from 'server/course/course.entity';
 import { Semester } from 'server/semester/semester.entity';
 import { NonClassParent } from 'server/nonClassParent/nonclassparent.entity';
 import { Area } from 'server/area/area.entity';
@@ -19,7 +18,6 @@ import { NonClassEventView } from './NonClassEvent.view.entity';
     TypeOrmModule.forFeature([
       Area,
       Semester,
-      Course,
       NonClassParent,
       NonClassEvent,
       NonClassParentView,

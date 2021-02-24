@@ -3,7 +3,6 @@ import { Repository } from 'typeorm';
 import { TERM } from 'common/constants';
 import { MeetingListingView } from 'server/meeting/MeetingListingView.entity';
 import { RoomListingView } from 'server/location/RoomListingView.entity';
-import { CourseListingView } from 'server/course/CourseListingView.entity';
 import { NonClassParentView } from './NonClassParentView.entity';
 import { NonClassEventView } from './NonClassEvent.view.entity';
 
@@ -14,11 +13,6 @@ export class NonClassEventService {
   public async find(academicYear: number):
   Promise<NonClassParentView[]> {
     const nonClassEvents = this.parentRepository.createQueryBuilder('p')
-      .leftJoinAndMapOne(
-        'p.course',
-        CourseListingView, 'course',
-        'course."id" = p."courseId"'
-      )
       .leftJoinAndMapOne(
         'p.spring',
         NonClassEventView, 'spring',
@@ -58,8 +52,7 @@ export class NonClassEventService {
         'fall_meetings.room',
         RoomListingView, 'fall_meetings_room',
         'fall_meetings_room.id = "fall_meetings"."roomId"'
-      )
-      .orderBy('course.area', 'ASC');
+      );
     return nonClassEvents.getMany();
   }
 }

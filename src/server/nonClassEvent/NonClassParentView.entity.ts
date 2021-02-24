@@ -7,7 +7,6 @@ import {
   ObjectType,
 } from 'typeorm';
 import { NonClassParent } from 'server/nonClassParent/nonclassparent.entity';
-import { CourseListingView } from 'server/course/CourseListingView.entity';
 import { NonClassEventView } from './NonClassEvent.view.entity';
 
 @ViewEntity('NonClassParentView', {
@@ -16,7 +15,6 @@ import { NonClassEventView } from './NonClassEvent.view.entity';
     .select('parent.id', 'id')
     .addSelect('parent.contact', 'contact')
     .addSelect('parent.title', 'title')
-    .addSelect('parent."courseId"', 'courseId')
     .from(NonClassParent, 'parent'),
 })
 export class NonClassParentView {
@@ -28,11 +26,6 @@ export class NonClassParentView {
 
   @ViewColumn()
   public title: string;
-
-  @ViewColumn()
-  public courseId: string;
-
-  public course: CourseListingView;
 
   public spring: NonClassEventView;
 

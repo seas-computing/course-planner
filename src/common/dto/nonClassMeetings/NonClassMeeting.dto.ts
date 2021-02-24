@@ -1,46 +1,7 @@
 import {
-  DAY, TERM_PATTERN, TERM, IS_SEAS,
+  DAY, TERM,
 } from 'common/constants';
 import { ApiModelProperty } from '@nestjs/swagger';
-
-abstract class Course {
-  @ApiModelProperty({
-    example: 'CS',
-  })
-  public area: string;
-
-  @ApiModelProperty({
-    example: 'Data Science 1: Introduction to Data Science',
-  })
-  public title: string;
-
-  @ApiModelProperty({
-    example: 'AC 209a',
-  })
-  public catalogNumber: string;
-
-  @ApiModelProperty({
-    example: true,
-  })
-  public isSEAS: IS_SEAS;
-
-  @ApiModelProperty({
-    example: false,
-  })
-  public isUndergraduate: boolean;
-
-  @ApiModelProperty({
-    example: 'Same as CS 109a, STATS 121a',
-  })
-  public notes?: string = '';
-
-  @ApiModelProperty({
-    type: 'enum',
-    enum: TERM_PATTERN,
-    example: TERM_PATTERN.FALL,
-  })
-  public termPattern: TERM_PATTERN;
-}
 
 abstract class Location {
   @ApiModelProperty({
@@ -121,9 +82,6 @@ export default abstract class NonClassMeetingResponseDTO {
     example: 'Reading group',
   })
   public title: string;
-
-  @ApiModelProperty({ type: Course })
-  public course: Course;
 
   @ApiModelProperty({ type: NonClassEvent })
   public spring: NonClassEvent;

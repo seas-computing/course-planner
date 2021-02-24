@@ -260,9 +260,7 @@ describe('Population Service', function () {
       const parentsRepository: Repository<NonClassParent> = testModule.get(
         getRepositoryToken(NonClassParent)
       );
-      const dbParents = await parentsRepository.find({
-        relations: ['course'],
-      });
+      const dbParents = await parentsRepository.find();
 
       deepStrictEqual(
         dbParents.map(({ contact, title }) => ({ contact, title })),

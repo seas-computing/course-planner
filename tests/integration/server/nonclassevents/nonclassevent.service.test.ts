@@ -80,18 +80,6 @@ describe('NonClassEvent Service', function () {
         Array(fallAcademicyears.length).fill(expectedAcdemicYear)
       );
     });
-    it('concatenates course number and prefix', async function () {
-      const expectedAcdemicYear = 2020;
-
-      const events = await service.find(expectedAcdemicYear);
-
-      const catalogNumbers = events.map(({ course }) => course.catalogNumber);
-      const catalogNumbersValid = catalogNumbers
-        .every((catalogNumber) => catalogNumber.length > 0);
-
-      deepStrictEqual(catalogNumbersValid, true);
-      deepStrictEqual(catalogNumbers.length, events.length);
-    });
     describe('Meetings', function () {
       let dbMeetings: Meeting[];
       let meetingRepository: Repository<Meeting>;
