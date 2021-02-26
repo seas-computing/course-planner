@@ -7,13 +7,15 @@ import { TEXT_VARIANT } from 'mark-one';
  * the given absence
  */
 export const absenceToVariant = (absence: FacultyAbsence): TEXT_VARIANT => {
-  if ([ABSENCE_TYPE.PARENTAL_LEAVE, ABSENCE_TYPE.RESEARCH_LEAVE]
-    .includes(absence.type)) {
-    return TEXT_VARIANT.NEGATIVE;
-  } if ([ABSENCE_TYPE.NO_LONGER_ACTIVE].includes(absence.type)) {
-    return TEXT_VARIANT.MEDIUM;
+  switch (absence.type) {
+    case ABSENCE_TYPE.PARENTAL_LEAVE:
+    case ABSENCE_TYPE.RESEARCH_LEAVE:
+      return TEXT_VARIANT.NEGATIVE;
+    case ABSENCE_TYPE.NO_LONGER_ACTIVE:
+      return TEXT_VARIANT.MEDIUM;
+    default:
+      return TEXT_VARIANT.BASE;
   }
-  return TEXT_VARIANT.BASE;
 };
 
 export default absenceToVariant;
