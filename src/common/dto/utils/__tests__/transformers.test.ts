@@ -1,6 +1,6 @@
 import { strictEqual } from 'assert';
 import { computerScienceCourseResponse, physicsCourseResponse } from 'testData';
-import { trimString } from '../util';
+import { trimString } from '../transformers';
 
 describe('DTO Helper Functions', function () {
   describe('trimIfString', function () {
