@@ -8,7 +8,7 @@ import {
   IsOptional,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { trimString } from '../util';
+import { trimString } from '../utils';
 
 /**
  * @module Server.DTOS.Courses
