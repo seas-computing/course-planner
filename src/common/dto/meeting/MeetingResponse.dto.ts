@@ -77,8 +77,8 @@ export default abstract class MeetingResponse {
   public endTime: string;
 
   /**
-   * Defines a new room that should be created in database where the meeting
-   * will be held.  Either this or [[MeetingRoomRequest]] must be defined
+   * The room where the meeting will be held, which can be undefined if a room
+   * hasn't been chosen yet.
    */
   @ApiModelProperty({
     type: MeetingRoomResponse,
