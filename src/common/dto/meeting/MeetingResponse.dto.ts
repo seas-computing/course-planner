@@ -25,11 +25,11 @@ abstract class MeetingRoomResponse {
   public campus: string;
 
   /**
-   * The name/number of the room
+   * The name of the building concatenated with the number of the room
    */
   @ApiModelProperty({
     type: 'string',
-    example: 'G125',
+    example: 'Maxwell-Dworkin G125',
   })
   public name: string;
 }
