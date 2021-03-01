@@ -33,11 +33,22 @@ export default function IsMutuallyExclusiveWith<DTO>(
      * This is not really documented in class-validator, but I've borrowed the
      * code for [the @IsOptional decorator][1] and added a small to tweak to
      * only ignore when this particular field is not the only field defined.
-     * That way, the validators will run if:
+     *
+     * If the function in optionalArgs.constraints[0] returns true, all
+     * validators on this field will run; if it returns false, none of the
+     * validators will run. Crucially, the set of "all validators" includes the
+     * `isMutuallyExclusiveWith` validator defined below. This means that the
+     * check for mutual exclusivity will only run on the fields that have
+     * actually been defined, which enables us to stack additional validators
+     * on-top of this one to check things like `@IsUUID` or `@IsNotEmpty` --
+     * without this, those validators would run and flag any undefined fields
+     * as errors.
+     *
+     * That way, the validators a given field will run if:
      *
      * 1. None of the fields are defined
      * 2. More than one field is defined
-     * 3. Only this particular field is defined
+     * 3. Only that specific field is defined
      *
      * [1]: (https://github.com/typestack/class-validator/blob/v0.11.1/src/decorator/decorators.ts#L229-L241)
      */
