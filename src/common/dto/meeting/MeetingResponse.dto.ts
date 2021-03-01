@@ -35,7 +35,7 @@ abstract class MeetingRoomResponse {
 }
 
 /**
- * Represents the reponse returned from the server after creating or editing a
+ * Represents the response returned from the server after creating or editing a
  * meeting
  */
 
