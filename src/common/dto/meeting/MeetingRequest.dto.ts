@@ -66,7 +66,8 @@ export default abstract class MeetingRequest {
     example: '7187d276-f6cf-4323-af7d-dd70f4a08e3d',
   })
   @IsUUID()
-  public id: string;
+  @IsOptional()
+  public id?: string;
 
   /**
    * The day of the week on which the meeting takes place.
