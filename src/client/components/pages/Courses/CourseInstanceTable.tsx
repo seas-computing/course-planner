@@ -32,10 +32,10 @@ interface CourseInstanceTableProps {
    */
   academicYear: number;
 }
+
 /**
  * Component representing the list of CourseInstances in a given Academic year
  */
-
 const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
   academicYear,
   courseList,
