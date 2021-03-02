@@ -33,23 +33,45 @@ describe('Meeting Modal Focus Behavior', function () {
     getStub.resolves(testData);
   });
   describe('On Open Behavior', function () {
-    beforeEach(async function () {
-      ({ findByText } = render(
-        <CoursesPage />,
-        dispatchStub
-      ));
-      const editCS50MeetingButton = await waitForElement(
-        () => document.getElementById(`${cs50CourseInstance.id}-${cs50CourseInstance.termPattern}-edit-meetings-button`)
-      );
-      fireEvent.click(editCS50MeetingButton);
-      await findByText(/Meetings for/);
+    context('when a fall semester meeting modal is opened', function () {
+      beforeEach(async function () {
+        ({ findByText } = render(
+          <CoursesPage />,
+          dispatchStub
+        ));
+        const editCS50MeetingButton = await waitForElement(
+          () => document.getElementById(`${cs50CourseInstance.id}-${cs50CourseInstance.termPattern}-edit-meetings-button`)
+        );
+        fireEvent.click(editCS50MeetingButton);
+        await findByText(/Meetings for/);
+      });
+      it('sets the focus to the meeting modal header', function () {
+        strictEqual(
+          (document.activeElement as HTMLElement)
+            .textContent.includes(cs50CourseInstance.catalogNumber),
+          true
+        );
+      });
     });
-    it('sets the focus to the meeting modal header', function () {
-      strictEqual(
-        (document.activeElement as HTMLElement)
-          .textContent.includes(cs50CourseInstance.catalogNumber),
-        true
-      );
+    context('when a spring semester meeting modal is opened', function () {
+      beforeEach(async function () {
+        ({ findByText } = render(
+          <CoursesPage />,
+          dispatchStub
+        ));
+        const editAM105MeetingButton = await waitForElement(
+          () => document.getElementById(`${am105CourseInstance.id}-${am105CourseInstance.termPattern}-edit-meetings-button`)
+        );
+        fireEvent.click(editAM105MeetingButton);
+        await findByText(/Meetings for/);
+      });
+      it('sets the focus to the meeting modal header', function () {
+        strictEqual(
+          (document.activeElement as HTMLElement)
+            .textContent.includes(am105CourseInstance.catalogNumber),
+          true
+        );
+      });
     });
   });
   describe('On Close Behavior', function () {
