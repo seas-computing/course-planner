@@ -37,7 +37,7 @@ describe('Meeting Modal Focus Behavior', function () {
         () => document.getElementById(`${cs50CourseInstance.id}-${cs50CourseInstance.termPattern}-edit-meetings-button`)
       );
       fireEvent.click(editCS50MeetingButton);
-      await findByText(/Rooms for/);
+      await findByText(/Meetings for/);
     });
     it('sets the focus to the meeting modal header', function () {
       strictEqual(
@@ -58,10 +58,10 @@ describe('Meeting Modal Focus Behavior', function () {
         () => document.getElementById(`${cs50CourseInstance.id}-${cs50CourseInstance.termPattern}-edit-meetings-button`)
       );
       fireEvent.click(editCS50MeetingButton);
-      await findByText(/Rooms for/);
+      await findByText(/Meetings for/);
       const cancelButton = await findByText(/Cancel/);
       fireEvent.click(cancelButton);
-      await wait(() => !queryByText(/Rooms for/));
+      await wait(() => !queryByText(/Meetings for/));
     });
     it('returns focus to the originally clicked edit meeting button', function () {
       strictEqual(

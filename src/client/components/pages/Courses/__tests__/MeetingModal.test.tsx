@@ -4,6 +4,7 @@ import {
   GetByText,
   QueryByText,
   wait,
+  waitForElement,
 } from '@testing-library/react';
 import { strictEqual } from 'assert';
 import { TERM } from 'common/constants';
@@ -38,11 +39,8 @@ describe('Meeting Modal', function () {
     });
     describe('On Open Behavior', function () {
       it('populates the heading with the correct course instance information', function () {
-        strictEqual(
-          !!queryByText(
-            `Rooms for ${cs50CourseInstance.catalogNumber} - ${cs50CourseInstance.title} - ${meetingTerm} ${cs50CourseInstance[semKey].calendarYear}`
-          ),
-          true
+        return waitForElement(
+          () => getByText(`Meetings for ${cs50CourseInstance.catalogNumber} - ${meetingTerm} ${cs50CourseInstance[semKey].calendarYear}`)
         );
       });
     });
@@ -50,7 +48,7 @@ describe('Meeting Modal', function () {
       it('calls the onClose handler once', async function () {
         const cancelButton = getByText('Cancel');
         fireEvent.click(cancelButton);
-        await wait(() => !queryByText(/Rooms for/));
+        await wait(() => !queryByText(/Meetings for/));
         await wait(() => strictEqual(onCloseStub.callCount, 1));
       });
     });

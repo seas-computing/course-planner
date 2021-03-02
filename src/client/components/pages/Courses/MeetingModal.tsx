@@ -109,13 +109,13 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
         forwardRef={modalHeaderRef}
         tabIndex={0}
       >
-        {`Rooms for ${course.catalogNumber} - ${course.title} - ${term} ${instance.calendarYear}`}
+        {`Meetings for ${course.catalogNumber} - ${term} ${instance.calendarYear}`}
       </ModalHeader>
       <ModalBody>
         <MeetingModalBodyGrid>
-          <MeetingScheduler>Meeting Scheduler</MeetingScheduler>
+          <MeetingScheduler>{`Meeting times for ${course.catalogNumber}`}</MeetingScheduler>
           <FacultyNotes>Faculty Notes</FacultyNotes>
-          <RoomAvailability>Room Availability Table</RoomAvailability>
+          <RoomAvailability>Room Availability</RoomAvailability>
         </MeetingModalBodyGrid>
       </ModalBody>
       <ModalFooter>
