@@ -6,9 +6,9 @@ import {
 import { parse, isBefore } from 'date-fns';
 
 /**
- * Validation decorator to check that a time field is after occuring after
- * another field in the same object. This will be used to check that the
- * endTime of a course meeting is after the start time.
+ * Validation decorator to check that a time field occurs before another field
+ * in the same object. This will be used to check that the startTime of a
+ * course meeting is before the endTime.
  */
 
 export default function IsOccurringBefore<DTO>(
