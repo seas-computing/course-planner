@@ -3,7 +3,7 @@ import { ApiModelProperty } from '@nestjs/swagger';
 import {
   IsUUID, IsNotEmpty, IsEnum, IsOptional,
 } from 'class-validator';
-import { IsMutuallyExclusiveWith } from '../utils';
+import { IsMutuallyExclusiveWith, IsOccurringBefore, IsOccurringAfter } from '../utils';
 
 /**
  * Represents a request sent to the server to create or edit a meeting
@@ -42,6 +42,7 @@ export default abstract class MeetingRequest {
     example: '12:00:00-5',
   })
   @IsNotEmpty()
+  @IsOccurringBefore('endTime')
   public startTime: string;
 
   /**
@@ -52,6 +53,7 @@ export default abstract class MeetingRequest {
     example: '13:30:00-5',
   })
   @IsNotEmpty()
+  @IsOccurringAfter('startTime')
   public endTime: string;
 
   /**
