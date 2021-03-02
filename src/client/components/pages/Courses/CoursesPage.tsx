@@ -92,11 +92,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
    * Set the ref focus for the edit meeting button
    */
   const setEditButtonFocus = (): void => {
-    setTimeout((): void => {
-      if (meetingEditButtonRef) {
-        meetingEditButtonRef.current.focus();
-      }
-    });
+    setTimeout((): void => meetingEditButtonRef.current.focus());
   };
 
   /**
