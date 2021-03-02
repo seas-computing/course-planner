@@ -90,10 +90,8 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   };
 
   useEffect((): void => {
-    if (isVisible) {
-      setMeetingModalFocus();
-    }
-  }, [isVisible]);
+    setMeetingModalFocus();
+  }, []);
 
   const { course, term } = currentCourseInstance;
   const semKey = term.toLowerCase() as TermKey;
