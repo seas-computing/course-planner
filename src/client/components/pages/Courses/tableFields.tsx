@@ -173,12 +173,14 @@ export const formatMeetings = (
         </TableCellList>
         <BorderlessButton
           id={`${course.id}-${sem}-edit-meetings-button`}
-          onClick={() => coursesPageContext.onMeetingEdit({
-            course,
-            term: sem,
-          })}
+          onClick={() => coursesPageContext
+            && coursesPageContext.onMeetingEdit({
+              course,
+              term: sem,
+            })}
           variant={VARIANT.INFO}
-          forwardRef={coursesPageContext.currentCourseInstance
+          forwardRef={coursesPageContext
+            && coursesPageContext.currentCourseInstance
             && coursesPageContext.currentCourseInstance.course.id === course.id
             && coursesPageContext.currentCourseInstance.term === sem
             ? coursesPageContext.meetingEditButtonRef
