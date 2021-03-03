@@ -10,6 +10,9 @@ import { NonClassParentData, NonClassEventData } from './data';
 
 export class NonClassEventPopulationService
   extends BasePopulationService<NonClassEvent> {
+  @InjectRepository(NonClassEvent)
+  protected eventRepository: Repository<NonClassEvent>;
+
   @InjectRepository(NonClassParent)
   protected parentRepository: Repository<NonClassParent>;
 
@@ -54,8 +57,7 @@ export class NonClassEventPopulationService
     const meetings = await this.meetingRepository.find({
       take: 4,
     });
-
-    return this.repository.save([
+    return this.eventRepository.save([
       {
         ...events[0],
         nonClassParent: dataScienceParent,
@@ -84,6 +86,6 @@ export class NonClassEventPopulationService
   }
 
   public async drop(): Promise<void> {
-    await this.repository.query('TRUNCATE TABLE nonClassEvents, nonClassParents CASCADE;');
+    await this.eventRepository.query('TRUNCATE TABLE nonClassEvents, nonClassParents CASCADE;');
   }
 }
