@@ -18,6 +18,7 @@ import { FacultyCourseInstance } from 'server/courseInstance/facultycourseinstan
   SelectQueryBuilder<Faculty> => connection.createQueryBuilder()
     .select('f.id', 'id')
     .addSelect('CONCAT_WS(\', \', f."lastName", f."firstName")', 'displayName')
+    .addSelect('f.notes', 'notes')
     .addSelect('fci.order', 'instructorOrder')
     .addSelect('fci."courseInstanceId"', 'courseInstanceId')
     .leftJoin(FacultyCourseInstance, 'fci', 'fci."facultyId" = f.id')
@@ -36,6 +37,12 @@ export class FacultyListingView {
    */
   @ViewColumn()
   public displayName: string;
+
+  /**
+   * Notes specific to the faculty member outlining preferences and additional information
+   */
+  @ViewColumn()
+  public notes: string;
 
   /**
    * From [[FacultyCourseInstance]]
