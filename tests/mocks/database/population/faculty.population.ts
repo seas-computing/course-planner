@@ -33,6 +33,7 @@ export class FacultyPopulationService extends BasePopulationService<Faculty> {
       instructor.lastName = facultyData.lastName;
       instructor.HUID = facultyData.HUID;
       instructor.jointWith = facultyData.jointWith;
+      instructor.notes = facultyData.notes;
       instructor.category = facultyData.category;
       instructor.area = allAreas.find(
         ({ name }): boolean => name === facultyData.area

@@ -13,6 +13,7 @@ export const faculty = [
     jointWith: null,
     category: FACULTY_TYPE.NON_LADDER,
     area: 'CS',
+    notes: 'Prefers Cambridge campus',
   },
   {
     firstName: 'Christopher',
@@ -22,6 +23,7 @@ export const faculty = [
     jointWith: null,
     category: FACULTY_TYPE.LADDER,
     area: 'AM',
+    notes: 'Prefers Allston campus',
   },
   {
     firstName: 'James',
@@ -31,6 +33,7 @@ export const faculty = [
     jointWith: null,
     category: FACULTY_TYPE.NON_LADDER,
     area: 'CS',
+    notes: '',
   },
   {
     firstName: 'Michael',
@@ -40,6 +43,7 @@ export const faculty = [
     jointWith: null,
     category: FACULTY_TYPE.LADDER,
     area: 'CS',
+    notes: 'Prefers Cambridge campus',
   },
   {
     firstName: 'Pavlos',
@@ -49,6 +53,7 @@ export const faculty = [
     jointWith: null,
     category: FACULTY_TYPE.NON_LADDER,
     area: 'ACS',
+    notes: 'Requesting room in MD',
   },
   {
     firstName: 'Kevin',
@@ -58,6 +63,7 @@ export const faculty = [
     jointWith: null,
     category: FACULTY_TYPE.NON_LADDER,
     area: 'ACS',
+    notes: '',
   },
   {
     firstName: 'Christopher',
@@ -67,6 +73,7 @@ export const faculty = [
     jointWith: null,
     category: FACULTY_TYPE.NON_LADDER,
     area: 'ACS',
+    notes: 'Requesting room in SEC',
   },
   {
     firstName: 'Prineha',
@@ -76,6 +83,7 @@ export const faculty = [
     jointWith: null,
     category: FACULTY_TYPE.LADDER,
     area: 'Mat & ME',
+    notes: 'Prefers Cambridge campus',
   },
   {
     firstName: 'Linsey',
@@ -85,6 +93,7 @@ export const faculty = [
     jointWith: null,
     category: FACULTY_TYPE.NON_LADDER,
     area: 'BE',
+    notes: 'Requesting room in SEC',
   },
   {
     firstName: 'Julia',
@@ -94,6 +103,7 @@ export const faculty = [
     jointWith: null,
     category: FACULTY_TYPE.NON_SEAS_LADDER,
     area: 'AP',
+    notes: 'Requesting room in SEC',
   },
   {
     firstName: 'Michelle',
@@ -103,6 +113,7 @@ export const faculty = [
     jointWith: null,
     category: FACULTY_TYPE.NON_LADDER,
     area: 'Mat & ME',
+    notes: '',
   },
   {
     firstName: 'Robert',
@@ -112,6 +123,7 @@ export const faculty = [
     jointWith: null,
     category: FACULTY_TYPE.LADDER,
     area: 'Mat & ME',
+    notes: '',
   },
   {
     firstName: 'Mark',
@@ -121,6 +133,7 @@ export const faculty = [
     jointWith: null,
     category: FACULTY_TYPE.NON_LADDER,
     area: 'ACS',
+    notes: 'Prefers Allston campus',
   },
   {
     firstName: 'Mark',
@@ -130,6 +143,7 @@ export const faculty = [
     jointWith: null,
     category: FACULTY_TYPE.NON_LADDER,
     area: 'ACS',
+    notes: '',
   },
   {
     firstName: 'Boris',
@@ -139,6 +153,7 @@ export const faculty = [
     jointWith: null,
     category: FACULTY_TYPE.LADDER,
     area: 'EE',
+    notes: 'Prefers Allston campus',
   },
   {
     firstName: 'Jennifer',
@@ -148,5 +163,6 @@ export const faculty = [
     jointWith: null,
     category: FACULTY_TYPE.LADDER,
     area: 'AP',
+    notes: 'Prefers Cambridge campus',
   },
 ];
