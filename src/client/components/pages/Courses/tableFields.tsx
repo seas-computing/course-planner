@@ -179,10 +179,9 @@ export const formatMeetings = (
               term: sem,
             })}
           variant={VARIANT.INFO}
-          forwardRef={coursesPageContext
-            && coursesPageContext.currentCourseInstance
-            && coursesPageContext.currentCourseInstance.course.id === course.id
-            && coursesPageContext.currentCourseInstance.term === sem
+          forwardRef={coursesPageContext?.currentCourseInstance?.course.id
+            === course.id
+            && coursesPageContext?.currentCourseInstance?.term === sem
             ? coursesPageContext.meetingEditButtonRef
             : null}
         >
