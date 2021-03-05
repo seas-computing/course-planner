@@ -33,93 +33,46 @@ describe('Meeting Modal Focus Behavior', function () {
     getStub.resolves(testData);
   });
   describe('On Open Behavior', function () {
-    context('when a fall semester meeting modal is opened', function () {
-      beforeEach(async function () {
-        ({ findByText } = render(
-          <CoursesPage />,
-          dispatchStub
-        ));
-        const editCS50MeetingButton = await waitForElement(
-          () => document.getElementById(`${cs50CourseInstance.id}-${cs50CourseInstance.termPattern}-edit-meetings-button`)
-        );
-        fireEvent.click(editCS50MeetingButton);
-        await findByText(/Meetings for/);
-      });
-      it('sets the focus to the meeting modal header', function () {
-        strictEqual(
-          (document.activeElement as HTMLElement)
-            .textContent.includes(cs50CourseInstance.catalogNumber),
-          true
-        );
-      });
+    beforeEach(async function () {
+      ({ findByText } = render(
+        <CoursesPage />,
+        dispatchStub
+      ));
+      const editCS50MeetingButton = await waitForElement(
+        () => document.getElementById(`${cs50CourseInstance.id}-${cs50CourseInstance.termPattern}-edit-meetings-button`)
+      );
+      fireEvent.click(editCS50MeetingButton);
+      await findByText(/Meetings for/);
     });
-    context('when a spring semester meeting modal is opened', function () {
-      beforeEach(async function () {
-        ({ findByText } = render(
-          <CoursesPage />,
-          dispatchStub
-        ));
-        const editAM105MeetingButton = await waitForElement(
-          () => document.getElementById(`${am105CourseInstance.id}-${am105CourseInstance.termPattern}-edit-meetings-button`)
-        );
-        fireEvent.click(editAM105MeetingButton);
-        await findByText(/Meetings for/);
-      });
-      it('sets the focus to the meeting modal header', function () {
-        strictEqual(
-          (document.activeElement as HTMLElement)
-            .textContent.includes(am105CourseInstance.catalogNumber),
-          true
-        );
-      });
+    it('sets the focus to the meeting modal header', function () {
+      strictEqual(
+        (document.activeElement as HTMLElement)
+          .textContent.includes(cs50CourseInstance.catalogNumber),
+        true
+      );
     });
   });
   describe('On Close Behavior', function () {
-    context('when a fall semester meeting modal is closed', function () {
-      let editCS50MeetingButton: HTMLElement;
-      beforeEach(async function () {
-        ({ findByText, queryByText } = render(
-          <CoursesPage />,
-          dispatchStub
-        ));
-        editCS50MeetingButton = await waitForElement(
-          () => document.getElementById(`${cs50CourseInstance.id}-${cs50CourseInstance.termPattern}-edit-meetings-button`)
-        );
-        fireEvent.click(editCS50MeetingButton);
-        await findByText(/Meetings for/);
-        const cancelButton = await findByText(/Cancel/);
-        fireEvent.click(cancelButton);
-        await wait(() => !queryByText(/Meetings for/));
-      });
-      it('returns focus to the originally clicked edit meeting button', function () {
-        strictEqual(
-          document.activeElement as HTMLElement,
-          editCS50MeetingButton
-        );
-      });
+    let editCS50MeetingButton: HTMLElement;
+    beforeEach(async function () {
+      ({ findByText, queryByText } = render(
+        <CoursesPage />,
+        dispatchStub
+      ));
+      editCS50MeetingButton = await waitForElement(
+        () => document.getElementById(`${cs50CourseInstance.id}-${cs50CourseInstance.termPattern}-edit-meetings-button`)
+      );
+      fireEvent.click(editCS50MeetingButton);
+      await findByText(/Meetings for/);
+      const cancelButton = await findByText(/Cancel/);
+      fireEvent.click(cancelButton);
+      await wait(() => !queryByText(/Meetings for/));
     });
-    context('when a spring semester meeting modal is closed', function () {
-      let editAM105MeetingButton: HTMLElement;
-      beforeEach(async function () {
-        ({ findByText, queryByText } = render(
-          <CoursesPage />,
-          dispatchStub
-        ));
-        editAM105MeetingButton = await waitForElement(
-          () => document.getElementById(`${am105CourseInstance.id}-${am105CourseInstance.termPattern}-edit-meetings-button`)
-        );
-        fireEvent.click(editAM105MeetingButton);
-        await findByText(/Meetings for/);
-        const cancelButton = await findByText(/Cancel/);
-        fireEvent.click(cancelButton);
-        await wait(() => !queryByText(/Meetings for/));
-      });
-      it('returns focus to the originally clicked edit meeting button', function () {
-        strictEqual(
-          document.activeElement as HTMLElement,
-          editAM105MeetingButton
-        );
-      });
+    it('returns focus to the originally clicked edit meeting button', function () {
+      strictEqual(
+        document.activeElement as HTMLElement,
+        editCS50MeetingButton
+      );
     });
   });
 });
