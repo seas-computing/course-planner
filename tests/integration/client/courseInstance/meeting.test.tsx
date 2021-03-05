@@ -7,7 +7,7 @@ import {
   wait,
   waitForElement,
 } from '@testing-library/react';
-import { strictEqual } from 'assert';
+import { notStrictEqual, strictEqual } from 'assert';
 import { CourseAPI } from 'client/api';
 import { SinonStub, stub } from 'sinon';
 import { render } from 'test-utils';
@@ -17,6 +17,7 @@ import {
   es095CourseInstance,
 } from 'testData';
 import CoursesPage from 'client/components/pages/Courses/CoursesPage';
+import { TERM } from 'common/constants';
 
 describe('Meeting Modal Focus Behavior', function () {
   let getStub: SinonStub;
@@ -53,25 +54,32 @@ describe('Meeting Modal Focus Behavior', function () {
     });
   });
   describe('On Close Behavior', function () {
-    let editCS50MeetingButton: HTMLElement;
+    let editFallES095MeetingButton: HTMLElement;
+    let editSpringES095MeetingButton: HTMLElement;
     beforeEach(async function () {
       ({ findByText, queryByText } = render(
         <CoursesPage />,
         dispatchStub
       ));
-      editCS50MeetingButton = await waitForElement(
-        () => document.getElementById(`${cs50CourseInstance.id}-${cs50CourseInstance.termPattern}-edit-meetings-button`)
+      editFallES095MeetingButton = await waitForElement(
+        () => document.getElementById(`${es095CourseInstance.id}-${TERM.FALL}-edit-meetings-button`)
       );
-      fireEvent.click(editCS50MeetingButton);
+      fireEvent.click(editFallES095MeetingButton);
       await findByText(/Meetings for/);
       const cancelButton = await findByText(/Cancel/);
       fireEvent.click(cancelButton);
       await wait(() => !queryByText(/Meetings for/));
+      editSpringES095MeetingButton = document
+        .getElementById(`${es095CourseInstance.id}-${TERM.SPRING}-edit-meetings-button`);
     });
     it('returns focus to the originally clicked edit meeting button', function () {
       strictEqual(
         document.activeElement as HTMLElement,
-        editCS50MeetingButton
+        editFallES095MeetingButton
+      );
+      notStrictEqual(
+        document.activeElement as HTMLElement,
+        editSpringES095MeetingButton
       );
     });
   });
