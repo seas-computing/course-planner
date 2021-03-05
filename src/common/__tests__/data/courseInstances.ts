@@ -53,6 +53,7 @@ export const cs50CourseInstance: CourseInstanceResponseDTO = {
       {
         id: '8d2c8320-dfe5-4d6b-9722-525f94401c7d',
         displayName: 'Malan, David',
+        notes: 'Prefers Sanders Theater',
       },
     ],
     meetings: [
@@ -160,6 +161,7 @@ export const es095CourseInstance: CourseInstanceResponseDTO = {
       {
         id: 'ae3948c7-b254-4cfb-aa9f-5c54c13a1a86',
         displayName: 'Bottino, Paul',
+        notes: '',
       },
     ],
     meetings: [
@@ -187,6 +189,7 @@ export const es095CourseInstance: CourseInstanceResponseDTO = {
       {
         id: 'ae3948c7-b254-4cfb-aa9f-5c54c13a1a86',
         displayName: 'Bottino, Paul',
+        notes: '',
       },
     ],
     meetings: [
@@ -250,10 +253,12 @@ export const ac209aCourseInstance: CourseInstanceResponseDTO = {
       {
         id: 'dcf88d99-1b7f-4863-93d3-d0b0bb43c8e7',
         displayName: 'Rader, Kevin',
+        notes: 'Prefers Cambridge campus',
       },
       {
         id: '78f75a40-b0bd-43af-84d8-0ec68f313dba',
         displayName: 'Protopapas, Pavlos',
+        notes: 'No preference on campus',
       },
     ],
     meetings: [
@@ -329,10 +334,12 @@ export const ac209aCourseInstanceWithoutRooms
       {
         id: 'dcf88d99-1b7f-4863-93d3-d0b0bb43c8e7',
         displayName: 'Rader, Kevin',
+        notes: 'Prefers Cambridge campus',
       },
       {
         id: '78f75a40-b0bd-43af-84d8-0ec68f313dba',
         displayName: 'Protopapas, Pavlos',
+        notes: 'No preference on campus',
       },
     ],
     meetings: [
