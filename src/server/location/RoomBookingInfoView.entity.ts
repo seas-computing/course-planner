@@ -1,7 +1,7 @@
 import {
   ViewEntity, ViewColumn, Connection, SelectQueryBuilder,
 } from 'typeorm';
-import { Room } from '../location/room.entity';
+import { Room } from './room.entity';
 import { Meeting } from '../meeting/meeting.entity';
 import { DAY, TERM } from '../../common/constants';
 import { CourseInstance } from '../courseInstance/courseinstance.entity';
