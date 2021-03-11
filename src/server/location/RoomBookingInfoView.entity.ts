@@ -20,7 +20,7 @@ import { Semester } from '../semester/semester.entity';
   expression: (connection: Connection):
   SelectQueryBuilder<Meeting> => connection.createQueryBuilder()
     .select('r.id', 'roomId')
-    .addSelect('s.academicYear', 'year')
+    .addSelect('s."academicYear"', 'calendarYear')
     .addSelect('s.term', 'term')
     .addSelect('m."startTime"', 'startTime')
     .addSelect('m."endTime"', 'endTime')
@@ -54,9 +54,10 @@ export class RoomBookingView {
 
   /**
    * The year in which this booking is scheduled
+   * Note that academicYear in the semester table is actually calendar year
    */
   @ViewColumn()
-  public year: string;
+  public calendarYear: string;
 
   /**
    * The time at which this booking starts
