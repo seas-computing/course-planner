@@ -30,6 +30,7 @@ import { RedisStore } from 'connect-redis';
 import LOG_LEVEL from '../../common/constants/logLevels';
 import { ScheduleBlockView } from '../courseInstance/ScheduleBlockView.entity';
 import { ScheduleEntryView } from '../courseInstance/ScheduleEntryView.entity';
+import { RoomBookingInfoView } from '../location/RoomBookingInfoView.entity';
 
 /**
  * Parses process.env to create a clean configuration interface
@@ -172,6 +173,7 @@ class ConfigService {
         Building,
         Campus,
         Room,
+        RoomBookingInfoView,
         RoomListingView,
         Meeting,
         MeetingListingView,
