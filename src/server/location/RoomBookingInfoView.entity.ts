@@ -39,7 +39,8 @@ import { Semester } from '../semester/semester.entity';
     .leftJoin(NonClassParent, 'ncp', 'nce."nonClassParentId" = ncp.id')
     .leftJoin(Semester, 's', 'COALESCE(ci."semesterId", nce."semesterId") = s.id'),
 })
-export class RoomBookingView {
+
+export class RoomBookingInfoView {
   /**
    * The id of the room associated with this booking
    */
