@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { RoomBookingInfoView } from './RoomBookingInfoView.entity';
 
 @Injectable()
-export class RoomService {
+export class LocationService {
   @InjectRepository(RoomBookingInfoView)
   private readonly roomBookRepository: Repository<RoomBookingInfoView>;
 

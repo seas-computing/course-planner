@@ -6,7 +6,7 @@ import MeetingRequest from '../../common/dto/meeting/MeetingRequest.dto';
 import { CourseInstance } from '../courseInstance/courseinstance.entity';
 import { NonClassEvent } from '../nonClassEvent/nonclassevent.entity';
 import { Semester } from '../semester/semester.entity';
-import { RoomService } from '../location/room.service';
+import { LocationService } from '../location/location.service';
 
 @Injectable()
 export class MeetingService {
@@ -19,8 +19,8 @@ export class MeetingService {
   @InjectRepository(NonClassEvent)
   private readonly nceRepository: Repository<NonClassEvent>;
 
-  @Inject(RoomService)
-  private readonly roomService: RoomService;
+  @Inject(LocationService)
+  private readonly locationService: LocationService;
 
   /**
    * Create a new meeting associated with courseInstance or nonClassEvent
@@ -40,7 +40,7 @@ export class MeetingService {
       }
       if (semester) {
         const { academicYear: calendarYear, term } = semester;
-        const isAvailable = await this.roomService
+        const isAvailable = await this.locationService
           .checkRoomAvailability({
             ...meetingData,
             calendarYear,
