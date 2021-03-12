@@ -64,11 +64,11 @@ export class MeetingService {
     let semester: Semester;
     if (courseInstanceId) {
       meetingToSave.courseInstance = await this.ciRepository
-        .findOneOrFail(courseInstanceId);
+        .findOneOrFail(courseInstanceId, { relations: ['semester'] });
       ({ semester } = meetingToSave.courseInstance);
     } else {
       meetingToSave.nonClassEvent = await this.nceRepository
-        .findOneOrFail(nonClassEventId);
+        .findOneOrFail(nonClassEventId, { relations: ['semester'] });
       ({ semester } = meetingToSave.nonClassEvent);
     }
 
