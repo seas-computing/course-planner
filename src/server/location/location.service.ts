@@ -36,7 +36,7 @@ export class LocationService {
       meetingTitles: string[]
     }[] = await this.roomBookingRepository
       .createQueryBuilder()
-      .select('roomId')
+      .select('"roomId"')
       .addSelect('array_agg("meetingTitle")', 'meetingTitles')
       .groupBy('"roomId"')
       .addGroupBy('"calendarYear"')
