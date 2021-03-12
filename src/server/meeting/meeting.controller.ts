@@ -30,7 +30,6 @@ export class MeetingController {
   public async createOrUpdateMeeting(
     @Body() data: MeetingRequestDTO
   ): Promise<MeetingResponseDTO> {
-    let response: MeetingResponseDTO;
     let room: RoomListingView;
 
     const saved = await this.meetingService.saveMeeting(data);
@@ -41,7 +40,7 @@ export class MeetingController {
     // a meeting with `room: undefined`
     if (saved.room) {
       room = await this.roomListingRepository
-        .findOne(response.room.id);
+        .findOne(saved.room.id);
     }
     return {
       ...saved,
