@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FunctionComponent, ReactElement } from 'react';
 import {
   cs50CourseInstance, ac209aCourseInstance, ac209aCourseInstanceWithoutRooms,
 } from 'testData';
@@ -9,11 +9,13 @@ import {
 import { render } from 'test-utils';
 import { dayEnumToString } from 'common/constants/day';
 import { offeredEnumToString } from 'common/constants/offered';
+import { SinonStub, stub } from 'sinon';
 import {
   retrieveValue, tableFields, formatInstructors, formatMeetings,
 } from '../tableFields';
 
 describe('tableFields', function () {
+  let dispatchMessage: SinonStub;
   describe('helper functions', function () {
     describe('retrieveValue', function () {
       it('should return a function to get course-level fields', function () {
@@ -115,15 +117,21 @@ describe('tableFields', function () {
       });
     });
     describe('formatMeetings', function () {
+      beforeEach(function () {
+        dispatchMessage = stub();
+      });
       context('When semester has data', function () {
         context('With times and rooms', function () {
           it('Should return a component that renders days, times and rooms as a list', function () {
             const fallMeetings = formatMeetings(TERM.FALL);
-            const { getAllByRole } = render(
+            const TestComponent: FunctionComponent = (): ReactElement => (
               <div>
                 {fallMeetings(ac209aCourseInstance)}
-              </div>,
-              (): void => {}
+              </div>
+            );
+            const { getAllByRole } = render(
+              <TestComponent />,
+              dispatchMessage
             );
             const entries = getAllByRole('listitem')
               .map(({ textContent }): string => textContent);
@@ -138,11 +146,14 @@ describe('tableFields', function () {
         context('With times but not rooms', function () {
           it('Should return a component that renders just days and times as a list', function () {
             const fallMeetings = formatMeetings(TERM.FALL);
-            const { getAllByRole } = render(
+            const TestComponent: FunctionComponent = (): ReactElement => (
               <div>
                 {fallMeetings(ac209aCourseInstanceWithoutRooms)}
-              </div>,
-              (): void => {}
+              </div>
+            );
+            const { getAllByRole } = render(
+              <TestComponent />,
+              dispatchMessage
             );
             const entries = getAllByRole('listitem')
               .map(({ textContent }): string => textContent);
@@ -156,7 +167,16 @@ describe('tableFields', function () {
       context('When semester does not have data', function () {
         it('Should return null', function () {
           const springTimes = formatMeetings(TERM.SPRING);
-          strictEqual(springTimes(ac209aCourseInstance), null);
+          const TestComponent: FunctionComponent = (): ReactElement => (
+            <div>
+              {springTimes(ac209aCourseInstance)}
+            </div>
+          );
+          render(
+            <TestComponent />,
+            dispatchMessage
+          );
+          strictEqual(document.body.textContent, '');
         });
       });
     });
