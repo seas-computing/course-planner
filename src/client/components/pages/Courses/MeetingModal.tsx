@@ -2,7 +2,6 @@ import { CoursesPageCourseInstance } from 'client/context';
 import { TermKey } from 'common/constants/term';
 import {
   Button,
-  fromTheme,
   Modal,
   ModalBody,
   ModalFooter,
@@ -37,11 +36,11 @@ interface MeetingModalProps {
  * Utility component to style content within meeting modal body
  */
 const MeetingModalBodyGrid = styled.div`
-  height: 75vh;
-  width: 75vw;
+  max-height: 75vh;
+  max-width: 75vw;
   display: flex;
   flex-direction: row;
-  column-gap: ${fromTheme('ws', 'xsmall')};
+  justify-content: space-between;
 `;
 
 /**
@@ -50,7 +49,7 @@ const MeetingModalBodyGrid = styled.div`
 const MeetingScheduler = styled.div`
  display: flex;
  flex-direction: column;
- flex: 1;
+ flex-basis: 48%;
 `;
 
 /**
@@ -75,7 +74,7 @@ const MeetingSchedulerBody = styled.div`
 const RoomAvailability = styled.div`
  display: flex;
  flex-direction: column;
- flex: 1;
+ flex-basis: 48%;
 `;
 
 /**
