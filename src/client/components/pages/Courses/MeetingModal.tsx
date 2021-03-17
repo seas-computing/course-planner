@@ -2,7 +2,6 @@ import { CoursesPageCourseInstance } from 'client/context';
 import { TermKey } from 'common/constants/term';
 import {
   Button,
-  fromTheme,
   Modal,
   ModalBody,
   ModalFooter,
@@ -37,37 +36,61 @@ interface MeetingModalProps {
  * Utility component to style content within meeting modal body
  */
 const MeetingModalBodyGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-  grid-template-areas:
-  "meetingScheduler roomAvailability"
-  "facultyNotes roomAvailability";
-  column-gap: ${fromTheme('ws', 'xsmall')};
+  max-height: 75vh;
+  max-width: 75vw;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 `;
 
 /**
- * Placeholder for the meeting scheduler form of the meeting modal for
- * display purposes
+ * Contains the meeting scheduler section of the meeting modal
  */
 const MeetingScheduler = styled.div`
-  grid-area: meetingScheduler;
+ display: flex;
+ flex-direction: column;
+ flex-basis: 48%;
 `;
 
 /**
- * Placeholder for the faculty notes section of the meeting modal for
- * display purposes
+ * The header of the meeting scheduler section of the Meeting Modal
  */
-const FacultyNotes = styled.div`
-  grid-area: facultyNotes;
+const MeetingSchedulerHeader = styled.h3`
+ flex: 0;
+`;
+
+/**
+ * Contains the MeetingScheduler and RoomAvailability sections of the
+ * Meeting Modal
+ */
+const MeetingSchedulerBody = styled.div`
+ flex: 1;
+ overflow: auto;
+`;
+
+/**
+ * Contains the room availability section of the meeting modal
+ */
+const RoomAvailability = styled.div`
+ display: flex;
+ flex-direction: column;
+ flex-basis: 48%;
+`;
+
+/**
+ * The header of the room availability section of the Meeting Modal
+ */
+const RoomAvailabilityHeader = styled.h3`
+ flex: 0;
 `;
 
 /**
  * Placeholder for the room availability table of the meeting modal for
  * display purposes
  */
-const RoomAvailability = styled.div`
-  grid-area: roomAvailability;
+const RoomAvailabilityBody = styled.div`
+  flex: 1;
+  overflow: auto;
 `;
 
 const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
@@ -111,9 +134,14 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
       </ModalHeader>
       <ModalBody>
         <MeetingModalBodyGrid>
-          <MeetingScheduler>{`Meeting times for ${course.catalogNumber}`}</MeetingScheduler>
-          <FacultyNotes>Faculty Notes</FacultyNotes>
-          <RoomAvailability>Room Availability</RoomAvailability>
+          <MeetingScheduler>
+            <MeetingSchedulerHeader>{`Meeting times for ${course.catalogNumber}`}</MeetingSchedulerHeader>
+            <MeetingSchedulerBody />
+          </MeetingScheduler>
+          <RoomAvailability>
+            <RoomAvailabilityHeader>Room Availability</RoomAvailabilityHeader>
+            <RoomAvailabilityBody />
+          </RoomAvailability>
         </MeetingModalBodyGrid>
       </ModalBody>
       <ModalFooter>
