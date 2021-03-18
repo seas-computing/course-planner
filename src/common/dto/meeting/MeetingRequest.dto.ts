@@ -3,9 +3,8 @@ import { ApiModelProperty } from '@nestjs/swagger';
 import {
   IsUUID, IsNotEmpty, IsEnum, IsOptional, Matches,
 } from 'class-validator';
-import { IsMutuallyExclusiveWith, IsOccurringBefore, IsOccurringAfter } from '../utils';
+import { pgTimeTZ, IsOccurringBefore, IsOccurringAfter } from '../utils';
 
-const timeStampFormat = /[0-2][0-9]:[0-5][0-9]:[0-5][0-9]-[0-2][0-9]/;
 /**
  * Represents a request sent to the server to create or edit a meeting
  * associated with a course instance or non class event
@@ -43,7 +42,7 @@ export default abstract class MeetingRequest {
     example: '12:00:00-05',
   })
   @IsNotEmpty()
-  @Matches(timeStampFormat)
+  @Matches(pgTimeTZ)
   @IsOccurringBefore('endTime')
   public startTime: string;
 
@@ -55,7 +54,7 @@ export default abstract class MeetingRequest {
     example: '13:30:00-05',
   })
   @IsNotEmpty()
-  @Matches(timeStampFormat)
+  @Matches(pgTimeTZ)
   @IsOccurringAfter('startTime')
   public endTime: string;
 
