@@ -47,7 +47,7 @@
     "styled-components": "^5.1.1",
     "swagger-ui-express": "^4.1.2",
     "tsconfig-paths": "^3.8.0",
-    "typeorm": "^0.2.25",
+    "typeorm": "^0.2.31",
     "winston": "^3.3.3"
   },
   "scripts": {
