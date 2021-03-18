@@ -59,30 +59,6 @@ export abstract class MeetingRequestDTO {
   public endTime: string;
 
   /**
-   * The ID of a [[CourseInstance]] to which the meeting belongs.
-   * Either this or a [[NonClassEvent]] id must be provided.
-   */
-  @ApiModelProperty({
-    type: 'string',
-    example: 'ec141394-4011-485d-bba5-173b9fdef04d',
-  })
-  @IsUUID()
-  @IsMutuallyExclusiveWith(['nonClassEventId'])
-  public courseInstanceId?: string;
-
-  /**
-   * The ID of a [[NonClassEvent]] to which the meeting belongs.
-   * Either this or a [[CourseInstance]] id must be provided.
-   */
-  @ApiModelProperty({
-    type: 'string',
-    example: '56a825b0-8860-4434-b843-c530a86138a1',
-  })
-  @IsUUID()
-  @IsMutuallyExclusiveWith(['courseInstanceId'])
-  public nonClassEventId?: string;
-
-  /**
    * The ID of the room where the meeting will be held, which can be undefined
    * if one hasn't been chosen yet.
    */
