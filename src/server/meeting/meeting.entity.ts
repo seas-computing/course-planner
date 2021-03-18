@@ -44,7 +44,9 @@ export class Meeting extends BaseEntity {
    */
   @ManyToOne(
     (): ObjectType<NonClassEvent> => NonClassEvent,
-    ({ meetings }): Meeting[] => meetings
+    ({ meetings }): Meeting[] => meetings,
+    { orphanedRowAction: 'delete' }
+
   )
   public nonClassEvent: NonClassEvent;
 
@@ -53,7 +55,8 @@ export class Meeting extends BaseEntity {
    */
   @ManyToOne(
     (): ObjectType<CourseInstance> => CourseInstance,
-    ({ meetings }): Meeting[] => meetings
+    ({ meetings }): Meeting[] => meetings,
+    { orphanedRowAction: 'delete' }
   )
   public courseInstance: CourseInstance;
 
