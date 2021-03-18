@@ -29,6 +29,7 @@ export class LocationService {
       day,
       startTime,
       endTime,
+      parentId,
     } = details;
 
     const bookings: {
@@ -43,6 +44,7 @@ export class LocationService {
       .addGroupBy('term')
       .addGroupBy('day')
       .where('"roomId"=:roomId', { roomId })
+      .andWhere('"parentId"!=:parentId', { parentId })
       .andWhere('term=:term', { term })
       .andWhere('"calendarYear"=:calendarYear', { calendarYear })
       .andWhere('"day"=:day', { day })
