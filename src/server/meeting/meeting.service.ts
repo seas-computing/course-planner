@@ -77,21 +77,25 @@ export class MeetingService {
     // is a room Id in the request, we should make sure it's available before
     // assigning the room to the meeting
     if (roomId) {
-      const { academicYear: calendarYear, term } = semester;
-      const { day, startTime, endTime } = meeting;
-      const isAvailable = await this.locationService
-        .checkRoomAvailability({
-          roomId,
+      const bookings = await this.locationService
+        .getRoomAvailability({
+          ...meetingData,
+          parentId,
           calendarYear,
           term,
-          day,
-          startTime,
-          endTime,
         });
-      if (isAvailable) {
-        meetingToSave.room = await this.roomRepository.findOneOrFail(roomId);
+      // - If nothing is returned from the query, there are no bookings and we
+      //   can book it.
+      // - If there is a room returned, but the list of meetingTitles is empty,
+      //   then there are no overlapping bookings and we can book it.
+      // - If there is a room entry and there are any entries in the
+      //   meetingTitles list, those meetings conflict with the requested meeting
+      //   and we need to return false
+      if (bookings.length === 0 || bookings[0].meetingTitles.length === 0) {
+        meetingToSave.room = await this.roomRepository.findOne(roomId);
       } else {
-        throw new BadRequestException('This room is not available at this time');
+        const { day, startTime, endTime } = meetingData;
+        throw new BadRequestException(`This room is not available on ${day} between ${startTime} and ${endTime}. It is already booked for ${bookings[0].meetingTitles.join(', ')}`);
       }
     }
 
