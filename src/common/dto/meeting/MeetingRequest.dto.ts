@@ -10,7 +10,7 @@ import { pgTimeTZ, IsOccurringBefore, IsOccurringAfter } from '../utils';
  * associated with a course instance or non class event
  */
 
-export default abstract class MeetingRequest {
+export abstract class MeetingRequestDTO {
   /**
    * If this is an existing meeting being edited, this will be the UUID in our
    * database.
