@@ -3,13 +3,11 @@ import {
   Put,
   Inject,
   Body,
+  Param,
 } from '@nestjs/common';
-import MeetingRequestDTO from 'common/dto/meeting/MeetingRequest.dto';
-import MeetingResponseDTO from 'common/dto/meeting/MeetingResponse.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { MeetingRequestDTO } from 'common/dto/meeting/MeetingRequest.dto';
+import { MeetingResponseDTO } from 'common/dto/meeting/MeetingResponse.dto';
 import { MeetingService } from './meeting.service';
-import { RoomListingView } from '../location/RoomListingView.entity';
 
 /**
  * API routes for managing meetings
@@ -20,31 +18,21 @@ export class MeetingController {
   @Inject(MeetingService)
   private readonly meetingService: MeetingService;
 
-  @InjectRepository(RoomListingView)
-  private readonly roomListingRepository: Repository<RoomListingView>;
-
   /**
-   * Provides a single route for creating and updating meetings
+   * Provides a single route for creating and updating a list of meetings for
+   * the parent (either a nonClassEvent or a courseIntance) whose id is given
+   * in the url parameter. Any meetings that have been removed from the
+   * parent's meetings list will be deleted
    */
-  @Put('/')
+  @Put('/:parentId')
   public async createOrUpdateMeeting(
-    @Body() data: MeetingRequestDTO
-  ): Promise<MeetingResponseDTO> {
-    let room: RoomListingView;
-
-    const saved = await this.meetingService.saveMeeting(data);
-
-    // Our [[MeetingResponseDTO]] expects a richer room object that includes
-    // the [[Campus]] and [[Building]]/[[Room]] concatenated name. It is legal
-    // to create a [[Meeting]] without an associated room, so the fallback returns
-    // a meeting with `room: undefined`
-    if (saved.room) {
-      room = await this.roomListingRepository
-        .findOne(saved.room.id);
-    }
-    return {
-      ...saved,
-      room,
-    };
+    @Body() meetingList: MeetingRequestDTO[],
+      @Param('parentId') parentId: string
+  ): Promise<MeetingResponseDTO[]> {
+    return this.meetingService
+      .saveMeetings(
+        parentId,
+        meetingList
+      );
   }
 }
