@@ -1,13 +1,15 @@
-import { Injectable, BadRequestException, Inject } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Injectable, Inject, BadRequestException } from '@nestjs/common';
+import { InjectRepository, getConnectionToken } from '@nestjs/typeorm';
+import { Repository, Connection } from 'typeorm';
 import { Meeting } from './meeting.entity';
-import MeetingRequest from '../../common/dto/meeting/MeetingRequest.dto';
+import { MeetingRequestDTO } from '../../common/dto/meeting/MeetingRequest.dto';
 import { CourseInstance } from '../courseInstance/courseinstance.entity';
 import { NonClassEvent } from '../nonClassEvent/nonclassevent.entity';
-import { Semester } from '../semester/semester.entity';
 import { LocationService } from '../location/location.service';
 import { Room } from '../location/room.entity';
+import ValidationException from '../../common/errors/ValidationException';
+import { RoomListingView } from '../location/RoomListingView.entity';
+import { MeetingResponseDTO } from '../../common/dto/meeting/MeetingResponse.dto';
 
 /**
  * A service for managing the individual meetings associated with course
@@ -19,57 +21,104 @@ export class MeetingService {
   @InjectRepository(Meeting)
   private readonly meetingRepository: Repository<Meeting>;
 
-  @InjectRepository(CourseInstance)
-  private readonly ciRepository: Repository<CourseInstance>;
-
-  @InjectRepository(NonClassEvent)
-  private readonly nceRepository: Repository<NonClassEvent>;
-
   @InjectRepository(Room)
   private readonly roomRepository: Repository<Room>;
 
   @Inject(LocationService)
   private readonly locationService: LocationService;
 
+  @InjectRepository(RoomListingView)
+  private readonly roomListingRepository: Repository<RoomListingView>;
+
+  @InjectRepository(CourseInstance)
+  private readonly courseInstanceRepository: Repository<CourseInstance>;
+
+  @InjectRepository(NonClassEvent)
+  private readonly nonClassEventRepository: Repository<CourseInstance>;
+
+  @Inject(getConnectionToken())
+  private readonly connection: Connection;
+
+  /**
+   * A generic save method that can update either a course instance or
+   * non-class event with a new list of meetings
+   *
+   */
+  public async saveMeetings(
+    parentId: string,
+    meetingList: MeetingRequestDTO[]
+  ): Promise<MeetingResponseDTO[]> {
+    // Need to retrieve the parent instance from the database. Since the parent of
+    // a meeting can be either a CourseInstance or a NonClassEvent, we're using
+    // the `findOneOrFail` repository methods with try ... catch blocks to get
+    // whichever type has an entity with the passed Id. Using exception
+    // handling for control flow is not ideal, but this seems to be the most
+    // efficient way to handle this case.
+    let parent: CourseInstance | NonClassEvent;
+    try {
+      parent = await this.courseInstanceRepository
+        .findOneOrFail(parentId, { relations: ['semester'] });
+    } catch (_) {
+      try {
+        parent = await this.nonClassEventRepository
+          .findOneOrFail(parentId, { relations: ['semester'] });
+      } catch (err) {
+        throw new BadRequestException(
+          `Could not find a course instance or non-class event with id ${parentId}`
+        );
+      }
+    }
+
+    parent.meetings = await Promise.all(
+      meetingList.map(
+        async (meeting) => this.validateAndCreate(meeting, parent)
+      )
+    );
+
+    // The manager.save method allows for saving entities without needing to
+    // specify the repository.
+    const savedParent = await this.connection.manager.save(parent);
+
+    // Our [[MeetingResponseDTO]] expects a richer room object that includes
+    // the [[Campus]] and [[Building]]/[[Room]] concatenated name. It is legal
+    // to create a [[Meeting]] without an associated room, so the fallback returns
+    // a meeting with `room: undefined`
+    let room: RoomListingView;
+    return Promise.all(savedParent.meetings.map(async (saved) => {
+      if (saved.room) {
+        const { id: roomId } = saved.room;
+        room = await this.roomListingRepository.findOne({ id: roomId });
+      }
+      return { ...saved, room };
+    }));
+  }
+
   /**
    * Create a new meeting or update an existing meeting associated with
    * courseInstance or nonClassEvent.
    */
-  public async saveMeeting(meetingData: MeetingRequest): Promise<Meeting> {
+  public async validateAndCreate(
+    meetingData: MeetingRequestDTO,
+    parentData: CourseInstance | NonClassEvent
+  ): Promise<Meeting> {
     const {
-      id,
+      id: meetingId,
       roomId,
-      courseInstanceId,
-      nonClassEventId,
-      ...meeting
     } = meetingData;
 
-    // If the request has a id, it's an update to an existing meeting and we
-    // need to get that entity from the database. If not, it's a new meeting
-    // and we need to create a new entity. In either case, we can assign the
-    // non-relational fields from our request to the entity
-    let meetingToSave: Meeting;
-    if (id) {
-      meetingToSave = await this.meetingRepository
-        .findOneOrFail(id);
-    } else {
-      meetingToSave = new Meeting();
-    }
-    Object.assign(meetingToSave, meeting);
+    const {
+      id: parentId,
+      semester: {
+        academicYear: calendarYear,
+        term,
+      },
+    } = parentData;
 
-    // The semester relationship exists on the courseInstance or the
-    // nonClassEvent, and our request must have one of those fields defined.
-    // Depending on which type of id we have, we'll pull the related entity
-    // from the database and grab a reference to the semester
-    let semester: Semester;
-    if (courseInstanceId) {
-      meetingToSave.courseInstance = await this.ciRepository
-        .findOneOrFail(courseInstanceId, { relations: ['semester'] });
-      ({ semester } = meetingToSave.courseInstance);
+    let meetingToSave: Meeting;
+    if (meetingId) {
+      meetingToSave = await this.meetingRepository.preload(meetingData);
     } else {
-      meetingToSave.nonClassEvent = await this.nceRepository
-        .findOneOrFail(nonClassEventId, { relations: ['semester'] });
-      ({ semester } = meetingToSave.nonClassEvent);
+      meetingToSave = this.meetingRepository.create(meetingData);
     }
 
     // It is permissible to create a meeting without a room, so we can ignore
@@ -99,6 +148,6 @@ export class MeetingService {
       }
     }
 
-    return this.meetingRepository.save(meetingToSave);
+    return meetingToSave;
   }
 }
