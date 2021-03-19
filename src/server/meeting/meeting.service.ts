@@ -1,4 +1,6 @@
-import { Injectable, Inject, BadRequestException } from '@nestjs/common';
+import {
+  Injectable, Inject, BadRequestException, NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository, getConnectionToken } from '@nestjs/typeorm';
 import { Repository, Connection } from 'typeorm';
 import { Meeting } from './meeting.entity';
@@ -7,7 +9,6 @@ import { CourseInstance } from '../courseInstance/courseinstance.entity';
 import { NonClassEvent } from '../nonClassEvent/nonclassevent.entity';
 import { LocationService } from '../location/location.service';
 import { Room } from '../location/room.entity';
-import ValidationException from '../../common/errors/ValidationException';
 import { RoomListingView } from '../location/RoomListingView.entity';
 import { MeetingResponseDTO } from '../../common/dto/meeting/MeetingResponse.dto';
 
@@ -63,7 +64,7 @@ export class MeetingService {
         parent = await this.nonClassEventRepository
           .findOneOrFail(parentId, { relations: ['semester'] });
       } catch (err) {
-        throw new BadRequestException(
+        throw new NotFoundException(
           `Could not find a course instance or non-class event with id ${parentId}`
         );
       }
