@@ -16,6 +16,7 @@ import React, {
   useRef,
 } from 'react';
 import styled from 'styled-components';
+import { instructorDisplayNameToFirstLast } from '../utils/instructorDisplayNameToFirstLast';
 
 interface MeetingModalProps {
   /**
@@ -136,7 +137,19 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
         <MeetingModalBodyGrid>
           <MeetingScheduler>
             <MeetingSchedulerHeader>{`Meeting times for ${course.catalogNumber}`}</MeetingSchedulerHeader>
-            <MeetingSchedulerBody />
+            <MeetingSchedulerBody>
+              <h3>
+                Faculty Notes
+              </h3>
+              {instance.instructors.map((instructor) => (
+                <div key={instructor.displayName}>
+                  <h4>
+                    {instructorDisplayNameToFirstLast(instructor.displayName)}
+                  </h4>
+                  <p>{instructor.notes === '' ? 'No Notes' : instructor.notes}</p>
+                </div>
+              ))}
+            </MeetingSchedulerBody>
           </MeetingScheduler>
           <RoomAvailability>
             <RoomAvailabilityHeader>Room Availability</RoomAvailabilityHeader>
