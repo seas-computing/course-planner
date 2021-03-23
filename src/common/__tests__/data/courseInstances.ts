@@ -55,6 +55,11 @@ export const cs50CourseInstance: CourseInstanceResponseDTO = {
         displayName: 'Malan, David',
         notes: 'Prefers Sanders Theater',
       },
+      {
+        id: '4d952d8a-21a1-425b-876e-321ce708dea8',
+        displayName: 'Waldo, James',
+        notes: '',
+      },
     ],
     meetings: [
       {
