@@ -135,10 +135,9 @@ describe('Course Instance Service', function () {
       const dbInstances = await instanceRepository.find({
         relations: ['facultyCourseInstances', 'facultyCourseInstances.faculty'],
       });
-      notStrictEqual(result.length, 0);
+      notStrictEqual(result.length, 0, 'There are no course instances.');
       result.forEach(({ spring, fall }) => {
         [spring, fall].forEach(({ id, instructors, offered }) => {
-          strictEqual(Array.isArray(instructors), true);
           if (offered === OFFERED.Y) {
             const { facultyCourseInstances } = dbInstances.find(
               ({ id: dbID }) => dbID === id
