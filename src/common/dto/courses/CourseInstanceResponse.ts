@@ -33,10 +33,12 @@ abstract class Instance {
       {
         id: '5c8e015f-eae6-4586-9eb0-fc7d243403bf',
         displayName: 'Rogers, Chris',
+        notes: 'Prefers Cambridge campus',
       },
       {
         id: 'effb8b1f-0525-42d0-bcbe-29206121d8ac',
         displayName: 'Waldo, James',
+        notes: 'Prefers Allston campus',
       },
     ],
     default: [],
@@ -44,6 +46,7 @@ abstract class Instance {
   public instructors: {
     id: string;
     displayName: string;
+    notes?: string;
   }[] = [];
 
   @ApiModelProperty({

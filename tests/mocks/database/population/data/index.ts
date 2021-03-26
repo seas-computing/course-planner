@@ -52,6 +52,7 @@ export interface FacultyData {
   email: string;
   HUID: string;
   jointWith: string | null;
+  notes: string | null;
   category: FACULTY_TYPE;
   area: string;
 }

@@ -131,6 +131,30 @@ describe('Course Instance Service', function () {
         });
       });
     });
+    it('Should list the faculty notes if any for each instance', async function () {
+      const dbInstances = await instanceRepository.find({
+        relations: ['facultyCourseInstances', 'facultyCourseInstances.faculty'],
+      });
+      notStrictEqual(result.length, 0, 'There are no course instances.');
+      result.forEach(({ spring, fall }) => {
+        [spring, fall].forEach(({ id, instructors, offered }) => {
+          if (offered === OFFERED.Y) {
+            const { facultyCourseInstances } = dbInstances.find(
+              ({ id: dbID }) => dbID === id
+            );
+            facultyCourseInstances.forEach(({ faculty }) => {
+              const resultIndex = instructors.findIndex(
+                ({ id: facultyID }) => facultyID === faculty.id
+              );
+              strictEqual(
+                instructors[resultIndex].notes,
+                faculty.notes
+              );
+            });
+          }
+        });
+      });
+    });
     describe('Meetings', function () {
       let dbMeetings: Meeting[];
       beforeEach(async function () {

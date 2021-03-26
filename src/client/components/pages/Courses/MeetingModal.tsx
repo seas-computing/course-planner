@@ -16,6 +16,15 @@ import React, {
   useRef,
 } from 'react';
 import styled from 'styled-components';
+import { instructorDisplayNameToFirstLast } from '../utils/instructorDisplayNameToFirstLast';
+
+/**
+ * A component that applies styling for text that indicates the faculty has
+ * no associated notes
+ */
+const StyledFacultyNote = styled.span`
+  font-style: italic;
+`;
 
 interface MeetingModalProps {
   /**
@@ -136,7 +145,27 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
         <MeetingModalBodyGrid>
           <MeetingScheduler>
             <MeetingSchedulerHeader>{`Meeting times for ${course.catalogNumber}`}</MeetingSchedulerHeader>
-            <MeetingSchedulerBody />
+            <MeetingSchedulerBody>
+              <h3>
+                Faculty Notes
+              </h3>
+              <div>
+                {instance.instructors.map((instructor) => (
+                  <div key={instructor.displayName}>
+                    <h4>
+                      {instructorDisplayNameToFirstLast(instructor.displayName)}
+                    </h4>
+                    <p>
+                      {
+                        instructor.notes === ''
+                          ? <StyledFacultyNote>No Notes</StyledFacultyNote>
+                          : instructor.notes
+                      }
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </MeetingSchedulerBody>
           </MeetingScheduler>
           <RoomAvailability>
             <RoomAvailabilityHeader>Room Availability</RoomAvailabilityHeader>
