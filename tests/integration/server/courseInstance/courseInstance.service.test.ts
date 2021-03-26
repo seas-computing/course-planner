@@ -138,7 +138,6 @@ describe('Course Instance Service', function () {
       notStrictEqual(result.length, 0, 'There are no course instances.');
       result.forEach(({ spring, fall }) => {
         [spring, fall].forEach(({ id, instructors, offered }) => {
-          strictEqual(Array.isArray(instructors), true, 'Semesters.instructors is not an array.');
           if (offered === OFFERED.Y) {
             const { facultyCourseInstances } = dbInstances.find(
               ({ id: dbID }) => dbID === id
