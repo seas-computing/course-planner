@@ -33,18 +33,6 @@ export class NonClassParent extends BaseEntity {
   public contact: string;
 
   /**
-   * The [[Course]] associated with this collection of non class events.
-   *
-   * ---
-   * Many [[NonClassParent]]s have one [[Course]]
-   */
-  @ManyToOne(
-    (): ObjectType<Course> => Course,
-    ({ nonClassParents }): NonClassParent[] => nonClassParents
-  )
-  public course: Course;
-
-  /**
    * Collection of scheduled events. These are typically events that occur
    * outside the normal teaching of classes (for example, office hours or
    * seminars)
