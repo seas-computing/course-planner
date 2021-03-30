@@ -1,8 +1,7 @@
 import {
-  Entity, Column, ObjectType, ManyToOne, OneToMany,
+  Entity, Column, ObjectType, OneToMany,
 } from 'typeorm';
 import { BaseEntity } from '../base/base.entity';
-import { Course } from '../course/course.entity';
 import { NonClassEvent } from '../nonClassEvent/nonclassevent.entity';
 
 /**
