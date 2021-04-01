@@ -1,8 +1,7 @@
 import {
-  Entity, Column, ObjectType, ManyToOne, OneToMany,
+  Entity, Column, ObjectType, OneToMany,
 } from 'typeorm';
 import { BaseEntity } from '../base/base.entity';
-import { Course } from '../course/course.entity';
 import { NonClassEvent } from '../nonClassEvent/nonclassevent.entity';
 
 /**
@@ -31,18 +30,6 @@ export class NonClassParent extends BaseEntity {
     comment: 'The faculty member contact for a given event. This is recorded here, as this information does not regularly change',
   })
   public contact: string;
-
-  /**
-   * The [[Course]] associated with this collection of non class events.
-   *
-   * ---
-   * Many [[NonClassParent]]s have one [[Course]]
-   */
-  @ManyToOne(
-    (): ObjectType<Course> => Course,
-    ({ nonClassParents }): NonClassParent[] => nonClassParents
-  )
-  public course: Course;
 
   /**
    * Collection of scheduled events. These are typically events that occur

@@ -29,7 +29,7 @@ import { Semester } from '../semester/semester.entity';
                WHEN m."courseInstanceId" IS NOT NULL
                THEN CONCAT_WS(' ', c.prefix, c.number)
                WHEN m."nonClassEventId" IS NOT NULL
-               THEN nce.title
+               THEN ncp.title
                END`, 'meetingTitle')
     .from(Meeting, 'm')
     .leftJoin(Room, 'r', 'r.id = m."roomId"')

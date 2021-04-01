@@ -10,7 +10,6 @@ import { TERM_PATTERN, IS_SEAS } from 'common/constants';
 import { BaseEntity } from '../base/base.entity';
 import { CourseInstance } from '../courseInstance/courseinstance.entity';
 import { Area } from '../area/area.entity';
-import { NonClassParent } from '../nonClassParent/nonclassparent.entity';
 
 /**
  * The parent of many [[CourseInstance]] entities. The course entity is responsibile
@@ -139,20 +138,6 @@ export class Course extends BaseEntity {
     { cascade: ['insert'] }
   )
   public instances: CourseInstance[];
-
-  /**
-   * [[NonClassParent]]s are parent entities to [[NonClassevent]] and are
-   * designed to be analogous to Courses, except that [[NonClassParent]]s can be
-   * scheduled outside of and independently from a [[Course]].
-   *
-   * ---
-   * Many [[NonClassParent]]s have one [[Course]]
-   */
-  @OneToMany(
-    (): ObjectType<NonClassParent> => NonClassParent,
-    ({ course }): Course => course
-  )
-  public nonClassParents: NonClassParent[];
 
   /**
   * The subject [[Area]] this course belongs to
