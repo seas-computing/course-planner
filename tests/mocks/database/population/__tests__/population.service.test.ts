@@ -54,31 +54,32 @@ describe('Population Service', function () {
     // other suites will be using the back end.
     return db.stop();
   });
-
+  beforeEach(async function () {
+    testModule = await Test.createTestingModule({
+      imports: [
+        ConfigModule,
+        TypeOrmModule.forRootAsync({
+          imports: [ConfigModule],
+          useFactory: (
+            config: ConfigService
+          ): TypeOrmModuleOptions => ({
+            ...config.dbOptions,
+            synchronize: true,
+            autoLoadEntities: true,
+            retryAttempts: 10,
+            retryDelay: 10000,
+          }),
+          inject: [ConfigService],
+        }),
+        PopulationModule,
+      ],
+    })
+      .overrideProvider(ConfigService)
+      .useValue(new ConfigService(db.connectionEnv))
+      .compile();
+  });
   describe('Automatic population', function () {
     beforeEach(async function () {
-      testModule = await Test.createTestingModule({
-        imports: [
-          ConfigModule,
-          TypeOrmModule.forRootAsync({
-            imports: [ConfigModule],
-            useFactory: (
-              config: ConfigService
-            ): TypeOrmModuleOptions => ({
-              ...config.dbOptions,
-              synchronize: true,
-              autoLoadEntities: true,
-              retryAttempts: 10,
-              retryDelay: 10000,
-            }),
-            inject: [ConfigService],
-          }),
-          PopulationModule,
-        ],
-      })
-        .overrideProvider(ConfigService)
-        .useValue(new ConfigService(db.connectionEnv))
-        .compile();
       // calling init triggers the onApplicationBootstrap hook
       await testModule.createNestApplication().init();
     });
@@ -285,28 +286,6 @@ describe('Population Service', function () {
   describe('Automatic depopulation', function () {
     let typeormConnection: Connection;
     beforeEach(async function () {
-      testModule = await Test.createTestingModule({
-        imports: [
-          ConfigModule,
-          TypeOrmModule.forRootAsync({
-            imports: [ConfigModule],
-            useFactory: (
-              config: ConfigService
-            ): TypeOrmModuleOptions => ({
-              ...config.dbOptions,
-              synchronize: true,
-              autoLoadEntities: true,
-              retryAttempts: 10,
-              retryDelay: 10000,
-            }),
-            inject: [ConfigService],
-          }),
-          PopulationModule,
-        ],
-      })
-        .overrideProvider(ConfigService)
-        .useValue(new ConfigService(db.connectionEnv))
-        .compile();
       // calling init triggers the onApplicationBootstrap hook
       await testModule.createNestApplication().init();
       // close the module, triggering beforeApplicationShutdown hook
