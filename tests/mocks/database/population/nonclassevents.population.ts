@@ -86,6 +86,10 @@ export class NonClassEventPopulationService
   }
 
   public async drop(): Promise<void> {
-    await this.eventRepository.query('TRUNCATE TABLE nonClassEvents, nonClassParents CASCADE;');
+    // Using code found here: https://github.com/typeorm/typeorm/issues/5934#issuecomment-618334924
+    // to get the table name dynamically, since the spacing/casing is a little weird
+    const nonClassEvent = this.eventRepository.metadata.tableName;
+    const nonClassParent = this.parentRepository.metadata.tableName;
+    await this.eventRepository.query(`TRUNCATE TABLE "${nonClassEvent}", "${nonClassParent}" CASCADE;`);
   }
 }
