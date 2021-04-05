@@ -41,7 +41,8 @@ export class NonClassParent extends BaseEntity {
    */
   @OneToMany(
     (): ObjectType<NonClassEvent> => NonClassEvent,
-    ({ nonClassParent }): NonClassParent => nonClassParent
+    ({ nonClassParent }): NonClassParent => nonClassParent,
+    { cascade: ['insert'] }
   )
   public nonClassEvents: NonClassEvent[];
 }

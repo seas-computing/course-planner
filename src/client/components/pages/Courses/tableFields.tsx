@@ -1,4 +1,9 @@
-import React, { ReactElement, ReactNode, ReactText } from 'react';
+import React, {
+  ReactElement,
+  ReactNode,
+  ReactText,
+  useContext,
+} from 'react';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import {
   BorderlessButton,
@@ -23,6 +28,7 @@ import { dayEnumToString } from 'common/constants/day';
 import { offeredEnumToString } from 'common/constants/offered';
 import { TermKey } from 'common/constants/term';
 import styled from 'styled-components';
+import { CoursesPageContext } from '../../../context/CoursesPageContext';
 
 /**
  * Simple helper function that takes a property name and optionally a semester
@@ -130,6 +136,7 @@ export const formatMeetings = (
   ) => ReactNode => (
   course: CourseInstanceResponseDTO
 ): ReactNode => {
+  const coursesPageContext = useContext(CoursesPageContext);
   const semKey = sem.toLowerCase() as TermKey;
   const { meetings } = course[semKey];
   return meetings[0].day === null
@@ -165,8 +172,18 @@ export const formatMeetings = (
           ))}
         </TableCellList>
         <BorderlessButton
-          onClick={(): void => {}}
+          id={`${course.id}-${sem}-edit-meetings-button`}
+          onClick={() => coursesPageContext
+            && coursesPageContext.onMeetingEdit({
+              course,
+              term: sem,
+            })}
           variant={VARIANT.INFO}
+          forwardRef={coursesPageContext?.currentCourseInstance?.course.id
+            === course.id
+            && coursesPageContext.currentCourseInstance.term === sem
+            ? coursesPageContext.meetingEditButtonRef
+            : null}
         >
           <FontAwesomeIcon icon={faEdit} />
         </BorderlessButton>

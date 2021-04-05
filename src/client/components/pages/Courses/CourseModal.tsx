@@ -23,6 +23,7 @@ import {
   Dropdown,
   ValidationErrorMessage,
   POSITION,
+  Form,
 } from 'mark-one';
 import { MetadataContext } from 'client/context/MetadataContext';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
@@ -250,7 +251,10 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
       </ModalHeader>
       <ModalBody>
         <NoteText>Note: * denotes a required field</NoteText>
-        <form id="editCourseForm">
+        <Form
+          id="editCourseForm"
+          label="Edit Course Form"
+        >
           <Fieldset
             legend="Course Area"
             isBorderVisible
@@ -356,6 +360,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
             label={displayNames.isUndergraduate}
             onChange={updateFormFields}
             labelPosition={POSITION.RIGHT}
+            hideError
           />
           <Dropdown
             id="isSEAS"
@@ -404,7 +409,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
               {courseModalError}
             </ValidationErrorMessage>
           )}
-        </form>
+        </Form>
       </ModalBody>
       <ModalFooter>
         <Button
