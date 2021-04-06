@@ -14,4 +14,4 @@ coverage:
         target: 90
         threshold: 10
         informational: true
-    changes: no
+    changes: off
