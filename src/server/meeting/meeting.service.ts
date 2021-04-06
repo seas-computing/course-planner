@@ -9,8 +9,8 @@ import { CourseInstance } from '../courseInstance/courseinstance.entity';
 import { NonClassEvent } from '../nonClassEvent/nonclassevent.entity';
 import { LocationService } from '../location/location.service';
 import { Room } from '../location/room.entity';
-import { RoomListingView } from '../location/RoomListingView.entity';
 import { MeetingResponseDTO } from '../../common/dto/meeting/MeetingResponse.dto';
+import { MeetingListingView } from './MeetingListingView.entity';
 
 /**
  * A service for managing the individual meetings associated with course
@@ -28,8 +28,8 @@ export class MeetingService {
   @Inject(LocationService)
   private readonly locationService: LocationService;
 
-  @InjectRepository(RoomListingView)
-  private readonly roomListingRepository: Repository<RoomListingView>;
+  @InjectRepository(MeetingListingView)
+  private readonly meetingListingRepository: Repository<MeetingListingView>;
 
   @InjectRepository(CourseInstance)
   private readonly courseInstanceRepository: Repository<CourseInstance>;
@@ -84,14 +84,18 @@ export class MeetingService {
     // the [[Campus]] and [[Building]]/[[Room]] concatenated name. It is legal
     // to create a [[Meeting]] without an associated room, so the fallback returns
     // a meeting with `room: undefined`
-    let room: RoomListingView;
-    return Promise.all(savedParent.meetings.map(async (saved) => {
-      if (saved.room) {
-        const { id: roomId } = saved.room;
-        room = await this.roomListingRepository.findOne({ id: roomId });
-      }
-      return { ...saved, room };
-    }));
+    return this.meetingListingRepository
+      .find({
+        // PR #232 will add the nonClassEventId to the MeetingListingView
+        // where: `"courseInstanceId"='${parentId}' OR "nonClassEventId"='${parentId}'`,
+        where: `"courseInstanceId"='${savedParent.id}'`,
+        order: {
+          day: 'ASC',
+          startTime: 'ASC',
+          endTime: 'ASC',
+        },
+        // relations: ['room'],
+      });
   }
 
   /**
