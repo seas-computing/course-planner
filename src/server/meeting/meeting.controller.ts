@@ -38,8 +38,8 @@ export class MeetingController {
    * in the url parameter. Any meetings that have been removed from the
    * parent's meetings list will be deleted
    */
-  @UseGuards(Authentication)
   @UseGuards(new RequireGroup(GROUP.ADMIN))
+  @UseGuards(Authentication)
   @ApiOperation({
     title: 'Create, update, or remove meetings from a course instance or non-class event',
   })
