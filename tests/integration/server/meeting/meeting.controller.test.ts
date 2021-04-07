@@ -194,7 +194,7 @@ describe.only('Meeting API', function () {
             let updatedMeeting: Meeting;
             let savedMeeting: MeetingResponseDTO;
             let otherMeetings: Meeting[];
-            context.only('With the same room', function () {
+            context('With the same room', function () {
               beforeEach(async function () {
                 ([
                   meetingToEdit,
@@ -238,15 +238,8 @@ describe.only('Meeting API', function () {
                 const updatedEndTime = format(parsedEndTime, 'hh:mm a');
                 strictEqual(savedMeeting.endTime, updatedEndTime);
               });
-              it.only('Should not change the room', function () {
-                console.log(savedMeeting);
-                deepStrictEqual(savedMeeting.room, meetingToEdit.room);
-              });
-              it('Should not affect the other meetings', function () {
-                const unaffectedMeetings = result
-                  .filter(({ id }) => id !== updatedMeeting.id);
-                console.log(unaffectedMeetings);
-                deepStrictEqual(unaffectedMeetings, otherMeetings);
+              it('Should not change the room', function () {
+                strictEqual(savedMeeting.room.id, meetingToEdit.room.id);
               });
             });
             context('With a different room', function () {
