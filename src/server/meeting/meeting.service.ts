@@ -11,6 +11,7 @@ import { LocationService } from '../location/location.service';
 import { Room } from '../location/room.entity';
 import { MeetingResponseDTO } from '../../common/dto/meeting/MeetingResponse.dto';
 import { MeetingListingView } from './MeetingListingView.entity';
+import { RoomListingView } from '../location/RoomListingView.entity';
 
 /**
  * A service for managing the individual meetings associated with course
@@ -85,17 +86,13 @@ export class MeetingService {
     // to create a [[Meeting]] without an associated room, so the fallback returns
     // a meeting with `room: undefined`
     return this.meetingListingRepository
-      .find({
-        // PR #232 will add the nonClassEventId to the MeetingListingView
-        // where: `"courseInstanceId"='${parentId}' OR "nonClassEventId"='${parentId}'`,
-        where: `"courseInstanceId"='${savedParent.id}'`,
-        order: {
-          day: 'ASC',
-          startTime: 'ASC',
-          endTime: 'ASC',
-        },
-        // relations: ['room'],
-      });
+      .createQueryBuilder('m')
+      .where(`m."courseInstanceId"='${savedParent.id}'`)
+      .orderBy('day', 'ASC')
+      .addOrderBy('"startTime"', 'ASC')
+      .addOrderBy('"endTime"', 'ASC')
+      .leftJoinAndMapOne('m.room', RoomListingView, 'room', 'room.id=m."roomId"')
+      .getMany();
   }
 
   /**
