@@ -148,6 +148,8 @@ export class MeetingService {
         const { day, startTime, endTime } = meetingData;
         throw new BadRequestException(`This room is not available on ${day} between ${startTime} and ${endTime}. It is already booked for ${bookings[0].meetingTitles.join(', ')}`);
       }
+    } else {
+      meetingToSave.room = null;
     }
 
     return meetingToSave;
