@@ -15,7 +15,6 @@ import { NonClassEventView } from './NonClassEvent.view.entity';
     .select('parent.id', 'id')
     .addSelect('parent.contact', 'contact')
     .addSelect('parent.title', 'title')
-    .addSelect('parent."courseId"', 'courseId')
     .from(NonClassParent, 'parent'),
 })
 export class NonClassParentView {
@@ -27,8 +26,6 @@ export class NonClassParentView {
 
   @ViewColumn()
   public title: string;
-
-  public courseId: string;
 
   public spring: NonClassEventView;
 
