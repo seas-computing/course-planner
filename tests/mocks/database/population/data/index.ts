@@ -76,7 +76,6 @@ export interface NonClassParentData {
 }
 
 export interface NonClassEventData {
-  title: string;
   private: boolean;
   nonClassParent: NonClassParentData;
 }
