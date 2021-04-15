@@ -13,7 +13,9 @@ import { CourseInstance } from './courseinstance.entity';
 import { Meeting } from '../meeting/meeting.entity';
 import { Course } from '../course/course.entity';
 import { ScheduleBlockView } from './ScheduleBlockView.entity';
-import { RoomListingView } from '../location/RoomListingView.entity';
+import { Room } from '../location/room.entity';
+import { Building } from '../location/building.entity';
+import { Campus } from '../location/campus.entity';
 
 /**
  * [[CourseInstanceScheduleView]]s are used to generate the course timetable
@@ -28,14 +30,16 @@ import { RoomListingView } from '../location/RoomListingView.entity';
     .select('m.id', 'id')
     .addSelect('c.number', 'courseNumber')
     .addSelect('c.isUndergraduate', 'isUndergraduate')
-    .addSelect('r.name', 'room')
-    .addSelect('r.campus', 'campus')
+    .addSelect("CONCAT_WS(' ', b.name, r.name)", 'room')
+    .addSelect('campus.name', 'campus')
     .addSelect('CONCAT(c.prefix, m.day, TO_CHAR(m."startTime"::TIME, \'HH24MI\'), TO_CHAR(m."endTime"::TIME, \'HH24MI\'), s.term, s."academicYear")', 'blockId')
     .from(CourseInstance, 'ci')
     .leftJoin(Course, 'c', 'ci."courseId" = c.id')
     .innerJoin(Semester, 's', 's.id = ci."semesterId"')
     .innerJoin(Meeting, 'm', 'm."courseInstanceId" = ci.id')
-    .leftJoin(RoomListingView, 'r', 'r.id = m."roomId"')
+    .leftJoin(Room, 'r', 'r.id = m."roomId"')
+    .leftJoin(Building, 'b', 'b.id = r."buildingId"')
+    .leftJoin(Campus, 'campus', 'c.id = b."campusId"')
     .where(`c."isSEAS" <> '${IS_SEAS.N}'`),
 })
 export class ScheduleEntryView {
