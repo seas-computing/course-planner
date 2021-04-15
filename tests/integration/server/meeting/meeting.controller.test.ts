@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SessionModule } from 'nestjs-session';
 import { stub, SinonStub } from 'sinon';
-import request from 'supertest';
+import request, { Response } from 'supertest';
 import { HttpServer } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions, getRepositoryToken } from '@nestjs/typeorm';
 import * as dummy from 'testData';
 import { Repository } from 'typeorm';
-import { strictEqual, deepStrictEqual } from 'assert';
+import { strictEqual, notStrictEqual, deepStrictEqual } from 'assert';
 import { format, parse } from 'date-fns';
 import MockDB from '../../../mocks/database/MockDB';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
@@ -25,8 +25,10 @@ import { Meeting } from '../../../../src/server/meeting/meeting.entity';
 import { MeetingListingView } from '../../../../src/server/meeting/MeetingListingView.entity';
 import { RoomListingView } from '../../../../src/server/location/RoomListingView.entity';
 import { MeetingRequestDTO } from '../../../../src/common/dto/meeting/MeetingRequest.dto';
+import { RoomBookingInfoView } from '../../../../src/server/location/RoomBookingInfoView.entity';
+import { Room } from '../../../../src/server/location/room.entity';
 
-describe.only('Meeting API', function () {
+describe('Meeting API', function () {
   let testModule: TestingModule;
   let db: MockDB;
   let api: HttpServer;
@@ -34,6 +36,8 @@ describe.only('Meeting API', function () {
   let courseInstanceRepository: Repository<CourseInstance>;
   let meetingRepository: Repository<Meeting>;
   let meetingListingViewRepository: Repository<MeetingListingView>;
+  let roomRepository: Repository<Room>;
+  let roomBookingInfoRepository: Repository<RoomBookingInfoView>;
 
   before(async function () {
     this.timeout(120000);
@@ -92,6 +96,12 @@ describe.only('Meeting API', function () {
     meetingRepository = testModule.get(
       getRepositoryToken(Meeting)
     );
+    roomRepository = testModule.get(
+      getRepositoryToken(Room)
+    );
+    roomBookingInfoRepository = testModule.get(
+      getRepositoryToken(RoomBookingInfoView)
+    );
     const nestApp = await testModule
       .createNestApplication()
       .useGlobalPipes(new BadRequestExceptionPipe())
@@ -113,15 +123,14 @@ describe.only('Meeting API', function () {
         let newMeetings: MeetingRequestDTO[];
         context('When there are no existing meetings', function () {
           beforeEach(async function () {
-            (testCourseInstance = await courseInstanceRepository
+            const getMeetinglessCourse = courseInstanceRepository
               .createQueryBuilder('ci')
-              .select('ci.id', 'id')
-              .addSelect('ci."updatedAt"', 'updatedAt')
               .where('m.id IS NULL')
-              .limit(1)
-              .leftJoin(Meeting, 'm', 'm."courseInstanceId" = ci.id')
-              .getOne());
+              .leftJoinAndSelect(Meeting, 'm', 'm."courseInstanceId" = ci.id');
+
+            (testCourseInstance = await getMeetinglessCourse.getOne());
           });
+
           context('adding new meetings', function () {
             beforeEach(async function () {
               newMeetings = [
@@ -163,7 +172,7 @@ describe.only('Meeting API', function () {
             });
             it('Should return the new meetings, formatted with room data', async function () {
               const formattedMeetings = await meetingListingViewRepository
-                .createQueryBuilder()
+                .createQueryBuilder('ci')
                 .where(
                   '"courseInstanceId"=:ciid',
                   { ciid: testCourseInstance.id }
@@ -171,6 +180,7 @@ describe.only('Meeting API', function () {
                 .orderBy('day', 'ASC')
                 .addOrderBy('"startTime"', 'ASC')
                 .addOrderBy('"endTime"', 'ASC')
+                .leftJoinAndMapOne('ci.room', RoomListingView, 'r', 'r.id=ci."roomId"')
                 .getMany();
               strictEqual(
                 JSON.stringify(result),
@@ -182,7 +192,7 @@ describe.only('Meeting API', function () {
         context('When there are existing meetings', function () {
           beforeEach(async function () {
             const allInstances = await courseInstanceRepository
-              .find({ relations: ['meetings', 'meetings.room'] });
+              .find({ relations: ['semester', 'meetings', 'meetings.room'] });
             (testCourseInstance = allInstances.find(
               ({ meetings }) => meetings
               && meetings.length > 1
@@ -243,17 +253,423 @@ describe.only('Meeting API', function () {
               });
             });
             context('With a different room', function () {
-              context('When the room is available', function () {});
-              context('When the room is already booked', function () {});
+              context('When the room is available', function () {
+                let unbookedRoom: Room;
+                beforeEach(async function () {
+                  ([
+                    meetingToEdit,
+                    ...otherMeetings
+                  ] = testCourseInstance.meetings);
+                  updatedMeeting = new Meeting();
+                  Object.assign(updatedMeeting, meetingToEdit);
+                  updatedMeeting.day = DAY.MON;
+                  updatedMeeting.startTime = '00:00:01-05';
+                  updatedMeeting.endTime = '23:59:59-05';
+                  const unbookedRoomQuery = roomRepository
+                    .createQueryBuilder('r')
+                    .where('r.id <> :roomId', { roomId: updatedMeeting.room.id })
+                    .andWhere('"meetingTitle" IS NULL')
+                    .leftJoin(RoomBookingInfoView, 'rb', `rb.roomId = r.id AND rb.day = '${DAY.MON}'`);
+                  unbookedRoom = await unbookedRoomQuery
+                    .getOne();
+                  updatedMeeting.room = unbookedRoom;
+                  const response = await request(api)
+                    .put(`/api/meetings/${testCourseInstance.id}`)
+                    .send({
+                      meetings: [
+                        updatedMeeting,
+                        ...otherMeetings,
+                      ].map(({ room, ...mtg }) => ({
+                        ...mtg, roomId: room?.id,
+                      })),
+                    });
+                  result = response.body;
+                  savedMeeting = result
+                    .find(({ id }) => id === meetingToEdit.id);
+                });
+                it('Should update the meeting day', function () {
+                  strictEqual(savedMeeting.day, updatedMeeting.day);
+                });
+                it('Should update the meeting startTime', function () {
+                  const parsedStartTime = parse(
+                    updatedMeeting.startTime,
+                    'HH:mm:ssX',
+                    dummy.refDate
+                  );
+                  const updatedStartTime = format(parsedStartTime, 'hh:mm a');
+                  strictEqual(savedMeeting.startTime, updatedStartTime);
+                });
+                it('Should update the meeting endTime', function () {
+                  const parsedEndTime = parse(
+                    updatedMeeting.endTime,
+                    'HH:mm:ssX',
+                    dummy.refDate
+                  );
+                  const updatedEndTime = format(parsedEndTime, 'hh:mm a');
+                  strictEqual(savedMeeting.endTime, updatedEndTime);
+                });
+                it('Should change the room', function () {
+                  strictEqual(savedMeeting.room.id, unbookedRoom.id);
+                  notStrictEqual(savedMeeting.room.id, meetingToEdit.room.id);
+                  notStrictEqual(savedMeeting.room, undefined);
+                });
+              });
+              context('When the room is already booked', function () {
+                let bookedRoom: Room;
+                let response: Response;
+                beforeEach(async function () {
+                  ([
+                    meetingToEdit,
+                    ...otherMeetings
+                  ] = testCourseInstance.meetings);
+                  updatedMeeting = new Meeting();
+                  Object.assign(updatedMeeting, meetingToEdit);
+                  updatedMeeting.day = DAY.MON;
+                  updatedMeeting.startTime = '00:00:01-05';
+                  updatedMeeting.endTime = '23:59:59-05';
+                  const bookedRoomQuery = roomRepository
+                    .createQueryBuilder('r')
+                    .where('r.id <> :roomId', { roomId: updatedMeeting.room.id })
+                    .andWhere('"meetingTitle" IS NOT NULL')
+                    .leftJoin(RoomBookingInfoView, 'rb', `rb.roomId = r.id AND rb.day = '${DAY.MON}'`);
+                  bookedRoom = await bookedRoomQuery
+                    .getOne();
+                  updatedMeeting.room = bookedRoom;
+                  response = await request(api)
+                    .put(`/api/meetings/${testCourseInstance.id}`)
+                    .send({
+                      meetings: [
+                        updatedMeeting,
+                        ...otherMeetings,
+                      ].map(({ room, ...mtg }) => ({
+                        ...mtg, roomId: room?.id,
+                      })),
+                    });
+                });
+                it('Should return a Bad Request error', function () {
+                  strictEqual(response.status, 400);
+                });
+                it('Should list the meetings that have the room booked', async function () {
+                  const roomBookingQuery = roomBookingInfoRepository
+                    .createQueryBuilder()
+                    .select('array_agg("meetingTitle")', 'meetingTitles')
+                    .groupBy('"roomId"')
+                    .addGroupBy('"calendarYear"')
+                    .addGroupBy('term')
+                    .addGroupBy('day')
+                    .where('"roomId" = :roomId', { roomId: updatedMeeting.room.id })
+                    .andWhere('day = :roomDay', { roomDay: updatedMeeting.day })
+                    .andWhere('term = :ciTerm', {
+                      ciTerm: testCourseInstance.semester.term,
+                    })
+                    .andWhere('"calendarYear" = :ciYear', {
+                      ciYear: testCourseInstance.semester.academicYear,
+                    })
+                    .andWhere('day = :roomDay', {
+                      roomDay: updatedMeeting.day,
+                    })
+                    .andWhere(
+                      '(:startTime, :endTime) OVERLAPS ("startTime", "endTime")',
+                      {
+                        startTime: updatedMeeting.startTime,
+                        endTime: updatedMeeting.endTime,
+                      }
+                    );
+                  const { meetingTitles } = await roomBookingQuery.getRawOne();
+                  const errorResponse = response.body.message as string;
+                  strictEqual(Array.isArray(meetingTitles), true);
+                  strictEqual(meetingTitles.length > 0, true);
+                  strictEqual(
+                    errorResponse.includes(meetingTitles),
+                    true
+                  );
+                });
+              });
             });
-            context('Removing the room', function () {});
+            context('Removing the room', function () {
+              beforeEach(async function () {
+                ([
+                  meetingToEdit,
+                  ...otherMeetings
+                ] = testCourseInstance.meetings);
+                updatedMeeting = new Meeting();
+                Object.assign(updatedMeeting, meetingToEdit);
+                updatedMeeting.day = DAY.MON;
+                updatedMeeting.startTime = '00:00:01-05';
+                updatedMeeting.endTime = '23:59:59-05';
+                updatedMeeting.room = null;
+                const response = await request(api)
+                  .put(`/api/meetings/${testCourseInstance.id}`)
+                  .send({
+                    meetings: [
+                      updatedMeeting,
+                      ...otherMeetings,
+                    ].map(({ room, ...mtg }) => ({ ...mtg, roomId: room?.id })),
+                  });
+                result = response.body;
+                savedMeeting = result
+                  .find(({ id }) => id === meetingToEdit.id);
+              });
+              it('Should update the meeting day', function () {
+                strictEqual(savedMeeting.day, updatedMeeting.day);
+              });
+              it('Should update the meeting startTime', function () {
+                const parsedStartTime = parse(
+                  updatedMeeting.startTime,
+                  'HH:mm:ssX',
+                  dummy.refDate
+                );
+                const updatedStartTime = format(parsedStartTime, 'hh:mm a');
+                strictEqual(savedMeeting.startTime, updatedStartTime);
+              });
+              it('Should update the meeting endTime', function () {
+                const parsedEndTime = parse(
+                  updatedMeeting.endTime,
+                  'HH:mm:ssX',
+                  dummy.refDate
+                );
+                const updatedEndTime = format(parsedEndTime, 'hh:mm a');
+                strictEqual(savedMeeting.endTime, updatedEndTime);
+              });
+              it('Should blank the room', function () {
+                strictEqual(savedMeeting.room, null);
+              });
+            });
           });
           context('Adding a new meeting', function () {
-            context('When the room is available', function () {});
-            context('When the room is already booked', function () {});
-            context('When there is no room', function () {});
+            let newMeeting: Meeting;
+            let otherMeetings: Meeting[];
+            let savedMeeting: MeetingResponseDTO;
+            context('When the room is available', function () {
+              let unbookedRoom: Room;
+              beforeEach(async function () {
+                ([
+                  ...otherMeetings
+                ] = testCourseInstance.meetings);
+                newMeeting = new Meeting();
+                newMeeting.day = DAY.FRI;
+                newMeeting.startTime = '00:00:01-05';
+                newMeeting.endTime = '23:59:59-05';
+                const unbookedRoomQuery = roomRepository
+                  .createQueryBuilder('r')
+                  .where('"meetingTitle" IS NULL')
+                  .leftJoin(RoomBookingInfoView, 'rb', `rb.roomId = r.id AND rb.day = '${DAY.FRI}'`);
+                unbookedRoom = await unbookedRoomQuery
+                  .getOne();
+                newMeeting.room = unbookedRoom;
+                const response = await request(api)
+                  .put(`/api/meetings/${testCourseInstance.id}`)
+                  .send({
+                    meetings: [
+                      ...otherMeetings,
+                      newMeeting,
+                    ].map(({ room, ...mtg }) => ({
+                      ...mtg, roomId: room?.id,
+                    })),
+                  });
+                result = response.body;
+                const otherIds = otherMeetings.map(({ id }) => id);
+                savedMeeting = result
+                  .find(({ id }) => (!otherIds.includes(id)));
+              });
+              it('Should include the new meeting in the result', function () {
+                strictEqual(savedMeeting.day, newMeeting.day);
+                const parsedStartTime = parse(
+                  newMeeting.startTime,
+                  'HH:mm:ssX',
+                  dummy.refDate
+                );
+                const newStartTime = format(parsedStartTime, 'hh:mm a');
+                strictEqual(savedMeeting.startTime, newStartTime);
+                const parsedEndTime = parse(
+                  newMeeting.endTime,
+                  'HH:mm:ssX',
+                  dummy.refDate
+                );
+                const newEndTime = format(parsedEndTime, 'hh:mm a');
+                strictEqual(savedMeeting.endTime, newEndTime);
+                strictEqual(savedMeeting.room.id, newMeeting.room.id);
+              });
+              it('Should add the new meeting in the database', async function () {
+                const dbMeeting = await meetingRepository.findOne(
+                  savedMeeting.id,
+                  { relations: ['room'] }
+                );
+                strictEqual(dbMeeting.day, newMeeting.day);
+                strictEqual(dbMeeting.startTime, newMeeting.startTime);
+                strictEqual(dbMeeting.endTime, newMeeting.endTime);
+                strictEqual(dbMeeting.room.id, newMeeting.room.id);
+              });
+            });
+            context('When the room is already booked', function () {
+              let bookedRoom: Room;
+              let response: Response;
+              beforeEach(async function () {
+                ([
+                  ...otherMeetings
+                ] = testCourseInstance.meetings);
+                newMeeting = new Meeting();
+                newMeeting.day = DAY.FRI;
+                newMeeting.startTime = '00:00:01-05';
+                newMeeting.endTime = '23:59:59-05';
+                const bookedRoomQuery = roomRepository
+                  .createQueryBuilder('r')
+                  .where('"meetingTitle" IS NOT NULL')
+                  .leftJoin(RoomBookingInfoView, 'rb', `rb.roomId = r.id AND rb.day = '${DAY.FRI}'`);
+                bookedRoom = await bookedRoomQuery
+                  .getOne();
+                newMeeting.room = bookedRoom;
+                response = await request(api)
+                  .put(`/api/meetings/${testCourseInstance.id}`)
+                  .send({
+                    meetings: [
+                      ...otherMeetings,
+                      newMeeting,
+                    ].map(({ room, ...mtg }) => ({
+                      ...mtg, roomId: room?.id,
+                    })),
+                  });
+              });
+              it('Should return a Bad Request error', function () {
+                strictEqual(response.status, 400);
+              });
+              it('Should list the meetings that have the room booked', async function () {
+                const roomBookingQuery = roomBookingInfoRepository
+                  .createQueryBuilder()
+                  .select('array_agg("meetingTitle")', 'meetingTitles')
+                  .groupBy('"roomId"')
+                  .addGroupBy('"calendarYear"')
+                  .addGroupBy('term')
+                  .addGroupBy('day')
+                  .where('"roomId" = :roomId', { roomId: newMeeting.room.id })
+                  .andWhere('day = :roomDay', { roomDay: newMeeting.day })
+                  .andWhere('term = :ciTerm', {
+                    ciTerm: testCourseInstance.semester.term,
+                  })
+                  .andWhere('"calendarYear" = :ciYear', {
+                    ciYear: testCourseInstance.semester.academicYear,
+                  })
+                  .andWhere('day = :roomDay', {
+                    roomDay: newMeeting.day,
+                  })
+                  .andWhere(
+                    '(:startTime, :endTime) OVERLAPS ("startTime", "endTime")',
+                    {
+                      startTime: newMeeting.startTime,
+                      endTime: newMeeting.endTime,
+                    }
+                  );
+                const { meetingTitles } = await roomBookingQuery.getRawOne();
+                const errorResponse = response.body.message as string;
+                strictEqual(Array.isArray(meetingTitles), true);
+                strictEqual(meetingTitles.length > 0, true);
+                strictEqual(
+                  errorResponse.includes(meetingTitles),
+                  true
+                );
+              });
+            });
+            context('When there is no room', function () {
+              beforeEach(async function () {
+                ([
+                  ...otherMeetings
+                ] = testCourseInstance.meetings);
+                newMeeting = new Meeting();
+                newMeeting.day = DAY.FRI;
+                newMeeting.startTime = '00:00:01-05';
+                newMeeting.endTime = '23:59:59-05';
+                newMeeting.room = null;
+                const response = await request(api)
+                  .put(`/api/meetings/${testCourseInstance.id}`)
+                  .send({
+                    meetings: [
+                      ...otherMeetings,
+                      newMeeting,
+                    ].map(({ room, ...mtg }) => ({
+                      ...mtg, roomId: room?.id,
+                    })),
+                  });
+                result = response.body;
+                const otherIds = otherMeetings.map(({ id }) => id);
+                savedMeeting = result
+                  .find(({ id }) => (!otherIds.includes(id)));
+              });
+              it('Should include the new meeting in the result', function () {
+                strictEqual(savedMeeting.day, newMeeting.day);
+                const parsedStartTime = parse(
+                  newMeeting.startTime,
+                  'HH:mm:ssX',
+                  dummy.refDate
+                );
+                const newStartTime = format(parsedStartTime, 'hh:mm a');
+                strictEqual(savedMeeting.startTime, newStartTime);
+                const parsedEndTime = parse(
+                  newMeeting.endTime,
+                  'HH:mm:ssX',
+                  dummy.refDate
+                );
+                const newEndTime = format(parsedEndTime, 'hh:mm a');
+                strictEqual(savedMeeting.endTime, newEndTime);
+                strictEqual(savedMeeting.room, null);
+              });
+              it('Should add the new meeting in the database', async function () {
+                const dbMeeting = await meetingRepository.findOne(
+                  savedMeeting.id,
+                  { relations: ['room'] }
+                );
+                strictEqual(dbMeeting.day, newMeeting.day);
+                strictEqual(dbMeeting.startTime, newMeeting.startTime);
+                strictEqual(dbMeeting.endTime, newMeeting.endTime);
+                strictEqual(dbMeeting.room, null);
+              });
+            });
           });
-          context('removing a meeting', function () {});
+          context('removing a meeting', function () {
+            let meetingToRemove: Meeting;
+            let otherMeetings: Meeting[];
+            beforeEach(async function () {
+              ([
+                meetingToRemove,
+                ...otherMeetings
+              ] = testCourseInstance.meetings);
+              const response = await request(api)
+                .put(`/api/meetings/${testCourseInstance.id}`)
+                .send({
+                  meetings: otherMeetings
+                    .map(({ room, ...mtg }) => ({ ...mtg, roomId: room?.id })),
+                });
+              result = response.body;
+            });
+            it('Should not return the meeting in the results', function () {
+              const removedMeetingIndex = result
+                .findIndex(({ id }) => id === meetingToRemove.id);
+              strictEqual(removedMeetingIndex, -1);
+            });
+            it('Should remove the meeeting in the database', async function () {
+              const savedInstance = await courseInstanceRepository
+                .findOne(
+                  testCourseInstance.id,
+                  { relations: ['meetings', 'meetings.room'] }
+                );
+              deepStrictEqual(savedInstance.meetings, otherMeetings);
+            });
+          });
+          context('removing all meetings', function () {
+            beforeEach(async function () {
+              const response = await request(api)
+                .put(`/api/meetings/${testCourseInstance.id}`)
+                .send({ meetings: [] });
+              result = response.body;
+            });
+            it('Should return an empty array', function () {
+              deepStrictEqual(result, []);
+            });
+            it('Should delete all the entries in the database', async function () {
+              const savedInstance = await courseInstanceRepository
+                .findOne(testCourseInstance.id, { relations: ['meetings'] });
+              deepStrictEqual(savedInstance.meetings, []);
+            });
+          });
         });
       });
       context('Updating a non-class event', function () {
