@@ -10,7 +10,7 @@ import {
 import { Semester } from 'server/semester/semester.entity';
 import { IS_SEAS } from 'common/constants';
 import { CourseInstance } from './courseinstance.entity';
-import { MeetingListingView } from '../meeting/MeetingListingView.entity';
+import { Meeting } from '../meeting/meeting.entity';
 import { Course } from '../course/course.entity';
 import { ScheduleBlockView } from './ScheduleBlockView.entity';
 import { RoomListingView } from '../location/RoomListingView.entity';
@@ -34,7 +34,7 @@ import { RoomListingView } from '../location/RoomListingView.entity';
     .from(CourseInstance, 'ci')
     .leftJoin(Course, 'c', 'ci."courseId" = c.id')
     .innerJoin(Semester, 's', 's.id = ci."semesterId"')
-    .innerJoin(MeetingListingView, 'm', 'm."courseInstanceId" = ci.id')
+    .innerJoin(Meeting, 'm', 'm."courseInstanceId" = ci.id')
     .leftJoin(RoomListingView, 'r', 'r.id = m."roomId"')
     .where(`c."isSEAS" <> '${IS_SEAS.N}'`),
 })
