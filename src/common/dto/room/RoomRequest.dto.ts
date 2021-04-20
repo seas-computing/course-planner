@@ -12,17 +12,17 @@ import { timeStampFormat } from '../meeting/MeetingRequest.dto';
  */
 export default abstract class RoomRequest {
   /**
-   * The academic year in which the meeting takes place
+   * The calendar year in which the meeting takes place
    */
   @ApiModelProperty({
     type: 'string',
     example: '2019',
   })
   @IsNotEmpty()
-  public acadYear: string;
+  public calendarYear: string;
 
   /**
-   * The semester in which the meeting takes place.
+   * The term in which the meeting takes place.
    */
   @ApiModelProperty({
     type: 'string',
@@ -30,7 +30,7 @@ export default abstract class RoomRequest {
   })
   @IsNotEmpty()
   @IsEnum(TERM)
-  public semester: TERM;
+  public term: TERM;
 
   /**
    * The day of the week on which the meeting takes place.
