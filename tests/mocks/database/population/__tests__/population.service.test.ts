@@ -7,7 +7,7 @@ import {
   Connection,
 } from 'typeorm';
 import { Area } from 'server/area/area.entity';
-import { strictEqual, notStrictEqual } from 'assert';
+import { strictEqual, notStrictEqual, deepStrictEqual } from 'assert';
 import { Semester } from 'server/semester/semester.entity';
 import { Room } from 'server/location/room.entity';
 import { Building } from 'server/location/building.entity';
@@ -20,9 +20,12 @@ import { Course } from 'server/course/course.entity';
 import { OFFERED } from 'common/constants';
 import { ConfigModule } from 'server/config/config.module';
 import { ConfigService } from 'server/config/config.service';
+import { NonClassParent } from 'server/nonClassParent/nonclassparent.entity';
+import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
 import { PopulationModule } from '../population.module';
 import MockDB from '../../MockDB';
 import * as testData from '../data';
+import { nonClassParents, nonClassEvents } from '../data';
 
 describe('Population Service', function () {
   let testModule: TestingModule;
@@ -51,31 +54,32 @@ describe('Population Service', function () {
     // other suites will be using the back end.
     return db.stop();
   });
-
+  beforeEach(async function () {
+    testModule = await Test.createTestingModule({
+      imports: [
+        ConfigModule,
+        TypeOrmModule.forRootAsync({
+          imports: [ConfigModule],
+          useFactory: (
+            config: ConfigService
+          ): TypeOrmModuleOptions => ({
+            ...config.dbOptions,
+            synchronize: true,
+            autoLoadEntities: true,
+            retryAttempts: 10,
+            retryDelay: 10000,
+          }),
+          inject: [ConfigService],
+        }),
+        PopulationModule,
+      ],
+    })
+      .overrideProvider(ConfigService)
+      .useValue(new ConfigService(db.connectionEnv))
+      .compile();
+  });
   describe('Automatic population', function () {
     beforeEach(async function () {
-      testModule = await Test.createTestingModule({
-        imports: [
-          ConfigModule,
-          TypeOrmModule.forRootAsync({
-            imports: [ConfigModule],
-            useFactory: (
-              config: ConfigService
-            ): TypeOrmModuleOptions => ({
-              ...config.dbOptions,
-              synchronize: true,
-              autoLoadEntities: true,
-              retryAttempts: 10,
-              retryDelay: 10000,
-            }),
-            inject: [ConfigService],
-          }),
-          PopulationModule,
-        ],
-      })
-        .overrideProvider(ConfigService)
-        .useValue(new ConfigService(db.connectionEnv))
-        .compile();
       // calling init triggers the onApplicationBootstrap hook
       await testModule.createNestApplication().init();
     });
@@ -253,32 +257,37 @@ describe('Population Service', function () {
         }
       });
     });
+    it('Should populate the nonClassParents table', async function () {
+      const parentsRepository: Repository<NonClassParent> = testModule.get(
+        getRepositoryToken(NonClassParent)
+      );
+      const dbParents = await parentsRepository.find();
+
+      deepStrictEqual(
+        dbParents.map(({ contact, title }) => ({ contact, title })),
+        nonClassParents
+      );
+    });
+    it('Should populate the nonClassEvents table', async function () {
+      const eventsRepository: Repository<NonClassEvent> = testModule.get(
+        getRepositoryToken(NonClassEvent)
+      );
+      const dbEvents = await eventsRepository.find({
+        relations: ['nonClassParent'],
+      });
+
+      const actualEvents = [...new Set(dbEvents
+        .map(({ nonClassParent: { title } }) => title).sort())];
+
+      const expectedEvents = nonClassEvents
+        .map(({ nonClassParent: { title } }) => title).sort();
+
+      deepStrictEqual(actualEvents, expectedEvents);
+    });
   });
   describe('Automatic depopulation', function () {
     let typeormConnection: Connection;
     beforeEach(async function () {
-      testModule = await Test.createTestingModule({
-        imports: [
-          ConfigModule,
-          TypeOrmModule.forRootAsync({
-            imports: [ConfigModule],
-            useFactory: (
-              config: ConfigService
-            ): TypeOrmModuleOptions => ({
-              ...config.dbOptions,
-              synchronize: true,
-              autoLoadEntities: true,
-              retryAttempts: 10,
-              retryDelay: 10000,
-            }),
-            inject: [ConfigService],
-          }),
-          PopulationModule,
-        ],
-      })
-        .overrideProvider(ConfigService)
-        .useValue(new ConfigService(db.connectionEnv))
-        .compile();
       // calling init triggers the onApplicationBootstrap hook
       await testModule.createNestApplication().init();
       // close the module, triggering beforeApplicationShutdown hook
@@ -343,6 +352,16 @@ describe('Population Service', function () {
       courseRepository = getRepository(Course);
       const dbCourses = await courseRepository.find();
       strictEqual(dbCourses.length, 0);
+    });
+    it('Should truncate the nonClassParent table', async function () {
+      const parentRepository = getRepository(NonClassParent);
+      const dbParents = await parentRepository.find();
+      strictEqual(dbParents.length, 0);
+    });
+    it('Should truncate the nonClassEvent table', async function () {
+      const eventRepository = getRepository(NonClassEvent);
+      const dbParents = await eventRepository.find();
+      strictEqual(dbParents.length, 0);
     });
   });
 });

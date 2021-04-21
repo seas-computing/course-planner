@@ -13,6 +13,8 @@ export * from './courses';
 export * from './faculty';
 export * from './rooms';
 export * from './semesters';
+export * from './nonClassParents';
+export * from './nonClassEvents';
 
 export interface AreaData {
   name: string;
@@ -68,6 +70,16 @@ export interface SemesterData {
   term: TERM;
 }
 
+export interface NonClassParentData {
+  title: string;
+  contact: string;
+}
+
+export interface NonClassEventData {
+  private: boolean;
+  nonClassParent: NonClassParentData;
+}
+
 export type TestData = (
   AreaData
   | BuildingData
@@ -76,4 +88,6 @@ export type TestData = (
   | FacultyData
   | RoomData
   | SemesterData
+  | NonClassParentData
+  | NonClassEventData
 );
