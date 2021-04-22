@@ -23,7 +23,8 @@ export class RoomService {
   private readonly roomBookingInfoViewRepository:
   Repository<RoomBookingInfoView>;
 
-  /** Resolves with a list of rooms and the course instance and/or non class
+  /**
+   * Resolves with a list of rooms and the course instance and/or non class
    * meetings that are scheduled to occur during the requested calendar year,
    * term, day, start time, and end time
    */
@@ -39,19 +40,20 @@ export class RoomService {
     } = roomInfo;
     const result = await this.roomListingViewRepository
       .createQueryBuilder('r')
-      .select('r.id', 'id')
-      .addSelect('r.campus', 'campus')
-      .addSelect('r.name', 'name')
-      .addSelect('r.capacity', 'capacity')
-      .leftJoinAndMapMany('r.meetings', RoomBookingInfoView, 'b', 'r.id = b."roomId"')
-      .where('b."calendarYear" = :calendarYear', { calendarYear })
-      .andWhere('b.term = :term', { term })
-      .andWhere('b.day = :day', { day })
-      .andWhere('(b."startTime" <= :startTime && b."endTime" >= :endTime) || (b."startTime" >= :startTime && b."startTime" < :endTime) || (b."endTime" > :startTime && b."endTime" <= :endTime)', { startTime, endTime })
+      .leftJoinAndMapMany('r.meetings', RoomBookingInfoView, 'b',
+        `r.id = b."roomId" AND b."calendarYear" = :calendarYear
+          AND b.term = :term
+          AND b.day = :day
+          AND ((b."startTime" <= :startTime AND b."endTime" >= :endTime)
+            OR (b."startTime" >= :startTime AND b."startTime" < :endTime)
+            OR (b."endTime" > :startTime AND b."endTime" <= :endTime))`,
+        {
+          calendarYear, term, day, startTime, endTime,
+        })
       .getMany() as unknown[] as RoomQueryResult[];
-    return result.map((row) => ({
+    return result.map(({ meetings, ...row }) => ({
       ...row,
-      meetingTitles: row.meetings.map(({ meetingTitle }) => meetingTitle),
+      meetingTitles: meetings.map(({ meetingTitle }) => meetingTitle),
     }));
   }
 }
