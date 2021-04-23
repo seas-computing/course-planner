@@ -10,12 +10,15 @@ import { Campus } from 'server/location/campus.entity';
 import { CourseInstance } from 'server/courseInstance/courseinstance.entity';
 import { Meeting } from 'server/meeting/meeting.entity';
 import { FacultyCourseInstance } from 'server/courseInstance/facultycourseinstance.entity';
+import { NonClassParent } from 'server/nonClassParent/nonclassparent.entity';
+import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
 import { PopulationService } from './population.service';
 import { SemesterPopulationService } from './semester.population';
 import { AreaPopulationService } from './area.population';
 import { CoursePopulationService } from './course.population';
 import { FacultyPopulationService } from './faculty.population';
 import { RoomPopulationService } from './room.population';
+import { NonClassEventPopulationService } from './nonclassevents.population';
 
 /**
  * Injects the repositories and services necessary for populating the database
@@ -33,6 +36,8 @@ import { RoomPopulationService } from './room.population';
       Meeting,
       Room,
       Semester,
+      NonClassParent,
+      NonClassEvent,
     ]),
   ],
   providers: [
@@ -41,6 +46,7 @@ import { RoomPopulationService } from './room.population';
     FacultyPopulationService,
     RoomPopulationService,
     SemesterPopulationService,
+    NonClassEventPopulationService,
     PopulationService,
   ],
   exports: [
