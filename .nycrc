@@ -1,5 +1,5 @@
 {
-  "check-coverage": true,
+  "check-coverage": false,
   "lines": 80,
   "statements": 80,
   "functions": 80,
@@ -11,5 +11,7 @@
   "clean": true,
   "instrument": true,
   "sourceMap": true,
-  "reporter": ["text", "lcov"]
+  "reporter": [
+    "lcov"
+  ]
 }

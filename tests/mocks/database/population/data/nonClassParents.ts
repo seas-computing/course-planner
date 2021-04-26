@@ -1,10 +1,10 @@
 export const nonClassParents = [
   {
-    title: 'Data Science',
+    title: 'Computer Science Area Meeting',
     contact: 'James Waldo',
   },
   {
-    title: 'Applied Math',
+    title: 'Active Learning Labs Staff Meeting',
     contact: 'Nishant V. Sule',
   },
 ];

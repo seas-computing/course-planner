@@ -276,12 +276,13 @@ describe('Population Service', function () {
         relations: ['nonClassParent'],
       });
 
-      deepStrictEqual(
-        [...new Set(
-          dbEvents.map(({ nonClassParent }) => nonClassParent.id)
-        )].length,
-        nonClassEvents.length
-      );
+      const actualEvents = [...new Set(dbEvents
+        .map(({ nonClassParent: { title } }) => title).sort())];
+
+      const expectedEvents = nonClassEvents
+        .map(({ nonClassParent: { title } }) => title).sort();
+
+      deepStrictEqual(actualEvents, expectedEvents);
     });
   });
   describe('Automatic depopulation', function () {

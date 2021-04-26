@@ -7,7 +7,11 @@ coverage:
     project:
       default:
         target: 90
+        threshold: 10
+        informational: true
     patch:
       default:
-        threshold: 2
-    changes: no
+        target: 90
+        threshold: 10
+        informational: true
+    changes: off
