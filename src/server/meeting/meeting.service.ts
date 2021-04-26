@@ -87,7 +87,8 @@ export class MeetingService {
     // a meeting with `room: undefined`
     return this.meetingListingRepository
       .createQueryBuilder('m')
-      .where(`m."courseInstanceId"='${savedParent.id}'`)
+      .where('m."courseInstanceId"=:pid', { pid: savedParent.id })
+      .orWhere('m."nonClassEventId"=:pid', { pid: savedParent.id })
       .orderBy('day', 'ASC')
       .addOrderBy('"startTime"', 'ASC')
       .addOrderBy('"endTime"', 'ASC')
