@@ -3,18 +3,18 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
 import { Semester } from 'server/semester/semester.entity';
-import { TERM } from 'common/constants';
 import { Meeting } from 'server/meeting/meeting.entity';
 import { BasePopulationService } from './base.population';
-import { NonClassParentData, NonClassEventData } from './data';
+import { NonClassMeetingData } from './data';
+import { Room } from '../../../../src/server/location/room.entity';
 
 export class NonClassEventPopulationService
-  extends BasePopulationService<NonClassEvent> {
-  @InjectRepository(NonClassEvent)
-  protected eventRepository: Repository<NonClassEvent>;
-
+  extends BasePopulationService<NonClassParent> {
   @InjectRepository(NonClassParent)
   protected parentRepository: Repository<NonClassParent>;
+
+  @InjectRepository(NonClassEvent)
+  protected eventRepository: Repository<NonClassEvent>;
 
   @InjectRepository(Semester)
   protected semesterRepository: Repository<Semester>;
@@ -22,67 +22,56 @@ export class NonClassEventPopulationService
   @InjectRepository(Meeting)
   protected meetingRepository: Repository<Meeting>;
 
+  @InjectRepository(Room)
+  protected roomRepository: Repository<Room>;
+
   public async populate({
-    parents,
-    events,
-  }: {
-    parents: NonClassParentData[];
-    events: NonClassEventData[];
-  }): Promise<NonClassEvent[]> {
-    const [fall, spring] = await this.semesterRepository.find({
-      // The usage of an array of objects means typeorm will compile this
-      // into
-      // ((academicyear = 2019 AND term = "fall") OR  (academicYear = 2020 AND term = "spring"))
-      where: [
-        { academicYear: 2019, term: TERM.FALL },
-        { academicYear: 2020, term: TERM.SPRING },
-      ],
+    nonClassMeetings,
+  }: { nonClassMeetings: NonClassMeetingData[] }): Promise<NonClassParent[]> {
+    const allSemesters = await this.semesterRepository.find({
       order: {
         academicYear: 'ASC',
+        term: 'ASC',
       },
     });
 
-    const [
-      dataScienceParent,
-      appliedMathParent,
-    ] = await this.parentRepository.save([
+    const allRooms = await this.roomRepository.find(
       {
-        ...parents[0],
-      },
-      {
-        ...parents[1],
-      },
-    ]);
+        order: {
+          name: 'ASC',
+        },
+        relations: ['building'],
+      }
+    );
 
-    const meetings = await this.meetingRepository.find({
-      take: 4,
-    });
-    return this.eventRepository.save([
-      {
-        ...events[0],
-        nonClassParent: dataScienceParent,
-        semester: fall,
-        meetings: [meetings[0]],
-      },
-      {
-        ...events[0],
-        nonClassParent: dataScienceParent,
-        semester: spring,
-        meetings: [meetings[1]],
-      },
-      {
-        ...events[1],
-        nonClassParent: appliedMathParent,
-        semester: fall,
-        meetings: [meetings[2]],
-      },
-      {
-        ...events[1],
-        nonClassParent: appliedMathParent,
-        semester: spring,
-        meetings: [meetings[3]],
-      },
-    ]);
+    return this.parentRepository.save(
+      nonClassMeetings.map((parentData) => {
+        const nonClassParent = new NonClassParent();
+        nonClassParent.title = parentData.title;
+        nonClassParent.contact = parentData.contact;
+        nonClassParent.nonClassEvents = allSemesters
+          .map((sem): NonClassEvent => {
+            const nonClassEvent = new NonClassEvent();
+            nonClassEvent.private = parentData.private;
+            nonClassEvent.semester = sem;
+            nonClassEvent.meetings = parentData.meetings
+              .map((meetingData): Meeting => {
+                const meeting = new Meeting();
+                meeting.day = meetingData.day;
+                meeting.startTime = meetingData.startTime;
+                meeting.endTime = meetingData.endTime;
+                meeting.room = allRooms.find(
+                  ({ name, building }): boolean => (
+                    `${building.name} ${name}` === meetingData.room
+                  )
+                );
+                return meeting;
+              });
+            return nonClassEvent;
+          });
+        return nonClassParent;
+      })
+    );
   }
 
   public async drop(): Promise<void> {
