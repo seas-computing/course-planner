@@ -75,3 +75,24 @@ export const allDataValidYears = (
       ))
     ))
 );
+
+/**
+ * Converts a Postgres Time With Time Zone style string, e.g. 13:00:00-05 to a
+ * short am/pm time string. Does not use the Date object, because that's
+ * introducing unexpected timezone conversions.
+ */
+
+export const tzStringToAMPM = (tzString: string): string => {
+  const tzRegEx = /(?<hour>[0-2][0-9]):(?<minute>[0-5][0-9]):(?<second>[0-5][0-9])(?<offset>[-+][0-1][0-9])/g;
+  const timeMatch = tzRegEx.exec(tzString);
+  if (timeMatch) {
+    const { hour, minute } = timeMatch.groups;
+    if (hour === '12') {
+      return `${hour}:${minute} PM`;
+    } if (hour > '12') {
+      return `${(parseInt(hour, 10) - 12).toString().padStart(2, '0')}:${minute} PM`;
+    }
+    return `${hour}:${minute} AM`;
+  }
+  throw new Error('Not a valid timezone string');
+};
