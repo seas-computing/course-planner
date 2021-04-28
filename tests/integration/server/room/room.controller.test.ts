@@ -103,7 +103,7 @@ describe('Room API', function () {
       term: TERM.FALL,
       day: DAY.MON,
       startTime: '10:00:00-05',
-      endTime: '13:00:00-05',
+      endTime: '20:00:00-05',
     };
     context('As an unauthenticated user', function () {
       beforeEach(function () {
@@ -205,8 +205,9 @@ describe('Room API', function () {
           it('returns the expected meetings', function () {
             const actualMeetings = result
               .map((room) => room.meetingTitles)
-              .reduce((acc, val) => acc.concat(val), []);
-            // Returns an array of course meeting titles that occur during the requested times
+              .reduce((acc, val) => acc.concat(val), [])
+              .sort();
+            // Returns an array of sorted course meeting titles that occur during the requested times
             const expectedMeetings = flatMap(courses.map(
               (course) => course.instances.meetings
                 .filter((meeting) => meeting.day === requestBody.day
@@ -220,7 +221,7 @@ describe('Room API', function () {
                     || (meeting.endTime > requestBody.startTime
                       && meeting.endTime <= requestBody.endTime)))
                 .map(() => `${course.prefix} ${course.number}`)
-            ));
+            )).sort();
             deepStrictEqual(actualMeetings, expectedMeetings);
           });
         });
