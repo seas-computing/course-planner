@@ -37,9 +37,7 @@ export class RoomService {
         `r.id = b."roomId" AND b."calendarYear" = :calendarYear
           AND b.term = :term
           AND b.day = :day
-          AND ((b."startTime" <= :startTime AND b."endTime" >= :endTime)
-            OR (b."startTime" >= :startTime AND b."startTime" < :endTime)
-            OR (b."endTime" > :startTime AND b."endTime" <= :endTime))`,
+          AND ((b."startTime", b."endTime") OVERLAPS (:startTime, :endTime))`,
         roomInfo)
       .getMany() as unknown[] as RoomQueryResult[];
     return result.map(({ meetings, ...row }) => ({
