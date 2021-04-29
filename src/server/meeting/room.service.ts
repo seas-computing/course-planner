@@ -31,13 +31,6 @@ export class RoomService {
   public async getRooms(
     roomInfo: RoomRequest
   ): Promise<RoomResponse[]> {
-    const {
-      calendarYear,
-      term,
-      day,
-      startTime,
-      endTime,
-    } = roomInfo;
     const result = await this.roomListingViewRepository
       .createQueryBuilder('r')
       .leftJoinAndMapMany('r.meetings', RoomBookingInfoView, 'b',
@@ -47,9 +40,7 @@ export class RoomService {
           AND ((b."startTime" <= :startTime AND b."endTime" >= :endTime)
             OR (b."startTime" >= :startTime AND b."startTime" < :endTime)
             OR (b."endTime" > :startTime AND b."endTime" <= :endTime))`,
-        {
-          calendarYear, term, day, startTime, endTime,
-        })
+        roomInfo)
       .getMany() as unknown[] as RoomQueryResult[];
     return result.map(({ meetings, ...row }) => ({
       ...row,
