@@ -6,8 +6,6 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * RoomListingView to retrieve room data.
  */
 export class AddRoomCapacity1618886074206 implements MigrationInterface {
-  name = 'AddRoomCapacity1618886074206';
-
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query('DELETE FROM "typeorm_metadata" WHERE "type" = \'VIEW\' AND "schema" = $1 AND "name" = $2', ['public', 'RoomListingView']);
     await queryRunner.query('DROP VIEW "RoomListingView"');
