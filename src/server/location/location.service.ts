@@ -15,7 +15,7 @@ interface RoomQueryResult {
 }
 
 @Injectable()
-export class RoomService {
+export class LocationService {
   @InjectRepository(RoomListingView)
   private readonly roomListingViewRepository: Repository<RoomListingView>;
 

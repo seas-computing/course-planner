@@ -22,7 +22,7 @@ import { ConfigModule } from 'server/config/config.module';
 import { AuthModule } from 'server/auth/auth.module';
 import RoomResponse from 'common/dto/room/RoomResponse.dto';
 import * as dummy from 'testData';
-import { MeetingModule } from 'server/meeting/meeting.module';
+import { LocationModule } from 'server/location/location.module';
 import RoomRequest from 'common/dto/room/RoomRequest.dto';
 import flatMap from 'lodash.flatmap';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
@@ -31,7 +31,7 @@ import { PopulationModule } from '../../../mocks/database/population/population.
 import { rooms } from '../../../mocks/database/population/data/rooms';
 import { courses } from '../../../mocks/database/population/data/courses';
 
-describe('Room API', function () {
+describe('Location API', function () {
   let testModule: TestingModule;
   let db: MockDB;
   let authStub: SinonStub;
@@ -77,7 +77,7 @@ describe('Room API', function () {
           defaultStrategy: AUTH_MODE.TEST,
         }),
         PopulationModule,
-        MeetingModule,
+        LocationModule,
       ],
     })
       .overrideProvider(ConfigService)

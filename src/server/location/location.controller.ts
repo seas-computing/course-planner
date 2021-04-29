@@ -13,7 +13,7 @@ import { GROUP } from 'common/constants';
 import { Authentication } from 'server/auth/authentication.guard';
 import RoomResponse from 'common/dto/room/RoomResponse.dto';
 import RoomRequest from 'common/dto/room/RoomRequest.dto';
-import { RoomService } from './room.service';
+import { LocationService } from './location.service';
 
 @ApiUseTags('Rooms')
 @Controller('api/rooms')
@@ -24,9 +24,9 @@ import { RoomService } from './room.service';
   description: 'The user is authenticated, but lacks the permissions to access this endpoint',
 })
 @UseGuards(Authentication, new RequireGroup(GROUP.ADMIN))
-export class RoomController {
-  @Inject(RoomService)
-  private readonly roomService: RoomService;
+export class LocationController {
+  @Inject(LocationService)
+  private readonly locationService: LocationService;
 
   @Get('/')
   @ApiOperation({ title: 'Retrieve all rooms from the database along with the meetings that take place in them' })
@@ -37,6 +37,6 @@ export class RoomController {
   })
   public async getRoomAvailability(@Query() roomInfo: RoomRequest)
     : Promise<RoomResponse[]> {
-    return this.roomService.getRooms(roomInfo);
+    return this.locationService.getRooms(roomInfo);
   }
 }

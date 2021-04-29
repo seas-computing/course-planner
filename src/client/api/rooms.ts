@@ -13,6 +13,6 @@ Promise<RoomResponse[]> => {
   return response.data as RoomResponse[];
 };
 
-export const RoomAPI = {
+export const LocationAPI = {
   getRoomAvailability,
 };

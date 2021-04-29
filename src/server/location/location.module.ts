@@ -2,8 +2,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from '@nestjs/common';
 import { RoomBookingInfoView } from 'server/location/RoomBookingInfoView.entity';
 import { RoomListingView } from 'server/location/RoomListingView.entity';
-import { RoomController } from './room.controller';
-import { RoomService } from './room.service';
+import { LocationController } from './location.controller';
+import { LocationService } from './location.service';
 
 @Module({
   imports: [
@@ -12,9 +12,9 @@ import { RoomService } from './room.service';
       RoomBookingInfoView,
     ]),
   ],
-  controllers: [RoomController],
+  controllers: [LocationController],
   providers: [
-    RoomService,
+    LocationService,
   ],
 })
-export class MeetingModule { }
+export class LocationModule { }
