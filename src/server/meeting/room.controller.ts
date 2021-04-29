@@ -1,5 +1,5 @@
 import {
-  Controller, Get, UseGuards, Body, Inject,
+  Controller, Get, UseGuards, Query, Inject,
 } from '@nestjs/common';
 import {
   ApiOkResponse,
@@ -35,7 +35,7 @@ export class RoomController {
     description: 'An array of all rooms along with the meetings, if any, occurring at the requested time period',
     isArray: true,
   })
-  public async getRoomAvailability(@Body() roomInfo: RoomRequest)
+  public async getRoomAvailability(@Query() roomInfo: RoomRequest)
     : Promise<RoomResponse[]> {
     return this.roomService.getRooms(roomInfo);
   }
