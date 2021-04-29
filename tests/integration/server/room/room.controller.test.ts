@@ -114,7 +114,8 @@ describe('Room API', function () {
         authStub.rejects(new ForbiddenException());
 
         response = await request(api)
-          .get(`/api/rooms/?calendarYear=${testParams.calendarYear}&term=${testParams.term}&day=${testParams.day}&startTime=${testParams.startTime}&endTime=${testParams.endTime}`);
+          .get('/api/rooms')
+          .query(testParams);
 
         strictEqual(response.ok, false);
         strictEqual(response.status, HttpStatus.FORBIDDEN);
@@ -129,7 +130,8 @@ describe('Room API', function () {
             authStub.resolves(adminUser);
             const invalidYear = '1902';
             response = await request(api)
-              .get(`/api/rooms/?calendarYear=${invalidYear}&term=${testParams.term}&day=${testParams.day}&startTime=${testParams.startTime}&endTime=${testParams.endTime}`);
+              .get('/api/rooms')
+              .query({ ...testParams, calendarYear: invalidYear });
             result = response.body;
           });
           it('should return a 200 status', function () {
@@ -147,7 +149,9 @@ describe('Room API', function () {
           beforeEach(async function () {
             authStub.resolves(adminUser);
             const invalidTerm = 'fakeTerm' as TERM;
-            response = await request(api).get(`/api/rooms/?calendarYear=${testParams.calendarYear}&term=${invalidTerm}&day=${testParams.day}&startTime=${testParams.startTime}&endTime=${testParams.endTime}`);
+            response = await request(api)
+              .get('/api/rooms')
+              .query({ ...testParams, term: invalidTerm });
           });
           it('should return a 400 status', function () {
             strictEqual(response.status, HttpStatus.BAD_REQUEST);
@@ -158,7 +162,8 @@ describe('Room API', function () {
             authStub.resolves(adminUser);
             const invalidDay = 'fakeDay' as DAY;
             response = await request(api)
-              .get(`/api/rooms/?calendarYear=${testParams.calendarYear}&term=${testParams.term}&day=${invalidDay}&startTime=${testParams.startTime}&endTime=${testParams.endTime}`);
+              .get('/api/rooms')
+              .query({ ...testParams, day: invalidDay });
           });
           it('should return a 400 status', function () {
             strictEqual(response.status, HttpStatus.BAD_REQUEST);
@@ -169,7 +174,8 @@ describe('Room API', function () {
             authStub.resolves(adminUser);
             const invalidStartTime = '10:00AM';
             response = await request(api)
-              .get(`/api/rooms/?calendarYear=${testParams.calendarYear}&term=${testParams.term}&day=${testParams.day}&startTime=${invalidStartTime}&endTime=${testParams.endTime}`);
+              .get('/api/rooms')
+              .query({ ...testParams, startTime: invalidStartTime });
           });
           it('should return a 400 status', function () {
             strictEqual(response.status, HttpStatus.BAD_REQUEST);
@@ -180,7 +186,8 @@ describe('Room API', function () {
             authStub.resolves(adminUser);
             const invalidEndTime = '26:00:00-05';
             response = await request(api)
-              .get(`/api/rooms/?calendarYear=${testParams.calendarYear}&term=${testParams.term}&day=${testParams.day}&startTime=${testParams.startTime}&endTime=${invalidEndTime}`);
+              .get('/api/rooms')
+              .query({ ...testParams, endTime: invalidEndTime });
           });
           it('should return a 400 status', function () {
             strictEqual(response.status, HttpStatus.BAD_REQUEST);
@@ -191,7 +198,8 @@ describe('Room API', function () {
           beforeEach(async function () {
             authStub.resolves(adminUser);
             response = await request(api)
-              .get(`/api/rooms/?calendarYear=${testParams.calendarYear}&term=${testParams.term}&day=${testParams.day}&startTime=${testParams.startTime}&endTime=${testParams.endTime}`);
+              .get('/api/rooms')
+              .query(testParams);
             result = response.body;
           });
           it('should return a 200 status', function () {
@@ -234,7 +242,8 @@ describe('Room API', function () {
         beforeEach(async function () {
           authStub.resolves(regularUser);
           response = await request(api)
-            .get(`/api/rooms/?calendarYear=${testParams.calendarYear}&term=${testParams.term}&day=${testParams.day}&startTime=${testParams.startTime}&endTime=${testParams.endTime}`);
+            .get('/api/rooms')
+            .query(testParams);
         });
         it('is inaccessible to unauthenticated users', function () {
           authStub.rejects(new ForbiddenException());
