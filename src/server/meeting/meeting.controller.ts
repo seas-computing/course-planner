@@ -5,6 +5,8 @@ import {
   Body,
   Param,
   UseGuards,
+  NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { MeetingRequestDTO } from 'common/dto/meeting/MeetingRequest.dto';
 import { MeetingResponseDTO } from 'common/dto/meeting/MeetingResponse.dto';
@@ -17,10 +19,12 @@ import {
   ApiBadRequestResponse,
   ApiImplicitBody,
 } from '@nestjs/swagger';
+import { EntityNotFoundError } from 'typeorm';
 import { MeetingService } from './meeting.service';
 import { Authentication } from '../auth/authentication.guard';
 import { RequireGroup } from '../auth/group.guard';
 import { GROUP } from '../../common/constants';
+import { RoomConflictException } from '../location/RoomConflict.exception';
 
 /**
  * API routes for managing meetings
@@ -68,10 +72,21 @@ export class MeetingController {
     @Body('meetings') meetings: MeetingRequestDTO[],
       @Param('parentId') parentId: string
   ): Promise<MeetingResponseDTO[]> {
-    return this.meetingService
-      .saveMeetings(
-        parentId,
-        meetings
-      );
+    try {
+      const savedMeetings = await this.meetingService
+        .saveMeetings(
+          parentId,
+          meetings
+        );
+      return savedMeetings;
+    } catch (error) {
+      if (error instanceof EntityNotFoundError) {
+        throw new NotFoundException(error.message);
+      }
+      if (error instanceof RoomConflictException) {
+        throw new BadRequestException(error.message);
+      }
+      throw error;
+    }
   }
 }
