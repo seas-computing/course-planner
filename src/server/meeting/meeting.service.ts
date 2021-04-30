@@ -2,7 +2,7 @@ import {
   Injectable, Inject, BadRequestException, NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository, getConnectionToken } from '@nestjs/typeorm';
-import { Repository, Connection } from 'typeorm';
+import { Repository, Connection, EntityNotFoundError } from 'typeorm';
 import { Meeting } from './meeting.entity';
 import { MeetingRequestDTO } from '../../common/dto/meeting/MeetingRequest.dto';
 import { CourseInstance } from '../courseInstance/courseinstance.entity';
@@ -60,14 +60,28 @@ export class MeetingService {
     try {
       parent = await this.courseInstanceRepository
         .findOneOrFail(parentId, { relations: ['semester'] });
-    } catch (_) {
-      try {
-        parent = await this.nonClassEventRepository
-          .findOneOrFail(parentId, { relations: ['semester'] });
-      } catch (err) {
-        throw new NotFoundException(
-          `Could not find a course instance or non-class event with id ${parentId}`
-        );
+    } catch (ciError) {
+      if (ciError instanceof EntityNotFoundError) {
+        try {
+          parent = await this.nonClassEventRepository
+            .findOneOrFail(parentId, { relations: ['semester'] });
+        } catch (nceError) {
+          if (nceError instanceof EntityNotFoundError) {
+            throw new EntityNotFoundError(
+              {
+                name: 'Course Instance or Non-Class Event',
+                type: parent,
+              },
+              {
+                id: parentId,
+              }
+            );
+          } else {
+            throw nceError;
+          }
+        }
+      } else {
+        throw ciError;
       }
     }
 
