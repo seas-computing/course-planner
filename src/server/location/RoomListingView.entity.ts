@@ -26,6 +26,7 @@ import { MeetingListingView } from 'server/meeting/MeetingListingView.entity';
     .select('r.id', 'id')
     .addSelect("CONCAT_WS(' ', b.name, r.name)", 'name')
     .addSelect('c.name', 'campus')
+    .addSelect('r.capacity', 'capacity')
     .leftJoin(Building, 'b', 'r."buildingId" = b.id')
     .leftJoin(Campus, 'c', 'b."campusId" = c.id')
     .from(Room, 'r'),
@@ -51,6 +52,13 @@ export class RoomListingView {
    */
   @ViewColumn()
   public campus: string;
+
+  /**
+   * From [[Room]]
+   * The maximum capacity of the room
+   */
+  @ViewColumn()
+  public capacity: number;
 
   /**
    * One [[Room]] can have many [[MeetingListingView]]
