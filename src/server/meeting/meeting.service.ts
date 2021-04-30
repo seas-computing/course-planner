@@ -114,7 +114,7 @@ export class MeetingService {
    * Create a new meeting or update an existing meeting associated with
    * courseInstance or nonClassEvent.
    */
-  public async validateAndCreate(
+  private async validateAndCreate(
     meetingData: MeetingRequestDTO,
     parentData: CourseInstance | NonClassEvent
   ): Promise<Meeting> {
