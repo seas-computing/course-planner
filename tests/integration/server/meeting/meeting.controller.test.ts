@@ -1170,7 +1170,7 @@ describe('Meeting API', function () {
       context('With an invalid id', function () {
         let invalidId: string;
         beforeEach(async function () {
-          invalidId = 'invalid';
+          ({ id: invalidId } = await meetingRepository.findOne());
           response = await request(api)
             .put(`/api/meetings/${invalidId}`)
             .send({
