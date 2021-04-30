@@ -94,5 +94,5 @@ export const tzStringToAMPM = (tzString: string): string => {
     }
     return `${hour}:${minute} AM`;
   }
-  throw new Error('Not a valid timezone string');
+  throw new TypeError('Not a valid timezone string');
 };
