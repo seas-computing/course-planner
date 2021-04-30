@@ -130,7 +130,7 @@ export class MeetingService {
     // assigning the room to the meeting
     if (roomId) {
       const bookings = await this.locationService
-        .getRoomAvailability({
+        .getRoomBookings({
           ...meetingData,
           parentId,
           calendarYear,

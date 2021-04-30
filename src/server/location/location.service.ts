@@ -24,7 +24,7 @@ export class LocationService {
    * when there is a conflict
    */
 
-  public async getRoomAvailability(
+  public async getRoomBookings(
     details: Partial<RoomBookingInfoView>
   ): Promise<Booking[]> {
     const {
