@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SessionModule } from 'nestjs-session';
 import { stub, SinonStub } from 'sinon';
 import request, { Response } from 'supertest';
-import { HttpServer } from '@nestjs/common';
+import { HttpServer, HttpStatus } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions, getRepositoryToken } from '@nestjs/typeorm';
 import * as dummy from 'testData';
 import { Repository } from 'typeorm';
@@ -340,7 +340,7 @@ describe('Meeting API', function () {
                     });
                 });
                 it('Should return a Bad Request error', function () {
-                  strictEqual(response.status, 400);
+                  strictEqual(response.status, HttpStatus.BAD_REQUEST);
                 });
                 it('Should list the meetings that have the room booked', async function () {
                   const roomBookingQuery = roomBookingInfoRepository
@@ -511,7 +511,7 @@ describe('Meeting API', function () {
                   });
               });
               it('Should return a Bad Request error', function () {
-                strictEqual(response.status, 400);
+                strictEqual(response.status, HttpStatus.BAD_REQUEST);
               });
               it('Should list the meetings that have the room booked', async function () {
                 const roomBookingQuery = roomBookingInfoRepository
@@ -861,7 +861,7 @@ describe('Meeting API', function () {
                     });
                 });
                 it('Should return a Bad Request error', function () {
-                  strictEqual(response.status, 400);
+                  strictEqual(response.status, HttpStatus.BAD_REQUEST);
                 });
                 it('Should list the meetings that have the room booked', async function () {
                   const roomBookingQuery = roomBookingInfoRepository
@@ -1032,7 +1032,7 @@ describe('Meeting API', function () {
                   });
               });
               it('Should return a Bad Request error', function () {
-                strictEqual(response.status, 400);
+                strictEqual(response.status, HttpStatus.BAD_REQUEST);
               });
               it('Should list the meetings that have the room booked', async function () {
                 const roomBookingQuery = roomBookingInfoRepository
@@ -1178,8 +1178,8 @@ describe('Meeting API', function () {
             });
           result = response.body;
         });
-        it('Should return a 404 error', function () {
-          strictEqual(response.status, 404);
+        it('Should return a NotFound error', function () {
+          strictEqual(response.status, HttpStatus.NOT_FOUND);
         });
         it('Should include that invalid id in the error message', function () {
           const invalidIdRE = new RegExp(invalidId);
@@ -1197,8 +1197,8 @@ describe('Meeting API', function () {
             });
           result = response.body;
         });
-        it('Should return a 404 error', function () {
-          strictEqual(response.status, 404);
+        it('Should return a NotFound error', function () {
+          strictEqual(response.status, HttpStatus.NOT_FOUND);
         });
       });
     });
@@ -1216,8 +1216,8 @@ describe('Meeting API', function () {
               meetings: [],
             });
         });
-        it('Should return a 403 error', function () {
-          strictEqual(response.status, 403);
+        it('Should return a forbidden error', function () {
+          strictEqual(response.status, HttpStatus.FORBIDDEN);
         });
       });
       context('Updating a NonClassEvent', function () {
@@ -1230,8 +1230,8 @@ describe('Meeting API', function () {
               meetings: [],
             });
         });
-        it('Should return a 403 error', function () {
-          strictEqual(response.status, 403);
+        it('Should return a forbidden error', function () {
+          strictEqual(response.status, HttpStatus.FORBIDDEN);
         });
       });
     });
