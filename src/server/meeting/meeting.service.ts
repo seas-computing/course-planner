@@ -12,6 +12,7 @@ import { Room } from '../location/room.entity';
 import { MeetingResponseDTO } from '../../common/dto/meeting/MeetingResponse.dto';
 import { MeetingListingView } from './MeetingListingView.entity';
 import { RoomListingView } from '../location/RoomListingView.entity';
+import { RoomConflictException } from '../location/RoomConflict.exception';
 
 /**
  * A service for managing the individual meetings associated with course
@@ -160,8 +161,10 @@ export class MeetingService {
       if (bookings.length === 0 || bookings[0].meetingTitles.length === 0) {
         meetingToSave.room = await this.roomRepository.findOne(roomId);
       } else {
-        const { day, startTime, endTime } = meetingData;
-        throw new BadRequestException(`This room is not available on ${day} between ${startTime} and ${endTime}. It is already booked for ${bookings[0].meetingTitles.join(', ')}`);
+        throw new RoomConflictException(
+          meetingData,
+          bookings[0].meetingTitles
+        );
       }
     } else {
       meetingToSave.room = null;
