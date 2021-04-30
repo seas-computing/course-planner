@@ -5,7 +5,7 @@ import {
 } from 'class-validator';
 import { IsMutuallyExclusiveWith, IsOccurringBefore, IsOccurringAfter } from '../utils';
 
-const timeStampFormat = /[0-2][0-9]:[0-5][0-9]:[0-5][0-9]-[0-2][0-9]/;
+export const timeStampFormat = /[0-2][0-9]:[0-5][0-9]:[0-5][0-9]-[0-2][0-9]/;
 /**
  * Represents a request sent to the server to create or edit a meeting
  * associated with a course instance or non class event
