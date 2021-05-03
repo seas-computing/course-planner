@@ -38,7 +38,7 @@ export default function IsOccurringBefore<DTO>(
           return false;
         },
         defaultMessage(args: ValidationArguments): string {
-          return `${args.property} must occur after ${args.constraints[0] as string}`;
+          return `${args.property} must occur before ${args.constraints[0] as string}`;
         },
       },
     });
