@@ -25,7 +25,6 @@ import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
 import { PopulationModule } from '../population.module';
 import MockDB from '../../MockDB';
 import * as testData from '../data';
-import { nonClassParents, nonClassEvents } from '../data';
 
 describe('Population Service', function () {
   let testModule: TestingModule;
@@ -232,30 +231,56 @@ describe('Population Service', function () {
         getRepositoryToken(Meeting)
       );
       const dbMeetings = await meetingRepository.find({
-        relations: ['room', 'courseInstance', 'courseInstance.course'],
+        relations: [
+          'room',
+          'courseInstance',
+          'courseInstance.course',
+          'nonClassEvent',
+          'nonClassEvent.nonClassParent',
+        ],
       });
       // For each row in the meeting table, make sure that the data matches
       // the meeting info from the testData
-      dbMeetings.forEach(({
-        day, startTime, endTime, courseInstance,
-      }) => {
-        if (courseInstance.offered === OFFERED.Y) {
-          const { prefix, number, title } = courseInstance.course;
-          const testCourse = testData.courses.find((course) => (
-            course.prefix === prefix
+      dbMeetings
+        .filter(({ courseInstance }) => (!!courseInstance))
+        .forEach(({
+          day, startTime, endTime, courseInstance,
+        }) => {
+          if (courseInstance.offered === OFFERED.Y) {
+            const { prefix, number, title } = courseInstance.course;
+            const testCourse = testData.courses.find((course) => (
+              course.prefix === prefix
             && course.number === number
             && course.title === title
+            ));
+            strictEqual(!!testCourse, true);
+            const meetingOnDay = testCourse
+              .instances
+              .meetings
+              .find(({ day: mtgDay }) => mtgDay === day);
+            strictEqual(!!meetingOnDay, true);
+            strictEqual(startTime, meetingOnDay.startTime);
+            strictEqual(endTime, meetingOnDay.endTime);
+          }
+        });
+      dbMeetings
+        .filter(({ nonClassEvent }) => (!!nonClassEvent))
+        .forEach(({
+          day, startTime, endTime, nonClassEvent,
+        }) => {
+          const { contact, title } = nonClassEvent.nonClassParent;
+          const testMeeting = testData.nonClassMeetings.find((nonClass) => (
+            nonClass.title === title
+            && nonClass.contact === contact
           ));
-          strictEqual(!!testCourse, true);
-          const meetingOnDay = testCourse
-            .instances
+          strictEqual(!!testMeeting, true);
+          const meetingOnDay = testMeeting
             .meetings
             .find(({ day: mtgDay }) => mtgDay === day);
           strictEqual(!!meetingOnDay, true);
           strictEqual(startTime, meetingOnDay.startTime);
           strictEqual(endTime, meetingOnDay.endTime);
-        }
-      });
+        });
     });
     it('Should populate the nonClassParents table', async function () {
       const parentsRepository: Repository<NonClassParent> = testModule.get(
@@ -264,8 +289,9 @@ describe('Population Service', function () {
       const dbParents = await parentsRepository.find();
 
       deepStrictEqual(
-        dbParents.map(({ contact, title }) => ({ contact, title })),
-        nonClassParents
+        dbParents.map(({ contact, title }) => ({ contact, title })).sort(),
+        testData.nonClassMeetings
+          .map(({ contact, title }) => ({ contact, title })).sort()
       );
     });
     it('Should populate the nonClassEvents table', async function () {
@@ -279,8 +305,8 @@ describe('Population Service', function () {
       const actualEvents = [...new Set(dbEvents
         .map(({ nonClassParent: { title } }) => title).sort())];
 
-      const expectedEvents = nonClassEvents
-        .map(({ nonClassParent: { title } }) => title).sort();
+      const expectedEvents = testData.nonClassMeetings
+        .map(({ title }) => title).sort();
 
       deepStrictEqual(actualEvents, expectedEvents);
     });

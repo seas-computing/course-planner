@@ -5,6 +5,7 @@ import * as dummy from 'testData';
 import { Authentication } from 'server/auth/authentication.guard';
 import { UnauthorizedException } from '@nestjs/common';
 import { SessionModule } from 'nestjs-session';
+import { Session } from 'express-session';
 import { UserController } from '../user.controller';
 
 describe('User controller', function () {
@@ -31,7 +32,7 @@ describe('User controller', function () {
       it('returns the user', function () {
         const testSession = {
           user: dummy.regularUser,
-        } as unknown as Express.Session;
+        } as unknown as Session;
         const result = controller.getCurrentUser({
           session: testSession,
         } as Request);
@@ -40,7 +41,7 @@ describe('User controller', function () {
     });
     context('When there is no user in session', function () {
       it('throws an UnauthorizedException', function () {
-        const testSession = {} as Express.Session;
+        const testSession = {} as Session;
         throws((): void => {
           controller.getCurrentUser({
             session: testSession,

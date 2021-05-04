@@ -2,7 +2,6 @@ import {
   Injectable,
   Inject,
   Logger as NestLogger,
-  Global,
 } from '@nestjs/common';
 import { Logger as TypeORMLogger } from 'typeorm';
 import winston, { Logger as WinstonLogger } from 'winston';
@@ -73,7 +72,6 @@ const widestLog = Math.max(
  *
 */
 
-@Global()
 @Injectable()
 class LogService extends NestLogger implements TypeORMLogger {
   /**
@@ -135,7 +133,7 @@ class LogService extends NestLogger implements TypeORMLogger {
    * trace separately.
    * LOG LEVEL: 0
    */
-  public error(message: Error, trace?: null, label?: Writable): void
+  public error(message: Error | Writable, trace?: null, label?: Writable): void
   public error(message: Writable, trace?: string, label?: Writable): void
   public error(message: unknown, trace?: string, label?: Writable): void {
     if (message instanceof Error) {
@@ -154,7 +152,7 @@ class LogService extends NestLogger implements TypeORMLogger {
    * error function
    */
   public logQueryError(
-    error: Writable,
+    error: string | Error,
     query: Writable,
     parameters?: Inspectable
   ): void {

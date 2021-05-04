@@ -14,8 +14,7 @@ import {
   rooms,
   faculty,
   courses,
-  nonClassParents,
-  nonClassEvents,
+  nonClassMeetings,
 } from './data';
 import { NonClassEventPopulationService } from './nonclassevents.population';
 
@@ -59,10 +58,7 @@ export class PopulationService implements
     await this.roomService.populate({ buildings, campuses, rooms });
     await this.facultyService.populate({ faculty });
     await this.courseService.populate({ courses });
-    await this.nonClassEventPopulationService.populate({
-      parents: nonClassParents,
-      events: nonClassEvents,
-    });
+    await this.nonClassEventPopulationService.populate({ nonClassMeetings });
   }
 
   /**

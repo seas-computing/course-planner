@@ -3,8 +3,7 @@ import { ApiModelProperty } from '@nestjs/swagger';
 import {
   IsNotEmpty, IsEnum, Matches,
 } from 'class-validator';
-import { IsOccurringBefore, IsOccurringAfter } from '../utils';
-import { timeStampFormat } from '../meeting/MeetingRequest.dto';
+import { IsOccurringBefore, IsOccurringAfter, pgTimeTZ } from '../utils';
 
 /**
  * Represents a request to retrieve all rooms along with the course instance
@@ -51,7 +50,7 @@ export default abstract class RoomRequest {
     example: '14:45:00-05',
   })
   @IsNotEmpty()
-  @Matches(timeStampFormat)
+  @Matches(pgTimeTZ)
   @IsOccurringBefore('endTime')
   public startTime: string;
 
@@ -63,7 +62,7 @@ export default abstract class RoomRequest {
     example: '16:30:00-05',
   })
   @IsNotEmpty()
-  @Matches(timeStampFormat)
+  @Matches(pgTimeTZ)
   @IsOccurringAfter('startTime')
   public endTime: string;
 }

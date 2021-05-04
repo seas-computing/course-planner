@@ -4,6 +4,7 @@ import * as dummy from 'testData';
 import { throws, deepStrictEqual } from 'assert';
 import { UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
+import { Session } from 'express-session';
 import { HarvardKeyStrategy } from '../harvardkey.strategy';
 import { ConfigService } from '../../config/config.service';
 
@@ -34,7 +35,7 @@ describe('HarvardKeyStrategy', function () {
     it('returns the user', function () {
       const testSession = {
         user: dummy.regularUser,
-      } as unknown as Express.Session;
+      } as unknown as Session;
       const result = hkey.validate({
         session: testSession,
       } as Request);
@@ -43,7 +44,7 @@ describe('HarvardKeyStrategy', function () {
   });
   context('When there is no user in session', function () {
     it('throws an UnauthorizedException', function () {
-      const testSession = {} as Express.Session;
+      const testSession = {} as Session;
       throws((): void => {
         hkey.validate({
           session: testSession,

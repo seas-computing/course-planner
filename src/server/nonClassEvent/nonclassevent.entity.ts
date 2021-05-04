@@ -58,7 +58,9 @@ export class NonClassEvent extends BaseEntity {
   @OneToMany(
     (): ObjectType<Meeting> => Meeting,
     ({ nonClassEvent }): NonClassEvent => nonClassEvent,
-    { cascade: ['insert'] }
+    {
+      cascade: ['insert', 'update'],
+    }
   )
   public meetings: Meeting[];
 }
