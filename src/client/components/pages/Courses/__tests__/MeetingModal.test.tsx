@@ -48,7 +48,7 @@ describe('Meeting Modal', function () {
         context('when the faculty member has associated notes', function () {
           it('displays the faculty notes associated with the course instance', async function () {
             const facultyWithNotes = (testCourseInstance.fall.instructors
-              .filter((instructor) => (instructor.notes !== '')));
+              .filter((instructor) => (instructor.notes !== '' && instructor.notes !== null)));
             const expectedNotes = facultyWithNotes
               .map((faculty) => faculty.notes);
             return Promise.all(expectedNotes.map((note) => waitForElement(
@@ -57,12 +57,23 @@ describe('Meeting Modal', function () {
           });
         });
         context('when the faculty member does not have associated notes', function () {
-          it('displays the text "No Notes"', function () {
-            const facultyWithoutNotes = (testCourseInstance.fall.instructors
-              .filter((instructor) => (instructor.notes === '')));
-            const modalNotes = getByText('Faculty Notes', { exact: false }).nextElementSibling;
-            const noNotesLength = (modalNotes as HTMLElement).textContent.match(/s*No Notes\s*$/g).length;
-            strictEqual(facultyWithoutNotes.length, noNotesLength);
+          context('when faculty notes is an empty string', function () {
+            it('displays the text "No Notes"', function () {
+              const facultyWithoutNotes = (testCourseInstance.fall.instructors
+                .filter((instructor) => (instructor.notes === '')));
+              const modalNotes = getByText('Faculty Notes', { exact: false }).nextElementSibling;
+              const noNotesLength = (modalNotes as HTMLElement).textContent.match(/s*No Notes\s*$/g).length;
+              strictEqual(facultyWithoutNotes.length, noNotesLength);
+            });
+          });
+          context('when faculty notes is null', function () {
+            it('displays the text "No Notes"', function () {
+              const facultyWithNullNotes = (testCourseInstance.fall.instructors
+                .filter((instructor) => (instructor.notes === null)));
+              const modalNotes = getByText('Faculty Notes', { exact: false }).nextElementSibling;
+              const noNotesLength = (modalNotes as HTMLElement).textContent.match(/s*No Notes\s*$/g).length;
+              strictEqual(facultyWithNullNotes.length, noNotesLength);
+            });
           });
         });
       });

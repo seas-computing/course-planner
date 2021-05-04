@@ -384,4 +384,22 @@ export const courses = [
       ],
     },
   },
+  {
+    title: 'Special Topics in Computer Science',
+    area: 'CS',
+    prefix: 'CS',
+    number: '299R',
+    isUndergraduate: true,
+    notes: '',
+    private: false,
+    sameAs: '',
+    termPattern: TERM_PATTERN.BOTH,
+    isSEAS: IS_SEAS.Y,
+    instances: {
+      facultyHUIDs: [
+        '13131313',
+      ],
+      meetings: [],
+    },
+  },
 ];

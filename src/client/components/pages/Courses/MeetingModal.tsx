@@ -157,7 +157,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
                     </h4>
                     <p>
                       {
-                        instructor.notes === ''
+                        !instructor.notes
                           ? <StyledFacultyNote>No Notes</StyledFacultyNote>
                           : instructor.notes
                       }

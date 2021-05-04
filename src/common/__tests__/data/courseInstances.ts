@@ -60,6 +60,11 @@ export const cs50CourseInstance: CourseInstanceResponseDTO = {
         displayName: 'Waldo, James',
         notes: '',
       },
+      {
+        id: 'cec66944-8c43-4094-a05e-5fdccca2e04c',
+        displayName: 'Amin, Nada',
+        notes: null,
+      },
     ],
     meetings: [
       {

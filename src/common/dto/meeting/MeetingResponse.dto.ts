@@ -39,7 +39,7 @@ abstract class MeetingRoomResponse {
  * meeting
  */
 
-export default abstract class MeetingResponse {
+export abstract class MeetingResponseDTO {
   /**
    * The database UUID of the meeting
    */
