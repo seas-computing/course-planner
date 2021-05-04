@@ -1,6 +1,4 @@
-import {
-  Injectable, Inject, BadRequestException, NotFoundException,
-} from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { InjectRepository, getConnectionToken } from '@nestjs/typeorm';
 import { Repository, Connection, EntityNotFoundError } from 'typeorm';
 import { Meeting } from './meeting.entity';
