@@ -155,7 +155,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
               <div className="meeting-times-section">
                 <ul>
                   {instance.meetings.map((meeting) => (
-                    <ListLayout>
+                    <ListLayout key={meeting.id}>
                       <BorderlessButton
                         id={`deleteButton${meeting.id}`}
                         variant={VARIANT.DANGER}
