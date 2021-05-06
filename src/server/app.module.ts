@@ -26,6 +26,7 @@ import { AuthController } from './auth/auth.controller';
 import { LogService } from './log/log.service';
 import { LocationModule } from './location/location.module';
 import { MeetingModule } from './meeting/meeting.module';
+import { NonClassEventModule } from './nonClassEvent/nonclassevent.module';
 
 /**
  * Base application module that configures the database connections and other
@@ -74,6 +75,7 @@ import { MeetingModule } from './meeting/meeting.module';
     MetadataModule,
     LocationModule,
     MeetingModule,
+    NonClassEventModule,
   ],
   controllers: [
     UserController,
