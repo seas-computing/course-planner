@@ -7,3 +7,4 @@ export * from './semesters';
 export * from './faculty';
 export * from './area';
 export * from './metadata';
+export * from './meetings';

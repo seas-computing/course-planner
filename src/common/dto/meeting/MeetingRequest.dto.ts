@@ -3,15 +3,14 @@ import { ApiModelProperty } from '@nestjs/swagger';
 import {
   IsUUID, IsNotEmpty, IsEnum, IsOptional, Matches,
 } from 'class-validator';
-import { IsMutuallyExclusiveWith, IsOccurringBefore, IsOccurringAfter } from '../utils';
+import { pgTimeTZ, IsOccurringBefore, IsOccurringAfter } from '../utils';
 
-export const timeStampFormat = /[0-2][0-9]:[0-5][0-9]:[0-5][0-9]-[0-2][0-9]/;
 /**
  * Represents a request sent to the server to create or edit a meeting
  * associated with a course instance or non class event
  */
 
-export default abstract class MeetingRequest {
+export abstract class MeetingRequestDTO {
   /**
    * If this is an existing meeting being edited, this will be the UUID in our
    * database.
@@ -43,7 +42,7 @@ export default abstract class MeetingRequest {
     example: '12:00:00-05',
   })
   @IsNotEmpty()
-  @Matches(timeStampFormat)
+  @Matches(pgTimeTZ)
   @IsOccurringBefore('endTime')
   public startTime: string;
 
@@ -55,33 +54,9 @@ export default abstract class MeetingRequest {
     example: '13:30:00-05',
   })
   @IsNotEmpty()
-  @Matches(timeStampFormat)
+  @Matches(pgTimeTZ)
   @IsOccurringAfter('startTime')
   public endTime: string;
-
-  /**
-   * The ID of a [[CourseInstance]] to which the meeting belongs.
-   * Either this or a [[NonClassEvent]] id must be provided.
-   */
-  @ApiModelProperty({
-    type: 'string',
-    example: 'ec141394-4011-485d-bba5-173b9fdef04d',
-  })
-  @IsUUID()
-  @IsMutuallyExclusiveWith(['nonClassEventId'])
-  public courseInstanceId?: string;
-
-  /**
-   * The ID of a [[NonClassEvent]] to which the meeting belongs.
-   * Either this or a [[CourseInstance]] id must be provided.
-   */
-  @ApiModelProperty({
-    type: 'string',
-    example: '56a825b0-8860-4434-b843-c530a86138a1',
-  })
-  @IsUUID()
-  @IsMutuallyExclusiveWith(['courseInstanceId'])
-  public nonClassEventId?: string;
 
   /**
    * The ID of the room where the meeting will be held, which can be undefined

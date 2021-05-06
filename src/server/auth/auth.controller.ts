@@ -202,7 +202,7 @@ export class AuthController {
         });
         req.session.user = authorizedUser;
         return {
-          url: (req.session.loginOrigin as string || this.config.clientBaseURL),
+          url: (req.session.loginOrigin || this.config.clientBaseURL),
           statusCode: HttpStatus.FOUND,
         };
       }

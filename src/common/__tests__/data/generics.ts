@@ -50,3 +50,13 @@ export const email = 'help@seas.harvard.edu';
  */
 
 export const error = new Error('Error');
+
+/**
+ * A reference date of January 1, 2021 to use for date comparisons.
+ * This date is chosen because:
+ * 1. It's not in Daylight Savings Time
+ * 2. Timezone errors should be very apparent, since the previous date is
+ * December 31, 2020
+ */
+
+export const refDate = new Date(2021, 0, 1);

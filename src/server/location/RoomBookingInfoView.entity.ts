@@ -25,6 +25,7 @@ import { Semester } from '../semester/semester.entity';
     .addSelect('m."startTime"', 'startTime')
     .addSelect('m."endTime"', 'endTime')
     .addSelect('m.day', 'day')
+    .addSelect('COALESCE(m."courseInstanceId", m."nonClassEventId")', 'parentId')
     .addSelect(`CASE
                WHEN m."courseInstanceId" IS NOT NULL
                THEN CONCAT_WS(' ', c.prefix, c.number)
@@ -83,4 +84,10 @@ export class RoomBookingInfoView {
    */
   @ViewColumn()
   public meetingTitle: string;
+
+  /**
+   * The id of the courseInstance or nonClassEvent to which this meeting is related
+   */
+  @ViewColumn()
+  public parentId: string;
 }
