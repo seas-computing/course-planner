@@ -17,7 +17,7 @@ export class Meeting extends BaseEntity {
    * @example `"19:15:40.328-04"`
    */
   @Column({
-    type: 'time with time zone',
+    type: 'time',
     comment: 'The time of day this event (meeting) begins in 24 hour time with ISO8601 timezone (e.g "19:15:40.328-04")',
   })
   public startTime: string;
@@ -27,7 +27,7 @@ export class Meeting extends BaseEntity {
    * @example `"19:15:40.328-04"`
    */
   @Column({
-    type: 'time with time zone',
+    type: 'time',
     comment: 'The time of day this event (meeting) ends in 24 hour time with ISO8601 timezone (e.g "19:15:40.328-04")',
   })
   public endTime: string;
