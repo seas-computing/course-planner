@@ -6,6 +6,7 @@ import {
   OneToMany,
   ObjectType,
 } from 'typeorm';
+import { Area } from 'server/area/area.entity';
 import { NonClassParent } from 'server/nonClassParent/nonclassparent.entity';
 import { NonClassEventView } from './NonClassEvent.view.entity';
 
@@ -19,6 +20,8 @@ import { NonClassEventView } from './NonClassEvent.view.entity';
     .addSelect('parent.notes', 'notes')
     .addSelect('parent.expectedSize', 'expectedSize')
     .addSelect('parent.title', 'title')
+    .addSelect('area.name', 'area')
+    .leftJoin(Area, 'area', 'area.id = parent."areaId"')
     .from(NonClassParent, 'parent'),
 })
 export class NonClassParentView {
@@ -42,6 +45,9 @@ export class NonClassParentView {
 
   @ViewColumn()
   public expectedSize: number;
+
+  @ViewColumn()
+  public area: string;
 
   public spring: NonClassEventView;
 

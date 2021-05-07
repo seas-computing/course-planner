@@ -1,5 +1,6 @@
+import { Area } from 'server/area/area.entity';
 import {
-  Entity, Column, ObjectType, OneToMany,
+  Entity, Column, ObjectType, OneToMany, ManyToOne,
 } from 'typeorm';
 import { BaseEntity } from '../base/base.entity';
 import { NonClassEvent } from '../nonClassEvent/nonclassevent.entity';
@@ -74,6 +75,19 @@ export class NonClassParent extends BaseEntity {
     nullable: true,
   })
   public expectedSize?: number;
+
+  /**
+   * The [[Area]] this [[NonClassParent]] belongs to
+   *
+   * ---
+   * Many [[NonClassParent]]s belong to one [[Area]]
+   */
+  @ManyToOne(
+    (): ObjectType<Area> => Area,
+    ({ nonClassParents }): NonClassParent[] => nonClassParents,
+    { nullable: false }
+  )
+  public area: Area;
 
   /**
    * Collection of scheduled events. These are typically events that occur

@@ -1,3 +1,4 @@
+import { NonClassParent } from 'server/nonClassParent/nonclassparent.entity';
 import {
   Entity, Column, OneToMany, ObjectType,
 } from 'typeorm';
@@ -36,6 +37,18 @@ export class Area extends BaseEntity {
     ({ area }): Area => area
   )
   public courses: Course[];
+
+  /**
+   * An array of [[NonClassParent]]s within this subject area
+   *
+   * ---
+   * One [[Area]] has many [[NonClassParent]]s
+   */
+  @OneToMany(
+    (): ObjectType<NonClassParent> => NonClassParent,
+    ({ area }): Area => area
+  )
+  public nonClassParents: NonClassParent[];
 
   /**
    * An array of [[Faculty]] members
