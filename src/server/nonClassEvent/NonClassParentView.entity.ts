@@ -24,13 +24,13 @@ export class NonClassParentView {
   public id: string;
 
   @ViewColumn()
-  public contact_name: string;
+  public contactName: string;
 
   @ViewColumn()
-  public contact_email: string;
+  public contactEmail: string;
 
   @ViewColumn()
-  public contact_phone: string;
+  public contactPhone: string;
 
   @ViewColumn()
   public title: string;
