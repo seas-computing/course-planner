@@ -13,7 +13,9 @@ import { NonClassEventView } from './NonClassEvent.view.entity';
   expression: (connection: Connection):
   SelectQueryBuilder<NonClassParent> => connection.createQueryBuilder()
     .select('parent.id', 'id')
-    .addSelect('parent.contact', 'contact')
+    .addSelect('parent.contactName', 'contactName')
+    .addSelect('parent.contactEmail', 'contactEmail')
+    .addSelect('parent.contactPhone', 'contactPhone')
     .addSelect('parent.title', 'title')
     .from(NonClassParent, 'parent'),
 })
@@ -22,7 +24,13 @@ export class NonClassParentView {
   public id: string;
 
   @ViewColumn()
-  public contact: string;
+  public contact_name: string;
+
+  @ViewColumn()
+  public contact_email: string;
+
+  @ViewColumn()
+  public contact_phone: string;
 
   @ViewColumn()
   public title: string;

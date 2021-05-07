@@ -22,14 +22,37 @@ export class NonClassParent extends BaseEntity {
   public title: string;
 
   /**
-   * The facutly member contact for a given non-class event.
-   * This is recorded here, as this informatino does not regularly change.
+   * The faculty member name for a given event.
+   * This is recorded here as it does not regularly change between events.
    */
   @Column({
     type: 'varchar',
-    comment: 'The faculty member contact for a given event. This is recorded here, as this information does not regularly change',
+    comment: 'The faculty member name for a given event. This is recorded here as it does not regularly change between events.',
+    nullable: true,
   })
-  public contact: string;
+  public contactName: string;
+
+  /**
+   * The contact email for a given non class parent.
+   * This is recorded here as it does not regularly change between events.
+   */
+  @Column({
+    type: 'varchar',
+    comment: 'The contact email for a given non class parent. This is recorded here as it does not regularly change between events.',
+    nullable: true,
+  })
+  public contactEmail: string;
+
+  /**
+   * The contact phone number for a given non class parent.
+   * This is recorded here as it does not regularly change between events.
+   */
+  @Column({
+    type: 'varchar',
+    comment: 'The contact phone number for a given non class parent. This is recorded here as it does not regularly change between events.',
+    nullable: true,
+  })
+  public contactPhone: string;
 
   /**
    * Collection of scheduled events. These are typically events that occur
