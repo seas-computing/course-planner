@@ -30,7 +30,7 @@ export class NonClassParent extends BaseEntity {
     comment: 'The faculty member name for a given event. This is recorded here as it does not regularly change between events.',
     nullable: true,
   })
-  public contactName: string;
+  public contactName?: string;
 
   /**
    * The contact email for a given non class parent.
@@ -41,7 +41,7 @@ export class NonClassParent extends BaseEntity {
     comment: 'The contact email for a given non class parent. This is recorded here as it does not regularly change between events.',
     nullable: true,
   })
-  public contactEmail: string;
+  public contactEmail?: string;
 
   /**
    * The contact phone number for a given non class parent.
@@ -52,7 +52,18 @@ export class NonClassParent extends BaseEntity {
     comment: 'The contact phone number for a given non class parent. This is recorded here as it does not regularly change between events.',
     nullable: true,
   })
-  public contactPhone: string;
+  public contactPhone?: string;
+
+  /**
+   * Any notes users may wish to record against this NonClassParent can be
+   * recorded here
+   */
+  @Column({
+    type: 'text',
+    comment: 'Any notes users may wish to record against this NonClassParent can be recorded here',
+    nullable: true,
+  })
+  public notes?: string;
 
   /**
    * Collection of scheduled events. These are typically events that occur

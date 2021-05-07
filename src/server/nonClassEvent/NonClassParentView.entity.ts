@@ -16,6 +16,7 @@ import { NonClassEventView } from './NonClassEvent.view.entity';
     .addSelect('parent.contactName', 'contactName')
     .addSelect('parent.contactEmail', 'contactEmail')
     .addSelect('parent.contactPhone', 'contactPhone')
+    .addSelect('parent.notes', 'notes')
     .addSelect('parent.title', 'title')
     .from(NonClassParent, 'parent'),
 })
@@ -31,6 +32,9 @@ export class NonClassParentView {
 
   @ViewColumn()
   public contactPhone: string;
+
+  @ViewColumn()
+  public notes: string;
 
   @ViewColumn()
   public title: string;

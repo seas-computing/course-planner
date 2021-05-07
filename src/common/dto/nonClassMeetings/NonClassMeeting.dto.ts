@@ -83,6 +83,33 @@ export default abstract class NonClassMeetingResponseDTO {
   })
   public title: string;
 
+  @ApiModelProperty({
+    description: 'The contact name for this non-class parent',
+    example: 'James Waldo',
+    nullable: true,
+  })
+  public contactName?: string;
+
+  @ApiModelProperty({
+    description: 'The contact email for this non-class parent',
+    example: 'j.waldo@seas.harvard.edu',
+    nullable: true,
+  })
+  public contactEmail?: string;
+
+  @ApiModelProperty({
+    description: 'The contact email for this non-class parent',
+    example: '(123) 456-7890',
+    nullable: true,
+  })
+  public contactPhone?: string;
+
+  @ApiModelProperty({
+    description: 'Any misc. notes users wish to record alongside the non class parent',
+    example: 'Only occurs in odd-numbered years',
+  })
+  public notes?: string;
+
   @ApiModelProperty({ type: NonClassEvent })
   public spring: NonClassEvent;
 
