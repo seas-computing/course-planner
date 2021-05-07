@@ -39,7 +39,7 @@ import { Campus } from '../location/campus.entity';
     .innerJoin(Meeting, 'm', 'm."courseInstanceId" = ci.id')
     .leftJoin(Room, 'r', 'r.id = m."roomId"')
     .leftJoin(Building, 'b', 'b.id = r."buildingId"')
-    .leftJoin(Campus, 'campus', 'c.id = b."campusId"')
+    .leftJoin(Campus, 'campus', 'campus.id = b."campusId"')
     .where(`c."isSEAS" <> '${IS_SEAS.N}'`),
 })
 export class ScheduleEntryView {
