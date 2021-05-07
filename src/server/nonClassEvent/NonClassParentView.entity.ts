@@ -17,6 +17,7 @@ import { NonClassEventView } from './NonClassEvent.view.entity';
     .addSelect('parent.contactEmail', 'contactEmail')
     .addSelect('parent.contactPhone', 'contactPhone')
     .addSelect('parent.notes', 'notes')
+    .addSelect('parent.expectedSize', 'expectedSize')
     .addSelect('parent.title', 'title')
     .from(NonClassParent, 'parent'),
 })
@@ -38,6 +39,9 @@ export class NonClassParentView {
 
   @ViewColumn()
   public title: string;
+
+  @ViewColumn()
+  public expectedSize: number;
 
   public spring: NonClassEventView;
 

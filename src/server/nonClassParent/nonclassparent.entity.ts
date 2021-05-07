@@ -66,6 +66,16 @@ export class NonClassParent extends BaseEntity {
   public notes?: string;
 
   /**
+   * Expected enrollment size for this academic year
+   */
+  @Column({
+    type: 'int',
+    comment: 'Expected enrollment size for this academic year',
+    nullable: true,
+  })
+  public expectedSize?: number;
+
+  /**
    * Collection of scheduled events. These are typically events that occur
    * outside the normal teaching of classes (for example, office hours or
    * seminars)

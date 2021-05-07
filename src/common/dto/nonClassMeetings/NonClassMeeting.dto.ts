@@ -107,8 +107,16 @@ export default abstract class NonClassMeetingResponseDTO {
   @ApiModelProperty({
     description: 'Any misc. notes users wish to record alongside the non class parent',
     example: 'Only occurs in odd-numbered years',
+    nullable: true,
   })
   public notes?: string;
+
+  @ApiModelProperty({
+    description: 'Non class parent predicted enrollment size',
+    example: 82,
+    nullable: true,
+  })
+  public expectedSize?: number;
 
   @ApiModelProperty({ type: NonClassEvent })
   public spring: NonClassEvent;
