@@ -52,7 +52,8 @@ export class NonClassEventService {
         'fall_meetings.room',
         RoomListingView, 'fall_meetings_room',
         'fall_meetings_room.id = "fall_meetings"."roomId"'
-      );
+      )
+      .orderBy('p.area', 'ASC');
     return nonClassEvents.getMany();
   }
 }
