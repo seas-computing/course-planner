@@ -15,8 +15,8 @@ import {
   computationalModelingofFluidsReadingGroup,
   dataScienceReadingGroup,
 } from 'common/__tests__/data/nonClassEvents';
-import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import { NonClassParentView } from 'server/nonClassEvent/NonClassParentView.entity';
+import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 const mockNonClassEventService = {
   find: stub(),

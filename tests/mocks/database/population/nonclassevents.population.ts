@@ -4,10 +4,10 @@ import { Repository } from 'typeorm';
 import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
 import { Semester } from 'server/semester/semester.entity';
 import { Meeting } from 'server/meeting/meeting.entity';
+import { Area } from 'server/area/area.entity';
 import { BasePopulationService } from './base.population';
 import { NonClassMeetingData } from './data';
 import { Room } from '../../../../src/server/location/room.entity';
-import { Area } from 'server/area/area.entity';
 
 export class NonClassEventPopulationService
   extends BasePopulationService<NonClassParent> {
