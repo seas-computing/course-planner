@@ -5,6 +5,7 @@ import NonClassMeetingResponseDTO from 'common/dto/nonClassMeetings/NonClassMeet
 import { ConfigService } from 'server/config/config.service';
 import { Authentication } from 'server/auth/authentication.guard';
 import { NonClassEventService } from './nonClassEvent.service';
+import { NonClassParentView } from './NonClassParentView.entity';
 
 @UseGuards(Authentication)
 @Controller('api/non-class-events')
@@ -23,7 +24,7 @@ export class NonClassEventController {
   @Get('/')
   public async find(
     @Query('acyr') acyr?: number
-  ): Promise<NonClassMeetingResponseDTO[]> {
+  ): Promise<Record<string, NonClassMeetingResponseDTO[]>> {
     let academicYear: number;
     if (acyr) {
       academicYear = acyr;
@@ -31,6 +32,21 @@ export class NonClassEventController {
       ({ academicYear } = this.config);
     }
 
-    return this.service.find(academicYear);
+    const nonClassEvents = (await this.service.find(academicYear))
+      .reduce(
+        (
+          acc: Record<string, NonClassParentView[]>,
+          val: NonClassParentView
+        ) => {
+          const { academicYear: year } = val.spring;
+
+          if (!Array.isArray(acc[year])) {
+            acc[year] = [];
+          }
+          acc[year].push(val);
+          return acc;
+        }, {}
+      );
+    return nonClassEvents;
   }
 }

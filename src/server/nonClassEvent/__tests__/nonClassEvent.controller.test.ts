@@ -72,5 +72,31 @@ describe('NonClassEvent controller', function () {
         mockData
       );
     });
+    it('groups NonClassParents by academic year', async function () {
+      const {
+        spring: springSemester,
+      } = computationalModelingofFluidsReadingGroup;
+
+      const mockData = [
+        dataScienceReadingGroup,
+        {
+          ...computationalModelingofFluidsReadingGroup,
+          spring: {
+            ...springSemester,
+            academicYear: (
+              parseInt(springSemester.academicYear, 10) + 2
+            ).toString(),
+          },
+        },
+      ];
+      mockNonClassEventService.find.resolves(mockData);
+
+      const results = await controller.find();
+
+      deepStrictEqual(
+        Object.keys(results),
+        [...new Set(mockData.map(({ spring }) => spring.academicYear))]
+      );
+    });
   });
 });
