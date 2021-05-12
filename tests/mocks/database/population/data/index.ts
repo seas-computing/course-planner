@@ -74,7 +74,7 @@ export interface SemesterData {
 
 export interface NonClassMeetingData {
   title: string;
-  contact: string;
+  contactName: string;
   private: boolean;
   meetings: MeetingData[];
 }

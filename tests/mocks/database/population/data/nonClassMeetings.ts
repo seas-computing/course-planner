@@ -3,7 +3,7 @@ import { DAY } from '../../../../../src/common/constants';
 export const nonClassMeetings = [
   {
     title: 'Computer Science Area Meeting',
-    contact: 'James Waldo',
+    contactName: 'James Waldo',
     private: false,
     meetings: [
       {
@@ -16,7 +16,7 @@ export const nonClassMeetings = [
   },
   {
     title: 'Active Learning Labs Staff Meeting',
-    contact: 'Nishant V. Sule',
+    contactName: 'Nishant V. Sule',
     private: false,
     meetings: [
       {
@@ -29,7 +29,7 @@ export const nonClassMeetings = [
   },
   {
     title: 'Quantum Lab Meeting',
-    contact: 'Pri Narang',
+    contactName: 'Pri Narang',
     private: false,
     meetings: [],
   },
