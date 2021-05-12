@@ -16,6 +16,7 @@ import {
   dataScienceReadingGroup,
 } from 'common/__tests__/data/nonClassEvents';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
+import { NonClassParentView } from 'server/nonClassEvent/NonClassParentView.entity';
 
 const mockNonClassEventService = {
   find: stub(),
@@ -95,10 +96,14 @@ describe('Non Class Event API', function () {
         strictEqual(response.ok, true);
         strictEqual(response.status, HttpStatus.OK);
         strictEqual(mockNonClassEventService.find.callCount, 1);
-        deepStrictEqual(response.body, [
-          computationalModelingofFluidsReadingGroup,
-          dataScienceReadingGroup,
-        ]);
+        deepStrictEqual(
+          Object.values(response.body as Record<string, NonClassParentView[]>)
+            .reduce((acc, val) => acc.concat(val), []),
+          [
+            computationalModelingofFluidsReadingGroup,
+            dataScienceReadingGroup,
+          ]
+        );
       });
     });
   });
