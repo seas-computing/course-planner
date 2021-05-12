@@ -1,7 +1,7 @@
-import { Area } from 'server/area/area.entity';
 import {
   Entity, Column, ObjectType, OneToMany, ManyToOne,
 } from 'typeorm';
+import { Area } from '../area/area.entity';
 import { BaseEntity } from '../base/base.entity';
 import { NonClassEvent } from '../nonClassEvent/nonclassevent.entity';
 
