@@ -49,6 +49,8 @@ export class NonClassEventPopulationService
         const nonClassParent = new NonClassParent();
         nonClassParent.title = parentData.title;
         nonClassParent.contactName = parentData.contactName;
+        nonClassParent.contactEmail = parentData.contactEmail;
+        nonClassParent.contactPhone = parentData.contactPhone;
         nonClassParent.nonClassEvents = allSemesters
           .map((sem): NonClassEvent => {
             const nonClassEvent = new NonClassEvent();

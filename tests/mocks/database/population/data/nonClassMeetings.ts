@@ -4,6 +4,8 @@ export const nonClassMeetings = [
   {
     title: 'Computer Science Area Meeting',
     contactName: 'James Waldo',
+    contactEmail: 'j.waldo@harvard.edu',
+    contactPhone: '(123)-456-7890',
     private: false,
     meetings: [
       {
@@ -17,6 +19,8 @@ export const nonClassMeetings = [
   {
     title: 'Active Learning Labs Staff Meeting',
     contactName: 'Nishant V. Sule',
+    contactEmail: '',
+    contactPhone: '(111)-222-3333',
     private: false,
     meetings: [
       {
@@ -30,6 +34,8 @@ export const nonClassMeetings = [
   {
     title: 'Quantum Lab Meeting',
     contactName: 'Pri Narang',
+    contactEmail: '',
+    contactPhone: '',
     private: false,
     meetings: [],
   },
