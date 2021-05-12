@@ -77,6 +77,7 @@ export interface NonClassMeetingData {
   contactName: string;
   contactEmail: string;
   contactPhone: string;
+  expectedSize: number;
   private: boolean;
   meetings: MeetingData[];
 }

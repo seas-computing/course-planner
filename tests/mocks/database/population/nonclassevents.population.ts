@@ -57,6 +57,7 @@ export class NonClassEventPopulationService
         nonClassParent.contactName = parentData.contactName;
         nonClassParent.contactEmail = parentData.contactEmail;
         nonClassParent.contactPhone = parentData.contactPhone;
+        nonClassParent.expectedSize = parentData.expectedSize;
         nonClassParent.area = area;
         nonClassParent.nonClassEvents = allSemesters
           .map((sem): NonClassEvent => {

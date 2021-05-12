@@ -269,13 +269,14 @@ describe('Population Service', function () {
           day, startTime, endTime, nonClassEvent,
         }) => {
           const {
-            contactName, contactPhone, contactEmail, title,
+            contactName, contactPhone, contactEmail, title, expectedSize,
           } = nonClassEvent.nonClassParent;
           const testMeeting = testData.nonClassMeetings.find((nonClass) => (
             nonClass.title === title
             && nonClass.contactName === contactName
             && nonClass.contactPhone === contactPhone
             && nonClass.contactEmail === contactEmail
+            && nonClass.expectedSize === expectedSize
           ));
           strictEqual(!!testMeeting, true);
           const meetingOnDay = testMeeting
@@ -294,16 +295,16 @@ describe('Population Service', function () {
 
       deepStrictEqual(
         dbParents.map(({
-          contactName, contactPhone, contactEmail, title,
+          contactName, contactPhone, contactEmail, title, expectedSize,
         }) => ({
-          contactName, contactPhone, contactEmail, title,
+          contactName, contactPhone, contactEmail, title, expectedSize,
         }))
           .sort(),
         testData.nonClassMeetings
           .map(({
-            contactName, contactPhone, contactEmail, title,
+            contactName, contactPhone, contactEmail, title, expectedSize,
           }) => ({
-            contactName, contactPhone, contactEmail, title,
+            contactName, contactPhone, contactEmail, title, expectedSize,
           })).sort()
       );
     });
