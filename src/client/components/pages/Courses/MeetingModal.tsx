@@ -7,6 +7,7 @@ import {
   ModalFooter,
   ModalHeader,
   VARIANT,
+  BorderlessButton,
 } from 'mark-one';
 import React, {
   FunctionComponent,
@@ -15,7 +16,12 @@ import React, {
   useEffect,
   useRef,
 } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import styled from 'styled-components';
+import { VerticalSpace } from 'client/components/layout';
+import { ButtonLayout, ListLayout } from 'client/components/general';
+import { dayEnumToString } from 'common/constants/day';
 import { instructorDisplayNameToFirstLast } from '../utils/instructorDisplayNameToFirstLast';
 
 /**
@@ -146,6 +152,45 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
           <MeetingScheduler>
             <MeetingSchedulerHeader>{`Meeting times for ${course.catalogNumber}`}</MeetingSchedulerHeader>
             <MeetingSchedulerBody>
+              <div className="meeting-times-section">
+                <ul>
+                  {instance.meetings.map((meeting) => (
+                    <ListLayout key={meeting.id}>
+                      <BorderlessButton
+                        id={`deleteButton${meeting.id}`}
+                        variant={VARIANT.DANGER}
+                        onClick={
+                          (): void => {}
+                        }
+                      >
+                        <FontAwesomeIcon icon={faTrash} />
+                      </BorderlessButton>
+                      <span>{`${dayEnumToString(meeting.day)}, ${meeting.startTime} to ${meeting.endTime} in ${meeting.room.name}`}</span>
+                      <BorderlessButton
+                        id={`editButton${meeting.id}`}
+                        variant={VARIANT.INFO}
+                        onClick={
+                          (): void => {}
+                        }
+                      >
+                        <FontAwesomeIcon icon={faEdit} />
+                      </BorderlessButton>
+                    </ListLayout>
+                  ))}
+                </ul>
+                <VerticalSpace />
+                <ButtonLayout>
+                  <Button
+                    id="addNewTimeButton"
+                    onClick={
+                      (): void => {}
+                    }
+                    variant={VARIANT.SECONDARY}
+                  >
+                    Add New Time
+                  </Button>
+                </ButtonLayout>
+              </div>
               <h3>
                 Faculty Notes
               </h3>
