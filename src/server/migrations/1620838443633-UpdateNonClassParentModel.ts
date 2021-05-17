@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
- * This migration adds additional fields to the [[NonclassParent]] model such
+ * This migration adds additional fields to the [[NonClassParent]] model such
  * as `contactName`, `contactEmail`, `contactPhone` and `expectedSize` as well
  * as `area`
  *
