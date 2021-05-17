@@ -6,7 +6,11 @@
  */
 export const dataScienceReadingGroup = {
   id: '9548f85e-d613-48d2-94fe-63dbaf95084c',
-  contact: 'Jim Waldo',
+  contactName: 'Jim Waldo',
+  contactEmail: null,
+  contactPhone: '(128) 229-9918',
+  notes: null,
+  expectedSize: 190,
   title: 'Data Science Reading Group',
   spring: {
     id: '59d737ac-aadc-4e67-8d7a-7db2299d0026',
@@ -78,7 +82,11 @@ export const dataScienceReadingGroup = {
  */
 export const computationalModelingofFluidsReadingGroup = {
   id: 'ad9a6a86-4cd1-4063-bd6d-c7379f10c540',
-  contact: 'Jim Waldo',
+  contactName: 'Jim Waldo',
+  contactEmail: 'jwaldo@harvard.edu',
+  contactPhone: null,
+  notes: 'Some notes',
+  expectedSize: null,
   title: 'Computational Modeling of Fluids and Soft Matter Reading Group',
   spring: {
     id: '3086f1be-a15f-491f-b82b-e991f3e747b1',
