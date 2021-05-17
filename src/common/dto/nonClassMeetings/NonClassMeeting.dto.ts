@@ -98,7 +98,7 @@ export default abstract class NonClassMeetingResponseDTO {
   public contactEmail?: string;
 
   @ApiModelProperty({
-    description: 'The contact email for this non-class parent',
+    description: 'The contact phone number for this non-class parent',
     example: '(123) 456-7890',
     nullable: true,
   })
