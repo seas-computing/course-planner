@@ -7,6 +7,7 @@ export const nonClassMeetings = [
     contactEmail: 'j.waldo@harvard.edu',
     contactPhone: '(123)-456-7890',
     expectedSize: 16,
+    notes: null,
     private: false,
     meetings: [
       {
@@ -23,6 +24,7 @@ export const nonClassMeetings = [
     contactEmail: '',
     contactPhone: '(111)-222-3333',
     expectedSize: 26,
+    notes: 'some notes',
     private: false,
     meetings: [
       {
