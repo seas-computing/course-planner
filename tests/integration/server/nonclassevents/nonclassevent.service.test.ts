@@ -89,7 +89,7 @@ describe('NonClassEvent Service', function () {
           relations: ['room', 'room.building'],
         });
       });
-      it('Should format the startTimes and endTimes as HH:MM AM', async function () {
+      it('Should format the startTimes and endTimes as hh:mm aa', async function () {
         const expectedAcdemicYear = 2020;
 
         const events = await service.find(expectedAcdemicYear);
