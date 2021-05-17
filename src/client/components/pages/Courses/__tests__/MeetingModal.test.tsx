@@ -8,6 +8,7 @@ import {
 } from '@testing-library/react';
 import { strictEqual } from 'assert';
 import { TERM } from 'common/constants';
+import { dayEnumToString } from 'common/constants/day';
 import { TermKey } from 'common/constants/term';
 import React from 'react';
 import { SinonStub, stub } from 'sinon';
@@ -75,6 +76,15 @@ describe('Meeting Modal', function () {
               strictEqual(facultyWithNullNotes.length, noNotesLength);
             });
           });
+        });
+      });
+      describe('Meeting Times', function () {
+        it('displays each of the existing meetings', function () {
+          const expectedMeetings = testCourseInstance.fall.meetings
+            .map((meeting) => `${dayEnumToString(meeting.day)}, ${meeting.startTime} to ${meeting.endTime} in ${meeting.room.name}`);
+          return Promise.all(expectedMeetings.map((meeting) => waitForElement(
+            () => getByText(meeting)
+          )));
         });
       });
     });
