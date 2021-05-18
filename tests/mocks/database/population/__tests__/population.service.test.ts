@@ -269,7 +269,12 @@ describe('Population Service', function () {
           day, startTime, endTime, nonClassEvent,
         }) => {
           const {
-            contactName, contactPhone, contactEmail, title, expectedSize,
+            contactName,
+            contactPhone,
+            contactEmail,
+            title,
+            expectedSize,
+            notes,
           } = nonClassEvent.nonClassParent;
           const testMeeting = testData.nonClassMeetings.find((nonClass) => (
             nonClass.title === title
@@ -277,6 +282,7 @@ describe('Population Service', function () {
             && nonClass.contactPhone === contactPhone
             && nonClass.contactEmail === contactEmail
             && nonClass.expectedSize === expectedSize
+            && nonClass.notes === notes
           ));
           strictEqual(!!testMeeting, true);
           const meetingOnDay = testMeeting
