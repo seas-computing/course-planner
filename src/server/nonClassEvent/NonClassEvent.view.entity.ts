@@ -5,6 +5,7 @@ import {
   ViewColumn,
   ManyToOne,
   ObjectType,
+  JoinColumn,
 } from 'typeorm';
 import { Semester } from 'server/semester/semester.entity';
 import { TERM } from 'common/constants';
@@ -57,7 +58,6 @@ export class NonClassEventView {
    * From [[CourseInstance]]
    * The [[MultiYearPlanView]] this instance view belongs to
    */
-  @ViewColumn()
   @ManyToOne(
     (): ObjectType<NonClassParentView> => NonClassParentView,
     ({ nonClassEvents }): NonClassEventView[] => nonClassEvents
