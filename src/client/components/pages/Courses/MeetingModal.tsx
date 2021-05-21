@@ -15,6 +15,7 @@ import React, {
   Ref,
   useEffect,
   useRef,
+  useState,
 } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -135,6 +136,15 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   const semKey = term.toLowerCase() as TermKey;
   const instance = course[semKey];
 
+  /**
+   * Keeps track of the current meetings for this instance. This is updated as
+   * users add and edit meetings in the modal.
+   */
+  const [
+    currentMeetings,
+    setCurrentMeetings,
+  ] = useState(instance.meetings);
+
   return (
     <Modal
       ariaLabelledBy="editMeeting"
@@ -154,7 +164,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
             <MeetingSchedulerBody>
               <div className="meeting-times-section">
                 <ul>
-                  {instance.meetings.map((meeting) => (
+                  {currentMeetings.map((meeting) => (
                     <ListLayout key={meeting.id}>
                       <BorderlessButton
                         id={`deleteButton${meeting.id}`}
