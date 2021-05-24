@@ -55,8 +55,10 @@ interface MeetingModalProps {
  * Utility component to style content within meeting modal body
  */
 const MeetingModalBodyGrid = styled.div`
-  max-height: 75vh;
-  max-width: 75vw;
+  max-height: 90vh;
+  min-height: 70vh;
+  max-width: 90vw;
+  min-width: 75vw;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -344,6 +346,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
                                   }
                                 >
                                   <FontAwesomeIcon icon={faEdit} />
+                                </BorderlessButton>
                               </>
                             )
                         }
