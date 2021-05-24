@@ -8,6 +8,9 @@ import {
   ModalHeader,
   VARIANT,
   BorderlessButton,
+  Dropdown,
+  TextInput,
+  ValidationErrorMessage,
 } from 'mark-one';
 import React, {
   FunctionComponent,
@@ -22,7 +25,7 @@ import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import styled from 'styled-components';
 import { VerticalSpace } from 'client/components/layout';
 import { ButtonLayout, ListLayout } from 'client/components/general';
-import { dayEnumToString } from 'common/constants/day';
+import DAY, { dayEnumToString, days } from 'common/constants/day';
 import { instructorDisplayNameToFirstLast } from '../utils/instructorDisplayNameToFirstLast';
 
 /**
@@ -109,6 +112,14 @@ const RoomAvailabilityBody = styled.div`
   overflow: auto;
 `;
 
+/**
+ * Contains the meeting day and time selectors so they can be displayed side by side
+ */
+const TimeSelector = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
+
 const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   isVisible,
   onClose,
@@ -145,6 +156,46 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     setCurrentMeetings,
   ] = useState(instance.meetings);
 
+  /**
+   * The meeting within the list of meetings that is currently being edited
+   */
+  const [
+    currentEditedMeetingId,
+    setCurrentEditedMeetingId,
+  ] = useState(null as string);
+
+  /**
+   * The selected day in the dropdown for the meeting currently being edited
+   */
+  const [
+    currentEditedDay,
+    setCurrentEditedDay,
+  ] = useState(null as DAY);
+
+  /**
+   * The start time value for the meeting currently being edited
+   */
+  const [
+    currentStartTime,
+    setCurrentStartTime,
+  ] = useState(null as string);
+
+  /**
+   * The end time value for the meeting currently being edited
+   */
+  const [
+    currentEndTime,
+    setCurrentEndTime,
+  ] = useState(null as string);
+
+  /**
+   * The current value of the error message when creating or editing a meeting time
+   */
+  const [
+    meetingTimeError,
+    setMeetingTimeError,
+  ] = useState('');
+
   return (
     <Modal
       ariaLabelledBy="editMeeting"
@@ -164,29 +215,141 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
             <MeetingSchedulerBody>
               <div className="meeting-times-section">
                 <ul>
-                  {currentMeetings.map((meeting) => (
-                    <ListLayout key={meeting.id}>
-                      <BorderlessButton
-                        id={`deleteButton${meeting.id}`}
-                        variant={VARIANT.DANGER}
-                        onClick={
-                          (): void => {}
+                  {currentMeetings.map(
+                    (meeting) => (
+                      <ListLayout key={meeting.id}>
+                        <BorderlessButton
+                          id={`deleteButton${meeting.id}`}
+                          variant={VARIANT.DANGER}
+                          onClick={
+                            (): void => {}
+                          }
+                        >
+                          <FontAwesomeIcon icon={faTrash} />
+                        </BorderlessButton>
+                        {
+                          meeting.id === currentEditedMeetingId
+                            ? (
+                              <div>
+                                <TimeSelector>
+                                  <Dropdown
+                                    id="meetingDay"
+                                    name="meetingDay"
+                                    label="Meeting Day"
+                                    options={
+                                      days.map((day) => ({
+                                        value: day,
+                                        label: dayEnumToString(day),
+                                      }))
+                                    }
+                                    value={currentEditedDay}
+                                    onChange={
+                                      (event
+                                      : React.ChangeEvent<HTMLSelectElement>)
+                                      : void => {
+                                        setCurrentEditedDay(
+                                          event.currentTarget.value as DAY
+                                        );
+                                      }
+                                    }
+                                    hideError
+                                    isRequired
+                                    isLabelVisible={false}
+                                  />
+                                  <TextInput
+                                    id="meetingStartTime"
+                                    name="meetingStartTime"
+                                    label="Meeting Start Time"
+                                    type="time"
+                                    value={currentStartTime}
+                                    onChange={
+                                      (event
+                                      : React.ChangeEvent<HTMLInputElement>)
+                                      : void => {
+                                        setCurrentStartTime(
+                                          event.currentTarget.value
+                                        );
+                                      }
+                                    }
+                                    hideError
+                                    isRequired
+                                    isLabelVisible={false}
+                                  />
+                                  <TextInput
+                                    id="meetingEndTime"
+                                    name="meetingEndTime"
+                                    label="Meeting End Time"
+                                    type="time"
+                                    value={currentEndTime}
+                                    onChange={
+                                      (event
+                                      : React.ChangeEvent<HTMLInputElement>)
+                                      : void => {
+                                        setCurrentEndTime(
+                                          event.currentTarget.value
+                                        );
+                                      }
+                                    }
+                                    hideError
+                                    isRequired
+                                    isLabelVisible={false}
+                                  />
+                                  <ValidationErrorMessage
+                                    id="meetingTimeErrorMessage"
+                                  >
+                                    {meetingTimeError}
+                                  </ValidationErrorMessage>
+                                </TimeSelector>
+                                <div>
+                                  <span>
+                                    Room:
+                                    {` ${meeting.room.name}`}
+                                  </span>
+                                  <ButtonLayout>
+                                    <Button
+                                      id="closeButton"
+                                      onClick={
+                                        (): void => {}
+                                      }
+                                      variant={VARIANT.SECONDARY}
+                                    >
+                                      Close
+                                    </Button>
+                                    <Button
+                                      id="showRoomsButton"
+                                      onClick={
+                                        (): void => {}
+                                      }
+                                      variant={VARIANT.PRIMARY}
+                                    >
+                                      Show Rooms
+                                    </Button>
+                                  </ButtonLayout>
+                                </div>
+                              </div>
+                            )
+                            : (
+                              <>
+                                <span>{`${dayEnumToString(meeting.day)}, ${meeting.startTime} to ${meeting.endTime} in ${meeting.room.name}`}</span>
+                                <BorderlessButton
+                                  id={`editButton${meeting.id}`}
+                                  variant={VARIANT.INFO}
+                                  onClick={
+                                    (): void => {
+                                      setCurrentEditedMeetingId(meeting.id);
+                                      setCurrentEditedDay(meeting.day);
+                                      setCurrentStartTime(meeting.startTime);
+                                      setCurrentEndTime(meeting.endTime);
+                                    }
+                                  }
+                                >
+                                  <FontAwesomeIcon icon={faEdit} />
+                              </>
+                            )
                         }
-                      >
-                        <FontAwesomeIcon icon={faTrash} />
-                      </BorderlessButton>
-                      <span>{`${dayEnumToString(meeting.day)}, ${meeting.startTime} to ${meeting.endTime} in ${meeting.room.name}`}</span>
-                      <BorderlessButton
-                        id={`editButton${meeting.id}`}
-                        variant={VARIANT.INFO}
-                        onClick={
-                          (): void => {}
-                        }
-                      >
-                        <FontAwesomeIcon icon={faEdit} />
-                      </BorderlessButton>
-                    </ListLayout>
-                  ))}
+                      </ListLayout>
+                    )
+                  )}
                 </ul>
                 <VerticalSpace />
                 <ButtonLayout>
