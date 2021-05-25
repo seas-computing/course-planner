@@ -26,6 +26,7 @@ import styled from 'styled-components';
 import { VerticalSpace } from 'client/components/layout';
 import { ButtonLayout, ListLayout } from 'client/components/general';
 import DAY, { dayEnumToString, days } from 'common/constants/day';
+import { convert12To24HourTime } from 'common/utils/timeHelperFunctions';
 import { instructorDisplayNameToFirstLast } from '../utils/instructorDisplayNameToFirstLast';
 
 /**
@@ -162,16 +163,16 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
    * The meeting within the list of meetings that is currently being edited
    */
   const [
-    currentEditedMeetingId,
-    setCurrentEditedMeetingId,
+    currentMeetingId,
+    setCurrentMeetingId,
   ] = useState(null as string);
 
   /**
    * The selected day in the dropdown for the meeting currently being edited
    */
   const [
-    currentEditedDay,
-    setCurrentEditedDay,
+    currentDay,
+    setCurrentDay,
   ] = useState(null as DAY);
 
   /**
@@ -230,7 +231,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
                           <FontAwesomeIcon icon={faTrash} />
                         </BorderlessButton>
                         {
-                          meeting.id === currentEditedMeetingId
+                          meeting.id === currentMeetingId
                             ? (
                               <div>
                                 <TimeSelector>
@@ -244,12 +245,12 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
                                         label: dayEnumToString(day),
                                       }))
                                     }
-                                    value={currentEditedDay}
+                                    value={currentDay}
                                     onChange={
                                       (event
                                       : React.ChangeEvent<HTMLSelectElement>)
                                       : void => {
-                                        setCurrentEditedDay(
+                                        setCurrentDay(
                                           event.currentTarget.value as DAY
                                         );
                                       }
@@ -263,7 +264,9 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
                                     name="meetingStartTime"
                                     label="Meeting Start Time"
                                     type="time"
-                                    value={currentStartTime}
+                                    value={convert12To24HourTime(
+                                      currentStartTime
+                                    )}
                                     onChange={
                                       (event
                                       : React.ChangeEvent<HTMLInputElement>)
@@ -282,7 +285,9 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
                                     name="meetingEndTime"
                                     label="Meeting End Time"
                                     type="time"
-                                    value={currentEndTime}
+                                    value={convert12To24HourTime(
+                                      currentEndTime
+                                    )}
                                     onChange={
                                       (event
                                       : React.ChangeEvent<HTMLInputElement>)
@@ -338,8 +343,8 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
                                   variant={VARIANT.INFO}
                                   onClick={
                                     (): void => {
-                                      setCurrentEditedMeetingId(meeting.id);
-                                      setCurrentEditedDay(meeting.day);
+                                      setCurrentMeetingId(meeting.id);
+                                      setCurrentDay(meeting.day);
                                       setCurrentStartTime(meeting.startTime);
                                       setCurrentEndTime(meeting.endTime);
                                     }
