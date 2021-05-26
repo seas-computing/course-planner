@@ -24,9 +24,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import styled from 'styled-components';
 import { VerticalSpace } from 'client/components/layout';
-import { ButtonLayout, ListLayout } from 'client/components/general';
+import { ButtonLayout, ListLayout, TimePicker } from 'client/components/general';
 import DAY, { dayEnumToString, days } from 'common/constants/day';
 import { convert12To24HourTime } from 'common/utils/timeHelperFunctions';
+import { calculateStartEndTimes, meetingTimeSlots } from 'common/constants/timeslots';
 import { instructorDisplayNameToFirstLast } from '../utils/instructorDisplayNameToFirstLast';
 
 /**
@@ -258,6 +259,29 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
                                     hideError
                                     isRequired
                                     isLabelVisible={false}
+                                  />
+                                  <TimePicker
+                                    id="timeslots"
+                                    name="timeslots"
+                                    options={[{ value: '', label: '🕒' }]
+                                      .concat(meetingTimeSlots.map((slot) => ({
+                                        value: slot,
+                                        label: slot,
+                                      })))}
+                                    value={currentTimeslot}
+                                    onChange={
+                                      (event
+                                      : React.ChangeEvent<HTMLSelectElement>)
+                                      : void => {
+                                        if (event.currentTarget.value !== '') {
+                                          const times = calculateStartEndTimes(
+                                            event.currentTarget.value
+                                          );
+                                          setCurrentStartTime(times.start);
+                                          setCurrentEndTime(times.end);
+                                        }
+                                      }
+                                    }
                                   />
                                   <TextInput
                                     id="meetingStartTime"
