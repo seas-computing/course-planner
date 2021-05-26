@@ -14,21 +14,21 @@ import { Room } from '../location/room.entity';
 export class Meeting extends BaseEntity {
   /**
    * The time of day this event (meeting) begins in 24 hour time with ISO8601 timezone
-   * @example `"19:15:40.328-04"`
+   * @example `"19:15:40"`
    */
   @Column({
     type: 'time',
-    comment: 'The time of day this event (meeting) begins in 24 hour time with ISO8601 timezone (e.g "19:15:40.328-04")',
+    comment: 'The time of day this event (meeting) begins in 24 hour time (e.g "19:15:40")',
   })
   public startTime: string;
 
   /**
    * The time of day this event (meeting) ends in 24 hour time with ISO8601 timezone
-   * @example `"19:15:40.328-04"`
+   * @example `"19:15:40"`
    */
   @Column({
     type: 'time',
-    comment: 'The time of day this event (meeting) ends in 24 hour time with ISO8601 timezone (e.g "19:15:40.328-04")',
+    comment: 'The time of day this event (meeting) ends in 24 hour time (e.g "19:15:40")',
   })
   public endTime: string;
 
