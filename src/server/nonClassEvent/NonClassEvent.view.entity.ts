@@ -5,7 +5,6 @@ import {
   ViewColumn,
   ManyToOne,
   ObjectType,
-  JoinColumn,
 } from 'typeorm';
 import { Semester } from 'server/semester/semester.entity';
 import { TERM } from 'common/constants';
