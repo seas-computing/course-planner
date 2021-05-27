@@ -16,19 +16,3 @@ export const meetingTimeSlots = [
   '06:00 PM-07:00 PM',
   '07:00 PM-08:00 PM',
 ];
-
-/**
- * A helper function that calculates the start and end times given the defined
- * meetingTimeSlots, which is an array of strings (e.g. ['08:00 AM-09:00 AM',
- * '09:00 AM-10:00 AM']). This function is called each time a user selects a new
- * timeslot in the meeting modal to populate the adjacent start and end time
- * text input fields accordingly.
- */
-export const calculateStartEndTimes = (timeslot: string):
-{start: string, end: string} => {
-  const times = timeslot.split('-');
-  return {
-    start: times[0],
-    end: times[1],
-  };
-};

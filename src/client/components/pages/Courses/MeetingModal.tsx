@@ -26,8 +26,8 @@ import styled from 'styled-components';
 import { VerticalSpace } from 'client/components/layout';
 import { ButtonLayout, ListLayout, TimePicker } from 'client/components/general';
 import DAY, { dayEnumToString, days } from 'common/constants/day';
-import { convert12To24HourTime } from 'common/utils/timeHelperFunctions';
-import { calculateStartEndTimes, meetingTimeSlots } from 'common/constants/timeslots';
+import { calculateStartEndTimes, convert12To24HourTime } from 'common/utils/timeHelperFunctions';
+import { meetingTimeSlots } from 'common/constants/timeslots';
 import { instructorDisplayNameToFirstLast } from '../utils/instructorDisplayNameToFirstLast';
 
 /**
