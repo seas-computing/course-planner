@@ -177,6 +177,14 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   ] = useState(null as DAY);
 
   /**
+   * The timeslot currently selected in the time picker dropdown
+   */
+  const [
+    currentTimeslot,
+    setCurrentTimeslot,
+  ] = useState(null as string);
+
+  /**
    * The start time value for the meeting currently being edited
    */
   const [
