@@ -1,5 +1,6 @@
+import { Area } from 'server/area/area.entity';
 import {
-  Entity, Column, ObjectType, OneToMany,
+  Entity, Column, ObjectType, OneToMany, ManyToOne,
 } from 'typeorm';
 import { BaseEntity } from '../base/base.entity';
 import { NonClassEvent } from '../nonClassEvent/nonclassevent.entity';
@@ -22,14 +23,71 @@ export class NonClassParent extends BaseEntity {
   public title: string;
 
   /**
-   * The facutly member contact for a given non-class event.
-   * This is recorded here, as this informatino does not regularly change.
+   * The faculty member name for a given event.
+   * This is recorded here as it does not regularly change between events.
    */
   @Column({
     type: 'varchar',
-    comment: 'The faculty member contact for a given event. This is recorded here, as this information does not regularly change',
+    comment: 'The faculty member name for a given event. This is recorded here as it does not regularly change between events.',
+    nullable: true,
   })
-  public contact: string;
+  public contactName?: string;
+
+  /**
+   * The contact email for a given non class parent.
+   * This is recorded here as it does not regularly change between events.
+   */
+  @Column({
+    type: 'varchar',
+    comment: 'The contact email for a given non class parent. This is recorded here as it does not regularly change between events.',
+    nullable: true,
+  })
+  public contactEmail?: string;
+
+  /**
+   * The contact phone number for a given non class parent.
+   * This is recorded here as it does not regularly change between events.
+   */
+  @Column({
+    type: 'varchar',
+    comment: 'The contact phone number for a given non class parent. This is recorded here as it does not regularly change between events.',
+    nullable: true,
+  })
+  public contactPhone?: string;
+
+  /**
+   * Any notes users may wish to record against this NonClassParent can be
+   * recorded here
+   */
+  @Column({
+    type: 'text',
+    comment: 'Any notes users may wish to record against this NonClassParent can be recorded here',
+    nullable: true,
+  })
+  public notes?: string;
+
+  /**
+   * Expected enrollment size for this academic year
+   */
+  @Column({
+    type: 'int',
+    comment: 'Expected enrollment size for this academic year',
+    nullable: true,
+  })
+  public expectedSize?: number;
+
+  /**
+   * The [[Area]] this [[NonClassParent]] belongs to
+   *
+   * ---
+   * Many [[NonClassParent]]s belong to one [[Area]]
+   */
+  @ManyToOne(
+    (): ObjectType<Area> => Area,
+    ({ nonClassParents }): NonClassParent[] => nonClassParents,
+    { nullable: false }
+  )
+  public area: Area;
 
   /**
    * Collection of scheduled events. These are typically events that occur
