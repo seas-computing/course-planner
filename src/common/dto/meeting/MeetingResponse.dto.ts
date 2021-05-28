@@ -5,7 +5,7 @@ import { ApiModelProperty } from '@nestjs/swagger';
  * Models the information a room included with the server response
  */
 
-abstract class MeetingRoomResponse {
+export abstract class MeetingRoomResponse {
   /**
    * The database uuid of the room
    */
