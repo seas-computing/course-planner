@@ -6,7 +6,7 @@ import DAY, { dayEnumToString, days } from 'common/constants/day';
 import { meetingTimeSlots } from 'common/constants/timeslots';
 import { CourseInstanceResponseMeeting } from 'common/dto/courses/CourseInstanceResponse';
 import { MeetingRoomResponse } from 'common/dto/meeting/MeetingResponse.dto';
-import { calculateStartEndTimes, convert12To24HourTime } from 'common/utils/timeHelperFunctions';
+import { calculateStartEndTimes, convert12To24HourTime, convertTo12HourDisplayTime } from 'common/utils/timeHelperFunctions';
 import {
   BorderlessButton,
   Button,
@@ -258,7 +258,7 @@ export const MeetingTimesList
                   )
                   : (
                     <>
-                      <span>{`${dayEnumToString(meeting.day)}, ${meeting.startTime} to ${meeting.endTime} in ${meeting.room.name}`}</span>
+                      <span>{`${dayEnumToString(meeting.day)}, ${convertTo12HourDisplayTime(meeting.startTime)} to ${convertTo12HourDisplayTime(meeting.endTime)} in ${meeting.room.name}`}</span>
                       <BorderlessButton
                         id={`editButton${meeting.id}`}
                         variant={VARIANT.INFO}

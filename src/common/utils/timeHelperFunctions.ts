@@ -23,6 +23,40 @@ export const convert12To24HourTime = (twelveHourTime: string): string => {
 };
 
 /**
+ * A helper function that converts a time string into a user friendly format.
+ * If the time provided is in a 12 hour time format, the time is returned without
+ * a leading zero (e.g. '08:45 AM' becomes '8:45 AM').
+ * If the time provided is in a 24 hour time format, it is converted into
+ * 12 hour time format.
+ */
+export const convertTo12HourDisplayTime = (time: string): string => {
+  // If the time provided is already in 12 hour time, return the time as is
+  if (time.split(' ').length > 1) {
+    // Remove leading zeroes if any
+    return time.replace(/^0+/, '');
+  }
+  const splitTime = time.split(':');
+  let hour = parseInt(splitTime[0], 10);
+  const minute = splitTime[1];
+  let period = 'AM';
+
+  if (hour > 12) {
+    hour -= 12;
+    period = 'PM';
+  }
+
+  if (hour === 12) {
+    period = 'PM';
+  }
+
+  if (hour === 0) {
+    hour = 12;
+  }
+
+  return `${hour}:${minute} ${period}`;
+};
+
+/**
  * A helper function that calculates the start and end times given the defined
  * meetingTimeSlots, which is an array of strings (e.g. ['08:00 AM-09:00 AM',
  * '09:00 AM-10:00 AM']). This function is called each time a user selects a new
