@@ -207,6 +207,16 @@ export const MeetingTimesList
                           onChange={(event: React.ChangeEvent<HTMLInputElement>)
                           : void => {
                             setCurrentEndTime(event.currentTarget.value);
+                            setCurrentMeetings(currentMeetings.map(
+                              (currentMeeting) => (
+                                currentMeeting.id === currentMeetingId
+                                  ? {
+                                    ...currentMeeting,
+                                    endTime: event.currentTarget.value,
+                                  }
+                                  : currentMeeting
+                              )
+                            ));
                           }}
                           hideError
                           isRequired
