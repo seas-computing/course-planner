@@ -8,8 +8,9 @@ import {
 } from '@testing-library/react';
 import { strictEqual } from 'assert';
 import { TERM } from 'common/constants';
-import { dayEnumToString } from 'common/constants/day';
+import DAY, { dayEnumToString } from 'common/constants/day';
 import { TermKey } from 'common/constants/term';
+import { convertTo12HourDisplayTime } from 'common/utils/timeHelperFunctions';
 import React from 'react';
 import { SinonStub, stub } from 'sinon';
 import { render } from 'test-utils';
@@ -20,6 +21,7 @@ describe('Meeting Modal', function () {
   describe('rendering', function () {
     let getByText: BoundFunction<GetByText>;
     let queryByText: BoundFunction<QueryByText>;
+    let getByLabelText: BoundFunction<GetByText>;
     let onCloseStub: SinonStub;
     const dispatchMessage: SinonStub = stub();
     const meetingTerm = TERM.FALL;
@@ -27,7 +29,7 @@ describe('Meeting Modal', function () {
     const testCourseInstance = cs50CourseInstance;
     beforeEach(function () {
       onCloseStub = stub();
-      ({ getByText, queryByText } = render(
+      ({ getByText, queryByText, getByLabelText } = render(
         <MeetingModal
           isVisible
           currentCourseInstance={{
@@ -79,12 +81,43 @@ describe('Meeting Modal', function () {
         });
       });
       describe('Meeting Times', function () {
-        it('displays each of the existing meetings', function () {
-          const expectedMeetings = testCourseInstance.fall.meetings
-            .map((meeting) => `${dayEnumToString(meeting.day)}, ${meeting.startTime} to ${meeting.endTime} in ${meeting.room.name}`);
-          return Promise.all(expectedMeetings.map((meeting) => waitForElement(
-            () => getByText(meeting)
-          )));
+        describe('On Initial Rendering', function () {
+          it('displays each of the existing meetings', function () {
+            const expectedMeetings = testCourseInstance.fall.meetings
+              .map((meeting) => `${dayEnumToString(meeting.day)}, ${meeting.startTime} to ${meeting.endTime} in ${meeting.room.name}`);
+            return Promise.all(expectedMeetings.map((meeting) => waitForElement(
+              () => getByText(meeting)
+            )));
+          });
+        });
+        describe('On Edit Behavior', function () {
+          const testMeetingDay = DAY.FRI;
+          const cs50Meeting = testCourseInstance[semKey].meetings
+            .filter((meeting) => meeting.day === testMeetingDay)[0];
+          beforeEach(async function () {
+            const editCS50FridayMeeting = await waitForElement(() => document.getElementById('editMeetingButton' + cs50Meeting.id));
+            fireEvent.click(editCS50FridayMeeting);
+          });
+          context('when an edit button is clicked', function () {
+            it('displays the correct initial meeting day', function () {
+              const dayDropdown = getByLabelText('Meeting Day', { exact: false }) as HTMLSelectElement;
+              strictEqual(dayDropdown.value, testMeetingDay);
+            });
+            it('displays the correct initial start time', function () {
+              const startTimeDropdown = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;
+              strictEqual(
+                convertTo12HourDisplayTime(startTimeDropdown.value),
+                cs50Meeting.startTime
+              );
+            });
+            it('displays the correct initial end time', function () {
+              const endTimeDropdown = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
+              strictEqual(
+                convertTo12HourDisplayTime(endTimeDropdown.value),
+                cs50Meeting.endTime
+              );
+            });
+          });
         });
       });
     });
