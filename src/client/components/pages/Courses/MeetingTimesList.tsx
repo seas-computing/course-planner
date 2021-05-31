@@ -169,8 +169,13 @@ export const MeetingTimesList
                               const times = calculateStartEndTimes(
                                 event.currentTarget.value
                               );
-                              setCurrentStartTime(times.start);
-                              setCurrentEndTime(times.end);
+                              // The start and end time inputs expect times in 24 hour format
+                              setCurrentStartTime(
+                                convert12To24HourTime(times.start)
+                              );
+                              setCurrentEndTime(
+                                convert12To24HourTime(times.end)
+                              );
                             }
                           }}
                         />
