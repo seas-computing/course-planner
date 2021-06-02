@@ -17,7 +17,6 @@ export class AddDatabaseComments1622033603597 implements MigrationInterface {
     await queryRunner.query('COMMENT ON COLUMN "course"."notes" IS \'Free text for administrators to record notes against a course\'');
     await queryRunner.query('COMMENT ON COLUMN "course"."private" IS \'Allows admin staff to hide courses and prevent their publication either because the courses are non-SEAS courses and should not be displayed on the SEAS course schedule, or because they are still finalizing the course details\'');
     await queryRunner.query('COMMENT ON COLUMN "course"."isSEAS" IS \'Not all courses are delivered by SEAS, some are delivered by other divisions (for example, some courses may be science courses), therefore it may be desireable to denote such courses to differenciate them from courses offered by SEAS\'');
-    await queryRunner.query('COMMENT ON COLUMN "non_class_parent"."contact" IS \'The faculty member contact for a given event. This is recorded here, as this information does not regularly change\'');
     await queryRunner.query('COMMENT ON COLUMN "campus"."name" IS \'Campus name (i.e - Allston)\'');
     await queryRunner.query('COMMENT ON COLUMN "building"."name" IS \'The building name (i.e - Maxwell Dworkin)\'');
     await queryRunner.query('COMMENT ON COLUMN "room"."name" IS \'The room name (i.e - Lecture Theatre)\'');
@@ -45,7 +44,6 @@ export class AddDatabaseComments1622033603597 implements MigrationInterface {
     await queryRunner.query('COMMENT ON COLUMN "room"."name" IS NULL');
     await queryRunner.query('COMMENT ON COLUMN "building"."name" IS NULL');
     await queryRunner.query('COMMENT ON COLUMN "campus"."name" IS NULL');
-    await queryRunner.query('COMMENT ON COLUMN "non_class_parent"."contact" IS NULL');
     await queryRunner.query('COMMENT ON COLUMN "course"."isSEAS" IS NULL');
     await queryRunner.query('COMMENT ON COLUMN "course"."private" IS NULL');
     await queryRunner.query('COMMENT ON COLUMN "course"."notes" IS NULL');
