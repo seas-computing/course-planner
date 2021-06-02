@@ -141,6 +141,57 @@ describe('Meeting Modal', function () {
                 strictEqual(endTimeInput.value, expectedEndTime);
               });
             });
+            context('when a day dropdown value is changed', function () {
+              const updatedDay = DAY.MON;
+              context('after navigating to a different meeting', function () {
+                it('preserves the updated day value', async function () {
+                  const dayDropdown = getByLabelText('Meeting Day', { exact: false }) as HTMLSelectElement;
+                  fireEvent.change(dayDropdown,
+                    { target: { value: updatedDay } });
+                  const editCS50TuesdayMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50TuesdayMeetingId));
+                  fireEvent.click(editCS50TuesdayMeetingButton);
+                  const editCS50InitialMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50InitialMeeting.id));
+                  fireEvent.click(editCS50InitialMeetingButton);
+                  strictEqual(dayDropdown.value, updatedDay);
+                });
+              });
+            });
+            context('when a start time input value is changed', function () {
+              const updatedStartTime = '12:00';
+              context('after navigating to a different meeting', function () {
+                it('preserves the updated start time value', async function () {
+                  const startTimeDropdown = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;
+                  fireEvent.change(startTimeDropdown,
+                    { target: { value: updatedStartTime } });
+                  const editCS50TuesdayMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50TuesdayMeetingId));
+                  fireEvent.click(editCS50TuesdayMeetingButton);
+                  const editCS50InitialMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50InitialMeeting.id));
+                  fireEvent.click(editCS50InitialMeetingButton);
+                  strictEqual(
+                    startTimeDropdown.value,
+                    convert12To24HourTime(updatedStartTime)
+                  );
+                });
+              });
+            });
+            context('when an end time input value is changed', function () {
+              const updatedEndTime = '14:00';
+              context('after navigating to a different meeting', function () {
+                it('preserves the updated end time value', async function () {
+                  const endTimeDropdown = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
+                  fireEvent.change(endTimeDropdown,
+                    { target: { value: updatedEndTime } });
+                  const editCS50TuesdayMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50TuesdayMeetingId));
+                  fireEvent.click(editCS50TuesdayMeetingButton);
+                  const editCS50InitialMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50InitialMeeting.id));
+                  fireEvent.click(editCS50InitialMeetingButton);
+                  strictEqual(
+                    endTimeDropdown.value,
+                    convert12To24HourTime(updatedEndTime)
+                  );
+                });
+              });
+            });
           });
         });
       });
