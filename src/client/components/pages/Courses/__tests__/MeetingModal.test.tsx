@@ -10,7 +10,7 @@ import { strictEqual } from 'assert';
 import { TERM } from 'common/constants';
 import DAY, { dayEnumToString } from 'common/constants/day';
 import { TermKey } from 'common/constants/term';
-import { convertTo12HourDisplayTime } from 'common/utils/timeHelperFunctions';
+import { calculateStartEndTimes, convert12To24HourTime, convertTo12HourDisplayTime } from 'common/utils/timeHelperFunctions';
 import React from 'react';
 import { SinonStub, stub } from 'sinon';
 import { render } from 'test-utils';
@@ -92,11 +92,13 @@ describe('Meeting Modal', function () {
         });
         describe('On Edit Behavior', function () {
           const testMeetingDay = DAY.FRI;
-          const cs50Meeting = testCourseInstance[semKey].meetings
+          const cs50InitialMeeting = testCourseInstance[semKey].meetings
             .filter((meeting) => meeting.day === testMeetingDay)[0];
+          const cs50TuesdayMeetingId = testCourseInstance[semKey].meetings
+            .filter((meeting) => meeting.day === DAY.TUE)[0].id;
           beforeEach(async function () {
-            const editCS50FridayMeeting = await waitForElement(() => document.getElementById('editMeetingButton' + cs50Meeting.id));
-            fireEvent.click(editCS50FridayMeeting);
+            const editCS50InitialMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50InitialMeeting.id));
+            fireEvent.click(editCS50InitialMeetingButton);
           });
           context('when an edit button is clicked', function () {
             it('displays the correct initial meeting day', function () {
@@ -107,15 +109,37 @@ describe('Meeting Modal', function () {
               const startTimeDropdown = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;
               strictEqual(
                 convertTo12HourDisplayTime(startTimeDropdown.value),
-                cs50Meeting.startTime
+                cs50InitialMeeting.startTime
               );
             });
             it('displays the correct initial end time', function () {
               const endTimeDropdown = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
               strictEqual(
                 convertTo12HourDisplayTime(endTimeDropdown.value),
-                cs50Meeting.endTime
+                cs50InitialMeeting.endTime
               );
+            });
+            context('when a timeslot is selected', function () {
+              const timeslot = '10:00 AM-11:00 AM';
+              const expectedTimes = calculateStartEndTimes(timeslot);
+              beforeEach(async function () {
+                const timepicker = await waitForElement(() => document.getElementById('timeslots'));
+                fireEvent.change(timepicker, { target: { value: timeslot } });
+              });
+              it('populates the start time text input field with the expected time', function () {
+                const startTimeInput = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;
+                const expectedStartTime = convert12To24HourTime(
+                  expectedTimes.start
+                );
+                strictEqual(startTimeInput.value, expectedStartTime);
+              });
+              it('populates the end time text input field with the expected time', function () {
+                const endTimeInput = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
+                const expectedEndTime = convert12To24HourTime(
+                  expectedTimes.end
+                );
+                strictEqual(endTimeInput.value, expectedEndTime);
+              });
             });
           });
         });
