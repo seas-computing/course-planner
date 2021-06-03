@@ -39,7 +39,7 @@ export abstract class MeetingRequestDTO {
    */
   @ApiModelProperty({
     type: 'string',
-    example: '12:00:00-05',
+    example: '12:00:00',
   })
   @IsNotEmpty()
   @Matches(pgTimeTZ)
@@ -51,7 +51,7 @@ export abstract class MeetingRequestDTO {
    */
   @ApiModelProperty({
     type: 'string',
-    example: '13:30:00-05',
+    example: '13:30:00',
   })
   @IsNotEmpty()
   @Matches(pgTimeTZ)

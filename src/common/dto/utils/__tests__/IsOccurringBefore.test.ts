@@ -2,8 +2,8 @@ import { validate } from 'class-validator';
 import { strictEqual, deepStrictEqual } from 'assert';
 import IsOccurringBefore from '../IsOccurringBefore';
 
-const timeBefore = '01:01:01-05';
-const timeAfter = '02:02:02-05';
+const timeBefore = '01:01:01';
+const timeAfter = '02:02:02';
 
 describe('IsOccurringBefore', function () {
   class TimeStamps {

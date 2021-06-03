@@ -54,8 +54,8 @@ abstract class Instance {
       {
         id: '7187d276-f6cf-4323-af7d-dd70f4a08e3d',
         day: DAY.TUE,
-        startTime: '12:00:00-5',
-        endTime: '13:00:00-5',
+        startTime: '12:00:00',
+        endTime: '13:00:00',
         room: {
           id: 'c7b1fa3f-c5b0-478d-a29c-7f85a4d80109',
           campus: 'Cambridge',

@@ -219,8 +219,8 @@ describe('Meeting API', function () {
                 updatedMeeting = new Meeting();
                 Object.assign(updatedMeeting, meetingToEdit);
                 updatedMeeting.day = DAY.MON;
-                updatedMeeting.startTime = '10:00:00-05';
-                updatedMeeting.endTime = '16:00:00-05';
+                updatedMeeting.startTime = '10:00:00';
+                updatedMeeting.endTime = '16:00:00';
                 response = await request(api)
                   .put(`/api/meetings/${testCourseInstance.id}`)
                   .send({
@@ -263,8 +263,8 @@ describe('Meeting API', function () {
                   updatedMeeting = new Meeting();
                   Object.assign(updatedMeeting, meetingToEdit);
                   updatedMeeting.day = DAY.MON;
-                  updatedMeeting.startTime = '10:00:00-05';
-                  updatedMeeting.endTime = '16:00:00-05';
+                  updatedMeeting.startTime = '10:00:00';
+                  updatedMeeting.endTime = '16:00:00';
                   const unbookedRoomQuery = roomRepository
                     .createQueryBuilder('r')
                     .where('r.id <> :roomId', { roomId: updatedMeeting.room.id })
@@ -318,8 +318,8 @@ describe('Meeting API', function () {
                   updatedMeeting = new Meeting();
                   Object.assign(updatedMeeting, meetingToEdit);
                   updatedMeeting.day = DAY.MON;
-                  updatedMeeting.startTime = '10:00:00-05';
-                  updatedMeeting.endTime = '16:00:00-05';
+                  updatedMeeting.startTime = '10:00:00';
+                  updatedMeeting.endTime = '16:00:00';
                   const bookedRoomQuery = roomRepository
                     .createQueryBuilder('r')
                     .where('r.id <> :roomId', { roomId: updatedMeeting.room.id })
@@ -388,8 +388,8 @@ describe('Meeting API', function () {
                 updatedMeeting = new Meeting();
                 Object.assign(updatedMeeting, meetingToEdit);
                 updatedMeeting.day = DAY.MON;
-                updatedMeeting.startTime = '10:00:00-05';
-                updatedMeeting.endTime = '16:00:00-05';
+                updatedMeeting.startTime = '10:00:00';
+                updatedMeeting.endTime = '16:00:00';
                 updatedMeeting.room = null;
                 response = await request(api)
                   .put(`/api/meetings/${testCourseInstance.id}`)
@@ -435,8 +435,8 @@ describe('Meeting API', function () {
                 ] = testCourseInstance.meetings);
                 newMeeting = new Meeting();
                 newMeeting.day = DAY.FRI;
-                newMeeting.startTime = '10:00:00-05';
-                newMeeting.endTime = '16:00:00-05';
+                newMeeting.startTime = '10:00:00';
+                newMeeting.endTime = '16:00:00';
                 const unbookedRoomQuery = roomRepository
                   .createQueryBuilder('r')
                   .where('"meetingTitle" IS NULL')
@@ -490,8 +490,8 @@ describe('Meeting API', function () {
                 ] = testCourseInstance.meetings);
                 newMeeting = new Meeting();
                 newMeeting.day = DAY.FRI;
-                newMeeting.startTime = '10:00:00-05';
-                newMeeting.endTime = '16:00:00-05';
+                newMeeting.startTime = '10:00:00';
+                newMeeting.endTime = '16:00:00';
                 const bookedRoomQuery = roomRepository
                   .createQueryBuilder('r')
                   .where('"meetingTitle" IS NOT NULL')
@@ -556,8 +556,8 @@ describe('Meeting API', function () {
                 ] = testCourseInstance.meetings);
                 newMeeting = new Meeting();
                 newMeeting.day = DAY.FRI;
-                newMeeting.startTime = '10:00:00-05';
-                newMeeting.endTime = '16:00:00-05';
+                newMeeting.startTime = '10:00:00';
+                newMeeting.endTime = '16:00:00';
                 newMeeting.room = null;
                 response = await request(api)
                   .put(`/api/meetings/${testCourseInstance.id}`)
@@ -740,8 +740,8 @@ describe('Meeting API', function () {
                 updatedMeeting = new Meeting();
                 Object.assign(updatedMeeting, meetingToEdit);
                 updatedMeeting.day = DAY.THU;
-                updatedMeeting.startTime = '10:00:00-05';
-                updatedMeeting.endTime = '16:00:00-05';
+                updatedMeeting.startTime = '10:00:00';
+                updatedMeeting.endTime = '16:00:00';
                 response = await request(api)
                   .put(`/api/meetings/${testNonClassEvent.id}`)
                   .send({
@@ -784,8 +784,8 @@ describe('Meeting API', function () {
                   updatedMeeting = new Meeting();
                   Object.assign(updatedMeeting, meetingToEdit);
                   updatedMeeting.day = DAY.MON;
-                  updatedMeeting.startTime = '10:00:00-05';
-                  updatedMeeting.endTime = '16:00:00-05';
+                  updatedMeeting.startTime = '10:00:00';
+                  updatedMeeting.endTime = '16:00:00';
                   const unbookedRoomQuery = roomRepository
                     .createQueryBuilder('r')
                     .where('r.id <> :roomId', { roomId: updatedMeeting.room.id })
@@ -839,8 +839,8 @@ describe('Meeting API', function () {
                   updatedMeeting = new Meeting();
                   Object.assign(updatedMeeting, meetingToEdit);
                   updatedMeeting.day = DAY.MON;
-                  updatedMeeting.startTime = '10:00:00-05';
-                  updatedMeeting.endTime = '16:00:00-05';
+                  updatedMeeting.startTime = '10:00:00';
+                  updatedMeeting.endTime = '16:00:00';
                   const bookedRoomQuery = roomRepository
                     .createQueryBuilder('r')
                     .where('r.id <> :roomId', { roomId: updatedMeeting.room.id })
@@ -909,8 +909,8 @@ describe('Meeting API', function () {
                 updatedMeeting = new Meeting();
                 Object.assign(updatedMeeting, meetingToEdit);
                 updatedMeeting.day = DAY.MON;
-                updatedMeeting.startTime = '10:00:00-05';
-                updatedMeeting.endTime = '16:00:00-05';
+                updatedMeeting.startTime = '10:00:00';
+                updatedMeeting.endTime = '16:00:00';
                 updatedMeeting.room = null;
                 response = await request(api)
                   .put(`/api/meetings/${testNonClassEvent.id}`)
@@ -956,8 +956,8 @@ describe('Meeting API', function () {
                 ] = testNonClassEvent.meetings);
                 newMeeting = new Meeting();
                 newMeeting.day = DAY.THU;
-                newMeeting.startTime = '10:00:00-05';
-                newMeeting.endTime = '16:00:00-05';
+                newMeeting.startTime = '10:00:00';
+                newMeeting.endTime = '16:00:00';
                 const unbookedRoomQuery = roomRepository
                   .createQueryBuilder('r')
                   .where('"meetingTitle" IS NULL')
@@ -1011,8 +1011,8 @@ describe('Meeting API', function () {
                 ] = testNonClassEvent.meetings);
                 newMeeting = new Meeting();
                 newMeeting.day = DAY.FRI;
-                newMeeting.startTime = '10:00:00-05';
-                newMeeting.endTime = '16:00:00-05';
+                newMeeting.startTime = '10:00:00';
+                newMeeting.endTime = '16:00:00';
                 const bookedRoomQuery = roomRepository
                   .createQueryBuilder('r')
                   .where('"meetingTitle" IS NOT NULL')
@@ -1077,8 +1077,8 @@ describe('Meeting API', function () {
                 ] = testNonClassEvent.meetings);
                 newMeeting = new Meeting();
                 newMeeting.day = DAY.FRI;
-                newMeeting.startTime = '10:00:00-05';
-                newMeeting.endTime = '16:00:00-05';
+                newMeeting.startTime = '10:00:00';
+                newMeeting.endTime = '16:00:00';
                 newMeeting.room = null;
                 response = await request(api)
                   .put(`/api/meetings/${testNonClassEvent.id}`)
