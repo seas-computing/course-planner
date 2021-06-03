@@ -27,7 +27,7 @@ import { MeetingRequestDTO } from '../../../../src/common/dto/meeting/MeetingReq
 import { RoomBookingInfoView } from '../../../../src/server/location/RoomBookingInfoView.entity';
 import { Room } from '../../../../src/server/location/room.entity';
 import { NonClassEvent } from '../../../../src/server/nonClassEvent/nonclassevent.entity';
-import { tzStringToAMPM } from '../../../utils/helperFunctions';
+import { PGTime } from '../../../../src/common/utils/PGTime';
 
 describe('Meeting API', function () {
   let testModule: TestingModule;
@@ -237,15 +237,15 @@ describe('Meeting API', function () {
                 strictEqual(savedMeeting.day, updatedMeeting.day);
               });
               it('Should update the meeting startTime', function () {
-                const updatedStartTime = tzStringToAMPM(
+                const updatedStartTime = new PGTime(
                   updatedMeeting.startTime
-                );
+                ).displayTime;
                 strictEqual(savedMeeting.startTime, updatedStartTime);
               });
               it('Should update the meeting endTime', function () {
-                const updatedEndTime = tzStringToAMPM(
+                const updatedEndTime = new PGTime(
                   updatedMeeting.endTime
-                );
+                ).displayTime;
                 strictEqual(savedMeeting.endTime, updatedEndTime);
               });
               it('Should not change the room', function () {
@@ -291,15 +291,15 @@ describe('Meeting API', function () {
                   strictEqual(savedMeeting.day, updatedMeeting.day);
                 });
                 it('Should update the meeting startTime', function () {
-                  const updatedStartTime = tzStringToAMPM(
+                  const updatedStartTime = new PGTime(
                     updatedMeeting.startTime
-                  );
+                  ).displayTime;
                   strictEqual(savedMeeting.startTime, updatedStartTime);
                 });
                 it('Should update the meeting endTime', function () {
-                  const updatedEndTime = tzStringToAMPM(
+                  const updatedEndTime = new PGTime(
                     updatedMeeting.endTime
-                  );
+                  ).displayTime;
                   strictEqual(savedMeeting.endTime, updatedEndTime);
                 });
                 it('Should change the room', function () {
@@ -407,15 +407,15 @@ describe('Meeting API', function () {
                 strictEqual(savedMeeting.day, updatedMeeting.day);
               });
               it('Should update the meeting startTime', function () {
-                const updatedStartTime = tzStringToAMPM(
+                const updatedStartTime = new PGTime(
                   updatedMeeting.startTime
-                );
+                ).displayTime;
                 strictEqual(savedMeeting.startTime, updatedStartTime);
               });
               it('Should update the meeting endTime', function () {
-                const updatedEndTime = tzStringToAMPM(
+                const updatedEndTime = new PGTime(
                   updatedMeeting.endTime
-                );
+                ).displayTime;
                 strictEqual(savedMeeting.endTime, updatedEndTime);
               });
               it('Should blank the room', function () {
@@ -461,13 +461,13 @@ describe('Meeting API', function () {
               });
               it('Should include the new meeting in the result', function () {
                 strictEqual(savedMeeting.day, newMeeting.day);
-                const newStartTime = tzStringToAMPM(
+                const newStartTime = new PGTime(
                   newMeeting.startTime
-                );
+                ).displayTime;
                 strictEqual(savedMeeting.startTime, newStartTime);
-                const newEndTime = tzStringToAMPM(
+                const newEndTime = new PGTime(
                   newMeeting.endTime
-                );
+                ).displayTime;
                 strictEqual(savedMeeting.endTime, newEndTime);
                 strictEqual(savedMeeting.room.id, newMeeting.room.id);
               });
@@ -576,13 +576,13 @@ describe('Meeting API', function () {
               });
               it('Should include the new meeting in the result', function () {
                 strictEqual(savedMeeting.day, newMeeting.day);
-                const newStartTime = tzStringToAMPM(
+                const newStartTime = new PGTime(
                   newMeeting.startTime
-                );
+                ).displayTime;
                 strictEqual(savedMeeting.startTime, newStartTime);
-                const newEndTime = tzStringToAMPM(
+                const newEndTime = new PGTime(
                   newMeeting.endTime
-                );
+                ).displayTime;
                 strictEqual(savedMeeting.endTime, newEndTime);
                 strictEqual(savedMeeting.room, null);
               });
@@ -758,15 +758,15 @@ describe('Meeting API', function () {
                 strictEqual(savedMeeting.day, updatedMeeting.day);
               });
               it('Should update the meeting startTime', function () {
-                const updatedStartTime = tzStringToAMPM(
+                const updatedStartTime = new PGTime(
                   updatedMeeting.startTime
-                );
+                ).displayTime;
                 strictEqual(savedMeeting.startTime, updatedStartTime);
               });
               it('Should update the meeting endTime', function () {
-                const updatedEndTime = tzStringToAMPM(
+                const updatedEndTime = new PGTime(
                   updatedMeeting.endTime
-                );
+                ).displayTime;
                 strictEqual(savedMeeting.endTime, updatedEndTime);
               });
               it('Should not change the room', function () {
@@ -812,15 +812,15 @@ describe('Meeting API', function () {
                   strictEqual(savedMeeting.day, updatedMeeting.day);
                 });
                 it('Should update the meeting startTime', function () {
-                  const updatedStartTime = tzStringToAMPM(
+                  const updatedStartTime = new PGTime(
                     updatedMeeting.startTime
-                  );
+                  ).displayTime;
                   strictEqual(savedMeeting.startTime, updatedStartTime);
                 });
                 it('Should update the meeting endTime', function () {
-                  const updatedEndTime = tzStringToAMPM(
+                  const updatedEndTime = new PGTime(
                     updatedMeeting.endTime
-                  );
+                  ).displayTime;
                   strictEqual(savedMeeting.endTime, updatedEndTime);
                 });
                 it('Should change the room', function () {
@@ -928,15 +928,15 @@ describe('Meeting API', function () {
                 strictEqual(savedMeeting.day, updatedMeeting.day);
               });
               it('Should update the meeting startTime', function () {
-                const updatedStartTime = tzStringToAMPM(
+                const updatedStartTime = new PGTime(
                   updatedMeeting.startTime
-                );
+                ).displayTime;
                 strictEqual(savedMeeting.startTime, updatedStartTime);
               });
               it('Should update the meeting endTime', function () {
-                const updatedEndTime = tzStringToAMPM(
+                const updatedEndTime = new PGTime(
                   updatedMeeting.endTime
-                );
+                ).displayTime;
                 strictEqual(savedMeeting.endTime, updatedEndTime);
               });
               it('Should blank the room', function () {
@@ -982,13 +982,13 @@ describe('Meeting API', function () {
               });
               it('Should include the new meeting in the result', function () {
                 strictEqual(savedMeeting.day, newMeeting.day);
-                const newStartTime = tzStringToAMPM(
+                const newStartTime = new PGTime(
                   newMeeting.startTime
-                );
+                ).displayTime;
                 strictEqual(savedMeeting.startTime, newStartTime);
-                const newEndTime = tzStringToAMPM(
+                const newEndTime = new PGTime(
                   newMeeting.endTime
-                );
+                ).displayTime;
                 strictEqual(savedMeeting.endTime, newEndTime);
                 strictEqual(savedMeeting.room.id, newMeeting.room.id);
               });
@@ -1097,13 +1097,13 @@ describe('Meeting API', function () {
               });
               it('Should include the new meeting in the result', function () {
                 strictEqual(savedMeeting.day, newMeeting.day);
-                const newStartTime = tzStringToAMPM(
+                const newStartTime = new PGTime(
                   newMeeting.startTime
-                );
+                ).displayTime;
                 strictEqual(savedMeeting.startTime, newStartTime);
-                const newEndTime = tzStringToAMPM(
+                const newEndTime = new PGTime(
                   newMeeting.endTime
-                );
+                ).displayTime;
                 strictEqual(savedMeeting.endTime, newEndTime);
                 strictEqual(savedMeeting.room, null);
               });
