@@ -8,11 +8,10 @@ import { AuthModule } from 'server/auth/auth.module';
 import { NonClassEventService } from 'server/nonClassEvent/nonClassEvent.service';
 import { deepStrictEqual, notStrictEqual, strictEqual } from 'assert';
 import { Meeting } from 'server/meeting/meeting.entity';
-import { format, parse } from 'date-fns';
-import { utcToZonedTime } from 'date-fns-tz';
 import { Repository } from 'typeorm';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import MockDB from '../../../mocks/database/MockDB';
+import { PGTime } from '../../../../src/common/utils/PGTime';
 
 describe('NonClassEvent Service', function () {
   let testModule: TestingModule;
@@ -108,31 +107,10 @@ describe('NonClassEvent Service', function () {
                   );
                 // We're using Jan 1 as the date because JS is being too clever
                 // and always trying to componsate for DST for us.
-                const fmtDBStartTime = format(
-                  utcToZonedTime(
-                    parse(
-                      dbStartTime,
-                      'HH:mm:ssx',
-                      new Date(2020, 0, 1)
-                    ),
-                    'America/New_York'
-                  ),
-                  'hh:mm aa'
-                );
-                const fmtDBEndTime = format(
-                  utcToZonedTime(
-                    parse(
-                      dbEndTime,
-                      'HH:mm:ssx',
-                      new Date(2020, 0, 1)
-                    ),
-                    'America/New_York'
-                  ),
-                  'hh:mm aa'
-                );
-
-                strictEqual(startTime, fmtDBStartTime);
-                strictEqual(endTime, fmtDBEndTime);
+                const fmtDBStartTime = new PGTime(dbStartTime);
+                const fmtDBEndTime = new PGTime(dbEndTime);
+                strictEqual(startTime, fmtDBStartTime.displayTime);
+                strictEqual(endTime, fmtDBEndTime.displayTime);
               }
             });
           });
