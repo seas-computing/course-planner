@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
 import { Semester } from 'server/semester/semester.entity';
 import { Meeting } from 'server/meeting/meeting.entity';
+import { Area } from 'server/area/area.entity';
 import { BasePopulationService } from './base.population';
 import { NonClassMeetingData } from './data';
 import { Room } from '../../../../src/server/location/room.entity';
@@ -25,6 +26,9 @@ export class NonClassEventPopulationService
   @InjectRepository(Room)
   protected roomRepository: Repository<Room>;
 
+  @InjectRepository(Area)
+  protected areaRepository: Repository<Area>;
+
   public async populate({
     nonClassMeetings,
   }: { nonClassMeetings: NonClassMeetingData[] }): Promise<NonClassParent[]> {
@@ -44,11 +48,18 @@ export class NonClassEventPopulationService
       }
     );
 
+    const area = await this.areaRepository.findOne();
+
     return this.parentRepository.save(
       nonClassMeetings.map((parentData) => {
         const nonClassParent = new NonClassParent();
         nonClassParent.title = parentData.title;
-        nonClassParent.contact = parentData.contact;
+        nonClassParent.contactName = parentData.contactName;
+        nonClassParent.contactEmail = parentData.contactEmail;
+        nonClassParent.contactPhone = parentData.contactPhone;
+        nonClassParent.expectedSize = parentData.expectedSize;
+        nonClassParent.notes = parentData.notes;
+        nonClassParent.area = area;
         nonClassParent.nonClassEvents = allSemesters
           .map((sem): NonClassEvent => {
             const nonClassEvent = new NonClassEvent();

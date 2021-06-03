@@ -268,10 +268,21 @@ describe('Population Service', function () {
         .forEach(({
           day, startTime, endTime, nonClassEvent,
         }) => {
-          const { contact, title } = nonClassEvent.nonClassParent;
+          const {
+            contactName,
+            contactPhone,
+            contactEmail,
+            title,
+            expectedSize,
+            notes,
+          } = nonClassEvent.nonClassParent;
           const testMeeting = testData.nonClassMeetings.find((nonClass) => (
             nonClass.title === title
-            && nonClass.contact === contact
+            && nonClass.contactName === contactName
+            && nonClass.contactPhone === contactPhone
+            && nonClass.contactEmail === contactEmail
+            && nonClass.expectedSize === expectedSize
+            && nonClass.notes === notes
           ));
           strictEqual(!!testMeeting, true);
           const meetingOnDay = testMeeting
@@ -289,9 +300,18 @@ describe('Population Service', function () {
       const dbParents = await parentsRepository.find();
 
       deepStrictEqual(
-        dbParents.map(({ contact, title }) => ({ contact, title })).sort(),
+        dbParents.map(({
+          contactName, contactPhone, contactEmail, title, expectedSize,
+        }) => ({
+          contactName, contactPhone, contactEmail, title, expectedSize,
+        }))
+          .sort(),
         testData.nonClassMeetings
-          .map(({ contact, title }) => ({ contact, title })).sort()
+          .map(({
+            contactName, contactPhone, contactEmail, title, expectedSize,
+          }) => ({
+            contactName, contactPhone, contactEmail, title, expectedSize,
+          })).sort()
       );
     });
     it('Should populate the nonClassEvents table', async function () {
