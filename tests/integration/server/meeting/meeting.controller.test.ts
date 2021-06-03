@@ -362,7 +362,7 @@ describe('Meeting API', function () {
                       roomDay: updatedMeeting.day,
                     })
                     .andWhere(
-                      '(:startTime, :endTime) OVERLAPS ("startTime", "endTime")',
+                      '(:startTime::TIME, :endTime::TIME) OVERLAPS ("startTime", "endTime")',
                       {
                         startTime: updatedMeeting.startTime,
                         endTime: updatedMeeting.endTime,
@@ -533,7 +533,7 @@ describe('Meeting API', function () {
                     roomDay: newMeeting.day,
                   })
                   .andWhere(
-                    '(:startTime, :endTime) OVERLAPS ("startTime", "endTime")',
+                    '(:startTime::TIME, :endTime::TIME) OVERLAPS ("startTime", "endTime")',
                     {
                       startTime: newMeeting.startTime,
                       endTime: newMeeting.endTime,
@@ -883,7 +883,7 @@ describe('Meeting API', function () {
                       roomDay: updatedMeeting.day,
                     })
                     .andWhere(
-                      '(:startTime, :endTime) OVERLAPS ("startTime", "endTime")',
+                      '(:startTime::TIME, :endTime::TIME) OVERLAPS ("startTime", "endTime")',
                       {
                         startTime: updatedMeeting.startTime,
                         endTime: updatedMeeting.endTime,
@@ -1054,7 +1054,7 @@ describe('Meeting API', function () {
                     roomDay: newMeeting.day,
                   })
                   .andWhere(
-                    '(:startTime, :endTime) OVERLAPS ("startTime", "endTime")',
+                    '(:startTime::TIME, :endTime::TIME) OVERLAPS ("startTime", "endTime")',
                     {
                       startTime: newMeeting.startTime,
                       endTime: newMeeting.endTime,
