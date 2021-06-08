@@ -1,3 +1,9 @@
+import React, {
+  FunctionComponent,
+  ReactElement,
+  useState,
+} from 'react';
+import styled from 'styled-components';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ButtonLayout, ListLayout, TimePicker } from 'client/components/general';
@@ -6,7 +12,11 @@ import DAY, { dayEnumToString, days } from 'common/constants/day';
 import { meetingTimeSlots } from 'common/constants/timeslots';
 import { CourseInstanceResponseMeeting } from 'common/dto/courses/CourseInstanceResponse';
 import { MeetingRoomResponse } from 'common/dto/meeting/MeetingResponse.dto';
-import { calculateStartEndTimes, convert12To24HourTime, convertTo12HourDisplayTime } from 'common/utils/timeHelperFunctions';
+import {
+  calculateStartEndTimes,
+  convert12To24HourTime,
+  convertTo12HourDisplayTime,
+} from 'common/utils/timeHelperFunctions';
 import {
   BorderlessButton,
   Button,
@@ -15,8 +25,6 @@ import {
   ValidationErrorMessage,
   VARIANT,
 } from 'mark-one';
-import React, { FunctionComponent, ReactElement, useState } from 'react';
-import styled from 'styled-components';
 
 /**
  * Contains the meeting day and time selectors so they can be displayed side by side
@@ -130,10 +138,11 @@ export const MeetingTimesList
                           id="meetingDay"
                           name="meetingDay"
                           label="Meeting Day"
-                          options={days.map((day) => ({
-                            value: day,
-                            label: dayEnumToString(day),
-                          }))}
+                          options={[{ value: '', label: '' }]
+                            .concat(days.map((day) => ({
+                              value: day,
+                              label: dayEnumToString(day),
+                            })))}
                           value={currentDay}
                           onChange={(event
                           : React.ChangeEvent<HTMLSelectElement>): void => {
