@@ -42,6 +42,8 @@ import { Repository } from 'typeorm';
 import { Area } from 'server/area/area.entity';
 import MockDB from '../../../mocks/database/MockDB';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
+import { CourseService } from '../../../../src/server/course/course.service';
+import { Course } from '../../../../src/server/course/course.entity';
 
 /**
  * This class takes a supertest response with an error
@@ -70,6 +72,8 @@ describe('Course Admin Modal Behavior', function () {
   let putStub: SinonStub;
   let postStub: SinonStub;
   let authStub: SinonStub;
+  let courseService: CourseService;
+  let courseRepository: Repository<Course>;
 
   let db: MockDB;
   let testModule: TestingModule;
@@ -125,9 +129,9 @@ describe('Course Admin Modal Behavior', function () {
     })
       .overrideProvider(ConfigService)
       .useValue(new ConfigService(db.connectionEnv))
-
       .compile();
-
+    courseService = testModule.get<CourseService>(CourseService);
+    courseRepository = testModule.get(getRepositoryToken(Course));
     const nestApp = await testModule.createNestApplication()
       .useGlobalPipes(new BadRequestExceptionPipe())
       .init();
@@ -428,9 +432,22 @@ describe('Course Admin Modal Behavior', function () {
     describe('other errors', function () {
       context('when creating a course', function () {
         beforeEach(function () {
-          postStub = stub(request, 'post');
-          postStub.rejects(new InternalServerErrorException());
+          stub(courseService, 'save').rejects(new InternalServerErrorException());
           onSuccessStub = stub();
+          postStub = stub(request, 'post');
+          postStub.callsFake(async (url, data) => {
+            const result = await supertestedApi.post(url)
+              .send(data);
+            // An error is not thrown for an error HTTP status,
+            // so we must throw it ourselves.
+            if (result.error) {
+              throw new AxiosSupertestError(result);
+            }
+            return {
+              ...result,
+              data: result.body,
+            };
+          });
           onCloseStub = stub();
           ({
             getByText,
@@ -446,8 +463,31 @@ describe('Course Admin Modal Behavior', function () {
             dispatchMessage
           ));
         });
+        afterEach(function () {
+          (courseService.save as SinonStub).restore();
+        });
         context('when there is an internal server error', function () {
           it('displays the error', async function () {
+            const existingAreaSelect = document.getElementById('existingArea') as HTMLSelectElement;
+            const courseTitleInput = getByLabelText('Course Title', { exact: false }) as HTMLInputElement;
+            const isSEASSelect = getByLabelText('Is SEAS', { exact: false }) as HTMLSelectElement;
+            const termPatternSelect = getByLabelText('Term Pattern', { exact: false }) as HTMLSelectElement;
+            fireEvent.change(
+              existingAreaSelect,
+              { target: { value: physicsCourse.area.name } }
+            );
+            fireEvent.change(
+              courseTitleInput,
+              { target: { value: physicsCourse.title } }
+            );
+            fireEvent.change(
+              isSEASSelect,
+              { target: { value: physicsCourse.isSEAS } }
+            );
+            fireEvent.change(
+              termPatternSelect,
+              { target: { value: physicsCourse.termPattern } }
+            );
             const submitButton = getByText('Submit');
             fireEvent.click(submitButton);
             await findByText('Internal Server Error', { exact: false });
@@ -456,8 +496,22 @@ describe('Course Admin Modal Behavior', function () {
       });
       context('when editing a course', function () {
         beforeEach(function () {
+          stub(courseRepository, 'findOneOrFail').resolves(physicsCourse);
+          stub(courseRepository, 'save').rejects(new InternalServerErrorException());
           putStub = stub(request, 'put');
-          putStub.rejects(new InternalServerErrorException());
+          putStub.callsFake(async (url, data) => {
+            const result = await supertestedApi.put(url)
+              .send(data);
+            // An error is not thrown for an error HTTP status,
+            // so we must throw it ourselves.
+            if (result.error) {
+              throw new AxiosSupertestError(result);
+            }
+            return {
+              ...result,
+              data: result.body,
+            };
+          });
           onSuccessStub = stub();
           onCloseStub = stub();
           ({
@@ -475,9 +529,18 @@ describe('Course Admin Modal Behavior', function () {
             dispatchMessage
           ));
         });
+        afterEach(function () {
+          (courseRepository.save as SinonStub).restore();
+          (courseRepository.findOneOrFail as SinonStub).restore();
+        });
         context('when there is an internal server error', function () {
           it('displays the error', async function () {
-            const submitButton = getByText('Submit');
+            const isSEASSelect = getByLabelText('Is SEAS', { exact: false }) as HTMLSelectElement;
+            fireEvent.change(
+              isSEASSelect,
+              { target: { value: physicsCourse.isSEAS === 'Y' ? 'N' : 'Y' } }
+            );
+            const submitButton = getByText('Submit', { exact: false });
             fireEvent.click(submitButton);
             await findByText('Internal Server Error', { exact: false });
           });
