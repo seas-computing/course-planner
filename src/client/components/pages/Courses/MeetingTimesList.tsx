@@ -279,7 +279,9 @@ export const MeetingTimesList
                           <Button
                             id="showRoomsButton"
                             onClick={
-                              (): void => {}
+                              (): void => {
+                                validateTimes();
+                              }
                             }
                             variant={VARIANT.PRIMARY}
                           >

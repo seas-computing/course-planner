@@ -158,13 +158,24 @@ describe('Meeting Modal', function () {
                 });
               });
               context('when changed to an empty value', function () {
+                const errorMessage = 'Please provide a day and start/end times before proceeding.';
+                beforeEach(function () {
+                  const dayDropdown = getByLabelText('Meeting Day', { exact: false }) as HTMLSelectElement;
+                  fireEvent.change(dayDropdown, { target: { value: '' } });
+                });
                 context('after clicking the edit button of a different meeting', function () {
                   it('displays a validation error message', async function () {
-                    const dayDropdown = getByLabelText('Meeting Day', { exact: false }) as HTMLSelectElement;
-                    fireEvent.change(dayDropdown, { target: { value: '' } });
                     const editCS50TuesdayMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50TuesdayMeetingId));
                     fireEvent.click(editCS50TuesdayMeetingButton);
-                    const errorMessage = 'Please provide a day and start/end times before proceeding.';
+                    return waitForElement(
+                      () => getByText(errorMessage, { exact: false })
+                    );
+                  });
+                });
+                context('after clicking on the "Show Rooms" button', function () {
+                  it('displays a validation error message', async function () {
+                    const showRoomsButton = getByText('Show Rooms');
+                    fireEvent.click(showRoomsButton);
                     return waitForElement(
                       () => getByText(errorMessage, { exact: false })
                     );
@@ -192,13 +203,24 @@ describe('Meeting Modal', function () {
                 });
               });
               context('when changed to an empty value', function () {
+                const errorMessage = 'Please provide a day and start/end times before proceeding.';
+                beforeEach(function () {
+                  const startTimeDropdown = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;
+                  fireEvent.change(startTimeDropdown, { target: { value: '' } });
+                });
                 context('after clicking the edit button of a different meeting', function () {
                   it('displays a validation error message', async function () {
-                    const startTimeDropdown = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;
-                    fireEvent.change(startTimeDropdown, { target: { value: '' } });
                     const editCS50TuesdayMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50TuesdayMeetingId));
                     fireEvent.click(editCS50TuesdayMeetingButton);
-                    const errorMessage = 'Please provide a day and start/end times before proceeding.';
+                    return waitForElement(
+                      () => getByText(errorMessage, { exact: false })
+                    );
+                  });
+                });
+                context('after clicking on the "Show Rooms" button', function () {
+                  it('displays a validation error message', function () {
+                    const showRoomsButton = getByText('Show Rooms');
+                    fireEvent.click(showRoomsButton);
                     return waitForElement(
                       () => getByText(errorMessage, { exact: false })
                     );
@@ -206,15 +228,26 @@ describe('Meeting Modal', function () {
                 });
               });
               context('when changed to a value later than end time', function () {
+                const errorMessage = 'End time must be later than start time.';
+                const updatedStartTime = convert12To24HourTime('11:59 PM');
+                beforeEach(function () {
+                  const startTimeDropdown = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;
+                  fireEvent.change(startTimeDropdown,
+                    { target: { value: updatedStartTime } });
+                });
                 context('after clicking the edit button of a different meeting', function () {
                   it('displays a validation error message', async function () {
-                    const updatedStartTime = convert12To24HourTime('11:59 PM');
-                    const startTimeDropdown = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;
-                    fireEvent.change(startTimeDropdown,
-                      { target: { value: updatedStartTime } });
                     const editCS50TuesdayMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50TuesdayMeetingId));
                     fireEvent.click(editCS50TuesdayMeetingButton);
-                    const errorMessage = 'End time must be later than start time.';
+                    return waitForElement(
+                      () => getByText(errorMessage, { exact: false })
+                    );
+                  });
+                });
+                context('after clicking on the "Show Rooms" button', function () {
+                  it('displays a validation error message', function () {
+                    const showRoomsButton = getByText('Show Rooms');
+                    fireEvent.click(showRoomsButton);
                     return waitForElement(
                       () => getByText(errorMessage, { exact: false })
                     );
@@ -242,13 +275,24 @@ describe('Meeting Modal', function () {
                 });
               });
               context('when changed to an empty value', function () {
+                const errorMessage = 'Please provide a day and start/end times before proceeding.';
+                beforeEach(function () {
+                  const endTimeDropdown = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
+                  fireEvent.change(endTimeDropdown, { target: { value: '' } });
+                });
                 context('after clicking the edit button of a different meeting', function () {
                   it('displays a validation error message', async function () {
-                    const endTimeDropdown = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
-                    fireEvent.change(endTimeDropdown, { target: { value: '' } });
                     const editCS50TuesdayMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50TuesdayMeetingId));
                     fireEvent.click(editCS50TuesdayMeetingButton);
-                    const errorMessage = 'Please provide a day and start/end times before proceeding.';
+                    return waitForElement(
+                      () => getByText(errorMessage, { exact: false })
+                    );
+                  });
+                });
+                context('after clicking on the "Show Rooms" button', function () {
+                  it('displays a validation error message', function () {
+                    const showRoomsButton = getByText('Show Rooms');
+                    fireEvent.click(showRoomsButton);
                     return waitForElement(
                       () => getByText(errorMessage, { exact: false })
                     );
@@ -256,15 +300,26 @@ describe('Meeting Modal', function () {
                 });
               });
               context('when changed to a value earlier than start time', function () {
+                const errorMessage = 'End time must be later than start time.';
+                const updatedEndTime = convert12To24HourTime('12:01 AM');
+                beforeEach(function () {
+                  const endTimeDropdown = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
+                  fireEvent.change(endTimeDropdown,
+                    { target: { value: updatedEndTime } });
+                });
                 context('after clicking the edit button of a different meeting', function () {
                   it('displays a validation error message', async function () {
-                    const updatedEndTime = convert12To24HourTime('12:01 AM');
-                    const endTimeDropdown = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
-                    fireEvent.change(endTimeDropdown,
-                      { target: { value: updatedEndTime } });
                     const editCS50TuesdayMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50TuesdayMeetingId));
                     fireEvent.click(editCS50TuesdayMeetingButton);
-                    const errorMessage = 'End time must be later than start time.';
+                    return waitForElement(
+                      () => getByText(errorMessage, { exact: false })
+                    );
+                  });
+                });
+                context('after clicking on the "Show Rooms" button', function () {
+                  it('displays a validation error message', function () {
+                    const showRoomsButton = getByText('Show Rooms');
+                    fireEvent.click(showRoomsButton);
                     return waitForElement(
                       () => getByText(errorMessage, { exact: false })
                     );
