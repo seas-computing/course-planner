@@ -114,6 +114,24 @@ export const MeetingTimesList
     setMeetingTimeError,
   ] = useState('');
 
+  /**
+   * The fields of the existing meeting are checked to make sure they are non-empty.
+   * The entered start and end times are compared to make sure the start time is
+   * not later than the end time. In either case, an error is set.
+   */
+  const validateTimes = (): boolean => {
+    if (currentMeetingId && (currentDay === '' as DAY || currentStartTime === '' || currentEndTime === '')) {
+      setMeetingTimeError('Error: Please fill out all fields before proceeding.');
+      return false;
+    }
+    if (currentMeetingId && (currentStartTime >= currentEndTime)) {
+      setMeetingTimeError('Error: End time must be later than start time.');
+      return false;
+    }
+    setMeetingTimeError('');
+    return true;
+  };
+
   return (
     <div className="meeting-times-section">
       <ul>
@@ -178,7 +196,6 @@ export const MeetingTimesList
                               const times = calculateStartEndTimes(
                                 event.currentTarget.value
                               );
-                              // The start and end time inputs expect times in 24 hour format
                               setCurrentStartTime(
                                 convert12To24HourTime(times.start)
                               );
@@ -236,12 +253,14 @@ export const MeetingTimesList
                           isRequired
                           isLabelVisible={false}
                         />
+                      </TimeSelector>
+                      <div>
                         <ValidationErrorMessage
                           id="meetingTimeErrorMessage"
                         >
                           {meetingTimeError}
                         </ValidationErrorMessage>
-                      </TimeSelector>
+                      </div>
                       <div>
                         <span>
                           Room:
@@ -278,11 +297,13 @@ export const MeetingTimesList
                         variant={VARIANT.INFO}
                         onClick={
                           (): void => {
-                            setCurrentMeetingId(meeting.id);
-                            setCurrentDay(meeting.day);
-                            setCurrentStartTime(meeting.startTime);
-                            setCurrentEndTime(meeting.endTime);
-                            setCurrentRoom(meeting.room);
+                            if (validateTimes()) {
+                              setCurrentMeetingId(meeting.id);
+                              setCurrentDay(meeting.day);
+                              setCurrentStartTime(meeting.startTime);
+                              setCurrentEndTime(meeting.endTime);
+                              setCurrentRoom(meeting.room);
+                            }
                           }
                         }
                       >
