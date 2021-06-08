@@ -1,6 +1,4 @@
 import { strictEqual, notStrictEqual, deepStrictEqual } from 'assert';
-import { parse } from 'date-fns';
-import { format, utcToZonedTime } from 'date-fns-tz';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule, getRepositoryToken, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { CourseInstanceModule } from 'server/courseInstance/courseInstance.module';
@@ -24,6 +22,7 @@ import { Repository } from 'typeorm';
 import { testFourYearPlanAcademicYears } from 'testData';
 import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
+import { PGTime } from '../../../../src/common/utils/PGTime';
 
 describe('Course Instance Service', function () {
   let testModule: TestingModule;
@@ -175,33 +174,10 @@ describe('Course Instance Service', function () {
                   .find(
                     ({ id: dbID }) => dbID === id
                   );
-                // We're using Jan 1 as the date because JS is being too clever
-                // and always trying to componsate for DST for us.
-                const fmtDBStartTime = format(
-                  utcToZonedTime(
-                    parse(
-                      dbStartTime,
-                      'HH:mm:ssx',
-                      new Date(2020, 0, 1)
-                    ),
-                    'America/New_York'
-                  ),
-                  'hh:mm aa'
-                );
-                const fmtDBEndTime = format(
-                  utcToZonedTime(
-                    parse(
-                      dbEndTime,
-                      'HH:mm:ssx',
-                      new Date(2020, 0, 1)
-                    ),
-                    'America/New_York'
-                  ),
-                  'hh:mm aa'
-                );
-
-                strictEqual(startTime, fmtDBStartTime);
-                strictEqual(endTime, fmtDBEndTime);
+                const pgDBStartTime = new PGTime(dbStartTime);
+                const pgDBEndTime = new PGTime(dbEndTime);
+                strictEqual(startTime, pgDBStartTime.displayTime);
+                strictEqual(endTime, pgDBEndTime.displayTime);
               }
             });
           });

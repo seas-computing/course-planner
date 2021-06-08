@@ -12,8 +12,8 @@ export const nonClassMeetings = [
     meetings: [
       {
         day: DAY.TUE,
-        startTime: '11:00:00-05',
-        endTime: '12:00:00-05',
+        startTime: '11:00:00',
+        endTime: '12:00:00',
         room: 'Maxwell Dworkin B151',
       },
     ],
@@ -29,8 +29,8 @@ export const nonClassMeetings = [
     meetings: [
       {
         day: DAY.THU,
-        startTime: '11:00:00-05',
-        endTime: '12:00:00-05',
+        startTime: '11:00:00',
+        endTime: '12:00:00',
         room: '114 Western Avenue 200',
       },
     ],

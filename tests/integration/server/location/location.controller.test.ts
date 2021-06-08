@@ -102,8 +102,8 @@ describe('Location API', function () {
       calendarYear: '2020',
       term: TERM.FALL,
       day: DAY.MON,
-      startTime: '10:00:00-05',
-      endTime: '20:00:00-05',
+      startTime: '10:00:00',
+      endTime: '20:00:00',
     };
     context('As an unauthenticated user', function () {
       beforeEach(function () {
@@ -184,7 +184,7 @@ describe('Location API', function () {
         context('With an invalid end time', function () {
           beforeEach(async function () {
             authStub.resolves(adminUser);
-            const invalidEndTime = '26:00:00-05';
+            const invalidEndTime = '26:00:00';
             response = await request(api)
               .get('/api/rooms')
               .query({ ...testParams, endTime: invalidEndTime });
