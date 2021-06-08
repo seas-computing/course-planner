@@ -176,11 +176,7 @@ describe('Faculty Schedule Controller', function () {
             }));
           return rejects(
             () => (fsController.updateFacultyAbsence(updatedAbsence)), {
-              message: {
-                error: 'Not Found',
-                message: 'The entered Absence does not exist',
-                statusCode: 404,
-              },
+              message: 'The entered Absence does not exist',
             }
           );
         });
@@ -196,7 +192,7 @@ describe('Faculty Schedule Controller', function () {
           } catch (e) {
             strictEqual(e instanceof Error, true);
             strictEqual(e instanceof NotFoundException, false);
-            strictEqual((e.message.error as string).includes('Internal Server Error'), true);
+            strictEqual((e.message as string).includes('Internal Server Error'), true);
           }
         });
       });

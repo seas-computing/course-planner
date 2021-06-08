@@ -162,9 +162,7 @@ describe('Faculty controller', function () {
         } catch (e) {
           strictEqual(e instanceof NotFoundException, true);
           const error = e as NotFoundException;
-          strictEqual(error.message && 'message' in error.message, true);
-          const errorMessageObject = error.message as { message : string; };
-          strictEqual(errorMessageObject.message, errorMessage);
+          strictEqual(error.message, errorMessage);
         }
       });
     });
