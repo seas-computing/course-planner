@@ -1,5 +1,5 @@
 import { DAY } from 'common/constants';
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsUUID, IsNotEmpty, IsEnum, IsOptional, Matches,
 } from 'class-validator';
@@ -16,7 +16,7 @@ export abstract class MeetingRequestDTO {
    * If this is an existing meeting being edited, this will be the UUID in our
    * database.
    */
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: '7187d276-f6cf-4323-af7d-dd70f4a08e3d',
   })
@@ -27,7 +27,7 @@ export abstract class MeetingRequestDTO {
   /**
    * The day of the week on which the meeting takes place.
    */
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: DAY.MON,
   })
@@ -38,7 +38,7 @@ export abstract class MeetingRequestDTO {
   /**
    * The time at which the meeting starts
    */
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: '12:00:00',
   })
@@ -50,7 +50,7 @@ export abstract class MeetingRequestDTO {
   /**
    * The time at which the meeting ends
    */
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: '13:30:00',
   })
@@ -63,7 +63,7 @@ export abstract class MeetingRequestDTO {
    * The ID of the room where the meeting will be held, which can be undefined
    * if one hasn't been chosen yet.
    */
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: 'c7b1fa3f-c5b0-478d-a29c-7f85a4d80109',
   })

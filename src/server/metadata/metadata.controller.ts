@@ -7,7 +7,7 @@ import {
 import {
   ApiOperation,
   ApiOkResponse,
-  ApiUseTags,
+  ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Authentication } from 'server/auth/authentication.guard';
@@ -17,7 +17,7 @@ import { AreaService } from 'server/area/area.service';
 import { ConfigService } from 'server/config/config.service';
 import { CourseService } from 'server/course/course.service';
 
-@ApiUseTags('Metadata')
+@ApiTags('Metadata')
 @UseGuards(Authentication)
 @Controller('api/metadata')
 @ApiUnauthorizedResponse({ description: 'Thrown if the user is not authenticated' })
@@ -40,7 +40,7 @@ export class MetadataController {
    * the database
    */
   @Get('/')
-  @ApiOperation({ title: 'Retrieve metadata from the database' })
+  @ApiOperation({ summary: 'Retrieve metadata from the database' })
   @ApiOkResponse({
     type: MetadataResponse,
     description: 'An object of metadata containing information regarding the current academic year, existing areas, and existing semesters in the database',

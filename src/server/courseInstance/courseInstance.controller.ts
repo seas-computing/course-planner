@@ -8,7 +8,7 @@ import {
 import {
   ApiOkResponse,
   ApiOperation,
-  ApiUseTags,
+  ApiTags,
 } from '@nestjs/swagger';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
@@ -68,8 +68,8 @@ export class CourseInstanceController {
   /**
    * Responds with a list of multiyear plan records.
    */
-  @ApiUseTags('Course Instance')
-  @ApiOperation({ title: 'Retrieve the multi-year plan' })
+  @ApiTags('Course Instance')
+  @ApiOperation({ summary: 'Retrieve the multi-year plan' })
   @ApiOkResponse({
     type: MultiYearPlanResponseDTO,
     description: 'An array of all the multi-year plan records',
@@ -87,8 +87,8 @@ export class CourseInstanceController {
    * Retrieves the schedule data for all SEAS courses offered in a given term
    */
 
-  @ApiUseTags('Course Instance')
-  @ApiOperation({ title: 'Retrieve Course Schedule Data' })
+  @ApiTags('Course Instance')
+  @ApiOperation({ summary: 'Retrieve Course Schedule Data' })
   @ApiOkResponse({
     type: ScheduleViewResponseDTO,
     description: 'An array of the schedule data for a given term',

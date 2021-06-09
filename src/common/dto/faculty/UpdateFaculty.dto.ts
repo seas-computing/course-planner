@@ -1,4 +1,4 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsNotEmpty,
   IsEnum,
@@ -11,14 +11,14 @@ import {
 import { FACULTY_TYPE } from '../../constants';
 
 export abstract class UpdateFacultyDTO {
-  @ApiModelProperty({
+  @ApiProperty({
     example: 'df15cfff-0f6f-4769-8841-1ab8a9c335d9',
   })
   @IsUUID()
   @IsNotEmpty()
   public id: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     example: '87654321',
   })
   @IsNotEmpty()
@@ -26,40 +26,40 @@ export abstract class UpdateFacultyDTO {
   @Length(8, 8)
   public HUID: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     example: 'Ada',
   })
   @IsOptional()
   @IsString()
   public firstName?: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     example: 'Lovelace',
   })
   @IsNotEmpty()
   public lastName: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     example: FACULTY_TYPE.NON_SEAS_LADDER,
     enum: FACULTY_TYPE,
   })
   @IsEnum(FACULTY_TYPE)
   public category: FACULTY_TYPE;
 
-  @ApiModelProperty({
+  @ApiProperty({
     example: 'AM',
   })
   @IsString()
   public area: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     example: 'PHYS (1 FTE SEAS)',
   })
   @IsOptional()
   @IsString()
   public jointWith?: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     example: 'Prefers classroom near Maxwell-Dworkin',
   })
   @IsOptional()

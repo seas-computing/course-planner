@@ -9,12 +9,12 @@ import { Request } from 'express';
 import {
   ApiOperation,
   ApiOkResponse,
-  ApiUseTags,
+  ApiTags,
 } from '@nestjs/swagger';
 import { UserResponse } from 'common/dto/users/userResponse.dto';
 import { Authentication } from '../auth/authentication.guard';
 
-@ApiUseTags('User')
+@ApiTags('User')
 @Controller('api/users')
 export class UserController {
   /**
@@ -24,7 +24,7 @@ export class UserController {
    */
   @Get('/current')
   @ApiOperation({
-    title: 'Return the currently logged-in user\'s data from session',
+    summary: 'Return the currently logged-in user\'s data from session',
   })
   @ApiOkResponse({
     type: UserResponse,
