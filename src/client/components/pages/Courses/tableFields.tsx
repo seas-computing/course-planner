@@ -80,7 +80,7 @@ export const formatInstructors = (
   course: CourseInstanceResponseDTO
 ): ReactNode => {
   const semKey = sem.toLowerCase() as TermKey;
-  const { instructors } = course[semKey];
+  const { [semKey]: { instructors } } = course;
   return instructors.length === 0
     ? null
     : (
@@ -138,7 +138,10 @@ export const formatMeetings = (
 ): ReactNode => {
   const coursesPageContext = useContext(CoursesPageContext);
   const semKey = sem.toLowerCase() as TermKey;
-  const { meetings } = course[semKey];
+  const {
+    [semKey]: { meetings },
+    id: courseId,
+  } = course;
   return meetings[0].day === null
     ? null
     : (
@@ -172,7 +175,7 @@ export const formatMeetings = (
           ))}
         </TableCellList>
         <BorderlessButton
-          id={`${course.id}-${sem}-edit-meetings-button`}
+          id={`${courseId}-${sem}-edit-meetings-button`}
           onClick={() => coursesPageContext
             && coursesPageContext.onMeetingEdit({
               course,
@@ -180,7 +183,7 @@ export const formatMeetings = (
             })}
           variant={VARIANT.INFO}
           forwardRef={coursesPageContext?.currentCourseInstance?.course.id
-            === course.id
+            === courseId
             && coursesPageContext.currentCourseInstance.term === sem
             ? coursesPageContext.meetingEditButtonRef
             : null}
