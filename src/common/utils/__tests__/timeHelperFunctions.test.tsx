@@ -3,9 +3,17 @@ import { calculateStartEndTimes, convert12To24HourTime, convertTo12HourDisplayTi
 
 describe('Time Helper Functions', function () {
   describe('convert12To24HourTime', function () {
-    it('should convert AM times appropriately to 24 hour time', function () {
-      const originalTime = '04:32 AM';
-      strictEqual(convert12To24HourTime(originalTime), originalTime.split(' ')[0]);
+    context('AM times', function () {
+      it('should convert AM times appropriately to 24 hour time', function () {
+        const originalTime = '4:32 AM';
+        strictEqual(convert12To24HourTime(originalTime), `0${originalTime.split(' ')[0]}`);
+      });
+      it('should left pad AM times with a 0', function () {
+        const nonPaddedHour = '5';
+        const minutes = '45';
+        const originalTime = `${nonPaddedHour}:${minutes} AM`;
+        strictEqual(convert12To24HourTime(originalTime), `0${nonPaddedHour}:${minutes}`);
+      });
     });
     it('should convert PM times appropriately to 24 hour time', function () {
       const originalTime = '07:10 PM';

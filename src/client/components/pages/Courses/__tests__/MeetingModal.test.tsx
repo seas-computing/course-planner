@@ -1,5 +1,6 @@
 import {
   BoundFunction,
+  FindByText,
   fireEvent,
   GetByText,
   QueryByText,
@@ -22,6 +23,7 @@ describe('Meeting Modal', function () {
     let getByText: BoundFunction<GetByText>;
     let queryByText: BoundFunction<QueryByText>;
     let getByLabelText: BoundFunction<GetByText>;
+    let findByLabelText: BoundFunction<FindByText>;
     let onCloseStub: SinonStub;
     const dispatchMessage: SinonStub = stub();
     const meetingTerm = TERM.FALL;
@@ -29,7 +31,12 @@ describe('Meeting Modal', function () {
     const testCourseInstance = cs50CourseInstance;
     beforeEach(function () {
       onCloseStub = stub();
-      ({ getByText, queryByText, getByLabelText } = render(
+      ({
+        getByText,
+        queryByText,
+        getByLabelText,
+        findByLabelText,
+      } = render(
         <MeetingModal
           isVisible
           currentCourseInstance={{
@@ -120,11 +127,12 @@ describe('Meeting Modal', function () {
               );
             });
             context('when a timeslot is selected', function () {
-              const timeslot = '10:00 AM-11:00 AM';
+              const timeslot = '12:00 PM-1:00 PM';
               const expectedTimes = calculateStartEndTimes(timeslot);
               beforeEach(async function () {
-                const timepicker = await waitForElement(() => document.getElementById('timeslots'));
-                fireEvent.change(timepicker, { target: { value: timeslot } });
+                const timepicker = await waitForElement(() => findByLabelText('Timeslot Button'));
+                fireEvent.click(timepicker);
+                fireEvent.click(getByText(timeslot));
               });
               it('populates the start time text input field with the expected time', function () {
                 const startTimeInput = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;

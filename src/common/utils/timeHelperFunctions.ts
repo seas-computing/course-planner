@@ -13,11 +13,15 @@ export const convert12To24HourTime = (twelveHourTime: string): string => {
    * For noon, 12 is added back to the hour portion of time in the following
    * conditional statement given that the period is PM.
    */
-  if (hour === '12') {
+  if (hour === '12' && period === 'AM') {
     hour = '00';
   }
-  if (period === 'PM') {
+  if (period === 'PM' && hour !== '12') {
     hour = (parseInt(hour, 10) + 12).toString();
+  }
+  // If hour is a single digit, add a 0 to the left to pad the hour
+  if (hour.length === 1) {
+    hour = `0${hour}`;
   }
   return `${hour}:${minute}`;
 };
