@@ -1,14 +1,14 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { FACULTY_TYPE, ABSENCE_TYPE } from 'common/constants';
 
 export abstract class FacultyCourse {
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: '37b66373-5000-43f2-9c14-8c2426273785',
   })
   public id: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: 'CS 50',
   })
@@ -16,13 +16,13 @@ export abstract class FacultyCourse {
 }
 
 export abstract class FacultyAbsence {
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: 'f696d531-aef2-413f-9922-f480aa9d6039',
   })
   public id: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     example: ABSENCE_TYPE.SABBATICAL,
     enum: ABSENCE_TYPE,
   })
@@ -30,79 +30,79 @@ export abstract class FacultyAbsence {
 }
 
 export abstract class FacultySemester {
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: '4c15c2bf-7823-47e0-9954-2ce914b73595',
   })
   public id: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'number',
     example: 2021,
   })
   public academicYear: number;
 
-  @ApiModelProperty({
+  @ApiProperty({
     isArray: true,
     type: FacultyCourse,
   })
   public courses: FacultyCourse[];
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: FacultyAbsence,
   })
   public absence: FacultyAbsence;
 }
 
 export abstract class FacultyResponseDTO {
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: '4c15c2bf-7823-47e0-9954-2ce914b73595',
   })
   public id: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: 'Chris',
   })
   public firstName?: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: 'Rogers',
   })
   public lastName?: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     example: FACULTY_TYPE.LADDER,
     enum: FACULTY_TYPE,
   })
   public category: FACULTY_TYPE;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: 'EPS (0.5 FTE SEAS)',
   })
   public jointWith?: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: 'Prefers classroom near Maxwell-Dworkin',
   })
   public notes?: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: 'AM',
   })
   public area: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: FacultySemester,
   })
   public fall: FacultySemester;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: FacultySemester,
   })
   public spring: FacultySemester;

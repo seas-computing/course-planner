@@ -1,5 +1,5 @@
 import { DAY, TERM } from 'common/constants';
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsEnum, Matches } from 'class-validator';
 import { IsOccurringBefore, IsOccurringAfter } from '../utils';
 import { PGTime } from '../../utils/PGTime';
@@ -12,7 +12,7 @@ export default abstract class RoomRequest {
   /**
    * The calendar year in which the meeting takes place
    */
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: '2019',
   })
@@ -22,7 +22,7 @@ export default abstract class RoomRequest {
   /**
    * The term in which the meeting takes place.
    */
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: TERM.SPRING,
   })
@@ -33,7 +33,7 @@ export default abstract class RoomRequest {
   /**
    * The day of the week on which the meeting takes place.
    */
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: DAY.WED,
   })
@@ -44,7 +44,7 @@ export default abstract class RoomRequest {
   /**
    * The time at which the meeting starts
    */
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: '14:45:00',
   })
@@ -56,7 +56,7 @@ export default abstract class RoomRequest {
   /**
    * The time at which the meeting ends
    */
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: '16:30:00',
   })

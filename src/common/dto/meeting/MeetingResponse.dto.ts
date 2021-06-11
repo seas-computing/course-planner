@@ -1,5 +1,5 @@
 import { DAY } from 'common/constants';
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 /**
  * Models the information a room included with the server response
@@ -9,7 +9,7 @@ abstract class MeetingRoomResponse {
   /**
    * The database uuid of the room
    */
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: 'c7b1fa3f-c5b0-478d-a29c-7f85a4d80109',
   })
@@ -18,7 +18,7 @@ abstract class MeetingRoomResponse {
   /**
    * The campus within the university where the room is located
    */
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: 'Cambridge',
   })
@@ -27,7 +27,7 @@ abstract class MeetingRoomResponse {
   /**
    * The name of the building concatenated with the number of the room
    */
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: 'Maxwell-Dworkin G125',
   })
@@ -43,7 +43,7 @@ export abstract class MeetingResponseDTO {
   /**
    * The database UUID of the meeting
    */
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: '7187d276-f6cf-4323-af7d-dd70f4a08e3d',
   })
@@ -52,7 +52,7 @@ export abstract class MeetingResponseDTO {
   /**
    * The day of the week on which the meeting takes place.
    */
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: DAY.MON,
   })
@@ -61,7 +61,7 @@ export abstract class MeetingResponseDTO {
   /**
    * The time at which the meeting starts
    */
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: '12:00:00-5',
   })
@@ -70,7 +70,7 @@ export abstract class MeetingResponseDTO {
   /**
    * The time at which the meeting ends
    */
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: '13:30:00-5',
   })
@@ -80,7 +80,7 @@ export abstract class MeetingResponseDTO {
    * The room where the meeting will be held, which can be undefined if a room
    * hasn't been chosen yet.
    */
-  @ApiModelProperty({
+  @ApiProperty({
     type: MeetingRoomResponse,
   })
   public room?: MeetingRoomResponse;

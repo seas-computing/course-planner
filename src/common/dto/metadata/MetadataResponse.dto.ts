@@ -5,30 +5,30 @@
  * API requests for metadata (i.e: getting the academic year, semesters, areas, etc.)
  */
 
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export abstract class MetadataResponse {
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'number',
     example: 2012,
   })
   public currentAcademicYear: number;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: ['AP', 'CS'],
     isArray: true,
   })
   public areas: string[];
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: ['Fall 2012', 'Spring 2013'],
     isArray: true,
   })
   public semesters: string[];
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: ['AC', 'AP', 'BE'],
     isArray: true,

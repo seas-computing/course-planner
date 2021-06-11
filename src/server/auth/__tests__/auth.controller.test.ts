@@ -257,12 +257,13 @@ describe('Auth controller', function () {
           reqStub.resolves({
             data: fakeAssertion,
           });
+          const expectedError = new UnauthorizedException(dummy.string);
           return rejects(async () => {
             await controller.validateHarvardKeyData(
               testRequest,
               fakeTicket
             );
-          }, dummy.string);
+          }, expectedError);
         });
       });
       context('when the response is invalid', function () {

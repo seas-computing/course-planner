@@ -1,14 +1,14 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { FACULTY_TYPE } from '../../constants';
 
 export abstract class FacultyArea {
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
   })
   public id: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: 'ACS',
   })
@@ -16,43 +16,43 @@ export abstract class FacultyArea {
 }
 
 export abstract class ManageFacultyResponseDTO {
-  @ApiModelProperty({
+  @ApiProperty({
     example: '4c15c2bf-7823-47e0-9954-2ce914b73595',
   })
   public id: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     example: '12345678',
   })
   public HUID: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     example: 'Samantha',
   })
   public firstName?: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     example: 'Johnston',
   })
   public lastName?: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     example: FACULTY_TYPE.LADDER,
     enum: FACULTY_TYPE,
   })
   public category: FACULTY_TYPE;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: FacultyArea,
   })
   public area: FacultyArea;
 
-  @ApiModelProperty({
+  @ApiProperty({
     example: 'EPS (0.5 FTE SEAS)',
   })
   public jointWith?: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     example: 'Prefers classroom near Maxwell-Dworkin',
   })
   public notes?: string;

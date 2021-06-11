@@ -11,13 +11,13 @@ import {
 import { MeetingRequestDTO } from 'common/dto/meeting/MeetingRequest.dto';
 import { MeetingResponseDTO } from 'common/dto/meeting/MeetingResponse.dto';
 import {
-  ApiUseTags,
+  ApiTags,
   ApiOperation,
   ApiOkResponse,
   ApiUnauthorizedResponse,
   ApiNotFoundResponse,
   ApiBadRequestResponse,
-  ApiImplicitBody,
+  ApiBody,
 } from '@nestjs/swagger';
 import { EntityNotFoundError } from 'typeorm';
 import { MeetingService } from './meeting.service';
@@ -30,7 +30,7 @@ import { RoomConflictException } from '../location/RoomConflict.exception';
  * API routes for managing meetings
  */
 
-@ApiUseTags('Meetings')
+@ApiTags('Meetings')
 @Controller('api/meetings')
 export class MeetingController {
   @Inject(MeetingService)
@@ -45,17 +45,16 @@ export class MeetingController {
   @UseGuards(new RequireGroup(GROUP.ADMIN))
   @UseGuards(Authentication)
   @ApiOperation({
-    title: 'Create, update, or remove meetings from a course instance or non-class event',
+    summary: 'Create, update, or remove meetings from a course instance or non-class event',
   })
   @ApiOkResponse({
     type: MeetingResponseDTO,
     isArray: true,
     description: 'An array of the meetings now associated with the course instance or non-class event',
   })
-  @ApiImplicitBody({
+  @ApiBody({
     type: MeetingRequestDTO,
     isArray: true,
-    name: 'meetings',
     description: 'An array of meetings that should be associated with the course instance or non-class event specified by the parentId parameter. Any existing meetings associated with the parent that are not included in the request will be removed. An empty array removes all meetings.',
   })
   @ApiUnauthorizedResponse({

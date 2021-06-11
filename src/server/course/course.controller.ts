@@ -8,7 +8,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiUnauthorizedResponse,
-  ApiUseTags,
+  ApiTags,
   ApiForbiddenResponse,
   ApiBadRequestResponse,
   ApiNotFoundResponse,
@@ -23,7 +23,7 @@ import { Area } from 'server/area/area.entity';
 import { Course } from './course.entity';
 import { CourseService } from './course.service';
 
-@ApiUseTags('Course')
+@ApiTags('Course')
 @Controller('api/courses')
 @ApiForbiddenResponse({
   description: 'The user is not authenticated',
@@ -43,7 +43,7 @@ export class CourseController {
   private readonly areaRepository: Repository<Area>;
 
   @Get('/')
-  @ApiOperation({ title: 'Retrieve all courses in the database' })
+  @ApiOperation({ summary: 'Retrieve all courses in the database' })
   @ApiOkResponse({
     type: ManageCourseResponseDTO,
     description: 'An array of all the courses along with their area',
@@ -54,7 +54,7 @@ export class CourseController {
   }
 
   @Post('/')
-  @ApiOperation({ title: 'Create a new course' })
+  @ApiOperation({ summary: 'Create a new course' })
   @ApiOkResponse({
     type: ManageCourseResponseDTO,
     description: 'The newly created course',
@@ -94,7 +94,7 @@ export class CourseController {
   }
 
   @Put(':id')
-  @ApiOperation({ title: 'Update an existing course' })
+  @ApiOperation({ summary: 'Update an existing course' })
   @ApiOkResponse({
     type: ManageCourseResponseDTO,
     description: 'The updated course information',
