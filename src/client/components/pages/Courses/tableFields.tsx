@@ -142,7 +142,7 @@ export const formatMeetings = (
     [semKey]: { meetings },
     id: courseId,
   } = course;
-  return meetings[0].day === null
+  return (meetings[0] === undefined || meetings[0]?.day === null)
     ? null
     : (
       <>
