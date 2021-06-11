@@ -4,22 +4,23 @@ import React, {
   useState,
 } from 'react';
 import styled from 'styled-components';
-import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faAngleDown, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { ButtonLayout, ListLayout, TimePicker } from 'client/components/general';
+import { ButtonLayout, ListLayout } from 'client/components/general';
 import { VerticalSpace } from 'client/components/layout';
 import DAY, { dayEnumToString, days } from 'common/constants/day';
 import { meetingTimeSlots } from 'common/constants/timeslots';
 import { CourseInstanceResponseMeeting } from 'common/dto/courses/CourseInstanceResponse';
 import { MeetingRoomResponse } from 'common/dto/meeting/MeetingResponse.dto';
 import {
-  calculateStartEndTimes,
   convert12To24HourTime,
   convertTo12HourDisplayTime,
 } from 'common/utils/timeHelperFunctions';
 import {
   BorderlessButton,
   Button,
+  ButtonDropdownMenu,
+  ButtonDropdownMenuItem,
   Dropdown,
   TextInput,
   ValidationErrorMessage,
@@ -180,31 +181,29 @@ export const MeetingTimesList
                           isRequired
                           isLabelVisible={false}
                         />
-                        <TimePicker
-                          id="timeslots"
-                          name="timeslots"
-                          options={[{ value: '', label: '🕒' }]
-                            .concat(meetingTimeSlots.map((slot) => ({
-                              value: slot,
-                              label: slot,
-                            })))}
-                          value={currentTimeslot}
-                          onChange={(event
-                          : React.ChangeEvent<HTMLSelectElement>)
-                          : void => {
-                            if (event.currentTarget.value !== '') {
-                              const times = calculateStartEndTimes(
-                                event.currentTarget.value
-                              );
-                              setCurrentStartTime(
-                                convert12To24HourTime(times.start)
-                              );
-                              setCurrentEndTime(
-                                convert12To24HourTime(times.end)
-                              );
-                            }
-                          }}
-                        />
+                        <ButtonDropdownMenu
+                          alt="Timeslot Button"
+                          label={<FontAwesomeIcon icon={faAngleDown} size="sm" />}
+                          variant={VARIANT.BASE}
+                        >
+                          {meetingTimeSlots.map(({
+                            label,
+                            start,
+                            end,
+                          }) => (
+                            <ButtonDropdownMenuItem
+                              onClick={() => {
+                                setCurrentStartTime(
+                                  convert12To24HourTime(start)
+                                );
+                                setCurrentEndTime(convert12To24HourTime(end));
+                              }}
+                              key={label}
+                            >
+                              {label}
+                            </ButtonDropdownMenuItem>
+                          ))}
+                        </ButtonDropdownMenu>
                         <TextInput
                           id="meetingStartTime"
                           name="meetingStartTime"
