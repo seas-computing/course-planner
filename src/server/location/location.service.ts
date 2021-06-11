@@ -65,7 +65,7 @@ export class LocationService {
       .andWhere('"calendarYear"=:calendarYear', { calendarYear })
       .andWhere('day=:day', { day })
       .andWhere(
-        '(:startTime, :endTime) OVERLAPS ("startTime", "endTime")',
+        '(:startTime::TIME, :endTime::TIME) OVERLAPS ("startTime", "endTime")',
         { startTime, endTime }
       )
       .getRawMany();
@@ -85,7 +85,7 @@ export class LocationService {
         `r.id = b."roomId" AND b."calendarYear" = :calendarYear
           AND b.term = :term
           AND b.day = :day
-          AND ((b."startTime", b."endTime") OVERLAPS (:startTime, :endTime))`,
+          AND (b."startTime", b."endTime") OVERLAPS (:startTime::TIME, :endTime::TIME)`,
         roomInfo)
       .getMany() as unknown[] as RoomQueryResult[];
     return result.map(({ meetings, ...row }) => ({

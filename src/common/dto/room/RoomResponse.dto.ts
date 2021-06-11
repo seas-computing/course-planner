@@ -1,10 +1,10 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export default abstract class RoomResponse {
   /**
    * The database uuid of the room
    */
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: '861f3bca-e318-4c02-976c-53d60a2c09bc',
   })
@@ -13,7 +13,7 @@ export default abstract class RoomResponse {
   /**
    * The campus within the university where the room is located
    */
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: 'Allston',
   })
@@ -22,7 +22,7 @@ export default abstract class RoomResponse {
   /**
    * The name of the building concatenated with the number of the room
    */
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: 'Maxwell-Dworkin G125',
   })
@@ -31,7 +31,7 @@ export default abstract class RoomResponse {
   /**
    * The maximum number of people that can occupy the room at a time
    */
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'number',
     example: 200,
   })
@@ -44,7 +44,7 @@ export default abstract class RoomResponse {
    * If the array is empty, there are no courses or non-class meetings that
    * overlap with the requested times.
    */
-  @ApiModelProperty({
+  @ApiProperty({
     isArray: true,
     example: ['AC 209', 'Staff Meeting', 'ES 115', 'AM 218'],
   })

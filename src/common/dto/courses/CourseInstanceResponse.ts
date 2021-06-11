@@ -1,4 +1,4 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import {
   DAY, OFFERED, TERM_PATTERN, IS_SEAS,
 } from 'common/constants';
@@ -20,26 +20,26 @@ export interface CourseInstanceResponseMeeting {
  */
 
 abstract class Instance {
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: 'ec141394-4011-485d-bba5-173b9fdef04d',
   })
   public id: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: '2016',
   })
   public calendarYear: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: OFFERED.Y,
     enum: OFFERED,
   })
   public offered: OFFERED;
 
-  @ApiModelProperty({
+  @ApiProperty({
     isArray: true,
     example: [
       {
@@ -61,13 +61,13 @@ abstract class Instance {
     notes?: string;
   }[] = [];
 
-  @ApiModelProperty({
+  @ApiProperty({
     example: [
       {
         id: '7187d276-f6cf-4323-af7d-dd70f4a08e3d',
         day: DAY.TUE,
-        startTime: '12:00:00-5',
-        endTime: '13:00:00-5',
+        startTime: '12:00:00',
+        endTime: '13:00:00',
         room: {
           id: 'c7b1fa3f-c5b0-478d-a29c-7f85a4d80109',
           campus: 'Cambridge',
@@ -79,19 +79,19 @@ abstract class Instance {
   })
   public meetings: CourseInstanceResponseMeeting[];
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'number',
     example: 15,
   })
   public preEnrollment: number;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'number',
     example: 12,
   })
   public studyCardEnrollment: number;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'number',
     example: 8,
   })
@@ -99,67 +99,67 @@ abstract class Instance {
 }
 
 export default abstract class CourseInstanceResponseDTO {
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: 'c7b1fa3f-c5b0-478d-a29c-7f85a4d80109',
   })
   public id: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: 'ACS',
   })
   public area: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'boolean',
     example: false,
   })
   public isUndergraduate: boolean;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: 'AM 10',
   })
   public catalogNumber: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: 'Applied Math for computation',
   })
   public title: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: 'CS 050',
   })
   public sameAs: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     enum: IS_SEAS,
     example: true,
   })
   public isSEAS: IS_SEAS;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: Instance,
   })
   public spring: Instance;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: Instance,
   })
   public fall: Instance;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: 'Taking place in a larger room this year',
     default: '',
   })
   public notes?: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     enum: TERM_PATTERN,
   })

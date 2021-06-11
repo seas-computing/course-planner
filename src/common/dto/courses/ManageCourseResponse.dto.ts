@@ -1,60 +1,60 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { TERM_PATTERN, IS_SEAS } from 'common/constants';
 import { CourseArea } from './CourseArea.dto';
 
 export abstract class ManageCourseResponseDTO {
-  @ApiModelProperty({
+  @ApiProperty({
     example: 'b8bc8456-51fd-48ef-b111-5a5990671cd1',
   })
   public id: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     example: 'Computational Modeling of Fluids and Soft Matter',
   })
   public title: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: CourseArea,
   })
   public area: CourseArea;
 
-  @ApiModelProperty({
+  @ApiProperty({
     example: 'AP',
   })
   public prefix?: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     example: '227',
   })
   public number?: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     example: 'AP 227',
   })
   public catalogNumber: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     example: TERM_PATTERN.FALL,
     enum: TERM_PATTERN,
   })
   public termPattern?: TERM_PATTERN;
 
-  @ApiModelProperty({
+  @ApiProperty({
     example: false,
   })
   public isUndergraduate: boolean;
 
-  @ApiModelProperty({
+  @ApiProperty({
     example: true,
   })
   public isSEAS: IS_SEAS;
 
-  @ApiModelProperty({
+  @ApiProperty({
     example: 'AC 227',
   })
   public sameAs?: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'boolean',
     example: false,
   })

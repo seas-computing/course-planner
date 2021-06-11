@@ -16,7 +16,7 @@ import {
   ApiOperation,
   ApiOkResponse,
   ApiBadRequestResponse,
-  ApiUseTags,
+  ApiTags,
   ApiNotFoundResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -37,7 +37,7 @@ import { Faculty } from './faculty.entity';
 import { FacultyService } from './faculty.service';
 import { FacultyScheduleService } from './facultySchedule.service';
 
-@ApiUseTags('Faculty')
+@ApiTags('Faculty')
 @UseGuards(Authentication)
 @Controller('api/faculty')
 @ApiUnauthorizedResponse({ description: 'Thrown if the user is not authenticated' })
@@ -62,7 +62,7 @@ export class FacultyController {
 
   @UseGuards(new RequireGroup(GROUP.ADMIN))
   @Get('/')
-  @ApiOperation({ title: 'Retrieve all faculty in the database' })
+  @ApiOperation({ summary: 'Retrieve all faculty in the database' })
   @ApiOkResponse({
     type: ManageFacultyResponseDTO,
     description: 'An array of all the faculty along with their area',
@@ -82,7 +82,7 @@ export class FacultyController {
    */
   @UseGuards(new RequireGroup(GROUP.READ_ONLY))
   @Get('/schedule')
-  @ApiOperation({ title: 'Retrieve all faculty along with their area, course instances, and absences' })
+  @ApiOperation({ summary: 'Retrieve all faculty along with their area, course instances, and absences' })
   @ApiOkResponse({
     type: Object,
     description: 'An object where the academic year maps to an array of faculty along with their area, course instances, and absences',
@@ -113,7 +113,7 @@ export class FacultyController {
 
   @UseGuards(new RequireGroup(GROUP.ADMIN))
   @Put('/absence/:id')
-  @ApiOperation({ title: 'Edit an existing faculty\'s absence entry in the database' })
+  @ApiOperation({ summary: 'Edit an existing faculty\'s absence entry in the database' })
   @ApiOkResponse({
     type: AbsenceResponseDTO,
     description: 'An object with the edited absence entry\'s information.',
@@ -147,7 +147,7 @@ export class FacultyController {
 
   @UseGuards(new RequireGroup(GROUP.ADMIN))
   @Post('/')
-  @ApiOperation({ title: 'Create a new faculty entry in the database' })
+  @ApiOperation({ summary: 'Create a new faculty entry in the database' })
   @ApiOkResponse({
     type: ManageFacultyResponseDTO,
     description: 'An object with the newly created faculty member\'s information.',
@@ -201,7 +201,7 @@ export class FacultyController {
 
   @UseGuards(new RequireGroup(GROUP.ADMIN))
   @Put(':id')
-  @ApiOperation({ title: 'Edit an existing faculty entry in the database' })
+  @ApiOperation({ summary: 'Edit an existing faculty entry in the database' })
   @ApiOkResponse({
     type: ManageFacultyResponseDTO,
     description: 'An object with the edited faculty member\'s information.',

@@ -1,9 +1,12 @@
 import { validate } from 'class-validator';
-import { strictEqual, deepStrictEqual } from 'assert';
+import { strictEqual, deepStrictEqual, throws } from 'assert';
+import { stub } from 'sinon';
+import * as dummy from 'testData';
 import IsOccurringAfter from '../IsOccurringAfter';
+import { PGTime } from '../../../utils/PGTime';
 
-const timeBefore = '01:01:01-05';
-const timeAfter = '02:02:02-05';
+const timeBefore = '01:01:01';
+const timeAfter = '02:02:02';
 
 describe('IsOccurringAfter', function () {
   class TimeStamps {
@@ -73,6 +76,17 @@ describe('IsOccurringAfter', function () {
       strictEqual(errors.length, 1);
       const [{ constraints }] = errors;
       deepStrictEqual(Object.keys(constraints), ['isOccurringAfter']);
+    });
+  });
+  context('When there is a non-TypeError thrown', function () {
+    beforeEach(function () {
+      testCase = new TimeStamps();
+      testCase.startTime = timeBefore;
+      testCase.endTime = timeAfter;
+      stub(PGTime.prototype, 'isAfter').throws(dummy.error);
+    });
+    it('Should throw that error', function () {
+      throws(() => validate(testCase), dummy.error);
     });
   });
 });

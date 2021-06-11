@@ -5,7 +5,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiUnauthorizedResponse,
-  ApiUseTags,
+  ApiTags,
   ApiForbiddenResponse,
 } from '@nestjs/swagger';
 import { RequireGroup } from 'server/auth/group.guard';
@@ -15,7 +15,7 @@ import RoomResponse from 'common/dto/room/RoomResponse.dto';
 import RoomRequest from 'common/dto/room/RoomRequest.dto';
 import { LocationService } from './location.service';
 
-@ApiUseTags('Rooms')
+@ApiTags('Rooms')
 @Controller('api/rooms')
 @ApiForbiddenResponse({
   description: 'The user is not authenticated',
@@ -29,7 +29,7 @@ export class LocationController {
   private readonly locationService: LocationService;
 
   @Get('/')
-  @ApiOperation({ title: 'Retrieve all rooms from the database along with the meetings that take place in them' })
+  @ApiOperation({ summary: 'Retrieve all rooms from the database along with the meetings that take place in them' })
   @ApiOkResponse({
     type: RoomResponse,
     description: 'An array of all rooms along with the meetings, if any, occurring at the requested time period',

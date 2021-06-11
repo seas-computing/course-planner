@@ -3,7 +3,7 @@ import {
   ValidationOptions,
   ValidationArguments,
 } from 'class-validator';
-import { parse, isBefore } from 'date-fns';
+import { PGTime } from '../../utils/PGTime';
 
 /**
  * Validation decorator to check that a time field occurs before another field
@@ -29,11 +29,18 @@ export default function IsOccurringBefore<DTO>(
         validate(value: string, args: ValidationArguments): boolean {
           const target = args.object as DTO;
           const [otherProp] = args.constraints as (string & keyof DTO)[];
-          const otherTime = target[otherProp];
-          if (typeof otherTime === 'string') {
-            const thisTimeAsDate = parse(value, 'HH:mm:ssx', new Date());
-            const otherTimeAsDate = parse(otherTime, 'HH:mm:ssx', new Date());
-            return isBefore(thisTimeAsDate, otherTimeAsDate);
+          const otherTimestamp = target[otherProp];
+          if (typeof otherTimestamp === 'string') {
+            try {
+              const thisTime = new PGTime(value);
+              const otherTime = new PGTime(otherTimestamp);
+              return thisTime.isBefore(otherTime);
+            } catch (err) {
+              if (err instanceof TypeError) {
+                return false;
+              }
+              throw err;
+            }
           }
           return false;
         },
