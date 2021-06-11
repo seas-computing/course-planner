@@ -87,6 +87,8 @@ export class LocationService {
           AND b.day = :day
           AND (b."startTime", b."endTime") OVERLAPS (:startTime::TIME, :endTime::TIME)`,
         roomInfo)
+      .orderBy('r.campus', 'ASC')
+      .addOrderBy('r.name', 'ASC')
       .getMany() as unknown[] as RoomQueryResult[];
     return result.map(({ meetings, ...row }) => ({
       ...row,
