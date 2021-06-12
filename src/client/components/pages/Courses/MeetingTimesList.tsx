@@ -193,10 +193,21 @@ export const MeetingTimesList
                           }) => (
                             <ButtonDropdownMenuItem
                               onClick={() => {
-                                setCurrentStartTime(
-                                  convert12To24HourTime(start)
-                                );
-                                setCurrentEndTime(convert12To24HourTime(end));
+                                const startTime = convert12To24HourTime(start);
+                                const endTime = convert12To24HourTime(end);
+                                setCurrentStartTime(startTime);
+                                setCurrentEndTime(endTime);
+                                setCurrentMeetings(currentMeetings.map(
+                                  (currentMeeting) => (
+                                    currentMeeting.id === currentMeetingId
+                                      ? {
+                                        ...currentMeeting,
+                                        startTime,
+                                        endTime,
+                                      }
+                                      : currentMeeting
+                                  )
+                                ));
                               }}
                               key={label}
                             >

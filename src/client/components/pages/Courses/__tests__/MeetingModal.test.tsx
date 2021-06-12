@@ -128,7 +128,9 @@ describe('Meeting Modal', function () {
             });
             context('when a timeslot is selected', function () {
               const timeslot = '12:00 PM-1:00 PM';
-              const expectedTimes = calculateStartEndTimes(timeslot);
+              const times = calculateStartEndTimes(timeslot);
+              const expectedStartTime = convert12To24HourTime(times.start);
+              const expectedEndTime = convert12To24HourTime(times.end);
               beforeEach(async function () {
                 const timepicker = await waitForElement(() => findByLabelText('Timeslot Button'));
                 fireEvent.click(timepicker);
@@ -136,17 +138,23 @@ describe('Meeting Modal', function () {
               });
               it('populates the start time text input field with the expected time', function () {
                 const startTimeInput = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;
-                const expectedStartTime = convert12To24HourTime(
-                  expectedTimes.start
-                );
                 strictEqual(startTimeInput.value, expectedStartTime);
               });
               it('populates the end time text input field with the expected time', function () {
                 const endTimeInput = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
-                const expectedEndTime = convert12To24HourTime(
-                  expectedTimes.end
-                );
                 strictEqual(endTimeInput.value, expectedEndTime);
+              });
+              context('after navigating to a different meeting', function () {
+                it('preserves the selected start and end times', async function () {
+                  const editCS50TuesdayMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50TuesdayMeetingId));
+                  fireEvent.click(editCS50TuesdayMeetingButton);
+                  const editCS50InitialMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50InitialMeeting.id));
+                  fireEvent.click(editCS50InitialMeetingButton);
+                  const startTimeInput = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;
+                  const endTimeInput = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
+                  strictEqual(startTimeInput.value, expectedStartTime);
+                  strictEqual(endTimeInput.value, expectedEndTime);
+                });
               });
             });
             describe('Day Dropdown', function () {
