@@ -1,4 +1,5 @@
 import {
+  AllByRole,
   BoundFunction,
   FindByText,
   fireEvent,
@@ -11,7 +12,11 @@ import { strictEqual } from 'assert';
 import { TERM } from 'common/constants';
 import DAY, { dayEnumToString } from 'common/constants/day';
 import { TermKey } from 'common/constants/term';
-import { calculateStartEndTimes, convert12To24HourTime, convertTo12HourDisplayTime } from 'common/utils/timeHelperFunctions';
+import {
+  calculateStartEndTimes,
+  convert12To24HourTime,
+  convertTo12HourDisplayTime,
+} from 'common/utils/timeHelperFunctions';
 import React from 'react';
 import { SinonStub, stub } from 'sinon';
 import { render } from 'test-utils';
@@ -24,6 +29,7 @@ describe('Meeting Modal', function () {
     let queryByText: BoundFunction<QueryByText>;
     let getByLabelText: BoundFunction<GetByText>;
     let findByLabelText: BoundFunction<FindByText>;
+    let queryAllByRole: BoundFunction<AllByRole>;
     let onCloseStub: SinonStub;
     const dispatchMessage: SinonStub = stub();
     const meetingTerm = TERM.FALL;
@@ -145,15 +151,34 @@ describe('Meeting Modal', function () {
                 strictEqual(endTimeInput.value, expectedEndTime);
               });
               context('after navigating to a different meeting', function () {
-                it('preserves the selected start and end times', async function () {
+                beforeEach(async function () {
                   const editCS50TuesdayMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50TuesdayMeetingId));
                   fireEvent.click(editCS50TuesdayMeetingButton);
                   const editCS50InitialMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50InitialMeeting.id));
                   fireEvent.click(editCS50InitialMeetingButton);
+                });
+                it('renders no validation error messages', function () {
+                  strictEqual(queryAllByRole('alert').length, 0);
+                });
+                it('preserves the selected start and end times', function () {
                   const startTimeInput = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;
                   const endTimeInput = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
                   strictEqual(startTimeInput.value, expectedStartTime);
                   strictEqual(endTimeInput.value, expectedEndTime);
+                });
+              });
+              context('after clicking the "Show Rooms" button', function () {
+                it('renders no validation error messages', function () {
+                  const showRoomsButton = getByText('Show Rooms');
+                  fireEvent.click(showRoomsButton);
+                  strictEqual(queryAllByRole('alert').length, 0);
+                });
+              });
+              context('after clicking the "Close" button', function () {
+                it('renders no validation error messages', function () {
+                  const closeButton = getByText('Close');
+                  fireEvent.click(closeButton);
+                  strictEqual(queryAllByRole('alert').length, 0);
                 });
               });
             });
@@ -170,6 +195,20 @@ describe('Meeting Modal', function () {
                     const editCS50InitialMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50InitialMeeting.id));
                     fireEvent.click(editCS50InitialMeetingButton);
                     strictEqual(dayDropdown.value, updatedDay);
+                  });
+                });
+                context('after clicking the "Show Rooms" button', function () {
+                  it('renders no validation error messages', function () {
+                    const showRoomsButton = getByText('Show Rooms');
+                    fireEvent.click(showRoomsButton);
+                    strictEqual(queryAllByRole('alert').length, 0);
+                  });
+                });
+                context('after clicking the "Close" button', function () {
+                  it('renders no validation error messages', function () {
+                    const closeButton = getByText('Close');
+                    fireEvent.click(closeButton);
+                    strictEqual(queryAllByRole('alert').length, 0);
                   });
                 });
               });
@@ -192,6 +231,15 @@ describe('Meeting Modal', function () {
                   it('displays a validation error message', async function () {
                     const showRoomsButton = getByText('Show Rooms');
                     fireEvent.click(showRoomsButton);
+                    return waitForElement(
+                      () => getByText(errorMessage, { exact: false })
+                    );
+                  });
+                });
+                context('after clicking on the "Close" button', function () {
+                  it('displays a validation error message', async function () {
+                    const closeButton = getByText('Close');
+                    fireEvent.click(closeButton);
                     return waitForElement(
                       () => getByText(errorMessage, { exact: false })
                     );
@@ -242,6 +290,15 @@ describe('Meeting Modal', function () {
                     );
                   });
                 });
+                context('after clicking on the "Close" button', function () {
+                  it('displays a validation error message', async function () {
+                    const closeButton = getByText('Close');
+                    fireEvent.click(closeButton);
+                    return waitForElement(
+                      () => getByText(errorMessage, { exact: false })
+                    );
+                  });
+                });
               });
               context('when changed to a value later than end time', function () {
                 const errorMessage = 'End time must be later than start time.';
@@ -264,6 +321,15 @@ describe('Meeting Modal', function () {
                   it('displays a validation error message', function () {
                     const showRoomsButton = getByText('Show Rooms');
                     fireEvent.click(showRoomsButton);
+                    return waitForElement(
+                      () => getByText(errorMessage, { exact: false })
+                    );
+                  });
+                });
+                context('after clicking on the "Close" button', function () {
+                  it('displays a validation error message', async function () {
+                    const closeButton = getByText('Close');
+                    fireEvent.click(closeButton);
                     return waitForElement(
                       () => getByText(errorMessage, { exact: false })
                     );
@@ -314,6 +380,15 @@ describe('Meeting Modal', function () {
                     );
                   });
                 });
+                context('after clicking on the "Close" button', function () {
+                  it('displays a validation error message', async function () {
+                    const closeButton = getByText('Close');
+                    fireEvent.click(closeButton);
+                    return waitForElement(
+                      () => getByText(errorMessage, { exact: false })
+                    );
+                  });
+                });
               });
               context('when changed to a value earlier than start time', function () {
                 const errorMessage = 'End time must be later than start time.';
@@ -336,6 +411,15 @@ describe('Meeting Modal', function () {
                   it('displays a validation error message', function () {
                     const showRoomsButton = getByText('Show Rooms');
                     fireEvent.click(showRoomsButton);
+                    return waitForElement(
+                      () => getByText(errorMessage, { exact: false })
+                    );
+                  });
+                });
+                context('after clicking on the "Close" button', function () {
+                  it('displays a validation error message', async function () {
+                    const closeButton = getByText('Close');
+                    fireEvent.click(closeButton);
                     return waitForElement(
                       () => getByText(errorMessage, { exact: false })
                     );
