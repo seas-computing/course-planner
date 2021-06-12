@@ -280,7 +280,12 @@ export const MeetingTimesList
                           <Button
                             id="closeButton"
                             onClick={
-                              (): void => {}
+                              (): void => {
+                                // Close the current meeting only if there are no validation errors
+                                if (validateTimes()) {
+                                  setCurrentMeetingId(null);
+                                }
+                              }
                             }
                             variant={VARIANT.SECONDARY}
                           >
