@@ -42,6 +42,7 @@ describe('Meeting Modal', function () {
         queryByText,
         getByLabelText,
         findByLabelText,
+        queryAllByRole,
       } = render(
         <MeetingModal
           isVisible
@@ -157,9 +158,6 @@ describe('Meeting Modal', function () {
                   const editCS50InitialMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50InitialMeeting.id));
                   fireEvent.click(editCS50InitialMeetingButton);
                 });
-                it('renders no validation error messages', function () {
-                  strictEqual(queryAllByRole('alert').length, 0);
-                });
                 it('preserves the selected start and end times', function () {
                   const startTimeInput = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;
                   const endTimeInput = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
@@ -171,12 +169,15 @@ describe('Meeting Modal', function () {
                 it('renders no validation error messages', function () {
                   const showRoomsButton = getByText('Show Rooms');
                   fireEvent.click(showRoomsButton);
-                  strictEqual(queryAllByRole('alert').length, 0);
+                  // The row remains expanded at this point, and the text
+                  // content of the error message of the row should be empty.
+                  strictEqual(queryAllByRole('alert')[0].innerText, undefined);
                 });
               });
               context('after clicking the "Close" button', function () {
                 it('renders no validation error messages', function () {
                   const closeButton = getByText('Close');
+                  // Collapses the meeting row
                   fireEvent.click(closeButton);
                   strictEqual(queryAllByRole('alert').length, 0);
                 });
@@ -199,13 +200,21 @@ describe('Meeting Modal', function () {
                 });
                 context('after clicking the "Show Rooms" button', function () {
                   it('renders no validation error messages', function () {
+                    const dayDropdown = getByLabelText('Meeting Day', { exact: false }) as HTMLSelectElement;
+                    fireEvent.change(dayDropdown,
+                      { target: { value: updatedDay } });
                     const showRoomsButton = getByText('Show Rooms');
                     fireEvent.click(showRoomsButton);
-                    strictEqual(queryAllByRole('alert').length, 0);
+                    // The row remains expanded at this point, and the text
+                    // content of the error message of the row should be empty.
+                    strictEqual(queryAllByRole('alert')[0].innerText, undefined);
                   });
                 });
                 context('after clicking the "Close" button', function () {
                   it('renders no validation error messages', function () {
+                    const dayDropdown = getByLabelText('Meeting Day', { exact: false }) as HTMLSelectElement;
+                    fireEvent.change(dayDropdown,
+                      { target: { value: updatedDay } });
                     const closeButton = getByText('Close');
                     fireEvent.click(closeButton);
                     strictEqual(queryAllByRole('alert').length, 0);
@@ -263,6 +272,28 @@ describe('Meeting Modal', function () {
                       startTimeDropdown.value,
                       convert12To24HourTime(updatedStartTime)
                     );
+                  });
+                });
+                context('after clicking the "Show Rooms" button', function () {
+                  it('renders no validation error messages', function () {
+                    const startTimeDropdown = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;
+                    fireEvent.change(startTimeDropdown,
+                      { target: { value: updatedStartTime } });
+                    const showRoomsButton = getByText('Show Rooms');
+                    fireEvent.click(showRoomsButton);
+                    // The row remains expanded at this point, and the text
+                    // content of the error message of the row should be empty.
+                    strictEqual(queryAllByRole('alert')[0].innerText, undefined);
+                  });
+                });
+                context('after clicking the "Close" button', function () {
+                  it('renders no validation error messages', function () {
+                    const startTimeDropdown = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;
+                    fireEvent.change(startTimeDropdown,
+                      { target: { value: updatedStartTime } });
+                    const closeButton = getByText('Close');
+                    fireEvent.click(closeButton);
+                    strictEqual(queryAllByRole('alert').length, 0);
                   });
                 });
               });
@@ -353,6 +384,28 @@ describe('Meeting Modal', function () {
                       endTimeDropdown.value,
                       convert12To24HourTime(updatedEndTime)
                     );
+                  });
+                });
+                context('after clicking the "Show Rooms" button', function () {
+                  it('renders no validation error messages', function () {
+                    const endTimeDropdown = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
+                    fireEvent.change(endTimeDropdown,
+                      { target: { value: updatedEndTime } });
+                    const showRoomsButton = getByText('Show Rooms');
+                    fireEvent.click(showRoomsButton);
+                    // The row remains expanded at this point, and the text
+                    // content of the error message of the row should be empty.
+                    strictEqual(queryAllByRole('alert')[0].innerText, undefined);
+                  });
+                });
+                context('after clicking the "Close" button', function () {
+                  it('renders no validation error messages', function () {
+                    const endTimeDropdown = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
+                    fireEvent.change(endTimeDropdown,
+                      { target: { value: updatedEndTime } });
+                    const closeButton = getByText('Close');
+                    fireEvent.click(closeButton);
+                    strictEqual(queryAllByRole('alert').length, 0);
                   });
                 });
               });
