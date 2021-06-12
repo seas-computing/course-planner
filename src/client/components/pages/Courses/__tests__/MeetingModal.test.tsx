@@ -158,10 +158,12 @@ describe('Meeting Modal', function () {
                   const editCS50InitialMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50InitialMeeting.id));
                   fireEvent.click(editCS50InitialMeetingButton);
                 });
-                it('preserves the selected start and end times', function () {
+                it('preserves the updated start time', function () {
                   const startTimeInput = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;
-                  const endTimeInput = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
                   strictEqual(startTimeInput.value, expectedStartTime);
+                });
+                it('preserves the updated end time', function () {
+                  const endTimeInput = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
                   strictEqual(endTimeInput.value, expectedEndTime);
                 });
               });
@@ -180,6 +182,24 @@ describe('Meeting Modal', function () {
                   // Collapses the meeting row
                   fireEvent.click(closeButton);
                   strictEqual(queryAllByRole('alert').length, 0);
+                });
+                it('preserves the updated start time', async function () {
+                  const closeButton = getByText('Close');
+                  fireEvent.click(closeButton);
+                  // Reopen the original meeting to check value
+                  const editCS50InitialMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50InitialMeeting.id));
+                  fireEvent.click(editCS50InitialMeetingButton);
+                  const startTimeInput = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;
+                  strictEqual(startTimeInput.value, expectedStartTime);
+                });
+                it('preserves the updated end time', async function () {
+                  const closeButton = getByText('Close');
+                  fireEvent.click(closeButton);
+                  // Reopen the original meeting to check value
+                  const editCS50InitialMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50InitialMeeting.id));
+                  fireEvent.click(editCS50InitialMeetingButton);
+                  const endTimeInput = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
+                  strictEqual(endTimeInput.value, expectedEndTime);
                 });
               });
             });
@@ -218,6 +238,16 @@ describe('Meeting Modal', function () {
                     const closeButton = getByText('Close');
                     fireEvent.click(closeButton);
                     strictEqual(queryAllByRole('alert').length, 0);
+                  });
+                  it('preserves the updated day value', async function () {
+                    const dayDropdown = getByLabelText('Meeting Day', { exact: false }) as HTMLSelectElement;
+                    fireEvent.change(dayDropdown,
+                      { target: { value: updatedDay } });
+                    const closeButton = getByText('Close');
+                    fireEvent.click(closeButton);
+                    const editCS50InitialMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50InitialMeeting.id));
+                    fireEvent.click(editCS50InitialMeetingButton);
+                    strictEqual(dayDropdown.value, updatedDay);
                   });
                 });
               });
@@ -294,6 +324,19 @@ describe('Meeting Modal', function () {
                     const closeButton = getByText('Close');
                     fireEvent.click(closeButton);
                     strictEqual(queryAllByRole('alert').length, 0);
+                  });
+                  it('preserves the updated start time value', async function () {
+                    const startTimeDropdown = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;
+                    fireEvent.change(startTimeDropdown,
+                      { target: { value: updatedStartTime } });
+                    const closeButton = getByText('Close');
+                    fireEvent.click(closeButton);
+                    const editCS50InitialMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50InitialMeeting.id));
+                    fireEvent.click(editCS50InitialMeetingButton);
+                    strictEqual(
+                      startTimeDropdown.value,
+                      convert12To24HourTime(updatedStartTime)
+                    );
                   });
                 });
               });
@@ -406,6 +449,19 @@ describe('Meeting Modal', function () {
                     const closeButton = getByText('Close');
                     fireEvent.click(closeButton);
                     strictEqual(queryAllByRole('alert').length, 0);
+                  });
+                  it('preserves the updated end time value', async function () {
+                    const endTimeDropdown = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
+                    fireEvent.change(endTimeDropdown,
+                      { target: { value: updatedEndTime } });
+                    const closeButton = getByText('Close');
+                    fireEvent.click(closeButton);
+                    const editCS50InitialMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50InitialMeeting.id));
+                    fireEvent.click(editCS50InitialMeetingButton);
+                    strictEqual(
+                      endTimeDropdown.value,
+                      convert12To24HourTime(updatedEndTime)
+                    );
                   });
                 });
               });
