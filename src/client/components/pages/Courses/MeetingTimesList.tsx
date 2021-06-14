@@ -116,6 +116,14 @@ export const MeetingTimesList
   ] = useState('');
 
   /**
+   * Used to create a temporary unique ID for new meetings on the client. A permanent UUID will be assigned as a result of the server request
+   */
+  const [
+    newMeetingIndex,
+    setNewMeetingIndex,
+  ] = useState(0);
+
+  /**
    * The fields of the existing meeting are checked to make sure they are non-empty.
    * The entered start and end times are compared to make sure the start time is
    * not later than the end time. In either case, an error is set.
@@ -125,7 +133,7 @@ export const MeetingTimesList
       setMeetingTimeError('Please provide a day and start/end times before proceeding.');
       return false;
     }
-    if (currentMeetingId && (currentStartTime > currentEndTime)) {
+    if (currentMeetingId && (currentStartTime >= currentEndTime)) {
       setMeetingTimeError('End time must be later than start time.');
       return false;
     }
@@ -220,7 +228,7 @@ export const MeetingTimesList
                           name="meetingStartTime"
                           label="Meeting Start Time"
                           type="time"
-                          value={convert12To24HourTime(currentStartTime)}
+                          value={currentStartTime !== '' ? convert12To24HourTime(currentStartTime) : ''}
                           onChange={(event: React.ChangeEvent<HTMLInputElement>)
                           : void => {
                             setCurrentStartTime(event.currentTarget.value);
@@ -244,7 +252,7 @@ export const MeetingTimesList
                           name="meetingEndTime"
                           label="Meeting End Time"
                           type="time"
-                          value={convert12To24HourTime(currentEndTime)}
+                          value={currentEndTime !== '' ? convert12To24HourTime(currentEndTime) : ''}
                           onChange={(event: React.ChangeEvent<HTMLInputElement>)
                           : void => {
                             setCurrentEndTime(event.currentTarget.value);
@@ -274,7 +282,7 @@ export const MeetingTimesList
                       <div>
                         <span>
                           Room:
-                          {` ${currentRoom.name}`}
+                          {` ${currentRoom !== null ? currentRoom.name : ''}`}
                         </span>
                         <ButtonLayout>
                           <Button
@@ -308,7 +316,7 @@ export const MeetingTimesList
                   )
                   : (
                     <>
-                      <span>{`${dayEnumToString(meeting.day)}, ${convertTo12HourDisplayTime(meeting.startTime)} to ${convertTo12HourDisplayTime(meeting.endTime)} in ${meeting.room.name}`}</span>
+                      <span>{`${dayEnumToString(meeting.day)}, ${convertTo12HourDisplayTime(meeting.startTime)} to ${convertTo12HourDisplayTime(meeting.endTime)} ${meeting.room !== null ? `in ${meeting.room.name}` : ''}`}</span>
                       <BorderlessButton
                         id={`editMeetingButton${meeting.id}`}
                         variant={VARIANT.INFO}
@@ -338,7 +346,26 @@ export const MeetingTimesList
         <Button
           id="addNewTimeButton"
           onClick={
-            (): void => {}
+            (): void => {
+              // Close the current meeting only if there are no validation errors
+              if (validateTimes()) {
+                setCurrentMeetingId(null);
+                // Generate a new meeting row using a newly created meeting ID via the newMeetingIndex
+                setCurrentMeetings([...currentMeetings, {
+                  id: `newMeeting${newMeetingIndex}`,
+                  day: '' as DAY,
+                  startTime: '',
+                  endTime: '',
+                  room: null,
+                }]);
+                setCurrentMeetingId(`newMeeting${newMeetingIndex}`);
+                setNewMeetingIndex(newMeetingIndex + 1);
+                setCurrentDay('' as DAY);
+                setCurrentStartTime('');
+                setCurrentEndTime('');
+                setCurrentRoom(null);
+              }
+            }
           }
           variant={VARIANT.SECONDARY}
         >
