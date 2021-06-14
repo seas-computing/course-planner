@@ -89,6 +89,13 @@ export const cs50CourseInstance: CourseInstanceResponseDTO = {
           name: 'Sanders Theater',
         },
       },
+      {
+        id: 'be6235a9-3425-4b03-aa90-9a69997ad1cf',
+        day: DAY.THU,
+        startTime: '11:00 AM',
+        endTime: '11:30 PM',
+        room: null,
+      },
     ],
   },
 };

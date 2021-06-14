@@ -316,7 +316,7 @@ export const MeetingTimesList
                   )
                   : (
                     <>
-                      <span>{`${dayEnumToString(meeting.day)}, ${convertTo12HourDisplayTime(meeting.startTime)} to ${convertTo12HourDisplayTime(meeting.endTime)} ${meeting.room !== null ? `in ${meeting.room.name}` : ''}`}</span>
+                      <span>{`${dayEnumToString(meeting.day)}, ${convertTo12HourDisplayTime(meeting.startTime)} to ${convertTo12HourDisplayTime(meeting.endTime)}${meeting.room !== null ? ` in ${meeting.room.name}` : ''}`}</span>
                       <BorderlessButton
                         id={`editMeetingButton${meeting.id}`}
                         variant={VARIANT.INFO}
