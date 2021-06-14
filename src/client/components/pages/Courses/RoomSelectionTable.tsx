@@ -15,10 +15,17 @@ import {
 import RoomResponse from 'common/dto/room/RoomResponse.dto';
 
 interface RoomSelectionTableProps {
+  /** Whether an asynchronous request to the server has been made */
   dataFetching: boolean;
+  /** The list of rooms to show in the list */
   roomList: RoomResponse[];
+  /** A handler to be called when the add button is clicked */
   addButtonHandler: (arg0: string, arg1: string) => void;
 }
+
+/**
+ * The allowed values for Availability filter in the room table
+ */
 
 enum AVAILABILITY {
   ALL='All',
@@ -26,6 +33,10 @@ enum AVAILABILITY {
   UNAVAILABLE='Unavailable',
   CHECK='Check FAS availability'
 }
+
+/**
+ * Renders the list of rooms into the table interface
+ */
 
 const RoomSelectionTable = (
   { roomList, addButtonHandler, dataFetching }: RoomSelectionTableProps

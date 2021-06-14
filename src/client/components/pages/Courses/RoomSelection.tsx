@@ -5,9 +5,16 @@ import RoomSelectionTable from './RoomSelectionTable';
 import RoomRequest from '../../../../common/dto/room/RoomRequest.dto';
 
 interface RoomSelectionProps {
+  /** The day and time for which a room should be selected */
   roomRequestData?: RoomRequest;
+  /** The handler that will be called when a room is chosen */
   roomHandler: (arg0: string, arg1: string) => void;
 }
+
+/**
+ * Wrapper component that handles fetching the list of rooms based on the data
+ * provided, then rendering it into a table
+ */
 
 const RoomSelection = (
   props: RoomSelectionProps

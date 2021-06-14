@@ -134,6 +134,9 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     setMeetingModalFocus();
   }, []);
 
+  /**
+   * State field to set the day and time for which rooms should be shown
+   */
   const [
     showRoomsData,
     setShowRoomsData,
