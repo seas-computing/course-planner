@@ -20,7 +20,7 @@ interface RoomSelectionTableProps {
   /** The list of rooms to show in the list */
   roomList: RoomResponse[];
   /** A handler to be called when the add button is clicked */
-  addButtonHandler: (arg0: string, arg1: string) => void;
+  addButtonHandler: (roomData: RoomResponse) => void;
 }
 
 /**
@@ -89,25 +89,28 @@ const RoomSelectionTable = (
           </TableRow>
         </TableHead>
         <TableBody>
-          {!dataFetching && roomList.map(({
-            id, campus, name, capacity, meetingTitles,
-          }, index) => (
-            <TableRow key={id} isStriped={index % 2 !== 0}>
-              <TableCell>{campus}</TableCell>
-              <TableRowHeadingCell scope="row">{name}</TableRowHeadingCell>
-              <TableCell>{capacity}</TableCell>
-              <TableCell>{meetingTitles.join(',\n')}</TableCell>
-              <TableCell>
-                <Button
-                  onClick={() => { addButtonHandler(id, name); }}
-                  variant={VARIANT.POSITIVE}
-                >
-                  Add
+          {!dataFetching && roomList.map((roomData, index) => {
+            const {
+              id, campus, name, capacity, meetingTitles
+            } = roomData;
+            return (
+              <TableRow key={id} isStriped={index % 2 !== 0}>
+                <TableCell>{campus}</TableCell>
+                <TableRowHeadingCell scope="row">{name}</TableRowHeadingCell>
+                <TableCell>{capacity}</TableCell>
+                <TableCell>{meetingTitles.join(',\n')}</TableCell>
+                <TableCell>
+                  <Button
+                    onClick={() => { addButtonHandler(roomData); }}
+                    variant={VARIANT.POSITIVE}
+                  >
+                    Add
 
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
+                  </Button>
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
       {dataFetching && <LoadSpinner>Searching for Rooms</LoadSpinner>}

@@ -8,7 +8,7 @@ interface RoomSelectionProps {
   /** The day and time for which a room should be selected */
   roomRequestData?: RoomRequest;
   /** The handler that will be called when a room is chosen */
-  roomHandler: (arg0: string, arg1: string) => void;
+  roomHandler: (roomData: RoomResponse) => void;
 }
 
 /**
