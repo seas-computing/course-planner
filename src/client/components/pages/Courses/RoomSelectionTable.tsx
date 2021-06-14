@@ -148,7 +148,7 @@ const RoomSelectionTable = (
       {dataFetching && <LoadSpinner>Searching for Rooms</LoadSpinner>}
       {!dataFetching && roomList.length === 0 && (
         <RoomSelectionTablePrompt>
-          Add Meeting Time to view room availability
+          Add meeting time to view room availability
         </RoomSelectionTablePrompt>
       )}
     </>
