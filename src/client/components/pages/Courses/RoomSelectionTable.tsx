@@ -1,4 +1,5 @@
 import React, { ReactElement, useState, ChangeEvent } from 'react';
+import styled from 'styled-components';
 import {
   Table,
   TableRow,
@@ -11,6 +12,7 @@ import {
   LoadSpinner,
   Dropdown,
   TableRowHeadingCell,
+  fromTheme,
 } from 'mark-one';
 import RoomResponse from 'common/dto/room/RoomResponse.dto';
 
@@ -33,6 +35,20 @@ enum AVAILABILITY {
   UNAVAILABLE='Unavailable',
   CHECK='Check FAS availability'
 }
+
+/**
+ * A textbox that will appear before a meeting day/time has been selected
+ */
+
+const RoomSelectionTablePrompt = styled.div`
+  border: ${fromTheme('border', 'light')};
+  border-top: none;
+  text-align: center;
+  font-weight: ${fromTheme('font', 'bold', 'weight')};
+  font-size: ${fromTheme('font', 'bold', 'size')};
+  font-family: ${fromTheme('font', 'bold', 'family')};
+  padding: ${fromTheme('ws', 'medium')};
+`;
 
 /**
  * Renders the list of rooms into the table interface
@@ -114,8 +130,10 @@ const RoomSelectionTable = (
         </TableBody>
       </Table>
       {dataFetching && <LoadSpinner>Searching for Rooms</LoadSpinner>}
-      {roomList === null && (
-        'Add Meeting Time to view room availability'
+      {!dataFetching && roomList.length === 0 && (
+        <RoomSelectionTablePrompt>
+          Add Meeting Time to view room availability
+        </RoomSelectionTablePrompt>
       )}
     </>
   );
