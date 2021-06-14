@@ -51,6 +51,20 @@ const RoomSelectionTablePrompt = styled.div`
 `;
 
 /**
+ * Formats the meeting data for the "Availability" column
+ */
+const displayAvailability = (roomData: RoomResponse) => {
+  const { campus, meetingTitles } = roomData;
+  if (campus === 'FAS') {
+    return 'Check FAS Availability';
+  }
+  if (meetingTitles.length > 0) {
+    return `No (${meetingTitles.join(', ')})`;
+  }
+  return 'Yes';
+};
+
+/**
  * Renders the list of rooms into the table interface
  */
 
@@ -107,14 +121,16 @@ const RoomSelectionTable = (
         <TableBody>
           {!dataFetching && roomList.map((roomData, index) => {
             const {
-              id, campus, name, capacity, meetingTitles
+              id, campus, name, capacity,
             } = roomData;
             return (
               <TableRow key={id} isStriped={index % 2 !== 0}>
                 <TableCell>{campus}</TableCell>
                 <TableRowHeadingCell scope="row">{name}</TableRowHeadingCell>
                 <TableCell>{capacity}</TableCell>
-                <TableCell>{meetingTitles.join(',\n')}</TableCell>
+                <TableCell>
+                  {displayAvailability(roomData)}
+                </TableCell>
                 <TableCell>
                   <Button
                     onClick={() => { addButtonHandler(roomData); }}
