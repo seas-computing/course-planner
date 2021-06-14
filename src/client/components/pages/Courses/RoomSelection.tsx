@@ -1,8 +1,12 @@
-import React, { useEffect, useState, ReactElement } from 'react';
+import React, {
+  useEffect, useState, ReactElement, useContext,
+} from 'react';
 import { getRoomAvailability } from 'client/api/rooms';
 import RoomResponse from 'common/dto/room/RoomResponse.dto';
 import RoomSelectionTable from './RoomSelectionTable';
 import RoomRequest from '../../../../common/dto/room/RoomRequest.dto';
+import { MessageContext } from '../../../context';
+import { AppMessage, MESSAGE_TYPE, MESSAGE_ACTION } from '../../../classes';
 
 interface RoomSelectionProps {
   /** The day and time for which a room should be selected */
@@ -25,16 +29,27 @@ const RoomSelection = (
   const [roomList, setRoomList] = useState<RoomResponse[]>([]);
   const [isFetching, setFetching] = useState<boolean>(false);
 
+  const dispatchMessage = useContext(MessageContext);
+
+  /**
+   * Fetch the room availability list whenever the request time/day changes.
+   */
   useEffect(() => {
     if (roomRequestData) {
       setFetching(true);
       getRoomAvailability(roomRequestData)
         .then(setRoomList)
-        .catch()
+        .catch((err: Error): void => {
+          dispatchMessage({
+            message: new AppMessage(err.message, MESSAGE_TYPE.ERROR),
+            type: MESSAGE_ACTION.PUSH,
+          });
+        })
         .finally(() => { setFetching(false); });
     }
   },
   [
+    dispatchMessage,
     setRoomList,
     setFetching,
     roomRequestData,
