@@ -98,7 +98,7 @@ describe('Meeting Modal', function () {
         describe('On Initial Rendering', function () {
           it('displays each of the existing meetings', function () {
             const expectedMeetings = testCourseInstance.fall.meetings
-              .map((meeting) => `${dayEnumToString(meeting.day)}, ${meeting.startTime} to ${meeting.endTime} in ${meeting.room.name}`);
+              .map((meeting) => `${dayEnumToString(meeting.day)}, ${meeting.startTime} to ${meeting.endTime}${meeting.room !== null ? ` in ${meeting.room.name}` : ''}`);
             return Promise.all(expectedMeetings.map((meeting) => waitForElement(
               () => getByText(meeting)
             )));
@@ -155,6 +155,7 @@ describe('Meeting Modal', function () {
                 beforeEach(async function () {
                   const editCS50TuesdayMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50TuesdayMeetingId));
                   fireEvent.click(editCS50TuesdayMeetingButton);
+                  // Navigating back to the original meeting
                   const editCS50InitialMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50InitialMeeting.id));
                   fireEvent.click(editCS50InitialMeetingButton);
                 });
@@ -200,6 +201,41 @@ describe('Meeting Modal', function () {
                   fireEvent.click(editCS50InitialMeetingButton);
                   const endTimeInput = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
                   strictEqual(endTimeInput.value, expectedEndTime);
+                });
+              });
+              context('after clicking the "Add New Time" button', function () {
+                it('renders no validation error messages', function () {
+                  const addNewTimeButton = getByText('Add New Time');
+                  fireEvent.click(addNewTimeButton);
+                  // A new meeting row expands, which includes an empty validation error field
+                  strictEqual(queryAllByRole('alert')[0].innerText, undefined);
+                });
+                context('when returning to the original meeting', function () {
+                  beforeEach(async function () {
+                    const addNewTimeButton = getByText('Add New Time');
+                    fireEvent.click(addNewTimeButton);
+                    // Fill out the newly added meeting row before checking the original meeting, since the newly added row cannot be blank.
+                    const dayDropdown = getByLabelText('Meeting Day', { exact: false }) as HTMLSelectElement;
+                    fireEvent.change(dayDropdown,
+                      { target: { value: DAY.THU } });
+                    const timepicker = await waitForElement(() => findByLabelText('Timeslot Button'));
+                    fireEvent.click(timepicker);
+                    fireEvent.click(getByText(timeslot));
+                  });
+                  it('preserves the originally updated start time', async function () {
+                    // Reopen the original meeting to check its value
+                    const editCS50InitialMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50InitialMeeting.id));
+                    fireEvent.click(editCS50InitialMeetingButton);
+                    const startTimeInput = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;
+                    strictEqual(startTimeInput.value, expectedStartTime);
+                  });
+                  it('preserves the originally updated end time', async function () {
+                    // Reopen the original meeting to check value
+                    const editCS50InitialMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50InitialMeeting.id));
+                    fireEvent.click(editCS50InitialMeetingButton);
+                    const endTimeInput = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
+                    strictEqual(endTimeInput.value, expectedEndTime);
+                  });
                 });
               });
             });
@@ -250,6 +286,34 @@ describe('Meeting Modal', function () {
                     strictEqual(dayDropdown.value, updatedDay);
                   });
                 });
+                context('after clicking the "Add New Time" button', function () {
+                  it('renders no validation error messages', function () {
+                    const dayDropdown = getByLabelText('Meeting Day', { exact: false }) as HTMLSelectElement;
+                    fireEvent.change(dayDropdown,
+                      { target: { value: updatedDay } });
+                    const addNewTimeButton = getByText('Add New Time');
+                    fireEvent.click(addNewTimeButton);
+                    // A new meeting row expands, which includes an empty validation error field
+                    strictEqual(queryAllByRole('alert')[0].innerText, undefined);
+                  });
+                  it('preserves the updated day value', async function () {
+                    const originalDayDropdown = getByLabelText('Meeting Day', { exact: false }) as HTMLSelectElement;
+                    fireEvent.change(originalDayDropdown,
+                      { target: { value: updatedDay } });
+                    const addNewTimeButton = getByText('Add New Time');
+                    fireEvent.click(addNewTimeButton);
+                    // Fill out the newly added meeting row before checking the original meeting, since the newly added row cannot be blank.
+                    const newDayDropdown = getByLabelText('Meeting Day', { exact: false }) as HTMLSelectElement;
+                    fireEvent.change(newDayDropdown,
+                      { target: { value: DAY.THU } });
+                    const timepicker = await waitForElement(() => findByLabelText('Timeslot Button'));
+                    fireEvent.click(timepicker);
+                    fireEvent.click(getByText('10:00 AM-11:00 AM'));
+                    const editCS50InitialMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50InitialMeeting.id));
+                    fireEvent.click(editCS50InitialMeetingButton);
+                    strictEqual(originalDayDropdown.value, updatedDay);
+                  });
+                });
               });
               context('when changed to an empty value', function () {
                 const errorMessage = 'Please provide a day and start/end times before proceeding.';
@@ -284,11 +348,20 @@ describe('Meeting Modal', function () {
                     );
                   });
                 });
+                context('after clicking the "Add New Time" button', function () {
+                  it('displays a validation error message', async function () {
+                    const addNewTimeButton = getByText('Add New Time');
+                    fireEvent.click(addNewTimeButton);
+                    return waitForElement(
+                      () => getByText(errorMessage, { exact: false })
+                    );
+                  });
+                });
               });
             });
             describe('Start Time Input', function () {
               context('when changed to a valid value', function () {
-                const updatedStartTime = '12:00';
+                const updatedStartTime = '01:00';
                 context('after navigating to a different meeting', function () {
                   it('preserves the updated start time value', async function () {
                     const startTimeDropdown = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;
@@ -339,6 +412,37 @@ describe('Meeting Modal', function () {
                     );
                   });
                 });
+                context('after clicking the "Add New Time" button', function () {
+                  it('renders no validation error messages', function () {
+                    const startTimeDropdown = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;
+                    fireEvent.change(startTimeDropdown,
+                      { target: { value: updatedStartTime } });
+                    const addNewTimeButton = getByText('Add New Time');
+                    fireEvent.click(addNewTimeButton);
+                    // A new meeting row expands, which includes an empty validation error field
+                    strictEqual(queryAllByRole('alert')[0].innerText, undefined);
+                  });
+                  it('preserves the updated start time', async function () {
+                    const startTimeDropdown = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;
+                    fireEvent.change(startTimeDropdown,
+                      { target: { value: updatedStartTime } });
+                    const addNewTimeButton = getByText('Add New Time');
+                    fireEvent.click(addNewTimeButton);
+                    // Fill out the newly added meeting row before checking the original meeting, since the newly added row cannot be blank.
+                    const newDayDropdown = getByLabelText('Meeting Day', { exact: false }) as HTMLSelectElement;
+                    fireEvent.change(newDayDropdown,
+                      { target: { value: DAY.THU } });
+                    const timepicker = await waitForElement(() => findByLabelText('Timeslot Button'));
+                    fireEvent.click(timepicker);
+                    fireEvent.click(getByText('10:00 AM-11:00 AM'));
+                    const editCS50InitialMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50InitialMeeting.id));
+                    fireEvent.click(editCS50InitialMeetingButton);
+                    strictEqual(
+                      startTimeDropdown.value,
+                      convert12To24HourTime(updatedStartTime)
+                    );
+                  });
+                });
               });
               context('when changed to an empty value', function () {
                 const errorMessage = 'Please provide a day and start/end times before proceeding.';
@@ -368,6 +472,15 @@ describe('Meeting Modal', function () {
                   it('displays a validation error message', async function () {
                     const closeButton = getByText('Close');
                     fireEvent.click(closeButton);
+                    return waitForElement(
+                      () => getByText(errorMessage, { exact: false })
+                    );
+                  });
+                });
+                context('after clicking on the "Add New Time" button', function () {
+                  it('displays a validation error message', async function () {
+                    const addNewTimeButton = getByText('Add New Time');
+                    fireEvent.click(addNewTimeButton);
                     return waitForElement(
                       () => getByText(errorMessage, { exact: false })
                     );
@@ -404,6 +517,15 @@ describe('Meeting Modal', function () {
                   it('displays a validation error message', async function () {
                     const closeButton = getByText('Close');
                     fireEvent.click(closeButton);
+                    return waitForElement(
+                      () => getByText(errorMessage, { exact: false })
+                    );
+                  });
+                });
+                context('after clicking on the "Add New Time" button', function () {
+                  it('displays a validation error message', async function () {
+                    const addNewTimeButton = getByText('Add New Time');
+                    fireEvent.click(addNewTimeButton);
                     return waitForElement(
                       () => getByText(errorMessage, { exact: false })
                     );
@@ -464,6 +586,37 @@ describe('Meeting Modal', function () {
                     );
                   });
                 });
+                context('after clicking the "Add New Time" button', function () {
+                  it('renders no validation error messages', function () {
+                    const endTimeDropdown = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
+                    fireEvent.change(endTimeDropdown,
+                      { target: { value: updatedEndTime } });
+                    const addNewTimeButton = getByText('Add New Time');
+                    fireEvent.click(addNewTimeButton);
+                    // A new meeting row expands, which includes an empty validation error field
+                    strictEqual(queryAllByRole('alert')[0].innerText, undefined);
+                  });
+                  it('preserves the updated end time', async function () {
+                    const endTimeDropdown = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
+                    fireEvent.change(endTimeDropdown,
+                      { target: { value: updatedEndTime } });
+                    const addNewTimeButton = getByText('Add New Time');
+                    fireEvent.click(addNewTimeButton);
+                    // Fill out the newly added meeting row before checking the original meeting, since the newly added row cannot be blank.
+                    const newDayDropdown = getByLabelText('Meeting Day', { exact: false }) as HTMLSelectElement;
+                    fireEvent.change(newDayDropdown,
+                      { target: { value: DAY.THU } });
+                    const timepicker = await waitForElement(() => findByLabelText('Timeslot Button'));
+                    fireEvent.click(timepicker);
+                    fireEvent.click(getByText('10:00 AM-11:00 AM'));
+                    const editCS50InitialMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50InitialMeeting.id));
+                    fireEvent.click(editCS50InitialMeetingButton);
+                    strictEqual(
+                      endTimeDropdown.value,
+                      convert12To24HourTime(updatedEndTime)
+                    );
+                  });
+                });
               });
               context('when changed to an empty value', function () {
                 const errorMessage = 'Please provide a day and start/end times before proceeding.';
@@ -493,6 +646,15 @@ describe('Meeting Modal', function () {
                   it('displays a validation error message', async function () {
                     const closeButton = getByText('Close');
                     fireEvent.click(closeButton);
+                    return waitForElement(
+                      () => getByText(errorMessage, { exact: false })
+                    );
+                  });
+                });
+                context('after clicking on the "Add New Time" button', function () {
+                  it('displays a validation error message', async function () {
+                    const addNewTimeButton = getByText('Add New Time');
+                    fireEvent.click(addNewTimeButton);
                     return waitForElement(
                       () => getByText(errorMessage, { exact: false })
                     );
@@ -533,6 +695,52 @@ describe('Meeting Modal', function () {
                       () => getByText(errorMessage, { exact: false })
                     );
                   });
+                });
+                context('after clicking on the "Add New Time" button', function () {
+                  it('displays a validation error message', async function () {
+                    const addNewTimeButton = getByText('Add New Time');
+                    fireEvent.click(addNewTimeButton);
+                    return waitForElement(
+                      () => getByText(errorMessage, { exact: false })
+                    );
+                  });
+                });
+              });
+            });
+          });
+          context('when the "Add New Time" button is clicked', function () {
+            const errorMessage = 'Please provide a day and start/end times before proceeding.';
+            beforeEach(function () {
+              const addNewTimeButton = getByText('Add New Time');
+              fireEvent.click(addNewTimeButton);
+            });
+            it('renders no initial validation error messages', function () {
+              // A new meeting row expands, which includes an empty validation error field
+              strictEqual(queryAllByRole('alert')[0].innerText, undefined);
+            });
+            context('when the "Add New Time" button is clicked again', function () {
+              context('when the form fields of the initial row have not been filled out', function () {
+                it('displays a validation error message', function () {
+                  // Clicking "Add New Time" a second time
+                  const addNewTimeButton = getByText('Add New Time');
+                  fireEvent.click(addNewTimeButton);
+                  return waitForElement(
+                    () => getByText(errorMessage, { exact: false })
+                  );
+                });
+              });
+              context('when the form fields of the initial row has filled out', function () {
+                it('does not display a validation error message', async function () {
+                  const dayDropdown = getByLabelText('Meeting Day', { exact: false }) as HTMLSelectElement;
+                  fireEvent.change(dayDropdown,
+                    { target: { value: DAY.THU } });
+                  const timepicker = await waitForElement(() => findByLabelText('Timeslot Button'));
+                  fireEvent.click(timepicker);
+                  fireEvent.click(getByText('11:00 AM-12:00 PM'));
+                  // Clicking "Add New Time" a second time
+                  const addNewTimeButton = getByText('Add New Time');
+                  fireEvent.click(addNewTimeButton);
+                  strictEqual(queryAllByRole('alert')[0].innerText, undefined);
                 });
               });
             });
