@@ -708,6 +708,8 @@ describe('Meeting Modal', function () {
               });
             });
           });
+        });
+        describe('On Add Behavior', function () {
           context('when the "Add New Time" button is clicked', function () {
             const errorMessage = 'Please provide a day and start/end times before proceeding.';
             beforeEach(function () {
@@ -729,7 +731,7 @@ describe('Meeting Modal', function () {
                   );
                 });
               });
-              context('when the form fields of the initial row has filled out', function () {
+              context('when the form fields of the initial row have been filled out', function () {
                 it('does not display a validation error message', async function () {
                   const dayDropdown = getByLabelText('Meeting Day', { exact: false }) as HTMLSelectElement;
                   fireEvent.change(dayDropdown,
