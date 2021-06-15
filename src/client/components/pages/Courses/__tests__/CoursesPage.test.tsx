@@ -16,10 +16,10 @@ import CoursesPage from '../CoursesPage';
 
 describe('Course Instances List', function () {
   let getStub: SinonStub;
-  let dispatchStub: SinonStub;
+  let dispatchMessage: SinonStub;
   beforeEach(function () {
     getStub = stub(CourseAPI, 'getCourseInstancesForYear');
-    dispatchStub = stub();
+    dispatchMessage = stub();
   });
   describe('fetching data on render', function () {
     context('When API request succeeds', function () {
@@ -54,11 +54,11 @@ describe('Course Instances List', function () {
       const errorMessage = 'Failed to retrieve course data';
       beforeEach(function () {
         getStub.rejects(new Error(errorMessage));
-        ({ queryByText } = render(<CoursesPage />, dispatchStub));
+        ({ queryByText } = render(<CoursesPage />, { dispatchMessage }));
       });
-      it('Should call the dispatchStub function', async function () {
+      it('Should call the dispatchMessage function', async function () {
         await wait(() => queryByText('Fetching') === null);
-        strictEqual(dispatchStub.callCount, 1);
+        strictEqual(dispatchMessage.callCount, 1);
       });
       it('Should include an error message describing the issue', async function () {
         await wait(() => queryByText('Fetching') === null);
@@ -66,7 +66,7 @@ describe('Course Instances List', function () {
           errorMessage,
           MESSAGE_TYPE.ERROR
         );
-        const realMessage = dispatchStub.args[0][0] as MessageReducerAction;
+        const realMessage = dispatchMessage.args[0][0] as MessageReducerAction;
         deepStrictEqual(realMessage.message, testErrorAppMessage);
         strictEqual(realMessage.type, MESSAGE_ACTION.PUSH);
       });

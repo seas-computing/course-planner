@@ -165,7 +165,7 @@ describe('Faculty Admin', function () {
       it('should throw an error', async function () {
         const { getAllByRole } = render(
           <FacultyAdmin />,
-          dispatchMessage
+          { dispatchMessage }
         );
         await wait(() => getAllByRole('row').length === emptyTestData.length + 1);
         strictEqual(dispatchMessage.callCount, 1);

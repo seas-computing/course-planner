@@ -220,7 +220,7 @@ describe('FacultyScheduleTable', function () {
     it('should throw an error', async function () {
       const { getAllByRole } = render(
         <FacultySchedule />,
-        dispatchMessage
+        { dispatchMessage }
       );
       await wait(() => getAllByRole('row').length === emptyTestData.length + 2);
       strictEqual(dispatchMessage.callCount, 1);

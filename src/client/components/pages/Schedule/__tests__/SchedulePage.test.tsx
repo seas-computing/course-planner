@@ -7,10 +7,10 @@ import * as dummy from 'testData';
 import SchedulePage from '../SchedulePage';
 
 describe('Schedule Page', function () {
-  let msgStub: SinonStub;
+  let dispatchMessage: SinonStub;
   let apiStub: SinonStub;
   beforeEach(function () {
-    msgStub = stub();
+    dispatchMessage = stub();
     apiStub = stub(CourseAPI, 'getCourseScheduleForSemester');
   });
   context('While fetching data', function () {
@@ -46,12 +46,12 @@ describe('Schedule Page', function () {
       apiStub.rejects(dummy.error);
       const { queryByText } = render(
         <SchedulePage />,
-        msgStub
+        { dispatchMessage }
       );
       await waitForElementToBeRemoved(() => queryByText(
         'Fetching Course Schedule'
       ));
-      strictEqual(msgStub.callCount, 1);
+      strictEqual(dispatchMessage.callCount, 1);
     });
   });
 });
