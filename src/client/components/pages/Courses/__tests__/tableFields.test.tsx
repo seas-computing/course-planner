@@ -96,8 +96,7 @@ describe('tableFields', function () {
           const { getAllByRole } = render(
             <div>
               {fallInstructors(ac209aCourseInstance)}
-            </div>,
-            (): void => {}
+            </div>
           );
           const entries = getAllByRole('listitem')
             .map(({ textContent }): string => textContent);
@@ -188,8 +187,7 @@ describe('tableFields', function () {
           const { queryByLabelText } = render(
             <div>
               {notesField.getValue(ac209aCourseInstance)}
-            </div>,
-            (): void => {}
+            </div>
           );
           const icon = queryByLabelText('View/Edit Notes');
           strictEqual(icon !== null, true);
@@ -202,8 +200,7 @@ describe('tableFields', function () {
           const { queryByLabelText } = render(
             <div>
               {notesField.getValue(cs50CourseInstance)}
-            </div>,
-            (): void => {}
+            </div>
           );
           const icon = queryByLabelText('Add Notes');
           strictEqual(icon !== null, true);

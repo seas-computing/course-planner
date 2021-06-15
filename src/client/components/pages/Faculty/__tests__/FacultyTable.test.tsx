@@ -85,8 +85,7 @@ describe('FacultyScheduleTable', function () {
             facultySchedules={facultyScheduleList}
             onEdit={(): void => {}}
             editButtonRef={null}
-          />,
-          (): void => {}
+          />
         )
         );
       });
@@ -141,8 +140,7 @@ describe('FacultyScheduleTable', function () {
             facultySchedules={facultyScheduleList}
             onEdit={(): void => {}}
             editButtonRef={null}
-          />,
-          (): void => {}
+          />
         )
         );
       });
