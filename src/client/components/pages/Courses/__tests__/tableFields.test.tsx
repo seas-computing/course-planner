@@ -9,13 +9,11 @@ import {
 import { render } from 'test-utils';
 import { dayEnumToString } from 'common/constants/day';
 import { offeredEnumToString } from 'common/constants/offered';
-import { SinonStub, stub } from 'sinon';
 import {
   retrieveValue, tableFields, formatInstructors, formatMeetings,
 } from '../tableFields';
 
 describe('tableFields', function () {
-  let dispatchMessage: SinonStub;
   describe('helper functions', function () {
     describe('retrieveValue', function () {
       it('should return a function to get course-level fields', function () {
@@ -116,9 +114,6 @@ describe('tableFields', function () {
       });
     });
     describe('formatMeetings', function () {
-      beforeEach(function () {
-        dispatchMessage = stub();
-      });
       context('When semester has data', function () {
         context('With times and rooms', function () {
           it('Should return a component that renders days, times and rooms as a list', function () {
@@ -129,8 +124,7 @@ describe('tableFields', function () {
               </div>
             );
             const { getAllByRole } = render(
-              <TestComponent />,
-              dispatchMessage
+              <TestComponent />
             );
             const entries = getAllByRole('listitem')
               .map(({ textContent }): string => textContent);
@@ -151,8 +145,7 @@ describe('tableFields', function () {
               </div>
             );
             const { getAllByRole } = render(
-              <TestComponent />,
-              dispatchMessage
+              <TestComponent />
             );
             const entries = getAllByRole('listitem')
               .map(({ textContent }): string => textContent);
@@ -172,8 +165,7 @@ describe('tableFields', function () {
             </div>
           );
           render(
-            <TestComponent />,
-            dispatchMessage
+            <TestComponent />
           );
           strictEqual(document.body.textContent, '');
         });

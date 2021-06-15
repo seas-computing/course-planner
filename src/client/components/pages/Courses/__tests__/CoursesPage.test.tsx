@@ -28,7 +28,7 @@ describe('Course Instances List', function () {
         getStub.resolves([
           { ...cs50CourseInstance },
         ]);
-        ({ findByText } = render(<CoursesPage />, dispatchStub));
+        ({ findByText } = render(<CoursesPage />));
       });
       it('calls the fetch function on render', function () {
         strictEqual(getStub.callCount, 1);

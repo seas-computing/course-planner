@@ -38,7 +38,6 @@ describe('Course Modal', function () {
   let getByLabelText: BoundFunction<GetByText>;
   let findByText: BoundFunction<FindByText>;
   let queryByText: BoundFunction<QueryByText>;
-  const dispatchMessage: SinonStub = stub();
   const testData = [
     physicsCourseResponse,
     computerScienceCourseResponse,
@@ -58,8 +57,7 @@ describe('Course Modal', function () {
         ({ getByLabelText, queryAllByRole } = render(
           <CourseModal
             isVisible
-          />,
-          dispatchMessage
+          />
         ));
       });
       describe('Existing Area Dropdown', function () {
@@ -128,8 +126,7 @@ describe('Course Modal', function () {
           <CourseModal
             isVisible
             currentCourse={physicsCourseResponse}
-          />,
-          dispatchMessage
+          />
         ));
       });
       it('populates the modal fields according to the current course selected', function () {
@@ -191,8 +188,7 @@ describe('Course Modal', function () {
       context('when the modal is closed', function () {
         beforeEach(async function () {
           ({ findByText, queryByText } = render(
-            <CourseAdmin />,
-            dispatchMessage
+            <CourseAdmin />
           ));
           // Show the create course modal
           createCourseButton = await findByText('Create New Course', { exact: false });
@@ -215,8 +211,7 @@ describe('Course Modal', function () {
       context('when the modal is closed', function () {
         it('returns focus to the originally clicked edit faculty button', async function () {
           ({ findByText, queryByText } = render(
-            <CourseAdmin />,
-            dispatchMessage
+            <CourseAdmin />
           ));
           // Show the edit course modal
           const editCourseButton = await waitForElement(
@@ -241,8 +236,7 @@ describe('Course Modal', function () {
       ({ getByLabelText } = render(
         <CourseModal
           isVisible
-        />,
-        dispatchMessage
+        />
       ));
     });
     context('when the create new area text field is clicked', function () {
@@ -298,8 +292,7 @@ describe('Course Modal', function () {
             getByLabelText,
             getByText,
           } = render(
-            <NewAreaExample />,
-            dispatchMessage
+            <NewAreaExample />
           ));
           // Show the create course modal
           createCourseButton = await findByText('Create New Course', { exact: false });
@@ -357,8 +350,7 @@ describe('Course Modal', function () {
             getByLabelText,
             getByText,
           } = render(
-            <ExistingAreaExample />,
-            dispatchMessage
+            <ExistingAreaExample />
           ));
           // Show the create course modal
           createCourseButton = await findByText('Create New Course', { exact: false });
@@ -422,8 +414,7 @@ describe('Course Modal', function () {
             getByLabelText,
             getByText,
           } = render(
-            <NewAreaExample />,
-            dispatchMessage
+            <NewAreaExample />
           ));
           // Show the create course modal
           const editCourseButton = await waitForElement(
@@ -477,8 +468,7 @@ describe('Course Modal', function () {
             getByLabelText,
             getByText,
           } = render(
-            <ExistingAreaExample />,
-            dispatchMessage
+            <ExistingAreaExample />
           ));
           // Show the create course modal
           const editCourseButton = await waitForElement(
@@ -519,8 +509,7 @@ describe('Course Modal', function () {
               currentCourse={physicsCourseResponse}
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
-            />,
-            dispatchMessage
+            />
           ));
         });
         it('calls the onSuccess handler once on submit', async function () {
@@ -558,8 +547,7 @@ describe('Course Modal', function () {
               }}
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
-            />,
-            dispatchMessage
+            />
           ));
         });
         it('does not call the onSuccess handler on submit', async function () {
@@ -588,8 +576,7 @@ describe('Course Modal', function () {
               isVisible
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
-            />,
-            dispatchMessage
+            />
           ));
           const existingAreaSelect = getByLabelText('Existing Area', { exact: true }) as HTMLSelectElement;
           fireEvent.change(
@@ -657,8 +644,7 @@ describe('Course Modal', function () {
               isVisible
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
-            />,
-            dispatchMessage
+            />
           ));
         });
         it('does not call the onSuccess handler on submit', async function () {

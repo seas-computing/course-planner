@@ -25,7 +25,6 @@ describe('Faculty Modal', function () {
     let getByText: BoundFunction<GetByText>;
     let queryAllByRole: BoundFunction<AllByRole>;
     let getByLabelText: BoundFunction<GetByText>;
-    const dispatchMessage: SinonStub = stub();
     let onSuccessStub: SinonStub;
     let onCloseStub: SinonStub;
     let putStub: SinonStub;
@@ -34,8 +33,7 @@ describe('Faculty Modal', function () {
       context('when currentFaculty is null', function () {
         beforeEach(function () {
           ({ getByLabelText, queryAllByRole } = render(
-            <FacultyModal isVisible />,
-            dispatchMessage
+            <FacultyModal isVisible />
           ));
         });
         it('renders a modal with all empty form fields', function () {
@@ -64,8 +62,7 @@ describe('Faculty Modal', function () {
             <FacultyModal
               isVisible
               currentFaculty={appliedMathFacultyMemberResponse}
-            />,
-            dispatchMessage
+            />
           ));
         });
         it('populates the modal fields according to the current faculty selected', function () {
@@ -116,8 +113,7 @@ describe('Faculty Modal', function () {
           <FacultyModal
             isVisible
             currentFaculty={appliedMathFacultyMemberResponse}
-          />,
-          dispatchMessage
+          />
         ));
       });
       describe('Area', function () {
@@ -237,8 +233,7 @@ describe('Faculty Modal', function () {
                 currentFaculty={appliedMathFacultyMemberResponse}
                 onSuccess={onSuccessStub}
                 onClose={onCloseStub}
-              />,
-              dispatchMessage
+              />
             ));
           });
           it('calls the onSuccess handler once on submit', async function () {
@@ -274,8 +269,7 @@ describe('Faculty Modal', function () {
                 }}
                 onSuccess={onSuccessStub}
                 onClose={onCloseStub}
-              />,
-              dispatchMessage
+              />
             ));
           });
           it('does not call the onSuccess handler on submit', async function () {
@@ -300,8 +294,7 @@ describe('Faculty Modal', function () {
               <FacultyModal
                 isVisible
                 onSuccess={onSuccessStub}
-              />,
-              dispatchMessage
+              />
             ));
             const courseAreaSelect = getByLabelText('Area', { exact: false }) as HTMLSelectElement;
             fireEvent.change(
@@ -345,8 +338,7 @@ describe('Faculty Modal', function () {
               <FacultyModal
                 isVisible
                 onSuccess={onSuccessStub}
-              />,
-              dispatchMessage
+              />
             ));
             const submitButton = getByText('Submit');
             fireEvent.click(submitButton);

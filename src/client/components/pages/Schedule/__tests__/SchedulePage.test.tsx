@@ -17,8 +17,7 @@ describe('Schedule Page', function () {
     it('Should display the spinner', function () {
       apiStub.resolves([]);
       const { queryByText } = render(
-        <SchedulePage />,
-        msgStub
+        <SchedulePage />
       );
       const spinner = queryByText('Fetching Course Schedule');
       strictEqual(!!spinner, true);
@@ -28,8 +27,7 @@ describe('Schedule Page', function () {
     it('Should render the data into the schedule', async function () {
       apiStub.resolves(dummy.testCourseScheduleData);
       const { queryByText } = render(
-        <SchedulePage />,
-        msgStub
+        <SchedulePage />
       );
       await waitForElementToBeRemoved(() => queryByText(
         'Fetching Course Schedule'
