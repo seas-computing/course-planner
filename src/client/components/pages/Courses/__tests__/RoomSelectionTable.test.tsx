@@ -126,7 +126,7 @@ describe('Room Selection Table', function () {
         });
       });
       context('and the roomList is empty', function () {
-        beforeEach(() => {
+        beforeEach(function () {
           renderResult = render(
             <RoomSelectionTable
               roomList={[]}
