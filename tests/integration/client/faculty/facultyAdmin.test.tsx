@@ -22,7 +22,6 @@ import FacultyAdmin from 'client/components/pages/FacultyAdmin';
 
 describe('Faculty Admin Modal Behavior', function () {
   let getStub: SinonStub;
-  let dispatchMessage: SinonStub;
   const testData = [
     physicsFacultyMemberResponse,
     bioengineeringFacultyMemberResponse,
@@ -30,7 +29,6 @@ describe('Faculty Admin Modal Behavior', function () {
   ];
   beforeEach(function () {
     getStub = stub(FacultyAPI, 'getAllFacultyMembers');
-    dispatchMessage = stub();
     getStub.resolves(testData);
   });
   describe('rendering', function () {
@@ -38,8 +36,7 @@ describe('Faculty Admin Modal Behavior', function () {
       context('when the modal is closed', function () {
         it('returns focus to the create faculty button', async function () {
           const { findByText, queryByText } = render(
-            <FacultyAdmin />,
-            dispatchMessage
+            <FacultyAdmin />
           );
           // show the create faculty modal
           const createFacultyButton = await findByText('Create New Faculty', { exact: false });
@@ -60,8 +57,7 @@ describe('Faculty Admin Modal Behavior', function () {
       context('when the modal is closed', function () {
         it('returns focus to the original edit faculty button', async function () {
           const { findByText, queryByText } = render(
-            <FacultyAdmin />,
-            dispatchMessage
+            <FacultyAdmin />
           );
           // show the edit faculty modal
           const editPhysicsFacultyButton = await waitForElement(() => document.getElementById('editFaculty' + physicsFacultyMemberResponse.id));

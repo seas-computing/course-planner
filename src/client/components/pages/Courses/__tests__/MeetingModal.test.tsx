@@ -21,7 +21,6 @@ describe('Meeting Modal', function () {
     let getByText: BoundFunction<GetByText>;
     let queryByText: BoundFunction<QueryByText>;
     let onCloseStub: SinonStub;
-    const dispatchMessage: SinonStub = stub();
     const meetingTerm = TERM.FALL;
     const semKey = meetingTerm.toLowerCase() as TermKey;
     const testCourseInstance = cs50CourseInstance;
@@ -35,8 +34,7 @@ describe('Meeting Modal', function () {
             term: meetingTerm,
           }}
           onClose={onCloseStub}
-        />,
-        dispatchMessage
+        />
       ));
     });
     describe('On Open Behavior', function () {

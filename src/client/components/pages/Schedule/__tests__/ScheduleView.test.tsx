@@ -19,8 +19,7 @@ describe('ScheduleView', function () {
           schedule={testCourseScheduleData}
           firstHour={8}
           lastHour={20}
-        />,
-        () => {}
+        />
       ));
     });
     it('Should render morning hours in am time', function () {
@@ -47,8 +46,7 @@ describe('ScheduleView', function () {
           schedule={testCourseScheduleData}
           firstHour={8}
           lastHour={20}
-        />,
-        () => {}
+        />
       ));
     });
     it('Should render the blocks with the course prefix', function () {

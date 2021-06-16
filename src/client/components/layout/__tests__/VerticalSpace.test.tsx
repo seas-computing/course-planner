@@ -13,8 +13,7 @@ describe('VerticalSpace Component', function () {
     ({ getByText } = render(
       <VerticalSpace>
         {testText}
-      </VerticalSpace>,
-      () => {}
+      </VerticalSpace>
     ));
   });
   it('renders', function () {
