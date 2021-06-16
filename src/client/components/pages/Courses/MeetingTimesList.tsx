@@ -45,7 +45,7 @@ const generateGrid = (isRowExpanded: boolean): string => {
     return `"delete day timeslot start end"
             ". error error error error"
             ". room room room room"
-            ". . . close show"`;
+            ". . . showclose showclose"`;
   }
   return '"delete info edit"';
 };
@@ -57,7 +57,13 @@ const StyledMeetingRow = styled.li<StyledMeetingRowProps>`
   grid-template-areas: ${({ isRowExpanded }) => (
     generateGrid(isRowExpanded)
   )};
-  padding: ${fromTheme('ws', 'small')};
+  grid-template-columns: min-content;
+  grid-template-rows: ${({ isRowExpanded }) => (
+    isRowExpanded
+      ? 'repeat(4, minmax(22px, auto));'
+      : ''
+  )};
+  padding: ${fromTheme('ws', 'xsmall')} 0px;
 `;
 
 const StyledMeetingInfo = styled.span`
@@ -98,16 +104,15 @@ const StyledDeleteButton = styled.span`
 
 const StyledEditButton = styled.span`
   grid-area: edit;
+  justify-self: end;
 `;
 
-const StyledCloseButton = styled.span`
-    grid-area: close;
+const StyledShowCloseButtons = styled.div`
+    grid-area: showclose;
     justify-self: end;
-`;
-
-const StyledShowRoomsButton = styled.span`
-    grid-area: show;
-    justify-self: end;
+    > * {
+      margin: 2px;
+    }
 `;
 
 /**
@@ -208,7 +213,7 @@ export const MeetingTimesList
           (meeting) => (
             <StyledMeetingRow
               key={meeting.id}
-              isRowExpanded={currentMeetingId !== null}
+              isRowExpanded={meeting.id === currentMeetingId}
             >
               <StyledDeleteButton>
                 <BorderlessButton
@@ -354,7 +359,7 @@ export const MeetingTimesList
                         Room:
                         {` ${currentRoom !== null ? currentRoom.name : ''}`}
                       </StyledRoom>
-                      <StyledCloseButton>
+                      <StyledShowCloseButtons>
                         <Button
                           id="closeButton"
                           onClick={
@@ -369,8 +374,6 @@ export const MeetingTimesList
                         >
                           Close
                         </Button>
-                      </StyledCloseButton>
-                      <StyledShowRoomsButton>
                         <Button
                           id="showRoomsButton"
                           onClick={
@@ -382,29 +385,36 @@ export const MeetingTimesList
                         >
                           Show Rooms
                         </Button>
-                      </StyledShowRoomsButton>
+                      </StyledShowCloseButtons>
                     </>
                   )
                   : (
                     <>
-                      <span>{`${dayEnumToString(meeting.day)}, ${convertTo12HourDisplayTime(meeting.startTime)} to ${convertTo12HourDisplayTime(meeting.endTime)}${meeting.room !== null ? ` in ${meeting.room.name}` : ''}`}</span>
-                      <BorderlessButton
-                        id={`editMeetingButton${meeting.id}`}
-                        variant={VARIANT.INFO}
-                        onClick={
-                          (): void => {
-                            if (validateTimes()) {
-                              setCurrentMeetingId(meeting.id);
-                              setCurrentDay(meeting.day);
-                              setCurrentStartTime(meeting.startTime);
-                              setCurrentEndTime(meeting.endTime);
-                              setCurrentRoom(meeting.room);
+                      <StyledMeetingInfo>
+                        {`${dayEnumToString(meeting.day)}, ${convertTo12HourDisplayTime(meeting.startTime)} to ${convertTo12HourDisplayTime(meeting.endTime)}`}
+                        <div>
+                          {`${meeting.room !== null ? ` in ${meeting.room.name}` : ''}`}
+                        </div>
+                      </StyledMeetingInfo>
+                      <StyledEditButton>
+                        <BorderlessButton
+                          id={`editMeetingButton${meeting.id}`}
+                          variant={VARIANT.INFO}
+                          onClick={
+                            (): void => {
+                              if (validateTimes()) {
+                                setCurrentMeetingId(meeting.id);
+                                setCurrentDay(meeting.day);
+                                setCurrentStartTime(meeting.startTime);
+                                setCurrentEndTime(meeting.endTime);
+                                setCurrentRoom(meeting.room);
+                              }
                             }
                           }
-                        }
-                      >
-                        <FontAwesomeIcon icon={faEdit} />
-                      </BorderlessButton>
+                        >
+                          <FontAwesomeIcon icon={faEdit} />
+                        </BorderlessButton>
+                      </StyledEditButton>
                     </>
                   )
               }

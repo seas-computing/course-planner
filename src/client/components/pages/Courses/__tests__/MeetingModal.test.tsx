@@ -1,5 +1,6 @@
 import {
   AllByRole,
+  AllByText,
   BoundFunction,
   FindByText,
   fireEvent,
@@ -26,6 +27,7 @@ import MeetingModal from '../MeetingModal';
 describe('Meeting Modal', function () {
   describe('rendering', function () {
     let getByText: BoundFunction<GetByText>;
+    let getAllByText: BoundFunction<AllByText>;
     let queryByText: BoundFunction<QueryByText>;
     let getByLabelText: BoundFunction<GetByText>;
     let findByLabelText: BoundFunction<FindByText>;
@@ -39,6 +41,7 @@ describe('Meeting Modal', function () {
       onCloseStub = stub();
       ({
         getByText,
+        getAllByText,
         queryByText,
         getByLabelText,
         findByLabelText,
@@ -96,12 +99,23 @@ describe('Meeting Modal', function () {
       });
       describe('Meeting Times', function () {
         describe('On Initial Rendering', function () {
-          it('displays each of the existing meetings', function () {
-            const expectedMeetings = testCourseInstance.fall.meetings
-              .map((meeting) => `${dayEnumToString(meeting.day)}, ${meeting.startTime} to ${meeting.endTime}${meeting.room !== null ? ` in ${meeting.room.name}` : ''}`);
-            return Promise.all(expectedMeetings.map((meeting) => waitForElement(
-              () => getByText(meeting)
-            )));
+          it('displays each of the existing meeting times', function () {
+            const expectedMeetingTimes = testCourseInstance.fall.meetings
+              .map((meeting) => `${dayEnumToString(meeting.day)}, ${meeting.startTime} to ${meeting.endTime}`);
+            return Promise.all(
+              expectedMeetingTimes.map((meeting) => waitForElement(
+                () => getByText(meeting, { exact: false })
+              ))
+            );
+          });
+          it('displays each of the existing meeting locations', function () {
+            const expectedMeetingLocation = testCourseInstance.fall.meetings
+              .map((meeting) => `${meeting.room !== null ? `in ${meeting.room.name}` : ''}`);
+            return Promise.all(
+              expectedMeetingLocation.map((meeting) => waitForElement(
+                () => getAllByText(meeting, { exact: false })
+              ))
+            );
           });
         });
         describe('On Edit Behavior', function () {
