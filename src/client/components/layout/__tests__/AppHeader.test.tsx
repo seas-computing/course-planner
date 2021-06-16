@@ -20,8 +20,7 @@ describe('AppHeader', function () {
       let queryByText: BoundFunction<QueryByText>;
       beforeEach(function () {
         ({ queryByText } = render(
-          <AppHeader currentUser={dummy.adminUser} />,
-          () => {}
+          <AppHeader currentUser={dummy.adminUser} />
         ));
       });
       it('should display the "Schedule" link', function () {
@@ -62,8 +61,7 @@ describe('AppHeader', function () {
     let queryByText: BoundFunction<QueryByText>;
     beforeEach(function () {
       ({ queryByText } = render(
-        <AppHeader currentUser={null} />,
-        () => {}
+        <AppHeader currentUser={null} />
       ));
     });
     it('Should not display a log out link', function () {

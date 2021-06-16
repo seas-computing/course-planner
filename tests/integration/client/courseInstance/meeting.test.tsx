@@ -23,7 +23,6 @@ describe('Meeting Modal Focus Behavior', function () {
   let getStub: SinonStub;
   let findByText: BoundFunction<FindByText>;
   let queryByText: BoundFunction<QueryByText>;
-  const dispatchStub: SinonStub = stub();
   const testData = [
     es095CourseInstance,
     cs50CourseInstance,
@@ -36,8 +35,7 @@ describe('Meeting Modal Focus Behavior', function () {
   describe('On Open Behavior', function () {
     beforeEach(async function () {
       ({ findByText } = render(
-        <CoursesPage />,
-        dispatchStub
+        <CoursesPage />
       ));
       const editCS50MeetingButton = await waitForElement(
         () => document.getElementById(`${cs50CourseInstance.id}-${cs50CourseInstance.termPattern}-edit-meetings-button`)
@@ -58,8 +56,7 @@ describe('Meeting Modal Focus Behavior', function () {
     let editSpringES095MeetingButton: HTMLElement;
     beforeEach(async function () {
       ({ findByText, queryByText } = render(
-        <CoursesPage />,
-        dispatchStub
+        <CoursesPage />
       ));
       editFallES095MeetingButton = await waitForElement(
         () => document.getElementById(`${es095CourseInstance.id}-${TERM.FALL}-edit-meetings-button`)
