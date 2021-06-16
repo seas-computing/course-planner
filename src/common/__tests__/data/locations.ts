@@ -16,6 +16,16 @@ export const bookedRoom: RoomResponse = {
 };
 
 /**
+ * A room response where multiple courses have already booked the room
+ */
+export const multiBookedRoom: RoomResponse = {
+  id: '608ec29b-0e9e-4efe-87b6-73a52f098f62',
+  name: 'Pierce Hall 121',
+  campus: 'Cambridge',
+  capacity: 120,
+  meetingTitles: ['AC 209a', 'ES 100', 'AM 112'],
+};
+/**
  * A room response where the room is available
  */
 export const freeRoom: RoomResponse = {
