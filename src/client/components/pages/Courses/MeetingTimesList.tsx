@@ -6,7 +6,7 @@ import React, {
 import styled from 'styled-components';
 import { faAngleDown, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { ButtonLayout, ListLayout } from 'client/components/general';
+import { ButtonLayout } from 'client/components/general';
 import { VerticalSpace } from 'client/components/layout';
 import DAY, { dayEnumToString, days } from 'common/constants/day';
 import { meetingTimeSlots } from 'common/constants/timeslots';
@@ -22,18 +22,11 @@ import {
   ButtonDropdownMenu,
   ButtonDropdownMenuItem,
   Dropdown,
+  fromTheme,
   TextInput,
   ValidationErrorMessage,
   VARIANT,
 } from 'mark-one';
-
-/**
- * Contains the meeting day and time selectors so they can be displayed side by side
- */
-const TimeSelector = styled.div`
-  display: flex;
-  flex-direction: row;
-`;
 
 interface MeetingTimesListProps {
   /**
@@ -41,6 +34,81 @@ interface MeetingTimesListProps {
    */
   meetings: CourseInstanceResponseMeeting[];
 }
+
+interface StyledMeetingRowProps {
+  /** If true, the user is currently editing a meeting entry */
+  isRowExpanded: boolean;
+}
+
+const generateGrid = (isRowExpanded: boolean): string => {
+  if (isRowExpanded) {
+    return `"delete day timeslot start end"
+            ". error error error error"
+            ". room room room room"
+            ". . . close show"`;
+  }
+  return '"delete info edit"';
+};
+
+const StyledMeetingRow = styled.li<StyledMeetingRowProps>`
+  display: grid;
+  align-items: center;
+  border-bottom: ${fromTheme('border', 'light')};
+  grid-template-areas: ${({ isRowExpanded }) => (
+    generateGrid(isRowExpanded)
+  )};
+  padding: ${fromTheme('ws', 'small')};
+`;
+
+const StyledMeetingInfo = styled.span`
+  grid-area: info;
+`;
+
+const StyledDay = styled.span`
+  grid-area: day;
+  display: inline-block;
+`;
+
+const StyledTimeslot = styled.span`
+  grid-area: timeslot;
+  justify-self: end;
+`;
+
+const StyledStart = styled.span`
+  grid-area: start;
+`;
+
+const StyledEnd = styled.span`
+  grid-area: end;
+`;
+
+const StyledError = styled.span`
+    grid-area: error;
+    justify-self: start;
+`;
+
+const StyledRoom = styled.div`
+    grid-area: room;
+`;
+
+const StyledDeleteButton = styled.span`
+  grid-area: delete;
+  justify-self: start;
+`;
+
+const StyledEditButton = styled.span`
+  grid-area: edit;
+`;
+
+const StyledCloseButton = styled.span`
+    grid-area: close;
+    justify-self: end;
+`;
+
+const StyledShowRoomsButton = styled.span`
+    grid-area: show;
+    justify-self: end;
+`;
 
 /**
  * The meeting times section of the modal that allows users to edit meetings
@@ -74,14 +142,6 @@ export const MeetingTimesList
     currentDay,
     setCurrentDay,
   ] = useState(null as DAY);
-
-  /**
-   * The timeslot currently selected in the time picker dropdown
-   */
-  const [
-    currentTimeslot,
-    setCurrentTimeslot,
-  ] = useState(null as string);
 
   /**
    * The start time value for the meeting currently being edited
@@ -146,21 +206,26 @@ export const MeetingTimesList
       <ul>
         {currentMeetings.map(
           (meeting) => (
-            <ListLayout key={meeting.id}>
-              <BorderlessButton
-                id={`deleteButton${meeting.id}`}
-                variant={VARIANT.DANGER}
-                onClick={
-                  (): void => {}
-                }
-              >
-                <FontAwesomeIcon icon={faTrash} />
-              </BorderlessButton>
+            <StyledMeetingRow
+              key={meeting.id}
+              isRowExpanded={currentMeetingId !== null}
+            >
+              <StyledDeleteButton>
+                <BorderlessButton
+                  id={`deleteButton${meeting.id}`}
+                  variant={VARIANT.DANGER}
+                  onClick={
+                    (): void => {}
+                  }
+                >
+                  <FontAwesomeIcon icon={faTrash} />
+                </BorderlessButton>
+              </StyledDeleteButton>
               {
                 meeting.id === currentMeetingId
                   ? (
-                    <div>
-                      <TimeSelector>
+                    <>
+                      <StyledDay>
                         <Dropdown
                           id="meetingDay"
                           name="meetingDay"
@@ -189,6 +254,8 @@ export const MeetingTimesList
                           isRequired
                           isLabelVisible={false}
                         />
+                      </StyledDay>
+                      <StyledTimeslot>
                         <ButtonDropdownMenu
                           alt="Timeslot Button"
                           label={<FontAwesomeIcon icon={faAngleDown} size="sm" />}
@@ -223,6 +290,8 @@ export const MeetingTimesList
                             </ButtonDropdownMenuItem>
                           ))}
                         </ButtonDropdownMenu>
+                      </StyledTimeslot>
+                      <StyledStart>
                         <TextInput
                           id="meetingStartTime"
                           name="meetingStartTime"
@@ -247,6 +316,8 @@ export const MeetingTimesList
                           isRequired
                           isLabelVisible={false}
                         />
+                      </StyledStart>
+                      <StyledEnd>
                         <TextInput
                           id="meetingEndTime"
                           name="meetingEndTime"
@@ -271,48 +342,48 @@ export const MeetingTimesList
                           isRequired
                           isLabelVisible={false}
                         />
-                      </TimeSelector>
-                      <div>
+                      </StyledEnd>
+                      <StyledError>
                         <ValidationErrorMessage
                           id="meetingTimeErrorMessage"
                         >
                           {meetingTimeError}
                         </ValidationErrorMessage>
-                      </div>
-                      <div>
-                        <span>
-                          Room:
-                          {` ${currentRoom !== null ? currentRoom.name : ''}`}
-                        </span>
-                        <ButtonLayout>
-                          <Button
-                            id="closeButton"
-                            onClick={
-                              (): void => {
-                                // Close the current meeting only if there are no validation errors
-                                if (validateTimes()) {
-                                  setCurrentMeetingId(null);
-                                }
+                      </StyledError>
+                      <StyledRoom>
+                        Room:
+                        {` ${currentRoom !== null ? currentRoom.name : ''}`}
+                      </StyledRoom>
+                      <StyledCloseButton>
+                        <Button
+                          id="closeButton"
+                          onClick={
+                            (): void => {
+                              // Close the current meeting only if there are no validation errors
+                              if (validateTimes()) {
+                                setCurrentMeetingId(null);
                               }
                             }
-                            variant={VARIANT.SECONDARY}
-                          >
-                            Close
-                          </Button>
-                          <Button
-                            id="showRoomsButton"
-                            onClick={
-                              (): void => {
-                                validateTimes();
-                              }
+                          }
+                          variant={VARIANT.SECONDARY}
+                        >
+                          Close
+                        </Button>
+                      </StyledCloseButton>
+                      <StyledShowRoomsButton>
+                        <Button
+                          id="showRoomsButton"
+                          onClick={
+                            (): void => {
+                              validateTimes();
                             }
-                            variant={VARIANT.PRIMARY}
-                          >
-                            Show Rooms
-                          </Button>
-                        </ButtonLayout>
-                      </div>
-                    </div>
+                          }
+                          variant={VARIANT.PRIMARY}
+                        >
+                          Show Rooms
+                        </Button>
+                      </StyledShowRoomsButton>
+                    </>
                   )
                   : (
                     <>
@@ -337,7 +408,7 @@ export const MeetingTimesList
                     </>
                   )
               }
-            </ListLayout>
+            </StyledMeetingRow>
           )
         )}
       </ul>
