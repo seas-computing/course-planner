@@ -199,7 +199,7 @@ export class Course extends BaseEntity {
   @BeforeInsert()
   @BeforeUpdate()
   parseCourseNumber():void {
-    const numberMatch = /^(?<int>\d+)?(?<alpha>[a-zA-Z]+)?$/.exec(this.number);
+    const numberMatch = /(?<int>\d+)?(?<alpha>[a-zA-Z\s]+)?/.exec(this.number);
     if (numberMatch && 'groups' in numberMatch) {
       const { alpha, int } = numberMatch.groups;
       this.numberInteger = int

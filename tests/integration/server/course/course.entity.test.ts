@@ -181,34 +181,6 @@ describe('Course Entity', function () {
           strictEqual(numberAlphabetical, null);
         });
       });
-      context('When a course number is is not formatted [NUMBER][LETTER]', function () {
-        beforeEach(async function () {
-          testCourse = Object.assign(testCourse, {
-            number: 'a901',
-          });
-          savedCourse = await courseRepository.save(testCourse);
-          ({
-            numberInteger,
-            numberAlphabetical,
-          } = await courseRepository.findOne(
-            savedCourse.id,
-            {
-              select: [
-                'id',
-                'numberInteger',
-                'numberAlphabetical',
-              ],
-            }
-
-          ));
-        });
-        it('Should set the numberInteger field to null', function () {
-          strictEqual(numberInteger, null);
-        });
-        it('Should set the numberAlphabetical field to null', function () {
-          strictEqual(numberAlphabetical, null);
-        });
-      });
       context('When a course number is an empty string', function () {
         beforeEach(async function () {
           testCourse = Object.assign(testCourse, {
@@ -325,32 +297,6 @@ describe('Course Entity', function () {
         context('When the new course number has only special character', function () {
           beforeEach(async function () {
             savedCourse.number = '???';
-            await courseRepository.save(savedCourse);
-            const savedUpdatedCourse = await courseRepository.findOne(
-              savedCourse.id,
-              {
-                select: [
-                  'id',
-                  'numberInteger',
-                  'numberAlphabetical',
-                ],
-              }
-            );
-            ({
-              numberInteger,
-              numberAlphabetical,
-            } = savedUpdatedCourse);
-          });
-          it('Should set the numberInteger field to null', function () {
-            strictEqual(numberInteger, null);
-          });
-          it('Should set the numberAlphabetical field to null', function () {
-            strictEqual(numberAlphabetical, null);
-          });
-        });
-        context('When the new course number is not formatted as [NUMBER][LETTER]', function () {
-          beforeEach(async function () {
-            savedCourse.number = 'a901';
             await courseRepository.save(savedCourse);
             const savedUpdatedCourse = await courseRepository.findOne(
               savedCourse.id,
