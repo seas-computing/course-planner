@@ -42,10 +42,10 @@ interface StyledMeetingRowProps {
 
 const generateGrid = (isRowExpanded: boolean): string => {
   if (isRowExpanded) {
-    return `"delete day timeslot start end"
-            ". error error error error"
-            ". room room room room"
-            ". . . showclose showclose"`;
+    return `"delete day timeslot start end ."
+            ". error error error error error"
+            ". room room room room room"
+            ". . . . showclose showclose"`;
   }
   return '"delete info edit"';
 };
@@ -73,19 +73,25 @@ const StyledMeetingInfo = styled.span`
 const StyledDay = styled.span`
   grid-area: day;
   display: inline-block;
+  max-width: max-content;
+  min-width: max-content;
 `;
 
 const StyledTimeslot = styled.span`
   grid-area: timeslot;
+  height: 100%;
   justify-self: end;
+  max-width: max-content;
 `;
 
 const StyledStart = styled.span`
   grid-area: start;
+  min-width: max-content;
 `;
 
 const StyledEnd = styled.span`
   grid-area: end;
+  min-width: max-content;
 `;
 
 const StyledError = styled.span`
