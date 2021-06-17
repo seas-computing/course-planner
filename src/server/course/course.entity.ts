@@ -5,6 +5,8 @@ import {
   ManyToOne,
   ObjectType,
   Index,
+  BeforeInsert,
+  BeforeUpdate,
 } from 'typeorm';
 import { TERM_PATTERN, IS_SEAS } from 'common/constants';
 import { BaseEntity } from '../base/base.entity';
@@ -193,4 +195,20 @@ export class Course extends BaseEntity {
     }
   )
   public area: Area;
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  parseCourseNumber():void {
+    const numberMatch = /^(?<int>\d+)?(?<alpha>[a-zA-Z]+)?$/.exec(this.number);
+    if (numberMatch && 'groups' in numberMatch) {
+      const { alpha, int } = numberMatch.groups;
+      this.numberInteger = int
+        ? parseInt(int, 10)
+        : null;
+      this.numberAlphabetical = alpha || null;
+    } else {
+      this.numberInteger = null;
+      this.numberAlphabetical = null;
+    }
+  }
 }
