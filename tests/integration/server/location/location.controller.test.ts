@@ -14,7 +14,7 @@ import { ConfigService } from 'server/config/config.service';
 import { adminUser, regularUser } from 'testData';
 import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 import { strictEqual, deepStrictEqual, notStrictEqual } from 'assert';
-import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { TypeOrmModule, TypeOrmModuleOptions, getRepositoryToken } from '@nestjs/typeorm';
 import {
   AUTH_MODE, DAY, TERM, TERM_PATTERN,
 } from 'common/constants';
@@ -25,17 +25,20 @@ import * as dummy from 'testData';
 import { LocationModule } from 'server/location/location.module';
 import RoomRequest from 'common/dto/room/RoomRequest.dto';
 import flatMap from 'lodash.flatmap';
+import { Repository } from 'typeorm';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import { rooms } from '../../../mocks/database/population/data/rooms';
 import { courses } from '../../../mocks/database/population/data/courses';
+import { Room } from '../../../../src/server/location/room.entity';
 
 describe('Location API', function () {
   let testModule: TestingModule;
   let db: MockDB;
   let authStub: SinonStub;
   let api: HttpServer;
+  let locationRepo: Repository<Room>;
 
   before(async function () {
     this.timeout(120000);
@@ -85,6 +88,7 @@ describe('Location API', function () {
 
       .compile();
 
+    locationRepo = testModule.get(getRepositoryToken(Room));
     const nestApp = await testModule
       .createNestApplication()
       .useGlobalPipes(new BadRequestExceptionPipe())
@@ -209,9 +213,17 @@ describe('Location API', function () {
             strictEqual(Array.isArray(result), true);
             notStrictEqual(result.length, 0);
           });
-          it('returns all rooms in the database', function () {
+          it('returns all rooms in the database', async function () {
             const actualRooms = result.map((room) => room.name);
-            const expectedRooms = rooms.map((room) => `${room.building} ${room.name}`);
+            const rawRooms = await locationRepo.createQueryBuilder('r')
+              .select('CONCAT_WS(\' \', b.name, r.name)', 'name')
+              .leftJoin('r.building', 'b')
+              .leftJoin('b.campus', 'c')
+              .orderBy('c.name', 'ASC')
+              .addOrderBy('b.name', 'ASC')
+              .addOrderBy('r.name', 'ASC')
+              .getRawMany();
+            const expectedRooms = rawRooms.map(({ name }) => <string>name);
             deepStrictEqual(actualRooms, expectedRooms);
           });
           it('returns the expected meetings', function () {

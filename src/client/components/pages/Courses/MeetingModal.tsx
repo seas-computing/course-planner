@@ -1,5 +1,5 @@
 import { CoursesPageCourseInstance } from 'client/context';
-import { TermKey } from 'common/constants/term';
+import TERM, { TermKey } from 'common/constants/term';
 import {
   Button,
   Modal,
@@ -15,14 +15,17 @@ import React, {
   Ref,
   useEffect,
   useRef,
+  useState,
 } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import styled from 'styled-components';
 import { VerticalSpace } from 'client/components/layout';
 import { ButtonLayout, ListLayout } from 'client/components/general';
-import { dayEnumToString } from 'common/constants/day';
+import DAY, { dayEnumToString } from 'common/constants/day';
 import { instructorDisplayNameToFirstLast } from '../utils/instructorDisplayNameToFirstLast';
+import RoomSelection from './RoomSelection';
+import RoomRequest from '../../../../common/dto/room/RoomRequest.dto';
 
 /**
  * A component that applies styling for text that indicates the faculty has
@@ -131,6 +134,20 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     setMeetingModalFocus();
   }, []);
 
+  /**
+   * State field to set the day and time for which rooms should be shown
+   */
+  const [
+    showRoomsData,
+    setShowRoomsData,
+  ] = useState<RoomRequest>({
+    day: DAY.MON,
+    startTime: '13:00:00',
+    endTime: '15:00:00',
+    term: TERM.FALL,
+    calendarYear: '2020',
+  });
+
   const { course, term } = currentCourseInstance;
   const semKey = term.toLowerCase() as TermKey;
   const instance = course[semKey];
@@ -214,7 +231,12 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
           </MeetingScheduler>
           <RoomAvailability>
             <RoomAvailabilityHeader>Room Availability</RoomAvailabilityHeader>
-            <RoomAvailabilityBody />
+            <RoomAvailabilityBody>
+              <RoomSelection
+                roomRequestData={showRoomsData}
+                roomHandler={() => {}}
+              />
+            </RoomAvailabilityBody>
           </RoomAvailability>
         </MeetingModalBodyGrid>
       </ModalBody>
