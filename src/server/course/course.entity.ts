@@ -58,6 +58,45 @@ export class Course extends BaseEntity {
   public number: string;
 
   /**
+   * The numerical part of the course number (e.g. - the 109 in CS 109b). This
+   * is needed to facilitate numerical sorting such that "CS 50" appears before
+   * "CS 109b".
+   *
+   * This field is not selected by default, so queries will need to explicitly
+   * include it.
+   *
+   * @example `50`
+   * @example `109`
+   */
+
+  @Column({
+    type: 'integer',
+    comment: 'Only the numerical portion of a course number (e.g. - 109 in "CS 109b")',
+    select: false,
+    nullable: true,
+  })
+  public numberInteger: number;
+
+  /**
+   * The alphabetical part of the course number (e.g. - the 109 in CS 109b). This
+   * is needed in conjunction with the numberInteger column to facilitate
+   * numerical sorting such that "CS 109a" appears before "CS 109a".
+   *
+   * This field is not selected by default, so queries will need to explicitly
+   * include it.
+   *
+   * @example `"b"`
+   */
+
+  @Column({
+    type: 'text',
+    comment: 'Only the alphabetical portion, if any, of a course number (e.g. the "a" of "CS 109a")',
+    select: false,
+    nullable: true,
+  })
+  public numberAlphabetical: string;
+
+  /**
    * Indicates whether or not this course is an undergraduate course.
    */
   @Column({
