@@ -196,6 +196,11 @@ export class Course extends BaseEntity {
   )
   public area: Area;
 
+  /**
+   * Before inserting or updating a course, this will parse the [[number]]
+   * string and save the integer and alphabetical portions in the respective
+   * [[numberInteger]] and [[numberAlphabetical]] fields.
+   */
   @BeforeInsert()
   @BeforeUpdate()
   parseCourseNumber():void {
