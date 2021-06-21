@@ -81,7 +81,6 @@ const StyledTimeslot = styled.span`
   grid-area: timeslot;
   height: 100%;
   justify-self: end;
-  max-width: max-content;
 `;
 
 const StyledStart = styled.span`
@@ -117,7 +116,7 @@ const StyledShowCloseButtons = styled.div`
     grid-area: showclose;
     justify-self: end;
     > * {
-      margin: 2px;
+      margin-left: ${fromTheme('ws', 'xsmall')};
     }
 `;
 
