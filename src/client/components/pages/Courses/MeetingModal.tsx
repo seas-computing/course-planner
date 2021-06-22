@@ -17,9 +17,7 @@ import React, {
   useState,
 } from 'react';
 import styled from 'styled-components';
-import { VerticalSpace } from 'client/components/layout';
-import { ButtonLayout, ListLayout } from 'client/components/general';
-import DAY, { dayEnumToString } from 'common/constants/day';
+import DAY from 'common/constants/day';
 import { instructorDisplayNameToFirstLast } from '../utils/instructorDisplayNameToFirstLast';
 import { MeetingTimesList } from './MeetingTimesList';
 import RoomSelection from './RoomSelection';
