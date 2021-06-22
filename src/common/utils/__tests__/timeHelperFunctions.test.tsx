@@ -56,6 +56,10 @@ describe('Time Helper Functions', function () {
         const time = '12:00';
         strictEqual(convertTo12HourDisplayTime(time), `${time} PM`);
       });
+      it('converts midnight appropriately', function () {
+        const time = '00:00';
+        strictEqual(convertTo12HourDisplayTime(time), '12:00 AM');
+      });
       it('converts post-noon times appropriately', function () {
         const time = '19:55';
         const [hour, minute] = time.split(':');
