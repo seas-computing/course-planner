@@ -3,7 +3,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from 'server/config/config.service';
 import { Authentication } from 'server/auth/authentication.guard';
-import NonClassMeetingResponseDTO from 'common/dto/nonclassmeetings/NonClassMeeting.dto';
+import NonClassMeetingResponseDTO from 'common/dto/nonClassMeetings/NonClassMeeting.dto';
 import { NonClassEventService } from './nonClassEvent.service';
 import { NonClassParentView } from './NonClassParentView.entity';
 
