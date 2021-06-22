@@ -66,7 +66,6 @@ describe('Course Admin Modal Behavior', function () {
   let findByText: BoundFunction<FindByText>;
   let queryByText: BoundFunction<QueryByText>;
   let getByLabelText: BoundFunction<GetByText>;
-  const dispatchMessage: SinonStub = stub();
   let onSuccessStub: SinonStub;
   let onCloseStub: SinonStub;
   let putStub: SinonStub;
@@ -173,8 +172,7 @@ describe('Course Admin Modal Behavior', function () {
               isVisible
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
-            />,
-            dispatchMessage
+            />
           ));
         });
         context('when required fields are not provided', function () {
@@ -326,8 +324,7 @@ describe('Course Admin Modal Behavior', function () {
               currentCourse={physicsCourseResponse}
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
-            />,
-            dispatchMessage
+            />
           ));
         });
         context('when required fields are not provided', function () {
@@ -459,8 +456,7 @@ describe('Course Admin Modal Behavior', function () {
               isVisible
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
-            />,
-            dispatchMessage
+            />
           ));
         });
         afterEach(function () {
@@ -525,8 +521,7 @@ describe('Course Admin Modal Behavior', function () {
               currentCourse={physicsCourseResponse}
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
-            />,
-            dispatchMessage
+            />
           ));
         });
         afterEach(function () {

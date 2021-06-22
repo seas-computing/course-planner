@@ -29,7 +29,6 @@ describe('Faculty Absence Modal', function () {
   let getByLabelText: BoundFunction<GetByText>;
   let getByText: BoundFunction<GetByText>;
   let queryByText: BoundFunction<QueryByText>;
-  const dispatchMessage: SinonStub = stub();
   let onSuccessStub: SinonStub;
   let onCancelStub: SinonStub;
   let putStub: SinonStub;
@@ -44,8 +43,7 @@ describe('Faculty Absence Modal', function () {
           currentAbsence={facultyAbsenceRequest}
           onSuccess={onSuccessStub}
           onCancel={onCancelStub}
-        />,
-        dispatchMessage
+        />
       ));
     });
     it('populates the absence field according to the current absence selected', function () {
@@ -80,8 +78,7 @@ describe('Faculty Absence Modal', function () {
             currentAbsence={facultyAbsenceRequest}
             onSuccess={onSuccessStub}
             onCancel={onCancelStub}
-          />,
-          dispatchMessage
+          />
         ));
         const absenceSelect = getByLabelText('Sabbatical/Leave', { exact: false }) as HTMLSelectElement;
         fireEvent.change(
@@ -114,8 +111,7 @@ describe('Faculty Absence Modal', function () {
             currentAbsence={facultyAbsenceRequest}
             onSuccess={onSuccessStub}
             onCancel={onCancelStub}
-          />,
-          dispatchMessage
+          />
         ));
         const submitButton = getByText('Submit');
         fireEvent.click(submitButton);
@@ -144,8 +140,7 @@ describe('Faculty Absence Modal', function () {
           currentAbsence={facultyAbsenceRequest}
           onSuccess={onSuccessStub}
           onCancel={onCancelStub}
-        />,
-        dispatchMessage
+        />
       ));
       const cancelButton = getByText('Cancel');
       fireEvent.click(cancelButton);

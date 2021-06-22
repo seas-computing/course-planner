@@ -21,24 +21,52 @@ const testMetadata = new MetadataContextValue(currentMetadata, (update) => {
 });
 
 /**
+ * Defines a set of additional options that can be passed as the second
+ * argument to a `render` call to stub/spy on specific properties. Sane
+ * defaults are provided so that all options are indeed optional
+ */
+
+interface CustomRenderOptions {
+  dispatchMessage?: DispatchMessage;
+  metadataContext?: MetadataContextValue;
+  routerEntries?: string[];
+}
+
+/**
  * In order to streamline our tests, we are redefining the `render` function to
  * include the Memory Router, Theme Provider, and Message Context Provider to
  * avoid having to redefine an App Stub for each test
  */
 const customRender = (
   ui: ReactElement,
-  dispatchMessage: DispatchMessage
-): RenderResult => render(
-  <MemoryRouter>
-    <MarkOneWrapper>
-      <MessageContext.Provider value={dispatchMessage}>
-        <MetadataContext.Provider value={testMetadata}>
-          {ui}
-        </MetadataContext.Provider>
-      </MessageContext.Provider>
-    </MarkOneWrapper>
-  </MemoryRouter>
-);
+  options: CustomRenderOptions = {}
+): RenderResult => {
+  let {
+    dispatchMessage,
+    metadataContext,
+    routerEntries,
+  } = options;
+  if (!dispatchMessage) {
+    dispatchMessage = () => {};
+  }
+  if (!metadataContext) {
+    metadataContext = testMetadata;
+  }
+  if (!routerEntries) {
+    routerEntries = ['/'];
+  }
+  return render(
+    <MemoryRouter initialEntries={routerEntries}>
+      <MarkOneWrapper>
+        <MessageContext.Provider value={dispatchMessage}>
+          <MetadataContext.Provider value={metadataContext}>
+            {ui}
+          </MetadataContext.Provider>
+        </MessageContext.Provider>
+      </MarkOneWrapper>
+    </MemoryRouter>
+  );
+};
 
 export * from '@testing-library/react';
 export { customRender as render };

@@ -34,7 +34,6 @@ describe('Meeting Modal', function () {
     let queryAllByRole: BoundFunction<AllByRole>;
     let onCloseStub: SinonStub;
     let onSaveStub: SinonStub;
-    const dispatchMessage: SinonStub = stub();
     const meetingTerm = TERM.FALL;
     const semKey = meetingTerm.toLowerCase() as TermKey;
     const testCourseInstance = cs50CourseInstance;
@@ -57,8 +56,7 @@ describe('Meeting Modal', function () {
           }}
           onClose={onCloseStub}
           onSave={onSaveStub}
-        />,
-        dispatchMessage
+        />
       ));
     });
     describe('On Open Behavior', function () {
