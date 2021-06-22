@@ -172,6 +172,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
                     isVisible={meetingModalVisible}
                     currentCourseInstance={currentCourseInstance}
                     onClose={closeMeetingModal}
+                    onSave={() => {}}
                   />
                 )
                 : <></>}

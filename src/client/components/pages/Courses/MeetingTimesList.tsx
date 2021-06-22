@@ -1,6 +1,7 @@
 import React, {
   FunctionComponent,
   ReactElement,
+  useEffect,
   useState,
 } from 'react';
 import styled from 'styled-components';
@@ -33,6 +34,7 @@ interface MeetingTimesListProps {
    * The current existing meetings for this course instance
    */
   meetings: CourseInstanceResponseMeeting[];
+  saving: boolean;
 }
 
 interface StyledMeetingRowProps {
@@ -127,6 +129,7 @@ const StyledShowCloseButtons = styled.div`
 export const MeetingTimesList
 : FunctionComponent<MeetingTimesListProps> = function ({
   meetings,
+  saving,
 }): ReactElement {
   /**
    * Keeps track of the current meetings for this instance. This is updated as
@@ -210,6 +213,12 @@ export const MeetingTimesList
     setMeetingTimeError('');
     return true;
   };
+
+  useEffect(() => {
+    if (saving) {
+      validateTimes();
+    }
+  });
 
   return (
     <div className="meeting-times-section">

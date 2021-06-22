@@ -14,6 +14,7 @@ import React, {
   Ref,
   useEffect,
   useRef,
+  useState,
 } from 'react';
 import styled from 'styled-components';
 import { instructorDisplayNameToFirstLast } from '../utils/instructorDisplayNameToFirstLast';
@@ -40,6 +41,10 @@ interface MeetingModalProps {
    * Handler to be invoked when the modal closes
    */
   onClose: () => void;
+  /**
+   * Handler to be invoked when the modal is saved
+   */
+  onSave: () => void;
 }
 
 /**
@@ -109,6 +114,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   isVisible,
   onClose,
   currentCourseInstance,
+  onSave,
 }): ReactElement {
   /**
    * The current value of the Meeting Modal ref
@@ -132,6 +138,15 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   const semKey = term.toLowerCase() as TermKey;
   const instance = course[semKey];
 
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (saving) {
+      setSaving(false);
+      onSave(/* TODO: pass the data back */);
+    }
+  }, [saving, onSave]);
+
   return (
     <Modal
       ariaLabelledBy="editMeeting"
@@ -149,7 +164,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
           <MeetingScheduler>
             <MeetingSchedulerHeader>{`Meeting times for ${course.catalogNumber}`}</MeetingSchedulerHeader>
             <MeetingSchedulerBody>
-              <MeetingTimesList meetings={instance.meetings} />
+              <MeetingTimesList meetings={instance.meetings} saving={saving} />
               <h3>
                 Faculty Notes
               </h3>
@@ -178,12 +193,22 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
         </MeetingModalBodyGrid>
       </ModalBody>
       <ModalFooter>
-        <Button
-          onClick={onClose}
-          variant={VARIANT.SECONDARY}
-        >
-          Cancel
-        </Button>
+        <>
+          <Button
+            onClick={() => {
+              setSaving(true);
+            }}
+            variant={VARIANT.PRIMARY}
+          >
+            Save
+          </Button>
+          <Button
+            onClick={onClose}
+            variant={VARIANT.SECONDARY}
+          >
+            Cancel
+          </Button>
+        </>
       </ModalFooter>
     </Modal>
   );

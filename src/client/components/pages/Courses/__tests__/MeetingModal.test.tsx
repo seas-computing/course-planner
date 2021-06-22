@@ -33,12 +33,14 @@ describe('Meeting Modal', function () {
     let findByLabelText: BoundFunction<FindByText>;
     let queryAllByRole: BoundFunction<AllByRole>;
     let onCloseStub: SinonStub;
+    let onSaveStub: SinonStub;
     const dispatchMessage: SinonStub = stub();
     const meetingTerm = TERM.FALL;
     const semKey = meetingTerm.toLowerCase() as TermKey;
     const testCourseInstance = cs50CourseInstance;
     beforeEach(function () {
       onCloseStub = stub();
+      onSaveStub = stub();
       ({
         getByText,
         getAllByText,
@@ -54,6 +56,7 @@ describe('Meeting Modal', function () {
             term: meetingTerm,
           }}
           onClose={onCloseStub}
+          onSave={onSaveStub}
         />,
         dispatchMessage
       ));
@@ -182,6 +185,15 @@ describe('Meeting Modal', function () {
                   strictEqual(endTimeInput.value, expectedEndTime);
                 });
               });
+              context('after clicking the "Save" button', function () {
+                it('renders no validation error messages', function () {
+                  const saveButton = getByText('Save');
+                  fireEvent.click(saveButton);
+                  // The row remains expanded at this point, and the text
+                  // content of the error message of the row should be empty.
+                  strictEqual(queryAllByRole('alert')[0].innerText, undefined);
+                });
+              });
               context('after clicking the "Show Rooms" button', function () {
                 it('renders no validation error messages', function () {
                   const showRoomsButton = getByText('Show Rooms');
@@ -268,6 +280,18 @@ describe('Meeting Modal', function () {
                     strictEqual(dayDropdown.value, updatedDay);
                   });
                 });
+                context('after clicking the "Save" button', function () {
+                  it('renders no validation error messages', function () {
+                    const dayDropdown = getByLabelText('Meeting Day', { exact: false }) as HTMLSelectElement;
+                    fireEvent.change(dayDropdown,
+                      { target: { value: updatedDay } });
+                    const saveButton = getByText('Save');
+                    fireEvent.click(saveButton);
+                    // The row remains expanded at this point, and the text
+                    // content of the error message of the row should be empty.
+                    strictEqual(queryAllByRole('alert')[0].innerText, undefined);
+                  });
+                });
                 context('after clicking the "Show Rooms" button', function () {
                   it('renders no validation error messages', function () {
                     const dayDropdown = getByLabelText('Meeting Day', { exact: false }) as HTMLSelectElement;
@@ -344,6 +368,15 @@ describe('Meeting Modal', function () {
                     );
                   });
                 });
+                context('after clicking on the "Save" button', function () {
+                  it('displays a validation error message', async function () {
+                    const saveButton = getByText('Save');
+                    fireEvent.click(saveButton);
+                    return waitForElement(
+                      () => getByText(errorMessage, { exact: false })
+                    );
+                  });
+                });
                 context('after clicking on the "Show Rooms" button', function () {
                   it('displays a validation error message', async function () {
                     const showRoomsButton = getByText('Show Rooms');
@@ -389,6 +422,18 @@ describe('Meeting Modal', function () {
                       startTimeDropdown.value,
                       convert12To24HourTime(updatedStartTime)
                     );
+                  });
+                });
+                context('after clicking the "Save" button', function () {
+                  it('renders no validation error messages', function () {
+                    const startTimeDropdown = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;
+                    fireEvent.change(startTimeDropdown,
+                      { target: { value: updatedStartTime } });
+                    const saveButton = getByText('Save');
+                    fireEvent.click(saveButton);
+                    // The row remains expanded at this point, and the text
+                    // content of the error message of the row should be empty.
+                    strictEqual(queryAllByRole('alert')[0].innerText, undefined);
                   });
                 });
                 context('after clicking the "Show Rooms" button', function () {
@@ -473,6 +518,15 @@ describe('Meeting Modal', function () {
                     );
                   });
                 });
+                context('after clicking on the "Save" button', function () {
+                  it('displays a validation error message', function () {
+                    const saveButton = getByText('Save');
+                    fireEvent.click(saveButton);
+                    return waitForElement(
+                      () => getByText(errorMessage, { exact: false })
+                    );
+                  });
+                });
                 context('after clicking on the "Show Rooms" button', function () {
                   it('displays a validation error message', function () {
                     const showRoomsButton = getByText('Show Rooms');
@@ -513,6 +567,15 @@ describe('Meeting Modal', function () {
                   it('displays a validation error message', async function () {
                     const editCS50TuesdayMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50TuesdayMeetingId));
                     fireEvent.click(editCS50TuesdayMeetingButton);
+                    return waitForElement(
+                      () => getByText(errorMessage, { exact: false })
+                    );
+                  });
+                });
+                context('after clicking on the "Save" button', function () {
+                  it('displays a validation error message', function () {
+                    const saveButton = getByText('Save');
+                    fireEvent.click(saveButton);
                     return waitForElement(
                       () => getByText(errorMessage, { exact: false })
                     );
@@ -563,6 +626,18 @@ describe('Meeting Modal', function () {
                       endTimeDropdown.value,
                       convert12To24HourTime(updatedEndTime)
                     );
+                  });
+                });
+                context('after clicking the "Save" button', function () {
+                  it('renders no validation error messages', function () {
+                    const endTimeDropdown = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
+                    fireEvent.change(endTimeDropdown,
+                      { target: { value: updatedEndTime } });
+                    const saveButton = getByText('Save');
+                    fireEvent.click(saveButton);
+                    // The row remains expanded at this point, and the text
+                    // content of the error message of the row should be empty.
+                    strictEqual(queryAllByRole('alert')[0].innerText, undefined);
                   });
                 });
                 context('after clicking the "Show Rooms" button', function () {
@@ -647,6 +722,15 @@ describe('Meeting Modal', function () {
                     );
                   });
                 });
+                context('after clicking on the "Save" button', function () {
+                  it('displays a validation error message', function () {
+                    const saveButton = getByText('Save');
+                    fireEvent.click(saveButton);
+                    return waitForElement(
+                      () => getByText(errorMessage, { exact: false })
+                    );
+                  });
+                });
                 context('after clicking on the "Show Rooms" button', function () {
                   it('displays a validation error message', function () {
                     const showRoomsButton = getByText('Show Rooms');
@@ -687,6 +771,15 @@ describe('Meeting Modal', function () {
                   it('displays a validation error message', async function () {
                     const editCS50TuesdayMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50TuesdayMeetingId));
                     fireEvent.click(editCS50TuesdayMeetingButton);
+                    return waitForElement(
+                      () => getByText(errorMessage, { exact: false })
+                    );
+                  });
+                });
+                context('after clicking on the "Save" button', function () {
+                  it('displays a validation error message', function () {
+                    const saveButton = getByText('Save');
+                    fireEvent.click(saveButton);
                     return waitForElement(
                       () => getByText(errorMessage, { exact: false })
                     );
@@ -770,6 +863,13 @@ describe('Meeting Modal', function () {
         fireEvent.click(cancelButton);
         await wait(() => !queryByText(/Meetings for/));
         await wait(() => strictEqual(onCloseStub.callCount, 1));
+      });
+    });
+    describe('On Save Behavior', function () {
+      it('calls the onSave handler once', async function () {
+        const saveButton = getByText('Save');
+        fireEvent.click(saveButton);
+        await wait(() => strictEqual(onSaveStub.callCount, 1));
       });
     });
   });
