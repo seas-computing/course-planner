@@ -21,6 +21,7 @@ import { Area } from '../area/area.entity';
  */
 
 @Entity()
+@Index(['prefix', 'numberInteger', 'numberAlphabetical'])
 export class Course extends BaseEntity {
   /**
    * The long title for the course
