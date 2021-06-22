@@ -40,7 +40,7 @@ describe('Time Helper Functions', function () {
       });
       context('when there is no leading zero', function () {
         it('returns the time string itself', function () {
-          const time = '10:54 PM';
+          const time = '12:00 AM';
           strictEqual(convertTo12HourDisplayTime(time), time);
         });
       });
