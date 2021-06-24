@@ -202,13 +202,15 @@ export const MeetingTimesList
    * not later than the end time. In either case, an error is set.
    */
   const validateTimes = (): boolean => {
-    if (currentMeetingId && (currentDay === '' as DAY || currentStartTime === '' || currentEndTime === '')) {
-      setMeetingTimeError('Please provide a day and start/end times before proceeding.');
-      return false;
-    }
-    if (currentMeetingId && (currentStartTime >= currentEndTime)) {
-      setMeetingTimeError('End time must be later than start time.');
-      return false;
+    if (currentMeetingId) {
+      if (currentDay === '' as DAY || currentStartTime === '' || currentEndTime === '') {
+        setMeetingTimeError('Please provide a day and start/end times before proceeding.');
+        return false;
+      }
+      if (currentStartTime >= currentEndTime) {
+        setMeetingTimeError('End time must be later than start time.');
+        return false;
+      }
     }
     setMeetingTimeError('');
     return true;
