@@ -21,7 +21,7 @@ export const convert12To24HourTime = (twelveHourTime: string): string => {
   }
   // If hour is a single digit, add a 0 to the left to pad the hour
   if (hour.length === 1) {
-    hour = `0${hour}`;
+    hour = hour.padStart(2, '0');
   }
   return `${hour}:${minute}`;
 };
