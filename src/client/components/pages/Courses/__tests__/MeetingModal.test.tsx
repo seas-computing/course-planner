@@ -14,7 +14,6 @@ import { TERM } from 'common/constants';
 import DAY, { dayEnumToString } from 'common/constants/day';
 import { TermKey } from 'common/constants/term';
 import {
-  calculateStartEndTimes,
   convert12To24HourTime,
   convertTo12HourDisplayTime,
 } from 'common/utils/timeHelperFunctions';
@@ -150,9 +149,9 @@ describe('Meeting Modal', function () {
             });
             context('when a timeslot is selected', function () {
               const timeslot = '12:00 PM-1:00 PM';
-              const times = calculateStartEndTimes(timeslot);
-              const expectedStartTime = convert12To24HourTime(times.start);
-              const expectedEndTime = convert12To24HourTime(times.end);
+              const times = timeslot.split('-');
+              const expectedStartTime = convert12To24HourTime(times[0]);
+              const expectedEndTime = convert12To24HourTime(times[1]);
               beforeEach(async function () {
                 const timepicker = await waitForElement(() => findByLabelText('Timeslot Button'));
                 fireEvent.click(timepicker);

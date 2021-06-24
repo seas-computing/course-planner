@@ -1,5 +1,5 @@
 import { strictEqual } from 'assert';
-import { calculateStartEndTimes, convert12To24HourTime, convertTo12HourDisplayTime } from '../timeHelperFunctions';
+import { convert12To24HourTime, convertTo12HourDisplayTime } from '../timeHelperFunctions';
 
 describe('Time Helper Functions', function () {
   describe('convert12To24HourTime', function () {
@@ -65,18 +65,6 @@ describe('Time Helper Functions', function () {
         const [hour, minute] = time.split(':');
         strictEqual(convertTo12HourDisplayTime(time), `${parseInt(hour, 10) - 12}:${minute} PM`);
       });
-    });
-  });
-  describe('calculateStartEndTimes', function () {
-    it('returns the expected start time', function () {
-      const startTime = '11:00 AM';
-      const timeslot = `${startTime}-12:00 PM`;
-      strictEqual(calculateStartEndTimes(timeslot).start, startTime);
-    });
-    it('returns the expected end time', function () {
-      const endTime = '10:30 AM';
-      const timeslot = `09:30 AM-${endTime}`;
-      strictEqual(calculateStartEndTimes(timeslot).end, endTime);
     });
   });
 });
