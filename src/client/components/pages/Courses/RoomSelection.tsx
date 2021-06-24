@@ -1,8 +1,10 @@
 import React, {
   useEffect, useState, ReactElement, useContext,
 } from 'react';
+import styled from 'styled-components';
 import { getRoomAvailability } from 'client/api/rooms';
 import RoomResponse from 'common/dto/room/RoomResponse.dto';
+import { fromTheme, LoadSpinner } from 'mark-one';
 import RoomSelectionTable from './RoomSelectionTable';
 import RoomRequest from '../../../../common/dto/room/RoomRequest.dto';
 import { MessageContext } from '../../../context';
@@ -16,6 +18,20 @@ interface RoomSelectionProps {
 }
 
 /**
+ * A textbox that will appear before a meeting day/time has been selected
+ */
+
+const RoomSelectionPrompt = styled.div`
+  border: ${fromTheme('border', 'light')};
+  border-top: none;
+  text-align: center;
+  font-weight: ${fromTheme('font', 'bold', 'weight')};
+  font-size: ${fromTheme('font', 'bold', 'size')};
+  font-family: ${fromTheme('font', 'bold', 'family')};
+  padding: ${fromTheme('ws', 'medium')};
+`;
+
+/**
  * Wrapper component that handles fetching the list of rooms based on the data
  * provided, then rendering it into a table
  */
@@ -26,7 +42,7 @@ const RoomSelection = (
   const {
     roomRequestData, roomHandler,
   } = props;
-  const [roomList, setRoomList] = useState<RoomResponse[]>([]);
+  const [roomList, setRoomList] = useState<RoomResponse[]>(null);
   const [isFetching, setFetching] = useState<boolean>(false);
 
   const dispatchMessage = useContext(MessageContext);
@@ -56,11 +72,18 @@ const RoomSelection = (
   ]);
 
   return (
-    <RoomSelectionTable
-      roomList={roomList}
-      addButtonHandler={roomHandler}
-      dataFetching={isFetching}
-    />
+    <>
+      <RoomSelectionTable
+        roomList={roomList}
+        addButtonHandler={roomHandler}
+      />
+      {isFetching && <LoadSpinner>Searching for Rooms</LoadSpinner>}
+      {roomList === null && (
+        <RoomSelectionPrompt>
+          Add meeting time to view room availability
+        </RoomSelectionPrompt>
+      )}
+    </>
   );
 };
 
