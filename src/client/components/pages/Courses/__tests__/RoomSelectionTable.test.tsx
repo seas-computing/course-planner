@@ -1,146 +1,193 @@
 import React from 'react';
 import { render } from 'test-utils';
-import { ok, strictEqual } from 'assert';
+import { ok, strictEqual, deepStrictEqual } from 'assert';
 import { spy } from 'sinon';
 import * as dummy from 'testData';
-import { RenderResult } from '@testing-library/react';
-import RoomSelectionTable from '../RoomSelectionTable';
+import { RenderResult, within, fireEvent } from '@testing-library/react';
+import RoomSelectionTable, { AVAILABILITY } from '../RoomSelectionTable';
 
 describe('Room Selection Table', function () {
   let renderResult: RenderResult;
+  const unavailableRooms = [
+    dummy.bookedRoom,
+    dummy.multiBookedRoom,
+  ];
+  const availableRooms = [
+    dummy.freeRoom,
+    dummy.freeFASRoom,
+  ];
+  const fullRoomList = [
+    ...unavailableRooms,
+    ...availableRooms,
+  ];
   describe('Rendering Conditions', function () {
-    context('When data is fetching', function () {
-      context('and the roomList is not empty', function () {
-        beforeEach(function () {
-          renderResult = render(
-            <RoomSelectionTable
-              roomList={[dummy.freeRoom, dummy.bookedRoom, dummy.fasRoom]}
-              dataFetching
-              addButtonHandler={spy()}
-            />
-          );
+    describe('Availability Filter', function () {
+      beforeEach(function () {
+        renderResult = render(
+          <RoomSelectionTable
+            roomList={[...fullRoomList]}
+            addButtonHandler={spy()}
+          />
+        );
+      });
+      context('When value is ALL', function () {
+        it('Should be the default', function () {
+          const { queryByRole } = renderResult;
+          const filter = queryByRole('combobox') as HTMLSelectElement;
+          strictEqual(filter.value, AVAILABILITY.ALL);
         });
-        it('Should show the loading spinner', function () {
-          const { queryByText } = renderResult;
-          ok(queryByText('Searching for Rooms'));
-        });
-        it('Should only show the two header rows in the table', function () {
-          const { getAllByRole } = renderResult;
-          const tableRows = getAllByRole('row');
-          strictEqual(tableRows.length, 2);
+        it('Should show all the rows', function () {
+          const { queryAllByRole } = renderResult;
+          const tableBodyRows = queryAllByRole('row')
+            .filter((row) => (
+              within(row).queryAllByRole('columnheader').length === 0
+            ));
+          strictEqual(tableBodyRows.length, fullRoomList.length);
+          const roomNames = tableBodyRows.map((row) => (
+            within(row).queryByRole('rowheader').textContent
+          ));
+          deepStrictEqual(roomNames, fullRoomList.map(({ name }) => name));
         });
       });
-      context('and the roomList is empty', function () {
-        beforeEach(function () {
-          renderResult = render(
-            <RoomSelectionTable
-              roomList={[]}
-              dataFetching
-              addButtonHandler={spy()}
-            />
+      context('When value is AVAILABLE', function () {
+        it('Should show all the available rows', function () {
+          const { queryByRole, queryAllByRole } = renderResult;
+          const filter = queryByRole('combobox');
+          fireEvent.change(
+            filter,
+            {
+              target: {
+                value: AVAILABILITY.AVAILABLE,
+              },
+            }
           );
+          const tableBodyRows = queryAllByRole('row')
+            .filter((row) => (
+              within(row).queryAllByRole('columnheader').length === 0
+            ));
+          strictEqual(tableBodyRows.length, availableRooms.length);
+          const roomNames = tableBodyRows.map((row) => (
+            within(row).queryByRole('rowheader').textContent
+          ));
+          deepStrictEqual(roomNames, availableRooms.map(({ name }) => name));
         });
-        it('Should show the loading spinner', function () {
-          const { queryByText } = renderResult;
-          ok(queryByText('Searching for Rooms'));
+      });
+      context('When value is UNAVAILABLE', function () {
+        it('Should show all the unavailable rows', function () {
+          const { queryByRole, queryAllByRole } = renderResult;
+          const filter = queryByRole('combobox');
+          fireEvent.change(
+            filter,
+            {
+              target: {
+                value: AVAILABILITY.UNAVAILABLE,
+              },
+            }
+          );
+          const tableBodyRows = queryAllByRole('row')
+            .filter((row) => (
+              within(row).queryAllByRole('columnheader').length === 0
+            ));
+          strictEqual(tableBodyRows.length, unavailableRooms.length);
+          const roomNames = tableBodyRows.map((row) => (
+            within(row).queryByRole('rowheader').textContent
+          ));
+          deepStrictEqual(roomNames, unavailableRooms.map(({ name }) => name));
         });
-        it('Should not show the prompt', function () {
-          const { queryByText } = renderResult;
-          ok(!queryByText('Add meeting time to view room availability'));
+      });
+      context('When value is anything else', function () {
+        it('Should default to showing everything', function () {
+          const { queryByRole, queryAllByRole } = renderResult;
+          const filter = queryByRole('combobox');
+          fireEvent.change(
+            filter,
+            {
+              target: {
+                value: 'foo' as AVAILABILITY,
+              },
+            }
+          );
+          const tableBodyRows = queryAllByRole('row')
+            .filter((row) => (
+              within(row).queryAllByRole('columnheader').length === 0
+            ));
+          strictEqual(tableBodyRows.length, fullRoomList.length);
+          const roomNames = tableBodyRows.map((row) => (
+            within(row).queryByRole('rowheader').textContent
+          ));
+          deepStrictEqual(roomNames, fullRoomList.map(({ name }) => name));
         });
       });
     });
-    context('When data is not fetching', function () {
-      context('and the roomList is not empty', function () {
-        context('When a room in the list is not occupied', function () {
-          beforeEach(function () {
-            renderResult = render(
-              <RoomSelectionTable
-                roomList={[dummy.freeRoom]}
-                addButtonHandler={spy()}
-              />
-            );
-          });
-          it('Should show "Yes" in the availability column', function () {
-            const { queryByText } = renderResult;
-            ok(queryByText('Yes'));
-          });
-          it('Should not render the spinner', function () {
-            const { queryByText } = renderResult;
-            ok(!queryByText('Searching for Rooms'));
-          });
-        });
-        context('When a room in the list is occupied by one course', function () {
-          beforeEach(function () {
-            renderResult = render(
-              <RoomSelectionTable
-                roomList={[dummy.bookedRoom]}
-                addButtonHandler={spy()}
-              />
-            );
-          });
-          it('Should show "No" and the list of meetings', function () {
-            const { queryByText } = renderResult;
-            ok(queryByText(`No (${dummy.bookedRoom.meetingTitles[0]})`));
-          });
-          it('Should not render the spinner', function () {
-            const { queryByText } = renderResult;
-            ok(!queryByText('Searching for Rooms'));
-          });
-        });
-        context('When a room in the list is occupied by multiple courses', function () {
-          beforeEach(function () {
-            renderResult = render(
-              <RoomSelectionTable
-                roomList={[dummy.multiBookedRoom]}
-                addButtonHandler={spy()}
-              />
-            );
-          });
-          it('Should show "No" and the list of meetings', function () {
-            const { queryByText } = renderResult;
-            ok(queryByText(`No (${dummy.multiBookedRoom.meetingTitles.join(', ')})`));
-          });
-          it('Should not render the spinner', function () {
-            const { queryByText } = renderResult;
-            ok(!queryByText('Searching for Rooms'));
-          });
-        });
-        context('When a room in the list is owned by FAS', function () {
-          beforeEach(function () {
-            renderResult = render(
-              <RoomSelectionTable
-                roomList={[dummy.fasRoom]}
-                addButtonHandler={spy()}
-              />
-            );
-          });
-          it('Should show check FAS availability', function () {
-            const { queryByText } = renderResult;
-            ok(queryByText('Check FAS Availability'));
-          });
-          it('Should not render the spinner', function () {
-            const { queryByText } = renderResult;
-            ok(!queryByText('Searching for Rooms'));
-          });
-        });
-      });
-      context('and the roomList is empty', function () {
+    context('Availability Column', function () {
+      context('When the room is available', function () {
         beforeEach(function () {
           renderResult = render(
             <RoomSelectionTable
-              roomList={[]}
+              roomList={[dummy.freeRoom]}
               addButtonHandler={spy()}
             />
           );
         });
-        it('Should show the prompt to add a meeting Time', function () {
+        it('Should show "Yes" in the availability column', function () {
           const { queryByText } = renderResult;
-          ok(queryByText('Add meeting time to view room availability'));
+          ok(queryByText('Yes'));
         });
-        it('Should not render the spinner', function () {
+      });
+      context('When a room in the list is occupied by one course', function () {
+        beforeEach(function () {
+          renderResult = render(
+            <RoomSelectionTable
+              roomList={[dummy.bookedRoom]}
+              addButtonHandler={spy()}
+            />
+          );
+        });
+        it('Should show "No" and the name of the meeting', function () {
           const { queryByText } = renderResult;
-          ok(!queryByText('Searching for Rooms'));
+          ok(queryByText(`No (${dummy.bookedRoom.meetingTitles[0]})`));
+        });
+      });
+      context('When a room in the list is occupied by multiple courses', function () {
+        beforeEach(function () {
+          renderResult = render(
+            <RoomSelectionTable
+              roomList={[dummy.multiBookedRoom]}
+              addButtonHandler={spy()}
+            />
+          );
+        });
+        it('Should show "No" and the list of meetings', function () {
+          const { queryByText } = renderResult;
+          ok(queryByText(`No (${dummy.multiBookedRoom.meetingTitles.join(', ')})`));
+        });
+      });
+      context('When a room in the list is owned by FAS and is available', function () {
+        beforeEach(function () {
+          renderResult = render(
+            <RoomSelectionTable
+              roomList={[dummy.freeFASRoom]}
+              addButtonHandler={spy()}
+            />
+          );
+        });
+        it('Should show check FAS availability', function () {
+          const { queryByText } = renderResult;
+          ok(queryByText('Check FAS Availability'));
+        });
+      });
+      context('When a room in the list is owned by FAS and is not available', function () {
+        beforeEach(function () {
+          renderResult = render(
+            <RoomSelectionTable
+              roomList={[dummy.bookedFASRoom]}
+              addButtonHandler={spy()}
+            />
+          );
+        });
+        it('Should "No" and the name of the meeting', function () {
+          const { queryByText } = renderResult;
+          ok(queryByText(`No (${dummy.bookedFASRoom.meetingTitles[0]})`));
         });
       });
     });
