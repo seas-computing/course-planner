@@ -42,7 +42,7 @@ const RoomSelection = (
   const {
     roomRequestData, roomHandler,
   } = props;
-  const [roomList, setRoomList] = useState<RoomResponse[]>(null);
+  const [roomList, setRoomList] = useState<RoomResponse[]>([]);
   const [isFetching, setFetching] = useState<boolean>(false);
 
   const dispatchMessage = useContext(MessageContext);
@@ -78,7 +78,7 @@ const RoomSelection = (
         addButtonHandler={roomHandler}
       />
       {isFetching && <LoadSpinner>Searching for Rooms</LoadSpinner>}
-      {roomList === null && (
+      {roomRequestData === null && (
         <RoomSelectionPrompt>
           Add meeting time to view room availability
         </RoomSelectionPrompt>
