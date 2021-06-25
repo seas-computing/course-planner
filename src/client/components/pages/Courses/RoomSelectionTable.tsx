@@ -24,11 +24,10 @@ interface RoomSelectionTableProps {
  * The allowed values for Availability filter in the room table
  */
 
-enum AVAILABILITY {
+export enum AVAILABILITY {
   ALL='All',
   AVAILABLE='Available',
   UNAVAILABLE='Unavailable',
-  CHECK='Check FAS availability'
 }
 
 /**
@@ -36,11 +35,11 @@ enum AVAILABILITY {
  */
 const displayAvailability = (roomData: RoomResponse) => {
   const { campus, meetingTitles } = roomData;
-  if (campus === 'FAS') {
-    return 'Check FAS Availability';
-  }
   if (meetingTitles.length > 0) {
     return `No (${meetingTitles.join(', ')})`;
+  }
+  if (campus === 'FAS') {
+    return 'Check FAS Availability';
   }
   return 'Yes';
 };
@@ -100,7 +99,18 @@ const RoomSelectionTable = (
           </TableRow>
         </TableHead>
         <TableBody>
-          {roomList.map((roomData, index) => {
+          {roomList.filter(({ meetingTitles }) => {
+            switch (availabilityFilter) {
+              case AVAILABILITY.ALL:
+                return true;
+              case AVAILABILITY.AVAILABLE:
+                return meetingTitles.length === 0;
+              case AVAILABILITY.UNAVAILABLE:
+                return meetingTitles.length > 0;
+              default:
+                return true;
+            }
+          }).map((roomData, index) => {
             const {
               id, campus, name, capacity,
             } = roomData;
