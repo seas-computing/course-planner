@@ -185,7 +185,7 @@ describe('Room Selection Table', function () {
             />
           );
         });
-        it('Should "No" and the name of the meeting', function () {
+        it('Should show "No" and the name of the meeting', function () {
           const { queryByText } = renderResult;
           ok(queryByText(`No (${dummy.bookedFASRoom.meetingTitles[0]})`));
         });
