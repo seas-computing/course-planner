@@ -1,5 +1,4 @@
 import React, { ReactElement, useState, ChangeEvent } from 'react';
-import styled from 'styled-components';
 import {
   Table,
   TableRow,
@@ -9,16 +8,12 @@ import {
   TableBody,
   VARIANT,
   Button,
-  LoadSpinner,
   Dropdown,
   TableRowHeadingCell,
-  fromTheme,
 } from 'mark-one';
 import RoomResponse from 'common/dto/room/RoomResponse.dto';
 
 interface RoomSelectionTableProps {
-  /** Whether an asynchronous request to the server has been made */
-  dataFetching?: boolean;
   /** The list of rooms to show in the list */
   roomList: RoomResponse[];
   /** A handler to be called when the add button is clicked */
@@ -29,37 +24,22 @@ interface RoomSelectionTableProps {
  * The allowed values for Availability filter in the room table
  */
 
-enum AVAILABILITY {
+export enum AVAILABILITY {
   ALL='All',
   AVAILABLE='Available',
   UNAVAILABLE='Unavailable',
-  CHECK='Check FAS availability'
 }
-
-/**
- * A textbox that will appear before a meeting day/time has been selected
- */
-
-const RoomSelectionTablePrompt = styled.div`
-  border: ${fromTheme('border', 'light')};
-  border-top: none;
-  text-align: center;
-  font-weight: ${fromTheme('font', 'bold', 'weight')};
-  font-size: ${fromTheme('font', 'bold', 'size')};
-  font-family: ${fromTheme('font', 'bold', 'family')};
-  padding: ${fromTheme('ws', 'medium')};
-`;
 
 /**
  * Formats the meeting data for the "Availability" column
  */
 const displayAvailability = (roomData: RoomResponse) => {
   const { campus, meetingTitles } = roomData;
-  if (campus === 'FAS') {
-    return 'Check FAS Availability';
-  }
   if (meetingTitles.length > 0) {
     return `No (${meetingTitles.join(', ')})`;
+  }
+  if (campus === 'FAS') {
+    return 'Check FAS Availability';
   }
   return 'Yes';
 };
@@ -69,7 +49,7 @@ const displayAvailability = (roomData: RoomResponse) => {
  */
 
 const RoomSelectionTable = (
-  { roomList, addButtonHandler, dataFetching }: RoomSelectionTableProps
+  { roomList, addButtonHandler }: RoomSelectionTableProps
 ): ReactElement<RoomSelectionTableProps> => {
   const [
     availabilityFilter,
@@ -119,7 +99,18 @@ const RoomSelectionTable = (
           </TableRow>
         </TableHead>
         <TableBody>
-          {!dataFetching && roomList.map((roomData, index) => {
+          {roomList.filter(({ meetingTitles }) => {
+            switch (availabilityFilter) {
+              case AVAILABILITY.ALL:
+                return true;
+              case AVAILABILITY.AVAILABLE:
+                return meetingTitles.length === 0;
+              case AVAILABILITY.UNAVAILABLE:
+                return meetingTitles.length > 0;
+              default:
+                return true;
+            }
+          }).map((roomData, index) => {
             const {
               id, campus, name, capacity,
             } = roomData;
@@ -145,18 +136,8 @@ const RoomSelectionTable = (
           })}
         </TableBody>
       </Table>
-      {dataFetching && <LoadSpinner>Searching for Rooms</LoadSpinner>}
-      {!dataFetching && roomList.length === 0 && (
-        <RoomSelectionTablePrompt>
-          Add meeting time to view room availability
-        </RoomSelectionTablePrompt>
-      )}
     </>
   );
-};
-
-RoomSelectionTable.defaultProps = {
-  dataFetching: false,
 };
 
 export default RoomSelectionTable;
