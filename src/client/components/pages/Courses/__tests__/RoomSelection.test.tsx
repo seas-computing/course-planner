@@ -33,7 +33,7 @@ describe('Room Selection', function () {
       });
       it('Should show the prompt to add a meeting Time', function () {
         const { queryByText } = renderResult;
-        ok(queryByText('Add meeting time to view room availability'));
+        ok(queryByText('Add meeting time and click "Show Rooms" to view availability'));
       });
       it('Should show the two header rows of the table', function () {
         const { queryAllByRole } = renderResult;
