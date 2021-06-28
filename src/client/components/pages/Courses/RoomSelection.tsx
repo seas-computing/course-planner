@@ -80,7 +80,7 @@ const RoomSelection = (
       {isFetching && <LoadSpinner>Searching for Rooms</LoadSpinner>}
       {roomRequestData === null && (
         <RoomSelectionPrompt>
-          Add meeting time to view room availability
+          Add meeting time and click &quot;Show Rooms&quot; to view availability
         </RoomSelectionPrompt>
       )}
     </>
