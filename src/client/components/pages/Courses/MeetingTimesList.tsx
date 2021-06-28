@@ -34,6 +34,11 @@ interface MeetingTimesListProps {
    * The current existing meetings for this course instance
    */
   meetings: CourseInstanceResponseMeeting[];
+  /**
+   * Handles updating the state of the list of meetings in the
+   * parent component (MeetingModal)
+   */
+  onChange: (meetings: CourseInstanceResponseMeeting[]) => void;
   saving: boolean;
 }
 
@@ -130,16 +135,8 @@ export const MeetingTimesList
 : FunctionComponent<MeetingTimesListProps> = function ({
   meetings,
   saving,
+  onChange,
 }): ReactElement {
-  /**
-   * Keeps track of the current meetings for this instance. This is updated as
-   * users add and edit meetings in the modal.
-   */
-  const [
-    currentMeetings,
-    setCurrentMeetings,
-  ] = useState(meetings);
-
   /**
    * The meeting within the list of meetings that is currently being edited
    */
@@ -222,10 +219,26 @@ export const MeetingTimesList
     }
   });
 
+  /**
+   * Retrieves and is used to update the current list of meetings, which lives
+   * in the state of the parent component (MeetingModal)
+   */
+  const getCurrentMeetings = () => meetings
+    .map((meeting: CourseInstanceResponseMeeting) => (
+      meeting.id === currentMeetingId
+        ? {
+          ...meeting,
+          day: currentDay,
+          startTime: currentStartTime,
+          endTime: currentEndTime,
+          room: currentRoom,
+        }
+        : meeting));
+
   return (
     <div className="meeting-times-section">
       <ul>
-        {currentMeetings.map(
+        {meetings.map(
           (meeting) => (
             <StyledMeetingRow
               key={meeting.id}
@@ -260,16 +273,6 @@ export const MeetingTimesList
                           onChange={(event
                           : React.ChangeEvent<HTMLSelectElement>): void => {
                             setCurrentDay(event.currentTarget.value as DAY);
-                            setCurrentMeetings(currentMeetings.map(
-                              (currentMeeting) => (
-                                currentMeeting.id === currentMeetingId
-                                  ? {
-                                    ...currentMeeting,
-                                    day: event.currentTarget.value as DAY,
-                                  }
-                                  : currentMeeting
-                              )
-                            ));
                           }}
                           hideError
                           isRequired
@@ -291,17 +294,6 @@ export const MeetingTimesList
                               onClick={() => {
                                 setCurrentStartTime(start);
                                 setCurrentEndTime(end);
-                                setCurrentMeetings(currentMeetings.map(
-                                  (currentMeeting) => (
-                                    currentMeeting.id === currentMeetingId
-                                      ? {
-                                        ...currentMeeting,
-                                        startTime: start,
-                                        endTime: end,
-                                      }
-                                      : currentMeeting
-                                  )
-                                ));
                               }}
                               key={label}
                             >
@@ -320,16 +312,6 @@ export const MeetingTimesList
                           onChange={(event: React.ChangeEvent<HTMLInputElement>)
                           : void => {
                             setCurrentStartTime(event.currentTarget.value);
-                            setCurrentMeetings(currentMeetings.map(
-                              (currentMeeting) => (
-                                currentMeeting.id === currentMeetingId
-                                  ? {
-                                    ...currentMeeting,
-                                    startTime: event.currentTarget.value,
-                                  }
-                                  : currentMeeting
-                              )
-                            ));
                           }}
                           hideError
                           isRequired
@@ -346,16 +328,6 @@ export const MeetingTimesList
                           onChange={(event: React.ChangeEvent<HTMLInputElement>)
                           : void => {
                             setCurrentEndTime(event.currentTarget.value);
-                            setCurrentMeetings(currentMeetings.map(
-                              (currentMeeting) => (
-                                currentMeeting.id === currentMeetingId
-                                  ? {
-                                    ...currentMeeting,
-                                    endTime: event.currentTarget.value,
-                                  }
-                                  : currentMeeting
-                              )
-                            ));
                           }}
                           hideError
                           isRequired
@@ -380,6 +352,7 @@ export const MeetingTimesList
                             (): void => {
                               // Close the current meeting only if there are no validation errors
                               if (validateTimes()) {
+                                onChange(getCurrentMeetings());
                                 setCurrentMeetingId(null);
                               }
                             }
@@ -392,7 +365,9 @@ export const MeetingTimesList
                           id="showRoomsButton"
                           onClick={
                             (): void => {
-                              validateTimes();
+                              if (validateTimes()) {
+                                onChange(getCurrentMeetings());
+                              }
                             }
                           }
                           variant={VARIANT.PRIMARY}
@@ -417,6 +392,7 @@ export const MeetingTimesList
                           onClick={
                             (): void => {
                               if (validateTimes()) {
+                                onChange(getCurrentMeetings());
                                 setCurrentMeetingId(meeting.id);
                                 setCurrentDay(meeting.day);
                                 setCurrentStartTime(meeting.startTime);
@@ -444,21 +420,30 @@ export const MeetingTimesList
             (): void => {
               // Close the current meeting only if there are no validation errors
               if (validateTimes()) {
-                setCurrentMeetingId(null);
+                // If there is a meeting currently being edited, get the data
+                // currently being edited and call onChange to update the meetings
+                let updatedMeetings = meetings;
+                if (currentMeetingId != null) {
+                  updatedMeetings = getCurrentMeetings();
+                  setCurrentMeetingId(null);
+                }
                 // Generate a new meeting row using a newly created meeting ID via the newMeetingIndex
-                setCurrentMeetings([...currentMeetings, {
+                const newMeeting = {
                   id: `newMeeting${newMeetingIndex}`,
                   day: '' as DAY,
                   startTime: '',
                   endTime: '',
                   room: null,
-                }]);
-                setCurrentMeetingId(`newMeeting${newMeetingIndex}`);
+                };
+                updatedMeetings = [...updatedMeetings, newMeeting];
+                // update the meetings
+                onChange(updatedMeetings);
+                setCurrentMeetingId(newMeeting.id);
                 setNewMeetingIndex(newMeetingIndex + 1);
-                setCurrentDay('' as DAY);
-                setCurrentStartTime('');
-                setCurrentEndTime('');
-                setCurrentRoom(null);
+                setCurrentDay(newMeeting.day);
+                setCurrentStartTime(newMeeting.startTime);
+                setCurrentEndTime(newMeeting.endTime);
+                setCurrentRoom(newMeeting.room);
               }
             }
           }

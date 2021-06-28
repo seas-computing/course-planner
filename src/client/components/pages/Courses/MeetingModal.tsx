@@ -155,6 +155,15 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   const semKey = term.toLowerCase() as TermKey;
   const instance = course[semKey];
 
+  /**
+   * Keeps track of the current meetings for this instance. This is updated as
+   * users add and edit meetings in the modal.
+   */
+  const [
+    currentMeetings,
+    setCurrentMeetings,
+  ] = useState(instance.meetings);
+
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -181,7 +190,11 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
           <MeetingScheduler>
             <MeetingSchedulerHeader>{`Meeting times for ${course.catalogNumber}`}</MeetingSchedulerHeader>
             <MeetingSchedulerBody>
-              <MeetingTimesList meetings={instance.meetings} saving={saving} />
+              <MeetingTimesList
+                meetings={currentMeetings}
+                saving={saving}
+                onChange={(meetings) => setCurrentMeetings(meetings)}
+              />
               <h3>
                 Faculty Notes
               </h3>
