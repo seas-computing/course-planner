@@ -7,7 +7,6 @@ import {
   ModalFooter,
   ModalHeader,
   VARIANT,
-  BorderlessButton,
 } from 'mark-one';
 import React, {
   FunctionComponent,
@@ -17,13 +16,10 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import styled from 'styled-components';
-import { VerticalSpace } from 'client/components/layout';
-import { ButtonLayout, ListLayout } from 'client/components/general';
-import DAY, { dayEnumToString } from 'common/constants/day';
+import DAY from 'common/constants/day';
 import { instructorDisplayNameToFirstLast } from '../utils/instructorDisplayNameToFirstLast';
+import { MeetingTimesList } from './MeetingTimesList';
 import RoomSelection from './RoomSelection';
 import RoomRequest from '../../../../common/dto/room/RoomRequest.dto';
 
@@ -48,6 +44,10 @@ interface MeetingModalProps {
    * Handler to be invoked when the modal closes
    */
   onClose: () => void;
+  /**
+   * Handler to be invoked when the modal is saved
+   */
+  onSave: () => void;
 }
 
 /**
@@ -55,7 +55,9 @@ interface MeetingModalProps {
  */
 const MeetingModalBodyGrid = styled.div`
   max-height: 75vh;
+  min-height: 65vh;
   max-width: 75vw;
+  min-width: 65vw;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -115,6 +117,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   isVisible,
   onClose,
   currentCourseInstance,
+  onSave,
 }): ReactElement {
   /**
    * The current value of the Meeting Modal ref
@@ -152,6 +155,24 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   const semKey = term.toLowerCase() as TermKey;
   const instance = course[semKey];
 
+  /**
+   * Keeps track of the current meetings for this instance. This is updated as
+   * users add and edit meetings in the modal.
+   */
+  const [
+    currentMeetings,
+    setCurrentMeetings,
+  ] = useState(instance.meetings);
+
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (saving) {
+      setSaving(false);
+      onSave(/* TODO: pass the data back */);
+    }
+  }, [saving, onSave]);
+
   return (
     <Modal
       ariaLabelledBy="editMeeting"
@@ -169,45 +190,11 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
           <MeetingScheduler>
             <MeetingSchedulerHeader>{`Meeting times for ${course.catalogNumber}`}</MeetingSchedulerHeader>
             <MeetingSchedulerBody>
-              <div className="meeting-times-section">
-                <ul>
-                  {instance.meetings.map((meeting) => (
-                    <ListLayout key={meeting.id}>
-                      <BorderlessButton
-                        id={`deleteButton${meeting.id}`}
-                        variant={VARIANT.DANGER}
-                        onClick={
-                          (): void => {}
-                        }
-                      >
-                        <FontAwesomeIcon icon={faTrash} />
-                      </BorderlessButton>
-                      <span>{`${dayEnumToString(meeting.day)}, ${meeting.startTime} to ${meeting.endTime} in ${meeting.room.name}`}</span>
-                      <BorderlessButton
-                        id={`editButton${meeting.id}`}
-                        variant={VARIANT.INFO}
-                        onClick={
-                          (): void => {}
-                        }
-                      >
-                        <FontAwesomeIcon icon={faEdit} />
-                      </BorderlessButton>
-                    </ListLayout>
-                  ))}
-                </ul>
-                <VerticalSpace />
-                <ButtonLayout>
-                  <Button
-                    id="addNewTimeButton"
-                    onClick={
-                      (): void => {}
-                    }
-                    variant={VARIANT.SECONDARY}
-                  >
-                    Add New Time
-                  </Button>
-                </ButtonLayout>
-              </div>
+              <MeetingTimesList
+                meetings={currentMeetings}
+                saving={saving}
+                onChange={(meetings) => setCurrentMeetings(meetings)}
+              />
               <h3>
                 Faculty Notes
               </h3>
@@ -241,12 +228,22 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
         </MeetingModalBodyGrid>
       </ModalBody>
       <ModalFooter>
-        <Button
-          onClick={onClose}
-          variant={VARIANT.SECONDARY}
-        >
-          Cancel
-        </Button>
+        <>
+          <Button
+            onClick={() => {
+              setSaving(true);
+            }}
+            variant={VARIANT.PRIMARY}
+          >
+            Save
+          </Button>
+          <Button
+            onClick={onClose}
+            variant={VARIANT.SECONDARY}
+          >
+            Cancel
+          </Button>
+        </>
       </ModalFooter>
     </Modal>
   );

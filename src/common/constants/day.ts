@@ -36,3 +36,8 @@ export const dayEnumToString = (dayEnum: DAY): string => {
       return null;
   }
 };
+
+/**
+ * An array of days that guarantees the order from Monday to Friday.
+ */
+export const days = [DAY.MON, DAY.TUE, DAY.WED, DAY.THU, DAY.FRI];

@@ -3,6 +3,18 @@ import {
   DAY, OFFERED, TERM_PATTERN, IS_SEAS,
 } from 'common/constants';
 
+export interface CourseInstanceResponseMeeting {
+  id: string;
+  day: DAY;
+  startTime: string;
+  endTime: string;
+  room: {
+    id: string;
+    campus: string;
+    name: string;
+  };
+}
+
 /**
  * @module Server.DTOS.Courses
  */
@@ -65,17 +77,7 @@ abstract class Instance {
     ],
     isArray: true,
   })
-  public meetings: {
-    id: string;
-    day: DAY;
-    startTime: string;
-    endTime: string;
-    room: {
-      id: string;
-      campus: string;
-      name: string;
-    };
-  }[];
+  public meetings: CourseInstanceResponseMeeting[];
 
   @ApiProperty({
     type: 'number',
