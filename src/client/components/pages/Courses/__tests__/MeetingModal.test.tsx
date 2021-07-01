@@ -9,7 +9,7 @@ import {
   wait,
   waitForElement,
 } from '@testing-library/react';
-import { strictEqual } from 'assert';
+import { strictEqual, notStrictEqual } from 'assert';
 import { TERM } from 'common/constants';
 import DAY, { dayEnumToString } from 'common/constants/day';
 import { TermKey } from 'common/constants/term';
@@ -20,7 +20,8 @@ import {
 import React from 'react';
 import { SinonStub, stub } from 'sinon';
 import { render } from 'test-utils';
-import { cs50CourseInstance } from 'testData';
+import { cs50CourseInstance, freeRoom } from 'testData';
+import * as roomAPI from 'client/api/rooms';
 import MeetingModal from '../MeetingModal';
 
 describe('Meeting Modal', function () {
@@ -30,21 +31,25 @@ describe('Meeting Modal', function () {
     let queryByText: BoundFunction<QueryByText>;
     let getByLabelText: BoundFunction<GetByText>;
     let findByLabelText: BoundFunction<FindByText>;
+    let findByText: BoundFunction<FindByText>;
     let queryAllByRole: BoundFunction<AllByRole>;
     let onCloseStub: SinonStub;
     let onSaveStub: SinonStub;
+    let roomAPIStub: SinonStub;
     const meetingTerm = TERM.FALL;
     const semKey = meetingTerm.toLowerCase() as TermKey;
     const testCourseInstance = cs50CourseInstance;
     beforeEach(function () {
       onCloseStub = stub();
       onSaveStub = stub();
+      roomAPIStub = stub(roomAPI, 'getRoomAvailability');
       ({
         getByText,
         getAllByText,
         queryByText,
         getByLabelText,
         findByLabelText,
+        findByText,
         queryAllByRole,
       } = render(
         <MeetingModal
@@ -191,12 +196,30 @@ describe('Meeting Modal', function () {
                 });
               });
               context('after clicking the "Show Rooms" button', function () {
-                it('renders no validation error messages', function () {
+                beforeEach(function () {
+                  roomAPIStub.resolves([freeRoom]);
                   const showRoomsButton = getByText('Show Rooms');
                   fireEvent.click(showRoomsButton);
+                });
+                it('renders no validation error messages', function () {
                   // The row remains expanded at this point, and the text
                   // content of the error message of the row should be empty.
                   strictEqual(queryAllByRole('alert')[0].innerText, undefined);
+                });
+                it('renders the list of available rooms', async function () {
+                  const roomInList = await findByText(freeRoom.name);
+                  notStrictEqual(roomInList, null);
+                  strictEqual(queryByText(/Add meeting time/), null);
+                });
+                context('after changing the value again', function () {
+                  it('removes the room list', async function () {
+                    const timepicker = await waitForElement(() => findByLabelText('Timeslot Button'));
+                    fireEvent.click(timepicker);
+                    fireEvent.click(getByText('1:00 PM-2:00 PM'));
+                    const promptMessage = await findByText(/Add meeting time/);
+                    notStrictEqual(promptMessage, null);
+                    strictEqual(queryByText(freeRoom.name), null);
+                  });
                 });
               });
               context('after clicking the "Close" button', function () {
@@ -287,15 +310,33 @@ describe('Meeting Modal', function () {
                   });
                 });
                 context('after clicking the "Show Rooms" button', function () {
-                  it('renders no validation error messages', function () {
+                  beforeEach(function () {
+                    roomAPIStub.resolves([freeRoom]);
                     const dayDropdown = getByLabelText('Meeting Day', { exact: false }) as HTMLSelectElement;
                     fireEvent.change(dayDropdown,
                       { target: { value: updatedDay } });
                     const showRoomsButton = getByText('Show Rooms');
                     fireEvent.click(showRoomsButton);
+                  });
+                  it('renders no validation error messages', function () {
                     // The row remains expanded at this point, and the text
                     // content of the error message of the row should be empty.
                     strictEqual(queryAllByRole('alert')[0].innerText, undefined);
+                  });
+                  it('renders the list of available rooms', async function () {
+                    const roomInList = await findByText(freeRoom.name);
+                    notStrictEqual(roomInList, null);
+                    strictEqual(queryByText(/Add meeting time/), null);
+                  });
+                  context('after changing the value again', function () {
+                    it('removes the room list', async function () {
+                      const dayDropdown = getByLabelText('Meeting Day', { exact: false }) as HTMLSelectElement;
+                      fireEvent.change(dayDropdown,
+                        { target: { value: DAY.FRI } });
+                      const promptMessage = await findByText(/Add meeting time/);
+                      notStrictEqual(promptMessage, null);
+                      strictEqual(queryByText(freeRoom.name), null);
+                    });
                   });
                 });
                 context('after clicking the "Close" button', function () {
@@ -429,15 +470,33 @@ describe('Meeting Modal', function () {
                   });
                 });
                 context('after clicking the "Show Rooms" button', function () {
-                  it('renders no validation error messages', function () {
+                  beforeEach(function () {
+                    roomAPIStub.resolves([freeRoom]);
                     const startTimeDropdown = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;
                     fireEvent.change(startTimeDropdown,
                       { target: { value: updatedStartTime } });
                     const showRoomsButton = getByText('Show Rooms');
                     fireEvent.click(showRoomsButton);
+                  });
+                  it('renders no validation error messages', function () {
                     // The row remains expanded at this point, and the text
                     // content of the error message of the row should be empty.
                     strictEqual(queryAllByRole('alert')[0].innerText, undefined);
+                  });
+                  it('renders the list of available rooms', async function () {
+                    const roomInList = await findByText(freeRoom.name);
+                    notStrictEqual(roomInList, null);
+                    strictEqual(queryByText(/Add meeting time/), null);
+                  });
+                  context('after changing the value again', function () {
+                    it('removes the room list', async function () {
+                      const startTimeDropdown = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;
+                      fireEvent.change(startTimeDropdown,
+                        { target: { value: '01:30' } });
+                      const promptMessage = await findByText(/Add meeting time/);
+                      notStrictEqual(promptMessage, null);
+                      strictEqual(queryByText(freeRoom.name), null);
+                    });
                   });
                 });
                 context('after clicking the "Close" button', function () {
@@ -631,15 +690,33 @@ describe('Meeting Modal', function () {
                   });
                 });
                 context('after clicking the "Show Rooms" button', function () {
-                  it('renders no validation error messages', function () {
+                  beforeEach(function () {
+                    roomAPIStub.resolves([freeRoom]);
                     const endTimeDropdown = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
                     fireEvent.change(endTimeDropdown,
                       { target: { value: updatedEndTime } });
                     const showRoomsButton = getByText('Show Rooms');
                     fireEvent.click(showRoomsButton);
+                  });
+                  it('renders no validation error messages', function () {
                     // The row remains expanded at this point, and the text
                     // content of the error message of the row should be empty.
                     strictEqual(queryAllByRole('alert')[0].innerText, undefined);
+                  });
+                  it('renders the list of available rooms', async function () {
+                    const roomInList = await findByText(freeRoom.name);
+                    notStrictEqual(roomInList, null);
+                    strictEqual(queryByText(/Add meeting time/), null);
+                  });
+                  context('after changing the value again', function () {
+                    it('removes the room list', async function () {
+                      const endTimeDropdown = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
+                      fireEvent.change(endTimeDropdown,
+                        { target: { value: '14:30' } });
+                      const promptMessage = await findByText(/Add meeting time/);
+                      notStrictEqual(promptMessage, null);
+                      strictEqual(queryByText(freeRoom.name), null);
+                    });
                   });
                 });
                 context('after clicking the "Close" button', function () {
