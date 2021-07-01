@@ -17,7 +17,6 @@ import { OFFERED, COURSE_TABLE_COLUMN } from 'common/constants';
 import CourseInstanceTable from './CourseInstanceTable';
 import { tableFields } from './tableFields';
 import { CoursesPageContext, CoursesPageCourseInstance } from '../../../context/CoursesPageContext';
-import MeetingModal from './MeetingModal';
 
 /*
  * TODO
@@ -166,16 +165,6 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
                   )
                 )}
               />
-              {currentCourseInstance && meetingModalVisible
-                ? (
-                  <MeetingModal
-                    isVisible={meetingModalVisible}
-                    currentCourseInstance={currentCourseInstance}
-                    onClose={closeMeetingModal}
-                    onSave={() => {}}
-                  />
-                )
-                : <></>}
             </CoursesPageContext.Provider>
           </>
         )}

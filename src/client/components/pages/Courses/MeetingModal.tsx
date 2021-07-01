@@ -41,6 +41,13 @@ interface MeetingModalProps {
    */
   currentCourseInstance: CoursesPageCourseInstance;
   /**
+   * The semester within the current course being edited
+   */
+  currentSemester: {
+    term: TERM,
+    calendarYear: number
+  };
+  /**
    * Handler to be invoked when the modal closes
    */
   onClose: () => void;
@@ -116,7 +123,8 @@ const RoomAvailabilityBody = styled.div`
 const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   isVisible,
   onClose,
-  currentCourseInstance,
+  currentCourse,
+  currentSemester,
   onSave,
 }): ReactElement {
   /**
@@ -151,7 +159,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     calendarYear: '2020',
   });
 
-  const { course, term } = currentCourseInstance;
+  const { term, calendarYear } = currentSemester;
   const semKey = term.toLowerCase() as TermKey;
   const instance = course[semKey];
 

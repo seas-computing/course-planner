@@ -3,6 +3,8 @@ import React, {
   ReactNode,
   ReactText,
   useContext,
+  useState,
+  useRef,
 } from 'react';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import {
@@ -29,6 +31,7 @@ import { offeredEnumToString } from 'common/constants/offered';
 import { TermKey } from 'common/constants/term';
 import styled from 'styled-components';
 import { CoursesPageContext } from '../../../context/CoursesPageContext';
+import MeetingModal from './MeetingModal';
 
 /**
  * Simple helper function that takes a property name and optionally a semester
@@ -131,17 +134,23 @@ const MeetingGridSection = styled.div<{area: string}>`
  */
 
 export const formatMeetings = (
-  sem: TERM
-): (arg0: CourseInstanceResponseDTO
-  ) => ReactNode => (
-  course: CourseInstanceResponseDTO
+  term: TERM
+) => (
+  course: CourseInstanceResponseDTO,
+  academicYear: number
 ): ReactNode => {
   const coursesPageContext = useContext(CoursesPageContext);
-  const semKey = sem.toLowerCase() as TermKey;
+  const semKey = term.toLowerCase() as TermKey;
   const {
     [semKey]: { meetings },
     id: courseId,
   } = course;
+  const [modalVisible, setModalVisible] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const currentSemester = {
+    term,
+    calendarYear: term === TERM.FALL ? academicYear - 1 : academicYear,
+  };
   return (meetings[0] === undefined || meetings[0]?.day === null)
     ? null
     : (
@@ -175,21 +184,25 @@ export const formatMeetings = (
           ))}
         </TableCellList>
         <BorderlessButton
-          id={`${courseId}-${sem}-edit-meetings-button`}
-          onClick={() => coursesPageContext
-            && coursesPageContext.onMeetingEdit({
-              course,
-              term: sem,
-            })}
+          id={`${courseId}-${term}-edit-meetings-button`}
+          onClick={() => { setModalVisible(true); }}
           variant={VARIANT.INFO}
-          forwardRef={coursesPageContext?.currentCourseInstance?.course.id
-            === courseId
-            && coursesPageContext.currentCourseInstance.term === sem
-            ? coursesPageContext.meetingEditButtonRef
-            : null}
+          forwardRef={buttonRef}
         >
           <FontAwesomeIcon icon={faEdit} />
         </BorderlessButton>
+        {modalVisible && (
+          <MeetingModal
+            isVisible={modalVisible}
+            currentSemester={currentSemester}
+            currentCourse={course}
+            onClose={() => {
+              setModalVisible(false);
+              setTimeout(() => { buttonRef.current.focus(); });
+            }}
+            onSave={() => {}}
+          />
+        )}
       </>
     );
 };
@@ -217,7 +230,7 @@ export interface CourseInstanceListColumn {
   /**
    * A function that will retrieve the appropriate data to appear in the cell
    */
-  getValue: (arg0: CourseInstanceResponseDTO) => ReactNode;
+  getValue: (arg0: CourseInstanceResponseDTO, arg1?: unknown) => ReactNode;
 }
 
 /**
