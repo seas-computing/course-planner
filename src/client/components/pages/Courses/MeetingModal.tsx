@@ -21,6 +21,7 @@ import { MeetingTimesList } from './MeetingTimesList';
 import RoomSelection from './RoomSelection';
 import RoomRequest from '../../../../common/dto/room/RoomRequest.dto';
 import CourseInstanceResponseDTO, { CourseInstanceResponseMeeting } from '../../../../common/dto/courses/CourseInstanceResponse';
+import { convert12To24HourTime } from '../../../../common/utils/timeHelperFunctions';
 
 /**
  * A component that applies styling for text that indicates the faculty has
@@ -273,6 +274,31 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     }
   };
 
+  /**
+   * Validates the current time information, then sets the time data as the
+   * room query
+   */
+  const searchForRooms = () => {
+    if (validateTimes()) {
+      let { startTime, endTime } = currentEditMeeting;
+      const { day } = currentEditMeeting;
+      // TODO: Once we adddress #358 this should not be necessary
+      if (/M$/.test(startTime)) {
+        startTime = convert12To24HourTime(startTime);
+      }
+      if (/M$/.test(endTime)) {
+        endTime = convert12To24HourTime(endTime);
+      }
+      setShowRoomsData({
+        term,
+        calendarYear: calendarYear.toString(),
+        startTime,
+        endTime,
+        day,
+      });
+    }
+  };
+
   return (
     <Modal
       ariaLabelledBy="editMeeting"
@@ -296,6 +322,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
                 meetingTimeError={meetingTimeError}
                 updateCurrentEditMeeting={updateCurrentEditMeeting}
                 closeCurrentEditMeeting={closeCurrentEditMeeting}
+                showRoomsHandler={searchForRooms}
               />
               <h3>
                 Faculty Notes

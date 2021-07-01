@@ -41,6 +41,10 @@ interface MeetingTimesListProps {
     update: Partial<CourseInstanceResponseMeeting>,
   ) => void;
   /**
+   * Handler to be called when the Show Rooms button is clicked
+   */
+  showRoomsHandler: () => void;
+  /**
    * Any validation erros that need to be addressed
    */
   meetingTimeError: string;
@@ -150,6 +154,7 @@ export const MeetingTimesList
   currentEditMeeting,
   updateCurrentEditMeeting,
   closeCurrentEditMeeting,
+  showRoomsHandler,
   meetingTimeError,
 }): ReactElement {
   return (
@@ -293,10 +298,7 @@ export const MeetingTimesList
                         </Button>
                         <Button
                           id="showRoomsButton"
-                          onClick={
-                            (): void => {
-                            }
-                          }
+                          onClick={showRoomsHandler}
                           variant={VARIANT.PRIMARY}
                         >
                           Show Rooms
