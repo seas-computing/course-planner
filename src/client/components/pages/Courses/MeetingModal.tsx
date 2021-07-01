@@ -196,6 +196,14 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   }, [saving, onSave]);
 
   /**
+   * The current value of the error message when creating or editing a meeting time
+   */
+  const [
+    meetingTimeError,
+    setMeetingTimeError,
+  ] = useState('');
+
+  /**
    * Updates individual fields in the current meeting by merging passed props
    * and values into the object
    */
@@ -207,6 +215,69 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
       ...update,
     }));
     setShowRoomsData(null);
+  };
+
+  /**
+   * The fields of the existing meeting are checked to make sure they are non-empty.
+   * The entered start and end times are compared to make sure the start time is
+   * not later than the end time. In either case, an error is set.
+   */
+  const validateTimes = (): boolean => {
+    if (currentEditMeeting) {
+      if (!currentEditMeeting.day
+         || !currentEditMeeting.startTime
+         || !currentEditMeeting.endTime) {
+        setMeetingTimeError('Please provide a day and start/end times before proceeding.');
+        return false;
+      }
+      if (currentEditMeeting.startTime >= currentEditMeeting.endTime) {
+        setMeetingTimeError('End time must be later than start time.');
+        return false;
+      }
+    }
+    setMeetingTimeError('');
+    return true;
+  };
+
+  /**
+   * Validates the current time information and updates the data for the
+   * meeting in our full list, then unsets the current meeting and
+   * optionally opens a new one. If the new meeting doesn't already exist in
+   * the full list of meetings, it will be added.
+   */
+  const closeCurrentEditMeeting = (
+    newMeeting?: CourseInstanceResponseMeeting
+  ) => {
+    if (validateTimes()) {
+      const updatedMeetings = [...allMeetings];
+      if (currentEditMeeting) {
+        const editMeetingIndex = updatedMeetings.findIndex(
+          ({ id }) => id === currentEditMeeting.id
+        );
+        if (editMeetingIndex !== -1) {
+          updatedMeetings.splice(
+            editMeetingIndex,
+            1,
+            currentEditMeeting
+          );
+        } else {
+          updatedMeetings.push(currentEditMeeting);
+        }
+      }
+      if (newMeeting) {
+        const newMeetingIndex = updatedMeetings.findIndex(
+          ({ id }) => id === newMeeting.id
+        );
+        if (newMeetingIndex === -1) {
+          updatedMeetings.push(newMeeting);
+        }
+        setCurrentEditMeeting(newMeeting);
+      } else {
+        setCurrentEditMeeting(null);
+      }
+      setAllMeetings(updatedMeetings);
+      setShowRoomsData(null);
+    }
   };
 
   return (
@@ -227,11 +298,11 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
             <MeetingSchedulerHeader>{`Meeting times for ${catalogNumber}`}</MeetingSchedulerHeader>
             <MeetingSchedulerBody>
               <MeetingTimesList
-                saving={saving}
-                onChange={(meetings) => setCurrentMeetings(meetings)}
                 allMeetings={allMeetings}
                 currentEditMeeting={currentEditMeeting}
+                meetingTimeError={meetingTimeError}
                 updateCurrentEditMeeting={updateCurrentEditMeeting}
+                closeCurrentEditMeeting={closeCurrentEditMeeting}
               />
               <h3>
                 Faculty Notes

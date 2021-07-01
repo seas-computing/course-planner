@@ -1,8 +1,6 @@
 import React, {
   FunctionComponent,
   ReactElement,
-  useEffect,
-  useState,
 } from 'react';
 import styled from 'styled-components';
 import { faAngleDown, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -10,7 +8,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DAY, { dayEnumToString, days } from 'common/constants/day';
 import { meetingTimeSlots } from 'common/constants/timeslots';
 import { CourseInstanceResponseMeeting } from 'common/dto/courses/CourseInstanceResponse';
-import { MeetingRoomResponse } from 'common/dto/meeting/MeetingResponse.dto';
 import {
   convert12To24HourTime,
   convertTo12HourDisplayTime,
@@ -34,12 +31,6 @@ interface MeetingTimesListProps {
    */
   allMeetings: CourseInstanceResponseMeeting[];
   /**
-   * Handles updating the state of the list of meetings in the
-   * parent component (MeetingModal)
-   */
-  onChange: (meetings: CourseInstanceResponseMeeting[]) => void;
-  saving: boolean;
-  /**
    * The meeting that is currently being edited
    */
   currentEditMeeting: CourseInstanceResponseMeeting;
@@ -49,6 +40,14 @@ interface MeetingTimesListProps {
   updateCurrentEditMeeting: (
     update: Partial<CourseInstanceResponseMeeting>,
   ) => void;
+  /**
+   * Any validation erros that need to be addressed
+   */
+  meetingTimeError: string;
+  /**
+   * A handler to clear the current edit meeting, optionally opening a new one
+   */
+  closeCurrentEditMeeting: (newMeeting?: CourseInstanceResponseMeeting) => void;
 }
 
 interface StyledMeetingRowProps {
@@ -148,69 +147,11 @@ const StyledButtonLayout = styled(ButtonLayout)`
 export const MeetingTimesList
 : FunctionComponent<MeetingTimesListProps> = function ({
   allMeetings,
-  saving,
-  onChange,
   currentEditMeeting,
   updateCurrentEditMeeting,
+  closeCurrentEditMeeting,
+  meetingTimeError,
 }): ReactElement {
-  /**
-   * The current value of the error message when creating or editing a meeting time
-   */
-  const [
-    meetingTimeError,
-    setMeetingTimeError,
-  ] = useState('');
-
-  /**
-   * Used to create a temporary unique ID for new meetings on the client. A permanent UUID will be assigned as a result of the server request
-   */
-  const [
-    newMeetingIndex,
-    setNewMeetingIndex,
-  ] = useState(0);
-
-  /**
-   * The fields of the existing meeting are checked to make sure they are non-empty.
-   * The entered start and end times are compared to make sure the start time is
-   * not later than the end time. In either case, an error is set.
-   */
-  const validateTimes = (): boolean => {
-    if (currentMeetingId) {
-      if (currentDay === '' as DAY || currentStartTime === '' || currentEndTime === '') {
-        setMeetingTimeError('Please provide a day and start/end times before proceeding.');
-        return false;
-      }
-      if (currentStartTime >= currentEndTime) {
-        setMeetingTimeError('End time must be later than start time.');
-        return false;
-      }
-    }
-    setMeetingTimeError('');
-    return true;
-  };
-
-  useEffect(() => {
-    if (saving) {
-      validateTimes();
-    }
-  });
-
-  /**
-   * Retrieves and is used to update the current list of meetings, which lives
-   * in the state of the parent component (MeetingModal)
-   */
-  const getCurrentMeetings = () => meetings
-    .map((meeting: CourseInstanceResponseMeeting) => (
-      meeting.id === currentMeetingId
-        ? {
-          ...meeting,
-          day: currentDay,
-          startTime: currentStartTime,
-          endTime: currentEndTime,
-          room: currentRoom,
-        }
-        : meeting));
-
   return (
     <div className="meeting-times-section">
       <ul>
@@ -343,11 +284,7 @@ export const MeetingTimesList
                           id="closeButton"
                           onClick={
                             (): void => {
-                              // Close the current meeting only if there are no validation errors
-                              if (validateTimes()) {
-                                onChange(getCurrentMeetings());
-                                setCurrentMeetingId(null);
-                              }
+                              closeCurrentEditMeeting(null);
                             }
                           }
                           variant={VARIANT.SECONDARY}
@@ -358,9 +295,6 @@ export const MeetingTimesList
                           id="showRoomsButton"
                           onClick={
                             (): void => {
-                              if (validateTimes()) {
-                                onChange(getCurrentMeetings());
-                              }
                             }
                           }
                           variant={VARIANT.PRIMARY}
@@ -384,14 +318,7 @@ export const MeetingTimesList
                           variant={VARIANT.INFO}
                           onClick={
                             (): void => {
-                              if (validateTimes()) {
-                                onChange(getCurrentMeetings());
-                                setCurrentMeetingId(meeting.id);
-                                setCurrentDay(meeting.day);
-                                setCurrentStartTime(meeting.startTime);
-                                setCurrentEndTime(meeting.endTime);
-                                setCurrentRoom(meeting.room);
-                              }
+                              closeCurrentEditMeeting(meeting);
                             }
                           }
                         >
@@ -408,37 +335,15 @@ export const MeetingTimesList
       <StyledButtonLayout>
         <Button
           id="addNewTimeButton"
-          onClick={
-            (): void => {
-              // Close the current meeting only if there are no validation errors
-              if (validateTimes()) {
-                // If there is a meeting currently being edited, get the data
-                // currently being edited and call onChange to update the meetings
-                let updatedMeetings = meetings;
-                if (currentMeetingId != null) {
-                  updatedMeetings = getCurrentMeetings();
-                  setCurrentMeetingId(null);
-                }
-                // Generate a new meeting row using a newly created meeting ID via the newMeetingIndex
-                const newMeeting = {
-                  id: `newMeeting${newMeetingIndex}`,
-                  day: '' as DAY,
-                  startTime: '',
-                  endTime: '',
-                  room: null,
-                };
-                updatedMeetings = [...updatedMeetings, newMeeting];
-                // update the meetings
-                onChange(updatedMeetings);
-                setCurrentMeetingId(newMeeting.id);
-                setNewMeetingIndex(newMeetingIndex + 1);
-                setCurrentDay(newMeeting.day);
-                setCurrentStartTime(newMeeting.startTime);
-                setCurrentEndTime(newMeeting.endTime);
-                setCurrentRoom(newMeeting.room);
-              }
-            }
-          }
+          onClick={() => {
+            closeCurrentEditMeeting({
+              id: `new-meeting-${allMeetings.length + 1}`,
+              day: '' as DAY,
+              startTime: '',
+              endTime: '',
+              room: null,
+            });
+          }}
           variant={VARIANT.SECONDARY}
         >
           Add New Time
