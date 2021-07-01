@@ -1,4 +1,3 @@
-import { CoursesPageCourseInstance } from 'client/context';
 import TERM, { TermKey } from 'common/constants/term';
 import {
   Button,
@@ -22,6 +21,7 @@ import { instructorDisplayNameToFirstLast } from '../utils/instructorDisplayName
 import { MeetingTimesList } from './MeetingTimesList';
 import RoomSelection from './RoomSelection';
 import RoomRequest from '../../../../common/dto/room/RoomRequest.dto';
+import CourseInstanceResponseDTO, { CourseInstanceResponseMeeting } from '../../../../common/dto/courses/CourseInstanceResponse';
 
 /**
  * A component that applies styling for text that indicates the faculty has
@@ -39,7 +39,7 @@ interface MeetingModalProps {
   /**
    * The current course instance being edited
    */
-  currentCourseInstance: CoursesPageCourseInstance;
+  currentCourse: CourseInstanceResponseDTO;
   /**
    * The semester within the current course being edited
    */

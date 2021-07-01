@@ -2,7 +2,6 @@ import React, {
   ReactElement,
   ReactNode,
   ReactText,
-  useContext,
   useState,
   useRef,
 } from 'react';
@@ -30,7 +29,6 @@ import { dayEnumToString } from 'common/constants/day';
 import { offeredEnumToString } from 'common/constants/offered';
 import { TermKey } from 'common/constants/term';
 import styled from 'styled-components';
-import { CoursesPageContext } from '../../../context/CoursesPageContext';
 import MeetingModal from './MeetingModal';
 
 /**
@@ -139,7 +137,6 @@ export const formatMeetings = (
   course: CourseInstanceResponseDTO,
   academicYear: number
 ): ReactNode => {
-  const coursesPageContext = useContext(CoursesPageContext);
   const semKey = term.toLowerCase() as TermKey;
   const {
     [semKey]: { meetings },
