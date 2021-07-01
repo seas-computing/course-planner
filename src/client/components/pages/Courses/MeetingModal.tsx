@@ -360,6 +360,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
         <>
           <Button
             onClick={() => {
+              closeCurrentEditMeeting(null);
               setSaving(true);
             }}
             variant={VARIANT.PRIMARY}
