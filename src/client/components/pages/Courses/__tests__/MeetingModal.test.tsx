@@ -187,9 +187,7 @@ describe('Meeting Modal', function () {
                 it('renders no validation error messages', function () {
                   const saveButton = getByText('Save');
                   fireEvent.click(saveButton);
-                  // The row remains expanded at this point, and the text
-                  // content of the error message of the row should be empty.
-                  strictEqual(queryAllByRole('alert')[0].innerText, undefined);
+                  strictEqual(queryAllByRole('alert').length, 0);
                 });
               });
               context('after clicking the "Show Rooms" button', function () {
@@ -285,9 +283,7 @@ describe('Meeting Modal', function () {
                       { target: { value: updatedDay } });
                     const saveButton = getByText('Save');
                     fireEvent.click(saveButton);
-                    // The row remains expanded at this point, and the text
-                    // content of the error message of the row should be empty.
-                    strictEqual(queryAllByRole('alert')[0].innerText, undefined);
+                    strictEqual(queryAllByRole('alert').length, 0);
                   });
                 });
                 context('after clicking the "Show Rooms" button', function () {
@@ -429,9 +425,7 @@ describe('Meeting Modal', function () {
                       { target: { value: updatedStartTime } });
                     const saveButton = getByText('Save');
                     fireEvent.click(saveButton);
-                    // The row remains expanded at this point, and the text
-                    // content of the error message of the row should be empty.
-                    strictEqual(queryAllByRole('alert')[0].innerText, undefined);
+                    strictEqual(queryAllByRole('alert').length, 0);
                   });
                 });
                 context('after clicking the "Show Rooms" button', function () {
@@ -633,9 +627,7 @@ describe('Meeting Modal', function () {
                       { target: { value: updatedEndTime } });
                     const saveButton = getByText('Save');
                     fireEvent.click(saveButton);
-                    // The row remains expanded at this point, and the text
-                    // content of the error message of the row should be empty.
-                    strictEqual(queryAllByRole('alert')[0].innerText, undefined);
+                    strictEqual(queryAllByRole('alert').length, 0);
                   });
                 });
                 context('after clicking the "Show Rooms" button', function () {
