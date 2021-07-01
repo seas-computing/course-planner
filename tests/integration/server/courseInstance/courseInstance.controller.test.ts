@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SessionModule } from 'nestjs-session';
 import { stub, SinonStub } from 'sinon';
 import request, { Response } from 'supertest';
-import { differenceInMinutes, parse } from 'date-fns';
 import { Repository } from 'typeorm';
 import {
   HttpStatus,
@@ -29,10 +28,10 @@ import { SemesterModule } from 'server/semester/semester.module';
 import * as dummy from 'testData';
 import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
-import { utcToZonedTime, format } from 'date-fns-tz';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
+import { PGTime } from '../../../../src/common/utils/PGTime';
 
 describe('CourseInstance API', function () {
   let testModule: TestingModule;
@@ -222,36 +221,18 @@ describe('CourseInstance API', function () {
                 endHour,
                 endMinute,
                 courses,
-              }) => {
-                const startDate = parse(
-                  `${startHour}:${startMinute}`,
-                  'HH:m',
-                  new Date(2020, 0, 1)
-                );
-                const blockStartTime = format(
-                  startDate,
-                  'HH:mm:ssx',
-                  { timeZone: 'America/New_York' }
-                );
-                const endDate = parse(
-                  `${endHour}:${endMinute}`,
-                  'HH:m',
-                  new Date(2020, 0, 1)
-                );
-                const blockEndTime = format(
-                  endDate,
-                  'HH:mm:ssx',
-                  { timeZone: 'America/New_York' }
-                );
-                return Promise.all(courses.map(async ({ id }) => {
-                  const {
-                    startTime,
-                    endTime,
-                  } = await meetingRepository.findOne(id);
-                  strictEqual(startTime, blockStartTime, `Meeting ${id} startTime doesn't match`);
-                  strictEqual(endTime, blockEndTime, `Meeting ${id} endTime doens't match`);
-                }));
-              })
+              }) => Promise.all(courses.map(async ({ id }) => {
+                const {
+                  startTime,
+                  endTime,
+                } = await meetingRepository.findOne(id);
+                const pgStartTime = new PGTime(startTime);
+                const pgEndTime = new PGTime(endTime);
+                strictEqual(pgStartTime.hour, startHour, `Meeting ${id} startHour doesn't match`);
+                strictEqual(pgStartTime.minute, startMinute, `Meeting ${id} startMinute doesn't match`);
+                strictEqual(pgEndTime.hour, endHour, `Meeting ${id} endHour doesn't match`);
+                strictEqual(pgEndTime.minute, endMinute, `Meeting ${id} endMinute doesn't match`);
+              })))
             );
           });
 
@@ -260,20 +241,8 @@ describe('CourseInstance API', function () {
               result.map(async ({ startHour, courses }) => {
                 const { id } = courses[0];
                 const { startTime } = await meetingRepository.findOne(id);
-                const startDate = parse(
-                  startTime,
-                  'HH:mm:ssx',
-                  new Date(2020, 0, 1)
-                );
-                const hour = format(
-                  utcToZonedTime(
-                    startDate,
-                    'America/New_York'
-                  ),
-                  'k',
-                  { timeZone: 'America/New_York' }
-                );
-                strictEqual(startHour, parseInt(hour, 10));
+                const { hour } = new PGTime(startTime);
+                strictEqual(startHour, hour);
               })
             );
           });
@@ -283,20 +252,8 @@ describe('CourseInstance API', function () {
               result.map(async ({ endHour, courses }) => {
                 const { id } = courses[0];
                 const { endTime } = await meetingRepository.findOne(id);
-                const endDate = parse(
-                  endTime,
-                  'HH:mm:ssx',
-                  new Date(2020, 0, 1)
-                );
-                const hour = format(
-                  utcToZonedTime(
-                    endDate,
-                    'America/New_York'
-                  ),
-                  'k',
-                  { timeZone: 'America/New_York' }
-                );
-                strictEqual(endHour, parseInt(hour, 10));
+                const { hour } = new PGTime(endTime);
+                strictEqual(endHour, hour);
               })
             );
           });
@@ -307,10 +264,11 @@ describe('CourseInstance API', function () {
                 const { id } = courses[0];
                 const { startTime, endTime } = await meetingRepository
                   .findOne(id);
-                const expected = differenceInMinutes(
-                  parse(endTime, 'HH:mm:ssx', new Date()),
-                  parse(startTime, 'HH:mm:ssx', new Date())
-                );
+                const pgStartTime = new PGTime(startTime);
+                const pgEndTime = new PGTime(endTime);
+                const expected = (pgEndTime.msSinceMidnight
+                  - pgStartTime.msSinceMidnight)
+                  / 60 / 1000;
                 strictEqual(duration, expected);
               })
             );

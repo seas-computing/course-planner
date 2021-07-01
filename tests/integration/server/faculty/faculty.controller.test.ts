@@ -11,7 +11,6 @@ import {
   HttpStatus,
   HttpServer,
   ForbiddenException,
-  NotFoundException,
 } from '@nestjs/common';
 import {
   strictEqual,
@@ -326,7 +325,7 @@ describe('Faculty API', function () {
           const response = await request(api)
             .post('/api/faculty')
             .send(newFacultyMemberInfo);
-          const body = response.body as NotFoundException;
+          const { body } = response;
           const message = body.message as string;
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.NOT_FOUND);
@@ -460,7 +459,7 @@ describe('Faculty API', function () {
           const response = await request(api)
             .put(`/api/faculty/${newFacultyMemberInfo.id}`)
             .send(newFacultyMemberInfo);
-          const body = response.body as NotFoundException;
+          const { body } = response;
           const message = body.message as string;
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.NOT_FOUND);
@@ -479,7 +478,7 @@ describe('Faculty API', function () {
           const response = await request(api)
             .put(`/api/faculty/${newFacultyMemberInfo.id}`)
             .send(newFacultyMemberInfo);
-          const body = response.body as NotFoundException;
+          const { body } = response;
           const message = body.message as string;
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.NOT_FOUND);
@@ -539,7 +538,7 @@ describe('Faculty API', function () {
           const response = await request(api)
             .put(`/api/faculty/absence/${facultyAbsenceRequest.id}`)
             .send(updatedAbsence);
-          const body = response.body as NotFoundException;
+          const { body } = response;
           const message = body.message as string;
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.NOT_FOUND);

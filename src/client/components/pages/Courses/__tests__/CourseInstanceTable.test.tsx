@@ -44,8 +44,7 @@ describe('CourseInstanceTable', function () {
                 testView.includes(viewColumn)
               )
             )}
-          />,
-          (): void => {}
+          />
         )
         );
       });
@@ -100,8 +99,7 @@ describe('CourseInstanceTable', function () {
                 testView.includes(viewColumn)
               )
             )}
-          />,
-          (): void => {}
+          />
         )
         );
       });
@@ -138,8 +136,7 @@ describe('CourseInstanceTable', function () {
                 testView.includes(viewColumn)
               )
             )}
-          />,
-          (): void => {}
+          />
         )
         );
       });
@@ -191,8 +188,7 @@ describe('CourseInstanceTable', function () {
               testView.includes(viewColumn)
             )
           )}
-        />,
-        (): void => {}
+        />
       )
       );
     });

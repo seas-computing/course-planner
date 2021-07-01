@@ -14,7 +14,7 @@ import {
 } from '@nestjs/core/router/router-response-controller';
 import {
   ApiOperation,
-  ApiUseTags,
+  ApiTags,
   ApiResponse,
 } from '@nestjs/swagger';
 import { User } from 'common/classes';
@@ -125,7 +125,7 @@ export interface HarvardKeyResponse {
  * For more information, see: {@link https://apereo.github.io/cas/4.2.x/protocol/CAS-Protocol-Specification.html#cas-protocol-30-specification}
  */
 
-@ApiUseTags('Authentication')
+@ApiTags('Authentication')
 @Controller('/')
 export class AuthController {
   @Inject(ConfigService)
@@ -137,7 +137,7 @@ export class AuthController {
    * the initiating page. Then we redirect the user to Harvard Key's login page
    */
   @ApiOperation({
-    title: 'Log the user in to Harvard Key and redirect to original path',
+    summary: 'Log the user in to Harvard Key and redirect to original path',
   })
   @ApiResponse({
     status: HttpStatus.SEE_OTHER,
@@ -169,7 +169,7 @@ export class AuthController {
    */
 
   @ApiOperation({
-    title: 'Validate the data returned by harvardkey',
+    summary: 'Validate the data returned by harvardkey',
   })
   @ApiResponse({
     status: HttpStatus.FOUND,
@@ -202,7 +202,7 @@ export class AuthController {
         });
         req.session.user = authorizedUser;
         return {
-          url: (req.session.loginOrigin as string || this.config.clientBaseURL),
+          url: (req.session.loginOrigin || this.config.clientBaseURL),
           statusCode: HttpStatus.FOUND,
         };
       }
@@ -220,7 +220,7 @@ export class AuthController {
    * logout page.
    */
   @ApiOperation({
-    title: 'Delete the user\'s session and redirect to the HarvardKey log out page',
+    summary: 'Delete the user\'s session and redirect to the HarvardKey log out page',
   })
   @ApiResponse({
     status: HttpStatus.SEE_OTHER,

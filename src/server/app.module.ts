@@ -24,6 +24,9 @@ import { LogModule } from './log/log.module';
 import { LogMiddleware } from './log/log.middleware';
 import { AuthController } from './auth/auth.controller';
 import { LogService } from './log/log.service';
+import { LocationModule } from './location/location.module';
+import { MeetingModule } from './meeting/meeting.module';
+import { NonClassEventModule } from './nonClassEvent/nonclassevent.module';
 
 /**
  * Base application module that configures the database connections and other
@@ -70,6 +73,9 @@ import { LogService } from './log/log.service';
     FacultyModule,
     CourseInstanceModule,
     MetadataModule,
+    LocationModule,
+    MeetingModule,
+    NonClassEventModule,
   ],
   controllers: [
     UserController,

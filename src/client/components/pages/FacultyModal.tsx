@@ -20,6 +20,7 @@ import {
   ValidationErrorMessage,
   NoteText,
   POSITION,
+  Form,
 } from 'mark-one';
 import { ManageFacultyResponseDTO } from 'common/dto/faculty/ManageFacultyResponse.dto';
 import {
@@ -227,7 +228,10 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
       </ModalHeader>
       <ModalBody>
         <NoteText>Note: * denotes a required field</NoteText>
-        <form id="editFacultyForm">
+        <Form
+          id="editFacultyForm"
+          label="Edit Faculty Form"
+        >
           <Dropdown
             id="courseArea"
             name="courseArea"
@@ -325,7 +329,7 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
               {facultyErrorMessage}
             </ValidationErrorMessage>
           )}
-        </form>
+        </Form>
       </ModalBody>
       <ModalFooter>
         <Button

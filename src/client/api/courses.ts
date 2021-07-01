@@ -32,12 +32,15 @@ Promise<ManageCourseResponseDTO> => {
   return response.data as ManageCourseResponseDTO;
 };
 
+/**
+ * Retrieve all of the course Instances for a given academicYear.
+ */
 export const getCourseInstancesForYear = async (
   acadYear: number
-): Promise<CourseInstanceResponseDTO[][]> => {
+): Promise<CourseInstanceResponseDTO[]> => {
   const response = await request
     .get(`/api/course-instances/?acadYear=${acadYear}`);
-  return response.data as CourseInstanceResponseDTO[][];
+  return response.data as CourseInstanceResponseDTO[];
 };
 
 export const getCourseScheduleForSemester = async (

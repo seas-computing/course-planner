@@ -21,7 +21,7 @@ import {
 } from 'mark-one';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import { MESSAGE_TYPE, AppMessage, MESSAGE_ACTION } from 'client/classes';
-import { MessageContext } from 'client/context';
+import { MessageContext, MetadataContext } from 'client/context';
 import { TableRowProps } from 'mark-one/lib/Tables/TableRow';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
@@ -49,31 +49,18 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
   const [currentCourses, setCourses] = useState(
     [] as ManageCourseResponseDTO[]
   );
-  const [prefixOptions, setPrefixOptions] = useState<{
-    value: string; label: string
-  }[]>([]);
+
+  /**
+   * The current value for the metadata context
+   */
+  const metadata = useContext(MetadataContext);
+
   const [courseValue, setCourseValue] = useState<string>('');
   const [titleValue, setTitleValue] = useState<string>('');
-  const [coursePrefixValue, setCoursePrefixValue] = useState<string>('');
+  const [areaValue, setAreaValue] = useState<string>('All');
 
   /**
-   * Extract the "Course Prefix" unique values
-   * from the course DTO area name
-   */
-  const coursePrefixSetup = (courses: ManageCourseResponseDTO[]) => {
-    let initPrefixOptions = courses.map(
-      (course) => ({ value: course.area.name, label: course.area.name })
-    );
-    initPrefixOptions = [...new Map(initPrefixOptions.map(
-      (item) => [item.value, item]
-    )).values()];
-    initPrefixOptions.push({ value: 'All', label: 'All' });
-    setPrefixOptions(initPrefixOptions);
-    setCoursePrefixValue('All');
-  };
-
-  /**
-   * Return filtered course based on the "Course Prefix",
+   * Return filtered course based on the "Course Area",
    * "Course" and "Title" fileds filter.
    * Note: .trim() might be used to remove whitespaces.
    * Need to ask Vittorio about the .trim()
@@ -88,10 +75,10 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
       courses,
       { field: 'title', value: titleValue, exact: false }
     );
-    if (coursePrefixValue !== 'All') {
+    if (areaValue !== 'All') {
       courses = listFilter(
         courses,
-        { field: 'area.name', value: coursePrefixValue, exact: true }
+        { field: 'area.name', value: areaValue, exact: true }
       );
     }
     return (courses);
@@ -123,7 +110,6 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
     try {
       const loadedCourses = await CourseAPI.getAllCourses();
       setCourses(loadedCourses);
-      coursePrefixSetup(loadedCourses);
     } catch (e) {
       dispatchMessage({
         message: new AppMessage(
@@ -144,7 +130,7 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
   }, [loadCourses]);
 
   return (
-    <>
+    <div data-testid="courseAdminPage">
       <VerticalSpace>
         <div className="create-course-button">
           <Button
@@ -164,7 +150,7 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
         <Table>
           <TableHead>
             <TableRow isStriped>
-              <TableHeadingCell scope="col">Course Prefix</TableHeadingCell>
+              <TableHeadingCell scope="col">Area</TableHeadingCell>
               <TableHeadingCell scope="col">Course</TableHeadingCell>
               <TableHeadingCell scope="col">Title</TableHeadingCell>
               <TableHeadingCell scope="col">Edit</TableHeadingCell>
@@ -172,15 +158,21 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
             <TableRow isStriped>
               <TableHeadingCell scope="col">
                 <Dropdown
-                  options={prefixOptions}
-                  value={coursePrefixValue}
-                  name="courseprefix"
-                  id="coursePrefix"
-                  label="The table will be filtered as selected in this course prefix dropdown filter"
+                  options={
+                    [{ value: 'All', label: 'All' }]
+                      .concat(metadata.areas.map((area) => ({
+                        value: area,
+                        label: area,
+                      })))
+                  }
+                  value={areaValue}
+                  name="areaValue"
+                  id="areaValue"
+                  label="The table will be filtered as selected in this area dropdown filter"
                   isLabelVisible={false}
                   hideError
                   onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
-                    setCoursePrefixValue(event.currentTarget.value);
+                    setAreaValue(event.currentTarget.value);
                   }}
                 />
               </TableHeadingCell>
@@ -266,7 +258,7 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
           }}
         />
       </div>
-    </>
+    </div>
   );
 };
 

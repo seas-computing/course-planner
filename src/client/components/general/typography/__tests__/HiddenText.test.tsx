@@ -6,8 +6,7 @@ import { HiddenText } from '..';
 describe('HiddenText', function () {
   it('Keeps the full text hidden in the DOM content', function () {
     const { container } = render(
-      <HiddenText>Hidden</HiddenText>,
-      () => {}
+      <HiddenText>Hidden</HiddenText>
     );
     strictEqual(container.textContent, 'Hidden');
   });

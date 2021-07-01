@@ -53,6 +53,17 @@ export const cs50CourseInstance: CourseInstanceResponseDTO = {
       {
         id: '8d2c8320-dfe5-4d6b-9722-525f94401c7d',
         displayName: 'Malan, David',
+        notes: 'Prefers Sanders Theater',
+      },
+      {
+        id: '4d952d8a-21a1-425b-876e-321ce708dea8',
+        displayName: 'Waldo, James',
+        notes: '',
+      },
+      {
+        id: 'cec66944-8c43-4094-a05e-5fdccca2e04c',
+        displayName: 'Amin, Nada',
+        notes: null,
       },
     ],
     meetings: [
@@ -63,6 +74,87 @@ export const cs50CourseInstance: CourseInstanceResponseDTO = {
         endTime: '12:00 PM',
         room: {
           id: 'afc4ee36-b0cf-4cd7-97b7-b51b3323280d',
+          campus: 'Cambridge',
+          name: 'Sanders Theater',
+        },
+      },
+      {
+        id: 'f21f783c-2204-4f32-8459-4b84095bbcc0',
+        day: DAY.TUE,
+        startTime: '10:00 AM',
+        endTime: '12:00 PM',
+        room: {
+          id: 'afc4ee36-b0cf-4cd7-97b7-b51b3323280d',
+          campus: 'Cambridge',
+          name: 'Sanders Theater',
+        },
+      },
+      {
+        id: 'be6235a9-3425-4b03-aa90-9a69997ad1cf',
+        day: DAY.THU,
+        startTime: '11:00 AM',
+        endTime: '11:30 PM',
+        room: null,
+      },
+    ],
+  },
+};
+
+/**
+ * The data object representing the Ordinary and Partial Differential Equations
+ * course, AM 105, in the 2018 academic year. This course is only offered in
+ * the spring, with one instructor and one meeting.
+ * It has no notes or sameAs data.
+ */
+export const am105CourseInstance: CourseInstanceResponseDTO = {
+  id: '6cdaede1-f5b4-47c1-8f96-a52524e49f86',
+  title: 'Ordinary and Partial Differential Equations',
+  area: 'AM',
+  isUndergraduate: true,
+  catalogNumber: 'AM 105',
+  sameAs: '',
+  isSEAS: IS_SEAS.Y,
+  notes: null,
+  termPattern: TERM_PATTERN.SPRING,
+  fall: {
+    id: '117b1fec-f46c-49f3-9e20-349f2472571a',
+    calendarYear: '2018',
+    offered: OFFERED.BLANK,
+    preEnrollment: null,
+    studyCardEnrollment: null,
+    actualEnrollment: null,
+    instructors: [],
+    meetings: [
+      {
+        id: null,
+        day: null,
+        startTime: null,
+        endTime: null,
+        room: null,
+      },
+    ],
+  },
+  spring: {
+    id: '336248cd-003d-4e61-8c9e-ad71ff8c0858',
+    calendarYear: '2017',
+    offered: OFFERED.Y,
+    preEnrollment: null,
+    studyCardEnrollment: 140,
+    actualEnrollment: 123,
+    instructors: [
+      {
+        id: 'e2fed2a7-9f13-46e2-a46c-901f6f902f57',
+        displayName: 'Levine, Margo',
+      },
+    ],
+    meetings: [
+      {
+        id: '86bff820-6378-4d37-b017-6862f099c5c8',
+        day: DAY.THU,
+        startTime: '10:00 AM',
+        endTime: '12:00 PM',
+        room: {
+          id: 'a176d455-a04b-4da8-a6b9-a3cf9ff5f6d4',
           campus: 'Cambridge',
           name: 'Sanders Theater',
         },
@@ -97,6 +189,7 @@ export const es095CourseInstance: CourseInstanceResponseDTO = {
       {
         id: 'ae3948c7-b254-4cfb-aa9f-5c54c13a1a86',
         displayName: 'Bottino, Paul',
+        notes: '',
       },
     ],
     meetings: [
@@ -124,6 +217,7 @@ export const es095CourseInstance: CourseInstanceResponseDTO = {
       {
         id: 'ae3948c7-b254-4cfb-aa9f-5c54c13a1a86',
         displayName: 'Bottino, Paul',
+        notes: '',
       },
     ],
     meetings: [
@@ -187,10 +281,12 @@ export const ac209aCourseInstance: CourseInstanceResponseDTO = {
       {
         id: 'dcf88d99-1b7f-4863-93d3-d0b0bb43c8e7',
         displayName: 'Rader, Kevin',
+        notes: 'Prefers Cambridge campus',
       },
       {
         id: '78f75a40-b0bd-43af-84d8-0ec68f313dba',
         displayName: 'Protopapas, Pavlos',
+        notes: 'No preference on campus',
       },
     ],
     meetings: [
@@ -220,6 +316,78 @@ export const ac209aCourseInstance: CourseInstanceResponseDTO = {
   },
 };
 
+/**
+ * Data representing the graduate intro to data science course, AC 209A, in the
+ * 2019 academic year. This course is offered in the fall, has multiple
+ * meetings and multiple instructors, and has notes and sameAs data.
+ */
+
+export const ac209aCourseInstanceWithoutRooms
+: CourseInstanceResponseDTO = {
+  id: '42a3fb1b-55ff-4d50-9a3f-d637f759119a',
+  title: 'Data Science 1: Introduction to Data Science',
+  area: 'ACS',
+  isUndergraduate: false,
+  catalogNumber: 'AC 209a',
+  sameAs: 'CS 109a, STATS 121a',
+  isSEAS: IS_SEAS.Y,
+  notes: 'Same as CS 109a, STATS 121a',
+  termPattern: TERM_PATTERN.FALL,
+  spring: {
+    id: '62b375fa-f922-406f-bc08-7725edab27ac',
+    calendarYear: '2019',
+    offered: OFFERED.BLANK,
+    preEnrollment: null,
+    studyCardEnrollment: null,
+    actualEnrollment: null,
+    instructors: [],
+    meetings: [
+      {
+        id: null,
+        day: null,
+        startTime: null,
+        endTime: null,
+        room: null,
+      },
+    ],
+  },
+  fall: {
+    id: 'b0aca4ce-e90b-47e4-97be-2187b3b7a621',
+    calendarYear: '2018',
+    offered: OFFERED.Y,
+    preEnrollment: null,
+    studyCardEnrollment: 77,
+    actualEnrollment: 66,
+    instructors: [
+      {
+        id: 'dcf88d99-1b7f-4863-93d3-d0b0bb43c8e7',
+        displayName: 'Rader, Kevin',
+        notes: 'Prefers Cambridge campus',
+      },
+      {
+        id: '78f75a40-b0bd-43af-84d8-0ec68f313dba',
+        displayName: 'Protopapas, Pavlos',
+        notes: 'No preference on campus',
+      },
+    ],
+    meetings: [
+      {
+        id: '0a3b2708-6191-4e1a-857b-6d3352836955',
+        day: DAY.MON,
+        startTime: '01:30 PM',
+        endTime: '02:45 PM',
+        room: null,
+      },
+      {
+        id: '533bc88d-3652-43c9-9936-56e280b57d6e',
+        day: DAY.WED,
+        startTime: '01:30 PM',
+        endTime: '02:45 PM',
+        room: null,
+      },
+    ],
+  },
+};
 /**
  * The starting academic year for the multi year plan test data
  */

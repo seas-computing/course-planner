@@ -26,7 +26,6 @@ import FacultySchedule from 'client/components/pages/Faculty/FacultyPage';
 describe('Faculty Schedule Modal Behavior', function () {
   let getStub: SinonStub;
   let putStub: SinonStub;
-  let dispatchMessage: SinonStub;
   const testData = [appliedMathFacultyScheduleResponse];
   const acadYear = testData[0].fall.academicYear;
   it('draws from test data from the same academic year', function () {
@@ -37,7 +36,6 @@ describe('Faculty Schedule Modal Behavior', function () {
   beforeEach(function () {
     getStub = stub(FacultyAPI, 'getFacultySchedulesForYear');
     getStub.resolves(testData);
-    dispatchMessage = stub();
   });
   describe('rendering', function () {
     let findByText: BoundFunction<FindByText>;
@@ -53,8 +51,7 @@ describe('Faculty Schedule Modal Behavior', function () {
         queryByText,
         getByLabelText,
       } = render(
-        <FacultySchedule />,
-        dispatchMessage
+        <FacultySchedule />
       )
       );
     });

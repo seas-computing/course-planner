@@ -1,4 +1,4 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { TERM_PATTERN, IS_SEAS } from 'common/constants';
 import {
   IsBoolean,
@@ -8,7 +8,7 @@ import {
   IsOptional,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { trimString } from '../util';
+import { trimString } from '../utils';
 
 /**
  * @module Server.DTOS.Courses
@@ -19,14 +19,14 @@ export abstract class CreateCourse {
   @Transform(trimString)
   public area: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'boolean',
     example: false,
   })
   @IsBoolean()
   public isUndergraduate: boolean;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: 'Applied Math for computation',
   })
@@ -35,7 +35,7 @@ export abstract class CreateCourse {
   @Transform(trimString)
   public title: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: 'CS',
   })
@@ -44,7 +44,7 @@ export abstract class CreateCourse {
   @Transform(trimString)
   public prefix?: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: '109b',
   })
@@ -53,7 +53,7 @@ export abstract class CreateCourse {
   @Transform(trimString)
   public number?: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     example: 'CS 050',
   })
@@ -62,7 +62,7 @@ export abstract class CreateCourse {
   @Transform(trimString)
   public sameAs?: string;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     enum: IS_SEAS,
     example: IS_SEAS.Y,
@@ -71,7 +71,7 @@ export abstract class CreateCourse {
   @IsNotEmpty()
   public isSEAS: IS_SEAS;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'boolean',
     example: false,
     default: true,
@@ -80,7 +80,7 @@ export abstract class CreateCourse {
   @IsOptional()
   public private: boolean;
 
-  @ApiModelProperty({
+  @ApiProperty({
     type: 'string',
     enum: TERM_PATTERN,
   })

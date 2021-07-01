@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiOperation, ApiOkResponse, ApiUseTags } from '@nestjs/swagger';
+import { ApiOperation, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
-@ApiUseTags('Health Check')
+@ApiTags('Health Check')
 @Controller('health-check')
 export class HealthCheckController {
   /**
@@ -9,7 +9,7 @@ export class HealthCheckController {
    */
   @Get('/')
   @ApiOperation({
-    title: 'While the server is active, return a 200 status code',
+    summary: 'While the server is active, return a 200 status code',
   })
   @ApiOkResponse({
     type: 'json',

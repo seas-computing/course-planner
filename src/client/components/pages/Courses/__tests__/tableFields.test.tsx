@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { FunctionComponent, ReactElement } from 'react';
 import {
-  cs50CourseInstance, ac209aCourseInstance,
+  cs50CourseInstance, ac209aCourseInstance, ac209aCourseInstanceWithoutRooms,
 } from 'testData';
 import { strictEqual, deepStrictEqual } from 'assert';
-import { TERM, COURSE_TABLE_COLUMN } from 'common/constants';
+import {
+  TERM, COURSE_TABLE_COLUMN, isSEASEnumToString, IS_SEAS,
+} from 'common/constants';
 import { render } from 'test-utils';
 import { dayEnumToString } from 'common/constants/day';
 import { offeredEnumToString } from 'common/constants/offered';
@@ -54,6 +56,36 @@ describe('tableFields', function () {
           offeredEnumToString(cs50CourseInstance.fall.offered)
         );
       });
+      it('Should return a function that converts IS_SEAS.Y to "Yes"', function () {
+        const getIsSEASValue = retrieveValue('isSEAS');
+        strictEqual(
+          getIsSEASValue({
+            ...cs50CourseInstance,
+            isSEAS: IS_SEAS.Y,
+          }),
+          isSEASEnumToString(IS_SEAS.Y)
+        );
+      });
+      it('Should return a function that converts IS_SEAS.N to "No"', function () {
+        const getIsSEASValue = retrieveValue('isSEAS');
+        strictEqual(
+          getIsSEASValue({
+            ...cs50CourseInstance,
+            isSEAS: IS_SEAS.N,
+          }),
+          isSEASEnumToString(IS_SEAS.N)
+        );
+      });
+      it('Should return a function that converts IS_SEAS.EPS to "EPS"', function () {
+        const getIsSEASValue = retrieveValue('isSEAS');
+        strictEqual(
+          getIsSEASValue({
+            ...cs50CourseInstance,
+            isSEAS: IS_SEAS.EPS,
+          }),
+          isSEASEnumToString(IS_SEAS.EPS)
+        );
+      });
     });
     describe('formatInstructors', function () {
       context('When course has data', function () {
@@ -62,8 +94,7 @@ describe('tableFields', function () {
           const { getAllByRole } = render(
             <div>
               {fallInstructors(ac209aCourseInstance)}
-            </div>,
-            (): void => {}
+            </div>
           );
           const entries = getAllByRole('listitem')
             .map(({ textContent }): string => textContent);
@@ -84,28 +115,59 @@ describe('tableFields', function () {
     });
     describe('formatMeetings', function () {
       context('When semester has data', function () {
-        it('Should return a component that renders days/times as a list', function () {
-          const fallMeetings = formatMeetings(TERM.FALL);
-          const { getAllByRole } = render(
-            <div>
-              {fallMeetings(ac209aCourseInstance)}
-            </div>,
-            (): void => {}
-          );
-          const entries = getAllByRole('listitem')
-            .map(({ textContent }): string => textContent);
-          const timesList = ac209aCourseInstance.fall.meetings
-            .map(({
-              day, startTime, endTime, room,
-            }): string => (
-              `${dayEnumToString(day)}${startTime}-${endTime}${room.name}${room.campus}`));
-          deepStrictEqual(entries, timesList);
+        context('With times and rooms', function () {
+          it('Should return a component that renders days, times and rooms as a list', function () {
+            const fallMeetings = formatMeetings(TERM.FALL);
+            const TestComponent: FunctionComponent = (): ReactElement => (
+              <div>
+                {fallMeetings(ac209aCourseInstance)}
+              </div>
+            );
+            const { getAllByRole } = render(
+              <TestComponent />
+            );
+            const entries = getAllByRole('listitem')
+              .map(({ textContent }): string => textContent);
+            const timesList = ac209aCourseInstance.fall.meetings
+              .map(({
+                day, startTime, endTime, room,
+              }): string => (
+                `${dayEnumToString(day)}${startTime}-${endTime}${room.name}${room.campus}`));
+            deepStrictEqual(entries, timesList);
+          });
+        });
+        context('With times but not rooms', function () {
+          it('Should return a component that renders just days and times as a list', function () {
+            const fallMeetings = formatMeetings(TERM.FALL);
+            const TestComponent: FunctionComponent = (): ReactElement => (
+              <div>
+                {fallMeetings(ac209aCourseInstanceWithoutRooms)}
+              </div>
+            );
+            const { getAllByRole } = render(
+              <TestComponent />
+            );
+            const entries = getAllByRole('listitem')
+              .map(({ textContent }): string => textContent);
+            const timesList = ac209aCourseInstance.fall.meetings
+              .map(({ day, startTime, endTime }): string => (
+                `${dayEnumToString(day)}${startTime}-${endTime}`));
+            deepStrictEqual(entries, timesList);
+          });
         });
       });
       context('When semester does not have data', function () {
         it('Should return null', function () {
           const springTimes = formatMeetings(TERM.SPRING);
-          strictEqual(springTimes(ac209aCourseInstance), null);
+          const TestComponent: FunctionComponent = (): ReactElement => (
+            <div>
+              {springTimes(ac209aCourseInstance)}
+            </div>
+          );
+          render(
+            <TestComponent />
+          );
+          strictEqual(document.body.textContent, '');
         });
       });
     });
@@ -117,8 +179,7 @@ describe('tableFields', function () {
           const { queryByLabelText } = render(
             <div>
               {notesField.getValue(ac209aCourseInstance)}
-            </div>,
-            (): void => {}
+            </div>
           );
           const icon = queryByLabelText('View/Edit Notes');
           strictEqual(icon !== null, true);
@@ -131,8 +192,7 @@ describe('tableFields', function () {
           const { queryByLabelText } = render(
             <div>
               {notesField.getValue(cs50CourseInstance)}
-            </div>,
-            (): void => {}
+            </div>
           );
           const icon = queryByLabelText('Add Notes');
           strictEqual(icon !== null, true);

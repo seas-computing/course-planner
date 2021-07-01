@@ -13,6 +13,7 @@ export * from './courses';
 export * from './faculty';
 export * from './rooms';
 export * from './semesters';
+export * from './nonClassMeetings';
 
 export interface AreaData {
   name: string;
@@ -24,6 +25,14 @@ export interface BuildingData {
 export interface CampusData {
   name: string;
 }
+
+export interface MeetingData {
+  day: DAY;
+  startTime: string;
+  endTime: string;
+  room: string;
+}
+
 export interface CourseData {
   title: string;
   area: string;
@@ -37,12 +46,7 @@ export interface CourseData {
   sameAs: string | null;
   instances: {
     facultyHUIDs: string[];
-    meetings: {
-      day: DAY;
-      startTime: string;
-      endTime: string;
-      room: string;
-    }[];
+    meetings: MeetingData[];
   };
 }
 
@@ -52,6 +56,7 @@ export interface FacultyData {
   email: string;
   HUID: string;
   jointWith: string | null;
+  notes: string | null;
   category: FACULTY_TYPE;
   area: string;
 }
@@ -67,6 +72,17 @@ export interface SemesterData {
   term: TERM;
 }
 
+export interface NonClassMeetingData {
+  title: string;
+  contactName?: string;
+  contactEmail?: string;
+  contactPhone?: string;
+  expectedSize?: number;
+  notes?: string;
+  private: boolean;
+  meetings: MeetingData[];
+}
+
 export type TestData = (
   AreaData
   | BuildingData
@@ -75,4 +91,5 @@ export type TestData = (
   | FacultyData
   | RoomData
   | SemesterData
+  | NonClassMeetingData
 );

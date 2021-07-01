@@ -39,6 +39,7 @@ import {
   facultyTypeEnumToTitleCase,
 } from 'common/utils/facultyHelperFunctions';
 import { CellLayout } from 'client/components/general';
+import { absenceToVariant } from '../utils/absenceToVariant';
 
 interface FacultyScheduleTableProps {
   /**
@@ -142,6 +143,7 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
               </TableCell>
               <TableCell>{faculty.jointWith}</TableCell>
               <TableCell
+                variant={absenceToVariant(faculty.fall.absence)}
                 verticalAlignment={VALIGN.TOP}
               >
                 <CellLayout>
@@ -178,7 +180,7 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
                   </BorderlessButton>
                 </CellLayout>
               </TableCell>
-              <TableCell>
+              <TableCell variant={absenceToVariant(faculty.fall.absence)}>
                 {faculty.fall.courses.map((course): ReactElement => (
                   <div key={course.id}>
                     {course.catalogNumber}
@@ -186,6 +188,7 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
                 ))}
               </TableCell>
               <TableCell
+                variant={absenceToVariant(faculty.spring.absence)}
                 verticalAlignment={VALIGN.TOP}
               >
                 <CellLayout>
@@ -222,7 +225,7 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
                   </BorderlessButton>
                 </CellLayout>
               </TableCell>
-              <TableCell>
+              <TableCell variant={absenceToVariant(faculty.spring.absence)}>
                 {faculty.spring.courses.map((course): ReactElement => (
                   <div key={course.id}>
                     {course.catalogNumber}

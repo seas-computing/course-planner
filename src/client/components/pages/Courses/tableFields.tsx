@@ -1,4 +1,9 @@
-import React, { ReactElement, ReactNode, ReactText } from 'react';
+import React, {
+  ReactElement,
+  ReactNode,
+  ReactText,
+  useContext,
+} from 'react';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import {
   BorderlessButton,
@@ -23,6 +28,7 @@ import { dayEnumToString } from 'common/constants/day';
 import { offeredEnumToString } from 'common/constants/offered';
 import { TermKey } from 'common/constants/term';
 import styled from 'styled-components';
+import { CoursesPageContext } from '../../../context/CoursesPageContext';
 
 /**
  * Simple helper function that takes a property name and optionally a semester
@@ -74,7 +80,7 @@ export const formatInstructors = (
   course: CourseInstanceResponseDTO
 ): ReactNode => {
   const semKey = sem.toLowerCase() as TermKey;
-  const { instructors } = course[semKey];
+  const { [semKey]: { instructors } } = course;
   return instructors.length === 0
     ? null
     : (
@@ -130,16 +136,20 @@ export const formatMeetings = (
   ) => ReactNode => (
   course: CourseInstanceResponseDTO
 ): ReactNode => {
+  const coursesPageContext = useContext(CoursesPageContext);
   const semKey = sem.toLowerCase() as TermKey;
-  const { meetings } = course[semKey];
-  return meetings[0].day === null
+  const {
+    [semKey]: { meetings },
+    id: courseId,
+  } = course;
+  return (meetings[0] === undefined || meetings[0]?.day === null)
     ? null
     : (
       <>
         <TableCellList>
           {meetings.map(({
             id,
-            room: { name: roomName, campus },
+            room,
             day,
             startTime,
             endTime,
@@ -150,19 +160,33 @@ export const formatMeetings = (
                   <div>{dayEnumToString(day)}</div>
                   <div>{`${startTime}-${endTime}`}</div>
                 </MeetingGridSection>
-                <MeetingGridSection area="room">
-                  {roomName}
-                </MeetingGridSection>
-                <MeetingGridSection area="campus">
-                  <CampusIcon>{campus}</CampusIcon>
-                </MeetingGridSection>
+                {room && (
+                  <>
+                    <MeetingGridSection area="room">
+                      {room.name}
+                    </MeetingGridSection>
+                    <MeetingGridSection area="campus">
+                      <CampusIcon>{room.campus}</CampusIcon>
+                    </MeetingGridSection>
+                  </>
+                )}
               </MeetingGrid>
             </TableCellListItem>
           ))}
         </TableCellList>
         <BorderlessButton
-          onClick={(): void => {}}
+          id={`${courseId}-${sem}-edit-meetings-button`}
+          onClick={() => coursesPageContext
+            && coursesPageContext.onMeetingEdit({
+              course,
+              term: sem,
+            })}
           variant={VARIANT.INFO}
+          forwardRef={coursesPageContext?.currentCourseInstance?.course.id
+            === courseId
+            && coursesPageContext.currentCourseInstance.term === sem
+            ? coursesPageContext.meetingEditButtonRef
+            : null}
         >
           <FontAwesomeIcon icon={faEdit} />
         </BorderlessButton>
