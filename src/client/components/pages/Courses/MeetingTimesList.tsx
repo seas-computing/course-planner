@@ -7,8 +7,6 @@ import React, {
 import styled from 'styled-components';
 import { faAngleDown, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { ButtonLayout } from 'client/components/general';
-import { VerticalSpace } from 'client/components/layout';
 import DAY, { dayEnumToString, days } from 'common/constants/day';
 import { meetingTimeSlots } from 'common/constants/timeslots';
 import { CourseInstanceResponseMeeting } from 'common/dto/courses/CourseInstanceResponse';
@@ -28,6 +26,7 @@ import {
   ValidationErrorMessage,
   VARIANT,
 } from 'mark-one';
+import { ButtonLayout } from '../../general';
 
 interface MeetingTimesListProps {
   /**
@@ -125,6 +124,11 @@ const StyledShowCloseButtons = styled.div`
     > * {
       margin-left: ${fromTheme('ws', 'xsmall')};
     }
+`;
+
+const StyledButtonLayout = styled(ButtonLayout)`
+  margin-top: ${fromTheme('ws', 'xsmall')};
+  margin-bottom: ${fromTheme('ws', 'xsmall')};
 `;
 
 /**
@@ -412,8 +416,7 @@ export const MeetingTimesList
           )
         )}
       </ul>
-      <VerticalSpace />
-      <ButtonLayout>
+      <StyledButtonLayout>
         <Button
           id="addNewTimeButton"
           onClick={
@@ -451,7 +454,7 @@ export const MeetingTimesList
         >
           Add New Time
         </Button>
-      </ButtonLayout>
+      </StyledButtonLayout>
     </div>
   );
 };
