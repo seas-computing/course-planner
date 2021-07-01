@@ -120,7 +120,7 @@ describe('tableFields', function () {
             const fallMeetings = formatMeetings(TERM.FALL);
             const TestComponent: FunctionComponent = (): ReactElement => (
               <div>
-                {fallMeetings(ac209aCourseInstance)}
+                {fallMeetings(ac209aCourseInstance, 2020)}
               </div>
             );
             const { getAllByRole } = render(
@@ -141,7 +141,7 @@ describe('tableFields', function () {
             const fallMeetings = formatMeetings(TERM.FALL);
             const TestComponent: FunctionComponent = (): ReactElement => (
               <div>
-                {fallMeetings(ac209aCourseInstanceWithoutRooms)}
+                {fallMeetings(ac209aCourseInstanceWithoutRooms, 2020)}
               </div>
             );
             const { getAllByRole } = render(
@@ -161,7 +161,7 @@ describe('tableFields', function () {
           const springTimes = formatMeetings(TERM.SPRING);
           const TestComponent: FunctionComponent = (): ReactElement => (
             <div>
-              {springTimes(ac209aCourseInstance)}
+              {springTimes(ac209aCourseInstance, 2020)}
             </div>
           );
           render(
