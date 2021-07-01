@@ -254,8 +254,6 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
             1,
             currentEditMeeting
           );
-        } else {
-          updatedMeetings.push(currentEditMeeting);
         }
       }
       if (newMeeting) {
