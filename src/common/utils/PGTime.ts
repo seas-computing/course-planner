@@ -7,7 +7,7 @@ export class PGTime {
   /**
    * A static RegExp that matches HH:MM:SS.mmm formatted timestamps
    */
-  public static readonly regex = /^(?<hour>([01][0-9]|2[0-3])):(?<minute>[0-5][0-9]):(?<second>[0-5][0-9])\.?(?<millisecond>[0-9]{3})?$/;
+  public static readonly regex = /^(?<hour>([01][0-9]|2[0-3])):(?<minute>[0-5][0-9]):?(?<second>[0-5][0-9])?\.?(?<millisecond>[0-9]{3})?$/;
 
   /** The hour part of the timestamp */
   public readonly hour: number;
@@ -32,7 +32,11 @@ export class PGTime {
     }
     this.hour = parseInt(timeMatch.groups.hour, 10);
     this.minute = parseInt(timeMatch.groups.minute, 10);
-    this.second = parseInt(timeMatch.groups.second, 10);
+    if (timeMatch.groups.second) {
+      this.second = parseInt(timeMatch.groups.second, 10);
+    } else {
+      this.second = 0;
+    }
     if (timeMatch.groups.millisecond) {
       this.millisecond = parseInt(timeMatch.groups.millisecond, 10);
     } else {
@@ -52,6 +56,16 @@ export class PGTime {
       this.second.toString().padStart(2, '0')
     }.${
       this.millisecond.toString().padStart(3, '0')
+    }`;
+  }
+
+  public toRequestString(): string {
+    return `${
+      this.hour.toString().padStart(2, '0')
+    }:${
+      this.minute.toString().padStart(2, '0')
+    }:${
+      this.second.toString().padStart(2, '0')
     }`;
   }
 
