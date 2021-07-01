@@ -161,16 +161,30 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
 
   const { term, calendarYear } = currentSemester;
   const semKey = term.toLowerCase() as TermKey;
-  const instance = course[semKey];
+  const {
+    catalogNumber,
+    [semKey]: {
+      meetings: instanceMeetings,
+      instructors: instanceInstructors,
+    },
+  } = currentCourse;
 
   /**
    * Keeps track of the current meetings for this instance. This is updated as
    * users add and edit meetings in the modal.
    */
   const [
-    currentMeetings,
-    setCurrentMeetings,
-  ] = useState(instance.meetings);
+    allMeetings,
+    setAllMeetings,
+  ] = useState<CourseInstanceResponseMeeting[]>(instanceMeetings);
+
+  /**
+   * Track the current meeting that is being edited within the modal
+   */
+  const [
+    currentEditMeeting,
+    setCurrentEditMeeting,
+  ] = useState<CourseInstanceResponseMeeting>(null);
 
   const [saving, setSaving] = useState(false);
 
@@ -191,23 +205,24 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
         forwardRef={modalHeaderRef}
         tabIndex={0}
       >
-        {`Meetings for ${course.catalogNumber} - ${term} ${instance.calendarYear}`}
+        {`Meetings for ${catalogNumber} - ${term} ${calendarYear}`}
       </ModalHeader>
       <ModalBody>
         <MeetingModalBodyGrid>
           <MeetingScheduler>
-            <MeetingSchedulerHeader>{`Meeting times for ${course.catalogNumber}`}</MeetingSchedulerHeader>
+            <MeetingSchedulerHeader>{`Meeting times for ${catalogNumber}`}</MeetingSchedulerHeader>
             <MeetingSchedulerBody>
               <MeetingTimesList
-                meetings={currentMeetings}
                 saving={saving}
                 onChange={(meetings) => setCurrentMeetings(meetings)}
+                allMeetings={allMeetings}
+                currentEditMeeting={currentEditMeeting}
               />
               <h3>
                 Faculty Notes
               </h3>
               <div>
-                {instance.instructors.map((instructor) => (
+                {instanceInstructors.map((instructor) => (
                   <div key={instructor.displayName}>
                     <h4>
                       {instructorDisplayNameToFirstLast(instructor.displayName)}

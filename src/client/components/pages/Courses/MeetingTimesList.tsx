@@ -32,13 +32,17 @@ interface MeetingTimesListProps {
   /**
    * The current existing meetings for this course instance
    */
-  meetings: CourseInstanceResponseMeeting[];
+  allMeetings: CourseInstanceResponseMeeting[];
   /**
    * Handles updating the state of the list of meetings in the
    * parent component (MeetingModal)
    */
   onChange: (meetings: CourseInstanceResponseMeeting[]) => void;
   saving: boolean;
+  /**
+   * The meeting that is currently being edited
+   */
+  currentEditMeeting: CourseInstanceResponseMeeting;
 }
 
 interface StyledMeetingRowProps {
@@ -137,9 +141,10 @@ const StyledButtonLayout = styled(ButtonLayout)`
  */
 export const MeetingTimesList
 : FunctionComponent<MeetingTimesListProps> = function ({
-  meetings,
+  allMeetings,
   saving,
   onChange,
+  currentEditMeeting,
 }): ReactElement {
   /**
    * The meeting within the list of meetings that is currently being edited
@@ -242,11 +247,13 @@ export const MeetingTimesList
   return (
     <div className="meeting-times-section">
       <ul>
-        {meetings.map(
+        {allMeetings.map(
           (meeting) => (
             <StyledMeetingRow
               key={meeting.id}
-              isRowExpanded={meeting.id === currentMeetingId}
+              isRowExpanded={
+                currentEditMeeting && meeting.id === currentEditMeeting.id
+              }
             >
               <StyledDeleteButton>
                 <BorderlessButton
@@ -260,7 +267,7 @@ export const MeetingTimesList
                 </BorderlessButton>
               </StyledDeleteButton>
               {
-                meeting.id === currentMeetingId
+                currentEditMeeting && meeting.id === currentEditMeeting.id
                   ? (
                     <>
                       <StyledDay>
@@ -273,7 +280,7 @@ export const MeetingTimesList
                               value: day,
                               label: dayEnumToString(day),
                             })))}
-                          value={currentDay}
+                          value={currentEditMeeting.day}
                           onChange={(event
                           : React.ChangeEvent<HTMLSelectElement>): void => {
                             setCurrentDay(event.currentTarget.value as DAY);
@@ -312,7 +319,11 @@ export const MeetingTimesList
                           name="meetingStartTime"
                           label="Meeting Start Time"
                           type="time"
-                          value={currentStartTime !== '' ? convert12To24HourTime(currentStartTime) : ''}
+                          value={currentEditMeeting.startTime !== ''
+                            ? convert12To24HourTime(
+                              currentEditMeeting.startTime
+                            )
+                            : ''}
                           onChange={(event: React.ChangeEvent<HTMLInputElement>)
                           : void => {
                             setCurrentStartTime(event.currentTarget.value);
@@ -328,7 +339,9 @@ export const MeetingTimesList
                           name="meetingEndTime"
                           label="Meeting End Time"
                           type="time"
-                          value={currentEndTime !== '' ? convert12To24HourTime(currentEndTime) : ''}
+                          value={currentEditMeeting.endTime !== ''
+                            ? convert12To24HourTime(currentEditMeeting.endTime)
+                            : ''}
                           onChange={(event: React.ChangeEvent<HTMLInputElement>)
                           : void => {
                             setCurrentEndTime(event.currentTarget.value);
@@ -347,7 +360,8 @@ export const MeetingTimesList
                       </StyledError>
                       <StyledRoom>
                         Room:
-                        {` ${currentRoom !== null ? currentRoom.name : ''}`}
+                        {currentEditMeeting.room
+                        && currentEditMeeting.room.name}
                       </StyledRoom>
                       <StyledShowCloseButtons>
                         <Button
