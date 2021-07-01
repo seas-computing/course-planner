@@ -74,7 +74,7 @@ const RoomSelection = (
   return (
     <>
       <RoomSelectionTable
-        roomList={roomList}
+        roomList={roomRequestData ? roomList : []}
         addButtonHandler={roomHandler}
       />
       {isFetching && <LoadSpinner>Searching for Rooms</LoadSpinner>}
