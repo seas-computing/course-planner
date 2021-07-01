@@ -195,6 +195,20 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     }
   }, [saving, onSave]);
 
+  /**
+   * Updates individual fields in the current meeting by merging passed props
+   * and values into the object
+   */
+  const updateCurrentEditMeeting = (
+    update: Partial<CourseInstanceResponseMeeting>
+  ): void => {
+    setCurrentEditMeeting((meeting) => ({
+      ...meeting,
+      ...update,
+    }));
+    setShowRoomsData(null);
+  };
+
   return (
     <Modal
       ariaLabelledBy="editMeeting"
@@ -217,6 +231,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
                 onChange={(meetings) => setCurrentMeetings(meetings)}
                 allMeetings={allMeetings}
                 currentEditMeeting={currentEditMeeting}
+                updateCurrentEditMeeting={updateCurrentEditMeeting}
               />
               <h3>
                 Faculty Notes

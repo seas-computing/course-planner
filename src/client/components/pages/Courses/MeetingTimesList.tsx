@@ -43,6 +43,12 @@ interface MeetingTimesListProps {
    * The meeting that is currently being edited
    */
   currentEditMeeting: CourseInstanceResponseMeeting;
+  /**
+   * Handler for updating individual fields in the current meeting
+   */
+  updateCurrentEditMeeting: (
+    update: Partial<CourseInstanceResponseMeeting>,
+  ) => void;
 }
 
 interface StyledMeetingRowProps {
@@ -145,47 +151,8 @@ export const MeetingTimesList
   saving,
   onChange,
   currentEditMeeting,
+  updateCurrentEditMeeting,
 }): ReactElement {
-  /**
-   * The meeting within the list of meetings that is currently being edited
-   */
-  const [
-    currentMeetingId,
-    setCurrentMeetingId,
-  ] = useState(null as string);
-
-  /**
-   * The selected day in the dropdown for the meeting currently being edited
-   */
-  const [
-    currentDay,
-    setCurrentDay,
-  ] = useState(null as DAY);
-
-  /**
-   * The start time value for the meeting currently being edited
-   */
-  const [
-    currentStartTime,
-    setCurrentStartTime,
-  ] = useState(null as string);
-
-  /**
-   * The end time value for the meeting currently being edited
-   */
-  const [
-    currentEndTime,
-    setCurrentEndTime,
-  ] = useState(null as string);
-
-  /**
-   * The room assigned to the meeting currently being edited
-   */
-  const [
-    currentRoom,
-    setCurrentRoom,
-  ] = useState(null as MeetingRoomResponse);
-
   /**
    * The current value of the error message when creating or editing a meeting time
    */
@@ -283,7 +250,9 @@ export const MeetingTimesList
                           value={currentEditMeeting.day}
                           onChange={(event
                           : React.ChangeEvent<HTMLSelectElement>): void => {
-                            setCurrentDay(event.currentTarget.value as DAY);
+                            updateCurrentEditMeeting(
+                              { day: event.currentTarget.value as DAY }
+                            );
                           }}
                           hideError
                           isRequired
@@ -303,8 +272,10 @@ export const MeetingTimesList
                           }) => (
                             <ButtonDropdownMenuItem
                               onClick={() => {
-                                setCurrentStartTime(start);
-                                setCurrentEndTime(end);
+                                updateCurrentEditMeeting({
+                                  startTime: start,
+                                  endTime: end,
+                                });
                               }}
                               key={label}
                             >
@@ -326,7 +297,9 @@ export const MeetingTimesList
                             : ''}
                           onChange={(event: React.ChangeEvent<HTMLInputElement>)
                           : void => {
-                            setCurrentStartTime(event.currentTarget.value);
+                            updateCurrentEditMeeting(
+                              { startTime: event.target.value }
+                            );
                           }}
                           hideError
                           isRequired
@@ -344,7 +317,9 @@ export const MeetingTimesList
                             : ''}
                           onChange={(event: React.ChangeEvent<HTMLInputElement>)
                           : void => {
-                            setCurrentEndTime(event.currentTarget.value);
+                            updateCurrentEditMeeting(
+                              { endTime: event.target.value }
+                            );
                           }}
                           hideError
                           isRequired
