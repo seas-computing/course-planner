@@ -49,8 +49,9 @@ describe('Meeting Modal', function () {
       } = render(
         <MeetingModal
           isVisible
-          currentCourseInstance={{
-            course: testCourseInstance,
+          currentCourse={testCourseInstance}
+          currentSemester={{
+            calendarYear: parseInt(testCourseInstance[semKey].calendarYear, 10),
             term: meetingTerm,
           }}
           onClose={onCloseStub}
