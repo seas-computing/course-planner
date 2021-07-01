@@ -16,7 +16,6 @@ import React, {
   useState,
 } from 'react';
 import styled from 'styled-components';
-import DAY from 'common/constants/day';
 import { instructorDisplayNameToFirstLast } from '../utils/instructorDisplayNameToFirstLast';
 import { MeetingTimesList } from './MeetingTimesList';
 import RoomSelection from './RoomSelection';
@@ -145,20 +144,6 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     setMeetingModalFocus();
   }, []);
 
-  /**
-   * State field to set the day and time for which rooms should be shown
-   */
-  const [
-    showRoomsData,
-    setShowRoomsData,
-  ] = useState<RoomRequest>({
-    day: DAY.MON,
-    startTime: '13:00:00',
-    endTime: '15:00:00',
-    term: TERM.FALL,
-    calendarYear: '2020',
-  });
-
   const { term, calendarYear } = currentSemester;
   const semKey = term.toLowerCase() as TermKey;
   const {
@@ -202,6 +187,14 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     meetingTimeError,
     setMeetingTimeError,
   ] = useState('');
+
+  /**
+   * State field to set the day and time for which rooms should be shown
+   */
+  const [
+    showRoomsData,
+    setShowRoomsData,
+  ] = useState<RoomRequest>(null);
 
   /**
    * Updates individual fields in the current meeting by merging passed props
