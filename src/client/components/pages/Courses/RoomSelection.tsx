@@ -18,6 +18,8 @@ interface RoomSelectionProps {
   roomHandler: (
     roomData: CourseInstanceResponseMeeting['room']
   ) => void;
+  /** The id of the room that is currently assigned to the meeting */
+  currentRoomId?: string;
 }
 
 /**
@@ -44,12 +46,9 @@ const roomSelectionPromptMessage = 'Add meeting time and click "Show Rooms" to v
  * provided, then rendering it into a table
  */
 
-const RoomSelection = (
-  props: RoomSelectionProps
-): ReactElement<RoomSelectionProps> => {
-  const {
-    roomRequestData, roomHandler,
-  } = props;
+const RoomSelection = ({
+  roomRequestData, roomHandler, currentRoomId,
+}: RoomSelectionProps): ReactElement<RoomSelectionProps> => {
   const [roomList, setRoomList] = useState<RoomResponse[]>([]);
   const [isFetching, setFetching] = useState<boolean>(false);
 
@@ -86,6 +85,7 @@ const RoomSelection = (
       <RoomSelectionTable
         roomList={roomList}
         addButtonHandler={roomHandler}
+        currentRoomId={currentRoomId}
       />
       {isFetching && <LoadSpinner>Searching for Rooms</LoadSpinner>}
       {roomRequestData === null && (
@@ -97,6 +97,7 @@ const RoomSelection = (
 
 RoomSelection.defaultProps = {
   roomRequestData: null,
+  currentRoomId: null,
 };
 
 export default RoomSelection;

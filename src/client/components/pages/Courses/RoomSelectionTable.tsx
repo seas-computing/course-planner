@@ -21,6 +21,8 @@ interface RoomSelectionTableProps {
   addButtonHandler: (
     roomData: CourseInstanceResponseMeeting['room']
   ) => void;
+  /** The id of the room currently assigned to the meeting being edited */
+  currentRoomId?: string;
 }
 
 /**
@@ -52,7 +54,7 @@ const displayAvailability = (roomData: RoomResponse) => {
  */
 
 const RoomSelectionTable = (
-  { roomList, addButtonHandler }: RoomSelectionTableProps
+  { roomList, addButtonHandler, currentRoomId }: RoomSelectionTableProps
 ): ReactElement<RoomSelectionTableProps> => {
   const [
     availabilityFilter,
@@ -141,6 +143,10 @@ const RoomSelectionTable = (
       </Table>
     </>
   );
+};
+
+RoomSelectionTable.defaultProps = {
+  currentRoomId: null,
 };
 
 export default RoomSelectionTable;
