@@ -365,7 +365,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
             <RoomAvailabilityBody>
               <RoomSelection
                 roomRequestData={showRoomsData}
-                roomHandler={() => {}}
+                roomHandler={(room) => { updateCurrentEditMeeting({ room }); }}
               />
             </RoomAvailabilityBody>
           </RoomAvailability>

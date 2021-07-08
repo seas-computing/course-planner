@@ -127,7 +127,7 @@ const RoomSelectionTable = (
                 </TableCell>
                 <TableCell>
                   <Button
-                    onClick={() => { addButtonHandler(roomData); }}
+                    onClick={() => { addButtonHandler({ id, campus, name }); }}
                     variant={VARIANT.POSITIVE}
                   >
                     Add
