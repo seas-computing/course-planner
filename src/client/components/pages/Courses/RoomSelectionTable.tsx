@@ -38,8 +38,13 @@ export enum AVAILABILITY {
 /**
  * Formats the meeting data for the "Availability" column
  */
-const displayAvailability = (roomData: RoomResponse) => {
-  const { campus, meetingTitles } = roomData;
+const displayAvailability = (
+  { id, campus, meetingTitles }: RoomResponse,
+  currentRoomId: string
+) => {
+  if (id === currentRoomId) {
+    return 'Current Room';
+  }
   if (meetingTitles.length > 0) {
     return `No (${meetingTitles.join(', ')})`;
   }
@@ -127,7 +132,7 @@ const RoomSelectionTable = (
                 <TableRowHeadingCell scope="row">{name}</TableRowHeadingCell>
                 <TableCell>{capacity}</TableCell>
                 <TableCell>
-                  {displayAvailability(roomData)}
+                  {displayAvailability(roomData, currentRoomId)}
                 </TableCell>
                 <TableCell>
                   <Button
