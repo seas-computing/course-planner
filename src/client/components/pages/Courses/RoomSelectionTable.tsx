@@ -117,8 +117,10 @@ const RoomSelectionTable = (
             }
           }).map((roomData, index) => {
             const {
-              id, campus, name, capacity,
+              id, campus, name, capacity, meetingTitles,
             } = roomData;
+            const isUnavailable = meetingTitles.length > 0
+              || id === currentRoomId;
             return (
               <TableRow key={id} isStriped={index % 2 !== 0}>
                 <TableCell>{campus}</TableCell>
@@ -131,6 +133,7 @@ const RoomSelectionTable = (
                   <Button
                     onClick={() => { addButtonHandler({ id, campus, name }); }}
                     variant={VARIANT.POSITIVE}
+                    disabled={isUnavailable}
                   >
                     Add
 
