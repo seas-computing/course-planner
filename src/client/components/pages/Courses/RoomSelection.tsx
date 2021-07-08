@@ -9,12 +9,15 @@ import RoomSelectionTable from './RoomSelectionTable';
 import RoomRequest from '../../../../common/dto/room/RoomRequest.dto';
 import { MessageContext } from '../../../context';
 import { AppMessage, MESSAGE_TYPE, MESSAGE_ACTION } from '../../../classes';
+import { CourseInstanceResponseMeeting } from '../../../../common/dto/courses/CourseInstanceResponse';
 
 interface RoomSelectionProps {
   /** The day and time for which a room should be selected */
   roomRequestData?: RoomRequest;
   /** The handler that will be called when a room is chosen */
-  roomHandler: (roomData: RoomResponse) => void;
+  roomHandler: (
+    roomData: CourseInstanceResponseMeeting['room']
+  ) => void;
 }
 
 /**
