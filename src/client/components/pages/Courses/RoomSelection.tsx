@@ -67,6 +67,8 @@ const RoomSelection = (
           });
         })
         .finally(() => { setFetching(false); });
+    } else {
+      setRoomList([]);
     }
   },
   [
@@ -79,7 +81,7 @@ const RoomSelection = (
   return (
     <>
       <RoomSelectionTable
-        roomList={roomRequestData ? roomList : []}
+        roomList={roomList}
         addButtonHandler={roomHandler}
       />
       {isFetching && <LoadSpinner>Searching for Rooms</LoadSpinner>}
