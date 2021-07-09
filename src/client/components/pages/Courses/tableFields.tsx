@@ -188,18 +188,16 @@ export const formatMeetings = (
         >
           <FontAwesomeIcon icon={faEdit} />
         </BorderlessButton>
-        {modalVisible && (
-          <MeetingModal
-            isVisible={modalVisible}
-            currentSemester={currentSemester}
-            currentCourse={course}
-            onClose={() => {
-              setModalVisible(false);
-              setTimeout(() => { buttonRef.current.focus(); });
-            }}
-            onSave={() => {}}
-          />
-        )}
+        <MeetingModal
+          isVisible={modalVisible}
+          currentSemester={currentSemester}
+          currentCourse={course}
+          onClose={() => {
+            setModalVisible(false);
+            setTimeout(() => { buttonRef.current.focus(); });
+          }}
+          onSave={() => {}}
+        />
       </>
     );
 };

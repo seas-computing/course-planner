@@ -142,8 +142,10 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   };
 
   useEffect((): void => {
-    setMeetingModalFocus();
-  }, []);
+    if (isVisible) {
+      setMeetingModalFocus();
+    }
+  }, [isVisible]);
 
   const { term, calendarYear } = currentSemester;
   const semKey = term.toLowerCase() as TermKey;
