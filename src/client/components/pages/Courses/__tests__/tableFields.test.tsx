@@ -118,9 +118,13 @@ describe('tableFields', function () {
         context('With times and rooms', function () {
           it('Should return a component that renders days, times and rooms as a list', function () {
             const fallMeetings = formatMeetings(TERM.FALL);
+            const testYear = parseInt(
+              ac209aCourseInstance.fall.calendarYear,
+              10
+            ) + 1;
             const TestComponent: FunctionComponent = (): ReactElement => (
               <div>
-                {fallMeetings(ac209aCourseInstance, 2020)}
+                {fallMeetings(ac209aCourseInstance, testYear)}
               </div>
             );
             const { getAllByRole } = render(
@@ -139,9 +143,13 @@ describe('tableFields', function () {
         context('With times but not rooms', function () {
           it('Should return a component that renders just days and times as a list', function () {
             const fallMeetings = formatMeetings(TERM.FALL);
+            const testYear = parseInt(
+              ac209aCourseInstance.fall.calendarYear,
+              10
+            ) + 1;
             const TestComponent: FunctionComponent = (): ReactElement => (
               <div>
-                {fallMeetings(ac209aCourseInstanceWithoutRooms, 2020)}
+                {fallMeetings(ac209aCourseInstanceWithoutRooms, testYear)}
               </div>
             );
             const { getAllByRole } = render(
@@ -159,9 +167,13 @@ describe('tableFields', function () {
       context('When semester does not have data', function () {
         it('Should return null', function () {
           const springTimes = formatMeetings(TERM.SPRING);
+          const testYear = parseInt(
+            ac209aCourseInstance.spring.calendarYear,
+            10
+          );
           const TestComponent: FunctionComponent = (): ReactElement => (
             <div>
-              {springTimes(ac209aCourseInstance, 2020)}
+              {springTimes(ac209aCourseInstance, testYear)}
             </div>
           );
           render(
