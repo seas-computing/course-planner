@@ -8,6 +8,7 @@ import {
   QueryByText,
   wait,
   waitForElement,
+  waitForElementToBeRemoved,
 } from '@testing-library/react';
 import { strictEqual, notStrictEqual } from 'assert';
 import { TERM } from 'common/constants';
@@ -213,9 +214,13 @@ describe('Meeting Modal', function () {
                 });
                 context('after changing the value again', function () {
                   it('removes the room list', async function () {
-                    const timepicker = await waitForElement(() => findByLabelText('Timeslot Button'));
+                    const timepicker = await findByLabelText('Timeslot Button');
                     fireEvent.click(timepicker);
-                    fireEvent.click(getByText('1:00 PM-2:00 PM'));
+                    const newTimeslot = await findByText('1:00 PM-2:00 PM');
+                    fireEvent.click(newTimeslot);
+                    await waitForElementToBeRemoved(
+                      () => getByText(freeRoom.name)
+                    );
                     const promptMessage = await findByText(/Add meeting time/);
                     notStrictEqual(promptMessage, null);
                     strictEqual(queryByText(freeRoom.name), null);
