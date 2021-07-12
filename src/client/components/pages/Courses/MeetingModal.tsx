@@ -141,12 +141,6 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     setTimeout((): void => modalHeaderRef.current.focus());
   };
 
-  useEffect((): void => {
-    if (isVisible) {
-      setMeetingModalFocus();
-    }
-  }, [isVisible]);
-
   const { term, calendarYear } = currentSemester;
   const semKey = term.toLowerCase() as TermKey;
   const {
@@ -164,7 +158,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   const [
     allMeetings,
     setAllMeetings,
-  ] = useState<CourseInstanceResponseMeeting[]>(instanceMeetings);
+  ] = useState<CourseInstanceResponseMeeting[]>([]);
 
   /**
    * Track the current meeting that is being edited within the modal
@@ -175,6 +169,24 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   ] = useState<CourseInstanceResponseMeeting>(null);
 
   const [saving, setSaving] = useState(false);
+
+  /**
+   * When the modal becomes visible, focus the header, load the current list of
+   * meetings, and reset the currentEditMeeting to null
+   */
+  useEffect(() => {
+    if (isVisible) {
+      setMeetingModalFocus();
+      setAllMeetings(instanceMeetings);
+      setCurrentEditMeeting(null);
+    }
+  },
+  [
+    isVisible,
+    setAllMeetings,
+    instanceMeetings,
+    setCurrentEditMeeting,
+  ]);
 
   useEffect(() => {
     if (saving) {
