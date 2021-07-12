@@ -135,14 +135,19 @@ const RoomSelectionTable = (
                   {displayAvailability(roomData, currentRoomId)}
                 </TableCell>
                 <TableCell>
-                  <Button
-                    onClick={() => { addButtonHandler({ id, campus, name }); }}
-                    variant={VARIANT.POSITIVE}
-                    disabled={isUnavailable}
-                  >
-                    Add
+                  {isUnavailable
+                    ? 'N/A'
+                    : (
+                      <Button
+                        onClick={() => {
+                          addButtonHandler({ id, campus, name });
+                        }}
+                        variant={VARIANT.POSITIVE}
+                      >
+                        Add
 
-                  </Button>
+                      </Button>
+                    )}
                 </TableCell>
               </TableRow>
             );
