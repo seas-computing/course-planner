@@ -9,6 +9,8 @@ import {
   wait,
   waitForElement,
   waitForElementToBeRemoved,
+  FindAllByText,
+  within,
 } from '@testing-library/react';
 import { strictEqual, notStrictEqual } from 'assert';
 import { TERM } from 'common/constants';
@@ -18,28 +20,32 @@ import {
   convert12To24HourTime,
   convertTo12HourDisplayTime,
 } from 'common/utils/timeHelperFunctions';
-import React from 'react';
+import React, { useState } from 'react';
 import { SinonStub, stub } from 'sinon';
 import { render } from 'test-utils';
-import { cs50CourseInstance, freeRoom } from 'testData';
+import { cs50CourseInstance, freeRoom, bookedRoom } from 'testData';
 import * as roomAPI from 'client/api/rooms';
+import { Button, VARIANT } from 'mark-one';
 import MeetingModal from '../MeetingModal';
 
 describe('Meeting Modal', function () {
+  let getByText: BoundFunction<GetByText>;
+  let getAllByText: BoundFunction<AllByText>;
+  let getAllByLabelText: BoundFunction<AllByText>;
+  let queryByText: BoundFunction<QueryByText>;
+  let getByLabelText: BoundFunction<GetByText>;
+  let findByLabelText: BoundFunction<FindByText>;
+  let findAllByLabelText: BoundFunction<FindAllByText>;
+  let findByText: BoundFunction<FindByText>;
+  let queryAllByRole: BoundFunction<AllByRole>;
+  let queryAllByText: BoundFunction<AllByText>;
+  let onCloseStub: SinonStub;
+  let onSaveStub: SinonStub;
+  let roomAPIStub: SinonStub;
+  const meetingTerm = TERM.FALL;
+  const semKey = meetingTerm.toLowerCase() as TermKey;
+  const testCourseInstance = cs50CourseInstance;
   describe('rendering', function () {
-    let getByText: BoundFunction<GetByText>;
-    let getAllByText: BoundFunction<AllByText>;
-    let queryByText: BoundFunction<QueryByText>;
-    let getByLabelText: BoundFunction<GetByText>;
-    let findByLabelText: BoundFunction<FindByText>;
-    let findByText: BoundFunction<FindByText>;
-    let queryAllByRole: BoundFunction<AllByRole>;
-    let onCloseStub: SinonStub;
-    let onSaveStub: SinonStub;
-    let roomAPIStub: SinonStub;
-    const meetingTerm = TERM.FALL;
-    const semKey = meetingTerm.toLowerCase() as TermKey;
-    const testCourseInstance = cs50CourseInstance;
     beforeEach(function () {
       onCloseStub = stub();
       onSaveStub = stub();
@@ -942,6 +948,140 @@ describe('Meeting Modal', function () {
         const saveButton = getByText('Save');
         fireEvent.click(saveButton);
         await wait(() => strictEqual(onSaveStub.callCount, 1));
+      });
+    });
+  });
+  describe('Closing and re-opening', function () {
+    const roomResults = [freeRoom, bookedRoom];
+    const FakePage = () => {
+      const [isOpen, setOpen] = useState(false);
+      return (
+        <div>
+          <Button
+            variant={VARIANT.DEFAULT}
+            onClick={() => { setOpen(true); }}
+          >
+            OPEN
+          </Button>
+          <MeetingModal
+            isVisible={isOpen}
+            currentCourse={testCourseInstance}
+            currentSemester={{
+              calendarYear: parseInt(
+                testCourseInstance[semKey].calendarYear,
+                10
+              ),
+              term: meetingTerm,
+            }}
+            onClose={() => { setOpen(false); }}
+            onSave={onSaveStub}
+          />
+        </div>
+      );
+    };
+    beforeEach(function () {
+      roomAPIStub = stub(roomAPI, 'getRoomAvailability').resolves(roomResults);
+      ({
+        getByText,
+        queryAllByText,
+        queryAllByRole,
+        findByText,
+        findByLabelText,
+        getAllByLabelText,
+        findAllByLabelText,
+      } = render(<FakePage />));
+    });
+    context('After adding a new meeting', function () {
+      context('Without saving', function () {
+        it('Should remove the added meeting', async function () {
+          // click open button, then wait for the Add button to appear
+          fireEvent.click(getByText('OPEN'));
+          const addButton = await findByText('Add New Time');
+          let visibleMeetings = getAllByLabelText(/Delete Meeting/);
+          // Confirm that we initially see only the original set of meetings
+          strictEqual(
+            visibleMeetings.length,
+            testCourseInstance[semKey].meetings.length
+          );
+          // Add a new meeting to the list, and confirm it's there
+          fireEvent.click(addButton);
+          await findByLabelText(/Meeting Day/);
+          visibleMeetings = getAllByLabelText(/Delete Meeting/);
+          strictEqual(
+            visibleMeetings.length,
+            testCourseInstance[semKey].meetings.length + 1
+          );
+          // close and reopen the meeting, waiting for the add button to appear again
+          fireEvent.click(getByText('Cancel'));
+          fireEvent.click(getByText('OPEN'));
+          await findByText('Add New Time');
+          visibleMeetings = getAllByLabelText(/Delete Meeting/);
+          // Confirm that we're back to the original set of meetings
+          strictEqual(
+            visibleMeetings.length,
+            testCourseInstance[semKey].meetings.length
+          );
+        });
+      });
+    });
+    context('After editing a meeting', function () {
+      context('Without saving', function () {
+        it('Should revert to the original data', async function () {
+          // Open the Modal, wait for content to be editable
+          fireEvent.click(getByText('OPEN'));
+          const editButtons = await findAllByLabelText(/Edit Meeting/);
+          // Confirm there are no meetings on Monday
+          strictEqual(queryAllByText(/Monday/).length, 0);
+          // Move one meeting to Monday
+          fireEvent.click(editButtons[0]);
+          fireEvent.change(
+            await findByLabelText(/Meeting Day/),
+            { target: { value: DAY.MON } }
+          );
+          fireEvent.click(getByText('Close'));
+          let mondays = queryAllByText(/Monday/);
+          strictEqual(mondays.length, 1);
+          // Close and reopen modal
+          fireEvent.click(getByText('Cancel'));
+          fireEvent.click(getByText('OPEN'));
+          await findAllByLabelText(/Delete Meeting/);
+          // Confirm there are again no meetings on Monday
+          mondays = queryAllByText(/Monday/);
+          strictEqual(mondays.length, 0);
+        });
+      });
+    });
+    context('After searching for a room', function () {
+      it('Should clear the search results', async function () {
+        // Open modal, and wait for content to appear
+        fireEvent.click(getByText('OPEN'));
+        const editButtons = await findAllByLabelText(/Edit Meeting/);
+        // Confirm that the Room Search table is empty
+        let tableBodyRows = queryAllByRole('row')
+          .filter((row) => (
+            within(row).queryAllByRole('columnheader').length === 0
+          ));
+        strictEqual(tableBodyRows.length, 0);
+        fireEvent.click(editButtons[0]);
+        // Search for available rooms
+        fireEvent.click(await findByText('Show Rooms'));
+        await findByText(roomResults[0].name, { exact: false });
+        // Confirm that data populates the table
+        tableBodyRows = queryAllByRole('row')
+          .filter((row) => (
+            within(row).queryAllByRole('columnheader').length === 0
+          ));
+        strictEqual(tableBodyRows.length, roomResults.length);
+        // Close and reopen the modal
+        fireEvent.click(getByText('Cancel'));
+        fireEvent.click(getByText('OPEN'));
+        await findAllByLabelText(/Delete Meeting/);
+        // confirm that the table is again empty
+        tableBodyRows = queryAllByRole('row')
+          .filter((row) => (
+            within(row).queryAllByRole('columnheader').length === 0
+          ));
+        strictEqual(tableBodyRows.length, 0);
       });
     });
   });
