@@ -161,7 +161,7 @@ export const MeetingTimesList
     <div className="meeting-times-section">
       <ul>
         {allMeetings.map(
-          (meeting) => (
+          (meeting, index) => (
             <StyledMeetingRow
               key={meeting.id}
               isRowExpanded={
@@ -170,6 +170,7 @@ export const MeetingTimesList
             >
               <StyledDeleteButton>
                 <BorderlessButton
+                  alt={`Delete Meeting ${index + 1}`}
                   id={`deleteButton${meeting.id}`}
                   variant={VARIANT.DANGER}
                   onClick={
@@ -316,6 +317,7 @@ export const MeetingTimesList
                       </StyledMeetingInfo>
                       <StyledEditButton>
                         <BorderlessButton
+                          alt={`Edit Meeting ${index + 1}`}
                           id={`editMeetingButton${meeting.id}`}
                           variant={VARIANT.INFO}
                           onClick={
