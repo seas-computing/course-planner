@@ -171,6 +171,14 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   const [saving, setSaving] = useState(false);
 
   /**
+   * State field to set the day and time for which rooms should be shown
+   */
+  const [
+    showRoomsData,
+    setShowRoomsData,
+  ] = useState<RoomRequest>(null);
+
+  /**
    * When the modal becomes visible, focus the header, load the current list of
    * meetings, and reset the currentEditMeeting to null
    */
@@ -179,6 +187,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
       setMeetingModalFocus();
       setAllMeetings(instanceMeetings);
       setCurrentEditMeeting(null);
+      setShowRoomsData(null);
     }
   },
   [
@@ -202,14 +211,6 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     meetingTimeError,
     setMeetingTimeError,
   ] = useState('');
-
-  /**
-   * State field to set the day and time for which rooms should be shown
-   */
-  const [
-    showRoomsData,
-    setShowRoomsData,
-  ] = useState<RoomRequest>(null);
 
   /**
    * Updates individual fields in the current meeting by merging passed props
