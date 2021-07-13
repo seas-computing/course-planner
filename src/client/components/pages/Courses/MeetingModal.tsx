@@ -186,6 +186,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     if (isVisible) {
       setMeetingModalFocus();
       setAllMeetings(instanceMeetings);
+    } else {
       setCurrentEditMeeting(null);
       setShowRoomsData(null);
     }
@@ -195,6 +196,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     setAllMeetings,
     instanceMeetings,
     setCurrentEditMeeting,
+    setShowRoomsData,
   ]);
 
   useEffect(() => {
