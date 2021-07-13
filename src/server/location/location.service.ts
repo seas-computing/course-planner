@@ -82,10 +82,12 @@ export class LocationService {
     const result = await this.roomListingViewRepository
       .createQueryBuilder('r')
       .leftJoinAndMapMany('r.meetings', RoomBookingInfoView, 'b',
-        `r.id = b."roomId" AND b."calendarYear" = :calendarYear
-          AND b.term = :term
-          AND b.day = :day
-          AND (b."startTime", b."endTime") OVERLAPS (:startTime::TIME, :endTime::TIME)`,
+        `r.id = b."roomId"
+           AND b."parentId" <> :excludeParent
+           AND b."calendarYear" = :calendarYear
+           AND b.term = :term
+           AND b.day = :day
+           AND (b."startTime", b."endTime") OVERLAPS (:startTime::TIME, :endTime::TIME)`,
         roomInfo)
       .orderBy('r.campus', 'ASC')
       .addOrderBy('r.name', 'ASC')
