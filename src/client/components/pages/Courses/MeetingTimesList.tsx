@@ -251,7 +251,9 @@ export const MeetingTimesList
                                 currentEditMeeting.startTime
                               )
                               : ''}
-                            onChange={(event: React.ChangeEvent<HTMLInputElement>)
+                            onChange={(
+                              event: React.ChangeEvent<HTMLInputElement>
+                            )
                             : void => {
                               updateCurrentEditMeeting(
                                 { startTime: event.target.value }
@@ -269,9 +271,13 @@ export const MeetingTimesList
                             label="Meeting End Time"
                             type="time"
                             value={currentEditMeeting.endTime !== ''
-                              ? convert12To24HourTime(currentEditMeeting.endTime)
+                              ? convert12To24HourTime(
+                                currentEditMeeting.endTime
+                              )
                               : ''}
-                            onChange={(event: React.ChangeEvent<HTMLInputElement>)
+                            onChange={(
+                              event: React.ChangeEvent<HTMLInputElement>
+                            )
                             : void => {
                               updateCurrentEditMeeting(
                                 { endTime: event.target.value }
