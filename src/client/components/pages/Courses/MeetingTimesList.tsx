@@ -161,179 +161,189 @@ export const MeetingTimesList
     <div className="meeting-times-section">
       <ul>
         {allMeetings.map(
-          (meeting, index) => (
-            <StyledMeetingRow
-              key={meeting.id}
-              isRowExpanded={
-                currentEditMeeting && meeting.id === currentEditMeeting.id
-              }
-            >
-              <StyledDeleteButton>
-                <BorderlessButton
-                  alt={`Delete Meeting ${index + 1}`}
-                  id={`deleteButton${meeting.id}`}
-                  variant={VARIANT.DANGER}
-                  onClick={
-                    (): void => {}
-                  }
-                >
-                  <FontAwesomeIcon icon={faTrash} />
-                </BorderlessButton>
-              </StyledDeleteButton>
-              {
-                currentEditMeeting && meeting.id === currentEditMeeting.id
-                  ? (
-                    <>
-                      <StyledDay>
-                        <Dropdown
-                          id="meetingDay"
-                          name="meetingDay"
-                          label="Meeting Day"
-                          options={[{ value: '', label: '' }]
-                            .concat(days.map((day) => ({
-                              value: day,
-                              label: dayEnumToString(day),
-                            })))}
-                          value={currentEditMeeting.day}
-                          onChange={(event
-                          : React.ChangeEvent<HTMLSelectElement>): void => {
-                            updateCurrentEditMeeting(
-                              { day: event.currentTarget.value as DAY }
-                            );
-                          }}
-                          hideError
-                          isRequired
-                          isLabelVisible={false}
-                        />
-                      </StyledDay>
-                      <StyledTimeslot>
-                        <ButtonDropdownMenu
-                          alt="Timeslot Button"
-                          label={<FontAwesomeIcon icon={faAngleDown} size="sm" />}
-                          variant={VARIANT.BASE}
-                        >
-                          {meetingTimeSlots.map(({
-                            label,
-                            start,
-                            end,
-                          }) => (
-                            <ButtonDropdownMenuItem
-                              onClick={() => {
-                                updateCurrentEditMeeting({
-                                  startTime: start,
-                                  endTime: end,
-                                });
-                              }}
-                              key={label}
-                            >
-                              {label}
-                            </ButtonDropdownMenuItem>
-                          ))}
-                        </ButtonDropdownMenu>
-                      </StyledTimeslot>
-                      <StyledStart>
-                        <TextInput
-                          id="meetingStartTime"
-                          name="meetingStartTime"
-                          label="Meeting Start Time"
-                          type="time"
-                          value={currentEditMeeting.startTime !== ''
-                            ? convert12To24HourTime(
-                              currentEditMeeting.startTime
-                            )
-                            : ''}
-                          onChange={(event: React.ChangeEvent<HTMLInputElement>)
-                          : void => {
-                            updateCurrentEditMeeting(
-                              { startTime: event.target.value }
-                            );
-                          }}
-                          hideError
-                          isRequired
-                          isLabelVisible={false}
-                        />
-                      </StyledStart>
-                      <StyledEnd>
-                        <TextInput
-                          id="meetingEndTime"
-                          name="meetingEndTime"
-                          label="Meeting End Time"
-                          type="time"
-                          value={currentEditMeeting.endTime !== ''
-                            ? convert12To24HourTime(currentEditMeeting.endTime)
-                            : ''}
-                          onChange={(event: React.ChangeEvent<HTMLInputElement>)
-                          : void => {
-                            updateCurrentEditMeeting(
-                              { endTime: event.target.value }
-                            );
-                          }}
-                          hideError
-                          isRequired
-                          isLabelVisible={false}
-                        />
-                      </StyledEnd>
-                      <StyledError>
-                        <ValidationErrorMessage
-                          id="meetingTimeErrorMessage"
-                        >
-                          {meetingTimeError}
-                        </ValidationErrorMessage>
-                      </StyledError>
-                      <StyledRoom>
-                        Room:
-                        {currentEditMeeting.room
+          (meeting, index) => {
+            const meetingTimeString = `${dayEnumToString(meeting.day)}, ${
+              convertTo12HourDisplayTime(meeting.startTime)
+            } to ${
+              convertTo12HourDisplayTime(meeting.endTime)
+            }`;
+            const meetingRoomString = meeting.room === null
+              ? ''
+              : ` in ${meeting.room.name}`;
+            return (
+              <StyledMeetingRow
+                key={meeting.id}
+                isRowExpanded={
+                  currentEditMeeting && meeting.id === currentEditMeeting.id
+                }
+              >
+                <StyledDeleteButton>
+                  <BorderlessButton
+                    alt={`Delete Meeting ${index + 1} on ${meetingTimeString}${meetingRoomString}`}
+                    id={`deleteButton${meeting.id}`}
+                    variant={VARIANT.DANGER}
+                    onClick={
+                      (): void => {}
+                    }
+                  >
+                    <FontAwesomeIcon icon={faTrash} />
+                  </BorderlessButton>
+                </StyledDeleteButton>
+                {
+                  currentEditMeeting && meeting.id === currentEditMeeting.id
+                    ? (
+                      <>
+                        <StyledDay>
+                          <Dropdown
+                            id="meetingDay"
+                            name="meetingDay"
+                            label="Meeting Day"
+                            options={[{ value: '', label: '' }]
+                              .concat(days.map((day) => ({
+                                value: day,
+                                label: dayEnumToString(day),
+                              })))}
+                            value={currentEditMeeting.day}
+                            onChange={(event
+                            : React.ChangeEvent<HTMLSelectElement>): void => {
+                              updateCurrentEditMeeting(
+                                { day: event.currentTarget.value as DAY }
+                              );
+                            }}
+                            hideError
+                            isRequired
+                            isLabelVisible={false}
+                          />
+                        </StyledDay>
+                        <StyledTimeslot>
+                          <ButtonDropdownMenu
+                            alt="Timeslot Button"
+                            label={<FontAwesomeIcon icon={faAngleDown} size="sm" />}
+                            variant={VARIANT.BASE}
+                          >
+                            {meetingTimeSlots.map(({
+                              label,
+                              start,
+                              end,
+                            }) => (
+                              <ButtonDropdownMenuItem
+                                onClick={() => {
+                                  updateCurrentEditMeeting({
+                                    startTime: start,
+                                    endTime: end,
+                                  });
+                                }}
+                                key={label}
+                              >
+                                {label}
+                              </ButtonDropdownMenuItem>
+                            ))}
+                          </ButtonDropdownMenu>
+                        </StyledTimeslot>
+                        <StyledStart>
+                          <TextInput
+                            id="meetingStartTime"
+                            name="meetingStartTime"
+                            label="Meeting Start Time"
+                            type="time"
+                            value={currentEditMeeting.startTime !== ''
+                              ? convert12To24HourTime(
+                                currentEditMeeting.startTime
+                              )
+                              : ''}
+                            onChange={(event: React.ChangeEvent<HTMLInputElement>)
+                            : void => {
+                              updateCurrentEditMeeting(
+                                { startTime: event.target.value }
+                              );
+                            }}
+                            hideError
+                            isRequired
+                            isLabelVisible={false}
+                          />
+                        </StyledStart>
+                        <StyledEnd>
+                          <TextInput
+                            id="meetingEndTime"
+                            name="meetingEndTime"
+                            label="Meeting End Time"
+                            type="time"
+                            value={currentEditMeeting.endTime !== ''
+                              ? convert12To24HourTime(currentEditMeeting.endTime)
+                              : ''}
+                            onChange={(event: React.ChangeEvent<HTMLInputElement>)
+                            : void => {
+                              updateCurrentEditMeeting(
+                                { endTime: event.target.value }
+                              );
+                            }}
+                            hideError
+                            isRequired
+                            isLabelVisible={false}
+                          />
+                        </StyledEnd>
+                        <StyledError>
+                          <ValidationErrorMessage
+                            id="meetingTimeErrorMessage"
+                          >
+                            {meetingTimeError}
+                          </ValidationErrorMessage>
+                        </StyledError>
+                        <StyledRoom>
+                          Room:
+                          {currentEditMeeting.room
                         && currentEditMeeting.room.name}
-                      </StyledRoom>
-                      <StyledShowCloseButtons>
-                        <Button
-                          id="closeButton"
-                          onClick={
-                            (): void => {
-                              closeCurrentEditMeeting(null);
+                        </StyledRoom>
+                        <StyledShowCloseButtons>
+                          <Button
+                            id="closeButton"
+                            onClick={
+                              (): void => {
+                                closeCurrentEditMeeting(null);
+                              }
                             }
-                          }
-                          variant={VARIANT.SECONDARY}
-                        >
-                          Close
-                        </Button>
-                        <Button
-                          id="showRoomsButton"
-                          onClick={showRoomsHandler}
-                          variant={VARIANT.PRIMARY}
-                        >
-                          Show Rooms
-                        </Button>
-                      </StyledShowCloseButtons>
-                    </>
-                  )
-                  : (
-                    <>
-                      <StyledMeetingInfo>
-                        {`${dayEnumToString(meeting.day)}, ${convertTo12HourDisplayTime(meeting.startTime)} to ${convertTo12HourDisplayTime(meeting.endTime)}`}
-                        <div>
-                          {`${meeting.room !== null ? ` in ${meeting.room.name}` : ''}`}
-                        </div>
-                      </StyledMeetingInfo>
-                      <StyledEditButton>
-                        <BorderlessButton
-                          alt={`Edit Meeting ${index + 1}`}
-                          id={`editMeetingButton${meeting.id}`}
-                          variant={VARIANT.INFO}
-                          onClick={
-                            (): void => {
-                              closeCurrentEditMeeting(meeting);
+                            variant={VARIANT.SECONDARY}
+                          >
+                            Close
+                          </Button>
+                          <Button
+                            id="showRoomsButton"
+                            onClick={showRoomsHandler}
+                            variant={VARIANT.PRIMARY}
+                          >
+                            Show Rooms
+                          </Button>
+                        </StyledShowCloseButtons>
+                      </>
+                    )
+                    : (
+                      <>
+                        <StyledMeetingInfo>
+                          {meetingTimeString}
+                          <div>
+                            {meetingRoomString}
+                          </div>
+                        </StyledMeetingInfo>
+                        <StyledEditButton>
+                          <BorderlessButton
+                            alt={`Edit Meeting ${index + 1} on ${meetingTimeString}${meetingRoomString}`}
+                            id={`editMeetingButton${meeting.id}`}
+                            variant={VARIANT.INFO}
+                            onClick={
+                              (): void => {
+                                closeCurrentEditMeeting(meeting);
+                              }
                             }
-                          }
-                        >
-                          <FontAwesomeIcon icon={faEdit} />
-                        </BorderlessButton>
-                      </StyledEditButton>
-                    </>
-                  )
-              }
-            </StyledMeetingRow>
-          )
+                          >
+                            <FontAwesomeIcon icon={faEdit} />
+                          </BorderlessButton>
+                        </StyledEditButton>
+                      </>
+                    )
+                }
+              </StyledMeetingRow>
+            );
+          }
         )}
       </ul>
       <StyledButtonLayout>
