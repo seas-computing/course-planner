@@ -156,10 +156,9 @@ describe('Room Selection Table', function () {
           const { queryByText } = renderResult;
           ok(queryByText(`No (${dummy.bookedRoom.meetingTitles[0]})`));
         });
-        it('Should disable the add button', function () {
-          const { getByRole } = renderResult;
-          fireEvent.click(getByRole('button'));
-          strictEqual(addSpy.callCount, 0);
+        it('Should Display "N/A" in the add column', function () {
+          const { queryByText } = renderResult;
+          ok(queryByText('N/A'));
         });
       });
       context('When a room in the list is occupied by multiple courses', function () {
@@ -175,10 +174,9 @@ describe('Room Selection Table', function () {
           const { queryByText } = renderResult;
           ok(queryByText(`No (${dummy.multiBookedRoom.meetingTitles.join(', ')})`));
         });
-        it('Should disable the add button', function () {
-          const { getByRole } = renderResult;
-          fireEvent.click(getByRole('button'));
-          strictEqual(addSpy.callCount, 0);
+        it('Should Display "N/A" in the add column', function () {
+          const { queryByText } = renderResult;
+          ok(queryByText('N/A'));
         });
       });
       context('When a room in the list is owned by FAS and is available', function () {
@@ -213,10 +211,9 @@ describe('Room Selection Table', function () {
           const { queryByText } = renderResult;
           ok(queryByText(`No (${dummy.bookedFASRoom.meetingTitles[0]})`));
         });
-        it('Should disable the add button', function () {
-          const { getByRole } = renderResult;
-          fireEvent.click(getByRole('button'));
-          strictEqual(addSpy.callCount, 0);
+        it('Should Display "N/A" in the add column', function () {
+          const { queryByText } = renderResult;
+          ok(queryByText('N/A'));
         });
       });
       context('When a room is already booked for the meeting', function () {
@@ -233,10 +230,9 @@ describe('Room Selection Table', function () {
           const { queryByText } = renderResult;
           ok(queryByText('Current Room'));
         });
-        it('Should disable the add button', function () {
-          const { getByRole } = renderResult;
-          fireEvent.click(getByRole('button'));
-          strictEqual(addSpy.callCount, 0);
+        it('Should Display "N/A" in the add column', function () {
+          const { queryByText } = renderResult;
+          ok(queryByText('N/A'));
         });
       });
     });
