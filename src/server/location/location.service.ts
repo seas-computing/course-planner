@@ -20,7 +20,7 @@ interface RoomQueryResult {
   campus: string;
   name: string;
   capacity: number;
-  meetings: RoomBookingInfoView[];
+  meetings: string[];
 }
 
 @Injectable()
@@ -77,24 +77,44 @@ export class LocationService {
    * term, day, start time, and end time
    */
   public async getRooms(
-    roomInfo: RoomRequest
+    {
+      excludeParent,
+      ...roomInfo
+    }: RoomRequest
   ): Promise<RoomResponse[]> {
-    const result = await this.roomListingViewRepository
+    const roomQuery = this.roomListingViewRepository
       .createQueryBuilder('r')
-      .leftJoinAndMapMany('r.meetings', RoomBookingInfoView, 'b',
-        `r.id = b."roomId"
-           AND b."parentId" <> :excludeParent
-           AND b."calendarYear" = :calendarYear
-           AND b.term = :term
-           AND b.day = :day
-           AND (b."startTime", b."endTime") OVERLAPS (:startTime::TIME, :endTime::TIME)`,
-        roomInfo)
+      .leftJoin((qb) => {
+        const subQuery = qb
+          .select('"meetingTitle"')
+          .addSelect('"roomId"')
+          .from(RoomBookingInfoView, 'b')
+          .where('"calendarYear" = :calendarYear')
+          .andWhere('term = :term')
+          .andWhere('day = :day')
+          .andWhere('("startTime", "endTime") OVERLAPS (:startTime::TIME, :endTime::TIME)');
+        if (excludeParent) {
+          subQuery.andWhere('"parentId" <> :excludeParent', { excludeParent });
+        }
+        return subQuery.setParameters(roomInfo);
+      }, 'b', 'r.id = b."roomId"')
+      .select('r.id', 'id')
+      .addSelect('r.campus', 'campus')
+      .addSelect('r.name', 'name')
+      .addSelect('r.capacity', 'capacity')
+      .addSelect('array_agg("b"."meetingTitle")', 'meetings')
+      .groupBy('r.id')
+      .addGroupBy('r.campus')
+      .addGroupBy('r.name')
+      .addGroupBy('r.capacity')
       .orderBy('r.campus', 'ASC')
-      .addOrderBy('r.name', 'ASC')
-      .getMany() as unknown[] as RoomQueryResult[];
-    return result.map(({ meetings, ...row }) => ({
+      .addOrderBy('r.name', 'ASC');
+    const result = await roomQuery
+      .getRawMany();
+    return result.map(({ meetings, ...row }: RoomQueryResult) => ({
       ...row,
-      meetingTitles: meetings.map(({ meetingTitle }) => meetingTitle),
+      meetingTitles: meetings
+        .filter((title) => !!title),
     }));
   }
 }
