@@ -933,6 +933,88 @@ describe('Meeting Modal', function () {
             });
           });
         });
+        describe('On Delete Behavior', function () {
+          context('when a meeting time is being edited', function () {
+            const cs50FridayMeeting = testCourseInstance[semKey].meetings
+              .filter((meeting) => meeting.day === DAY.FRI)[0];
+            const cs50TuesdayMeeting = testCourseInstance[semKey].meetings
+              .filter((meeting) => meeting.day === DAY.TUE)[0];
+            beforeEach(async function () {
+              const editCS50FridayMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50FridayMeeting.id));
+              fireEvent.click(editCS50FridayMeetingButton);
+            });
+            context('when the delete button of the meeting time being edited is clicked', function () {
+              it('removes the meeting being edited', async function () {
+                const deleteCS50FridayMeetingButton = await waitForElement(() => document.getElementById('delete-button-' + cs50FridayMeeting.id));
+                fireEvent.click(deleteCS50FridayMeetingButton);
+                const meetingText = `${DAY.FRI}, ${cs50FridayMeeting.startTime} to ${cs50FridayMeeting.endTime}`;
+                strictEqual(queryByText(meetingText, { exact: false }), null);
+              });
+            });
+            context('when the delete button of a meeting time not being edited is clicked', function () {
+              it('removes the meeting linked to the clicked delete button', async function () {
+                const deleteCS50TuesdayMeetingButton = await waitForElement(() => document.getElementById('delete-button-' + cs50TuesdayMeeting.id));
+                fireEvent.click(deleteCS50TuesdayMeetingButton);
+                const meetingText = `${DAY.TUE}, ${cs50TuesdayMeeting.startTime} to ${cs50TuesdayMeeting.endTime}`;
+                strictEqual(queryByText(meetingText, { exact: false }), null);
+              });
+            });
+          });
+          context('when a meeting is being added', function () {
+            const day = DAY.MON;
+            const startTime = '4:00 PM';
+            const endTime = '5:00 PM';
+            const cs50TuesdayMeeting = testCourseInstance[semKey].meetings
+              .filter((meeting) => meeting.day === DAY.TUE)[0];
+            beforeEach(async function () {
+              const addNewTimeButton = getByText('Add New Time');
+              fireEvent.click(addNewTimeButton);
+              const dayDropdown = getByLabelText('Meeting Day', { exact: false }) as HTMLSelectElement;
+              // Fill out the new meeting entry and exit the editing stage
+              fireEvent.change(dayDropdown,
+                { target: { value: day } });
+              const timepicker = await waitForElement(() => findByLabelText('Timeslot Button'));
+              fireEvent.click(timepicker);
+              fireEvent.click(getByText(`${startTime}-${endTime}`));
+            });
+            context('when the delete button of the meeting currently being added is clicked', function () {
+              it('removes the meeting currently being edited', async function () {
+                // The new meeting ids are determined by the length of the number of meetings.
+                const deleteButtonIndex = testCourseInstance[semKey]
+                  .meetings.length + 1;
+                const deleteNewMeetingButton = await waitForElement(
+                  () => document.getElementById(`delete-button-new-meeting-${deleteButtonIndex}`)
+                );
+                fireEvent.click(deleteNewMeetingButton);
+                const meetingText = `${day}, ${startTime} to ${endTime}`;
+                strictEqual(queryByText(meetingText, { exact: false }), null);
+              });
+            });
+            context('when the delete button of the newly added meeting is clicked', function () {
+              it('removes the newly added meeting', async function () {
+                const closeButton = getByText('Close');
+                fireEvent.click(closeButton);
+                // The new meeting ids are determined by the length of the number of meetings.
+                const deleteButtonIndex = testCourseInstance[semKey]
+                  .meetings.length + 1;
+                const deleteNewMeetingButton = await waitForElement(
+                  () => document.getElementById(`delete-button-new-meeting-${deleteButtonIndex}`)
+                );
+                fireEvent.click(deleteNewMeetingButton);
+                const meetingText = `${day}, ${startTime} to ${endTime}`;
+                strictEqual(queryByText(meetingText, { exact: false }), null);
+              });
+            });
+            context('when the delete button of a previously existing meeting is clicked', function () {
+              it('removes the meeting linked to the clicked delete button', async function () {
+                const deleteCS50TuesdayMeetingButton = await waitForElement(() => document.getElementById('delete-button-' + cs50TuesdayMeeting.id));
+                fireEvent.click(deleteCS50TuesdayMeetingButton);
+                const meetingText = `${DAY.TUE}, ${cs50TuesdayMeeting.startTime} to ${cs50TuesdayMeeting.endTime}`;
+                strictEqual(queryByText(meetingText, { exact: false }), null);
+              });
+            });
+          });
+        });
       });
     });
     describe('On Close Behavior', function () {
