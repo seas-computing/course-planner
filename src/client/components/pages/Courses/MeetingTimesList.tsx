@@ -52,6 +52,11 @@ interface MeetingTimesListProps {
    * A handler to clear the current edit meeting, optionally opening a new one
    */
   closeCurrentEditMeeting: (newMeeting?: CourseInstanceResponseMeeting) => void;
+  /**
+   * A handler to delete a meeting from the current existing meetings of the
+   * course instance
+   */
+  removeMeeting: (meeting: CourseInstanceResponseMeeting) => void;
 }
 
 interface StyledMeetingRowProps {
@@ -156,6 +161,7 @@ export const MeetingTimesList
   closeCurrentEditMeeting,
   showRoomsHandler,
   meetingTimeError,
+  removeMeeting,
 }): ReactElement {
   return (
     <div className="meeting-times-section">
@@ -180,10 +186,12 @@ export const MeetingTimesList
                 <StyledDeleteButton>
                   <BorderlessButton
                     alt={`Delete Meeting ${index + 1} on ${meetingTimeString}${meetingRoomString}`}
-                    id={`deleteButton${meeting.id}`}
+                    id={`delete-button-${meeting.id}`}
                     variant={VARIANT.DANGER}
                     onClick={
-                      (): void => {}
+                      (): void => {
+                        removeMeeting(meeting);
+                      }
                     }
                   >
                     <FontAwesomeIcon icon={faTrash} />

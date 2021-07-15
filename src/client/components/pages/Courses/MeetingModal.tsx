@@ -314,6 +314,22 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     }
   };
 
+  /**
+   * A handler to delete a meeting from the current existing meetings of the
+   * course instance. If the deleted meeting was being edited at the time of
+   * deletion, the state of the currently edited meeting is set back to null so
+   * that no meetings are expanded in edit mode.
+   */
+  const removeMeeting = (meeting: CourseInstanceResponseMeeting) => {
+    if (currentEditMeeting !== null) {
+      setCurrentEditMeeting(null);
+    }
+    const updatedMeetings = allMeetings.filter(
+      (currentMeeting) => currentMeeting.id !== meeting.id
+    );
+    setAllMeetings(updatedMeetings);
+  };
+
   return (
     <Modal
       ariaLabelledBy="editMeeting"
@@ -338,6 +354,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
                 updateCurrentEditMeeting={updateCurrentEditMeeting}
                 closeCurrentEditMeeting={closeCurrentEditMeeting}
                 showRoomsHandler={searchForRooms}
+                removeMeeting={removeMeeting}
               />
               <h3>
                 Faculty Notes
