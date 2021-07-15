@@ -32,6 +32,11 @@ const RoomSelectionPrompt = styled.div`
 `;
 
 /**
+ * The message shown inside the Room Selection prompt
+ */
+const roomSelectionPromptMessage = 'Add meeting time and click "Show Rooms" to view availability';
+
+/**
  * Wrapper component that handles fetching the list of rooms based on the data
  * provided, then rendering it into a table
  */
@@ -62,6 +67,8 @@ const RoomSelection = (
           });
         })
         .finally(() => { setFetching(false); });
+    } else {
+      setRoomList([]);
     }
   },
   [
@@ -79,9 +86,7 @@ const RoomSelection = (
       />
       {isFetching && <LoadSpinner>Searching for Rooms</LoadSpinner>}
       {roomRequestData === null && (
-        <RoomSelectionPrompt>
-          Add meeting time and click &quot;Show Rooms&quot; to view availability
-        </RoomSelectionPrompt>
+        <RoomSelectionPrompt>{roomSelectionPromptMessage}</RoomSelectionPrompt>
       )}
     </>
   );

@@ -226,7 +226,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
                       }
                     >
                       <CellLayout>
-                        {field.getValue(course)}
+                        {field.getValue(course, academicYear)}
                       </CellLayout>
                     </TableCell>
                   );
