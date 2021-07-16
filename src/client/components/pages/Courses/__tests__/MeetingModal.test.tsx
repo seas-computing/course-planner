@@ -980,10 +980,8 @@ describe('Meeting Modal', function () {
             context('when the delete button of the meeting currently being added is clicked', function () {
               it('removes the meeting currently being edited', async function () {
                 // The new meeting ids are determined by the length of the number of meetings.
-                const deleteButtonIndex = testCourseInstance[semKey]
-                  .meetings.length + 1;
                 const deleteNewMeetingButton = await waitForElement(
-                  () => document.getElementById(`delete-button-new-meeting-${deleteButtonIndex}`)
+                  () => document.getElementById('delete-button-new-meeting-1')
                 );
                 fireEvent.click(deleteNewMeetingButton);
                 const meetingText = `${day}, ${startTime} to ${endTime}`;
@@ -994,11 +992,8 @@ describe('Meeting Modal', function () {
               it('removes the newly added meeting', async function () {
                 const closeButton = getByText('Close');
                 fireEvent.click(closeButton);
-                // The new meeting ids are determined by the length of the number of meetings.
-                const deleteButtonIndex = testCourseInstance[semKey]
-                  .meetings.length + 1;
                 const deleteNewMeetingButton = await waitForElement(
-                  () => document.getElementById(`delete-button-new-meeting-${deleteButtonIndex}`)
+                  () => document.getElementById('delete-button-new-meeting-1')
                 );
                 fireEvent.click(deleteNewMeetingButton);
                 const meetingText = `${day}, ${startTime} to ${endTime}`;
