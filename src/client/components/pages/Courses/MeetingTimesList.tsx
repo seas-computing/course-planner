@@ -45,13 +45,21 @@ interface MeetingTimesListProps {
    */
   showRoomsHandler: () => void;
   /**
-   * Any validation erros that need to be addressed
+   * Any validation errors that need to be addressed
    */
   meetingTimeError: string;
   /**
    * A handler to clear the current edit meeting, optionally opening a new one
    */
   closeCurrentEditMeeting: (newMeeting?: CourseInstanceResponseMeeting) => void;
+  /**
+   * Used to create a temporary unique ID for new meetings on the client
+   */
+  newMeetingIdNumber: string;
+  /**
+   * A handler to update the meeting id number for the id of newly created meetings
+   */
+  updateNewMeetingIdNumber: () => void;
   /**
    * A handler to delete a meeting from the current existing meetings of the
    * course instance
@@ -162,6 +170,8 @@ export const MeetingTimesList
   showRoomsHandler,
   meetingTimeError,
   removeMeeting,
+  newMeetingIdNumber,
+  updateNewMeetingIdNumber,
 }): ReactElement {
   return (
     <div className="meeting-times-section">
@@ -365,12 +375,13 @@ export const MeetingTimesList
           id="addNewTimeButton"
           onClick={() => {
             closeCurrentEditMeeting({
-              id: `new-meeting-${allMeetings.length + 1}`,
+              id: `new-meeting-${newMeetingIdNumber}`,
               day: '' as DAY,
               startTime: '',
               endTime: '',
               room: null,
             });
+            updateNewMeetingIdNumber();
           }}
           variant={VARIANT.SECONDARY}
         >

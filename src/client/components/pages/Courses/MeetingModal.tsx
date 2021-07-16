@@ -215,6 +215,23 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   ] = useState('');
 
   /**
+   * Used to create a temporary unique ID for new meetings on the client.
+   * A permanent UUID will be assigned as a result of the server request
+   */
+  const [
+    newMeetingIdNumber,
+    setNewMeetingIdNumber,
+  ] = useState(1);
+
+  /**
+   * Updates the generated meeting id for newly created meetingsby increasing
+   * the current index by 1
+   */
+  const updateNewMeetingIdNumber = (): void => {
+    setNewMeetingIdNumber(newMeetingIdNumber + 1);
+  };
+
+  /**
    * Updates individual fields in the current meeting by merging passed props
    * and values into the object
    */
@@ -321,7 +338,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
    * that no meetings are expanded in edit mode.
    */
   const removeMeeting = (meeting: CourseInstanceResponseMeeting) => {
-    if (currentEditMeeting !== null) {
+    if (currentEditMeeting && meeting.id === currentEditMeeting.id) {
       setCurrentEditMeeting(null);
     }
     const updatedMeetings = allMeetings.filter(
@@ -354,6 +371,8 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
                 updateCurrentEditMeeting={updateCurrentEditMeeting}
                 closeCurrentEditMeeting={closeCurrentEditMeeting}
                 showRoomsHandler={searchForRooms}
+                newMeetingIdNumber={newMeetingIdNumber.toString()}
+                updateNewMeetingIdNumber={updateNewMeetingIdNumber}
                 removeMeeting={removeMeeting}
               />
               <h3>
