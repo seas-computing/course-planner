@@ -934,18 +934,26 @@ describe('Meeting Modal', function () {
           });
         });
         describe('On Delete Behavior', function () {
+          const cs50FridayMeeting = testCourseInstance[semKey].meetings
+            .filter((meeting) => meeting.day === DAY.FRI)[0];
+          const cs50TuesdayMeeting = testCourseInstance[semKey].meetings
+            .filter((meeting) => meeting.day === DAY.TUE)[0];
+          const fridayMeetingIndex = testCourseInstance[semKey].meetings
+            .findIndex(({ id }) => id === cs50FridayMeeting.id);
+          const tuesdayMeetingIndex = testCourseInstance[semKey].meetings
+            .findIndex(({ id }) => id === cs50TuesdayMeeting.id);
           context('when a meeting time is being edited', function () {
-            const cs50FridayMeeting = testCourseInstance[semKey].meetings
-              .filter((meeting) => meeting.day === DAY.FRI)[0];
-            const cs50TuesdayMeeting = testCourseInstance[semKey].meetings
-              .filter((meeting) => meeting.day === DAY.TUE)[0];
             beforeEach(async function () {
-              const editCS50FridayMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50FridayMeeting.id));
+              const editCS50FridayMeetingButton = await waitForElement(
+                () => findByLabelText(`Edit Meeting ${fridayMeetingIndex + 1} on ${dayEnumToString(cs50FridayMeeting.day)}, ${cs50FridayMeeting.startTime} to ${cs50FridayMeeting.endTime}${cs50FridayMeeting.room.name === '' ? '' : ` in ${cs50FridayMeeting.room.name}`}`)
+              );
               fireEvent.click(editCS50FridayMeetingButton);
             });
             context('when the delete button of the meeting time being edited is clicked', function () {
               it('removes the meeting being edited', async function () {
-                const deleteCS50FridayMeetingButton = await waitForElement(() => document.getElementById('delete-button-' + cs50FridayMeeting.id));
+                const deleteCS50FridayMeetingButton = await waitForElement(
+                  () => findByLabelText(`Delete Meeting ${fridayMeetingIndex + 1} on ${dayEnumToString(cs50FridayMeeting.day)}, ${cs50FridayMeeting.startTime} to ${cs50FridayMeeting.endTime}${cs50FridayMeeting.room.name === '' ? '' : ` in ${cs50FridayMeeting.room.name}`}`)
+                );
                 fireEvent.click(deleteCS50FridayMeetingButton);
                 const meetingText = `${DAY.FRI}, ${cs50FridayMeeting.startTime} to ${cs50FridayMeeting.endTime}`;
                 strictEqual(queryByText(meetingText, { exact: false }), null);
@@ -953,7 +961,9 @@ describe('Meeting Modal', function () {
             });
             context('when the delete button of a meeting time not being edited is clicked', function () {
               it('removes the meeting linked to the clicked delete button', async function () {
-                const deleteCS50TuesdayMeetingButton = await waitForElement(() => document.getElementById('delete-button-' + cs50TuesdayMeeting.id));
+                const deleteCS50TuesdayMeetingButton = await waitForElement(
+                  () => findByLabelText(`Delete Meeting ${tuesdayMeetingIndex + 1} on ${dayEnumToString(cs50TuesdayMeeting.day)}, ${cs50TuesdayMeeting.startTime} to ${cs50TuesdayMeeting.endTime}${cs50TuesdayMeeting.room.name === '' ? '' : ` in ${cs50TuesdayMeeting.room.name}`}`)
+                );
                 fireEvent.click(deleteCS50TuesdayMeetingButton);
                 const meetingText = `${DAY.TUE}, ${cs50TuesdayMeeting.startTime} to ${cs50TuesdayMeeting.endTime}`;
                 strictEqual(queryByText(meetingText, { exact: false }), null);
@@ -964,8 +974,6 @@ describe('Meeting Modal', function () {
             const day = DAY.MON;
             const startTime = '4:00 PM';
             const endTime = '5:00 PM';
-            const cs50TuesdayMeeting = testCourseInstance[semKey].meetings
-              .filter((meeting) => meeting.day === DAY.TUE)[0];
             beforeEach(async function () {
               const addNewTimeButton = getByText('Add New Time');
               fireEvent.click(addNewTimeButton);
@@ -1002,7 +1010,9 @@ describe('Meeting Modal', function () {
             });
             context('when the delete button of a previously existing meeting is clicked', function () {
               it('removes the meeting linked to the clicked delete button', async function () {
-                const deleteCS50TuesdayMeetingButton = await waitForElement(() => document.getElementById('delete-button-' + cs50TuesdayMeeting.id));
+                const deleteCS50TuesdayMeetingButton = await waitForElement(
+                  () => findByLabelText(`Delete Meeting ${tuesdayMeetingIndex + 1} on ${dayEnumToString(cs50TuesdayMeeting.day)}, ${cs50TuesdayMeeting.startTime} to ${cs50TuesdayMeeting.endTime}${cs50TuesdayMeeting.room.name === '' ? '' : ` in ${cs50TuesdayMeeting.room.name}`}`)
+                );
                 fireEvent.click(deleteCS50TuesdayMeetingButton);
                 const meetingText = `${DAY.TUE}, ${cs50TuesdayMeeting.startTime} to ${cs50TuesdayMeeting.endTime}`;
                 strictEqual(queryByText(meetingText, { exact: false }), null);
