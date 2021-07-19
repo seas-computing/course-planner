@@ -74,7 +74,15 @@ export class LocationService {
   /**
    * Resolves with a list of rooms and the course instance and/or non class
    * meetings that are scheduled to occur during the requested calendar year,
-   * term, day, start time, and end time
+   * term, day, start time, and end time.
+   *
+   * If the RoomRequest data includes an `exludeParent` property with the UUID
+   * of a [[CourseInstance]] or [[NonClassEvent]], it will not show that
+   * meeting in the list of meetings. This is mostly necessary when populating
+   * the [[RoomSelectionTable]] on the client, so that users can change the
+   * room associated with a meeting then change it back. It's implemented on
+   * the server so that we can strictly compare by UUID, not by the
+   * (potentially not unique) meeting title string.
    */
   public async getRooms(
     {
