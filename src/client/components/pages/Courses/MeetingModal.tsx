@@ -340,6 +340,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   const removeMeeting = (meeting: CourseInstanceResponseMeeting) => {
     if (currentEditMeeting && meeting.id === currentEditMeeting.id) {
       setCurrentEditMeeting(null);
+      setShowRoomsData(null);
     }
     const updatedMeetings = allMeetings.filter(
       (currentMeeting) => currentMeeting.id !== meeting.id
