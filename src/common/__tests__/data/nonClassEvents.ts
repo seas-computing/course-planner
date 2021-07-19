@@ -156,7 +156,7 @@ export const computationalModelingofFluidsReadingGroup = {
  * Non-class parent for applied math reading group formatted to match
  * [[NonClassMeetingResponseDTO]].
  */
- export const appliedMathematicsReadingGroup = {
+export const appliedMathematicsReadingGroup = {
   area: 'AM',
   id: '6512a306-3d2f-4a03-97fe-2dc7aac37107',
   contactName: 'Cliff Taube',
