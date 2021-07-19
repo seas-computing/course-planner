@@ -1,3 +1,5 @@
+import { DAY, TERM } from 'common/constants';
+
 /**
  * Data Science Reading Group
  *
@@ -5,6 +7,7 @@
  * [[NonClassMeetingResponseDTO]].
  */
 export const dataScienceReadingGroup = {
+  area: 'FAS',
   id: '9548f85e-d613-48d2-94fe-63dbaf95084c',
   contactName: 'Jim Waldo',
   contactEmail: null,
@@ -15,12 +18,11 @@ export const dataScienceReadingGroup = {
   spring: {
     id: '59d737ac-aadc-4e67-8d7a-7db2299d0026',
     academicYear: '2020',
-    term: 'SPRING',
-    nonClassParentId: '9548f85e-d613-48d2-94fe-63dbaf95084c',
+    term: 'SPRING' as TERM,
     meetings: [
       {
         id: '06369a12-24f0-4a5c-8ecc-9e0124179f75',
-        day: 'FRI',
+        day: 'FRI' as DAY,
         startTime: '12:14 AM',
         endTime: '12:17 AM',
         room: {
@@ -31,7 +33,7 @@ export const dataScienceReadingGroup = {
       },
       {
         id: '968bd796-0cfb-402a-91e3-59b44c2c9ab9',
-        day: 'MON',
+        day: 'MON' as DAY,
         startTime: '12:08 AM',
         endTime: '12:10 AM',
         room: {
@@ -45,12 +47,11 @@ export const dataScienceReadingGroup = {
   fall: {
     id: '613778f2-ef61-475e-8ca3-71a6416de9a4',
     academicYear: '2020',
-    term: 'FALL',
-    nonClassParentId: '9548f85e-d613-48d2-94fe-63dbaf95084c',
+    term: 'FALL' as TERM,
     meetings: [
       {
         id: 'bd572431-e00e-4a78-9975-1aa90d86c15b',
-        day: 'FRI',
+        day: 'FRI' as DAY,
         startTime: '12:14 AM',
         endTime: '12:17 AM',
         room: {
@@ -61,7 +62,7 @@ export const dataScienceReadingGroup = {
       },
       {
         id: 'afa76436-4523-4f3b-a952-95ec76c1294d',
-        day: 'MON',
+        day: 'MON' as DAY,
         startTime: '12:08 AM',
         endTime: '12:10 AM',
         room: {
@@ -81,6 +82,7 @@ export const dataScienceReadingGroup = {
  * [[NonClassMeetingResponseDTO]].
  */
 export const computationalModelingofFluidsReadingGroup = {
+  area: 'ACS',
   id: 'ad9a6a86-4cd1-4063-bd6d-c7379f10c540',
   contactName: 'Jim Waldo',
   contactEmail: 'jwaldo@harvard.edu',
@@ -91,12 +93,11 @@ export const computationalModelingofFluidsReadingGroup = {
   spring: {
     id: '3086f1be-a15f-491f-b82b-e991f3e747b1',
     academicYear: '2020',
-    term: 'SPRING',
-    nonClassParentId: 'ad9a6a86-4cd1-4063-bd6d-c7379f10c540',
+    term: 'SPRING' as TERM,
     meetings: [
       {
         id: '69c72509-3cf0-431a-a1d1-924dcdd43b01',
-        day: 'FRI',
+        day: 'FRI' as DAY,
         startTime: '12:14 AM',
         endTime: '12:17 AM',
         room: {
@@ -107,7 +108,7 @@ export const computationalModelingofFluidsReadingGroup = {
       },
       {
         id: 'afef329c-90af-4d67-9f86-74568a466d26',
-        day: 'MON',
+        day: 'MON' as DAY,
         startTime: '12:08 AM',
         endTime: '12:10 AM',
         room: {
@@ -121,12 +122,11 @@ export const computationalModelingofFluidsReadingGroup = {
   fall: {
     id: 'dfd31de2-d794-457a-bf46-908618afb7ca',
     academicYear: '2020',
-    term: 'FALL',
-    nonClassParentId: 'ad9a6a86-4cd1-4063-bd6d-c7379f10c540',
+    term: 'FALL' as TERM,
     meetings: [
       {
         id: '8bf44cd9-6aaa-4e39-a295-65794daf45cf',
-        day: 'FRI',
+        day: 'FRI' as DAY,
         startTime: '12:14 AM',
         endTime: '12:17 AM',
         room: {
@@ -137,7 +137,7 @@ export const computationalModelingofFluidsReadingGroup = {
       },
       {
         id: 'ac220eec-6775-4974-9950-700a2459979e',
-        day: 'MON',
+        day: 'MON' as DAY,
         startTime: '12:08 AM',
         endTime: '12:10 AM',
         room: {
