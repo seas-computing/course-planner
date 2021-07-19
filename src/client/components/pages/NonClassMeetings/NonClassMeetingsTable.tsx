@@ -135,12 +135,7 @@ const NonClassMeetingsTable: FunctionComponent<NonClassMeetingsTableProps> = ({
                   contactPhone,
                 ]
                   .filter((info) => !!info)
-                  .map((info) => (
-                    <>
-                      {info}
-                      <br />
-                    </>
-                  ))
+                  .map((info) => (<p key={info}>{info}</p>))
               }
             </TableCell>
             <TableCell key={`fallMeetings-${id}`}>
