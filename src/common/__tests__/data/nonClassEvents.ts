@@ -149,3 +149,78 @@ export const computationalModelingofFluidsReadingGroup = {
     ],
   },
 };
+
+/**
+ * Applied Math Reading Group
+ *
+ * Non-class parent for applied math reading group formatted to match
+ * [[NonClassMeetingResponseDTO]].
+ */
+ export const appliedMathematicsReadingGroup = {
+  area: 'AM',
+  id: '6512a306-3d2f-4a03-97fe-2dc7aac37107',
+  contactName: 'Cliff Taube',
+  contactEmail: 'ctaube@fas.harvard.edu',
+  contactPhone: null,
+  notes: 'This reading group is usually well attended',
+  expectedSize: null,
+  title: 'Applied mathematics reading group',
+  spring: {
+    id: '1cdcc7f4-2f0b-42f5-bd41-51dba7deda16',
+    academicYear: '2020',
+    term: 'SPRING' as TERM,
+    meetings: [
+      {
+        id: 'b5916e2b-42d6-46f3-acb7-dea1e3541a00',
+        day: 'FRI' as DAY,
+        startTime: '12:14 AM',
+        endTime: '12:17 AM',
+        room: {
+          id: '17d19e35-617d-486d-9b40-f30197342c18',
+          name: 'Maxwell Dworkin G115 Lecture Theatre',
+          campus: 'Cambridge',
+        },
+      },
+      {
+        id: 'dbe4a352-6755-4ffb-b0ca-e58e13fa8320',
+        day: 'TUE' as DAY,
+        startTime: '04:00 PM',
+        endTime: '05:00 PM',
+        room: {
+          id: '17d19e35-617d-486d-9b40-f30197342c18',
+          name: 'Maxwell Dworkin G115 Lecture Theatre',
+          campus: 'Cambridge',
+        },
+      },
+    ],
+  },
+  fall: {
+    id: '44f22dbb-d6c7-4673-8a7d-f70aa0562350',
+    academicYear: '2020',
+    term: 'FALL' as TERM,
+    meetings: [
+      {
+        id: '732c4b36-9239-4aa6-b131-c8d5cd15908d',
+        day: 'WED' as DAY,
+        startTime: '08:00 AM',
+        endTime: '10:00 AM',
+        room: {
+          id: '17d19e35-617d-486d-9b40-f30197342c18',
+          name: 'Maxwell Dworkin G115 Lecture Theatre',
+          campus: 'Cambridge',
+        },
+      },
+      {
+        id: '59be22e9-29b4-4b98-87f5-e157cbbc76ee',
+        day: 'TUE' as DAY,
+        startTime: '10:00 AM',
+        endTime: '11:10 AM',
+        room: {
+          id: '17d19e35-617d-486d-9b40-f30197342c18',
+          name: 'Maxwell Dworkin G115 Lecture Theatre',
+          campus: 'Cambridge',
+        },
+      },
+    ],
+  },
+};

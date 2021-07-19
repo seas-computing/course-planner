@@ -10,6 +10,7 @@ import {
 import {
   dataScienceReadingGroup,
   computationalModelingofFluidsReadingGroup,
+  appliedMathematicsReadingGroup,
 } from 'testData';
 import NonClassMeetingsTable from '../NonClassMeetingsTable';
 
@@ -18,6 +19,7 @@ describe('NonClassMeetings Table', function () {
   const nonClassMeetings = [
     dataScienceReadingGroup,
     computationalModelingofFluidsReadingGroup,
+    appliedMathematicsReadingGroup,
   ];
   describe('Header', function () {
     let getAllByRole: BoundFunction<AllByRole>;
@@ -54,9 +56,11 @@ describe('NonClassMeetings Table', function () {
       );
     });
     it('renders the non class meetings into the body', function () {
-      const headerRows = getAllByRole('row')
-        .filter((row) => within(row).queryAllByRole('columnheader').length > 0);
-      strictEqual(headerRows.length, nonClassMeetings.length);
+      const tableBodyRows = getAllByRole('row')
+        .filter(
+          (row) => within(row).queryAllByRole('columnheader').length === 0
+        );
+      strictEqual(tableBodyRows.length, nonClassMeetings.length);
     });
   });
 });
