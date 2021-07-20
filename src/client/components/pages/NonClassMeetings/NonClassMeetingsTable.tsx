@@ -86,15 +86,15 @@ const NonClassMeetingsTable: FunctionComponent<NonClassMeetingsTableProps> = ({
         </TableHeadingCell>
       </TableRow>
       <TableRow isStriped>
-        <TableHeadingCell key="area">Area</TableHeadingCell>
-        <TableHeadingCell key="title">Title</TableHeadingCell>
-        <TableHeadingCell key="expectedSize">Expected Size</TableHeadingCell>
-        <TableHeadingCell key="notes">Notes</TableHeadingCell>
-        <TableHeadingCell key="contactInfo">Contact Info</TableHeadingCell>
-        <TableHeadingCell key="springRoom">Room</TableHeadingCell>
-        <TableHeadingCell key="fallRoom">Room</TableHeadingCell>
-        <TableHeadingCell key="detail">Detail</TableHeadingCell>
-        <TableHeadingCell key="editMeeting">Edit Meeting</TableHeadingCell>
+        <TableHeadingCell>Area</TableHeadingCell>
+        <TableHeadingCell>Title</TableHeadingCell>
+        <TableHeadingCell>Expected Size</TableHeadingCell>
+        <TableHeadingCell>Notes</TableHeadingCell>
+        <TableHeadingCell>Contact Info</TableHeadingCell>
+        <TableHeadingCell>Room</TableHeadingCell>
+        <TableHeadingCell>Room</TableHeadingCell>
+        <TableHeadingCell>Detail</TableHeadingCell>
+        <TableHeadingCell>Edit Meeting</TableHeadingCell>
       </TableRow>
     </TableHead>
     <TableBody>
@@ -112,11 +112,11 @@ const NonClassMeetingsTable: FunctionComponent<NonClassMeetingsTableProps> = ({
           fall,
         }, index) => (
           <TableRow isStriped={index % 2 !== 0} key={id}>
-            <TableCell backgroundColor={getAreaColor(area)} key={`area-${id}`}>{area}</TableCell>
-            <TableCell key={`title-${id}`}>{title}</TableCell>
-            <TableCell key={`expectedSize-${id}`}>{expectedSize}</TableCell>
-            <TableCell key={`notes-${id}`}>{notes}</TableCell>
-            <TableCell key={`contactInfo-${id}`}>
+            <TableCell backgroundColor={getAreaColor(area)}>{area}</TableCell>
+            <TableCell>{title}</TableCell>
+            <TableCell>{expectedSize}</TableCell>
+            <TableCell>{notes}</TableCell>
+            <TableCell>
               {
                 /*
                   * This is being used instead of just outputting the fields
@@ -138,7 +138,7 @@ const NonClassMeetingsTable: FunctionComponent<NonClassMeetingsTableProps> = ({
                   .map((info) => (<p key={info}>{info}</p>))
               }
             </TableCell>
-            <TableCell key={`fallMeetings-${id}`}>
+            <TableCell>
               <CellLayout>
                 <TableCellList>
                   {fall.meetings.map(({
@@ -170,7 +170,6 @@ const NonClassMeetingsTable: FunctionComponent<NonClassMeetingsTableProps> = ({
                 </TableCellList>
                 <BorderlessButton
                   id={`${id}-${spring.term}-edit-meetings-button`}
-                  key={`${id}-${spring.term}-edit-meetings-button`}
                   onClick={() => {}}
                   variant={VARIANT.INFO}
                 >
@@ -178,7 +177,7 @@ const NonClassMeetingsTable: FunctionComponent<NonClassMeetingsTableProps> = ({
                 </BorderlessButton>
               </CellLayout>
             </TableCell>
-            <TableCell key={`springMeetings-${id}`}>
+            <TableCell>
               <CellLayout>
                 <TableCellList>
                   {spring.meetings.map(({
@@ -210,7 +209,6 @@ const NonClassMeetingsTable: FunctionComponent<NonClassMeetingsTableProps> = ({
                 </TableCellList>
                 <BorderlessButton
                   id={`${id}-${spring.term}-edit-meetings-button`}
-                  key={`${id}-${spring.term}-edit-meetings-button`}
                   onClick={() => {}}
                   variant={VARIANT.INFO}
                 >
