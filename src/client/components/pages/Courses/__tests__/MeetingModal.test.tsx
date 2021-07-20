@@ -968,6 +968,8 @@ describe('Meeting Modal', function () {
             const day = DAY.MON;
             const startTime = '4:00 PM';
             const endTime = '5:00 PM';
+            const newMeetingIndex = testCourseInstance[semKey]
+              .meetings.length + 1;
             beforeEach(async function () {
               const addNewTimeButton = getByText('Add New Time');
               fireEvent.click(addNewTimeButton);
@@ -975,15 +977,13 @@ describe('Meeting Modal', function () {
               // Fill out the new meeting entry and exit the editing stage
               fireEvent.change(dayDropdown,
                 { target: { value: day } });
-              const timepicker = await waitForElement(() => findByLabelText('Timeslot Button'));
+              const timepicker = await findByLabelText('Timeslot Button');
               fireEvent.click(timepicker);
               fireEvent.click(getByText(`${startTime}-${endTime}`));
             });
             context('when the delete button of the meeting currently being added is clicked', function () {
               it('removes the meeting currently being edited', async function () {
-                const deleteNewMeetingButton = await waitForElement(
-                  () => document.getElementById('delete-button-new-meeting-1')
-                );
+                const deleteNewMeetingButton = await findByLabelText(`Delete Meeting ${newMeetingIndex}`, { exact: false });
                 fireEvent.click(deleteNewMeetingButton);
                 const meetingText = `${day}, ${startTime} to ${endTime}`;
                 strictEqual(queryByText(meetingText, { exact: false }), null);
@@ -993,9 +993,7 @@ describe('Meeting Modal', function () {
               it('removes the newly added meeting', async function () {
                 const closeButton = getByText('Close');
                 fireEvent.click(closeButton);
-                const deleteNewMeetingButton = await waitForElement(
-                  () => document.getElementById('delete-button-new-meeting-1')
-                );
+                const deleteNewMeetingButton = await findByLabelText(`Delete Meeting ${newMeetingIndex}`, { exact: false });
                 fireEvent.click(deleteNewMeetingButton);
                 const meetingText = `${day}, ${startTime} to ${endTime}`;
                 strictEqual(queryByText(meetingText, { exact: false }), null);
