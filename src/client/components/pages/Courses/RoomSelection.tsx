@@ -9,12 +9,17 @@ import RoomSelectionTable from './RoomSelectionTable';
 import RoomRequest from '../../../../common/dto/room/RoomRequest.dto';
 import { MessageContext } from '../../../context';
 import { AppMessage, MESSAGE_TYPE, MESSAGE_ACTION } from '../../../classes';
+import { CourseInstanceResponseMeeting } from '../../../../common/dto/courses/CourseInstanceResponse';
 
 interface RoomSelectionProps {
   /** The day and time for which a room should be selected */
   roomRequestData?: RoomRequest;
   /** The handler that will be called when a room is chosen */
-  roomHandler: (roomData: RoomResponse) => void;
+  roomHandler: (
+    roomData: CourseInstanceResponseMeeting['room']
+  ) => void;
+  /** The id of the room that is currently assigned to the meeting */
+  currentRoomId?: string;
 }
 
 /**
@@ -41,12 +46,9 @@ const roomSelectionPromptMessage = 'Add meeting time and click "Show Rooms" to v
  * provided, then rendering it into a table
  */
 
-const RoomSelection = (
-  props: RoomSelectionProps
-): ReactElement<RoomSelectionProps> => {
-  const {
-    roomRequestData, roomHandler,
-  } = props;
+const RoomSelection = ({
+  roomRequestData, roomHandler, currentRoomId,
+}: RoomSelectionProps): ReactElement<RoomSelectionProps> => {
   const [roomList, setRoomList] = useState<RoomResponse[]>([]);
   const [isFetching, setFetching] = useState<boolean>(false);
 
@@ -83,6 +85,7 @@ const RoomSelection = (
       <RoomSelectionTable
         roomList={roomList}
         addButtonHandler={roomHandler}
+        currentRoomId={currentRoomId}
       />
       {isFetching && <LoadSpinner>Searching for Rooms</LoadSpinner>}
       {roomRequestData === null && (
@@ -94,6 +97,7 @@ const RoomSelection = (
 
 RoomSelection.defaultProps = {
   roomRequestData: null,
+  currentRoomId: null,
 };
 
 export default RoomSelection;

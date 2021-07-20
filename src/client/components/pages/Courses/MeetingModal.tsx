@@ -146,6 +146,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   const {
     catalogNumber,
     [semKey]: {
+      id: instanceId,
       meetings: instanceMeetings,
       instructors: instanceInstructors,
     },
@@ -310,6 +311,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
         startTime,
         endTime,
         day,
+        excludeParent: instanceId,
       });
     }
   };
@@ -365,7 +367,8 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
             <RoomAvailabilityBody>
               <RoomSelection
                 roomRequestData={showRoomsData}
-                roomHandler={() => {}}
+                roomHandler={(room) => { updateCurrentEditMeeting({ room }); }}
+                currentRoomId={currentEditMeeting?.room?.id}
               />
             </RoomAvailabilityBody>
           </RoomAvailability>

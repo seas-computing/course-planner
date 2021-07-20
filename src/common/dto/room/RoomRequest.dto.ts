@@ -1,6 +1,8 @@
 import { DAY, TERM } from 'common/constants';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsEnum, Matches } from 'class-validator';
+import {
+  IsNotEmpty, IsEnum, Matches, IsOptional, IsUUID,
+} from 'class-validator';
 import { IsOccurringBefore, IsOccurringAfter } from '../utils';
 import { PGTime } from '../../utils/PGTime';
 
@@ -64,4 +66,16 @@ export default abstract class RoomRequest {
   @Matches(PGTime.regex)
   @IsOccurringAfter('startTime')
   public endTime: string;
+
+  /**
+   * The id of a meeting parent to exclude from the meetingTitles field in the
+   * response
+   */
+  @ApiProperty({
+    type: 'string',
+    example: 'daa3ea86-f2ee-4730-aae6-a21736c1af6c',
+  })
+  @IsOptional()
+  @IsUUID()
+  public excludeParent?: string;
 }
