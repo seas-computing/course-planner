@@ -70,7 +70,6 @@ const NonClassMeetingsTable: FunctionComponent<NonClassMeetingsTableProps> = ({
         <TableHeadingCell>Contact Info</TableHeadingCell>
         <TableHeadingCell>Room</TableHeadingCell>
         <TableHeadingCell>Room</TableHeadingCell>
-        <TableHeadingCell>Detail</TableHeadingCell>
         <TableHeadingCell>Edit Meeting</TableHeadingCell>
       </TableRow>
     </TableHead>
@@ -192,14 +191,6 @@ const NonClassMeetingsTable: FunctionComponent<NonClassMeetingsTableProps> = ({
                   <FontAwesomeIcon icon={faEdit} />
                 </BorderlessButton>
               </CellLayout>
-            </TableCell>
-            <TableCell>
-              <BorderlessButton
-                onClick={() => {}}
-                variant={VARIANT.INFO}
-              >
-                <FontAwesomeIcon icon={faFolderOpen} />
-              </BorderlessButton>
             </TableCell>
             <TableCell>
               <BorderlessButton
