@@ -944,16 +944,12 @@ describe('Meeting Modal', function () {
             .findIndex(({ id }) => id === cs50TuesdayMeeting.id);
           context('when a meeting time is being edited', function () {
             beforeEach(async function () {
-              const editCS50FridayMeetingButton = await waitForElement(
-                () => findByLabelText(`Edit Meeting ${fridayMeetingIndex + 1} on ${dayEnumToString(cs50FridayMeeting.day)}, ${cs50FridayMeeting.startTime} to ${cs50FridayMeeting.endTime}${cs50FridayMeeting.room.name === '' ? '' : ` in ${cs50FridayMeeting.room.name}`}`)
-              );
+              const editCS50FridayMeetingButton = await findByLabelText(`Edit Meeting ${fridayMeetingIndex + 1}`, { exact: false });
               fireEvent.click(editCS50FridayMeetingButton);
             });
             context('when the delete button of the meeting time being edited is clicked', function () {
               it('removes the meeting being edited', async function () {
-                const deleteCS50FridayMeetingButton = await waitForElement(
-                  () => findByLabelText(`Delete Meeting ${fridayMeetingIndex + 1} on ${dayEnumToString(cs50FridayMeeting.day)}, ${cs50FridayMeeting.startTime} to ${cs50FridayMeeting.endTime}${cs50FridayMeeting.room.name === '' ? '' : ` in ${cs50FridayMeeting.room.name}`}`)
-                );
+                const deleteCS50FridayMeetingButton = await findByLabelText(`Delete Meeting ${fridayMeetingIndex + 1}`, { exact: false });
                 fireEvent.click(deleteCS50FridayMeetingButton);
                 const meetingText = `${DAY.FRI}, ${cs50FridayMeeting.startTime} to ${cs50FridayMeeting.endTime}`;
                 strictEqual(queryByText(meetingText, { exact: false }), null);
@@ -961,9 +957,7 @@ describe('Meeting Modal', function () {
             });
             context('when the delete button of a meeting time not being edited is clicked', function () {
               it('removes the meeting linked to the clicked delete button', async function () {
-                const deleteCS50TuesdayMeetingButton = await waitForElement(
-                  () => findByLabelText(`Delete Meeting ${tuesdayMeetingIndex + 1} on ${dayEnumToString(cs50TuesdayMeeting.day)}, ${cs50TuesdayMeeting.startTime} to ${cs50TuesdayMeeting.endTime}${cs50TuesdayMeeting.room.name === '' ? '' : ` in ${cs50TuesdayMeeting.room.name}`}`)
-                );
+                const deleteCS50TuesdayMeetingButton = await findByLabelText(`Delete Meeting ${tuesdayMeetingIndex + 1}`, { exact: false });
                 fireEvent.click(deleteCS50TuesdayMeetingButton);
                 const meetingText = `${DAY.TUE}, ${cs50TuesdayMeeting.startTime} to ${cs50TuesdayMeeting.endTime}`;
                 strictEqual(queryByText(meetingText, { exact: false }), null);
@@ -987,7 +981,6 @@ describe('Meeting Modal', function () {
             });
             context('when the delete button of the meeting currently being added is clicked', function () {
               it('removes the meeting currently being edited', async function () {
-                // The new meeting ids are determined by the length of the number of meetings.
                 const deleteNewMeetingButton = await waitForElement(
                   () => document.getElementById('delete-button-new-meeting-1')
                 );
@@ -1010,9 +1003,7 @@ describe('Meeting Modal', function () {
             });
             context('when the delete button of a previously existing meeting is clicked', function () {
               it('removes the meeting linked to the clicked delete button', async function () {
-                const deleteCS50TuesdayMeetingButton = await waitForElement(
-                  () => findByLabelText(`Delete Meeting ${tuesdayMeetingIndex + 1} on ${dayEnumToString(cs50TuesdayMeeting.day)}, ${cs50TuesdayMeeting.startTime} to ${cs50TuesdayMeeting.endTime}${cs50TuesdayMeeting.room.name === '' ? '' : ` in ${cs50TuesdayMeeting.room.name}`}`)
-                );
+                const deleteCS50TuesdayMeetingButton = await findByLabelText(`Delete Meeting ${tuesdayMeetingIndex + 1}`, { exact: false });
                 fireEvent.click(deleteCS50TuesdayMeetingButton);
                 const meetingText = `${DAY.TUE}, ${cs50TuesdayMeeting.startTime} to ${cs50TuesdayMeeting.endTime}`;
                 strictEqual(queryByText(meetingText, { exact: false }), null);
