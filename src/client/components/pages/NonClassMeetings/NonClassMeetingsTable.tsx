@@ -35,7 +35,7 @@ interface NonClassMeetingsTableProps {
 }
 
 /**
- * Component representing the list of CourseInstances in a given Academic year
+ * Component representing the list of non-class meetings in a given academic year
  */
 const NonClassMeetingsTable: FunctionComponent<NonClassMeetingsTableProps> = ({
   academicYear,

@@ -15,11 +15,11 @@ import NonClassMeetingsTable from './NonClassMeetingsTable';
 const acadYear = 2022;
 
 /**
- * Component representing the list of CourseInstances in a given Academic year
+ * Component representing the list of non-class meetings in a given Academic year
  */
 const NonClassMeetingsPage: FunctionComponent = (): ReactElement => {
   /**
-  * Store the list of courses/instances to displayed
+  * Store the list of non-class meetings to displayed
   */
   const [
     nonClassMeetings,
