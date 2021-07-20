@@ -14,14 +14,13 @@ import {
   TableCellListItem,
   BorderlessButton,
   VARIANT,
-  fromTheme,
 } from 'mark-one';
 import NonClassMeetingResponseDTO from 'common/dto/nonClassMeetings/NonClassMeeting.dto';
 import { getAreaColor } from 'common/constants';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
 import { dayEnumToString } from 'common/constants/day';
-import styled from 'styled-components';
+import { MeetingGrid } from 'client/components/pages/Courses/tableFields';
 import { CampusIcon, CellLayout } from 'client/components/general';
 
 interface NonClassMeetingsTableProps {
@@ -34,28 +33,6 @@ interface NonClassMeetingsTableProps {
    */
   academicYear: number;
 }
-
-/**
- * Utility component to style the data about a meeting
- */
-const MeetingGrid = styled.div`
- display: grid;
- grid-template-areas: "time campus room";
- grid-template-columns: 2fr 2em 3fr 2em;
- column-gap: ${fromTheme('ws', 'xsmall')};
- align-items: baseline;
-`;
-
-/**
-* Handles the placement of a single piece of the meeting data
-*/
-
-const MeetingGridSection = styled.div<{area: string}>`
- grid-area: ${({ area }): string => area};
- display: flex;
- flex-direction: column;
- align-items: flex-start;
-`;
 
 /**
  * Component representing the list of CourseInstances in a given Academic year
