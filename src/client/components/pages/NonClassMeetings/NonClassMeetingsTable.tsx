@@ -20,7 +20,7 @@ import { getAreaColor } from 'common/constants';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
 import { dayEnumToString } from 'common/constants/day';
-import { MeetingGrid } from 'client/components/pages/Courses/tableFields';
+import { MeetingGrid, MeetingGridSection } from 'client/components/pages/Courses/tableFields';
 import { CampusIcon, CellLayout } from 'client/components/general';
 
 interface NonClassMeetingsTableProps {
