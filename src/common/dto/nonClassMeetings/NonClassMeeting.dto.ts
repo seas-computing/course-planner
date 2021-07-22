@@ -72,6 +72,12 @@ abstract class NonClassEvent {
 
 export default abstract class NonClassMeetingResponseDTO {
   @ApiProperty({
+    description: 'The area the non-class meeting belongs to',
+    example: 'ACS',
+  })
+  public area: string;
+
+  @ApiProperty({
     description: 'NonClassParent ID',
     example: '56a825b0-8860-4434-b843-c530a86138a1',
   })

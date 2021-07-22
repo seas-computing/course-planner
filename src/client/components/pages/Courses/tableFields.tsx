@@ -108,7 +108,7 @@ export const formatInstructors = (
 /**
  * Utility component to style the data about a meeting
  */
-const MeetingGrid = styled.div`
+export const MeetingGrid = styled.div`
   display: grid;
   grid-template-areas: "time campus room";
   grid-template-columns: 2fr 2em 3fr 2em;
@@ -120,7 +120,7 @@ const MeetingGrid = styled.div`
  * Handles the placement of a single piece of the meeting data
  */
 
-const MeetingGridSection = styled.div<{area: string}>`
+export const MeetingGridSection = styled.div<{area: string}>`
   grid-area: ${({ area }): string => area};
   display: flex;
   flex-direction: column;

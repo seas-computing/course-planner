@@ -13,6 +13,7 @@ import {
   Courses,
   MultiYearPlan,
   Schedule,
+  NonClassMeetings,
 } from '../pages';
 import { UserContext } from '../../context';
 
@@ -22,6 +23,7 @@ const AppRouter: FunctionComponent = (): ReactElement => {
     return (
       <Switch>
         <Redirect exact from="/" to="/courses" />
+        <Route exact path="/non-class-meetings" component={NonClassMeetings} />
         <Route exact path="/courses" component={Courses} />
         <Route exact path="/course-admin" component={CourseAdmin} />
         <Route exact path="/faculty" component={Faculty} />
