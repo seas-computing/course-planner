@@ -45,7 +45,7 @@ interface MeetingModalProps {
    */
   currentSemester: {
     term: TERM,
-    calendarYear: number
+    calendarYear: string
   };
   /**
    * Handler to be invoked when the modal closes
@@ -324,7 +324,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
       }
       setShowRoomsData({
         term,
-        calendarYear: calendarYear.toString(),
+        calendarYear,
         startTime,
         endTime,
         day,

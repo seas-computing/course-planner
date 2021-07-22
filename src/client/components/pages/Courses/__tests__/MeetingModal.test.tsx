@@ -63,7 +63,7 @@ describe('Meeting Modal', function () {
           isVisible
           currentCourse={testCourseInstance}
           currentSemester={{
-            calendarYear: parseInt(testCourseInstance[semKey].calendarYear, 10),
+            calendarYear: testCourseInstance[semKey].calendarYear,
             term: meetingTerm,
           }}
           onClose={onCloseStub}
@@ -1071,10 +1071,7 @@ describe('Meeting Modal', function () {
             isVisible={isOpen}
             currentCourse={testCourseInstance}
             currentSemester={{
-              calendarYear: parseInt(
-                testCourseInstance[semKey].calendarYear,
-                10
-              ),
+              calendarYear: testCourseInstance[semKey].calendarYear,
               term: meetingTerm,
             }}
             onClose={() => { setOpen(false); }}
