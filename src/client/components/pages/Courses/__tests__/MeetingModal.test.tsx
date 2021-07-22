@@ -12,7 +12,7 @@ import {
   FindAllByText,
   within,
 } from '@testing-library/react';
-import { strictEqual, notStrictEqual } from 'assert';
+import { strictEqual, notStrictEqual, ok } from 'assert';
 import { TERM } from 'common/constants';
 import DAY, { dayEnumToString } from 'common/constants/day';
 import { TermKey } from 'common/constants/term';
@@ -27,7 +27,6 @@ import { cs50CourseInstance, freeRoom, bookedRoom } from 'testData';
 import * as roomAPI from 'client/api/rooms';
 import { Button, VARIANT } from 'mark-one';
 import MeetingModal from '../MeetingModal';
-import { ok } from 'assert';
 
 describe('Meeting Modal', function () {
   let getByText: BoundFunction<GetByText>;
