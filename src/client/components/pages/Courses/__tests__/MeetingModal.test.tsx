@@ -27,6 +27,7 @@ import { cs50CourseInstance, freeRoom, bookedRoom } from 'testData';
 import * as roomAPI from 'client/api/rooms';
 import { Button, VARIANT } from 'mark-one';
 import MeetingModal from '../MeetingModal';
+import { ok } from 'assert';
 
 describe('Meeting Modal', function () {
   let getByText: BoundFunction<GetByText>;
@@ -135,8 +136,14 @@ describe('Meeting Modal', function () {
           const testMeetingDay = DAY.FRI;
           const cs50InitialMeeting = testCourseInstance[semKey].meetings
             .filter((meeting) => meeting.day === testMeetingDay)[0];
+          const initialMeetingIndex = testCourseInstance[semKey].meetings
+            .findIndex(({ id }) => id === cs50InitialMeeting.id);
           const cs50TuesdayMeetingId = testCourseInstance[semKey].meetings
             .filter((meeting) => meeting.day === DAY.TUE)[0].id;
+          const unassignedRoomMeeting = testCourseInstance[semKey].meetings
+            .filter((meeting) => meeting.room === null)[0];
+          const unassignedRoomMeetingIndex = testCourseInstance[semKey].meetings
+            .findIndex(({ id }) => id === unassignedRoomMeeting.id);
           beforeEach(async function () {
             const editCS50InitialMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50InitialMeeting.id));
             fireEvent.click(editCS50InitialMeetingButton);
@@ -889,6 +896,28 @@ describe('Meeting Modal', function () {
                       () => getByText(errorMessage, { exact: false })
                     );
                   });
+                });
+              });
+            });
+            describe.only('Remove Room Button', function () {
+              context('when a room is assigned to the meeting', function () {
+                it('renders a corresponding remove room icon', function () {
+                  return findByLabelText(`Remove Room ${initialMeetingIndex + 1}`, { exact: false });
+                });
+                context('when the remove room button is clicked', function () {
+                  it('removes the room', async function () {
+                    const removeRemoveButton = await findByLabelText(`Remove Room ${initialMeetingIndex + 1}`, { exact: false });
+                    fireEvent.click(removeRemoveButton);
+                    strictEqual(queryByText(`Room:${cs50InitialMeeting.room.name}`, { exact: false }), null);
+                  });
+                  it('clears the room scheduling table', function () {
+                    ok(queryByText('Add meeting time and click "Show Rooms" to view availability'));
+                  });
+                });
+              });
+              context('when a room is not assigned to the meeting', function () {
+                it('does not render a corresponding remove room icon', function () {
+                  strictEqual(queryByText(`Remove Room ${unassignedRoomMeetingIndex + 1}`, { exact: false }), null);
                 });
               });
             });
