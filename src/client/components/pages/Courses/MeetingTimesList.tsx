@@ -3,7 +3,12 @@ import React, {
   ReactElement,
 } from 'react';
 import styled from 'styled-components';
-import { faAngleDown, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import {
+  faAngleDown,
+  faEdit,
+  faTrash,
+  faTimesCircle,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DAY, { dayEnumToString, days } from 'common/constants/day';
 import { meetingTimeSlots } from 'common/constants/timeslots';
@@ -317,6 +322,22 @@ export const MeetingTimesList
                           Room:
                           {currentEditMeeting.room
                         && currentEditMeeting.room.name}
+                          {currentEditMeeting.room && (
+                            <BorderlessButton
+                              alt={`Remove Room ${index + 1} on ${meetingTimeString}${meetingRoomString}`}
+                              id={`remove-room-${meeting.id}`}
+                              variant={VARIANT.DANGER}
+                              onClick={
+                                (): void => {
+                                  updateCurrentEditMeeting(
+                                    { room: null }
+                                  );
+                                }
+                              }
+                            >
+                              <FontAwesomeIcon icon={faTimesCircle} />
+                            </BorderlessButton>
+                          )}
                         </StyledRoom>
                         <StyledShowCloseButtons>
                           <Button
