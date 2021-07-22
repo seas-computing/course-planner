@@ -144,7 +144,7 @@ describe('Meeting Modal', function () {
           const unassignedRoomMeetingIndex = testCourseInstance[semKey].meetings
             .findIndex(({ id }) => id === unassignedRoomMeeting.id);
           beforeEach(async function () {
-            const editCS50InitialMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50InitialMeeting.id));
+            const editCS50InitialMeetingButton = await findByLabelText(`Edit Meeting ${initialMeetingIndex + 1}`, { exact: false });
             fireEvent.click(editCS50InitialMeetingButton);
           });
           context('when an edit button is clicked', function () {
