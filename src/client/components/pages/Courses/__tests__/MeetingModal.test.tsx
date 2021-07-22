@@ -899,7 +899,7 @@ describe('Meeting Modal', function () {
                 });
               });
             });
-            describe.only('Remove Room Button', function () {
+            describe('Remove Room Button', function () {
               context('when a room is assigned to the meeting', function () {
                 it('renders a corresponding remove room icon', function () {
                   return findByLabelText(`Remove Room ${initialMeetingIndex + 1}`, { exact: false });
