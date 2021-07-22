@@ -269,6 +269,27 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   };
 
   /**
+  * Merge the currentEditMeeting into allMeetings, returning the updated list.
+  */
+
+  const mergeMeetings = () => {
+    const updatedMeetings = [...allMeetings];
+    if (currentEditMeeting) {
+      const editMeetingIndex = updatedMeetings.findIndex(
+        ({ id }) => id === currentEditMeeting.id
+      );
+      if (editMeetingIndex !== -1) {
+        updatedMeetings.splice(
+          editMeetingIndex,
+          1,
+          currentEditMeeting
+        );
+      }
+    }
+    return updatedMeetings;
+  };
+
+  /**
    * Validates the current time information and updates the data for the
    * meeting in our full list, then unsets the current meeting and
    * optionally opens a new one. If the new meeting doesn't already exist in
@@ -278,19 +299,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     newMeeting?: CourseInstanceResponseMeeting
   ) => {
     if (validateTimes()) {
-      const updatedMeetings = [...allMeetings];
-      if (currentEditMeeting) {
-        const editMeetingIndex = updatedMeetings.findIndex(
-          ({ id }) => id === currentEditMeeting.id
-        );
-        if (editMeetingIndex !== -1) {
-          updatedMeetings.splice(
-            editMeetingIndex,
-            1,
-            currentEditMeeting
-          );
-        }
-      }
+      const updatedMeetings = mergeMeetings();
       if (newMeeting) {
         const newMeetingIndex = updatedMeetings.findIndex(
           ({ id }) => id === newMeeting.id
