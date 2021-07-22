@@ -18,7 +18,7 @@ import {
 import NonClassMeetingResponseDTO from 'common/dto/nonClassMeetings/NonClassMeeting.dto';
 import { getAreaColor } from 'common/constants';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
+import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { dayEnumToString } from 'common/constants/day';
 import { MeetingGrid, MeetingGridSection } from 'client/components/pages/Courses/tableFields';
 import { CampusIcon, CellLayout } from 'client/components/general';
