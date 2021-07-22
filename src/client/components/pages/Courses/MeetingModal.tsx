@@ -54,7 +54,7 @@ interface MeetingModalProps {
   /**
    * Handler to be invoked when the modal is saved
    */
-  onSave: () => void;
+  onSave: (arg0: CourseInstanceResponseMeeting[]) => void;
 }
 
 /**

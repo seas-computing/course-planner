@@ -135,7 +135,9 @@ export const formatMeetings = (
   term: TERM
 ) => (
   course: CourseInstanceResponseDTO,
-  academicYear: number
+  {
+    updateHandler,
+  }: ValueGetterOptions
 ): ReactNode => {
   const semKey = term.toLowerCase() as TermKey;
   const {
@@ -196,11 +198,31 @@ export const formatMeetings = (
             setModalVisible(false);
             setTimeout(() => { buttonRef.current.focus(); });
           }}
-          onSave={() => {}}
+          onSave={(newMeetingList) => {
+            updateHandler({
+              ...course,
+              [semKey]: {
+                ...course[semKey],
+                meetings: newMeetingList,
+              },
+            });
+          }}
         />
       </>
     );
 };
+
+/**
+ * Descibes the additional options passed into the getValue function
+ */
+export interface ValueGetterOptions {
+  /**
+   * A handler for updating the client state of the course wihtout needing to
+   * refresh data from the server
+   */
+  updateHandler?: (course: CourseInstanceResponseDTO) => void;
+}
+
 /**
  * Describes the columns in the CourseInstanceList
  */
@@ -225,7 +247,10 @@ export interface CourseInstanceListColumn {
   /**
    * A function that will retrieve the appropriate data to appear in the cell
    */
-  getValue: (arg0: CourseInstanceResponseDTO, arg1?: unknown) => ReactNode;
+  getValue: (
+    arg0: CourseInstanceResponseDTO,
+    arg1?: ValueGetterOptions
+  ) => ReactNode;
 }
 
 /**

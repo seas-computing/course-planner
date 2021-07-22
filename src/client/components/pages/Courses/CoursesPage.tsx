@@ -77,6 +77,21 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
       });
   }, [dispatchMessage]);
 
+  /**
+  * Method for updating a course in the local client list of courses. Intended
+  * to accept the results of an update returned from the server, without
+  * needing a full refresh of the data.
+  */
+  const updateLocalCourse = (course: CourseInstanceResponseDTO):void => {
+    const updatedCourses = [...currentCourses];
+    const originalCourseIndex = updatedCourses.findIndex(({ id }) => (
+      id === course.id));
+    if (originalCourseIndex >= 0) {
+      updatedCourses.splice(originalCourseIndex, 1, course);
+      setCourses(updatedCourses);
+    }
+  };
+
   return (
     <div className="course-instance-table">
       {fetching
@@ -97,6 +112,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
                         && spring.offered !== OFFERED.RETIRED)
                 )
             }
+            courseUpdateHandler={updateLocalCourse}
             tableData={tableFields.filter(
               ({ viewColumn }): boolean => (
                 currentView.includes(viewColumn)
