@@ -9,8 +9,8 @@ import { Button, LoadSpinner, VARIANT } from 'mark-one';
 import { MessageContext } from 'client/context';
 import { NonClassMeetingApi, NonClassMeetingsApiResponse } from 'client/api';
 import { MESSAGE_TYPE, MESSAGE_ACTION, AppMessage } from 'client/classes';
-import NonClassMeetingsTable from './NonClassMeetingsTable';
 import { VerticalSpace } from 'client/components/layout';
+import NonClassMeetingsTable from './NonClassMeetingsTable';
 
 // TODO: Get the actual current academic year instead of hard coding
 const acadYear = 2022;
