@@ -6,6 +6,7 @@ import {
   ModalFooter,
   ModalHeader,
   VARIANT,
+  LoadSpinner,
 } from 'mark-one';
 import React, {
   FunctionComponent,
@@ -16,12 +17,15 @@ import React, {
   useState,
 } from 'react';
 import styled from 'styled-components';
+import { AxiosError } from 'axios';
 import { instructorDisplayNameToFirstLast } from '../utils/instructorDisplayNameToFirstLast';
 import { MeetingTimesList } from './MeetingTimesList';
 import RoomSelection from './RoomSelection';
 import RoomRequest from '../../../../common/dto/room/RoomRequest.dto';
 import CourseInstanceResponseDTO, { CourseInstanceResponseMeeting } from '../../../../common/dto/courses/CourseInstanceResponse';
 import { convert12To24HourTime } from '../../../../common/utils/timeHelperFunctions';
+import { updateMeetingList } from '../../../api';
+import { MeetingRequestDTO } from '../../../../common/dto/meeting/MeetingRequest.dto';
 
 /**
  * A component that applies styling for text that indicates the faculty has
@@ -200,13 +204,6 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     setShowRoomsData,
   ]);
 
-  useEffect(() => {
-    if (saving) {
-      setSaving(false);
-      onSave(/* TODO: pass the data back */);
-    }
-  }, [saving, onSave]);
-
   /**
    * The current value of the error message when creating or editing a meeting time
    */
@@ -214,6 +211,8 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     meetingTimeError,
     setMeetingTimeError,
   ] = useState('');
+
+  const [saveError, setSaveError] = useState('');
 
   /**
    * Used to create a temporary unique ID for new meetings on the client.
@@ -359,6 +358,38 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     setAllMeetings(updatedMeetings);
   };
 
+  /**
+   * Handles submitting the updated list of meeting to the server, and passing
+   * the resulting saved list on to the `onSave` handler provided by the
+   * parent.
+   */
+  const saveMeetingData = () => {
+    if (validateTimes()) {
+      closeCurrentEditMeeting();
+      setSaving(true);
+      const updatesToSend = mergeMeetings()
+        .map(({ id, room, ...meeting }) => {
+          const update: MeetingRequestDTO = {
+            ...meeting,
+            roomId: room?.id,
+          };
+          if (id.startsWith('new-meeting')) {
+            return update;
+          }
+          return { id, ...update };
+        });
+      updateMeetingList(instanceId, updatesToSend)
+        .then(onSave)
+        .then(onClose)
+        .catch((error: AxiosError) => {
+          setSaveError(error.message);
+        })
+        .finally(() => {
+          setSaving(false);
+        });
+    }
+  };
+
   return (
     <Modal
       ariaLabelledBy="editMeeting"
@@ -419,25 +450,22 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
             </RoomAvailabilityBody>
           </RoomAvailability>
         </MeetingModalBodyGrid>
+        {saving && <LoadSpinner>Saving Meetings</LoadSpinner>}
+        <div>{saveError}</div>
       </ModalBody>
       <ModalFooter>
-        <>
-          <Button
-            onClick={() => {
-              closeCurrentEditMeeting(null);
-              setSaving(true);
-            }}
-            variant={VARIANT.PRIMARY}
-          >
-            Save
-          </Button>
-          <Button
-            onClick={onClose}
-            variant={VARIANT.SECONDARY}
-          >
-            Cancel
-          </Button>
-        </>
+        <Button
+          onClick={saveMeetingData}
+          variant={VARIANT.PRIMARY}
+        >
+          Save
+        </Button>
+        <Button
+          onClick={onClose}
+          variant={VARIANT.SECONDARY}
+        >
+          Cancel
+        </Button>
       </ModalFooter>
     </Modal>
   );
