@@ -14,7 +14,7 @@ import { MessageReducerAction } from 'client/context';
 import { dataScienceReadingGroup } from 'testData';
 import NonClassMeetingsPage from '../NonClassMeetingsPage';
 
-describe('Non Class Meetings', function () {
+describe('Non Class Meetings Page', function () {
   let getStub: SinonStub;
   let dispatchMessage: SinonStub;
   beforeEach(function () {
@@ -37,6 +37,11 @@ describe('Non Class Meetings', function () {
       });
       it('renders the data in the table', async function () {
         await findByText(dataScienceReadingGroup.title);
+      });
+      describe('New Meeting Button', function () {
+        it('is visible on the page', async function () {
+          await findByText('Create New Meeting');
+        });
       });
     });
     context('When API request fails', function () {
