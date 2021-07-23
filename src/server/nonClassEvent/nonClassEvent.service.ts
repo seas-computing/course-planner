@@ -10,16 +10,16 @@ export class NonClassEventService {
   @InjectRepository(NonClassParentView)
   private parentRepository: Repository<NonClassParentView>;
 
-  public async find(academicYear: number):
+  public async find(calendarYear: number):
   Promise<NonClassParentView[]> {
     const nonClassEvents = this.parentRepository.createQueryBuilder('p')
       .leftJoinAndMapOne(
         'p.spring',
         NonClassEventView, 'spring',
         'spring."nonClassParentId" = p."id" AND spring.term = :spring'
-          + ' AND spring."academicYear" = :academicYear',
+          + ' AND spring."calendarYear" = :calendarYear',
         {
-          academicYear,
+          calendarYear,
           spring: TERM.SPRING,
         }
       )
@@ -37,9 +37,9 @@ export class NonClassEventService {
         'p.fall',
         NonClassEventView, 'fall',
         'fall."nonClassParentId" = p."id" AND fall.term = :fall'
-          + ' AND fall."academicYear" = :academicYear',
+          + ' AND fall."calendarYear" = :calendarYear',
         {
-          academicYear,
+          calendarYear,
           fall: TERM.FALL,
         }
       )

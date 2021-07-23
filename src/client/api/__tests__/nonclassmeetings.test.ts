@@ -33,7 +33,7 @@ describe('Non-class meeting API', function () {
           headers: '',
           config: {},
           data: {
-            [dataScienceReadingGroup.spring.academicYear]: [
+            [dataScienceReadingGroup.spring.calendarYear]: [
               dataScienceReadingGroup,
               computationalModelingofFluidsReadingGroup,
             ],
@@ -52,7 +52,7 @@ describe('Non-class meeting API', function () {
         deepStrictEqual(
           result,
           {
-            [dataScienceReadingGroup.spring.academicYear]: [
+            [dataScienceReadingGroup.spring.calendarYear]: [
               dataScienceReadingGroup,
               computationalModelingofFluidsReadingGroup,
             ],

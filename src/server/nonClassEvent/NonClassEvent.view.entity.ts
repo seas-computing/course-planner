@@ -5,8 +5,9 @@ import {
   ViewColumn,
   ManyToOne,
   ObjectType,
+  JoinColumn,
 } from 'typeorm';
-import { Semester } from 'server/semester/semester.entity';
+import { SemesterView } from 'server/semester/SemesterView.entity';
 import { TERM } from 'common/constants';
 import { MeetingListingView } from 'server/meeting/MeetingListingView.entity';
 import { NonClassEvent } from './nonclassevent.entity';
@@ -17,13 +18,10 @@ import { NonClassParentView } from './NonClassParentView.entity';
   SelectQueryBuilder<NonClassEvent> => connection.createQueryBuilder()
     .select('event.id', 'id')
     .addSelect('event."nonClassParentId"', 'nonClassParentId')
-    .addSelect(`CASE
-        WHEN term = '${TERM.FALL}' THEN s.academicYear + 1
-        ELSE s.academicYear
-      END`, 'academicYear')
+    .addSelect('s."calendarYear"', 'calendarYear')
     .addSelect('s.term', 'term')
     .addSelect('event."semesterId"', 'semesterId')
-    .leftJoin(Semester, 's', 's.id = event."semesterId"')
+    .leftJoin(SemesterView, 's', 's.id = event."semesterId"')
     .from(NonClassEvent, 'event'),
 })
 export class NonClassEventView {
@@ -34,17 +32,16 @@ export class NonClassEventView {
   public id: string;
 
   /**
-   * From [[Semester]]
-   * The academic year in which the course instances takes place
+   * From [[SemesterView]]
+   * The calendar year in which the course instances takes place
    */
   @ViewColumn()
-  public academicYear: string;
+  public calendarYear: string;
 
   /**
-   * From [[Semester]]
+   * From [[SemesterView]]
    * The term (Spring or Fall) in which the course instance takes place
    */
-  @ViewColumn()
   public term: TERM;
 
   /**
@@ -57,9 +54,14 @@ export class NonClassEventView {
    * From [[CourseInstance]]
    * The [[MultiYearPlanView]] this instance view belongs to
    */
+  @JoinColumn()
   @ManyToOne(
     (): ObjectType<NonClassParentView> => NonClassParentView,
-    ({ nonClassEvents }): NonClassEventView[] => nonClassEvents
+    ({ spring }): NonClassEventView => spring
+  )
+  @ManyToOne(
+    (): ObjectType<NonClassParentView> => NonClassParentView,
+    ({ fall }): NonClassEventView => fall
   )
   public nonClassParentId: string;
 }

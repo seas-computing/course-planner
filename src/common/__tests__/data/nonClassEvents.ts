@@ -18,7 +18,7 @@ export const dataScienceReadingGroup: NonClassMeetingResponseDTO = {
   title: 'Data Science Reading Group',
   spring: {
     id: '59d737ac-aadc-4e67-8d7a-7db2299d0026',
-    academicYear: '2020',
+    calendarYear: '2020',
     meetings: [
       {
         id: '06369a12-24f0-4a5c-8ecc-9e0124179f75',
@@ -46,7 +46,7 @@ export const dataScienceReadingGroup: NonClassMeetingResponseDTO = {
   },
   fall: {
     id: '613778f2-ef61-475e-8ca3-71a6416de9a4',
-    academicYear: '2020',
+    calendarYear: '2020',
     meetings: [
       {
         id: 'bd572431-e00e-4a78-9975-1aa90d86c15b',
@@ -91,7 +91,7 @@ export const computationalModelingofFluidsReadingGroup: NonClassMeetingResponseD
   title: 'Computational Modeling of Fluids and Soft Matter Reading Group',
   spring: {
     id: '3086f1be-a15f-491f-b82b-e991f3e747b1',
-    academicYear: '2020',
+    calendarYear: '2020',
     meetings: [
       {
         id: '69c72509-3cf0-431a-a1d1-924dcdd43b01',
@@ -119,7 +119,7 @@ export const computationalModelingofFluidsReadingGroup: NonClassMeetingResponseD
   },
   fall: {
     id: 'dfd31de2-d794-457a-bf46-908618afb7ca',
-    academicYear: '2020',
+    calendarYear: '2020',
     meetings: [
       {
         id: '8bf44cd9-6aaa-4e39-a295-65794daf45cf',
@@ -164,7 +164,7 @@ export const appliedMathematicsReadingGroup: NonClassMeetingResponseDTO = {
   title: 'Applied mathematics reading group',
   spring: {
     id: '1cdcc7f4-2f0b-42f5-bd41-51dba7deda16',
-    academicYear: '2020',
+    calendarYear: '2020',
     meetings: [
       {
         id: 'b5916e2b-42d6-46f3-acb7-dea1e3541a00',
@@ -192,7 +192,7 @@ export const appliedMathematicsReadingGroup: NonClassMeetingResponseDTO = {
   },
   fall: {
     id: '44f22dbb-d6c7-4673-8a7d-f70aa0562350',
-    academicYear: '2020',
+    calendarYear: '2020',
     meetings: [
       {
         id: '732c4b36-9239-4aa6-b131-c8d5cd15908d',

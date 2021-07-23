@@ -26,7 +26,7 @@ describe('Non Class Meetings Page', function () {
       let findByText: BoundFunction<FindByText>;
       beforeEach(function () {
         getStub.resolves({
-          [dataScienceReadingGroup.spring.academicYear]: [
+          [dataScienceReadingGroup.spring.calendarYear]: [
             dataScienceReadingGroup,
           ],
         });

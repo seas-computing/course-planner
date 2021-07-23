@@ -52,10 +52,4 @@ export class NonClassParentView {
   public spring: NonClassEventView;
 
   public fall: NonClassEventView;
-
-  @OneToMany(
-    (): ObjectType<NonClassEventView> => NonClassEventView,
-    ({ nonClassParentId }): string => nonClassParentId
-  )
-  public nonClassEvents: NonClassEventView[];
 }
