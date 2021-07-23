@@ -1,4 +1,5 @@
 import { DAY, TERM } from 'common/constants';
+import NonClassMeetingResponseDTO from 'common/dto/nonClassMeetings/NonClassMeeting.dto';
 
 /**
  * Data Science Reading Group
@@ -6,7 +7,7 @@ import { DAY, TERM } from 'common/constants';
  * Non-class parent for data science reading group formatted to match
  * [[NonClassMeetingResponseDTO]].
  */
-export const dataScienceReadingGroup = {
+export const dataScienceReadingGroup: NonClassMeetingResponseDTO = {
   area: 'FAS',
   id: '9548f85e-d613-48d2-94fe-63dbaf95084c',
   contactName: 'Jim Waldo',
@@ -81,7 +82,7 @@ export const dataScienceReadingGroup = {
  * Non-class parent for data science reading group formatted to match
  * [[NonClassMeetingResponseDTO]].
  */
-export const computationalModelingofFluidsReadingGroup = {
+export const computationalModelingofFluidsReadingGroup: NonClassMeetingResponseDTO = {
   area: 'ACS',
   id: 'ad9a6a86-4cd1-4063-bd6d-c7379f10c540',
   contactName: 'Jim Waldo',
@@ -156,7 +157,7 @@ export const computationalModelingofFluidsReadingGroup = {
  * Non-class parent for applied math reading group formatted to match
  * [[NonClassMeetingResponseDTO]].
  */
-export const appliedMathematicsReadingGroup = {
+export const appliedMathematicsReadingGroup: NonClassMeetingResponseDTO = {
   area: 'AM',
   id: '6512a306-3d2f-4a03-97fe-2dc7aac37107',
   contactName: 'Cliff Taube',
