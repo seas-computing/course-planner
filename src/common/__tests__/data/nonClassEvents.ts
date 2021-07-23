@@ -80,7 +80,8 @@ export const dataScienceReadingGroup: NonClassMeetingResponseDTO = {
  * Non-class parent for data science reading group formatted to match
  * [[NonClassMeetingResponseDTO]].
  */
-export const computationalModelingofFluidsReadingGroup: NonClassMeetingResponseDTO = {
+export const computationalModelingofFluidsReadingGroup:
+NonClassMeetingResponseDTO = {
   area: 'ACS',
   id: 'ad9a6a86-4cd1-4063-bd6d-c7379f10c540',
   contactName: 'Jim Waldo',

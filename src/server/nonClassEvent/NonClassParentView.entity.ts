@@ -3,8 +3,6 @@ import {
   Connection,
   ViewColumn,
   SelectQueryBuilder,
-  OneToMany,
-  ObjectType,
 } from 'typeorm';
 import { Area } from 'server/area/area.entity';
 import { NonClassParent } from 'server/nonClassParent/nonclassparent.entity';
