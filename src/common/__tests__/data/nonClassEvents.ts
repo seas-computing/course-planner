@@ -23,7 +23,7 @@ export const dataScienceReadingGroup: NonClassMeetingResponseDTO = {
     meetings: [
       {
         id: '06369a12-24f0-4a5c-8ecc-9e0124179f75',
-        day: 'FRI' as DAY,
+        day: DAY.FRI,
         startTime: '12:14 AM',
         endTime: '12:17 AM',
         room: {
@@ -34,7 +34,7 @@ export const dataScienceReadingGroup: NonClassMeetingResponseDTO = {
       },
       {
         id: '968bd796-0cfb-402a-91e3-59b44c2c9ab9',
-        day: 'MON' as DAY,
+        day: DAY.MON,
         startTime: '12:08 AM',
         endTime: '12:10 AM',
         room: {
@@ -52,7 +52,7 @@ export const dataScienceReadingGroup: NonClassMeetingResponseDTO = {
     meetings: [
       {
         id: 'bd572431-e00e-4a78-9975-1aa90d86c15b',
-        day: 'FRI' as DAY,
+        day: DAY.FRI,
         startTime: '12:14 AM',
         endTime: '12:17 AM',
         room: {
@@ -63,7 +63,7 @@ export const dataScienceReadingGroup: NonClassMeetingResponseDTO = {
       },
       {
         id: 'afa76436-4523-4f3b-a952-95ec76c1294d',
-        day: 'MON' as DAY,
+        day: DAY.MON,
         startTime: '12:08 AM',
         endTime: '12:10 AM',
         room: {
@@ -98,7 +98,7 @@ export const computationalModelingofFluidsReadingGroup: NonClassMeetingResponseD
     meetings: [
       {
         id: '69c72509-3cf0-431a-a1d1-924dcdd43b01',
-        day: 'FRI' as DAY,
+        day: DAY.FRI,
         startTime: '12:14 AM',
         endTime: '12:17 AM',
         room: {
@@ -109,7 +109,7 @@ export const computationalModelingofFluidsReadingGroup: NonClassMeetingResponseD
       },
       {
         id: 'afef329c-90af-4d67-9f86-74568a466d26',
-        day: 'MON' as DAY,
+        day: DAY.MON,
         startTime: '12:08 AM',
         endTime: '12:10 AM',
         room: {
@@ -127,7 +127,7 @@ export const computationalModelingofFluidsReadingGroup: NonClassMeetingResponseD
     meetings: [
       {
         id: '8bf44cd9-6aaa-4e39-a295-65794daf45cf',
-        day: 'FRI' as DAY,
+        day: DAY.FRI,
         startTime: '12:14 AM',
         endTime: '12:17 AM',
         room: {
@@ -138,7 +138,7 @@ export const computationalModelingofFluidsReadingGroup: NonClassMeetingResponseD
       },
       {
         id: 'ac220eec-6775-4974-9950-700a2459979e',
-        day: 'MON' as DAY,
+        day: DAY.MON,
         startTime: '12:08 AM',
         endTime: '12:10 AM',
         room: {
@@ -173,7 +173,7 @@ export const appliedMathematicsReadingGroup: NonClassMeetingResponseDTO = {
     meetings: [
       {
         id: 'b5916e2b-42d6-46f3-acb7-dea1e3541a00',
-        day: 'FRI' as DAY,
+        day: DAY.FRI,
         startTime: '12:14 AM',
         endTime: '12:17 AM',
         room: {
@@ -184,7 +184,7 @@ export const appliedMathematicsReadingGroup: NonClassMeetingResponseDTO = {
       },
       {
         id: 'dbe4a352-6755-4ffb-b0ca-e58e13fa8320',
-        day: 'TUE' as DAY,
+        day: DAY.TUE,
         startTime: '04:00 PM',
         endTime: '05:00 PM',
         room: {
@@ -202,7 +202,7 @@ export const appliedMathematicsReadingGroup: NonClassMeetingResponseDTO = {
     meetings: [
       {
         id: '732c4b36-9239-4aa6-b131-c8d5cd15908d',
-        day: 'WED' as DAY,
+        day: DAY.WED,
         startTime: '08:00 AM',
         endTime: '10:00 AM',
         room: {
@@ -213,7 +213,7 @@ export const appliedMathematicsReadingGroup: NonClassMeetingResponseDTO = {
       },
       {
         id: '59be22e9-29b4-4b98-87f5-e157cbbc76ee',
-        day: 'TUE' as DAY,
+        day: DAY.TUE,
         startTime: '10:00 AM',
         endTime: '11:10 AM',
         room: {
