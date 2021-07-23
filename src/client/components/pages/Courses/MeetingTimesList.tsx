@@ -325,7 +325,6 @@ export const MeetingTimesList
                           {currentEditMeeting.room && (
                             <BorderlessButton
                               alt={`Remove Room ${index + 1} on ${meetingTimeString}${meetingRoomString}`}
-                              id={`remove-room-${meeting.id}`}
                               variant={VARIANT.DANGER}
                               onClick={
                                 (): void => {
