@@ -145,7 +145,7 @@ const NonClassMeetingsTable: FunctionComponent<NonClassMeetingsTableProps> = ({
                   ))}
                 </TableCellList>
                 <BorderlessButton
-                  id={`${id}-${spring.term}-edit-meetings-button`}
+                  id={`${id}-${spring.id}-edit-meetings-button`}
                   onClick={() => {}}
                   variant={VARIANT.INFO}
                 >
@@ -184,7 +184,7 @@ const NonClassMeetingsTable: FunctionComponent<NonClassMeetingsTableProps> = ({
                   ))}
                 </TableCellList>
                 <BorderlessButton
-                  id={`${id}-${spring.term}-edit-meetings-button`}
+                  id={`${id}-${fall.id}-edit-meetings-button`}
                   onClick={() => {}}
                   variant={VARIANT.INFO}
                 >
