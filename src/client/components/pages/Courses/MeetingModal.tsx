@@ -397,6 +397,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   const saveMeetingData = () => {
     if (validateTimes()) {
       closeCurrentEditMeeting();
+      setSaveError('');
       setSaving(true);
       const updatesToSend = mergeMeetings()
         .map(({ id, room, ...meeting }) => {
@@ -413,7 +414,8 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
         .then(onSave)
         .then(onClose)
         .catch((error: AxiosError) => {
-          setSaveError(error.message);
+          const serverError = error.response.data as Error;
+          setSaveError(serverError.message);
         })
         .finally(() => {
           setSaving(false);
