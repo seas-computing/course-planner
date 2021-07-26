@@ -62,10 +62,10 @@ describe('NonClassEvent Service', function () {
 
       const events = await service.find(expectedAcdemicYear);
 
-      const springAcademicYears = events.map((event) => event.fall.academicYear)
+      const springAcademicYears = events.map((event) => event.fall.calendarYear)
         .map((acyr) => parseInt(acyr));
 
-      const fallAcademicyears = events.map((event) => event.spring.academicYear)
+      const fallAcademicyears = events.map((event) => event.spring.calendarYear)
         .map((acyr) => parseInt(acyr));
 
       deepStrictEqual(springAcademicYears.length > 0, true);

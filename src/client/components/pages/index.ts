@@ -1,4 +1,5 @@
 export { default as CourseAdmin } from './CourseAdmin';
+export { default as NonClassMeetings } from './NonClassMeetings/NonClassMeetingsPage';
 export { default as Courses } from './Courses/CoursesPage';
 export { default as FacultyAdmin } from './FacultyAdmin';
 export { default as Faculty } from './Faculty/FacultyPage';

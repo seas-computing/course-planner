@@ -1,5 +1,5 @@
 import {
-  DAY, TERM,
+  DAY,
 } from 'common/constants';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -55,13 +55,9 @@ abstract class NonClassEvent {
   public id: string;
 
   @ApiProperty({
-    description: 'Denotes whether this NonClassEvent occurs in'
-      + ` ${TERM.SPRING} or ${TERM.FALL}`,
-    type: 'enum',
-    enum: TERM,
-    example: TERM.SPRING,
+    type: 'string',
   })
-  public term: TERM;
+  public calendarYear: string;
 
   @ApiProperty({
     type: Meeting,
@@ -71,6 +67,12 @@ abstract class NonClassEvent {
 }
 
 export default abstract class NonClassMeetingResponseDTO {
+  @ApiProperty({
+    description: 'The area the non-class meeting belongs to',
+    example: 'ACS',
+  })
+  public area: string;
+
   @ApiProperty({
     description: 'NonClassParent ID',
     example: '56a825b0-8860-4434-b843-c530a86138a1',

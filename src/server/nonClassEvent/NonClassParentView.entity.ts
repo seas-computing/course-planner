@@ -3,8 +3,6 @@ import {
   Connection,
   ViewColumn,
   SelectQueryBuilder,
-  OneToMany,
-  ObjectType,
 } from 'typeorm';
 import { Area } from 'server/area/area.entity';
 import { NonClassParent } from 'server/nonClassParent/nonclassparent.entity';
@@ -52,10 +50,4 @@ export class NonClassParentView {
   public spring: NonClassEventView;
 
   public fall: NonClassEventView;
-
-  @OneToMany(
-    (): ObjectType<NonClassEventView> => NonClassEventView,
-    ({ nonClassParentId }): string => nonClassParentId
-  )
-  public nonClassEvents: NonClassEventView[];
 }
