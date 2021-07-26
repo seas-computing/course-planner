@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'test-utils';
 import { ok, strictEqual, deepStrictEqual } from 'assert';
-import { spy } from 'sinon';
+import { spy, SinonSpy } from 'sinon';
 import * as dummy from 'testData';
 import { RenderResult, within, fireEvent } from '@testing-library/react';
 import RoomSelectionTable, { AVAILABILITY } from '../RoomSelectionTable';
@@ -20,13 +20,17 @@ describe('Room Selection Table', function () {
     ...unavailableRooms,
     ...availableRooms,
   ];
+  let addSpy: SinonSpy;
+  beforeEach(function () {
+    addSpy = spy();
+  });
   describe('Rendering Conditions', function () {
     describe('Availability Filter', function () {
       beforeEach(function () {
         renderResult = render(
           <RoomSelectionTable
             roomList={[...fullRoomList]}
-            addButtonHandler={spy()}
+            addButtonHandler={addSpy}
           />
         );
       });
@@ -119,13 +123,13 @@ describe('Room Selection Table', function () {
         });
       });
     });
-    context('Availability Column', function () {
+    context('Room availability', function () {
       context('When the room is available', function () {
         beforeEach(function () {
           renderResult = render(
             <RoomSelectionTable
               roomList={[dummy.freeRoom]}
-              addButtonHandler={spy()}
+              addButtonHandler={addSpy}
             />
           );
         });
@@ -133,13 +137,18 @@ describe('Room Selection Table', function () {
           const { queryByText } = renderResult;
           ok(queryByText('Yes'));
         });
+        it('Should not disable the add button', function () {
+          const { getByRole } = renderResult;
+          fireEvent.click(getByRole('button'));
+          strictEqual(addSpy.callCount, 1);
+        });
       });
       context('When a room in the list is occupied by one course', function () {
         beforeEach(function () {
           renderResult = render(
             <RoomSelectionTable
               roomList={[dummy.bookedRoom]}
-              addButtonHandler={spy()}
+              addButtonHandler={addSpy}
             />
           );
         });
@@ -147,13 +156,17 @@ describe('Room Selection Table', function () {
           const { queryByText } = renderResult;
           ok(queryByText(`No (${dummy.bookedRoom.meetingTitles[0]})`));
         });
+        it('Should Display "N/A" in the add column', function () {
+          const { queryByText } = renderResult;
+          ok(queryByText('N/A'));
+        });
       });
       context('When a room in the list is occupied by multiple courses', function () {
         beforeEach(function () {
           renderResult = render(
             <RoomSelectionTable
               roomList={[dummy.multiBookedRoom]}
-              addButtonHandler={spy()}
+              addButtonHandler={addSpy}
             />
           );
         });
@@ -161,13 +174,17 @@ describe('Room Selection Table', function () {
           const { queryByText } = renderResult;
           ok(queryByText(`No (${dummy.multiBookedRoom.meetingTitles.join(', ')})`));
         });
+        it('Should Display "N/A" in the add column', function () {
+          const { queryByText } = renderResult;
+          ok(queryByText('N/A'));
+        });
       });
       context('When a room in the list is owned by FAS and is available', function () {
         beforeEach(function () {
           renderResult = render(
             <RoomSelectionTable
               roomList={[dummy.freeFASRoom]}
-              addButtonHandler={spy()}
+              addButtonHandler={addSpy}
             />
           );
         });
@@ -175,19 +192,47 @@ describe('Room Selection Table', function () {
           const { queryByText } = renderResult;
           ok(queryByText('Check FAS Availability'));
         });
+        it('Should not disable the add button', function () {
+          const { getByRole } = renderResult;
+          fireEvent.click(getByRole('button'));
+          strictEqual(addSpy.callCount, 1);
+        });
       });
       context('When a room in the list is owned by FAS and is not available', function () {
         beforeEach(function () {
           renderResult = render(
             <RoomSelectionTable
               roomList={[dummy.bookedFASRoom]}
-              addButtonHandler={spy()}
+              addButtonHandler={addSpy}
             />
           );
         });
         it('Should show "No" and the name of the meeting', function () {
           const { queryByText } = renderResult;
           ok(queryByText(`No (${dummy.bookedFASRoom.meetingTitles[0]})`));
+        });
+        it('Should Display "N/A" in the add column', function () {
+          const { queryByText } = renderResult;
+          ok(queryByText('N/A'));
+        });
+      });
+      context('When a room is already booked for the meeting', function () {
+        beforeEach(function () {
+          renderResult = render(
+            <RoomSelectionTable
+              roomList={[dummy.bookedRoom]}
+              addButtonHandler={addSpy}
+              currentRoomId={dummy.bookedRoom.id}
+            />
+          );
+        });
+        it('Should show "Current Room" in the availability column', function () {
+          const { queryByText } = renderResult;
+          ok(queryByText('Current Room'));
+        });
+        it('Should Display "N/A" in the add column', function () {
+          const { queryByText } = renderResult;
+          ok(queryByText('N/A'));
         });
       });
     });

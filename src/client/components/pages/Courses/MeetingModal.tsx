@@ -146,6 +146,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   const {
     catalogNumber,
     [semKey]: {
+      id: instanceId,
       meetings: instanceMeetings,
       instructors: instanceInstructors,
     },
@@ -213,6 +214,23 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     meetingTimeError,
     setMeetingTimeError,
   ] = useState('');
+
+  /**
+   * Used to create a temporary unique ID for new meetings on the client.
+   * A permanent UUID will be assigned as a result of the server request
+   */
+  const [
+    newMeetingIdNumber,
+    setNewMeetingIdNumber,
+  ] = useState(1);
+
+  /**
+   * Updates the generated meeting id for newly created meetingsby increasing
+   * the current index by 1
+   */
+  const updateNewMeetingIdNumber = (): void => {
+    setNewMeetingIdNumber(newMeetingIdNumber + 1);
+  };
 
   /**
    * Updates individual fields in the current meeting by merging passed props
@@ -310,8 +328,26 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
         startTime,
         endTime,
         day,
+        excludeParent: instanceId,
       });
     }
+  };
+
+  /**
+   * A handler to delete a meeting from the current existing meetings of the
+   * course instance. If the deleted meeting was being edited at the time of
+   * deletion, the state of the currently edited meeting is set back to null so
+   * that no meetings are expanded in edit mode.
+   */
+  const removeMeeting = (meeting: CourseInstanceResponseMeeting) => {
+    if (currentEditMeeting && meeting.id === currentEditMeeting.id) {
+      setCurrentEditMeeting(null);
+      setShowRoomsData(null);
+    }
+    const updatedMeetings = allMeetings.filter(
+      (currentMeeting) => currentMeeting.id !== meeting.id
+    );
+    setAllMeetings(updatedMeetings);
   };
 
   return (
@@ -338,6 +374,9 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
                 updateCurrentEditMeeting={updateCurrentEditMeeting}
                 closeCurrentEditMeeting={closeCurrentEditMeeting}
                 showRoomsHandler={searchForRooms}
+                newMeetingIdNumber={newMeetingIdNumber.toString()}
+                updateNewMeetingIdNumber={updateNewMeetingIdNumber}
+                removeMeeting={removeMeeting}
               />
               <h3>
                 Faculty Notes
@@ -365,7 +404,8 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
             <RoomAvailabilityBody>
               <RoomSelection
                 roomRequestData={showRoomsData}
-                roomHandler={() => {}}
+                roomHandler={(room) => { updateCurrentEditMeeting({ room }); }}
+                currentRoomId={currentEditMeeting?.room?.id}
               />
             </RoomAvailabilityBody>
           </RoomAvailability>

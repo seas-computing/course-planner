@@ -3,7 +3,12 @@ import React, {
   ReactElement,
 } from 'react';
 import styled from 'styled-components';
-import { faAngleDown, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import {
+  faAngleDown,
+  faEdit,
+  faTrash,
+  faTimesCircle,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DAY, { dayEnumToString, days } from 'common/constants/day';
 import { meetingTimeSlots } from 'common/constants/timeslots';
@@ -45,13 +50,26 @@ interface MeetingTimesListProps {
    */
   showRoomsHandler: () => void;
   /**
-   * Any validation erros that need to be addressed
+   * Any validation errors that need to be addressed
    */
   meetingTimeError: string;
   /**
    * A handler to clear the current edit meeting, optionally opening a new one
    */
   closeCurrentEditMeeting: (newMeeting?: CourseInstanceResponseMeeting) => void;
+  /**
+   * Used to create a temporary unique ID for new meetings on the client
+   */
+  newMeetingIdNumber: string;
+  /**
+   * A handler to update the meeting id number for the id of newly created meetings
+   */
+  updateNewMeetingIdNumber: () => void;
+  /**
+   * A handler to delete a meeting from the current existing meetings of the
+   * course instance
+   */
+  removeMeeting: (meeting: CourseInstanceResponseMeeting) => void;
 }
 
 interface StyledMeetingRowProps {
@@ -156,6 +174,9 @@ export const MeetingTimesList
   closeCurrentEditMeeting,
   showRoomsHandler,
   meetingTimeError,
+  removeMeeting,
+  newMeetingIdNumber,
+  updateNewMeetingIdNumber,
 }): ReactElement {
   return (
     <div className="meeting-times-section">
@@ -180,10 +201,12 @@ export const MeetingTimesList
                 <StyledDeleteButton>
                   <BorderlessButton
                     alt={`Delete Meeting ${index + 1} on ${meetingTimeString}${meetingRoomString}`}
-                    id={`deleteButton${meeting.id}`}
+                    id={`delete-button-${meeting.id}`}
                     variant={VARIANT.DANGER}
                     onClick={
-                      (): void => {}
+                      (): void => {
+                        removeMeeting(meeting);
+                      }
                     }
                   >
                     <FontAwesomeIcon icon={faTrash} />
@@ -299,6 +322,21 @@ export const MeetingTimesList
                           Room:
                           {currentEditMeeting.room
                         && currentEditMeeting.room.name}
+                          {currentEditMeeting.room && (
+                            <BorderlessButton
+                              alt={`Remove Room ${index + 1} on ${meetingTimeString}${meetingRoomString}`}
+                              variant={VARIANT.DANGER}
+                              onClick={
+                                (): void => {
+                                  updateCurrentEditMeeting(
+                                    { room: null }
+                                  );
+                                }
+                              }
+                            >
+                              <FontAwesomeIcon icon={faTimesCircle} />
+                            </BorderlessButton>
+                          )}
                         </StyledRoom>
                         <StyledShowCloseButtons>
                           <Button
@@ -357,12 +395,13 @@ export const MeetingTimesList
           id="addNewTimeButton"
           onClick={() => {
             closeCurrentEditMeeting({
-              id: `new-meeting-${allMeetings.length + 1}`,
+              id: `new-meeting-${newMeetingIdNumber}`,
               day: '' as DAY,
               startTime: '',
               endTime: '',
               room: null,
             });
+            updateNewMeetingIdNumber();
           }}
           variant={VARIANT.SECONDARY}
         >

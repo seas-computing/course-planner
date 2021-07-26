@@ -13,7 +13,9 @@ import {
 import { ConfigService } from 'server/config/config.service';
 import { adminUser, regularUser } from 'testData';
 import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
-import { strictEqual, deepStrictEqual, notStrictEqual } from 'assert';
+import {
+  strictEqual, deepStrictEqual, notStrictEqual, notDeepStrictEqual,
+} from 'assert';
 import { TypeOrmModule, TypeOrmModuleOptions, getRepositoryToken } from '@nestjs/typeorm';
 import {
   AUTH_MODE, DAY, TERM, TERM_PATTERN,
@@ -32,6 +34,10 @@ import { PopulationModule } from '../../../mocks/database/population/population.
 import { rooms } from '../../../mocks/database/population/data/rooms';
 import { courses } from '../../../mocks/database/population/data/courses';
 import { Room } from '../../../../src/server/location/room.entity';
+import { CourseInstance } from '../../../../src/server/courseInstance/courseinstance.entity';
+import { Meeting } from '../../../../src/server/meeting/meeting.entity';
+import { Semester } from '../../../../src/server/semester/semester.entity';
+import { Course } from '../../../../src/server/course/course.entity';
 
 describe('Location API', function () {
   let testModule: TestingModule;
@@ -39,6 +45,7 @@ describe('Location API', function () {
   let authStub: SinonStub;
   let api: HttpServer;
   let locationRepo: Repository<Room>;
+  let courseInstanceRepo: Repository<CourseInstance>;
 
   before(async function () {
     this.timeout(120000);
@@ -89,6 +96,7 @@ describe('Location API', function () {
       .compile();
 
     locationRepo = testModule.get(getRepositoryToken(Room));
+    courseInstanceRepo = testModule.get(getRepositoryToken(CourseInstance));
     const nestApp = await testModule
       .createNestApplication()
       .useGlobalPipes(new BadRequestExceptionPipe())
@@ -197,44 +205,57 @@ describe('Location API', function () {
             strictEqual(response.status, HttpStatus.BAD_REQUEST);
           });
         });
-        context('With valid parameters', function () {
-          let result: RoomResponse[];
+        context('With an invalid excludeParent', function () {
           beforeEach(async function () {
             authStub.resolves(adminUser);
+            const invalidExcludeParent = 'notUUID';
             response = await request(api)
               .get('/api/rooms')
-              .query(testParams);
-            result = response.body;
+              .query({ ...testParams, excludeParent: invalidExcludeParent });
           });
-          it('should return a 200 status', function () {
-            strictEqual(response.status, HttpStatus.OK);
+          it('should return a 400 status', function () {
+            strictEqual(response.status, HttpStatus.BAD_REQUEST);
           });
-          it('should return a nonempty array of data', function () {
-            strictEqual(Array.isArray(result), true);
-            notStrictEqual(result.length, 0);
-          });
-          it('returns all rooms in the database', async function () {
-            const actualRooms = result.map((room) => room.name);
-            const rawRooms = await locationRepo.createQueryBuilder('r')
-              .select('CONCAT_WS(\' \', b.name, r.name)', 'name')
-              .leftJoin('r.building', 'b')
-              .leftJoin('b.campus', 'c')
-              .orderBy('c.name', 'ASC')
-              .addOrderBy('b.name', 'ASC')
-              .addOrderBy('r.name', 'ASC')
-              .getRawMany();
-            const expectedRooms = rawRooms.map(({ name }) => <string>name);
-            deepStrictEqual(actualRooms, expectedRooms);
-          });
-          it('returns the expected meetings', function () {
-            const actualMeetings = result
-              .map((room) => room.meetingTitles)
-              .reduce((acc, val) => acc.concat(val), [])
-              .sort();
-            // Returns an array of sorted course meeting titles that occur during the requested times
-            const expectedMeetings = flatMap(courses.map(
-              (course) => course.instances.meetings
-                .filter((meeting) => meeting.day === testParams.day
+        });
+        context('With valid parameters', function () {
+          let result: RoomResponse[];
+          context('Without an excludeParent value', function () {
+            beforeEach(async function () {
+              authStub.resolves(adminUser);
+              response = await request(api)
+                .get('/api/rooms')
+                .query(testParams);
+              result = response.body;
+            });
+            it('should return a 200 status', function () {
+              strictEqual(response.status, HttpStatus.OK);
+            });
+            it('should return a nonempty array of data', function () {
+              strictEqual(Array.isArray(result), true);
+              notStrictEqual(result.length, 0);
+            });
+            it('returns all rooms in the database', async function () {
+              const actualRooms = result.map((room) => room.name);
+              const rawRooms = await locationRepo.createQueryBuilder('r')
+                .select('CONCAT_WS(\' \', b.name, r.name)', 'name')
+                .leftJoin('r.building', 'b')
+                .leftJoin('b.campus', 'c')
+                .orderBy('c.name', 'ASC')
+                .addOrderBy('b.name', 'ASC')
+                .addOrderBy('r.name', 'ASC')
+                .getRawMany();
+              const expectedRooms = rawRooms.map(({ name }) => <string>name);
+              deepStrictEqual(actualRooms, expectedRooms);
+            });
+            it('returns the expected meetings', function () {
+              const actualMeetings = result
+                .map((room) => room.meetingTitles)
+                .reduce((acc, val) => acc.concat(val), [])
+                .sort();
+              // Returns an array of sorted course meeting titles that occur during the requested times
+              const expectedMeetings = flatMap(courses.map(
+                (course) => course.instances.meetings
+                  .filter((meeting) => meeting.day === testParams.day
                 && (course.termPattern === TERM_PATTERN.BOTH
                   || course.termPattern === testParams
                     .term as unknown as TERM_PATTERN)
@@ -244,9 +265,83 @@ describe('Location API', function () {
                     && meeting.startTime < testParams.endTime)
                     || (meeting.endTime > testParams.startTime
                       && meeting.endTime <= testParams.endTime)))
-                .map(() => `${course.prefix} ${course.number}`)
-            )).sort();
-            deepStrictEqual(actualMeetings, expectedMeetings);
+                  .map(() => `${course.prefix} ${course.number}`)
+              )).sort();
+              deepStrictEqual(actualMeetings, expectedMeetings);
+            });
+          });
+          context('With an excludeParent value', function () {
+            let testInstance: Record<string, unknown>;
+            beforeEach(async function () {
+              authStub.resolves(adminUser);
+              const testInstanceQuery = courseInstanceRepo
+                .createQueryBuilder('ci')
+                .select()
+                .leftJoin(Meeting, 'm', 'm."courseInstanceId" = ci.id')
+                .leftJoin(Semester, 's', 'ci."semesterId" = s.id')
+                .leftJoinAndSelect(Course, 'c', 'ci."courseId" = c.id')
+                .where('(m."startTime", m."endTime") OVERLAPS (:startTime::TIME, :endTime::TIME)')
+                .andWhere('m."day" = :day')
+                .andWhere('s."term" = :term')
+                .andWhere('s."academicYear" = :calendarYear')
+                .setParameters(testParams);
+              testInstance = await testInstanceQuery
+                .getRawOne();
+              response = await request(api)
+                .get('/api/rooms')
+                .query({
+                  ...testParams,
+                  excludeParent: testInstance.ci_id,
+                });
+              result = response.body;
+            });
+            it('should return a 200 status', function () {
+              strictEqual(response.status, HttpStatus.OK);
+            });
+            it('should return a nonempty array of data', function () {
+              strictEqual(Array.isArray(result), true);
+              notStrictEqual(result.length, 0);
+            });
+            it('returns all rooms in the database', async function () {
+              const actualRooms = result.map((room) => room.name);
+              const rawRooms = await locationRepo.createQueryBuilder('r')
+                .select('CONCAT_WS(\' \', b.name, r.name)', 'name')
+                .leftJoin('r.building', 'b')
+                .leftJoin('b.campus', 'c')
+                .orderBy('c.name', 'ASC')
+                .addOrderBy('b.name', 'ASC')
+                .addOrderBy('r.name', 'ASC')
+                .getRawMany();
+              const expectedRooms = rawRooms.map(({ name }) => <string>name);
+              deepStrictEqual(actualRooms, expectedRooms);
+            });
+            it('returns the expected meetings', function () {
+              const actualMeetings = result
+                .map((room) => room.meetingTitles)
+                .reduce((acc, val) => acc.concat(val), [])
+                .sort();
+              // Returns an array of sorted course meeting titles that occur during the requested times
+              const expectedMeetings = flatMap(courses.map(
+                (course) => course.instances.meetings
+                  .filter((meeting) => meeting.day === testParams.day
+                && (course.termPattern === TERM_PATTERN.BOTH
+                  || course.termPattern === testParams
+                    .term as unknown as TERM_PATTERN)
+                && ((meeting.startTime <= testParams.startTime
+                  && meeting.endTime >= testParams.endTime)
+                  || (meeting.startTime >= testParams.startTime
+                    && meeting.startTime < testParams.endTime)
+                    || (meeting.endTime > testParams.startTime
+                      && meeting.endTime <= testParams.endTime)))
+                  .map(() => `${course.prefix} ${course.number}`)
+              ))
+                .sort();
+              notDeepStrictEqual(actualMeetings, expectedMeetings);
+              const filteredMeetings = expectedMeetings
+                .filter((courseNumber) => (
+                  courseNumber !== `${testInstance.c_prefix as string} ${testInstance.c_number as string}`));
+              deepStrictEqual(actualMeetings, filteredMeetings);
+            });
           });
         });
       });

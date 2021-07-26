@@ -12,12 +12,17 @@ import {
   TableRowHeadingCell,
 } from 'mark-one';
 import RoomResponse from 'common/dto/room/RoomResponse.dto';
+import { CourseInstanceResponseMeeting } from '../../../../common/dto/courses/CourseInstanceResponse';
 
 interface RoomSelectionTableProps {
   /** The list of rooms to show in the list */
   roomList: RoomResponse[];
   /** A handler to be called when the add button is clicked */
-  addButtonHandler: (roomData: RoomResponse) => void;
+  addButtonHandler: (
+    roomData: CourseInstanceResponseMeeting['room']
+  ) => void;
+  /** The id of the room currently assigned to the meeting being edited */
+  currentRoomId?: string;
 }
 
 /**
@@ -33,8 +38,13 @@ export enum AVAILABILITY {
 /**
  * Formats the meeting data for the "Availability" column
  */
-const displayAvailability = (roomData: RoomResponse) => {
-  const { campus, meetingTitles } = roomData;
+const displayAvailability = (
+  { id, campus, meetingTitles }: RoomResponse,
+  currentRoomId: string
+) => {
+  if (id === currentRoomId) {
+    return 'Current Room';
+  }
   if (meetingTitles.length > 0) {
     return `No (${meetingTitles.join(', ')})`;
   }
@@ -49,7 +59,7 @@ const displayAvailability = (roomData: RoomResponse) => {
  */
 
 const RoomSelectionTable = (
-  { roomList, addButtonHandler }: RoomSelectionTableProps
+  { roomList, addButtonHandler, currentRoomId }: RoomSelectionTableProps
 ): ReactElement<RoomSelectionTableProps> => {
   const [
     availabilityFilter,
@@ -112,24 +122,32 @@ const RoomSelectionTable = (
             }
           }).map((roomData, index) => {
             const {
-              id, campus, name, capacity,
+              id, campus, name, capacity, meetingTitles,
             } = roomData;
+            const isUnavailable = meetingTitles.length > 0
+              || id === currentRoomId;
             return (
               <TableRow key={id} isStriped={index % 2 !== 0}>
                 <TableCell>{campus}</TableCell>
                 <TableRowHeadingCell scope="row">{name}</TableRowHeadingCell>
                 <TableCell>{capacity}</TableCell>
                 <TableCell>
-                  {displayAvailability(roomData)}
+                  {displayAvailability(roomData, currentRoomId)}
                 </TableCell>
                 <TableCell>
-                  <Button
-                    onClick={() => { addButtonHandler(roomData); }}
-                    variant={VARIANT.POSITIVE}
-                  >
-                    Add
+                  {isUnavailable
+                    ? 'N/A'
+                    : (
+                      <Button
+                        onClick={() => {
+                          addButtonHandler({ id, campus, name });
+                        }}
+                        variant={VARIANT.POSITIVE}
+                      >
+                        Add
 
-                  </Button>
+                      </Button>
+                    )}
                 </TableCell>
               </TableRow>
             );
@@ -138,6 +156,10 @@ const RoomSelectionTable = (
       </Table>
     </>
   );
+};
+
+RoomSelectionTable.defaultProps = {
+  currentRoomId: null,
 };
 
 export default RoomSelectionTable;

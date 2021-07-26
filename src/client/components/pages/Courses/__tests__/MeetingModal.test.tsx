@@ -12,7 +12,7 @@ import {
   FindAllByText,
   within,
 } from '@testing-library/react';
-import { strictEqual, notStrictEqual } from 'assert';
+import { strictEqual, notStrictEqual, ok } from 'assert';
 import { TERM } from 'common/constants';
 import DAY, { dayEnumToString } from 'common/constants/day';
 import { TermKey } from 'common/constants/term';
@@ -135,10 +135,16 @@ describe('Meeting Modal', function () {
           const testMeetingDay = DAY.FRI;
           const cs50InitialMeeting = testCourseInstance[semKey].meetings
             .filter((meeting) => meeting.day === testMeetingDay)[0];
+          const initialMeetingIndex = testCourseInstance[semKey].meetings
+            .findIndex(({ id }) => id === cs50InitialMeeting.id);
           const cs50TuesdayMeetingId = testCourseInstance[semKey].meetings
             .filter((meeting) => meeting.day === DAY.TUE)[0].id;
+          const unassignedRoomMeeting = testCourseInstance[semKey].meetings
+            .filter((meeting) => meeting.room === null)[0];
+          const unassignedRoomMeetingIndex = testCourseInstance[semKey].meetings
+            .findIndex(({ id }) => id === unassignedRoomMeeting.id);
           beforeEach(async function () {
-            const editCS50InitialMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50InitialMeeting.id));
+            const editCS50InitialMeetingButton = await findByLabelText(`Edit Meeting ${initialMeetingIndex + 1}`, { exact: false });
             fireEvent.click(editCS50InitialMeetingButton);
           });
           context('when an edit button is clicked', function () {
@@ -892,6 +898,28 @@ describe('Meeting Modal', function () {
                 });
               });
             });
+            describe('Remove Room Button', function () {
+              context('when a room is assigned to the meeting', function () {
+                it('renders a corresponding remove room icon', function () {
+                  return findByLabelText(`Remove Room ${initialMeetingIndex + 1}`, { exact: false });
+                });
+                context('when the remove room button is clicked', function () {
+                  it('removes the room', async function () {
+                    const removeRemoveButton = await findByLabelText(`Remove Room ${initialMeetingIndex + 1}`, { exact: false });
+                    fireEvent.click(removeRemoveButton);
+                    strictEqual(queryByText(`Room:${cs50InitialMeeting.room.name}`, { exact: false }), null);
+                  });
+                  it('clears the room scheduling table', function () {
+                    ok(queryByText('Add meeting time and click "Show Rooms" to view availability'));
+                  });
+                });
+              });
+              context('when a room is not assigned to the meeting', function () {
+                it('does not render a corresponding remove room icon', function () {
+                  strictEqual(queryByText(`Remove Room ${unassignedRoomMeetingIndex + 1}`, { exact: false }), null);
+                });
+              });
+            });
           });
         });
         describe('On Add Behavior', function () {
@@ -929,6 +957,82 @@ describe('Meeting Modal', function () {
                   fireEvent.click(addNewTimeButton);
                   strictEqual(queryAllByRole('alert')[0].innerText, undefined);
                 });
+              });
+            });
+          });
+        });
+        describe('On Delete Behavior', function () {
+          const cs50FridayMeeting = testCourseInstance[semKey].meetings
+            .filter((meeting) => meeting.day === DAY.FRI)[0];
+          const cs50TuesdayMeeting = testCourseInstance[semKey].meetings
+            .filter((meeting) => meeting.day === DAY.TUE)[0];
+          const fridayMeetingIndex = testCourseInstance[semKey].meetings
+            .findIndex(({ id }) => id === cs50FridayMeeting.id);
+          const tuesdayMeetingIndex = testCourseInstance[semKey].meetings
+            .findIndex(({ id }) => id === cs50TuesdayMeeting.id);
+          context('when a meeting time is being edited', function () {
+            beforeEach(async function () {
+              const editCS50FridayMeetingButton = await findByLabelText(`Edit Meeting ${fridayMeetingIndex + 1}`, { exact: false });
+              fireEvent.click(editCS50FridayMeetingButton);
+            });
+            context('when the delete button of the meeting time being edited is clicked', function () {
+              it('removes the meeting being edited', async function () {
+                const deleteCS50FridayMeetingButton = await findByLabelText(`Delete Meeting ${fridayMeetingIndex + 1}`, { exact: false });
+                fireEvent.click(deleteCS50FridayMeetingButton);
+                const meetingText = `${DAY.FRI}, ${cs50FridayMeeting.startTime} to ${cs50FridayMeeting.endTime}`;
+                strictEqual(queryByText(meetingText, { exact: false }), null);
+              });
+            });
+            context('when the delete button of a meeting time not being edited is clicked', function () {
+              it('removes the meeting linked to the clicked delete button', async function () {
+                const deleteCS50TuesdayMeetingButton = await findByLabelText(`Delete Meeting ${tuesdayMeetingIndex + 1}`, { exact: false });
+                fireEvent.click(deleteCS50TuesdayMeetingButton);
+                const meetingText = `${DAY.TUE}, ${cs50TuesdayMeeting.startTime} to ${cs50TuesdayMeeting.endTime}`;
+                strictEqual(queryByText(meetingText, { exact: false }), null);
+              });
+            });
+          });
+          context('when a meeting is being added', function () {
+            const day = DAY.MON;
+            const startTime = '4:00 PM';
+            const endTime = '5:00 PM';
+            const newMeetingIndex = testCourseInstance[semKey]
+              .meetings.length + 1;
+            beforeEach(async function () {
+              const addNewTimeButton = getByText('Add New Time');
+              fireEvent.click(addNewTimeButton);
+              const dayDropdown = getByLabelText('Meeting Day', { exact: false }) as HTMLSelectElement;
+              // Fill out the new meeting entry and exit the editing stage
+              fireEvent.change(dayDropdown,
+                { target: { value: day } });
+              const timepicker = await findByLabelText('Timeslot Button');
+              fireEvent.click(timepicker);
+              fireEvent.click(getByText(`${startTime}-${endTime}`));
+            });
+            context('when the delete button of the meeting currently being added is clicked', function () {
+              it('removes the meeting currently being edited', async function () {
+                const deleteNewMeetingButton = await findByLabelText(`Delete Meeting ${newMeetingIndex}`, { exact: false });
+                fireEvent.click(deleteNewMeetingButton);
+                const meetingText = `${day}, ${startTime} to ${endTime}`;
+                strictEqual(queryByText(meetingText, { exact: false }), null);
+              });
+            });
+            context('when the delete button of the newly added meeting is clicked', function () {
+              it('removes the newly added meeting', async function () {
+                const closeButton = getByText('Close');
+                fireEvent.click(closeButton);
+                const deleteNewMeetingButton = await findByLabelText(`Delete Meeting ${newMeetingIndex}`, { exact: false });
+                fireEvent.click(deleteNewMeetingButton);
+                const meetingText = `${day}, ${startTime} to ${endTime}`;
+                strictEqual(queryByText(meetingText, { exact: false }), null);
+              });
+            });
+            context('when the delete button of a previously existing meeting is clicked', function () {
+              it('removes the meeting linked to the clicked delete button', async function () {
+                const deleteCS50TuesdayMeetingButton = await findByLabelText(`Delete Meeting ${tuesdayMeetingIndex + 1}`, { exact: false });
+                fireEvent.click(deleteCS50TuesdayMeetingButton);
+                const meetingText = `${DAY.TUE}, ${cs50TuesdayMeeting.startTime} to ${cs50TuesdayMeeting.endTime}`;
+                strictEqual(queryByText(meetingText, { exact: false }), null);
               });
             });
           });
