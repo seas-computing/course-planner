@@ -238,11 +238,13 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   const updateCurrentEditMeeting = (
     update: Partial<CourseInstanceResponseMeeting>
   ): void => {
-    setCurrentEditMeeting((meeting) => ({
-      ...meeting,
-      ...update,
-    }));
-    setShowRoomsData(null);
+    if (!saving) {
+      setCurrentEditMeeting((meeting) => ({
+        ...meeting,
+        ...update,
+      }));
+      setShowRoomsData(null);
+    }
   };
 
   /**
@@ -320,7 +322,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
    * room query
    */
   const searchForRooms = () => {
-    if (validateTimes()) {
+    if (!saving && validateTimes()) {
       let { startTime, endTime } = currentEditMeeting;
       const { day } = currentEditMeeting;
       // TODO: Once we adddress #358 this should not be necessary
@@ -348,14 +350,16 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
    * that no meetings are expanded in edit mode.
    */
   const removeMeeting = (meeting: CourseInstanceResponseMeeting) => {
-    if (currentEditMeeting && meeting.id === currentEditMeeting.id) {
-      setCurrentEditMeeting(null);
-      setShowRoomsData(null);
+    if (!saving) {
+      if (currentEditMeeting && meeting.id === currentEditMeeting.id) {
+        setCurrentEditMeeting(null);
+        setShowRoomsData(null);
+      }
+      const updatedMeetings = allMeetings.filter(
+        (currentMeeting) => currentMeeting.id !== meeting.id
+      );
+      setAllMeetings(updatedMeetings);
     }
-    const updatedMeetings = allMeetings.filter(
-      (currentMeeting) => currentMeeting.id !== meeting.id
-    );
-    setAllMeetings(updatedMeetings);
   };
 
   /**
@@ -457,12 +461,14 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
         <Button
           onClick={saveMeetingData}
           variant={VARIANT.PRIMARY}
+          disabled={saving}
         >
           Save
         </Button>
         <Button
           onClick={onClose}
           variant={VARIANT.SECONDARY}
+          disabled={saving}
         >
           Cancel
         </Button>
