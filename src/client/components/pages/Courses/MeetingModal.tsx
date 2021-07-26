@@ -7,6 +7,7 @@ import {
   ModalHeader,
   VARIANT,
   LoadSpinner,
+  fromTheme,
 } from 'mark-one';
 import React, {
   FunctionComponent,
@@ -64,14 +65,20 @@ interface MeetingModalProps {
 /**
  * Utility component to style content within meeting modal body
  */
-const MeetingModalBodyGrid = styled.div`
-  max-height: 75vh;
-  min-height: 65vh;
-  max-width: 75vw;
-  min-width: 65vw;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+const MeetingModalBodyGrid = styled.div<{showError: boolean}>`
+  width: 75vw;
+  height: 75vh;
+  display: grid;
+  grid-template-areas:
+    "meet room"
+    "note room"
+    "err err"
+  ;
+  grid-template-rows: ${({ showError }) => (showError
+    ? 'auto 1fr min-content'
+    : 'auto 1fr 0')};
+  grid-template-columns: 1fr 1fr;
+  grid-column-gap: ${fromTheme('ws', 'xlarge')};
 `;
 
 /**
@@ -80,7 +87,7 @@ const MeetingModalBodyGrid = styled.div`
 const MeetingScheduler = styled.div`
  display: flex;
  flex-direction: column;
- flex-basis: 48%;
+ grid-area: meet;
 `;
 
 /**
@@ -105,7 +112,7 @@ const MeetingSchedulerBody = styled.div`
 const RoomAvailability = styled.div`
  display: flex;
  flex-direction: column;
- flex-basis: 48%;
+ grid-area: room;
 `;
 
 /**
@@ -121,7 +128,27 @@ const RoomAvailabilityHeader = styled.h3`
  */
 const RoomAvailabilityBody = styled.div`
   flex: 1;
-  overflow: auto;
+  overflow-y: auto;
+`;
+
+const NotesSection = styled.div`
+  grid-area: note;
+`;
+
+const ErrorSection = styled.div`
+  grid-area: err;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  align-items: center;
+`;
+
+const ErrorMessage = styled.p`
+  font-family: ${fromTheme('font', 'bold', 'family')};
+  font-size: ${fromTheme('font', 'bold', 'size')};
+  font-weight: ${fromTheme('font', 'bold', 'weight')};
+  color: ${fromTheme('color', 'text', 'negative')};
+  text-align: center;
 `;
 
 const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
@@ -407,7 +434,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
         {`Meetings for ${catalogNumber} - ${term} ${calendarYear}`}
       </ModalHeader>
       <ModalBody>
-        <MeetingModalBodyGrid>
+        <MeetingModalBodyGrid showError={!!saveError || saving}>
           <MeetingScheduler>
             <MeetingSchedulerHeader>{`Meeting times for ${catalogNumber}`}</MeetingSchedulerHeader>
             <MeetingSchedulerBody>
@@ -422,27 +449,31 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
                 updateNewMeetingIdNumber={updateNewMeetingIdNumber}
                 removeMeeting={removeMeeting}
               />
-              <h3>
-                Faculty Notes
-              </h3>
-              <div>
-                {instanceInstructors.map((instructor) => (
-                  <div key={instructor.displayName}>
-                    <h4>
-                      {instructorDisplayNameToFirstLast(instructor.displayName)}
-                    </h4>
-                    <p>
-                      {
-                        !instructor.notes
-                          ? <StyledFacultyNote>No Notes</StyledFacultyNote>
-                          : instructor.notes
-                      }
-                    </p>
-                  </div>
-                ))}
-              </div>
             </MeetingSchedulerBody>
           </MeetingScheduler>
+          <NotesSection>
+            <h3>
+              Faculty Notes
+            </h3>
+            <div>
+              {instanceInstructors.map((instructor) => (
+                <div key={instructor.displayName}>
+                  <h4>
+                    {instructorDisplayNameToFirstLast(
+                      instructor.displayName
+                    )}
+                  </h4>
+                  <p>
+                    {
+                      !instructor.notes
+                        ? <StyledFacultyNote>No Notes</StyledFacultyNote>
+                        : instructor.notes
+                    }
+                  </p>
+                </div>
+              ))}
+            </div>
+          </NotesSection>
           <RoomAvailability>
             <RoomAvailabilityHeader>Room Availability</RoomAvailabilityHeader>
             <RoomAvailabilityBody>
@@ -453,9 +484,11 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
               />
             </RoomAvailabilityBody>
           </RoomAvailability>
+          <ErrorSection>
+            {saving && <LoadSpinner>Saving Meetings</LoadSpinner>}
+            {!!saveError && <ErrorMessage>{saveError}</ErrorMessage>}
+          </ErrorSection>
         </MeetingModalBodyGrid>
-        {saving && <LoadSpinner>Saving Meetings</LoadSpinner>}
-        <div>{saveError}</div>
       </ModalBody>
       <ModalFooter>
         <Button
