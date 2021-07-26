@@ -59,7 +59,11 @@ const NonClassMeetingsPage: FunctionComponent = (): ReactElement => {
         : (
           <>
             <VerticalSpace>
-              <Button variant={VARIANT.INFO} onClick={() => {}}>
+              <Button
+                variant={VARIANT.INFO}
+                onClick={() => {}}
+                alt="Create New Meeting"
+              >
                 Create New Meeting
               </Button>
             </VerticalSpace>
