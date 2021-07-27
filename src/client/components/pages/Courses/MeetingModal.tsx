@@ -411,23 +411,27 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
           }
           return { id, ...update };
         });
+      let savedMeetings: MeetingResponseDTO[];
       try {
-        const savedMeetings = await updateMeetingList(
+        savedMeetings = await updateMeetingList(
           instanceId,
           updatesToSend
         );
-        onSave(savedMeetings);
-        onClose();
       } catch (err) {
         if (axios.isAxiosError(err)) {
           const serverError = err.response.data as Error;
           setSaveError(serverError.message);
-        } else {
+        } else if (savedMeetings === undefined) {
           const errorMessage = (err as Error).message;
-          setSaveError(`Failed to save meeting data: ${errorMessage}`);
+          setSaveError(`Failed to save meeting data. Please try again later.
+          ${errorMessage}`);
         }
       } finally {
         setSaving(false);
+      }
+      if (savedMeetings) {
+        onSave(savedMeetings);
+        onClose();
       }
     }
   };
