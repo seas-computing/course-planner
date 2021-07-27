@@ -13,7 +13,9 @@ import {
   within,
   RenderResult,
 } from '@testing-library/react';
-import { strictEqual, notStrictEqual, ok } from 'assert';
+import {
+  strictEqual, notStrictEqual, ok, deepStrictEqual,
+} from 'assert';
 import { TERM } from 'common/constants';
 import DAY, { dayEnumToString } from 'common/constants/day';
 import { TermKey } from 'common/constants/term';
@@ -25,8 +27,11 @@ import React, { useState } from 'react';
 import { SinonStub, stub } from 'sinon';
 import { render } from 'test-utils';
 import { cs50CourseInstance, freeRoom, bookedRoom } from 'testData';
+import * as dummy from 'testData';
 import * as roomAPI from 'client/api/rooms';
+import * as meetingAPI from 'client/api/meetings';
 import { Button, VARIANT } from 'mark-one';
+import axios from 'axios';
 import MeetingModal from '../MeetingModal';
 
 describe('Meeting Modal', function () {
@@ -969,10 +974,88 @@ describe('Meeting Modal', function () {
       });
     });
     describe('On Save Behavior', function () {
-      it('calls the onSave handler once', async function () {
-        const saveButton = getByText('Save');
-        fireEvent.click(saveButton);
-        await wait(() => strictEqual(onSaveStub.callCount, 1));
+      let meetingSaveStub: SinonStub;
+      let saveButton: HTMLElement;
+      const testMeetingResponses = [
+        dummy.mondayMeetingReponseWithRoom,
+        dummy.wednesdayMeetingReponseWithoutRoom,
+      ];
+      beforeEach(function () {
+        meetingSaveStub = stub(meetingAPI, 'updateMeetingList');
+        saveButton = renderResult.getByText('Save');
+      });
+      context('When the edited data is valid', function () {
+        context('When the save operation succeeds', function () {
+          beforeEach(async function () {
+            meetingSaveStub.resolves(testMeetingResponses);
+            fireEvent.click(renderResult.getByText('Save'));
+            await waitForElementToBeRemoved(
+              () => renderResult.getByText('Saving Meetings')
+            );
+          });
+          it('Should not display an error message', function () {
+            const errorMessage = renderResult.queryAllByRole('alert');
+            strictEqual(errorMessage.length, 0);
+          });
+          it('Should call the onSave handler', function () {
+            strictEqual(onSaveStub.callCount, 1);
+            deepStrictEqual(onSaveStub.args[0][0], testMeetingResponses);
+          });
+          it('Should call the onClose handler', function () {
+            strictEqual(onCloseStub.callCount, 1);
+          });
+        });
+        context('When the save operation fails', function () {
+          context('With a server Error', function () {
+            beforeEach(async function () {
+              // This is a bit hacky, but the `AxiosError` type isn't exposed
+              // as a constructor and I couldn't find a better way to test the
+              // control flow for handling different errors
+              stub(axios, 'isAxiosError').returns(true);
+              meetingSaveStub.rejects({ response: { data: dummy.error } });
+              fireEvent.click(saveButton);
+              await waitForElementToBeRemoved(
+                () => renderResult.getByText('Saving Meetings')
+              );
+            });
+            it('Displays the error message from the server', async function () {
+              const errorMessage = await renderResult.findAllByRole('alert');
+              strictEqual(errorMessage.length, 1);
+              strictEqual(errorMessage[0].textContent, dummy.error.message);
+            });
+          });
+          context('With any other error', function () {
+            beforeEach(async function () {
+              stub(axios, 'isAxiosError').returns(false);
+              meetingSaveStub.rejects(dummy.error);
+              fireEvent.click(saveButton);
+              await waitForElementToBeRemoved(
+                () => renderResult.getByText('Saving Meetings')
+              );
+            });
+            it('Prefixes the error with a message to try again', async function () {
+              const errorMessage = await renderResult.findAllByRole('alert');
+              strictEqual(errorMessage.length, 1);
+              const errorText = errorMessage[0].textContent;
+              strictEqual(errorText.includes(dummy.error.message), true);
+              strictEqual(errorText.includes('try again'), true);
+            });
+          });
+        });
+      });
+      context('When there is an error in the edited data', function () {
+        beforeEach(async function () {
+          // Set up failing data
+          fireEvent.click(renderResult.getByText('Add New Time'));
+          await renderResult.findByLabelText(/Delete Meeting 3/);
+          fireEvent.click(renderResult.getByText('Save'));
+        });
+        it('should show the error with the meeting', async function () {
+          const errorMessage = await renderResult.findAllByRole('alert');
+          strictEqual(errorMessage.length, 1);
+          const errorText = errorMessage[0].textContent;
+          strictEqual(errorText, 'Please provide a day and start/end times before proceeding.');
+        });
       });
     });
   });
