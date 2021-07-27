@@ -18,7 +18,7 @@ import React, {
   useState,
 } from 'react';
 import styled from 'styled-components';
-import { AxiosError } from 'axios';
+import axios from 'axios';
 import { instructorDisplayNameToFirstLast } from '../utils/instructorDisplayNameToFirstLast';
 import { MeetingTimesList } from './MeetingTimesList';
 import RoomSelection from './RoomSelection';
@@ -395,7 +395,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
    * the resulting saved list on to the `onSave` handler provided by the
    * parent.
    */
-  const saveMeetingData = () => {
+  const saveMeetingData = async () => {
     if (validateTimes()) {
       closeCurrentEditMeeting();
       setSaveError('');
@@ -411,16 +411,24 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
           }
           return { id, ...update };
         });
-      updateMeetingList(instanceId, updatesToSend)
-        .then(onSave)
-        .then(onClose)
-        .catch((error: AxiosError) => {
-          const serverError = error.response.data as Error;
+      try {
+        const savedMeetings = await updateMeetingList(
+          instanceId,
+          updatesToSend
+        );
+        onSave(savedMeetings);
+        onClose();
+      } catch (err) {
+        if (axios.isAxiosError(err)) {
+          const serverError = err.response.data as Error;
           setSaveError(serverError.message);
-        })
-        .finally(() => {
-          setSaving(false);
-        });
+        } else {
+          const errorMessage = (err as Error).message;
+          setSaveError(`Failed to save meeting data: ${errorMessage}`);
+        }
+      } finally {
+        setSaving(false);
+      }
     }
   };
 
