@@ -501,7 +501,14 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
           </RoomAvailability>
           <ErrorSection>
             {saving && <LoadSpinner>Saving Meetings</LoadSpinner>}
-            {!!saveError && <ErrorMessage>{saveError}</ErrorMessage>}
+            {!!saveError && (
+              <ErrorMessage
+                role="alert"
+                aria-live="assertive"
+              >
+                {saveError}
+              </ErrorMessage>
+            )}
           </ErrorSection>
         </MeetingModalBodyGrid>
       </ModalBody>
