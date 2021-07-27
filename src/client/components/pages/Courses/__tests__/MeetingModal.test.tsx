@@ -11,6 +11,7 @@ import {
   waitForElementToBeRemoved,
   FindAllByText,
   within,
+  RenderResult,
 } from '@testing-library/react';
 import { strictEqual, notStrictEqual, ok } from 'assert';
 import { TERM } from 'common/constants';
@@ -29,6 +30,7 @@ import { Button, VARIANT } from 'mark-one';
 import MeetingModal from '../MeetingModal';
 
 describe('Meeting Modal', function () {
+  let renderResult: RenderResult;
   let getByText: BoundFunction<GetByText>;
   let getAllByText: BoundFunction<AllByText>;
   let getAllByLabelText: BoundFunction<AllByText>;
@@ -50,15 +52,7 @@ describe('Meeting Modal', function () {
       onCloseStub = stub();
       onSaveStub = stub();
       roomAPIStub = stub(roomAPI, 'getRoomAvailability');
-      ({
-        getByText,
-        getAllByText,
-        queryByText,
-        getByLabelText,
-        findByLabelText,
-        findByText,
-        queryAllByRole,
-      } = render(
+      renderResult = render(
         <MeetingModal
           isVisible
           currentCourse={testCourseInstance}
@@ -69,7 +63,16 @@ describe('Meeting Modal', function () {
           onClose={onCloseStub}
           onSave={onSaveStub}
         />
-      ));
+      );
+      ({
+        getByText,
+        getAllByText,
+        queryByText,
+        getByLabelText,
+        findByLabelText,
+        findByText,
+        queryAllByRole,
+      } = renderResult);
     });
     describe('On Open Behavior', function () {
       it('populates the heading with the correct course instance information', function () {
