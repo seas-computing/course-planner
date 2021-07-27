@@ -232,7 +232,7 @@ describe('Meeting Modal', function () {
                     const newTimeslot = await findByText('1:00 PM-2:00 PM');
                     fireEvent.click(newTimeslot);
                     await waitForElementToBeRemoved(
-                      () => getByText(freeRoom.name)
+                      () => queryByText(freeRoom.name)
                     );
                     const promptMessage = await findByText(/Add meeting time/);
                     notStrictEqual(promptMessage, null);
