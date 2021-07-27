@@ -27,6 +27,7 @@ import CourseInstanceResponseDTO, { CourseInstanceResponseMeeting } from '../../
 import { convert12To24HourTime } from '../../../../common/utils/timeHelperFunctions';
 import { updateMeetingList } from '../../../api';
 import { MeetingRequestDTO } from '../../../../common/dto/meeting/MeetingRequest.dto';
+import { MeetingResponseDTO } from '../../../../common/dto/meeting/MeetingResponse.dto';
 
 /**
  * A component that applies styling for text that indicates the faculty has
@@ -59,7 +60,7 @@ interface MeetingModalProps {
   /**
    * Handler to be invoked when the modal is saved
    */
-  onSave: (arg0: CourseInstanceResponseMeeting[]) => void;
+  onSave: (arg0: MeetingResponseDTO[]) => void;
 }
 
 /**
