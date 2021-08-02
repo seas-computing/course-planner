@@ -4,6 +4,7 @@ import React, {
   ReactText,
   useState,
   useRef,
+  useEffect,
 } from 'react';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import {
@@ -127,6 +128,10 @@ export const MeetingGridSection = styled.div<{area: string}>`
   align-items: flex-start;
 `;
 
+interface LegacyEvent {
+  returnValue: string;
+}
+
 /**
  * Helper function to format day, time, and room into a single list
  */
@@ -143,6 +148,60 @@ export const formatMeetings = (
     id: courseId,
   } = course;
   const [modalVisible, setModalVisible] = useState(false);
+  /**
+   * Keeps track of whether the user has altered fields in the form to determine
+   * whether to show a confirmation dialog on modal close
+   */
+  const [
+    isChanged,
+    setIsChanged,
+  ] = useState(false);
+
+  const confirmMessage = "You have unsaved changes. Click 'OK' to disregard changes, or 'Cancel' to continue editing.";
+
+  useEffect(() => {
+    /**
+     * Checks to see if there are any unsaved changes in the modal When the user
+     * refreshes the page. If there are unsaved changes, the browser displays a
+     * warning message to confirm the page reload. If the user selects cancel, the
+     * user can continue making changes in the modal.
+     */
+    const onBeforeUnload = (event: Event) => {
+      if (!isChanged) return;
+      event.preventDefault();
+      // It's unclear whether TS will account for browser incompatibility here,
+      // so we use all three methods of setting the confirmation message,
+      // as detailed here:
+      // https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event
+      const legacyEvent = (event as unknown as LegacyEvent);
+      legacyEvent.returnValue = confirmMessage;
+      return confirmMessage;
+    };
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', onBeforeUnload);
+    };
+  },
+  [isChanged]);
+
+  /**
+   * Called when the modal is closed. If there are any unsaved changes,
+   * a warning message appears, and the user must confirm discarding the unsaved
+   * changes in order to close the modal. If the user selects cancel, the user
+   * can continue making changes in the modal.
+   */
+  const onModalClose = () => {
+    if (isChanged) {
+      // eslint-disable-next-line no-alert
+      if (window.confirm(confirmMessage)) {
+        setIsChanged(false);
+        setModalVisible(false);
+      }
+    } else {
+      setModalVisible(false);
+    }
+  };
+
   const buttonRef = useRef<HTMLButtonElement>(null);
   const currentSemester = {
     term,
@@ -190,10 +249,12 @@ export const formatMeetings = (
         </BorderlessButton>
         <MeetingModal
           isVisible={modalVisible}
+          isChanged={isChanged}
           currentSemester={currentSemester}
           currentCourse={course}
+          onChange={() => { setIsChanged(true); }}
           onClose={() => {
-            setModalVisible(false);
+            onModalClose();
             setTimeout(() => { buttonRef.current.focus(); });
           }}
           onSave={() => {}}

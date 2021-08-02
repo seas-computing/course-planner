@@ -37,6 +37,10 @@ interface MeetingModalProps {
    */
   isVisible: boolean;
   /**
+   * Whether the form fields have been changed
+   */
+  isChanged: boolean;
+  /**
    * The current course instance being edited
    */
   currentCourse: CourseInstanceResponseDTO;
@@ -47,6 +51,10 @@ interface MeetingModalProps {
     term: TERM,
     calendarYear: number
   };
+  /**
+   * Handler to be invoked when a form field has changed
+   */
+  onChange: () => void;
   /**
    * Handler to be invoked when the modal closes
    */
@@ -122,6 +130,8 @@ const RoomAvailabilityBody = styled.div`
 
 const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   isVisible,
+  isChanged,
+  onChange,
   onClose,
   currentCourse,
   currentSemester,
@@ -233,12 +243,24 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   };
 
   /**
+   * Calls the onChange function to indicate that there has been a change in the
+   * meetings of the current modal. If the user exits the modal without saving,
+   * there will be a warning message to prevent the user from losing changes.
+   */
+  const signalModalChange = () => {
+    if (!isChanged) {
+      onChange();
+    }
+  };
+
+  /**
    * Updates individual fields in the current meeting by merging passed props
    * and values into the object
    */
   const updateCurrentEditMeeting = (
     update: Partial<CourseInstanceResponseMeeting>
   ): void => {
+    signalModalChange();
     setCurrentEditMeeting((meeting) => ({
       ...meeting,
       ...update,
@@ -344,6 +366,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
       setCurrentEditMeeting(null);
       setShowRoomsData(null);
     }
+    signalModalChange();
     const updatedMeetings = allMeetings.filter(
       (currentMeeting) => currentMeeting.id !== meeting.id
     );
