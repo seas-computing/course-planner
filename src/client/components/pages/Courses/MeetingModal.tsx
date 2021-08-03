@@ -170,7 +170,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
    * rendered by letting next task of event queue run first.
    */
   const setMeetingModalFocus = (): void => {
-    setTimeout((): void => modalHeaderRef.current.focus());
+    setTimeout((): void => modalHeaderRef.current?.focus());
   };
 
   const { term, calendarYear } = currentSemester;

@@ -201,14 +201,14 @@ export const formatMeetings = (
             setModalVisible(false);
             setTimeout(() => { buttonRef.current.focus(); });
           }}
-          onSave={(newMeetingList) => {
+          onSave={(newMeetingList, message?: string) => {
             updateHandler({
               ...course,
               [semKey]: {
                 ...course[semKey],
                 meetings: newMeetingList,
               },
-            });
+            }, message);
           }}
         />
       </>
@@ -223,7 +223,7 @@ export interface ValueGetterOptions {
    * A handler for updating the client state of the course wihtout needing to
    * refresh data from the server
    */
-  updateHandler?: (course: CourseInstanceResponseDTO) => void;
+  updateHandler?: (course: CourseInstanceResponseDTO, message?: string) => void;
 }
 
 /**

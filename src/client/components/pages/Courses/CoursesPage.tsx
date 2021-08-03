@@ -82,13 +82,20 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   * to accept the results of an update returned from the server, without
   * needing a full refresh of the data.
   */
-  const updateLocalCourse = (course: CourseInstanceResponseDTO):void => {
+  const updateLocalCourse = (
+    course: CourseInstanceResponseDTO,
+    message?: string
+  ): void => {
     const updatedCourses = [...currentCourses];
     const originalCourseIndex = updatedCourses.findIndex(({ id }) => (
       id === course.id));
     if (originalCourseIndex >= 0) {
       updatedCourses.splice(originalCourseIndex, 1, course);
       setCourses(updatedCourses);
+      dispatchMessage({
+        message: new AppMessage(['Course updated.', message].join(' '), MESSAGE_TYPE.SUCCESS),
+        type: MESSAGE_ACTION.PUSH,
+      });
     }
   };
 
