@@ -109,7 +109,6 @@ describe('Course Admin Modal Behavior', function () {
             autoLoadEntities: true,
             retryAttempts: 10,
             retryDelay: 10000,
-            keepConnectionAlive: true,
           }),
           inject: [ConfigService],
         }),
