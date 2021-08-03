@@ -143,6 +143,7 @@ export const formatMeetings = (
   const {
     [semKey]: instance,
     id: parentId,
+    catalogNumber,
   } = course;
   const { calendarYear, meetings } = instance;
   const [modalVisible, setModalVisible] = useState(false);
@@ -185,6 +186,7 @@ export const formatMeetings = (
         </TableCellList>
         <BorderlessButton
           id={`${parentId}-${term}-edit-meetings-button`}
+          alt={`Edit meetings for ${catalogNumber} in ${semKey} ${calendarYear}`}
           onClick={() => { setModalVisible(true); }}
           variant={VARIANT.INFO}
           forwardRef={buttonRef}
