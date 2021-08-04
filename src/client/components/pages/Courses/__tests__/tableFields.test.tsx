@@ -168,7 +168,7 @@ describe('tableFields', function () {
         });
       });
       context('When semester does not have data', function () {
-        it('Should return null', function () {
+        it('Should return an empty list', function () {
           const springTimes = formatMeetings(TERM.SPRING);
           const TestComponent: FunctionComponent = (): ReactElement => (
             <div>
@@ -178,10 +178,10 @@ describe('tableFields', function () {
               )}
             </div>
           );
-          render(
+          const { queryAllByRole } = render(
             <TestComponent />
           );
-          strictEqual(document.body.textContent, '');
+          strictEqual(queryAllByRole('listitem').length, 0);
         });
       });
     });

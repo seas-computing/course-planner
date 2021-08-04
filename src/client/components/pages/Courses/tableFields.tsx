@@ -152,67 +152,66 @@ export const formatMeetings = (
     term,
     calendarYear,
   };
-  return (meetings[0] === undefined || meetings[0]?.day === null)
-    ? null
-    : (
-      <>
-        <TableCellList>
-          {meetings.map(({
-            id,
-            room,
-            day,
-            startTime,
-            endTime,
-          }): ReactElement => (
-            <TableCellListItem key={id}>
-              <MeetingGrid>
-                <MeetingGridSection area="time">
-                  <div>{dayEnumToString(day)}</div>
-                  <div>{`${startTime}-${endTime}`}</div>
-                </MeetingGridSection>
-                {room && (
-                  <>
-                    <MeetingGridSection area="room">
-                      {room.name}
-                    </MeetingGridSection>
-                    <MeetingGridSection area="campus">
-                      <CampusIcon>{room.campus}</CampusIcon>
-                    </MeetingGridSection>
-                  </>
-                )}
-              </MeetingGrid>
-            </TableCellListItem>
-          ))}
-        </TableCellList>
-        <BorderlessButton
-          id={`${parentId}-${term}-edit-meetings-button`}
-          alt={`Edit meetings for ${catalogNumber} in ${semKey} ${calendarYear}`}
-          onClick={() => { setModalVisible(true); }}
-          variant={VARIANT.INFO}
-          forwardRef={buttonRef}
-        >
-          <FontAwesomeIcon icon={faEdit} />
-        </BorderlessButton>
-        <MeetingModal
-          isVisible={modalVisible}
-          currentSemester={currentSemester}
-          currentCourse={course}
-          onClose={() => {
-            setModalVisible(false);
-            setTimeout(() => { buttonRef.current.focus(); });
-          }}
-          onSave={(newMeetingList, message?: string) => {
-            updateHandler({
-              ...course,
-              [semKey]: {
-                ...course[semKey],
-                meetings: newMeetingList,
-              },
-            }, message);
-          }}
-        />
-      </>
-    );
+  return (
+    <>
+      <TableCellList>
+        {(meetings[0] !== undefined && meetings[0]?.day !== null)
+        && meetings.map(({
+          id,
+          room,
+          day,
+          startTime,
+          endTime,
+        }): ReactElement => (
+          <TableCellListItem key={id}>
+            <MeetingGrid>
+              <MeetingGridSection area="time">
+                <div>{dayEnumToString(day)}</div>
+                <div>{`${startTime}-${endTime}`}</div>
+              </MeetingGridSection>
+              {room && (
+                <>
+                  <MeetingGridSection area="room">
+                    {room.name}
+                  </MeetingGridSection>
+                  <MeetingGridSection area="campus">
+                    <CampusIcon>{room.campus}</CampusIcon>
+                  </MeetingGridSection>
+                </>
+              )}
+            </MeetingGrid>
+          </TableCellListItem>
+        ))}
+      </TableCellList>
+      <BorderlessButton
+        id={`${parentId}-${term}-edit-meetings-button`}
+        alt={`Edit meetings for ${catalogNumber} in ${semKey} ${calendarYear}`}
+        onClick={() => { setModalVisible(true); }}
+        variant={VARIANT.INFO}
+        forwardRef={buttonRef}
+      >
+        <FontAwesomeIcon icon={faEdit} />
+      </BorderlessButton>
+      <MeetingModal
+        isVisible={modalVisible}
+        currentSemester={currentSemester}
+        currentCourse={course}
+        onClose={() => {
+          setModalVisible(false);
+          setTimeout(() => { buttonRef.current?.focus(); });
+        }}
+        onSave={(newMeetingList, message?: string) => {
+          updateHandler({
+            ...course,
+            [semKey]: {
+              ...course[semKey],
+              meetings: newMeetingList,
+            },
+          }, message);
+        }}
+      />
+    </>
+  );
 };
 
 /**
