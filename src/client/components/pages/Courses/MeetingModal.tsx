@@ -37,10 +37,6 @@ interface MeetingModalProps {
    */
   isVisible: boolean;
   /**
-   * Whether the form fields have been changed
-   */
-  isChanged: boolean;
-  /**
    * The current course instance being edited
    */
   currentCourse: CourseInstanceResponseDTO;
@@ -51,10 +47,6 @@ interface MeetingModalProps {
     term: TERM,
     calendarYear: number
   };
-  /**
-   * Handler to be invoked when a form field has changed
-   */
-  onChange: () => void;
   /**
    * Handler to be invoked when the modal closes
    */
@@ -130,8 +122,6 @@ const RoomAvailabilityBody = styled.div`
 
 const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   isVisible,
-  isChanged,
-  onChange,
   onClose,
   currentCourse,
   currentSemester,
@@ -150,6 +140,10 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   const setMeetingModalFocus = (): void => {
     setTimeout((): void => modalHeaderRef.current.focus());
   };
+
+  interface LegacyEvent {
+    returnValue: string;
+  }
 
   const { term, calendarYear } = currentSemester;
   const semKey = term.toLowerCase() as TermKey;
@@ -190,6 +184,17 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   ] = useState<RoomRequest>(null);
 
   /**
+   * Keeps track of whether the user has altered fields in the form to determine
+   * whether to show a confirmation dialog on modal close
+   */
+  const [
+    isChanged,
+    setIsChanged,
+  ] = useState(false);
+
+  const confirmMessage = "You have unsaved changes. Click 'OK' to disregard changes, or 'Cancel' to continue editing.";
+
+  /**
    * When the modal becomes visible, focus the header, load the current list of
    * meetings, and reset the currentEditMeeting to null
    */
@@ -201,6 +206,27 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
       setCurrentEditMeeting(null);
       setShowRoomsData(null);
     }
+    /**
+     * Checks to see if there are any unsaved changes in the modal when the user
+     * refreshes the page. If there are unsaved changes, the browser displays a
+     * warning message to confirm the page reload. If the user selects cancel, the
+     * user can continue making changes in the modal.
+     */
+    const onBeforeUnload = (event: Event) => {
+      if (!isChanged) return;
+      event.preventDefault();
+      // It's unclear whether TS will account for browser incompatibility here,
+      // so we use all three methods of setting the confirmation message,
+      // as detailed here:
+      // https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event
+      const legacyEvent = (event as unknown as LegacyEvent);
+      legacyEvent.returnValue = confirmMessage;
+      return confirmMessage;
+    };
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', onBeforeUnload);
+    };
   },
   [
     isVisible,
@@ -208,7 +234,26 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     instanceMeetings,
     setCurrentEditMeeting,
     setShowRoomsData,
+    isChanged,
   ]);
+
+  /**
+   * Called when the modal is closed. If there are any unsaved changes,
+   * a warning message appears, and the user must confirm discarding the unsaved
+   * changes in order to close the modal. If the user selects cancel, the user
+   * can continue making changes in the modal.
+   */
+  const onModalClose = () => {
+    if (isChanged) {
+      // eslint-disable-next-line no-alert
+      if (window.confirm(confirmMessage)) {
+        setIsChanged(false);
+        onClose();
+      }
+    } else {
+      onClose();
+    }
+  };
 
   useEffect(() => {
     if (saving) {
@@ -249,7 +294,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
    */
   const signalModalChange = () => {
     if (!isChanged) {
-      onChange();
+      setIsChanged(true);
     }
   };
 
@@ -376,7 +421,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   return (
     <Modal
       ariaLabelledBy="editMeeting"
-      closeHandler={onClose}
+      closeHandler={onModalClose}
       isVisible={isVisible}
     >
       <ModalHeader
@@ -446,7 +491,9 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
             Save
           </Button>
           <Button
-            onClick={onClose}
+            onClick={() => {
+              onModalClose();
+            }}
             variant={VARIANT.SECONDARY}
           >
             Cancel
