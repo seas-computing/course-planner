@@ -192,6 +192,12 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     setIsChanged,
   ] = useState(false);
 
+  /**
+   * Indicates whether the meetings have been initially set in the modal.
+   * This prevents the meetings from being loaded every time useEffect is run.
+   */
+  const [initialized, setInitialized] = useState(false);
+
   const confirmMessage = "You have unsaved changes. Click 'OK' to disregard changes, or 'Cancel' to continue editing.";
 
   /**
@@ -201,10 +207,14 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   useEffect(() => {
     if (isVisible) {
       setMeetingModalFocus();
-      setAllMeetings(instanceMeetings);
+      if (!initialized) {
+        setAllMeetings(instanceMeetings);
+        setInitialized(true);
+      }
     } else {
       setCurrentEditMeeting(null);
       setShowRoomsData(null);
+      setInitialized(false);
     }
     /**
      * Checks to see if there are any unsaved changes in the modal when the user
@@ -235,6 +245,8 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     setCurrentEditMeeting,
     setShowRoomsData,
     isChanged,
+    initialized,
+    setInitialized,
   ]);
 
   /**
@@ -407,11 +419,11 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
    * that no meetings are expanded in edit mode.
    */
   const removeMeeting = (meeting: CourseInstanceResponseMeeting) => {
+    signalModalChange();
     if (currentEditMeeting && meeting.id === currentEditMeeting.id) {
       setCurrentEditMeeting(null);
       setShowRoomsData(null);
     }
-    signalModalChange();
     const updatedMeetings = allMeetings.filter(
       (currentMeeting) => currentMeeting.id !== meeting.id
     );
