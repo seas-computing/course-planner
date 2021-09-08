@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsUUID } from 'class-validator';
+import { IsEmail, IsInt, IsNotEmpty, IsOptional, IsPhoneNumber, IsUUID } from 'class-validator';
 
 export default abstract class CreateNonClassParentDTO {
   @ApiProperty({
@@ -14,6 +14,7 @@ export default abstract class CreateNonClassParentDTO {
     description: 'The title of this non class parent',
     example: 'Reading group',
   })
+  @IsNotEmpty()
   public title: string;
 
   @ApiProperty({
@@ -21,6 +22,7 @@ export default abstract class CreateNonClassParentDTO {
     example: 'James Waldo',
     nullable: true,
   })
+  @IsOptional()
   public contactName?: string;
 
   @ApiProperty({
@@ -28,6 +30,8 @@ export default abstract class CreateNonClassParentDTO {
     example: 'j.waldo@seas.harvard.edu',
     nullable: true,
   })
+  @IsEmail()
+  @IsOptional()
   public contactEmail?: string;
 
   @ApiProperty({
@@ -35,6 +39,8 @@ export default abstract class CreateNonClassParentDTO {
     example: '(123) 456-7890',
     nullable: true,
   })
+  @IsOptional()
+  @IsPhoneNumber('US')
   public contactPhone?: string;
 
   @ApiProperty({
@@ -42,6 +48,7 @@ export default abstract class CreateNonClassParentDTO {
     example: 'Only occurs in odd-numbered years',
     nullable: true,
   })
+  @IsOptional()
   public notes?: string;
 
   @ApiProperty({
@@ -49,5 +56,7 @@ export default abstract class CreateNonClassParentDTO {
     example: 82,
     nullable: true,
   })
+  @IsInt()
+  @IsOptional()
   public expectedSize?: number;
 }
