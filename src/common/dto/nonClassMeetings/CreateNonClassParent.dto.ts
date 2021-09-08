@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsInt, IsNotEmpty, IsOptional, IsPhoneNumber, IsUUID } from 'class-validator';
+import {
+  IsEmail, IsInt, IsNotEmpty, IsOptional, IsPhoneNumber, IsUUID,
+} from 'class-validator';
 
 export default abstract class CreateNonClassParentDTO {
   @ApiProperty({
