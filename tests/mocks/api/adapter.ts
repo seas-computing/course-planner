@@ -58,7 +58,9 @@ const mockAdapter = (app: Server) => async (
         {
           config,
           code: result.statusCode,
-          response: result,
+          response: {
+            data: result.body,
+          },
           isAxiosError: true,
           toJSON: () => JSON.parse,
         }
