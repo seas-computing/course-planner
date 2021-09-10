@@ -29,6 +29,7 @@ import { dayEnumToString } from 'common/constants/day';
 import { offeredEnumToString } from 'common/constants/offered';
 import { TermKey } from 'common/constants/term';
 import styled from 'styled-components';
+import FontWrapper from 'client/components/general/typography/FontWrapper';
 import MeetingModal from './MeetingModal';
 
 /**
@@ -89,9 +90,11 @@ export const formatInstructors = (
         <TableCellList>
           {instructors.map(
             ({ id, displayName }): ReactElement => (
-              <TableCellListItem key={id}>
-                {displayName}
-              </TableCellListItem>
+              <FontWrapper>
+                <TableCellListItem key={id}>
+                  <FontWrapper>{displayName}</FontWrapper>
+                </TableCellListItem>
+              </FontWrapper>
             )
           )}
         </TableCellList>
@@ -160,24 +163,26 @@ export const formatMeetings = (
             startTime,
             endTime,
           }): ReactElement => (
-            <TableCellListItem key={id}>
-              <MeetingGrid>
-                <MeetingGridSection area="time">
-                  <div>{dayEnumToString(day)}</div>
-                  <div>{`${startTime}-${endTime}`}</div>
-                </MeetingGridSection>
-                {room && (
-                  <>
-                    <MeetingGridSection area="room">
-                      {room.name}
-                    </MeetingGridSection>
-                    <MeetingGridSection area="campus">
-                      <CampusIcon>{room.campus}</CampusIcon>
-                    </MeetingGridSection>
-                  </>
-                )}
-              </MeetingGrid>
-            </TableCellListItem>
+            <FontWrapper>
+              <TableCellListItem key={id}>
+                <MeetingGrid>
+                  <MeetingGridSection area="time">
+                    <div>{dayEnumToString(day)}</div>
+                    <div>{`${startTime}-${endTime}`}</div>
+                  </MeetingGridSection>
+                  {room && (
+                    <>
+                      <MeetingGridSection area="room">
+                        <FontWrapper>{room.name}</FontWrapper>
+                      </MeetingGridSection>
+                      <MeetingGridSection area="campus">
+                        <CampusIcon>{room.campus}</CampusIcon>
+                      </MeetingGridSection>
+                    </>
+                  )}
+                </MeetingGrid>
+              </TableCellListItem>
+            </FontWrapper>
           ))}
         </TableCellList>
         <BorderlessButton

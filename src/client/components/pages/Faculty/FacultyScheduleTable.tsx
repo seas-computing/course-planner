@@ -39,6 +39,7 @@ import {
   facultyTypeEnumToTitleCase,
 } from 'common/utils/facultyHelperFunctions';
 import { CellLayout } from 'client/components/general';
+import FontWrapper from 'client/components/general/typography/FontWrapper';
 import { absenceToVariant } from '../utils/absenceToVariant';
 
 interface FacultyScheduleTableProps {
@@ -134,14 +135,22 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
                 alignment={ALIGN.CENTER}
                 backgroundColor={getAreaColor(faculty.area)}
               >
-                {faculty.area}
+                <FontWrapper>{faculty.area}</FontWrapper>
               </TableCell>
-              <TableCell>{faculty.lastName}</TableCell>
-              <TableCell>{faculty.firstName}</TableCell>
               <TableCell>
-                {facultyTypeEnumToTitleCase(faculty.category)}
+                <FontWrapper>{faculty.lastName}</FontWrapper>
               </TableCell>
-              <TableCell>{faculty.jointWith}</TableCell>
+              <TableCell>
+                <FontWrapper>{faculty.firstName}</FontWrapper>
+              </TableCell>
+              <TableCell>
+                <FontWrapper>
+                  {facultyTypeEnumToTitleCase(faculty.category)}
+                </FontWrapper>
+              </TableCell>
+              <TableCell>
+                <FontWrapper>{faculty.jointWith}</FontWrapper>
+              </TableCell>
               <TableCell
                 variant={absenceToVariant(faculty.fall.absence)}
                 verticalAlignment={VALIGN.TOP}
@@ -149,13 +158,15 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
                 <CellLayout>
                   <TableCellList>
                     <TableCellListItem>
-                      {absenceEnumToTitleCase(
-                        faculty.fall.absence
-                          && faculty.fall.absence.type
-                          !== ABSENCE_TYPE.PRESENT
-                          ? faculty.fall.absence.type
-                          : ''
-                      )}
+                      <FontWrapper>
+                        {absenceEnumToTitleCase(
+                          faculty.fall.absence
+                            && faculty.fall.absence.type
+                            !== ABSENCE_TYPE.PRESENT
+                            ? faculty.fall.absence.type
+                            : ''
+                        )}
+                      </FontWrapper>
                     </TableCellListItem>
                   </TableCellList>
                   <BorderlessButton
@@ -181,11 +192,13 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
                 </CellLayout>
               </TableCell>
               <TableCell variant={absenceToVariant(faculty.fall.absence)}>
-                {faculty.fall.courses.map((course): ReactElement => (
-                  <div key={course.id}>
-                    {course.catalogNumber}
-                  </div>
-                ))}
+                <FontWrapper>
+                  {faculty.fall.courses.map((course): ReactElement => (
+                    <div key={course.id}>
+                      {course.catalogNumber}
+                    </div>
+                  ))}
+                </FontWrapper>
               </TableCell>
               <TableCell
                 variant={absenceToVariant(faculty.spring.absence)}
@@ -193,15 +206,17 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
               >
                 <CellLayout>
                   <TableCellList>
-                    <TableCellListItem>
-                      {absenceEnumToTitleCase(
-                        faculty.spring.absence
-                          && faculty.spring.absence.type
-                          !== ABSENCE_TYPE.PRESENT
-                          ? faculty.spring.absence.type
-                          : ''
-                      )}
-                    </TableCellListItem>
+                    <FontWrapper>
+                      <TableCellListItem>
+                        {absenceEnumToTitleCase(
+                          faculty.spring.absence
+                            && faculty.spring.absence.type
+                            !== ABSENCE_TYPE.PRESENT
+                            ? faculty.spring.absence.type
+                            : ''
+                        )}
+                      </TableCellListItem>
+                    </FontWrapper>
                   </TableCellList>
                   <BorderlessButton
                     id={computeEditAbsenceButtonId(faculty, TERM.SPRING)}
@@ -226,11 +241,13 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
                 </CellLayout>
               </TableCell>
               <TableCell variant={absenceToVariant(faculty.spring.absence)}>
-                {faculty.spring.courses.map((course): ReactElement => (
-                  <div key={course.id}>
-                    {course.catalogNumber}
-                  </div>
-                ))}
+                <FontWrapper>
+                  {faculty.spring.courses.map((course): ReactElement => (
+                    <div key={course.id}>
+                      {course.catalogNumber}
+                    </div>
+                  ))}
+                </FontWrapper>
               </TableCell>
               <TableCell alignment={ALIGN.CENTER}>
                 <BorderlessButton

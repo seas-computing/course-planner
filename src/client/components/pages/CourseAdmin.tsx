@@ -30,6 +30,7 @@ import { CourseAPI } from '../../api/courses';
 import { VerticalSpace } from '../layout';
 import CourseModal from './Courses/CourseModal';
 import { listFilter } from './Filter';
+import FontWrapper from '../general/typography/FontWrapper';
 
 /**
  * Computes the id of the course button for the course being edited
@@ -213,10 +214,14 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
                 <TableCell
                   backgroundColor={getAreaColor(course.area.name)}
                 >
-                  {course.area.name}
+                  <FontWrapper>{course.area.name}</FontWrapper>
                 </TableCell>
-                <TableCell>{course.catalogNumber}</TableCell>
-                <TableCell>{course.title}</TableCell>
+                <TableCell>
+                  <FontWrapper>{course.catalogNumber}</FontWrapper>
+                </TableCell>
+                <TableCell>
+                  <FontWrapper>{course.title}</FontWrapper>
+                </TableCell>
                 <TableCell>
                   <BorderlessButton
                     id={computeEditCourseButtonId(course)}

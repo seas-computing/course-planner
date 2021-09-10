@@ -16,6 +16,7 @@ import {
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { COURSE_TABLE_COLUMN, COURSE_TABLE_COLUMN_GROUP, getAreaColor } from 'common/constants';
 import { CellLayout } from 'client/components/general';
+import FontWrapper from 'client/components/general/typography/FontWrapper';
 import { CourseInstanceListColumn } from './tableFields';
 
 interface CourseInstanceTableProps {
@@ -211,7 +212,9 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
                         verticalAlignment={VALIGN.TOP}
                       >
                         <CellLayout>
-                          {field.getValue(course)}
+                          <FontWrapper>
+                            {field.getValue(course)}
+                          </FontWrapper>
                         </CellLayout>
                       </TableRowHeadingCell>
                     );
@@ -226,7 +229,9 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
                       }
                     >
                       <CellLayout>
-                        {field.getValue(course, academicYear)}
+                        <FontWrapper>
+                          {field.getValue(course, academicYear)}
+                        </FontWrapper>
                       </CellLayout>
                     </TableCell>
                   );

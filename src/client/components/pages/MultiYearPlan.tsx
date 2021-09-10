@@ -34,6 +34,7 @@ import { getSemestersFromYear, SemesterInfo } from 'common/utils/multiYearPlanHe
 import { getCatPrefixColor } from '../../../common/constants';
 import { listFilter } from './Filter';
 import { filterByInstructorValues } from './utils/filterByInstructorValues';
+import FontWrapper from '../general/typography/FontWrapper';
 
 /**
  * The component represents the Multi Year Plan page, which will be rendered at
@@ -198,7 +199,7 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
                 ? courseSemester.instance.faculty.map((faculty):
                 TableCellListItem => (
                   <TableCellListItem key={faculty.id}>
-                    {faculty.displayName}
+                    <FontWrapper>{faculty.displayName}</FontWrapper>
                   </TableCellListItem>
                 ))
                 : null}
@@ -292,13 +293,13 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
                       verticalAlignment={VALIGN.TOP}
                       backgroundColor={getCatPrefixColor(course.catalogPrefix)}
                     >
-                      {course.catalogPrefix}
+                      <FontWrapper>{course.catalogPrefix}</FontWrapper>
                     </TableCell>
                     <TableRowHeadingCell verticalAlignment={VALIGN.TOP} scope="row">
-                      {course.catalogNumber}
+                      <FontWrapper>{course.catalogNumber}</FontWrapper>
                     </TableRowHeadingCell>
                     <TableCell verticalAlignment={VALIGN.TOP}>
-                      {course.title}
+                      <FontWrapper>{course.title}</FontWrapper>
                     </TableCell>
                     <>
                       {courseInstance(course, semesters)}

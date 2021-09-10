@@ -22,6 +22,7 @@ import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { dayEnumToString } from 'common/constants/day';
 import { MeetingGrid, MeetingGridSection } from 'client/components/pages/Courses/tableFields';
 import { CampusIcon, CellLayout } from 'client/components/general';
+import FontWrapper from 'client/components/general/typography/FontWrapper';
 
 interface NonClassMeetingsTableProps {
   /**
@@ -88,10 +89,18 @@ const NonClassMeetingsTable: FunctionComponent<NonClassMeetingsTableProps> = ({
           fall,
         }, index) => (
           <TableRow isStriped={index % 2 !== 0} key={id}>
-            <TableCell backgroundColor={getAreaColor(area)}>{area}</TableCell>
-            <TableCell>{title}</TableCell>
-            <TableCell>{expectedSize}</TableCell>
-            <TableCell>{notes}</TableCell>
+            <TableCell backgroundColor={getAreaColor(area)}>
+              <FontWrapper>{area}</FontWrapper>
+            </TableCell>
+            <TableCell>
+              <FontWrapper>{title}</FontWrapper>
+            </TableCell>
+            <TableCell>
+              <FontWrapper>{expectedSize}</FontWrapper>
+            </TableCell>
+            <TableCell>
+              <FontWrapper>{notes}</FontWrapper>
+            </TableCell>
             <TableCell>
               {
                 /*
@@ -111,7 +120,11 @@ const NonClassMeetingsTable: FunctionComponent<NonClassMeetingsTableProps> = ({
                   contactPhone,
                 ]
                   .filter((info) => !!info)
-                  .map((info) => (<p key={info}>{info}</p>))
+                  .map((info) => (
+                    <p key={info}>
+                      <FontWrapper>{info}</FontWrapper>
+                    </p>
+                  ))
               }
             </TableCell>
             <TableCell>
@@ -124,24 +137,26 @@ const NonClassMeetingsTable: FunctionComponent<NonClassMeetingsTableProps> = ({
                     endTime,
                     room,
                   }) => (
-                    <TableCellListItem key={meetingId}>
-                      <MeetingGrid>
-                        <MeetingGridSection area="time">
-                          <div>{dayEnumToString(day)}</div>
-                          <div>{`${startTime}-${endTime}`}</div>
-                        </MeetingGridSection>
-                        {room && (
-                          <>
-                            <MeetingGridSection area="room">
-                              {room.name}
-                            </MeetingGridSection>
-                            <MeetingGridSection area="campus">
-                              <CampusIcon>{room.campus}</CampusIcon>
-                            </MeetingGridSection>
-                          </>
-                        )}
-                      </MeetingGrid>
-                    </TableCellListItem>
+                    <FontWrapper>
+                      <TableCellListItem key={meetingId}>
+                        <MeetingGrid>
+                          <MeetingGridSection area="time">
+                            <div>{dayEnumToString(day)}</div>
+                            <div>{`${startTime}-${endTime}`}</div>
+                          </MeetingGridSection>
+                          {room && (
+                            <>
+                              <MeetingGridSection area="room">
+                                {room.name}
+                              </MeetingGridSection>
+                              <MeetingGridSection area="campus">
+                                <CampusIcon>{room.campus}</CampusIcon>
+                              </MeetingGridSection>
+                            </>
+                          )}
+                        </MeetingGrid>
+                      </TableCellListItem>
+                    </FontWrapper>
                   ))}
                 </TableCellList>
                 <BorderlessButton
@@ -163,24 +178,26 @@ const NonClassMeetingsTable: FunctionComponent<NonClassMeetingsTableProps> = ({
                     endTime,
                     room,
                   }) => (
-                    <TableCellListItem key={meetingId}>
-                      <MeetingGrid>
-                        <MeetingGridSection area="time">
-                          <div>{dayEnumToString(day)}</div>
-                          <div>{`${startTime}-${endTime}`}</div>
-                        </MeetingGridSection>
-                        {room && (
-                          <>
-                            <MeetingGridSection area="room">
-                              {room.name}
-                            </MeetingGridSection>
-                            <MeetingGridSection area="campus">
-                              <CampusIcon>{room.campus}</CampusIcon>
-                            </MeetingGridSection>
-                          </>
-                        )}
-                      </MeetingGrid>
-                    </TableCellListItem>
+                    <FontWrapper>
+                      <TableCellListItem key={meetingId}>
+                        <MeetingGrid>
+                          <MeetingGridSection area="time">
+                            <div>{dayEnumToString(day)}</div>
+                            <div>{`${startTime}-${endTime}`}</div>
+                          </MeetingGridSection>
+                          {room && (
+                            <>
+                              <MeetingGridSection area="room">
+                                {room.name}
+                              </MeetingGridSection>
+                              <MeetingGridSection area="campus">
+                                <CampusIcon>{room.campus}</CampusIcon>
+                              </MeetingGridSection>
+                            </>
+                          )}
+                        </MeetingGrid>
+                      </TableCellListItem>
+                    </FontWrapper>
                   ))}
                 </TableCellList>
                 <BorderlessButton

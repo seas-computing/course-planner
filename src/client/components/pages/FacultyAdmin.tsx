@@ -36,6 +36,7 @@ import { FacultyAPI } from '../../api/faculty';
 import FacultyModal from './FacultyModal';
 import { VerticalSpace } from '../layout';
 import { listFilter } from './Filter';
+import FontWrapper from '../general/typography/FontWrapper';
 
 /**
  * Computes the id of the faculty button for the faculty being edited
@@ -255,11 +256,19 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
                     alignment={ALIGN.CENTER}
                     backgroundColor={getAreaColor(faculty.area.name)}
                   >
-                    {faculty.area && faculty.area.name}
+                    <FontWrapper>
+                      {faculty.area && faculty.area.name}
+                    </FontWrapper>
                   </TableCell>
-                  <TableCell alignment={ALIGN.CENTER}>{faculty.HUID}</TableCell>
-                  <TableCell>{faculty.lastName}</TableCell>
-                  <TableCell>{faculty.firstName}</TableCell>
+                  <TableCell alignment={ALIGN.CENTER}>
+                    <FontWrapper>{faculty.HUID}</FontWrapper>
+                  </TableCell>
+                  <TableCell>
+                    <FontWrapper>{faculty.lastName}</FontWrapper>
+                  </TableCell>
+                  <TableCell>
+                    <FontWrapper>{faculty.firstName}</FontWrapper>
+                  </TableCell>
                   <TableCell alignment={ALIGN.CENTER}>
                     <BorderlessButton
                       id={computeEditFacultyButtonId(faculty)}

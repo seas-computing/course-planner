@@ -12,6 +12,7 @@ import {
   TableRowHeadingCell,
 } from 'mark-one';
 import RoomResponse from 'common/dto/room/RoomResponse.dto';
+import FontWrapper from 'client/components/general/typography/FontWrapper';
 import { CourseInstanceResponseMeeting } from '../../../../common/dto/courses/CourseInstanceResponse';
 
 interface RoomSelectionTableProps {
@@ -128,26 +129,36 @@ const RoomSelectionTable = (
               || id === currentRoomId;
             return (
               <TableRow key={id} isStriped={index % 2 !== 0}>
-                <TableCell>{campus}</TableCell>
-                <TableRowHeadingCell scope="row">{name}</TableRowHeadingCell>
-                <TableCell>{capacity}</TableCell>
                 <TableCell>
-                  {displayAvailability(roomData, currentRoomId)}
+                  <FontWrapper>{campus}</FontWrapper>
+                </TableCell>
+                <TableRowHeadingCell scope="row">
+                  <FontWrapper>{name}</FontWrapper>
+                </TableRowHeadingCell>
+                <TableCell>
+                  <FontWrapper>{capacity}</FontWrapper>
                 </TableCell>
                 <TableCell>
-                  {isUnavailable
-                    ? 'N/A'
-                    : (
-                      <Button
-                        onClick={() => {
-                          addButtonHandler({ id, campus, name });
-                        }}
-                        variant={VARIANT.POSITIVE}
-                      >
-                        Add
+                  <FontWrapper>
+                    {displayAvailability(roomData, currentRoomId)}
+                  </FontWrapper>
+                </TableCell>
+                <TableCell>
+                  <FontWrapper>
+                    {isUnavailable
+                      ? 'N/A'
+                      : (
+                        <Button
+                          onClick={() => {
+                            addButtonHandler({ id, campus, name });
+                          }}
+                          variant={VARIANT.POSITIVE}
+                        >
+                          Add
 
-                      </Button>
-                    )}
+                        </Button>
+                      )}
+                  </FontWrapper>
                 </TableCell>
               </TableRow>
             );
