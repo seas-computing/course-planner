@@ -18,7 +18,7 @@ import { MemoryRouter } from 'react-router-dom';
 import App from 'client/components/App';
 import request from 'client/api/request';
 import { Repository } from 'typeorm';
-import { strictEqual, deepStrictEqual } from 'assert';
+import { strictEqual, deepStrictEqual, notStrictEqual } from 'assert';
 import mockAdapter from '../../mocks/api/adapter';
 import MockDB from '../../mocks/database/MockDB';
 import { ConfigModule } from '../../../src/server/config/config.module';
@@ -47,6 +47,8 @@ describe('End-to-end Course Instance updating', function () {
   let courseRepository: Repository<Course>;
   let meetingRepository: Repository<Meeting>;
   const currentAcademicYear = 2019;
+  const currentTerm = TERM.FALL;
+  const courseNumber = 'AM 205';
   before(async function () {
     db = new MockDB();
     return db.init();
@@ -122,11 +124,18 @@ describe('End-to-end Course Instance updating', function () {
     let renderResult: RenderResult;
     let courseToUpdate: Course;
     let instanceToUpdate: CourseInstance;
-    let courseNumber: string;
     let roomName: string;
     let editButton: HTMLElement;
     beforeEach(async function () {
-      const allCourses = await courseRepository.find(
+      // We're specifically updating the AM 205 course becuase there's a
+      // built-in potential room conflict with AM 22A -- they both use the same
+      // room at the same time on different days.
+      const [prefix, number] = courseNumber.split(' ');
+      courseToUpdate = await courseRepository.findOneOrFail(
+        {
+          prefix,
+          number,
+        },
         {
           relations: [
             'instances',
@@ -138,19 +147,10 @@ describe('End-to-end Course Instance updating', function () {
           ],
         }
       );
-      courseToUpdate = allCourses.find(
-        ({ instances }) => instances.some(
-          ({ meetings, semester }) => (
-            semester.term === TERM.FALL
-            && semester.academicYear === (currentAcademicYear - 1).toString()
-            && meetings?.length >= 2)
-        )
-      );
       instanceToUpdate = courseToUpdate.instances.find(({ semester }) => (
-        semester.term === TERM.FALL
+        semester.term === currentTerm
         && semester.academicYear === (currentAcademicYear - 1).toString()
       ));
-      courseNumber = `${courseToUpdate.prefix} ${courseToUpdate.number}`;
       renderResult = render(
         <MemoryRouter initialEntries={['/courses']}>
           <App />
@@ -317,48 +317,121 @@ describe('End-to-end Course Instance updating', function () {
       });
     });
     context('Modifying an existing meeting', function () {
-      beforeEach(async function () {
-        const modal = renderResult.getByRole('dialog');
-        // click "Add new Time"
-        const addButton = await renderResult.findByText('Add New Time');
-        fireEvent.click(addButton);
-        // Set day
-        const daySelector = await renderResult.findByLabelText('Meeting Day', { exact: false });
-        fireEvent.change(daySelector, { target: { value: DAY.MON } });
-        // set time
-        const timeDropdown = await renderResult.findByLabelText('Timeslot Button');
-        fireEvent.click(timeDropdown);
-        const wantedTime = await renderResult.findByText('5:00 PM-6:00 PM');
-        fireEvent.click(wantedTime);
-        // choose room
-        const showRoomsButton = await renderResult.findByText('Show Rooms');
-        fireEvent.click(showRoomsButton);
-        await waitForElementToBeRemoved(
-          () => renderResult.getByText('Searching', { exact: false })
-        );
-        const roomRows = await within(modal).findAllByRole('row');
-        const availableRoomRow = roomRows.find((row) => (getQueriesForElement(row).queryByRole('button')));
-        const roomButton = within(availableRoomRow).getByRole('button');
-        roomName = within(availableRoomRow).getByRole('rowheader').textContent;
-        fireEvent.click(roomButton);
-        // click close
-        const closeButton = renderResult.getByText('Close');
-        fireEvent.click(closeButton);
-        // click save
-        const saveButton = renderResult.getByText('Save');
-        fireEvent.click(saveButton);
-        return waitForElementToBeRemoved(() => within(modal).getByText('Saving Meetings'));
+      context('with a valid room/time combination', function () {
+        beforeEach(async function () {
+          const modal = renderResult.getByRole('dialog');
+          // click "Edit Meeting 1"
+          const meetingEditButton = await renderResult.findByLabelText(/Edit Meeting 1/);
+          fireEvent.click(meetingEditButton);
+          // Set day
+          const daySelector = await renderResult.findByLabelText('Meeting Day', { exact: false });
+          // It's hard-coded that AM 205 is on TUE/THU 10:30 - 11:45 and AM 22A
+          // is MON/WED/FRI 10:30 - 11:45 in the same room, so we can change to
+          // AM 205 to MON 12:00 - 13:30.
+          fireEvent.change(daySelector, {
+            target: {
+              value: DAY.MON,
+            },
+          });
+          const startTimeField = await renderResult
+            .findByLabelText('Meeting Start Time', { exact: false });
+          fireEvent.change(startTimeField, {
+            target: {
+              value: '12:00:00',
+            },
+          });
+          const endTimeField = await renderResult
+            .findByLabelText('Meeting End Time', { exact: false });
+          fireEvent.change(endTimeField, {
+            target: {
+              value: '13:30:00',
+            },
+          });
+          const closeButton = renderResult.getByText('Close');
+          fireEvent.click(closeButton);
+          // click save
+          const saveButton = renderResult.getByText('Save');
+          fireEvent.click(saveButton);
+          return waitForElementToBeRemoved(() => within(modal).getByText('Saving Meetings'));
+        });
+        it('Should close the modal', function () {
+          const modal = renderResult.queryByRole('dialog');
+          strictEqual(modal, null);
+        });
+        it('Should show a success message', async function () {
+          return renderResult.findByText('Course updated', { exact: false });
+        });
+        it('Should update the list of meetings', async function () {
+          const dayField = await within(editButton.parentElement)
+            .findByText('Monday');
+          return within(dayField.parentElement)
+            .findByText('12:00 PM-01:30 PM');
+        });
       });
-      it('Should close the modal', function () {
-        const modal = renderResult.queryByRole('dialog');
-        strictEqual(modal, null);
-      });
-      it('Should show a success message', async function () {
-        return renderResult.findByText('Course updated', { exact: false });
-      });
-      it('Should update the list of meetings', async function () {
-        return within(editButton.parentElement)
-          .findByText('05:00 PM-06:00 PM');
+      context('with an invalid room/time combination', function () {
+        beforeEach(async function () {
+          const modal = renderResult.getByRole('dialog');
+          // click "Edit Meeting 1"
+          const meetingEditButton = await renderResult.findByLabelText(/Edit Meeting 1/);
+          fireEvent.click(meetingEditButton);
+          const daySelector = await renderResult.findByLabelText('Meeting Day', { exact: false });
+          // It's hard-coded that AM 205 is on TUE/THU 10:30 - 11:45 and AM 22A
+          // is MON/WED/FRI 10:30 - 11:45 in the same room, so if change AM 205
+          // to MON wihout adjusting the time, we should get an error
+          fireEvent.change(daySelector, {
+            target: {
+              value: DAY.MON,
+            },
+          });
+          // Set day
+          const closeButton = renderResult.getByText('Close');
+          fireEvent.click(closeButton);
+          // click save
+          const saveButton = renderResult.getByText('Save');
+          fireEvent.click(saveButton);
+          return waitForElementToBeRemoved(() => within(modal).getByText('Saving Meetings'));
+        });
+        it('Should not close the modal', function () {
+          const modal = renderResult.queryByRole('dialog');
+          notStrictEqual(modal, null);
+        });
+        it('Should show an error message', async function () {
+          const modal = renderResult.getByRole('dialog');
+          const modalError = await within(modal).findByRole('alert');
+          strictEqual(
+            modalError.textContent,
+            'Maxwell Dworkin 220 is not available on Monday between 10:30 AM - 11:45 AM. CONFLICTS WITH: AM 22A'
+          );
+        });
+        it('Should clear the error when any meeting detail changes', async function () {
+          const modal = renderResult.getByRole('dialog');
+          const meetingEditButton = await within(modal).findByLabelText(/Edit Meeting 1/);
+          fireEvent.click(meetingEditButton);
+          const timeDropdown = await renderResult.findByLabelText('Timeslot Button');
+          fireEvent.click(timeDropdown);
+          const wantedTime = await renderResult.findByText('12:00 PM-1:00 PM');
+          fireEvent.click(wantedTime);
+          const closeButton = renderResult.getByText('Close');
+          fireEvent.click(closeButton);
+          const errorMessage = within(modal).queryByRole('alert');
+          strictEqual(errorMessage, null);
+        });
+        it('Should clear the error when closing/reopening modal', async function () {
+          const cancelButton = await renderResult.findByText('Cancel');
+          fireEvent.click(cancelButton);
+          const updatedEditButton = await renderResult.findByRole(
+            'button',
+            {
+              name: `Edit meetings for ${courseNumber} in fall ${currentAcademicYear - 1}`,
+            }
+          );
+          fireEvent.click(updatedEditButton);
+          const modal = await renderResult.findByRole('dialog');
+          strictEqual(
+            within(modal).queryByRole('alert'),
+            null
+          );
+        });
       });
     });
   });
