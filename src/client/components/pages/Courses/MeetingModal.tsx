@@ -201,7 +201,15 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     setCurrentEditMeeting,
   ] = useState<CourseInstanceResponseMeeting>(null);
 
+  /**
+   * Flag for when data is being saved to the server
+   */
   const [saving, setSaving] = useState(false);
+
+  /**
+   * Holds any errors returned by the server
+   */
+  const [saveError, setSaveError] = useState('');
 
   /**
    * State field to set the day and time for which rooms should be shown
@@ -217,6 +225,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
    */
   useEffect(() => {
     if (isVisible) {
+      setSaveError('');
       setMeetingModalFocus();
       setAllMeetings(instanceMeetings);
     } else {
@@ -239,8 +248,6 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     meetingTimeError,
     setMeetingTimeError,
   ] = useState('');
-
-  const [saveError, setSaveError] = useState('');
 
   /**
    * Used to create a temporary unique ID for new meetings on the client.
@@ -266,6 +273,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   const updateCurrentEditMeeting = (
     update: Partial<CourseInstanceResponseMeeting>
   ): void => {
+    setSaveError('');
     if (!saving) {
       setCurrentEditMeeting((meeting) => ({
         ...meeting,
