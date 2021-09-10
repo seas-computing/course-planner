@@ -119,7 +119,7 @@ describe('Course Admin', function () {
           <CourseAdmin />
         );
         await wait(() => getAllByRole('row').length > 1);
-        const newAreaCourseStyle = window.getComputedStyle(getByText('NA', { selector: 'td' }));
+        const newAreaCourseStyle = window.getComputedStyle(getByText('NA'));
         strictEqual(newAreaCourseStyle.backgroundColor, '');
       });
       context('when the the dropdown and the text input filters called', function () {
