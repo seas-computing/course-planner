@@ -1,18 +1,30 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeepPartial, Repository } from 'typeorm';
 import { TERM } from 'common/constants';
 import { MeetingListingView } from 'server/meeting/MeetingListingView.entity';
 import { RoomListingView } from 'server/location/RoomListingView.entity';
 import { NonClassParentView } from './NonClassParentView.entity';
 import { NonClassEventView } from './NonClassEvent.view.entity';
+import { Semester } from '../semester/semester.entity';
+import { NonClassParent } from '../nonClassParent/nonclassparent.entity';
+import { NonClassEvent } from './nonclassevent.entity';
 
 export class NonClassEventService {
   @InjectRepository(NonClassParentView)
-  private parentRepository: Repository<NonClassParentView>;
+  private parentViewRepository: Repository<NonClassParentView>;
+
+  @InjectRepository(Semester)
+  private semesterRepository: Repository<Semester>;
+
+  @InjectRepository(NonClassParent)
+  private parentRepository: Repository<NonClassParent>;
+
+  @InjectRepository(NonClassEvent)
+  private eventRepository: Repository<NonClassEvent>;
 
   public async find(calendarYear: number):
   Promise<NonClassParentView[]> {
-    const nonClassEvents = this.parentRepository.createQueryBuilder('p')
+    const nonClassEvents = this.parentViewRepository.createQueryBuilder('p')
       .leftJoinAndMapOne(
         'p.spring',
         NonClassEventView, 'spring',
@@ -55,5 +67,18 @@ export class NonClassEventService {
       )
       .orderBy('p.area', 'ASC');
     return nonClassEvents.getMany();
+  }
+
+  public async save(parent: Partial<NonClassParent>): Promise<NonClassParent> {
+    const semesters = await this.semesterRepository.find({});
+
+    return this.parentRepository.save({
+      ...this.parentRepository.create({
+        ...parent,
+        nonClassEvents: semesters.map(
+          (event) => this.eventRepository.create(event)
+        ),
+      }),
+    });
   }
 }

@@ -9,14 +9,20 @@ import { NonClassEventService } from 'server/nonClassEvent/nonClassEvent.service
 import { deepStrictEqual, notStrictEqual, strictEqual } from 'assert';
 import { Meeting } from 'server/meeting/meeting.entity';
 import { Repository } from 'typeorm';
+import { appliedMathematicsReadingGroup, fall, spring } from 'testData';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import MockDB from '../../../mocks/database/MockDB';
 import { PGTime } from '../../../../src/common/utils/PGTime';
+import { Semester } from 'server/semester/semester.entity';
+import { Area } from 'server/area/area.entity';
 
 describe('NonClassEvent Service', function () {
   let testModule: TestingModule;
   let db: MockDB;
   let service: NonClassEventService;
+  let semesterRepository: Repository<Semester>;
+  let areaRepository: Repository<Area>;
+
   before(async function () {
     db = new MockDB();
     await db.init();
@@ -51,6 +57,8 @@ describe('NonClassEvent Service', function () {
       .useValue(new ConfigService(db.connectionEnv))
       .compile();
     service = testModule.get(NonClassEventService);
+    semesterRepository = testModule.get(getRepositoryToken(Semester));
+    areaRepository = testModule.get(getRepositoryToken(Area));
     await testModule.createNestApplication().init();
   });
   afterEach(async function () {
@@ -135,6 +143,29 @@ describe('NonClassEvent Service', function () {
           });
         });
       });
+    });
+  });
+  describe('save', function () {
+    it('creates one non-class parent', async function () {
+      const area = await areaRepository.findOne();
+
+      const parent = await service.save({
+        area,
+        title: appliedMathematicsReadingGroup.title,
+      });
+
+      strictEqual(parent.title, appliedMathematicsReadingGroup.title);
+    });
+    it('creates one non-class event per semester', async function () {
+      const area = await areaRepository.findOne();
+      const semesterCount = await semesterRepository.count();
+
+      const parent = await service.save({
+        area,
+        title: appliedMathematicsReadingGroup.title,
+      });
+
+      strictEqual(parent.nonClassEvents.length, semesterCount);
     });
   });
 });
