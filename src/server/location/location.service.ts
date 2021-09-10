@@ -12,6 +12,7 @@ import { RoomBookingInfoView } from './RoomBookingInfoView.entity';
 
 export interface Booking {
   roomId: string;
+  roomName: string;
   meetingTitles: string[];
 }
 
@@ -55,7 +56,9 @@ export class LocationService {
       .createQueryBuilder()
       .select('"roomId"')
       .addSelect('array_agg("meetingTitle")', 'meetingTitles')
+      .addSelect('"roomName"')
       .groupBy('"roomId"')
+      .addGroupBy('"roomName"')
       .addGroupBy('"calendarYear"')
       .addGroupBy('term')
       .addGroupBy('day')
