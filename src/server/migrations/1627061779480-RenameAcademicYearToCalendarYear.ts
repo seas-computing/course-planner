@@ -13,8 +13,6 @@ implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query('DELETE FROM "typeorm_metadata" WHERE "type" = $1 AND "schema" = $2 AND "name" = $3', ['VIEW', 'public', 'NonClassEventView']);
     await queryRunner.query('DROP VIEW "NonClassEventView"');
-    await queryRunner.query('DELETE FROM "typeorm_metadata" WHERE "type" = $1 AND "schema" = $2 AND "name" = $3', ['VIEW', 'public', 'ScheduleBlockView']);
-    await queryRunner.query('DROP VIEW "ScheduleBlockView"');
     await queryRunner.query('ALTER TABLE "non_class_parent" ALTER COLUMN "contactName" DROP NOT NULL');
     await queryRunner.query('CREATE VIEW "NonClassEventView" AS SELECT "event"."id" AS "id", "s"."term" AS "term", event."nonClassParentId" AS "nonClassParentId", s."calendarYear" AS "calendarYear", event."semesterId" AS "semesterId" FROM "non_class_event" "event" LEFT JOIN "SemesterView" "s" ON "s"."id" = event."semesterId"');
     await queryRunner.query('INSERT INTO "typeorm_metadata"("type", "schema", "name", "value") VALUES ($1, $2, $3, $4)', ['VIEW', 'public', 'NonClassEventView', 'SELECT "event"."id" AS "id", "s"."term" AS "term", event."nonClassParentId" AS "nonClassParentId", s."calendarYear" AS "calendarYear", event."semesterId" AS "semesterId" FROM "non_class_event" "event" LEFT JOIN "SemesterView" "s" ON "s"."id" = event."semesterId"']);

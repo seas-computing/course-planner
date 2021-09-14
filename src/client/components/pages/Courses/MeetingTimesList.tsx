@@ -56,7 +56,9 @@ interface MeetingTimesListProps {
   /**
    * A handler to clear the current edit meeting, optionally opening a new one
    */
-  closeCurrentEditMeeting: (newMeeting?: CourseInstanceResponseMeeting) => void;
+  toggleCurrentEditMeeting: (
+    newMeeting?: CourseInstanceResponseMeeting
+  ) => void;
   /**
    * Used to create a temporary unique ID for new meetings on the client
    */
@@ -171,7 +173,7 @@ export const MeetingTimesList
   allMeetings,
   currentEditMeeting,
   updateCurrentEditMeeting,
-  closeCurrentEditMeeting,
+  toggleCurrentEditMeeting,
   showRoomsHandler,
   meetingTimeError,
   removeMeeting,
@@ -343,7 +345,7 @@ export const MeetingTimesList
                             id="closeButton"
                             onClick={
                               (): void => {
-                                closeCurrentEditMeeting(null);
+                                toggleCurrentEditMeeting(null);
                               }
                             }
                             variant={VARIANT.SECONDARY}
@@ -375,7 +377,7 @@ export const MeetingTimesList
                             variant={VARIANT.INFO}
                             onClick={
                               (): void => {
-                                closeCurrentEditMeeting(meeting);
+                                toggleCurrentEditMeeting(meeting);
                               }
                             }
                           >
@@ -394,7 +396,7 @@ export const MeetingTimesList
         <Button
           id="addNewTimeButton"
           onClick={() => {
-            closeCurrentEditMeeting({
+            toggleCurrentEditMeeting({
               id: `new-meeting-${newMeetingIdNumber}`,
               day: '' as DAY,
               startTime: '',

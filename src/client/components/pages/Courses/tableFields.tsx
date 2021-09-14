@@ -135,72 +135,96 @@ export const formatMeetings = (
   term: TERM
 ) => (
   course: CourseInstanceResponseDTO,
-  academicYear: number
+  {
+    updateHandler,
+  }: ValueGetterOptions
 ): ReactNode => {
   const semKey = term.toLowerCase() as TermKey;
   const {
-    [semKey]: { meetings },
-    id: courseId,
+    [semKey]: instance,
+    id: parentId,
+    catalogNumber,
   } = course;
+  const { calendarYear, meetings } = instance;
   const [modalVisible, setModalVisible] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const currentSemester = {
     term,
-    calendarYear: term === TERM.FALL ? academicYear - 1 : academicYear,
+    calendarYear,
   };
-  return (meetings[0] === undefined || meetings[0]?.day === null)
-    ? null
-    : (
-      <>
-        <TableCellList>
-          {meetings.map(({
-            id,
-            room,
-            day,
-            startTime,
-            endTime,
-          }): ReactElement => (
-            <TableCellListItem key={id}>
-              <MeetingGrid>
-                <MeetingGridSection area="time">
-                  <div>{dayEnumToString(day)}</div>
-                  <div>{`${startTime}-${endTime}`}</div>
-                </MeetingGridSection>
-                {room && (
-                  <>
-                    <MeetingGridSection area="room">
-                      {room.name}
-                    </MeetingGridSection>
-                    <MeetingGridSection area="campus">
-                      <CampusIcon>{room.campus}</CampusIcon>
-                    </MeetingGridSection>
-                  </>
-                )}
-              </MeetingGrid>
-            </TableCellListItem>
-          ))}
-        </TableCellList>
-        <BorderlessButton
-          id={`${courseId}-${term}-edit-meetings-button`}
-          onClick={() => { setModalVisible(true); }}
-          variant={VARIANT.INFO}
-          forwardRef={buttonRef}
-        >
-          <FontAwesomeIcon icon={faEdit} />
-        </BorderlessButton>
-        <MeetingModal
-          isVisible={modalVisible}
-          currentSemester={currentSemester}
-          currentCourse={course}
-          onClose={() => {
-            setModalVisible(false);
-            setTimeout(() => { buttonRef.current.focus(); });
-          }}
-          onSave={() => {}}
-        />
-      </>
-    );
+  return (
+    <>
+      <TableCellList>
+        {(meetings[0] !== undefined && meetings[0]?.day !== null)
+        && meetings.map(({
+          id,
+          room,
+          day,
+          startTime,
+          endTime,
+        }): ReactElement => (
+          <TableCellListItem key={id}>
+            <MeetingGrid>
+              <MeetingGridSection area="time">
+                <div>{dayEnumToString(day)}</div>
+                <div>{`${startTime}-${endTime}`}</div>
+              </MeetingGridSection>
+              {room && (
+                <>
+                  <MeetingGridSection area="room">
+                    {room.name}
+                  </MeetingGridSection>
+                  <MeetingGridSection area="campus">
+                    <CampusIcon>{room.campus}</CampusIcon>
+                  </MeetingGridSection>
+                </>
+              )}
+            </MeetingGrid>
+          </TableCellListItem>
+        ))}
+      </TableCellList>
+      <BorderlessButton
+        id={`${parentId}-${term}-edit-meetings-button`}
+        alt={`Edit meetings for ${catalogNumber} in ${semKey} ${calendarYear}`}
+        onClick={() => { setModalVisible(true); }}
+        variant={VARIANT.INFO}
+        forwardRef={buttonRef}
+      >
+        <FontAwesomeIcon icon={faEdit} />
+      </BorderlessButton>
+      <MeetingModal
+        isVisible={modalVisible}
+        currentSemester={currentSemester}
+        currentCourse={course}
+        onClose={() => {
+          setModalVisible(false);
+          setTimeout(() => { buttonRef.current?.focus(); });
+        }}
+        onSave={(newMeetingList, message?: string) => {
+          updateHandler({
+            ...course,
+            [semKey]: {
+              ...course[semKey],
+              meetings: newMeetingList,
+            },
+          }, message);
+        }}
+      />
+    </>
+  );
 };
+
+/**
+ * Descibes the additional options passed into the getValue function
+ */
+export interface ValueGetterOptions {
+  /**
+   * A handler for updating the client state of the course wihtout needing to
+   * refresh data from the server
+   */
+  updateHandler?: (course: CourseInstanceResponseDTO, message?: string) => void;
+}
+
 /**
  * Describes the columns in the CourseInstanceList
  */
@@ -225,7 +249,10 @@ export interface CourseInstanceListColumn {
   /**
    * A function that will retrieve the appropriate data to appear in the cell
    */
-  getValue: (arg0: CourseInstanceResponseDTO, arg1?: unknown) => ReactNode;
+  getValue: (
+    arg0: CourseInstanceResponseDTO,
+    arg1?: ValueGetterOptions
+  ) => ReactNode;
 }
 
 /**
