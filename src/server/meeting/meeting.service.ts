@@ -161,7 +161,7 @@ export class MeetingService {
       } else {
         throw new RoomConflictException(
           meetingData,
-          bookings[0].meetingTitles
+          bookings[0]
         );
       }
     } else {

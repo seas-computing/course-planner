@@ -342,6 +342,15 @@ describe('Meeting API', function () {
                 it('Should return a Bad Request error', function () {
                   strictEqual(response.status, HttpStatus.BAD_REQUEST);
                 });
+                it('Should include the name of the room', async function () {
+                  const roomName = await roomRepository
+                    .findOne(updatedMeeting.room.id, { relations: ['building'] });
+                  const errorResponse = response.body.message as string;
+                  strictEqual(
+                    errorResponse.startsWith(`${roomName.building.name} ${roomName.name}`),
+                    true
+                  );
+                });
                 it('Should list the meetings that have the room booked', async function () {
                   const roomBookingQuery = roomBookingInfoRepository
                     .createQueryBuilder()

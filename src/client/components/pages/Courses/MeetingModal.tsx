@@ -6,6 +6,8 @@ import {
   ModalFooter,
   ModalHeader,
   VARIANT,
+  LoadSpinner,
+  fromTheme,
 } from 'mark-one';
 import React, {
   FunctionComponent,
@@ -16,12 +18,16 @@ import React, {
   useState,
 } from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
 import { instructorDisplayNameToFirstLast } from '../utils/instructorDisplayNameToFirstLast';
 import { MeetingTimesList } from './MeetingTimesList';
 import RoomSelection from './RoomSelection';
 import RoomRequest from '../../../../common/dto/room/RoomRequest.dto';
 import CourseInstanceResponseDTO, { CourseInstanceResponseMeeting } from '../../../../common/dto/courses/CourseInstanceResponse';
 import { convert12To24HourTime } from '../../../../common/utils/timeHelperFunctions';
+import { updateMeetingList } from '../../../api';
+import { MeetingRequestDTO } from '../../../../common/dto/meeting/MeetingRequest.dto';
+import { MeetingResponseDTO } from '../../../../common/dto/meeting/MeetingResponse.dto';
 
 /**
  * A component that applies styling for text that indicates the faculty has
@@ -45,7 +51,7 @@ interface MeetingModalProps {
    */
   currentSemester: {
     term: TERM,
-    calendarYear: number
+    calendarYear: string
   };
   /**
    * Handler to be invoked when the modal closes
@@ -54,20 +60,26 @@ interface MeetingModalProps {
   /**
    * Handler to be invoked when the modal is saved
    */
-  onSave: () => void;
+  onSave: (arg0: MeetingResponseDTO[]) => void;
 }
 
 /**
  * Utility component to style content within meeting modal body
  */
-const MeetingModalBodyGrid = styled.div`
-  max-height: 75vh;
-  min-height: 65vh;
-  max-width: 75vw;
-  min-width: 65vw;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+const MeetingModalBodyGrid = styled.div<{showError: boolean}>`
+  width: 75vw;
+  height: 75vh;
+  display: grid;
+  grid-template-areas:
+    "meet room"
+    "note room"
+    "err err"
+  ;
+  grid-template-rows: ${({ showError }) => (showError
+    ? 'auto 1fr min-content'
+    : 'auto 1fr 0')};
+  grid-template-columns: 1fr 1fr;
+  grid-column-gap: ${fromTheme('ws', 'xlarge')};
 `;
 
 /**
@@ -76,7 +88,7 @@ const MeetingModalBodyGrid = styled.div`
 const MeetingScheduler = styled.div`
  display: flex;
  flex-direction: column;
- flex-basis: 48%;
+ grid-area: meet;
 `;
 
 /**
@@ -101,7 +113,7 @@ const MeetingSchedulerBody = styled.div`
 const RoomAvailability = styled.div`
  display: flex;
  flex-direction: column;
- flex-basis: 48%;
+ grid-area: room;
 `;
 
 /**
@@ -117,7 +129,27 @@ const RoomAvailabilityHeader = styled.h3`
  */
 const RoomAvailabilityBody = styled.div`
   flex: 1;
-  overflow: auto;
+  overflow-y: auto;
+`;
+
+const NotesSection = styled.div`
+  grid-area: note;
+`;
+
+const ErrorSection = styled.div`
+  grid-area: err;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  align-items: center;
+`;
+
+const ErrorMessage = styled.p`
+  font-family: ${fromTheme('font', 'bold', 'family')};
+  font-size: ${fromTheme('font', 'bold', 'size')};
+  font-weight: ${fromTheme('font', 'bold', 'weight')};
+  color: ${fromTheme('color', 'text', 'negative')};
+  text-align: center;
 `;
 
 const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
@@ -138,7 +170,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
    * rendered by letting next task of event queue run first.
    */
   const setMeetingModalFocus = (): void => {
-    setTimeout((): void => modalHeaderRef.current.focus());
+    setTimeout((): void => modalHeaderRef.current?.focus());
   };
 
   const { term, calendarYear } = currentSemester;
@@ -169,7 +201,15 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     setCurrentEditMeeting,
   ] = useState<CourseInstanceResponseMeeting>(null);
 
+  /**
+   * Flag for when data is being saved to the server
+   */
   const [saving, setSaving] = useState(false);
+
+  /**
+   * Holds any errors returned by the server
+   */
+  const [saveError, setSaveError] = useState('');
 
   /**
    * State field to set the day and time for which rooms should be shown
@@ -185,6 +225,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
    */
   useEffect(() => {
     if (isVisible) {
+      setSaveError('');
       setMeetingModalFocus();
       setAllMeetings(instanceMeetings);
     } else {
@@ -199,13 +240,6 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     setCurrentEditMeeting,
     setShowRoomsData,
   ]);
-
-  useEffect(() => {
-    if (saving) {
-      setSaving(false);
-      onSave(/* TODO: pass the data back */);
-    }
-  }, [saving, onSave]);
 
   /**
    * The current value of the error message when creating or editing a meeting time
@@ -239,11 +273,14 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   const updateCurrentEditMeeting = (
     update: Partial<CourseInstanceResponseMeeting>
   ): void => {
-    setCurrentEditMeeting((meeting) => ({
-      ...meeting,
-      ...update,
-    }));
-    setShowRoomsData(null);
+    setSaveError('');
+    if (!saving) {
+      setCurrentEditMeeting((meeting) => ({
+        ...meeting,
+        ...update,
+      }));
+      setShowRoomsData(null);
+    }
   };
 
   /**
@@ -269,28 +306,37 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   };
 
   /**
+  * Merge the currentEditMeeting into allMeetings, returning the updated list.
+  */
+
+  const mergeMeetings = () => {
+    const updatedMeetings = [...allMeetings];
+    if (currentEditMeeting) {
+      const editMeetingIndex = updatedMeetings.findIndex(
+        ({ id }) => id === currentEditMeeting.id
+      );
+      if (editMeetingIndex !== -1) {
+        updatedMeetings.splice(
+          editMeetingIndex,
+          1,
+          currentEditMeeting
+        );
+      }
+    }
+    return updatedMeetings;
+  };
+
+  /**
    * Validates the current time information and updates the data for the
    * meeting in our full list, then unsets the current meeting and
    * optionally opens a new one. If the new meeting doesn't already exist in
    * the full list of meetings, it will be added.
    */
-  const closeCurrentEditMeeting = (
+  const toggleCurrentEditMeeting = (
     newMeeting?: CourseInstanceResponseMeeting
   ) => {
     if (validateTimes()) {
-      const updatedMeetings = [...allMeetings];
-      if (currentEditMeeting) {
-        const editMeetingIndex = updatedMeetings.findIndex(
-          ({ id }) => id === currentEditMeeting.id
-        );
-        if (editMeetingIndex !== -1) {
-          updatedMeetings.splice(
-            editMeetingIndex,
-            1,
-            currentEditMeeting
-          );
-        }
-      }
+      const updatedMeetings = mergeMeetings();
       if (newMeeting) {
         const newMeetingIndex = updatedMeetings.findIndex(
           ({ id }) => id === newMeeting.id
@@ -312,7 +358,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
    * room query
    */
   const searchForRooms = () => {
-    if (validateTimes()) {
+    if (!saving && validateTimes()) {
       let { startTime, endTime } = currentEditMeeting;
       const { day } = currentEditMeeting;
       // TODO: Once we adddress #358 this should not be necessary
@@ -324,7 +370,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
       }
       setShowRoomsData({
         term,
-        calendarYear: calendarYear.toString(),
+        calendarYear,
         startTime,
         endTime,
         day,
@@ -340,14 +386,62 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
    * that no meetings are expanded in edit mode.
    */
   const removeMeeting = (meeting: CourseInstanceResponseMeeting) => {
-    if (currentEditMeeting && meeting.id === currentEditMeeting.id) {
-      setCurrentEditMeeting(null);
-      setShowRoomsData(null);
+    if (!saving) {
+      if (currentEditMeeting && meeting.id === currentEditMeeting.id) {
+        setCurrentEditMeeting(null);
+        setShowRoomsData(null);
+      }
+      const updatedMeetings = allMeetings.filter(
+        (currentMeeting) => currentMeeting.id !== meeting.id
+      );
+      setAllMeetings(updatedMeetings);
     }
-    const updatedMeetings = allMeetings.filter(
-      (currentMeeting) => currentMeeting.id !== meeting.id
-    );
-    setAllMeetings(updatedMeetings);
+  };
+
+  /**
+   * Handles submitting the updated list of meeting to the server, and passing
+   * the resulting saved list on to the `onSave` handler provided by the
+   * parent.
+   */
+  const saveMeetingData = async () => {
+    if (validateTimes()) {
+      toggleCurrentEditMeeting();
+      setSaveError('');
+      setSaving(true);
+      const updatesToSend = mergeMeetings()
+        .map(({ id, room, ...meeting }) => {
+          const update: MeetingRequestDTO = {
+            ...meeting,
+            roomId: room?.id,
+          };
+          if (id.startsWith('new-meeting')) {
+            return update;
+          }
+          return { id, ...update };
+        });
+      let savedMeetings: MeetingResponseDTO[];
+      try {
+        savedMeetings = await updateMeetingList(
+          instanceId,
+          updatesToSend
+        );
+      } catch (err) {
+        if (axios.isAxiosError(err)) {
+          const serverError = err.response.data as Error;
+          setSaveError(serverError.message);
+        } else if (savedMeetings === undefined) {
+          const errorMessage = (err as Error).message;
+          setSaveError(`Failed to save meeting data. Please try again later.
+          ${errorMessage}`);
+        }
+      } finally {
+        setSaving(false);
+      }
+      if (savedMeetings) {
+        onSave(savedMeetings);
+        onClose();
+      }
+    }
   };
 
   return (
@@ -363,7 +457,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
         {`Meetings for ${catalogNumber} - ${term} ${calendarYear}`}
       </ModalHeader>
       <ModalBody>
-        <MeetingModalBodyGrid>
+        <MeetingModalBodyGrid showError={!!saveError || saving}>
           <MeetingScheduler>
             <MeetingSchedulerHeader>{`Meeting times for ${catalogNumber}`}</MeetingSchedulerHeader>
             <MeetingSchedulerBody>
@@ -372,33 +466,37 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
                 currentEditMeeting={currentEditMeeting}
                 meetingTimeError={meetingTimeError}
                 updateCurrentEditMeeting={updateCurrentEditMeeting}
-                closeCurrentEditMeeting={closeCurrentEditMeeting}
+                toggleCurrentEditMeeting={toggleCurrentEditMeeting}
                 showRoomsHandler={searchForRooms}
                 newMeetingIdNumber={newMeetingIdNumber.toString()}
                 updateNewMeetingIdNumber={updateNewMeetingIdNumber}
                 removeMeeting={removeMeeting}
               />
-              <h3>
-                Faculty Notes
-              </h3>
-              <div>
-                {instanceInstructors.map((instructor) => (
-                  <div key={instructor.displayName}>
-                    <h4>
-                      {instructorDisplayNameToFirstLast(instructor.displayName)}
-                    </h4>
-                    <p>
-                      {
-                        !instructor.notes
-                          ? <StyledFacultyNote>No Notes</StyledFacultyNote>
-                          : instructor.notes
-                      }
-                    </p>
-                  </div>
-                ))}
-              </div>
             </MeetingSchedulerBody>
           </MeetingScheduler>
+          <NotesSection>
+            <h3>
+              Faculty Notes
+            </h3>
+            <div>
+              {instanceInstructors.map((instructor) => (
+                <div key={instructor.displayName}>
+                  <h4>
+                    {instructorDisplayNameToFirstLast(
+                      instructor.displayName
+                    )}
+                  </h4>
+                  <p>
+                    {
+                      !instructor.notes
+                        ? <StyledFacultyNote>No Notes</StyledFacultyNote>
+                        : instructor.notes
+                    }
+                  </p>
+                </div>
+              ))}
+            </div>
+          </NotesSection>
           <RoomAvailability>
             <RoomAvailabilityHeader>Room Availability</RoomAvailabilityHeader>
             <RoomAvailabilityBody>
@@ -409,26 +507,34 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
               />
             </RoomAvailabilityBody>
           </RoomAvailability>
+          <ErrorSection>
+            {saving && <LoadSpinner>Saving Meetings</LoadSpinner>}
+            {!!saveError && (
+              <ErrorMessage
+                role="alert"
+                aria-live="assertive"
+              >
+                {saveError}
+              </ErrorMessage>
+            )}
+          </ErrorSection>
         </MeetingModalBodyGrid>
       </ModalBody>
       <ModalFooter>
-        <>
-          <Button
-            onClick={() => {
-              closeCurrentEditMeeting(null);
-              setSaving(true);
-            }}
-            variant={VARIANT.PRIMARY}
-          >
-            Save
-          </Button>
-          <Button
-            onClick={onClose}
-            variant={VARIANT.SECONDARY}
-          >
-            Cancel
-          </Button>
-        </>
+        <Button
+          onClick={saveMeetingData}
+          variant={VARIANT.PRIMARY}
+          disabled={saving}
+        >
+          Save
+        </Button>
+        <Button
+          onClick={onClose}
+          variant={VARIANT.SECONDARY}
+          disabled={saving}
+        >
+          Cancel
+        </Button>
       </ModalFooter>
     </Modal>
   );

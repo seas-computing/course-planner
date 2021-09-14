@@ -1,4 +1,5 @@
 import React, { FunctionComponent, ReactElement } from 'react';
+import { spy, SinonSpy } from 'sinon';
 import {
   cs50CourseInstance, ac209aCourseInstance, ac209aCourseInstanceWithoutRooms,
 } from 'testData';
@@ -14,6 +15,10 @@ import {
 } from '../tableFields';
 
 describe('tableFields', function () {
+  let updateSpy: SinonSpy;
+  beforeEach(function () {
+    updateSpy = spy();
+  });
   describe('helper functions', function () {
     describe('retrieveValue', function () {
       it('should return a function to get course-level fields', function () {
@@ -118,13 +123,12 @@ describe('tableFields', function () {
         context('With times and rooms', function () {
           it('Should return a component that renders days, times and rooms as a list', function () {
             const fallMeetings = formatMeetings(TERM.FALL);
-            const testYear = parseInt(
-              ac209aCourseInstance.fall.calendarYear,
-              10
-            ) + 1;
             const TestComponent: FunctionComponent = (): ReactElement => (
               <div>
-                {fallMeetings(ac209aCourseInstance, testYear)}
+                {fallMeetings(
+                  ac209aCourseInstance,
+                  { updateHandler: updateSpy }
+                )}
               </div>
             );
             const { getAllByRole } = render(
@@ -143,13 +147,12 @@ describe('tableFields', function () {
         context('With times but not rooms', function () {
           it('Should return a component that renders just days and times as a list', function () {
             const fallMeetings = formatMeetings(TERM.FALL);
-            const testYear = parseInt(
-              ac209aCourseInstance.fall.calendarYear,
-              10
-            ) + 1;
             const TestComponent: FunctionComponent = (): ReactElement => (
               <div>
-                {fallMeetings(ac209aCourseInstanceWithoutRooms, testYear)}
+                {fallMeetings(
+                  ac209aCourseInstanceWithoutRooms,
+                  { updateHandler: updateSpy }
+                )}
               </div>
             );
             const { getAllByRole } = render(
@@ -165,21 +168,20 @@ describe('tableFields', function () {
         });
       });
       context('When semester does not have data', function () {
-        it('Should return null', function () {
+        it('Should return an empty list', function () {
           const springTimes = formatMeetings(TERM.SPRING);
-          const testYear = parseInt(
-            ac209aCourseInstance.spring.calendarYear,
-            10
-          );
           const TestComponent: FunctionComponent = (): ReactElement => (
             <div>
-              {springTimes(ac209aCourseInstance, testYear)}
+              {springTimes(
+                ac209aCourseInstance,
+                { updateHandler: updateSpy }
+              )}
             </div>
           );
-          render(
+          const { queryAllByRole } = render(
             <TestComponent />
           );
-          strictEqual(document.body.textContent, '');
+          strictEqual(queryAllByRole('listitem').length, 0);
         });
       });
     });

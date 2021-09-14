@@ -11,8 +11,11 @@ import {
   waitForElementToBeRemoved,
   FindAllByText,
   within,
+  RenderResult,
 } from '@testing-library/react';
-import { strictEqual, notStrictEqual, ok } from 'assert';
+import {
+  strictEqual, notStrictEqual, ok, deepStrictEqual,
+} from 'assert';
 import { TERM } from 'common/constants';
 import DAY, { dayEnumToString } from 'common/constants/day';
 import { TermKey } from 'common/constants/term';
@@ -24,11 +27,15 @@ import React, { useState } from 'react';
 import { SinonStub, stub } from 'sinon';
 import { render } from 'test-utils';
 import { cs50CourseInstance, freeRoom, bookedRoom } from 'testData';
+import * as dummy from 'testData';
 import * as roomAPI from 'client/api/rooms';
+import * as meetingAPI from 'client/api/meetings';
 import { Button, VARIANT } from 'mark-one';
+import axios from 'axios';
 import MeetingModal from '../MeetingModal';
 
 describe('Meeting Modal', function () {
+  let renderResult: RenderResult;
   let getByText: BoundFunction<GetByText>;
   let getAllByText: BoundFunction<AllByText>;
   let getAllByLabelText: BoundFunction<AllByText>;
@@ -50,6 +57,18 @@ describe('Meeting Modal', function () {
       onCloseStub = stub();
       onSaveStub = stub();
       roomAPIStub = stub(roomAPI, 'getRoomAvailability');
+      renderResult = render(
+        <MeetingModal
+          isVisible
+          currentCourse={testCourseInstance}
+          currentSemester={{
+            calendarYear: testCourseInstance[semKey].calendarYear,
+            term: meetingTerm,
+          }}
+          onClose={onCloseStub}
+          onSave={onSaveStub}
+        />
+      );
       ({
         getByText,
         getAllByText,
@@ -58,18 +77,7 @@ describe('Meeting Modal', function () {
         findByLabelText,
         findByText,
         queryAllByRole,
-      } = render(
-        <MeetingModal
-          isVisible
-          currentCourse={testCourseInstance}
-          currentSemester={{
-            calendarYear: parseInt(testCourseInstance[semKey].calendarYear, 10),
-            term: meetingTerm,
-          }}
-          onClose={onCloseStub}
-          onSave={onSaveStub}
-        />
-      ));
+      } = renderResult);
     });
     describe('On Open Behavior', function () {
       it('populates the heading with the correct course instance information', function () {
@@ -201,13 +209,6 @@ describe('Meeting Modal', function () {
                   strictEqual(endTimeInput.value, expectedEndTime);
                 });
               });
-              context('after clicking the "Save" button', function () {
-                it('renders no validation error messages', function () {
-                  const saveButton = getByText('Save');
-                  fireEvent.click(saveButton);
-                  strictEqual(queryAllByRole('alert').length, 0);
-                });
-              });
               context('after clicking the "Show Rooms" button', function () {
                 beforeEach(function () {
                   roomAPIStub.resolves([freeRoom]);
@@ -231,7 +232,7 @@ describe('Meeting Modal', function () {
                     const newTimeslot = await findByText('1:00 PM-2:00 PM');
                     fireEvent.click(newTimeslot);
                     await waitForElementToBeRemoved(
-                      () => getByText(freeRoom.name)
+                      () => queryByText(freeRoom.name)
                     );
                     const promptMessage = await findByText(/Add meeting time/);
                     notStrictEqual(promptMessage, null);
@@ -314,16 +315,6 @@ describe('Meeting Modal', function () {
                     const editCS50InitialMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50InitialMeeting.id));
                     fireEvent.click(editCS50InitialMeetingButton);
                     strictEqual(dayDropdown.value, updatedDay);
-                  });
-                });
-                context('after clicking the "Save" button', function () {
-                  it('renders no validation error messages', function () {
-                    const dayDropdown = getByLabelText('Meeting Day', { exact: false }) as HTMLSelectElement;
-                    fireEvent.change(dayDropdown,
-                      { target: { value: updatedDay } });
-                    const saveButton = getByText('Save');
-                    fireEvent.click(saveButton);
-                    strictEqual(queryAllByRole('alert').length, 0);
                   });
                 });
                 context('after clicking the "Show Rooms" button', function () {
@@ -420,15 +411,6 @@ describe('Meeting Modal', function () {
                     );
                   });
                 });
-                context('after clicking on the "Save" button', function () {
-                  it('displays a validation error message', async function () {
-                    const saveButton = getByText('Save');
-                    fireEvent.click(saveButton);
-                    return waitForElement(
-                      () => getByText(errorMessage, { exact: false })
-                    );
-                  });
-                });
                 context('after clicking on the "Show Rooms" button', function () {
                   it('displays a validation error message', async function () {
                     const showRoomsButton = getByText('Show Rooms');
@@ -474,16 +456,6 @@ describe('Meeting Modal', function () {
                       startTimeDropdown.value,
                       convert12To24HourTime(updatedStartTime)
                     );
-                  });
-                });
-                context('after clicking the "Save" button', function () {
-                  it('renders no validation error messages', function () {
-                    const startTimeDropdown = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;
-                    fireEvent.change(startTimeDropdown,
-                      { target: { value: updatedStartTime } });
-                    const saveButton = getByText('Save');
-                    fireEvent.click(saveButton);
-                    strictEqual(queryAllByRole('alert').length, 0);
                   });
                 });
                 context('after clicking the "Show Rooms" button', function () {
@@ -586,15 +558,6 @@ describe('Meeting Modal', function () {
                     );
                   });
                 });
-                context('after clicking on the "Save" button', function () {
-                  it('displays a validation error message', function () {
-                    const saveButton = getByText('Save');
-                    fireEvent.click(saveButton);
-                    return waitForElement(
-                      () => getByText(errorMessage, { exact: false })
-                    );
-                  });
-                });
                 context('after clicking on the "Show Rooms" button', function () {
                   it('displays a validation error message', function () {
                     const showRoomsButton = getByText('Show Rooms');
@@ -635,15 +598,6 @@ describe('Meeting Modal', function () {
                   it('displays a validation error message', async function () {
                     const editCS50TuesdayMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50TuesdayMeetingId));
                     fireEvent.click(editCS50TuesdayMeetingButton);
-                    return waitForElement(
-                      () => getByText(errorMessage, { exact: false })
-                    );
-                  });
-                });
-                context('after clicking on the "Save" button', function () {
-                  it('displays a validation error message', function () {
-                    const saveButton = getByText('Save');
-                    fireEvent.click(saveButton);
                     return waitForElement(
                       () => getByText(errorMessage, { exact: false })
                     );
@@ -694,16 +648,6 @@ describe('Meeting Modal', function () {
                       endTimeDropdown.value,
                       convert12To24HourTime(updatedEndTime)
                     );
-                  });
-                });
-                context('after clicking the "Save" button', function () {
-                  it('renders no validation error messages', function () {
-                    const endTimeDropdown = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
-                    fireEvent.change(endTimeDropdown,
-                      { target: { value: updatedEndTime } });
-                    const saveButton = getByText('Save');
-                    fireEvent.click(saveButton);
-                    strictEqual(queryAllByRole('alert').length, 0);
                   });
                 });
                 context('after clicking the "Show Rooms" button', function () {
@@ -806,15 +750,6 @@ describe('Meeting Modal', function () {
                     );
                   });
                 });
-                context('after clicking on the "Save" button', function () {
-                  it('displays a validation error message', function () {
-                    const saveButton = getByText('Save');
-                    fireEvent.click(saveButton);
-                    return waitForElement(
-                      () => getByText(errorMessage, { exact: false })
-                    );
-                  });
-                });
                 context('after clicking on the "Show Rooms" button', function () {
                   it('displays a validation error message', function () {
                     const showRoomsButton = getByText('Show Rooms');
@@ -855,15 +790,6 @@ describe('Meeting Modal', function () {
                   it('displays a validation error message', async function () {
                     const editCS50TuesdayMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50TuesdayMeetingId));
                     fireEvent.click(editCS50TuesdayMeetingButton);
-                    return waitForElement(
-                      () => getByText(errorMessage, { exact: false })
-                    );
-                  });
-                });
-                context('after clicking on the "Save" button', function () {
-                  it('displays a validation error message', function () {
-                    const saveButton = getByText('Save');
-                    fireEvent.click(saveButton);
                     return waitForElement(
                       () => getByText(errorMessage, { exact: false })
                     );
@@ -1048,10 +974,88 @@ describe('Meeting Modal', function () {
       });
     });
     describe('On Save Behavior', function () {
-      it('calls the onSave handler once', async function () {
-        const saveButton = getByText('Save');
-        fireEvent.click(saveButton);
-        await wait(() => strictEqual(onSaveStub.callCount, 1));
+      let meetingSaveStub: SinonStub;
+      let saveButton: HTMLElement;
+      const testMeetingResponses = [
+        dummy.mondayMeetingReponseWithRoom,
+        dummy.wednesdayMeetingReponseWithoutRoom,
+      ];
+      beforeEach(function () {
+        meetingSaveStub = stub(meetingAPI, 'updateMeetingList');
+        saveButton = renderResult.getByText('Save');
+      });
+      context('When the edited data is valid', function () {
+        context('When the save operation succeeds', function () {
+          beforeEach(async function () {
+            meetingSaveStub.resolves(testMeetingResponses);
+            fireEvent.click(renderResult.getByText('Save'));
+            await waitForElementToBeRemoved(
+              () => renderResult.getByText('Saving Meetings')
+            );
+          });
+          it('Should not display an error message', function () {
+            const errorMessage = renderResult.queryAllByRole('alert');
+            strictEqual(errorMessage.length, 0);
+          });
+          it('Should call the onSave handler', function () {
+            strictEqual(onSaveStub.callCount, 1);
+            deepStrictEqual(onSaveStub.args[0][0], testMeetingResponses);
+          });
+          it('Should call the onClose handler', function () {
+            strictEqual(onCloseStub.callCount, 1);
+          });
+        });
+        context('When the save operation fails', function () {
+          context('With a server Error', function () {
+            beforeEach(async function () {
+              // This is a bit hacky, but the `AxiosError` type isn't exposed
+              // as a constructor and I couldn't find a better way to test the
+              // control flow for handling different errors
+              stub(axios, 'isAxiosError').returns(true);
+              meetingSaveStub.rejects({ response: { data: dummy.error } });
+              fireEvent.click(saveButton);
+              await waitForElementToBeRemoved(
+                () => renderResult.getByText('Saving Meetings')
+              );
+            });
+            it('Displays the error message from the server', async function () {
+              const errorMessage = await renderResult.findAllByRole('alert');
+              strictEqual(errorMessage.length, 1);
+              strictEqual(errorMessage[0].textContent, dummy.error.message);
+            });
+          });
+          context('With any other error', function () {
+            beforeEach(async function () {
+              stub(axios, 'isAxiosError').returns(false);
+              meetingSaveStub.rejects(dummy.error);
+              fireEvent.click(saveButton);
+              await waitForElementToBeRemoved(
+                () => renderResult.getByText('Saving Meetings')
+              );
+            });
+            it('Prefixes the error with a message to try again', async function () {
+              const errorMessage = await renderResult.findAllByRole('alert');
+              strictEqual(errorMessage.length, 1);
+              const errorText = errorMessage[0].textContent;
+              strictEqual(errorText.includes(dummy.error.message), true);
+              strictEqual(errorText.includes('try again'), true);
+            });
+          });
+        });
+      });
+      context('When there is an error in the edited data', function () {
+        beforeEach(async function () {
+          // Set up failing data
+          fireEvent.click(renderResult.getByText('Add New Time'));
+          await renderResult.findByLabelText(/Delete Meeting 3/);
+          fireEvent.click(renderResult.getByText('Save'));
+        });
+        it('should show the error with the meeting', async function () {
+          const errorMessage = await renderResult.findAllByRole('alert');
+          strictEqual(errorMessage.length, 1);
+          const errorText = errorMessage[0].textContent;
+          strictEqual(errorText, 'Please provide a day and start/end times before proceeding.');
+        });
       });
     });
   });
@@ -1071,10 +1075,7 @@ describe('Meeting Modal', function () {
             isVisible={isOpen}
             currentCourse={testCourseInstance}
             currentSemester={{
-              calendarYear: parseInt(
-                testCourseInstance[semKey].calendarYear,
-                10
-              ),
+              calendarYear: testCourseInstance[semKey].calendarYear,
               term: meetingTerm,
             }}
             onClose={() => { setOpen(false); }}

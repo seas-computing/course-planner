@@ -31,6 +31,10 @@ interface CourseInstanceTableProps {
    * The Academic Year of the data currently being displayed
    */
   academicYear: number;
+  /**
+  * A handler to merge an updated course back into the complete list
+  */
+  courseUpdateHandler: (course: CourseInstanceResponseDTO) => void;
 }
 
 /**
@@ -40,6 +44,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
   academicYear,
   courseList,
   tableData,
+  courseUpdateHandler,
 }): ReactElement => {
   const courseColumns = tableData.filter(
     ({ columnGroup }): boolean => (
@@ -226,7 +231,12 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
                       }
                     >
                       <CellLayout>
-                        {field.getValue(course, academicYear)}
+                        {field.getValue(
+                          course,
+                          {
+                            updateHandler: courseUpdateHandler,
+                          }
+                        )}
                       </CellLayout>
                     </TableCell>
                   );

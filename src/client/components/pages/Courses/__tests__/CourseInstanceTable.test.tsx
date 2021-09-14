@@ -6,17 +6,22 @@ import {
   AllByRole,
   getRoles,
 } from 'test-utils';
+import { spy, SinonSpy } from 'sinon';
 import { cs50CourseInstance, es095CourseInstance } from 'testData';
 import { COURSE_TABLE_COLUMN } from 'common/constants';
 import CourseInstanceTable from '../CourseInstanceTable';
 import { tableFields } from '../tableFields';
 
 describe('CourseInstanceTable', function () {
+  let updateSpy: SinonSpy;
   const academicYear = 2020;
   const courseList = [
     cs50CourseInstance,
     es095CourseInstance,
   ];
+  beforeEach(function () {
+    updateSpy = spy();
+  });
   describe('Header rows', function () {
     context('With all fields visible', function () {
       const testView = [
@@ -39,6 +44,7 @@ describe('CourseInstanceTable', function () {
           <CourseInstanceTable
             academicYear={academicYear}
             courseList={courseList}
+            courseUpdateHandler={updateSpy}
             tableData={tableFields.filter(
               ({ viewColumn }): boolean => (
                 testView.includes(viewColumn)
@@ -94,6 +100,7 @@ describe('CourseInstanceTable', function () {
           <CourseInstanceTable
             academicYear={academicYear}
             courseList={courseList}
+            courseUpdateHandler={updateSpy}
             tableData={tableFields.filter(
               ({ viewColumn }): boolean => (
                 testView.includes(viewColumn)
@@ -130,6 +137,7 @@ describe('CourseInstanceTable', function () {
         ({ getAllByRole } = render(
           <CourseInstanceTable
             academicYear={academicYear}
+            courseUpdateHandler={updateSpy}
             courseList={courseList}
             tableData={tableFields.filter(
               ({ viewColumn }): boolean => (
@@ -183,6 +191,7 @@ describe('CourseInstanceTable', function () {
         <CourseInstanceTable
           academicYear={academicYear}
           courseList={courseList}
+          courseUpdateHandler={updateSpy}
           tableData={tableFields.filter(
             ({ viewColumn }): boolean => (
               testView.includes(viewColumn)
