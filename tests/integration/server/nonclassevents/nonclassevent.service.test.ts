@@ -9,12 +9,12 @@ import { NonClassEventService } from 'server/nonClassEvent/nonClassEvent.service
 import { deepStrictEqual, notStrictEqual, strictEqual } from 'assert';
 import { Meeting } from 'server/meeting/meeting.entity';
 import { Repository } from 'typeorm';
-import { appliedMathematicsReadingGroup, fall, spring } from 'testData';
+import { appliedMathematicsReadingGroup } from 'testData';
+import { Semester } from 'server/semester/semester.entity';
+import { Area } from 'server/area/area.entity';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import MockDB from '../../../mocks/database/MockDB';
 import { PGTime } from '../../../../src/common/utils/PGTime';
-import { Semester } from 'server/semester/semester.entity';
-import { Area } from 'server/area/area.entity';
 
 describe('NonClassEvent Service', function () {
   let testModule: TestingModule;
