@@ -69,7 +69,8 @@ export class NonClassEventService {
     return nonClassEvents.getMany();
   }
 
-  public async save(parent: Partial<NonClassParent>): Promise<NonClassParent> {
+  public async createWithNonClassEvents(parent: Partial<NonClassParent>):
+  Promise<NonClassParent> {
     const semesters = await this.semesterRepository.find({});
 
     return this.parentRepository.save({

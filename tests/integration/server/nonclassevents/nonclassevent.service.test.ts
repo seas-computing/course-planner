@@ -145,11 +145,11 @@ describe('NonClassEvent Service', function () {
       });
     });
   });
-  describe('save', function () {
+  describe('createWithNonClassEvents', function () {
     it('creates one non-class parent', async function () {
       const area = await areaRepository.findOne();
 
-      const parent = await service.save({
+      const parent = await service.createWithNonClassEvents({
         area,
         title: appliedMathematicsReadingGroup.title,
       });
@@ -160,7 +160,7 @@ describe('NonClassEvent Service', function () {
       const area = await areaRepository.findOne();
       const semesterCount = await semesterRepository.count();
 
-      const parent = await service.save({
+      const parent = await service.createWithNonClassEvents({
         area,
         title: appliedMathematicsReadingGroup.title,
       });
