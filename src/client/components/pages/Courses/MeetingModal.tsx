@@ -332,7 +332,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
    * optionally opens a new one. If the new meeting doesn't already exist in
    * the full list of meetings, it will be added.
    */
-  const closeCurrentEditMeeting = (
+  const toggleCurrentEditMeeting = (
     newMeeting?: CourseInstanceResponseMeeting
   ) => {
     if (validateTimes()) {
@@ -405,7 +405,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
    */
   const saveMeetingData = async () => {
     if (validateTimes()) {
-      closeCurrentEditMeeting();
+      toggleCurrentEditMeeting();
       setSaveError('');
       setSaving(true);
       const updatesToSend = mergeMeetings()
@@ -466,7 +466,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
                 currentEditMeeting={currentEditMeeting}
                 meetingTimeError={meetingTimeError}
                 updateCurrentEditMeeting={updateCurrentEditMeeting}
-                closeCurrentEditMeeting={closeCurrentEditMeeting}
+                toggleCurrentEditMeeting={toggleCurrentEditMeeting}
                 showRoomsHandler={searchForRooms}
                 newMeetingIdNumber={newMeetingIdNumber.toString()}
                 updateNewMeetingIdNumber={updateNewMeetingIdNumber}
