@@ -56,7 +56,9 @@ interface MeetingTimesListProps {
   /**
    * A handler to clear the current edit meeting, optionally opening a new one
    */
-  toggleCurrentEditMeeting: (newMeeting?: CourseInstanceResponseMeeting) => void;
+  toggleCurrentEditMeeting: (
+    newMeeting?: CourseInstanceResponseMeeting
+  ) => void;
   /**
    * Used to create a temporary unique ID for new meetings on the client
    */
