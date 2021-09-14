@@ -6,7 +6,7 @@ import { RoomListingView } from 'server/location/RoomListingView.entity';
 import { NonClassParentView } from './NonClassParentView.entity';
 import { NonClassEventView } from './NonClassEvent.view.entity';
 import { Semester } from '../semester/semester.entity';
-import { NonClassParent } from '../nonClassParent/nonclassparent.entity';
+import { NonClassParent } from './nonclassparent.entity';
 import { NonClassEvent } from './nonclassevent.entity';
 
 export class NonClassEventService {

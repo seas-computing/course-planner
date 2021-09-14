@@ -5,7 +5,7 @@ import {
   SelectQueryBuilder,
 } from 'typeorm';
 import { Area } from 'server/area/area.entity';
-import { NonClassParent } from 'server/nonClassParent/nonclassparent.entity';
+import { NonClassParent } from 'server/nonClassEvent/nonclassparent.entity';
 import { NonClassEventView } from './NonClassEvent.view.entity';
 
 @ViewEntity('NonClassParentView', {

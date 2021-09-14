@@ -20,7 +20,7 @@ import { Course } from 'server/course/course.entity';
 import { OFFERED } from 'common/constants';
 import { ConfigModule } from 'server/config/config.module';
 import { ConfigService } from 'server/config/config.service';
-import { NonClassParent } from 'server/nonClassParent/nonclassparent.entity';
+import { NonClassParent } from 'server/nonClassEvent/nonclassparent.entity';
 import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
 import { PopulationModule } from '../population.module';
 import MockDB from '../../MockDB';

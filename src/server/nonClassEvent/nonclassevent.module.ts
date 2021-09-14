@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { NonClassParent } from 'server/nonClassParent/nonclassparent.entity';
+import { NonClassParent } from 'server/nonClassEvent/nonclassparent.entity';
 import { Area } from 'server/area/area.entity';
 import { LocationModule } from 'server/location/location.module';
 import { SemesterModule } from 'server/semester/semester.module';

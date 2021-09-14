@@ -10,7 +10,7 @@ import { Campus } from 'server/location/campus.entity';
 import { CourseInstance } from 'server/courseInstance/courseinstance.entity';
 import { Meeting } from 'server/meeting/meeting.entity';
 import { FacultyCourseInstance } from 'server/courseInstance/facultycourseinstance.entity';
-import { NonClassParent } from 'server/nonClassParent/nonclassparent.entity';
+import { NonClassParent } from 'server/nonClassEvent/nonclassparent.entity';
 import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
 import { PopulationService } from './population.service';
 import { SemesterPopulationService } from './semester.population';
