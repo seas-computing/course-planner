@@ -12,6 +12,7 @@ import { Repository } from 'typeorm';
 import { appliedMathematicsReadingGroup } from 'testData';
 import { Semester } from 'server/semester/semester.entity';
 import { Area } from 'server/area/area.entity';
+import { NonClassParent } from 'server/nonClassEvent/nonclassparent.entity';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import MockDB from '../../../mocks/database/MockDB';
 import { PGTime } from '../../../../src/common/utils/PGTime';
@@ -146,15 +147,23 @@ describe('NonClassEvent Service', function () {
     });
   });
   describe('createWithNonClassEvents', function () {
+    let parentRepository: Repository<NonClassParent>;
+    beforeEach(async function () {
+      parentRepository = testModule
+        .get<Repository<NonClassParent>>(getRepositoryToken(NonClassParent));
+      await parentRepository.query(`TRUNCATE "${parentRepository.metadata.tableName}" CASCADE;`);
+    });
     it('creates one non-class parent', async function () {
       const area = await areaRepository.findOne();
 
-      const parent = await service.createWithNonClassEvents({
+      await service.createWithNonClassEvents({
         area,
         title: appliedMathematicsReadingGroup.title,
       });
 
-      strictEqual(parent.title, appliedMathematicsReadingGroup.title);
+      const dbParents = await parentRepository.count();
+
+      strictEqual(dbParents, 1);
     });
     it('creates one non-class event per semester', async function () {
       const area = await areaRepository.findOne();
@@ -166,6 +175,17 @@ describe('NonClassEvent Service', function () {
       });
 
       strictEqual(parent.nonClassEvents.length, semesterCount);
+    });
+    it('returns the newly created non-class parent', async function () {
+      const area = await areaRepository.findOne();
+
+      const parent = await service.createWithNonClassEvents({
+        area,
+        title: appliedMathematicsReadingGroup.title,
+      });
+
+      notStrictEqual(parent.id, null);
+      strictEqual(parent.title, appliedMathematicsReadingGroup.title);
     });
   });
 });
