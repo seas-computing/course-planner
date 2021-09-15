@@ -609,7 +609,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
           Save
         </Button>
         <Button
-          onClick={onClose}
+          onClick={onModalClose}
           variant={VARIANT.SECONDARY}
           disabled={saving}
         >
