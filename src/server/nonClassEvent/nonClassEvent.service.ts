@@ -1,5 +1,5 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { TERM } from 'common/constants';
 import { MeetingListingView } from 'server/meeting/MeetingListingView.entity';
 import { RoomListingView } from 'server/location/RoomListingView.entity';
@@ -22,9 +22,8 @@ export class NonClassEventService {
   @InjectRepository(NonClassEvent)
   private eventRepository: Repository<NonClassEvent>;
 
-  public async find(calendarYear: number):
-  Promise<NonClassParentView[]> {
-    const nonClassEvents = this.parentViewRepository.createQueryBuilder('p')
+  private get(calendarYear: number): SelectQueryBuilder<NonClassParentView> {
+    return this.parentViewRepository.createQueryBuilder('p')
       .leftJoinAndMapOne(
         'p.spring',
         NonClassEventView, 'spring',
@@ -66,7 +65,18 @@ export class NonClassEventService {
         'fall_meetings_room.id = "fall_meetings"."roomId"'
       )
       .orderBy('p.area', 'ASC');
-    return nonClassEvents.getMany();
+  }
+
+  public async find(calendarYear: number):
+  Promise<NonClassParentView[]> {
+    return this.get(calendarYear).getMany();
+  }
+
+  public async findOnyById(calendarYear: number, id: string):
+  Promise<NonClassParentView> {
+    return this.get(calendarYear)
+      .where('"p"."id" = :id', { id })
+      .getOne();
   }
 
   public async createWithNonClassEvents(parent: Partial<NonClassParent>):
