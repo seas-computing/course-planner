@@ -1,17 +1,24 @@
 import { ConfigService } from 'server/config/config.service';
 import { TestingModule, Test } from '@nestjs/testing';
 import { stub } from 'sinon';
-import { strictEqual, deepStrictEqual } from 'assert';
-import { year } from 'testData';
+import { strictEqual, deepStrictEqual, fail } from 'assert';
+import { rawAreaList, year, createNonClassParent } from 'testData';
 import {
   computationalModelingofFluidsReadingGroup,
   dataScienceReadingGroup,
 } from 'common/__tests__/data/nonClassEvents';
-import { NonClassEventController } from '../nonClassEvent.controller';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Area } from 'server/area/area.entity';
 import { NonClassEventService } from '../nonClassEvent.service';
+import { NonClassEventController } from '../nonClassEvent.controller';
 
 const mockNonClassEventService = {
   find: stub(),
+  createWithNonClassEvents: stub(),
+};
+
+const mockAreaRepository = {
+  findOne: stub(),
 };
 
 describe('NonClassEvent controller', function () {
@@ -26,6 +33,10 @@ describe('NonClassEvent controller', function () {
         {
           provide: NonClassEventService,
           useValue: mockNonClassEventService,
+        },
+        {
+          provide: getRepositoryToken(Area),
+          useValue: mockAreaRepository,
         },
       ],
     })
@@ -97,6 +108,33 @@ describe('NonClassEvent controller', function () {
         Object.keys(results),
         [...new Set(mockData.map(({ spring }) => spring.calendarYear))]
       );
+    });
+  });
+  describe('create', function () {
+    it('creates non class parents within an existing area', async function () {
+      const mockArea = rawAreaList[0];
+      mockAreaRepository.findOne.resolves(mockArea);
+
+      await controller.create(createNonClassParent);
+
+      strictEqual(
+        mockNonClassEventService.createWithNonClassEvents.args[0][0].area,
+        mockArea
+      );
+    });
+    it('throws BadRequestException for an invalid area', async function () {
+      mockAreaRepository.findOne.resolves(null);
+
+      try {
+        await controller.create({
+          ...createNonClassParent,
+          area: 'I don\'t exist',
+        });
+        fail('Did not throw');
+      } catch (e) {
+        console.log(e);
+        strictEqual(e.status, 400);
+      }
     });
   });
 });
