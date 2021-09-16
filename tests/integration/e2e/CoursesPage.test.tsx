@@ -540,5 +540,34 @@ describe('End-to-end Course Instance updating', function () {
         });
       });
     });
+    context('Making no changes to meetings', function () {
+      context('when the modal save button is clicked', function () {
+        it('Should close the modal', async function () {
+          // click save
+          const saveButton = renderResult.getByText('Save');
+          fireEvent.click(saveButton);
+          await waitForElementToBeRemoved(() => renderResult.queryByText('Saving Meetings'));
+          const modal = renderResult.queryByRole('dialog');
+          strictEqual(modal, null);
+        });
+        it('Should show a success message', async function () {
+          // click save
+          const saveButton = renderResult.getByText('Save');
+          fireEvent.click(saveButton);
+          await waitForElementToBeRemoved(() => renderResult.queryByText('Saving Meetings'));
+          return renderResult.findByText('Course updated', { exact: false });
+        });
+      });
+      context('when the modal save button is not clicked', function () {
+        context('when the user attempts to exit the modal', function () {
+          it('should show an unsaved changes warning', async function () {
+            const windowConfirmStub = stub(window, 'confirm');
+            const cancelButton = await renderResult.findByText('Cancel');
+            fireEvent.click(cancelButton);
+            strictEqual(windowConfirmStub.callCount, 0);
+          });
+        });
+      });
+    });
   });
 });
