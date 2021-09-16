@@ -1,4 +1,6 @@
-import { strictEqual, notStrictEqual, deepStrictEqual } from 'assert';
+import {
+  strictEqual, notStrictEqual, deepStrictEqual, ok,
+} from 'assert';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule, getRepositoryToken, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { CourseInstanceModule } from 'server/courseInstance/courseInstance.module';
@@ -197,6 +199,53 @@ describe('Course Instance Service', function () {
             });
           });
         });
+      });
+    });
+    describe('Ordering', function () {
+      it('should order by area => prefix => integer => letter', function () {
+        for (let i = 0; i < result.length; i++) {
+          if (result[i + 1]) {
+            const {
+              area: areaA,
+              catalogNumber: catalogNumberA,
+            } = result[i];
+            const {
+              area: areaB,
+              catalogNumber: catalogNumberB,
+            } = result[i + 1];
+            if (areaA === areaB) {
+              const [prefixA, ...numberA] = catalogNumberA.split(' ');
+              const [prefixB, ...numberB] = catalogNumberB.split(' ');
+              if (prefixA === prefixB) {
+                const integerA = parseInt(numberA.join('').replace(/\D*/g, ''), 10);
+                const integerB = parseInt(numberB.join('').replace(/\D*/g, ''), 10);
+                if (integerA === integerB) {
+                  const letterA = numberA.join().replace(/^\d*/g, '');
+                  const letterB = numberB.join().replace(/^\d*/g, '');
+                  ok(
+                    letterA < letterB,
+                    `${catalogNumberB} (${areaB}) sorted before ${catalogNumberA} (${areaA})`
+                  );
+                } else {
+                  ok(
+                    integerA < integerB,
+                    `${catalogNumberB} (${areaB}) sorted before ${catalogNumberA} (${areaA})`
+                  );
+                }
+              } else {
+                ok(
+                  prefixA < prefixB,
+                  `${catalogNumberB} (${areaB}) sorted before ${catalogNumberA} (${areaA})`
+                );
+              }
+            } else {
+              ok(
+                areaA < areaB,
+                `${catalogNumberB} (${areaB}) sorted before ${catalogNumberA} (${areaA})`
+              );
+            }
+          }
+        }
       });
     });
   });
