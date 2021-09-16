@@ -560,7 +560,7 @@ describe('End-to-end Course Instance updating', function () {
       });
       context('when the modal save button is not clicked', function () {
         context('when the user attempts to exit the modal', function () {
-          it('should show an unsaved changes warning', async function () {
+          it('should not show an unsaved changes warning', async function () {
             const windowConfirmStub = stub(window, 'confirm');
             const cancelButton = await renderResult.findByText('Cancel');
             fireEvent.click(cancelButton);
