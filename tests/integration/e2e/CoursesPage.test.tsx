@@ -269,9 +269,9 @@ describe('End-to-end Course Instance updating', function () {
           `${
             dayEnumToString(day)
           }${
-            new PGTime(startTime).displayTime
-          }-${
-            new PGTime(endTime).displayTime
+            PGTime.toDisplay(startTime)
+          } - ${
+            PGTime.toDisplay(endTime)
           }${room
             ? `${
               room.building.name
@@ -365,7 +365,7 @@ describe('End-to-end Course Instance updating', function () {
           const dayField = await within(editButton.parentElement)
             .findByText('Monday');
           return within(dayField.parentElement)
-            .findByText('12:00 PM-01:30 PM');
+            .findByText('12:00 PM - 1:30 PM');
         });
       });
       context('with an invalid room/time combination', function () {
