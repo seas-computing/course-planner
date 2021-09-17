@@ -1,4 +1,13 @@
 /**
+ * An enumeration of the possible values for the AM/PM portion of the time,
+ * when rendered in 12-hour format
+ */
+export enum MERIDIAN {
+  AM = 'AM',
+  PM = 'PM',
+}
+
+/**
  * A utility class to simplify handling timestamps generated from Postgres.
  * Provides helpers for time comparisons, and formatting.
  */
@@ -56,7 +65,7 @@ export class PGTime {
   }
 
   /**
-   * Display the timestamp in the original fomat
+   * Display the timestamp in the original format
    */
   public toString(): string {
     return `${
@@ -70,13 +79,15 @@ export class PGTime {
     }`;
   }
 
-  public toRequestString(): string {
+  /**
+   * Display the timestamp without seconds or milliseconds, as used in an input
+   * element
+   */
+  public get inputString(): string {
     return `${
       this.hour.toString().padStart(2, '0')
     }:${
       this.minute.toString().padStart(2, '0')
-    }:${
-      this.second.toString().padStart(2, '0')
     }`;
   }
 
@@ -92,16 +103,43 @@ export class PGTime {
   }
 
   /**
+   * Get the unpadded hour for display in 12-hour format
+   */
+  public get displayHour(): string {
+    if (this.hour === 0) {
+      return '12';
+    }
+    if (this.hour > 12) {
+      return (this.hour - 12).toString();
+    }
+    return this.hour.toString();
+  }
+
+  /**
+   * Get just the AM/PM portion of the timestamp, for rendering in 12 hour format
+   */
+  public get meridian(): MERIDIAN {
+    return this.hour < 12 ? MERIDIAN.AM : MERIDIAN.PM;
+  }
+
+  /**
+   * Returns an AM/PM formatted hour heading
+   */
+  public get hourHeading(): string {
+    return `${this.displayHour} ${this.meridian}`;
+  }
+
+  /**
    * Show the hour:minute with AM/PM
    */
   public get displayTime(): string {
-    const meridian = this.hour < 12 ? 'AM' : 'PM';
-    const twelveHourFmt = this.hour > 12 ? this.hour - 12 : this.hour;
     return `${
-      twelveHourFmt.toString().padStart(2, '0')
+      this.displayHour
     }:${
       this.minute.toString().padStart(2, '0')
-    } ${meridian}`;
+    } ${
+      this.meridian
+    }`;
   }
 
   /**
@@ -123,5 +161,59 @@ export class PGTime {
    */
   public isAfter(compTime: PGTime): boolean {
     return this.msSinceMidnight > compTime.msSinceMidnight;
+  }
+
+  /**
+   * Static method to convert a given timestamp to Display format (i.e. 12 hour
+   * AM/PM time). It's just a wrapper around
+   *
+   *     new PGTime(<timestamp>).displayTime
+   *
+   * but it returns null for falsy values (e.g. null, undefined, ''), where the
+   * constructor would throw an error
+   */
+  public static toDisplay(timestamp: string): string {
+    if (!timestamp) {
+      return null;
+    }
+    return new PGTime(timestamp).displayTime;
+  }
+
+  /**
+   * Attempts to parse an AM/PM style timestamp into a PGTime instance. This
+   * may not cover every possible format, but should hit most of our use cases.
+   */
+  public static fromDisplay(ampmTimestamp: string): PGTime {
+    if (!ampmTimestamp) {
+      return null;
+    }
+    const displayTimeRegex = /^(?<hour>0?[1-9]|1[0-2])(:(?<minute>[0-5][0-9])?(:(?<second>[0-5][0-9])?)?)?(\s*(?<meridian>[ap]\.?m?\.?|[AP]\.?M?\.?)?)?$/;
+    const timeMatch = displayTimeRegex.exec(ampmTimestamp);
+    if (
+      timeMatch === null
+      || timeMatch.groups === undefined
+      || timeMatch.groups.hour === undefined
+    ) {
+      throw new TypeError('Invalid timestamp format');
+    }
+    let hour = parseInt(timeMatch.groups.hour, 10);
+    if (timeMatch.groups.meridian && ['p', 'P'].includes(timeMatch.groups.meridian[0])) {
+      hour = hour === 12 ? 12 : hour + 12;
+    } else if (hour === 12) {
+      hour = 0;
+    }
+    const minute = timeMatch.groups.minute
+      ? parseInt(timeMatch.groups.minute, 10)
+      : 0;
+    const second = timeMatch.groups.second
+      ? parseInt(timeMatch.groups.second, 10)
+      : 0;
+    return new PGTime(`${
+      hour.toString().padStart(2, '0')
+    }:${
+      minute.toString().padStart(2, '0')
+    }:${
+      second.toString().padStart(2, '0')
+    }`);
   }
 }
