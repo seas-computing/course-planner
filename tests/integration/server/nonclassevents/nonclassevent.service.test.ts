@@ -6,9 +6,7 @@ import { NonClassEventModule } from 'server/nonClassEvent/nonclassevent.module';
 import { SemesterModule } from 'server/semester/semester.module';
 import { AuthModule } from 'server/auth/auth.module';
 import { NonClassEventService } from 'server/nonClassEvent/nonClassEvent.service';
-import {
-  deepStrictEqual, notStrictEqual, strictEqual,
-} from 'assert';
+import { deepStrictEqual, notStrictEqual, strictEqual } from 'assert';
 import { Meeting } from 'server/meeting/meeting.entity';
 import { Repository } from 'typeorm';
 import { appliedMathematicsReadingGroup } from 'testData';
@@ -143,95 +141,6 @@ describe('NonClassEvent Service', function () {
                 strictEqual(room.name, catName);
               }
             });
-          });
-        });
-      });
-    });
-  });
-  describe('findOneById', function () {
-    let parentRepository: Repository<NonClassParent>;
-    let expectedId: string;
-    beforeEach(async function () {
-      parentRepository = testModule.get(getRepositoryToken(NonClassParent));
-      ({ id: expectedId } = await parentRepository.findOne());
-    });
-    it('retrieves data for the academic year specified', async function () {
-      const expectedAcdemicYear = 2020;
-
-      const event = await service.findOnyById(expectedAcdemicYear, expectedId);
-
-      const years = [
-        parseInt(event.fall.calendarYear),
-        parseInt(event.spring.calendarYear),
-      ];
-
-      deepStrictEqual(years.length > 0, true);
-      deepStrictEqual(years, Array(years.length).fill(expectedAcdemicYear));
-    });
-    it('retrieves a single NonClassParent record by ID', async function () {
-      const expectedAcdemicYear = 2020;
-
-      const { id } = await service.findOnyById(expectedAcdemicYear, expectedId);
-
-      deepStrictEqual(id, expectedId);
-    });
-    describe('Meetings', function () {
-      let dbMeetings: Meeting[];
-      let meetingRepository: Repository<Meeting>;
-      beforeEach(async function () {
-        meetingRepository = testModule.get(getRepositoryToken(Meeting));
-        dbMeetings = await meetingRepository.find({
-          relations: ['room', 'room.building'],
-        });
-      });
-      it('Should format the startTimes and endTimes as hh:mm aa', async function () {
-        const expectedAcdemicYear = 2020;
-
-        const nonClassEvent = await service.findOnyById(
-          expectedAcdemicYear,
-          expectedId
-        );
-
-        notStrictEqual(nonClassEvent, null);
-        const { spring, fall } = nonClassEvent;
-        [spring, fall].forEach(({ meetings }) => {
-          meetings.forEach(({ id, startTime, endTime }) => {
-            if (id) {
-              const {
-                startTime: dbStartTime,
-                endTime: dbEndTime,
-              } = dbMeetings
-                .find(
-                  ({ id: dbID }) => dbID === id
-                );
-              // We're using Jan 1 as the date because JS is being too clever
-              // and always trying to componsate for DST for us.
-              const fmtDBStartTime = new PGTime(dbStartTime);
-              const fmtDBEndTime = new PGTime(dbEndTime);
-              strictEqual(startTime, fmtDBStartTime.displayTime);
-              strictEqual(endTime, fmtDBEndTime.displayTime);
-            }
-          });
-        });
-      });
-      it('Should concatenate the room and building name', async function () {
-        const expectedAcdemicYear = 2020;
-
-        const events = await service.findOnyById(
-          expectedAcdemicYear,
-          expectedId
-        );
-
-        notStrictEqual(events, null);
-        const { spring, fall } = events;
-        [spring, fall].forEach(({ meetings }) => {
-          meetings.forEach(({ id, room }) => {
-            if (id) {
-              const { room: dbRoom } = dbMeetings
-                .find(({ id: dbID }) => dbID === id);
-              const catName = `${dbRoom.building.name} ${dbRoom.name}`;
-              strictEqual(room.name, catName);
-            }
           });
         });
       });
