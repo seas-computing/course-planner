@@ -173,10 +173,6 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     setTimeout((): void => modalHeaderRef.current?.focus());
   };
 
-  interface LegacyEvent {
-    returnValue: string;
-  }
-
   const { term, calendarYear } = currentSemester;
   const semKey = term.toLowerCase() as TermKey;
   const {
@@ -266,12 +262,9 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     const onBeforeUnload = (event: Event) => {
       if (!isChanged) return;
       event.preventDefault();
-      // It's unclear whether TS will account for browser incompatibility here,
-      // so we use all three methods of setting the confirmation message,
-      // as detailed here:
-      // https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event
-      const legacyEvent = (event as unknown as LegacyEvent);
-      legacyEvent.returnValue = confirmMessage;
+      // Need to disable this rule for browser compatibility reasons
+      // eslint-disable-next-line no-param-reassign
+      event.returnValue = false;
       return confirmMessage;
     };
     window.addEventListener('beforeunload', onBeforeUnload);
