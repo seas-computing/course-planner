@@ -8,9 +8,10 @@ import NonClassMeetingResponseDTO from 'common/dto/nonClassMeetings/NonClassMeet
 import CreateNonClassParentDTO from 'common/dto/nonClassMeetings/CreateNonClassParent.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Area } from 'server/area/area.entity';
-import { EntityNotFoundError, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { NonClassParentView } from './NonClassParentView.entity';
 import { NonClassEventService } from './nonClassEvent.service';
+import { NonClassParent } from './nonclassparent.entity';
 
 @UseGuards(Authentication)
 @Controller('api/non-class-events')
@@ -59,7 +60,8 @@ export class NonClassEventController {
   }
 
   @Post('/')
-  public async create(parent: CreateNonClassParentDTO): Promise<any> {
+  public async create(parent: CreateNonClassParentDTO):
+  Promise<NonClassParent> {
     const area = await this.areaRepository.findOne({
       where: {
         name: parent.area,
@@ -70,7 +72,7 @@ export class NonClassEventController {
       throw new BadRequestException(`Cannot create non-class parent for invalid area: ${parent.area}`);
     }
 
-    await this.service.createWithNonClassEvents({
+    return this.service.createWithNonClassEvents({
       ...parent,
       area,
     });
