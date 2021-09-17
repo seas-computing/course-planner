@@ -5,79 +5,113 @@ describe('PGTime', function () {
   let testTime: PGTime;
   describe('constructor', function () {
     context('With a valid timestamp', function () {
-      context('With milliseconds', function () {
+      context('With hour, minutes, seconds, and milliseconds', function () {
         beforeEach(function () {
           testTime = new PGTime('15:30:45.600');
         });
-        it('Sets the hour prop', function () {
+        it('Should set the hour', function () {
           strictEqual(testTime.hour, 15);
         });
-        it('Sets the minute prop', function () {
+        it('Should set the minute', function () {
           strictEqual(testTime.minute, 30);
         });
-        it('Sets the second prop', function () {
+        it('Should set the second', function () {
           strictEqual(testTime.second, 45);
         });
-        it('Sets the milliseconds prop', function () {
+        it('Should set the milliseconds', function () {
           strictEqual(testTime.millisecond, 600);
         });
       });
-      context('Without milliseconds', function () {
+      context('With just hour, minutes, and seconds', function () {
         beforeEach(function () {
-          testTime = new PGTime('09:00:00');
+          testTime = new PGTime('09:19:29');
         });
-        it('Sets the hour prop', function () {
+        it('Should set the hour', function () {
           strictEqual(testTime.hour, 9);
         });
-        it('Sets the minute prop', function () {
-          strictEqual(testTime.minute, 0);
+        it('Should set the minute', function () {
+          strictEqual(testTime.minute, 19);
         });
-        it('Sets the second prop', function () {
+        it('Should set the second', function () {
+          strictEqual(testTime.second, 29);
+        });
+        it('Should default the millisecond to 0', function () {
+          strictEqual(testTime.millisecond, 0);
+        });
+      });
+      context('With hour and minute', function () {
+        beforeEach(function () {
+          testTime = new PGTime('11:11');
+        });
+        it('Should set the hour', function () {
+          strictEqual(testTime.hour, 11);
+        });
+        it('Should set the minute', function () {
+          strictEqual(testTime.minute, 11);
+        });
+        it('Should default the second to 0', function () {
           strictEqual(testTime.second, 0);
         });
-        it('Sets the milliseconds prop to 0', function () {
+        it('Should default the millisecond to 0', function () {
+          strictEqual(testTime.millisecond, 0);
+        });
+      });
+      context('With hour', function () {
+        beforeEach(function () {
+          testTime = new PGTime('13');
+        });
+        it('Should set the hour', function () {
+          strictEqual(testTime.hour, 13);
+        });
+        it('Should default the minute to 0', function () {
+          strictEqual(testTime.minute, 0);
+        });
+        it('Should default to second to 0', function () {
+          strictEqual(testTime.second, 0);
+        });
+        it('Should default the millisecond to 0', function () {
           strictEqual(testTime.millisecond, 0);
         });
       });
     });
     context('With an invalid timestamp', function () {
       context('That includes an offset', function () {
-        it('Throws a TypeError', function () {
+        it('Should throw a TypeError', function () {
           throws(() => new PGTime('15:30:45-05'), TypeError);
         });
       });
       context('That uses an out-of-range hour', function () {
-        it('Throws a TypeError', function () {
+        it('Should throw a TypeError', function () {
           throws(() => new PGTime('25:30:45'), TypeError);
         });
       });
       context('That uses an out-of-range minute', function () {
-        it('Throws a TypeError', function () {
+        it('Should throw a TypeError', function () {
           throws(() => new PGTime('15:75:45'), TypeError);
         });
       });
       context('That uses an out-of-range second', function () {
-        it('Throws a TypeError', function () {
+        it('Should throw a TypeError', function () {
           throws(() => new PGTime('15:30:75'), TypeError);
         });
       });
       context('That uses an out-of-range millisecond', function () {
-        it('Throws a TypeError', function () {
+        it('Should throw a TypeError', function () {
           throws(() => new PGTime('15:30:45.999999'), TypeError);
         });
       });
       context('That uses AM/PM time', function () {
-        it('Throws a TypeError', function () {
+        it('Should throw a TypeError', function () {
           throws(() => new PGTime('03:30:45 PM'), TypeError);
         });
       });
       context('That is not a time at all', function () {
-        it('Throws a TypeError', function () {
+        it('Should throw a TypeError', function () {
           throws(() => new PGTime('foo'), TypeError);
         });
       });
       context('With an empty string', function () {
-        it('Throws a TypeError', function () {
+        it('Should throw a TypeError', function () {
           throws(() => new PGTime(''), TypeError);
         });
       });

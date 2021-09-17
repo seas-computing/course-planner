@@ -5,9 +5,10 @@
 
 export class PGTime {
   /**
-   * A static RegExp that matches HH:MM:SS.mmm formatted timestamps
+   * A static RegExp that matches a wide range of 24-hour HH:MM:SS.mmm
+   * formatted timestamps
    */
-  public static readonly regex = /^(?<hour>([01][0-9]|2[0-3])):(?<minute>[0-5][0-9]):?(?<second>[0-5][0-9])?\.?(?<millisecond>[0-9]{3})?$/;
+  private readonly regex = /^(?<hour>[01]?[0-9]|2[0-3])(:(?<minute>[0-5][0-9])(:(?<second>[0-5][0-9])(\.(?<millisecond>[0-9][0-9]?[0-9]?)?)?)?)?$/;
 
   /** The hour part of the timestamp */
   public readonly hour: number;
@@ -22,26 +23,36 @@ export class PGTime {
   public readonly millisecond: number;
 
   /**
-   * Parses a string timestamp to create a PGTime instance. Throws a TypeError
-   * with a bad timestamp
+   * Parses a string timestamp to create a PGTime instance.
+   * The timestamp should be in 24-hour format, with
+   * - One or two digits in the hour
+   * - Optionally two digits in the minute
+   * - Optionally two digits in the second
+   * - Optionally one to three digits in the millisecond
+   *
+   * e.g., the string "13" will be treated the same as "13:00:00.000"
+   *
+   * Constructor will throw a TypeError if provided with a bad timestamp
    */
   public constructor(timestamp: string) {
-    const timeMatch = PGTime.regex.exec(timestamp);
-    if (timeMatch === null || timeMatch.groups === undefined) {
+    const timeMatch = this.regex.exec(timestamp);
+    if (
+      timeMatch === null
+      || timeMatch.groups === undefined
+      || timeMatch.groups.hour === undefined
+    ) {
       throw new TypeError('Invalid timestamp format');
     }
     this.hour = parseInt(timeMatch.groups.hour, 10);
-    this.minute = parseInt(timeMatch.groups.minute, 10);
-    if (timeMatch.groups.second) {
-      this.second = parseInt(timeMatch.groups.second, 10);
-    } else {
-      this.second = 0;
-    }
-    if (timeMatch.groups.millisecond) {
-      this.millisecond = parseInt(timeMatch.groups.millisecond, 10);
-    } else {
-      this.millisecond = 0;
-    }
+    this.minute = timeMatch.groups.minute
+      ? parseInt(timeMatch.groups.minute, 10)
+      : 0;
+    this.second = timeMatch.groups.second
+      ? parseInt(timeMatch.groups.second, 10)
+      : 0;
+    this.millisecond = timeMatch.groups.millisecond
+      ? parseInt(timeMatch.groups.millisecond, 10)
+      : 0;
   }
 
   /**
