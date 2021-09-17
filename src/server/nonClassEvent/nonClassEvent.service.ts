@@ -74,12 +74,10 @@ export class NonClassEventService {
     const semesters = await this.semesterRepository.find({});
 
     return this.parentRepository.save({
-      ...this.parentRepository.create({
-        ...parent,
-        nonClassEvents: semesters.map(
-          (event) => this.eventRepository.create(event)
-        ),
-      }),
+      ...parent,
+      nonClassEvents: semesters.map(
+        (event) => this.eventRepository.create(event)
+      ),
     });
   }
 }
