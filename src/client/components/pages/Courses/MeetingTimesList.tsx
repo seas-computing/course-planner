@@ -14,10 +14,6 @@ import DAY, { dayEnumToString, days } from 'common/constants/day';
 import { meetingTimeSlots } from 'common/constants/timeslots';
 import { CourseInstanceResponseMeeting } from 'common/dto/courses/CourseInstanceResponse';
 import {
-  convert12To24HourTime,
-  convertTo12HourDisplayTime,
-} from 'common/utils/timeHelperFunctions';
-import {
   BorderlessButton,
   Button,
   ButtonDropdownMenu,
@@ -29,6 +25,7 @@ import {
   VARIANT,
 } from 'mark-one';
 import { ButtonLayout } from '../../general';
+import { PGTime } from '../../../../common/utils/PGTime';
 
 interface MeetingTimesListProps {
   /**
@@ -185,10 +182,12 @@ export const MeetingTimesList
       <ul>
         {allMeetings.map(
           (meeting, index) => {
-            const meetingTimeString = `${dayEnumToString(meeting.day)}, ${
-              convertTo12HourDisplayTime(meeting.startTime)
+            const meetingTimeString = `${
+              dayEnumToString(meeting.day)
+            }, ${
+              PGTime.toDisplay(meeting.startTime)
             } to ${
-              convertTo12HourDisplayTime(meeting.endTime)
+              PGTime.toDisplay(meeting.endTime)
             }`;
             const meetingRoomString = meeting.room === null
               ? ''
@@ -272,9 +271,7 @@ export const MeetingTimesList
                             label="Meeting Start Time"
                             type="time"
                             value={currentEditMeeting.startTime !== ''
-                              ? convert12To24HourTime(
-                                currentEditMeeting.startTime
-                              )
+                              ? currentEditMeeting.startTime
                               : ''}
                             onChange={(
                               event: React.ChangeEvent<HTMLInputElement>
@@ -296,9 +293,7 @@ export const MeetingTimesList
                             label="Meeting End Time"
                             type="time"
                             value={currentEditMeeting.endTime !== ''
-                              ? convert12To24HourTime(
-                                currentEditMeeting.endTime
-                              )
+                              ? currentEditMeeting.endTime
                               : ''}
                             onChange={(
                               event: React.ChangeEvent<HTMLInputElement>

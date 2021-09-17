@@ -24,7 +24,6 @@ import { MeetingTimesList } from './MeetingTimesList';
 import RoomSelection from './RoomSelection';
 import RoomRequest from '../../../../common/dto/room/RoomRequest.dto';
 import CourseInstanceResponseDTO, { CourseInstanceResponseMeeting } from '../../../../common/dto/courses/CourseInstanceResponse';
-import { convert12To24HourTime } from '../../../../common/utils/timeHelperFunctions';
 import { updateMeetingList } from '../../../api';
 import { MeetingRequestDTO } from '../../../../common/dto/meeting/MeetingRequest.dto';
 import { MeetingResponseDTO } from '../../../../common/dto/meeting/MeetingResponse.dto';
@@ -359,15 +358,8 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
    */
   const searchForRooms = () => {
     if (!saving && validateTimes()) {
-      let { startTime, endTime } = currentEditMeeting;
+      const { startTime, endTime } = currentEditMeeting;
       const { day } = currentEditMeeting;
-      // TODO: Once we adddress #358 this should not be necessary
-      if (/M$/.test(startTime)) {
-        startTime = convert12To24HourTime(startTime);
-      }
-      if (/M$/.test(endTime)) {
-        endTime = convert12To24HourTime(endTime);
-      }
       setShowRoomsData({
         term,
         calendarYear,
