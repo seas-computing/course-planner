@@ -327,17 +327,6 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   };
 
   /**
-   * Calls the onChange function to indicate that there has been a change in the
-   * meetings of the current modal. If the user exits the modal without saving,
-   * there will be a warning message to prevent the user from losing changes.
-   */
-  const signalModalChange = () => {
-    if (!isChanged) {
-      setIsChanged(true);
-    }
-  };
-
-  /**
    * Updates individual fields in the current meeting by merging passed props
    * and values into the object
    */
@@ -346,7 +335,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   ): void => {
     setSaveError('');
     if (!saving) {
-      signalModalChange();
+      setIsChanged(true);
       setCurrentEditMeeting((meeting) => ({
         ...meeting,
         ...update,
@@ -459,7 +448,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
    */
   const removeMeeting = (meeting: CourseInstanceResponseMeeting) => {
     if (!saving) {
-      signalModalChange();
+      setIsChanged(true);
       if (currentEditMeeting && meeting.id === currentEditMeeting.id) {
         setCurrentEditMeeting(null);
         setShowRoomsData(null);
