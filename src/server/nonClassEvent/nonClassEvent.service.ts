@@ -75,9 +75,9 @@ export class NonClassEventService {
 
     return this.parentRepository.save({
       ...parent,
-      nonClassEvents: semesters.map(
-        (event) => this.eventRepository.create(event)
-      ),
+      nonClassEvents: semesters.map((semester) => ({
+        ...this.eventRepository.create(semester),
+      })),
     });
   }
 }
