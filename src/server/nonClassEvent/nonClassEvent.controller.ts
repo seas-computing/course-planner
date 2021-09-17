@@ -9,10 +9,12 @@ import CreateNonClassParentDTO from 'common/dto/nonClassMeetings/CreateNonClassP
 import { InjectRepository } from '@nestjs/typeorm';
 import { Area } from 'server/area/area.entity';
 import { Repository } from 'typeorm';
+import { ApiTags } from '@nestjs/swagger';
 import { NonClassParentView } from './NonClassParentView.entity';
 import { NonClassEventService } from './nonClassEvent.service';
 import { NonClassParent } from './nonclassparent.entity';
 
+@ApiTags('Non-Class Events')
 @UseGuards(Authentication)
 @Controller('api/non-class-events')
 export class NonClassEventController {
