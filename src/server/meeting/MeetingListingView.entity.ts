@@ -25,8 +25,8 @@ import { Meeting } from './meeting.entity';
     .addSelect('m."courseInstanceId"', 'courseInstanceId')
     .addSelect('m."nonClassEventId"', 'nonClassEventId')
     .addSelect('m.day', 'day')
-    .addSelect('TO_CHAR(CAST (m."startTime" AS TIME), \'HH12:MI AM\')', 'startTime')
-    .addSelect('TO_CHAR(CAST (m."endTime" AS TIME), \'HH12:MI AM\')', 'endTime')
+    .addSelect('m."startTime"', 'startTime')
+    .addSelect('m."endTime"', 'endTime')
     .addSelect('m."roomId"', 'roomId')
     .from(Meeting, 'm'),
 })
