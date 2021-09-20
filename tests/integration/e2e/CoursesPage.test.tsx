@@ -198,27 +198,47 @@ describe('End-to-end Course Instance updating', function () {
         // click close
         const closeButton = renderResult.getByText('Close');
         fireEvent.click(closeButton);
-        // click save
-        const saveButton = renderResult.getByText('Save');
-        fireEvent.click(saveButton);
-        return waitForElementToBeRemoved(() => within(modal).getByText('Saving Meetings'));
       });
-      it('Should close the modal', function () {
-        const modal = renderResult.queryByRole('dialog');
-        strictEqual(modal, null);
+      context('when the modal save button is clicked', function () {
+        it('Should close the modal', async function () {
+          // click save
+          const saveButton = renderResult.getByText('Save');
+          fireEvent.click(saveButton);
+          await waitForElementToBeRemoved(() => renderResult.queryByText('Saving Meetings'));
+          const modal = renderResult.queryByRole('dialog');
+          strictEqual(modal, null);
+        });
+        it('Should show a success message', async function () {
+          // click save
+          const saveButton = renderResult.getByText('Save');
+          fireEvent.click(saveButton);
+          await waitForElementToBeRemoved(() => renderResult.queryByText('Saving Meetings'));
+          return renderResult.findByText('Course updated', { exact: false });
+        });
+        it('Should update the list of meetings', async function () {
+          // click save
+          const saveButton = renderResult.getByText('Save');
+          fireEvent.click(saveButton);
+          await waitForElementToBeRemoved(() => renderResult.queryByText('Saving Meetings'));
+          return within(editButton.parentElement)
+            .findByText(roomName, { exact: false });
+        });
       });
-      it('Should show a success message', async function () {
-        return renderResult.findByText('Course updated', { exact: false });
-      });
-      it('Should update the list of meetings', async function () {
-        return within(editButton.parentElement)
-          .findByText(roomName, { exact: false });
+      context('when the modal save button is not clicked', function () {
+        context('when the user attempts to exit the modal', function () {
+          it('should show an unsaved changes warning', async function () {
+            const windowConfirmStub = stub(window, 'confirm');
+            windowConfirmStub.returns(true);
+            const cancelButton = await renderResult.findByText('Cancel');
+            fireEvent.click(cancelButton);
+            strictEqual(windowConfirmStub.callCount, 1);
+          });
+        });
       });
     });
     context('Removing a meeting', function () {
       let testDeleteMeetingInfo: Meeting;
       beforeEach(async function () {
-        const modal = renderResult.getByRole('dialog');
         // click "delete" for a meeting
         const deleteButtons = await renderResult.findAllByLabelText(/Delete Meeting/);
         const [testDeleteButton] = deleteButtons;
@@ -234,92 +254,132 @@ describe('End-to-end Course Instance updating', function () {
           }
         );
         fireEvent.click(testDeleteButton);
-        // click save
-        const saveButton = renderResult.getByText('Save');
-        fireEvent.click(saveButton);
-        return waitForElementToBeRemoved(() => within(modal).getByText('Saving Meetings'));
       });
-      it('Should close the modal', function () {
-        const modal = renderResult.queryByRole('dialog');
-        strictEqual(modal, null);
-      });
-      it('Should show a success message', async function () {
-        return renderResult.findByText('Course updated', { exact: false });
-      });
-      it('Should update the list of meetings', function () {
-        // get the entries listed in the UI
-        const meetingEntries = within(editButton.parentElement)
-          .queryAllByRole('listitem');
-        // make sure there's one missing
-        strictEqual(
-          meetingEntries.length,
-          instanceToUpdate.meetings.length - 1
-        );
-        const origMeetings = [...instanceToUpdate.meetings];
-        // Find the index of the meeting we deleted in the local list
-        const deletedMeetingIndex = origMeetings.findIndex(
-          ({ id }) => id === testDeleteMeetingInfo.id
-        );
-        // splice out the one we deleted
-        const [deletedMeeting] = origMeetings.splice(deletedMeetingIndex, 1);
-        // Map the original list to strings that match the html textContent
-        const meetingToTextContent = ({
-          day, startTime, endTime, room,
-        }: Meeting) => (
-          `${
-            dayEnumToString(day)
-          }${
-            new PGTime(startTime).displayTime
-          }-${
-            new PGTime(endTime).displayTime
-          }${room
-            ? `${
-              room.building.name
-            } ${
-              room.name
+      context('when the modal save button is clicked', function () {
+        it('Should close the modal', async function () {
+          // click save
+          const saveButton = renderResult.getByText('Save');
+          fireEvent.click(saveButton);
+          await waitForElementToBeRemoved(() => renderResult.queryByText('Saving Meetings'));
+          const modal = renderResult.queryByRole('dialog');
+          strictEqual(modal, null);
+        });
+        it('Should show a success message', async function () {
+          // click save
+          const saveButton = renderResult.getByText('Save');
+          fireEvent.click(saveButton);
+          await waitForElementToBeRemoved(() => renderResult.queryByText('Saving Meetings'));
+          return renderResult.findByText('Course updated', { exact: false });
+        });
+        it('Should update the list of meetings', async function () {
+          // click save
+          const saveButton = renderResult.getByText('Save');
+          fireEvent.click(saveButton);
+          await waitForElementToBeRemoved(() => renderResult.queryByText('Saving Meetings'));
+          // get the entries listed in the UI
+          const meetingEntries = within(editButton.parentElement)
+            .queryAllByRole('listitem');
+          // make sure there's one missing
+          strictEqual(
+            meetingEntries.length,
+            instanceToUpdate.meetings.length - 1
+          );
+          const origMeetings = [...instanceToUpdate.meetings];
+          // Find the index of the meeting we deleted in the local list
+          const deletedMeetingIndex = origMeetings.findIndex(
+            ({ id }) => id === testDeleteMeetingInfo.id
+          );
+          // splice out the one we deleted
+          const [deletedMeeting] = origMeetings.splice(deletedMeetingIndex, 1);
+          // Map the original list to strings that match the html textContent
+          const meetingToTextContent = ({
+            day, startTime, endTime, room,
+          }: Meeting) => (
+            `${
+              dayEnumToString(day)
             }${
-              room.building.campus.name
-            }`
-            : ''}`);
-        const meetingNames = origMeetings.map(meetingToTextContent);
-        const deletedMeetingName = meetingToTextContent(deletedMeeting);
-        const uiMeetingNames = meetingEntries
-          .map(({ textContent }) => textContent);
-        // compare the textContent to confirm list is correct
-        deepStrictEqual(uiMeetingNames, meetingNames);
-        strictEqual(uiMeetingNames.includes(deletedMeetingName), false);
+              new PGTime(startTime).displayTime
+            }-${
+              new PGTime(endTime).displayTime
+            }${room
+              ? `${
+                room.building.name
+              } ${
+                room.name
+              }${
+                room.building.campus.name
+              }`
+              : ''}`);
+          const meetingNames = origMeetings.map(meetingToTextContent);
+          const deletedMeetingName = meetingToTextContent(deletedMeeting);
+          const uiMeetingNames = meetingEntries
+            .map(({ textContent }) => textContent);
+          // compare the textContent to confirm list is correct
+          deepStrictEqual(uiMeetingNames, meetingNames);
+          strictEqual(uiMeetingNames.includes(deletedMeetingName), false);
+        });
+      });
+      context('when the modal save button is not clicked', function () {
+        context('when the user attempts to exit the modal', function () {
+          it('should show an unsaved changes warning', async function () {
+            const windowConfirmStub = stub(window, 'confirm');
+            windowConfirmStub.returns(true);
+            const cancelButton = await renderResult.findByText('Cancel');
+            fireEvent.click(cancelButton);
+            strictEqual(windowConfirmStub.callCount, 1);
+          });
+        });
       });
     });
     context('Removing all meetings', function () {
       beforeEach(async function () {
-        const modal = renderResult.getByRole('dialog');
         // click "delete" for every meeting
         const deleteButtons = await renderResult.findAllByLabelText(/Delete Meeting/);
         deleteButtons.forEach((testDeleteButton) => {
           fireEvent.click(testDeleteButton);
         });
-        // click save
-        const saveButton = renderResult.getByText('Save');
-        fireEvent.click(saveButton);
-        return waitForElementToBeRemoved(() => within(modal).getByText('Saving Meetings'));
       });
-      it('Should close the modal', function () {
-        const modal = renderResult.queryByRole('dialog');
-        strictEqual(modal, null);
+      context('when the modal save button is clicked', function () {
+        it('Should close the modal', async function () {
+          // click save
+          const saveButton = renderResult.getByText('Save');
+          fireEvent.click(saveButton);
+          await waitForElementToBeRemoved(() => renderResult.queryByText('Saving Meetings'));
+          const modal = renderResult.queryByRole('dialog');
+          strictEqual(modal, null);
+        });
+        it('Should show a success message', async function () {
+          // click save
+          const saveButton = renderResult.getByText('Save');
+          fireEvent.click(saveButton);
+          await waitForElementToBeRemoved(() => renderResult.queryByText('Saving Meetings'));
+          return renderResult.findByText('Course updated', { exact: false });
+        });
+        it('Should update the list of meetings', async function () {
+          // click save
+          const saveButton = renderResult.getByText('Save');
+          fireEvent.click(saveButton);
+          await waitForElementToBeRemoved(() => renderResult.queryByText('Saving Meetings'));
+          const meetingEntries = within(editButton.parentElement)
+            .queryAllByRole('listitem');
+          deepStrictEqual(meetingEntries, []);
+        });
       });
-      it('Should show a success message', async function () {
-        return renderResult.findByText('Course updated', { exact: false });
-      });
-      it('Should update the list of meetings', function () {
-        const meetingEntries = within(editButton.parentElement)
-          .queryAllByRole('listitem');
-        deepStrictEqual(meetingEntries, []);
+      context('when the modal save button is not clicked', function () {
+        context('when the user attempts to exit the modal', function () {
+          it('should show an unsaved changes warning', async function () {
+            const windowConfirmStub = stub(window, 'confirm');
+            windowConfirmStub.returns(true);
+            const cancelButton = await renderResult.findByText('Cancel');
+            fireEvent.click(cancelButton);
+            strictEqual(windowConfirmStub.callCount, 1);
+          });
+        });
       });
     });
     context('Modifying an existing meeting', function () {
       context('with a valid room/time combination', function () {
         beforeEach(async function () {
-          const modal = renderResult.getByRole('dialog');
           // click "Edit Meeting 1"
           const meetingEditButton = await renderResult.findByLabelText(/Edit Meeting 1/);
           fireEvent.click(meetingEditButton);
@@ -349,28 +409,48 @@ describe('End-to-end Course Instance updating', function () {
           });
           const closeButton = renderResult.getByText('Close');
           fireEvent.click(closeButton);
-          // click save
-          const saveButton = renderResult.getByText('Save');
-          fireEvent.click(saveButton);
-          return waitForElementToBeRemoved(() => within(modal).getByText('Saving Meetings'));
         });
-        it('Should close the modal', function () {
-          const modal = renderResult.queryByRole('dialog');
-          strictEqual(modal, null);
+        context('when the modal save button is clicked', function () {
+          it('Should close the modal', async function () {
+            // click save
+            const saveButton = renderResult.getByText('Save');
+            fireEvent.click(saveButton);
+            await waitForElementToBeRemoved(() => renderResult.queryByText('Saving Meetings'));
+            const modal = renderResult.queryByRole('dialog');
+            strictEqual(modal, null);
+          });
+          it('Should show a success message', async function () {
+            // click save
+            const saveButton = renderResult.getByText('Save');
+            fireEvent.click(saveButton);
+            await waitForElementToBeRemoved(() => renderResult.queryByText('Saving Meetings'));
+            return renderResult.findByText('Course updated', { exact: false });
+          });
+          it('Should update the list of meetings', async function () {
+            // click save
+            const saveButton = renderResult.getByText('Save');
+            fireEvent.click(saveButton);
+            await waitForElementToBeRemoved(() => renderResult.queryByText('Saving Meetings'));
+            const dayField = await within(editButton.parentElement)
+              .findByText('Monday');
+            return within(dayField.parentElement)
+              .findByText('12:00 PM-01:30 PM');
+          });
         });
-        it('Should show a success message', async function () {
-          return renderResult.findByText('Course updated', { exact: false });
-        });
-        it('Should update the list of meetings', async function () {
-          const dayField = await within(editButton.parentElement)
-            .findByText('Monday');
-          return within(dayField.parentElement)
-            .findByText('12:00 PM-01:30 PM');
+        context('when the modal save button is not clicked', function () {
+          context('when the user attempts to exit the modal', function () {
+            it('should show an unsaved changes warning', async function () {
+              const windowConfirmStub = stub(window, 'confirm');
+              windowConfirmStub.returns(true);
+              const cancelButton = await renderResult.findByText('Cancel');
+              fireEvent.click(cancelButton);
+              strictEqual(windowConfirmStub.callCount, 1);
+            });
+          });
         });
       });
       context('with an invalid room/time combination', function () {
         beforeEach(async function () {
-          const modal = renderResult.getByRole('dialog');
           // click "Edit Meeting 1"
           const meetingEditButton = await renderResult.findByLabelText(/Edit Meeting 1/);
           fireEvent.click(meetingEditButton);
@@ -386,51 +466,106 @@ describe('End-to-end Course Instance updating', function () {
           // Set day
           const closeButton = renderResult.getByText('Close');
           fireEvent.click(closeButton);
+        });
+        context('when the modal save button is clicked', function () {
+          it('Should not close the modal', async function () {
+            // click save
+            const saveButton = renderResult.getByText('Save');
+            fireEvent.click(saveButton);
+            await waitForElementToBeRemoved(() => renderResult.queryByText('Saving Meetings'));
+            const modal = renderResult.queryByRole('dialog');
+            notStrictEqual(modal, null);
+          });
+          it('Should show an error message', async function () {
+            // click save
+            const saveButton = renderResult.getByText('Save');
+            fireEvent.click(saveButton);
+            await waitForElementToBeRemoved(() => renderResult.queryByText('Saving Meetings'));
+            const modal = renderResult.getByRole('dialog');
+            const modalError = await within(modal).findByRole('alert');
+            strictEqual(
+              modalError.textContent,
+              'Maxwell Dworkin 220 is not available on Monday between 10:30 AM - 11:45 AM. CONFLICTS WITH: AM 22A'
+            );
+          });
+          it('Should clear the error when any meeting detail changes', async function () {
+            // click save
+            const saveButton = renderResult.getByText('Save');
+            fireEvent.click(saveButton);
+            await waitForElementToBeRemoved(() => renderResult.queryByText('Saving Meetings'));
+            const modal = renderResult.getByRole('dialog');
+            const meetingEditButton = await within(modal).findByLabelText(/Edit Meeting 1/);
+            fireEvent.click(meetingEditButton);
+            const timeDropdown = await renderResult.findByLabelText('Timeslot Button');
+            fireEvent.click(timeDropdown);
+            const wantedTime = await renderResult.findByText('12:00 PM-1:00 PM');
+            fireEvent.click(wantedTime);
+            const closeButton = renderResult.getByText('Close');
+            fireEvent.click(closeButton);
+            const errorMessage = within(modal).queryByRole('alert');
+            strictEqual(errorMessage, null);
+          });
+          it('Should clear the error when closing/reopening modal', async function () {
+            // click save
+            const saveButton = renderResult.getByText('Save');
+            fireEvent.click(saveButton);
+            await waitForElementToBeRemoved(() => renderResult.queryByText('Saving Meetings'));
+            const cancelButton = await renderResult.findByText('Cancel');
+            stub(window, 'confirm').returns(true);
+            fireEvent.click(cancelButton);
+            const updatedEditButton = await renderResult.findByRole(
+              'button',
+              {
+                name: `Edit meetings for ${courseNumber} in fall ${currentAcademicYear - 1}`,
+              }
+            );
+            fireEvent.click(updatedEditButton);
+            const modal = await renderResult.findByRole('dialog');
+            strictEqual(
+              within(modal).queryByRole('alert'),
+              null
+            );
+          });
+        });
+        context('when the modal save button is not clicked', function () {
+          context('when the user attempts to exit the modal', function () {
+            it('should show an unsaved changes warning', async function () {
+              const windowConfirmStub = stub(window, 'confirm');
+              windowConfirmStub.returns(true);
+              const cancelButton = await renderResult.findByText('Cancel');
+              fireEvent.click(cancelButton);
+              strictEqual(windowConfirmStub.callCount, 1);
+            });
+          });
+        });
+      });
+    });
+    context('Making no changes to meetings', function () {
+      context('when the modal save button is clicked', function () {
+        it('Should close the modal', async function () {
           // click save
           const saveButton = renderResult.getByText('Save');
           fireEvent.click(saveButton);
-          return waitForElementToBeRemoved(() => within(modal).getByText('Saving Meetings'));
-        });
-        it('Should not close the modal', function () {
+          await waitForElementToBeRemoved(() => renderResult.queryByText('Saving Meetings'));
           const modal = renderResult.queryByRole('dialog');
-          notStrictEqual(modal, null);
+          strictEqual(modal, null);
         });
-        it('Should show an error message', async function () {
-          const modal = renderResult.getByRole('dialog');
-          const modalError = await within(modal).findByRole('alert');
-          strictEqual(
-            modalError.textContent,
-            'Maxwell Dworkin 220 is not available on Monday between 10:30 AM - 11:45 AM. CONFLICTS WITH: AM 22A'
-          );
+        it('Should show a success message', async function () {
+          // click save
+          const saveButton = renderResult.getByText('Save');
+          fireEvent.click(saveButton);
+          await waitForElementToBeRemoved(() => renderResult.queryByText('Saving Meetings'));
+          return renderResult.findByText('Course updated', { exact: false });
         });
-        it('Should clear the error when any meeting detail changes', async function () {
-          const modal = renderResult.getByRole('dialog');
-          const meetingEditButton = await within(modal).findByLabelText(/Edit Meeting 1/);
-          fireEvent.click(meetingEditButton);
-          const timeDropdown = await renderResult.findByLabelText('Timeslot Button');
-          fireEvent.click(timeDropdown);
-          const wantedTime = await renderResult.findByText('12:00 PM-1:00 PM');
-          fireEvent.click(wantedTime);
-          const closeButton = renderResult.getByText('Close');
-          fireEvent.click(closeButton);
-          const errorMessage = within(modal).queryByRole('alert');
-          strictEqual(errorMessage, null);
-        });
-        it('Should clear the error when closing/reopening modal', async function () {
-          const cancelButton = await renderResult.findByText('Cancel');
-          fireEvent.click(cancelButton);
-          const updatedEditButton = await renderResult.findByRole(
-            'button',
-            {
-              name: `Edit meetings for ${courseNumber} in fall ${currentAcademicYear - 1}`,
-            }
-          );
-          fireEvent.click(updatedEditButton);
-          const modal = await renderResult.findByRole('dialog');
-          strictEqual(
-            within(modal).queryByRole('alert'),
-            null
-          );
+      });
+      context('when the modal save button is not clicked', function () {
+        context('when the user attempts to exit the modal', function () {
+          it('should not show an unsaved changes warning', async function () {
+            const windowConfirmStub = stub(window, 'confirm');
+            const cancelButton = await renderResult.findByText('Cancel');
+            fireEvent.click(cancelButton);
+            strictEqual(windowConfirmStub.callCount, 0);
+          });
         });
       });
     });
