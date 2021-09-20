@@ -275,7 +275,9 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
    * meetings haven't already yet been set.
    */
   useEffect(() => {
-    setAllMeetings(instanceMeetings);
+    if (isVisible) {
+      setAllMeetings(instanceMeetings);
+    }
   },
   [
     isVisible,
