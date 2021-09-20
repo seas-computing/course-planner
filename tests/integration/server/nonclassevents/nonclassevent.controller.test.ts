@@ -16,7 +16,13 @@ import {
   dataScienceReadingGroup,
 } from 'common/__tests__/data/nonClassEvents';
 import { NonClassParentView } from 'server/nonClassEvent/NonClassParentView.entity';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Area } from 'server/area/area.entity';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
+
+const mockAreaRepository = {
+  findOne: stub(),
+};
 
 const mockNonClassEventService = {
   find: stub(),
@@ -48,6 +54,10 @@ describe('Non Class Event API', function () {
         {
           provide: NonClassEventService,
           useValue: mockNonClassEventService,
+        },
+        {
+          provide: getRepositoryToken(Area),
+          useValue: mockAreaRepository,
         },
       ],
       controllers: [
