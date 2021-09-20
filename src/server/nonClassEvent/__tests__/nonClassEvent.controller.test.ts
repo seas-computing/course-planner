@@ -1,7 +1,9 @@
 import { ConfigService } from 'server/config/config.service';
 import { TestingModule, Test } from '@nestjs/testing';
 import { stub } from 'sinon';
-import { strictEqual, deepStrictEqual, fail } from 'assert';
+import {
+  strictEqual, deepStrictEqual, rejects,
+} from 'assert';
 import { rawAreaList, year, createNonClassParent } from 'testData';
 import {
   computationalModelingofFluidsReadingGroup,
@@ -9,6 +11,7 @@ import {
 } from 'common/__tests__/data/nonClassEvents';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Area } from 'server/area/area.entity';
+import { BadRequestException } from '@nestjs/common';
 import { NonClassEventService } from '../nonClassEvent.service';
 import { NonClassEventController } from '../nonClassEvent.controller';
 
@@ -122,19 +125,13 @@ describe('NonClassEvent controller', function () {
         mockArea
       );
     });
-    it('throws BadRequestException for an invalid area', async function () {
+    it('throws BadRequestException for an invalid area', function () {
       mockAreaRepository.findOne.resolves(null);
 
-      try {
-        await controller.create({
-          ...createNonClassParent,
-          area: 'I don\'t exist',
-        });
-        fail('Did not throw');
-      } catch (e) {
-        console.log(e);
-        strictEqual(e.status, 400);
-      }
+      void rejects(() => controller.create({
+        ...createNonClassParent,
+        area: 'I don\'t exist',
+      }), BadRequestException);
     });
   });
 });
