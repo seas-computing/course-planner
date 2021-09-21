@@ -478,7 +478,7 @@ describe('Meeting Modal', function () {
                     fireEvent.click(editCS50InitialMeetingButton);
                     strictEqual(
                       startTimeDropdown.value,
-                      PGTime.fromDisplay(updatedStartTime).inputString
+                      updatedStartTime
                     );
                   });
                 });
@@ -531,7 +531,7 @@ describe('Meeting Modal', function () {
                     fireEvent.click(editCS50InitialMeetingButton);
                     strictEqual(
                       startTimeDropdown.value,
-                      PGTime.fromDisplay(updatedStartTime).inputString
+                      updatedStartTime
                     );
                   });
                 });
@@ -562,7 +562,7 @@ describe('Meeting Modal', function () {
                     fireEvent.click(editCS50InitialMeetingButton);
                     strictEqual(
                       startTimeDropdown.value,
-                      PGTime.fromDisplay(updatedStartTime).inputString
+                      updatedStartTime
                     );
                   });
                 });
