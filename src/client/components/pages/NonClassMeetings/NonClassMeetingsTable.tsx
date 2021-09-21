@@ -129,7 +129,7 @@ const NonClassMeetingsTable: FunctionComponent<NonClassMeetingsTableProps> = ({
                       <MeetingGrid>
                         <MeetingGridSection area="time">
                           <div>{dayEnumToString(day)}</div>
-                          <div>{`${PGTime.toDisplay(startTime)}-${PGTime.toDisplay(endTime)}`}</div>
+                          <div>{`${PGTime.toDisplay(startTime)} - ${PGTime.toDisplay(endTime)}`}</div>
                         </MeetingGridSection>
                         {room && (
                           <>
@@ -168,7 +168,7 @@ const NonClassMeetingsTable: FunctionComponent<NonClassMeetingsTableProps> = ({
                       <MeetingGrid>
                         <MeetingGridSection area="time">
                           <div>{dayEnumToString(day)}</div>
-                          <div>{`${PGTime.toDisplay(startTime)}-${PGTime.toDisplay(endTime)}`}</div>
+                          <div>{`${PGTime.toDisplay(startTime)} - ${PGTime.toDisplay(endTime)}`}</div>
                         </MeetingGridSection>
                         {room && (
                           <>
