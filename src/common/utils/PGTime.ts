@@ -192,7 +192,7 @@ export class PGTime {
     if (!ampmTimestamp) {
       return null;
     }
-    const displayTimeRegex = /^(?<hour>0?[1-9]|1[0-2])(:(?<minute>[0-5][0-9])?(:(?<second>[0-5][0-9])?)?)?(\s*(?<meridian>[ap]\.?m?\.?|[AP]\.?M?\.?)?)?$/;
+    const displayTimeRegex = /^(?<hour>0?[1-9]|1[0-2])(:(?<minute>[0-5][0-9])?(:(?<second>[0-5][0-9])?)?)?\s*(?<meridian>[ap]\.?m?\.?|[AP]\.?M?\.?)$/;
     const timeMatch = displayTimeRegex.exec(ampmTimestamp);
     if (
       timeMatch === null

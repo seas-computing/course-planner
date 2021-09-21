@@ -454,26 +454,6 @@ describe('PGTime', function () {
             });
           });
         });
-        context('With just hour, minute, and second', function () {
-          beforeEach(function () {
-            testTime = PGTime.fromDisplay('9:15:30');
-          });
-          it('Should assume meridian is AM', function () {
-            strictEqual(testTime.meridian, MERIDIAN.AM);
-          });
-          it('Should set the hour', function () {
-            strictEqual(testTime.hour, 9);
-          });
-          it('Should set the minute', function () {
-            strictEqual(testTime.minute, 15);
-          });
-          it('Should set the second', function () {
-            strictEqual(testTime.second, 30);
-          });
-          it('should default the millisecond to 0', function () {
-            strictEqual(testTime.millisecond, 0);
-          });
-        });
         context('With just hour and minute and meridian', function () {
           beforeEach(function () {
             testTime = PGTime.fromDisplay('11:50 PM');
@@ -483,26 +463,6 @@ describe('PGTime', function () {
           });
           it('Should set the hour', function () {
             strictEqual(testTime.hour, 23);
-          });
-          it('Should set the minute', function () {
-            strictEqual(testTime.minute, 50);
-          });
-          it('Should default the second to 0', function () {
-            strictEqual(testTime.second, 0);
-          });
-          it('should default the millisecond to 0', function () {
-            strictEqual(testTime.millisecond, 0);
-          });
-        });
-        context('With just hour and minute', function () {
-          beforeEach(function () {
-            testTime = PGTime.fromDisplay('11:50');
-          });
-          it('Should assume meridian is AM', function () {
-            strictEqual(testTime.meridian, MERIDIAN.AM);
-          });
-          it('Should set the hour', function () {
-            strictEqual(testTime.hour, 11);
           });
           it('Should set the minute', function () {
             strictEqual(testTime.minute, 50);
@@ -534,28 +494,23 @@ describe('PGTime', function () {
             strictEqual(testTime.millisecond, 0);
           });
         });
-        context('With just hour', function () {
-          beforeEach(function () {
-            testTime = PGTime.fromDisplay('12');
-          });
-          it('Should assume meridian is AM', function () {
-            strictEqual(testTime.meridian, MERIDIAN.AM);
-          });
-          it('Should set the hour', function () {
-            strictEqual(testTime.hour, 0);
-          });
-          it('Should default the minute to 0', function () {
-            strictEqual(testTime.minute, 0);
-          });
-          it('Should default the second to 0', function () {
-            strictEqual(testTime.second, 0);
-          });
-          it('should default the millisecond to 0', function () {
-            strictEqual(testTime.millisecond, 0);
-          });
-        });
       });
       context('With an invalid timestamp', function () {
+        context('With just hour, minute, and second', function () {
+          it('Should throw a TypeError', function () {
+            throws(() => PGTime.fromDisplay('9:15:30'), TypeError);
+          });
+        });
+        context('With just hour and minute', function () {
+          it('Should throw a TypeError', function () {
+            throws(() => PGTime.fromDisplay('11:50'), TypeError);
+          });
+        });
+        context('With just hour', function () {
+          it('Should throw a TypeError', function () {
+            throws(() => PGTime.fromDisplay('12'), TypeError);
+          });
+        });
         context('That includes an offset', function () {
           it('Should throw a TypeError', function () {
             throws(() => PGTime.fromDisplay('10:30:45 A.M.-05'), TypeError);
