@@ -22,6 +22,10 @@ export class NonClassEventService {
   @InjectRepository(NonClassEvent)
   private eventRepository: Repository<NonClassEvent>;
 
+  /**
+   * Returns an array of [[NonClassParentView]] shaped [[NonClassParent]]s for
+   * the specified calendar year.
+   */
   public async find(calendarYear: number):
   Promise<NonClassParentView[]> {
     const nonClassEvents = this.parentViewRepository.createQueryBuilder('p')
@@ -69,6 +73,10 @@ export class NonClassEventService {
     return nonClassEvents.getMany();
   }
 
+  /**
+   * Creates a [[NonClassParent]], as well as all assocaited [[NonClassEvent]]s
+   * (one per [[Semester]])
+   */
   public async createWithNonClassEvents(parent: Partial<NonClassParent>):
   Promise<NonClassParent> {
     const semesters = await this.semesterRepository.find({});
