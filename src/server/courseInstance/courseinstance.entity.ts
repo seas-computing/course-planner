@@ -80,7 +80,7 @@ export class CourseInstance extends BaseEntity {
   @OneToMany(
     (): ObjectType<FacultyCourseInstance> => FacultyCourseInstance,
     ({ courseInstance }): CourseInstance => courseInstance,
-    { cascade: ['insert'] }
+    { cascade: ['insert', 'update'] }
   )
   public facultyCourseInstances: FacultyCourseInstance[];
 
