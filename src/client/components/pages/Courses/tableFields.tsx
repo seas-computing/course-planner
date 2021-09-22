@@ -30,6 +30,7 @@ import { offeredEnumToString } from 'common/constants/offered';
 import { TermKey } from 'common/constants/term';
 import styled from 'styled-components';
 import MeetingModal from './MeetingModal';
+import { PGTime } from '../../../../common/utils/PGTime';
 
 /**
  * Simple helper function that takes a property name and optionally a semester
@@ -167,7 +168,7 @@ export const formatMeetings = (
             <MeetingGrid>
               <MeetingGridSection area="time">
                 <div>{dayEnumToString(day)}</div>
-                <div>{`${startTime}-${endTime}`}</div>
+                <div>{`${PGTime.toDisplay(startTime)} - ${PGTime.toDisplay(endTime)}`}</div>
               </MeetingGridSection>
               {room && (
                 <>

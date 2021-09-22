@@ -27,7 +27,6 @@ import { MeetingRequestDTO } from '../../../../src/common/dto/meeting/MeetingReq
 import { RoomBookingInfoView } from '../../../../src/server/location/RoomBookingInfoView.entity';
 import { Room } from '../../../../src/server/location/room.entity';
 import { NonClassEvent } from '../../../../src/server/nonClassEvent/nonclassevent.entity';
-import { PGTime } from '../../../../src/common/utils/PGTime';
 
 describe('Meeting API', function () {
   let testModule: TestingModule;
@@ -237,16 +236,10 @@ describe('Meeting API', function () {
                 strictEqual(savedMeeting.day, updatedMeeting.day);
               });
               it('Should update the meeting startTime', function () {
-                const updatedStartTime = new PGTime(
-                  updatedMeeting.startTime
-                ).displayTime;
-                strictEqual(savedMeeting.startTime, updatedStartTime);
+                strictEqual(savedMeeting.startTime, updatedMeeting.startTime);
               });
               it('Should update the meeting endTime', function () {
-                const updatedEndTime = new PGTime(
-                  updatedMeeting.endTime
-                ).displayTime;
-                strictEqual(savedMeeting.endTime, updatedEndTime);
+                strictEqual(savedMeeting.endTime, updatedMeeting.endTime);
               });
               it('Should not change the room', function () {
                 strictEqual(savedMeeting.room.id, meetingToEdit.room.id);
@@ -291,16 +284,10 @@ describe('Meeting API', function () {
                   strictEqual(savedMeeting.day, updatedMeeting.day);
                 });
                 it('Should update the meeting startTime', function () {
-                  const updatedStartTime = new PGTime(
-                    updatedMeeting.startTime
-                  ).displayTime;
-                  strictEqual(savedMeeting.startTime, updatedStartTime);
+                  strictEqual(savedMeeting.startTime, updatedMeeting.startTime);
                 });
                 it('Should update the meeting endTime', function () {
-                  const updatedEndTime = new PGTime(
-                    updatedMeeting.endTime
-                  ).displayTime;
-                  strictEqual(savedMeeting.endTime, updatedEndTime);
+                  strictEqual(savedMeeting.endTime, updatedMeeting.endTime);
                 });
                 it('Should change the room', function () {
                   strictEqual(savedMeeting.room.id, unbookedRoom.id);
@@ -416,16 +403,10 @@ describe('Meeting API', function () {
                 strictEqual(savedMeeting.day, updatedMeeting.day);
               });
               it('Should update the meeting startTime', function () {
-                const updatedStartTime = new PGTime(
-                  updatedMeeting.startTime
-                ).displayTime;
-                strictEqual(savedMeeting.startTime, updatedStartTime);
+                strictEqual(savedMeeting.startTime, updatedMeeting.startTime);
               });
               it('Should update the meeting endTime', function () {
-                const updatedEndTime = new PGTime(
-                  updatedMeeting.endTime
-                ).displayTime;
-                strictEqual(savedMeeting.endTime, updatedEndTime);
+                strictEqual(savedMeeting.endTime, updatedMeeting.endTime);
               });
               it('Should blank the room', function () {
                 strictEqual(savedMeeting.room, null);
@@ -470,14 +451,8 @@ describe('Meeting API', function () {
               });
               it('Should include the new meeting in the result', function () {
                 strictEqual(savedMeeting.day, newMeeting.day);
-                const newStartTime = new PGTime(
-                  newMeeting.startTime
-                ).displayTime;
-                strictEqual(savedMeeting.startTime, newStartTime);
-                const newEndTime = new PGTime(
-                  newMeeting.endTime
-                ).displayTime;
-                strictEqual(savedMeeting.endTime, newEndTime);
+                strictEqual(savedMeeting.startTime, newMeeting.startTime);
+                strictEqual(savedMeeting.endTime, newMeeting.endTime);
                 strictEqual(savedMeeting.room.id, newMeeting.room.id);
               });
               it('Should add the new meeting in the database', async function () {
@@ -585,14 +560,8 @@ describe('Meeting API', function () {
               });
               it('Should include the new meeting in the result', function () {
                 strictEqual(savedMeeting.day, newMeeting.day);
-                const newStartTime = new PGTime(
-                  newMeeting.startTime
-                ).displayTime;
-                strictEqual(savedMeeting.startTime, newStartTime);
-                const newEndTime = new PGTime(
-                  newMeeting.endTime
-                ).displayTime;
-                strictEqual(savedMeeting.endTime, newEndTime);
+                strictEqual(savedMeeting.startTime, newMeeting.startTime);
+                strictEqual(savedMeeting.endTime, newMeeting.endTime);
                 strictEqual(savedMeeting.room, null);
               });
               it('Should add the new meeting in the database', async function () {
@@ -767,16 +736,10 @@ describe('Meeting API', function () {
                 strictEqual(savedMeeting.day, updatedMeeting.day);
               });
               it('Should update the meeting startTime', function () {
-                const updatedStartTime = new PGTime(
-                  updatedMeeting.startTime
-                ).displayTime;
-                strictEqual(savedMeeting.startTime, updatedStartTime);
+                strictEqual(savedMeeting.startTime, updatedMeeting.startTime);
               });
               it('Should update the meeting endTime', function () {
-                const updatedEndTime = new PGTime(
-                  updatedMeeting.endTime
-                ).displayTime;
-                strictEqual(savedMeeting.endTime, updatedEndTime);
+                strictEqual(savedMeeting.endTime, updatedMeeting.endTime);
               });
               it('Should not change the room', function () {
                 strictEqual(savedMeeting.room.id, meetingToEdit.room.id);
@@ -821,16 +784,10 @@ describe('Meeting API', function () {
                   strictEqual(savedMeeting.day, updatedMeeting.day);
                 });
                 it('Should update the meeting startTime', function () {
-                  const updatedStartTime = new PGTime(
-                    updatedMeeting.startTime
-                  ).displayTime;
-                  strictEqual(savedMeeting.startTime, updatedStartTime);
+                  strictEqual(savedMeeting.startTime, updatedMeeting.startTime);
                 });
                 it('Should update the meeting endTime', function () {
-                  const updatedEndTime = new PGTime(
-                    updatedMeeting.endTime
-                  ).displayTime;
-                  strictEqual(savedMeeting.endTime, updatedEndTime);
+                  strictEqual(savedMeeting.endTime, updatedMeeting.endTime);
                 });
                 it('Should change the room', function () {
                   strictEqual(savedMeeting.room.id, unbookedRoom.id);
@@ -937,16 +894,10 @@ describe('Meeting API', function () {
                 strictEqual(savedMeeting.day, updatedMeeting.day);
               });
               it('Should update the meeting startTime', function () {
-                const updatedStartTime = new PGTime(
-                  updatedMeeting.startTime
-                ).displayTime;
-                strictEqual(savedMeeting.startTime, updatedStartTime);
+                strictEqual(savedMeeting.startTime, updatedMeeting.startTime);
               });
               it('Should update the meeting endTime', function () {
-                const updatedEndTime = new PGTime(
-                  updatedMeeting.endTime
-                ).displayTime;
-                strictEqual(savedMeeting.endTime, updatedEndTime);
+                strictEqual(savedMeeting.endTime, updatedMeeting.endTime);
               });
               it('Should blank the room', function () {
                 strictEqual(savedMeeting.room, null);
@@ -991,14 +942,8 @@ describe('Meeting API', function () {
               });
               it('Should include the new meeting in the result', function () {
                 strictEqual(savedMeeting.day, newMeeting.day);
-                const newStartTime = new PGTime(
-                  newMeeting.startTime
-                ).displayTime;
-                strictEqual(savedMeeting.startTime, newStartTime);
-                const newEndTime = new PGTime(
-                  newMeeting.endTime
-                ).displayTime;
-                strictEqual(savedMeeting.endTime, newEndTime);
+                strictEqual(savedMeeting.startTime, newMeeting.startTime);
+                strictEqual(savedMeeting.endTime, newMeeting.endTime);
                 strictEqual(savedMeeting.room.id, newMeeting.room.id);
               });
               it('Should add the new meeting in the database', async function () {
@@ -1106,14 +1051,8 @@ describe('Meeting API', function () {
               });
               it('Should include the new meeting in the result', function () {
                 strictEqual(savedMeeting.day, newMeeting.day);
-                const newStartTime = new PGTime(
-                  newMeeting.startTime
-                ).displayTime;
-                strictEqual(savedMeeting.startTime, newStartTime);
-                const newEndTime = new PGTime(
-                  newMeeting.endTime
-                ).displayTime;
-                strictEqual(savedMeeting.endTime, newEndTime);
+                strictEqual(savedMeeting.startTime, newMeeting.startTime);
+                strictEqual(savedMeeting.endTime, newMeeting.endTime);
                 strictEqual(savedMeeting.room, null);
               });
               it('Should add the new meeting in the database', async function () {

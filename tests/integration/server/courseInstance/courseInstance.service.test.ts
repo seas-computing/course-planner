@@ -24,7 +24,6 @@ import { Repository } from 'typeorm';
 import { testFourYearPlanAcademicYears } from 'testData';
 import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
-import { PGTime } from '../../../../src/common/utils/PGTime';
 
 describe('Course Instance Service', function () {
   let testModule: TestingModule;
@@ -161,28 +160,6 @@ describe('Course Instance Service', function () {
       beforeEach(async function () {
         dbMeetings = await meetingRepository.find({
           relations: ['room', 'room.building'],
-        });
-      });
-      it('Should format the startTimes and endTimes as HH:MM AM', function () {
-        notStrictEqual(result.length, 0);
-        result.forEach(({ spring, fall }) => {
-          [spring, fall].forEach(({ meetings }) => {
-            meetings.forEach(({ id, startTime, endTime }) => {
-              if (id) {
-                const {
-                  startTime: dbStartTime,
-                  endTime: dbEndTime,
-                } = dbMeetings
-                  .find(
-                    ({ id: dbID }) => dbID === id
-                  );
-                const pgDBStartTime = new PGTime(dbStartTime);
-                const pgDBEndTime = new PGTime(dbEndTime);
-                strictEqual(startTime, pgDBStartTime.displayTime);
-                strictEqual(endTime, pgDBEndTime.displayTime);
-              }
-            });
-          });
         });
       });
       it('Should concatenate the room and building name', function () {

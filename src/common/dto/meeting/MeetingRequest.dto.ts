@@ -43,7 +43,7 @@ export abstract class MeetingRequestDTO {
     example: '12:00:00',
   })
   @IsNotEmpty()
-  @Matches(PGTime.regex)
+  @Matches(PGTime.strictRegex)
   @IsOccurringBefore('endTime')
   public startTime: string;
 
@@ -55,7 +55,7 @@ export abstract class MeetingRequestDTO {
     example: '13:30:00',
   })
   @IsNotEmpty()
-  @Matches(PGTime.regex)
+  @Matches(PGTime.strictRegex)
   @IsOccurringAfter('startTime')
   public endTime: string;
 
