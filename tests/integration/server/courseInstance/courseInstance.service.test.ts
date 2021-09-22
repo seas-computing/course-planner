@@ -9,7 +9,7 @@ import { CourseInstanceService } from 'server/courseInstance/courseInstance.serv
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { Course } from 'server/course/course.entity';
 import { CourseInstance } from 'server/courseInstance/courseinstance.entity';
-import { OFFERED } from 'common/constants';
+import { OFFERED, AUTH_MODE } from 'common/constants';
 import { Meeting } from 'server/meeting/meeting.entity';
 import { ConfigService } from 'server/config/config.service';
 import { ConfigModule } from 'server/config/config.module';
@@ -24,6 +24,7 @@ import { Repository } from 'typeorm';
 import { testFourYearPlanAcademicYears } from 'testData';
 import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
+import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 describe('Course Instance Service', function () {
   let testModule: TestingModule;
@@ -57,7 +58,10 @@ describe('Course Instance Service', function () {
           }),
           inject: [ConfigService],
         }),
-        AuthModule,
+        AuthModule.register({
+          strategies: [TestingStrategy],
+          defaultStrategy: AUTH_MODE.TEST,
+        }),
         PopulationModule,
         SemesterModule,
         CourseInstanceModule,
