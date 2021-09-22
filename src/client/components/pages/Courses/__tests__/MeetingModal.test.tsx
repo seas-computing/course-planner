@@ -1170,6 +1170,7 @@ describe('Meeting Modal', function () {
           fireEvent.click(getByText('Close'));
           let mondays = queryAllByText(/Monday/);
           strictEqual(mondays.length, 1);
+          stub(window, 'confirm').returns(true);
           // Close and reopen modal
           fireEvent.click(getByText('Cancel'));
           fireEvent.click(getByText('OPEN'));
