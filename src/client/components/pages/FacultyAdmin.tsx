@@ -263,6 +263,7 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
                   <TableCell alignment={ALIGN.CENTER}>
                     <BorderlessButton
                       id={computeEditFacultyButtonId(faculty)}
+                      alt={`Edit faculty information for ${faculty.firstName} ${faculty.lastName}`}
                       variant={VARIANT.INFO}
                       onClick={
                         (): void => {
