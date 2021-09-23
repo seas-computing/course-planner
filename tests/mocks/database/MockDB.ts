@@ -86,9 +86,19 @@ export default class MockDB {
     this.init = this._init.bind(this) as () => Promise<void>;
     // Adds listeners for the Node process events to clean up the container
     // if the test run stops unexpectedly.
-    process.on('beforeExit', () => { void this.stop(); });
-    process.on('SIGINT', () => { void this.stop(); });
-    process.on('SIGTERM', () => { void this.stop(); });
+    process.on('SIGINT', () => {
+      void this.stop()
+        .then(
+          () => {
+            process.exit(1);
+          }
+        )
+        .catch(
+          () => {
+            process.exit(1);
+          }
+        );
+    });
   }
 
   /**
