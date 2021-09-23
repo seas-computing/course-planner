@@ -127,7 +127,7 @@ export default class MockDB {
           '--name',
           this.name,
           '--publish',
-          `${this.port}:5432`,
+          `127.0.0.1:${this.port}:5432`,
           '--env',
           `POSTGRES_DB=${this.databaseName}`,
           '--env',
