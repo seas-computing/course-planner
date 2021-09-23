@@ -637,12 +637,21 @@ describe('CourseInstance API', function () {
         let instructorToAdd: InstructorRequestDTO;
         let originalInstructorAssignments: string[];
         beforeEach(async function () {
-          // find a faculty memeber who is not currently assigned to that course
-          const dbInstructor = await facultyRepository.findOne({
+          // find a faculty member who is not currently assigned to that
+          // course but does have other courses assignments. We need to do this
+          // through the facultyCourseInstance Repository, because the
+          // facultyRepository doesn't let us query for faculty who have
+          // facultyCourseInstance entities associated with them
+          const { faculty: dbInstructor } = await fciRepository.findOne({
             where: {
-              id: Not(In(assignedInstructors.map(({ id }) => id))),
+              faculty: {
+                id: Not(In(assignedInstructors.map(({ id }) => id))),
+              },
             },
-            relations: ['facultyCourseInstances'],
+            relations: [
+              'faculty',
+              'faculty.facultyCourseInstances',
+            ],
           });
           instructorToAdd = ({
             id: dbInstructor.id,
@@ -707,8 +716,10 @@ describe('CourseInstance API', function () {
             );
             notStrictEqual(savedAssignments.length, 0);
             deepStrictEqual(
-              savedAssignments.map(({ id }) => id),
-              originalInstructorAssignments
+              savedAssignments
+                .map(({ id }) => id)
+                .sort(),
+              originalInstructorAssignments.sort()
             );
           });
         });
@@ -767,8 +778,10 @@ describe('CourseInstance API', function () {
             );
             notStrictEqual(savedAssignments.length, 0);
             deepStrictEqual(
-              savedAssignments.map(({ id }) => id),
-              originalInstructorAssignments
+              savedAssignments
+                .map(({ id }) => id)
+                .sort(),
+              originalInstructorAssignments.sort()
             );
           });
         });
@@ -897,7 +910,8 @@ describe('CourseInstance API', function () {
           notStrictEqual(savedAssignments.length, 0);
           deepStrictEqual(
             savedAssignments
-              .map(({ id }) => id),
+              .map(({ id }) => id)
+              .sort(),
             originalInstructorAssignments
               .filter((id) => id !== testAssignmentId)
               .sort()
