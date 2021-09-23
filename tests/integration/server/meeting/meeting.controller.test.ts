@@ -7,7 +7,6 @@ import { TypeOrmModule, TypeOrmModuleOptions, getRepositoryToken } from '@nestjs
 import * as dummy from 'testData';
 import { Repository } from 'typeorm';
 import { strictEqual, notStrictEqual, deepStrictEqual } from 'assert';
-import MockDB from '../../../mocks/database/MockDB';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import { ConfigModule } from '../../../../src/server/config/config.module';
 import { AUTH_MODE, DAY } from '../../../../src/common/constants';
@@ -30,7 +29,6 @@ import { NonClassEvent } from '../../../../src/server/nonClassEvent/nonclasseven
 
 describe('Meeting API', function () {
   let testModule: TestingModule;
-  let db: MockDB;
   let api: HttpServer;
   let authStub: SinonStub;
   let courseInstanceRepository: Repository<CourseInstance>;
@@ -39,16 +37,6 @@ describe('Meeting API', function () {
   let nonClassEventRepository: Repository<NonClassEvent>;
   let roomRepository: Repository<Room>;
   let roomBookingInfoRepository: Repository<RoomBookingInfoView>;
-
-  before(async function () {
-    this.timeout(120000);
-    db = new MockDB();
-    return db.init();
-  });
-
-  after(async function () {
-    await db.stop();
-  });
 
   beforeEach(async function () {
     authStub = stub(TestingStrategy.prototype, 'login');
@@ -86,7 +74,7 @@ describe('Meeting API', function () {
       ],
     })
       .overrideProvider(ConfigService)
-      .useValue(new ConfigService(db.connectionEnv))
+      .useValue(new ConfigService(this.database.connectionEnv))
       .compile();
     courseInstanceRepository = testModule.get(
       getRepositoryToken(CourseInstance)
