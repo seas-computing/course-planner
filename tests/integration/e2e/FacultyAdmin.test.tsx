@@ -7,6 +7,7 @@ import {
   render,
   RenderResult,
   fireEvent,
+  waitForElementToBeRemoved,
 } from '@testing-library/react';
 import { TypeOrmModule, TypeOrmModuleOptions, getRepositoryToken } from '@nestjs/typeorm';
 import request from 'client/api/request';
@@ -115,7 +116,23 @@ describe('End-to-end Faculty Admin updating', function () {
         fireEvent.click(editButton);
         return renderResult.findByRole('dialog');
       });
-      context('when the modal save button is not clicked', function () {
+      context('when the modal submit button is clicked', function () {
+        context('when the user attempts to exit the modal', function () {
+          it('should not show an unsaved changes warning', async function () {
+            // Set new category for faculty entry
+            const categorySelector = await renderResult.findByLabelText('Category', { exact: false });
+            fireEvent.change(categorySelector,
+              { target: { value: FACULTY_TYPE.LADDER } });
+            // click save
+            const submitButton = renderResult.getByText('Submit');
+            fireEvent.click(submitButton);
+            await waitForElementToBeRemoved(() => renderResult.queryByText('Submit'));
+            const modal = renderResult.queryByRole('dialog');
+            strictEqual(modal, null);
+          });
+        });
+      });
+      context('when the modal submit button is not clicked', function () {
         context('when the user attempts to exit the modal', function () {
           it('should show an unsaved changes warning', async function () {
             // Set new category for faculty entry
