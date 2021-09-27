@@ -9,6 +9,7 @@ import { NonClassEvent } from '../nonClassEvent/nonclassevent.entity';
 import { NonClassParent } from '../nonClassParent/nonclassparent.entity';
 import { Course } from '../course/course.entity';
 import { Semester } from '../semester/semester.entity';
+import { Building } from './building.entity';
 
 /**
  * Represents the data associated with a room being booked for a meeting. Can
@@ -20,6 +21,7 @@ import { Semester } from '../semester/semester.entity';
   expression: (connection: Connection):
   SelectQueryBuilder<Meeting> => connection.createQueryBuilder()
     .select('r.id', 'roomId')
+    .addSelect("CONCAT_WS(' ', b.name, r.name)", 'roomName')
     .addSelect('s."academicYear"', 'calendarYear')
     .addSelect('s.term', 'term')
     .addSelect('m."startTime"', 'startTime')
@@ -34,6 +36,7 @@ import { Semester } from '../semester/semester.entity';
                END`, 'meetingTitle')
     .from(Meeting, 'm')
     .leftJoin(Room, 'r', 'r.id = m."roomId"')
+    .leftJoin(Building, 'b', 'b.id = r."buildingId"')
     .leftJoin(CourseInstance, 'ci', 'm."courseInstanceId" = ci.id')
     .leftJoin(Course, 'c', 'ci."courseId" = c.id')
     .leftJoin(NonClassEvent, 'nce', 'm."nonClassEventId" = nce.id')
@@ -47,6 +50,12 @@ export class RoomBookingInfoView {
    */
   @ViewColumn()
   public roomId: string;
+
+  /**
+   * The concatenated building & number of the room
+   */
+  @ViewColumn()
+  public roomName: string;
 
   /**
    * The term in which this booking is scheduled

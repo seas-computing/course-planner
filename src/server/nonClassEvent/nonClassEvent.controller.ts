@@ -38,7 +38,7 @@ export class NonClassEventController {
           acc: Record<string, NonClassParentView[]>,
           val: NonClassParentView
         ) => {
-          const { academicYear: year } = val.spring;
+          const { calendarYear: year } = val.spring;
 
           if (!Array.isArray(acc[year])) {
             acc[year] = [];

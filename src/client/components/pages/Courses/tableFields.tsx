@@ -2,7 +2,8 @@ import React, {
   ReactElement,
   ReactNode,
   ReactText,
-  useContext,
+  useState,
+  useRef,
 } from 'react';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import {
@@ -28,7 +29,8 @@ import { dayEnumToString } from 'common/constants/day';
 import { offeredEnumToString } from 'common/constants/offered';
 import { TermKey } from 'common/constants/term';
 import styled from 'styled-components';
-import { CoursesPageContext } from '../../../context/CoursesPageContext';
+import MeetingModal from './MeetingModal';
+import { PGTime } from '../../../../common/utils/PGTime';
 
 /**
  * Simple helper function that takes a property name and optionally a semester
@@ -107,7 +109,7 @@ export const formatInstructors = (
 /**
  * Utility component to style the data about a meeting
  */
-const MeetingGrid = styled.div`
+export const MeetingGrid = styled.div`
   display: grid;
   grid-template-areas: "time campus room";
   grid-template-columns: 2fr 2em 3fr 2em;
@@ -119,7 +121,7 @@ const MeetingGrid = styled.div`
  * Handles the placement of a single piece of the meeting data
  */
 
-const MeetingGridSection = styled.div<{area: string}>`
+export const MeetingGridSection = styled.div<{area: string}>`
   grid-area: ${({ area }): string => area};
   display: flex;
   flex-direction: column;
@@ -131,68 +133,99 @@ const MeetingGridSection = styled.div<{area: string}>`
  */
 
 export const formatMeetings = (
-  sem: TERM
-): (arg0: CourseInstanceResponseDTO
-  ) => ReactNode => (
-  course: CourseInstanceResponseDTO
+  term: TERM
+) => (
+  course: CourseInstanceResponseDTO,
+  {
+    updateHandler,
+  }: ValueGetterOptions
 ): ReactNode => {
-  const coursesPageContext = useContext(CoursesPageContext);
-  const semKey = sem.toLowerCase() as TermKey;
+  const semKey = term.toLowerCase() as TermKey;
   const {
-    [semKey]: { meetings },
-    id: courseId,
+    [semKey]: instance,
+    id: parentId,
+    catalogNumber,
   } = course;
-  return (meetings[0] === undefined || meetings[0]?.day === null)
-    ? null
-    : (
-      <>
-        <TableCellList>
-          {meetings.map(({
-            id,
-            room,
-            day,
-            startTime,
-            endTime,
-          }): ReactElement => (
-            <TableCellListItem key={id}>
-              <MeetingGrid>
-                <MeetingGridSection area="time">
-                  <div>{dayEnumToString(day)}</div>
-                  <div>{`${startTime}-${endTime}`}</div>
-                </MeetingGridSection>
-                {room && (
-                  <>
-                    <MeetingGridSection area="room">
-                      {room.name}
-                    </MeetingGridSection>
-                    <MeetingGridSection area="campus">
-                      <CampusIcon>{room.campus}</CampusIcon>
-                    </MeetingGridSection>
-                  </>
-                )}
-              </MeetingGrid>
-            </TableCellListItem>
-          ))}
-        </TableCellList>
-        <BorderlessButton
-          id={`${courseId}-${sem}-edit-meetings-button`}
-          onClick={() => coursesPageContext
-            && coursesPageContext.onMeetingEdit({
-              course,
-              term: sem,
-            })}
-          variant={VARIANT.INFO}
-          forwardRef={coursesPageContext?.currentCourseInstance?.course.id
-            === courseId
-            && coursesPageContext.currentCourseInstance.term === sem
-            ? coursesPageContext.meetingEditButtonRef
-            : null}
-        >
-          <FontAwesomeIcon icon={faEdit} />
-        </BorderlessButton>
-      </>
-    );
+  const { calendarYear, meetings } = instance;
+  const [modalVisible, setModalVisible] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const currentSemester = {
+    term,
+    calendarYear,
+  };
+  return (
+    <>
+      <TableCellList>
+        {(meetings[0] !== undefined && meetings[0]?.day !== null)
+        && meetings.map(({
+          id,
+          room,
+          day,
+          startTime,
+          endTime,
+        }): ReactElement => (
+          <TableCellListItem key={id}>
+            <MeetingGrid>
+              <MeetingGridSection area="time">
+                <div>{dayEnumToString(day)}</div>
+                <div>{`${PGTime.toDisplay(startTime)} - ${PGTime.toDisplay(endTime)}`}</div>
+              </MeetingGridSection>
+              {room && (
+                <>
+                  <MeetingGridSection area="room">
+                    {room.name}
+                  </MeetingGridSection>
+                  <MeetingGridSection area="campus">
+                    <CampusIcon>{room.campus}</CampusIcon>
+                  </MeetingGridSection>
+                </>
+              )}
+            </MeetingGrid>
+          </TableCellListItem>
+        ))}
+      </TableCellList>
+      <BorderlessButton
+        id={`${parentId}-${term}-edit-meetings-button`}
+        alt={`Edit meetings for ${catalogNumber} in ${semKey} ${calendarYear}`}
+        onClick={() => { setModalVisible(true); }}
+        variant={VARIANT.INFO}
+        forwardRef={buttonRef}
+      >
+        <FontAwesomeIcon icon={faEdit} />
+      </BorderlessButton>
+      <MeetingModal
+        isVisible={modalVisible}
+        currentSemester={currentSemester}
+        currentCourse={course}
+        onClose={() => {
+          setModalVisible(false);
+          setTimeout(() => { buttonRef.current?.focus(); });
+        }}
+        onSave={(newMeetingList, message?: string) => {
+          updateHandler({
+            ...course,
+            [semKey]: {
+              ...course[semKey],
+              meetings: newMeetingList,
+            },
+          }, message);
+        }}
+      />
+    </>
+  );
 };
+
+/**
+ * Descibes the additional options passed into the getValue function
+ */
+export interface ValueGetterOptions {
+  /**
+   * A handler for updating the client state of the course wihtout needing to
+   * refresh data from the server
+   */
+  updateHandler?: (course: CourseInstanceResponseDTO, message?: string) => void;
+}
+
 /**
  * Describes the columns in the CourseInstanceList
  */
@@ -217,7 +250,10 @@ export interface CourseInstanceListColumn {
   /**
    * A function that will retrieve the appropriate data to appear in the cell
    */
-  getValue: (arg0: CourseInstanceResponseDTO) => ReactNode;
+  getValue: (
+    arg0: CourseInstanceResponseDTO,
+    arg1?: ValueGetterOptions
+  ) => ReactNode;
 }
 
 /**

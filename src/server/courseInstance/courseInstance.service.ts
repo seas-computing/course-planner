@@ -95,9 +95,14 @@ export class CourseInstanceService {
         'fall_meetings_room',
         'fall_meetings_room.id = fall_meetings."roomId"'
       )
+      .leftJoin(Course, 'course', 'course.id=c.id')
       .where('fall."calendarYear" = :prevYear', { prevYear })
       .andWhere('spring."calendarYear" = :acadYear', { acadYear })
-      .orderBy('fall_instructors."instructorOrder"', 'ASC')
+      .orderBy('area', 'ASC')
+      .addOrderBy('course.prefix', 'ASC')
+      .addOrderBy('course."numberInteger"', 'ASC')
+      .addOrderBy('course."numberAlphabetical"', 'ASC')
+      .addOrderBy('fall_instructors."instructorOrder"', 'ASC')
       .addOrderBy('spring_instructors."instructorOrder"', 'ASC');
 
     return courseQuery.getMany() as Promise<CourseInstanceResponseDTO[]>;

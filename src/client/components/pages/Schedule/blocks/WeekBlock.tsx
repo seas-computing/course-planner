@@ -1,6 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 import DayBlock from './DayBlock';
+import { PGTime } from '../../../../../common/utils/PGTime';
 
 interface WeekBlockProps {
   /**
@@ -115,22 +116,6 @@ const WeekBlockWrapper = styled.div<WeekBlockWrapperProps>`
 `;
 
 /**
- * Convert a 24-hour numeric representation of the hour into an AM/PM string
- * representation
- *
- * Using this instead of date manipulation library or the Intl API to avoid any
- * issues around Daylight Savings Time
- */
-const hourToAMPM = (hour: number): string => {
-  if (hour < 12) {
-    return `${hour}am`;
-  } if (hour > 12) {
-    return `${hour - 12}pm`;
-  }
-  return '12pm';
-};
-
-/**
  * Represents the view of the entire week. Includes slots for days of the week,
  * and uses the same row grid as each DayBlock to display horizontal rules
  * across the week at 15-minute intervals
@@ -163,10 +148,11 @@ const WeekBlock: FunctionComponent<WeekBlockProps> = ({
           if (blockRow % (sixty / fifteen) === 0) {
             // Get the clock hour
             const hour = (blockRow / sixty) + firstHour;
+            const { hourHeading } = new PGTime(hour.toString());
             return (
               <React.Fragment key={blockRow}>
                 <HourHead row={blockRow}>
-                  {hourToAMPM(hour)}
+                  {hourHeading}
                 </HourHead>
                 <TimeRule
                   row={blockRow}

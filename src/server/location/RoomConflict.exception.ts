@@ -1,4 +1,7 @@
 import { MeetingRequestDTO } from '../../common/dto/meeting/MeetingRequest.dto';
+import { Booking } from './location.service';
+import { dayEnumToString } from '../../common/constants/day';
+import { PGTime } from '../../common/utils/PGTime';
 
 /**
  * A custom error to be thown when a user attempts to book a meeting in a room
@@ -8,12 +11,19 @@ import { MeetingRequestDTO } from '../../common/dto/meeting/MeetingRequest.dto';
 export class RoomConflictException extends Error {
   public constructor(
     details: Partial<MeetingRequestDTO>,
-    conflicts: string[]
+    conflict: Booking
   ) {
     const { day, startTime, endTime } = details;
-    super(
-      `This room is not available on ${day} between ${startTime} - ${endTime}.
-       CONFLICTS WITH: ${conflicts.join(', ')}`
-    );
+    super(`${
+      conflict.roomName
+    } is not available on ${
+      dayEnumToString(day)
+    } between ${
+      PGTime.toDisplay(startTime)
+    } - ${
+      PGTime.toDisplay(endTime)
+    }. CONFLICTS WITH: ${
+      conflict.meetingTitles.join(', ')
+    }`);
   }
 }

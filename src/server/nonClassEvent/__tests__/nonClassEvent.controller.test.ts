@@ -84,7 +84,7 @@ describe('NonClassEvent controller', function () {
           spring: {
             ...springSemester,
             academicYear: (
-              parseInt(springSemester.academicYear, 10) + 2
+              parseInt(springSemester.calendarYear, 10) + 2
             ).toString(),
           },
         },
@@ -95,7 +95,7 @@ describe('NonClassEvent controller', function () {
 
       deepStrictEqual(
         Object.keys(results),
-        [...new Set(mockData.map(({ spring }) => spring.academicYear))]
+        [...new Set(mockData.map(({ spring }) => spring.calendarYear))]
       );
     });
   });

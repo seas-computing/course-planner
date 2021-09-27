@@ -12,6 +12,7 @@ import { RoomBookingInfoView } from './RoomBookingInfoView.entity';
 
 export interface Booking {
   roomId: string;
+  roomName: string;
   meetingTitles: string[];
 }
 
@@ -20,7 +21,7 @@ interface RoomQueryResult {
   campus: string;
   name: string;
   capacity: number;
-  meetings: RoomBookingInfoView[];
+  meetings: string[];
 }
 
 @Injectable()
@@ -55,7 +56,9 @@ export class LocationService {
       .createQueryBuilder()
       .select('"roomId"')
       .addSelect('array_agg("meetingTitle")', 'meetingTitles')
+      .addSelect('"roomName"')
       .groupBy('"roomId"')
+      .addGroupBy('"roomName"')
       .addGroupBy('"calendarYear"')
       .addGroupBy('term')
       .addGroupBy('day')
@@ -74,25 +77,55 @@ export class LocationService {
   /**
    * Resolves with a list of rooms and the course instance and/or non class
    * meetings that are scheduled to occur during the requested calendar year,
-   * term, day, start time, and end time
+   * term, day, start time, and end time.
+   *
+   * If the RoomRequest data includes an `excludeParent` property with the UUID
+   * of a [[CourseInstance]] or [[NonClassEvent]], it will not show that
+   * meeting in the list of meetings. This is mostly necessary when populating
+   * the [[RoomSelectionTable]] on the client, so that users can change the
+   * room associated with a meeting then change it back. It's implemented on
+   * the server so that we can strictly compare by UUID, not by the
+   * (potentially not unique) meeting title string.
    */
   public async getRooms(
-    roomInfo: RoomRequest
+    {
+      excludeParent,
+      ...roomInfo
+    }: RoomRequest
   ): Promise<RoomResponse[]> {
-    const result = await this.roomListingViewRepository
+    const roomQuery = this.roomListingViewRepository
       .createQueryBuilder('r')
-      .leftJoinAndMapMany('r.meetings', RoomBookingInfoView, 'b',
-        `r.id = b."roomId" AND b."calendarYear" = :calendarYear
-          AND b.term = :term
-          AND b.day = :day
-          AND (b."startTime", b."endTime") OVERLAPS (:startTime::TIME, :endTime::TIME)`,
-        roomInfo)
+      .leftJoin((qb) => {
+        const subQuery = qb
+          .select('"meetingTitle"')
+          .addSelect('"roomId"')
+          .from(RoomBookingInfoView, 'b')
+          .where('"calendarYear" = :calendarYear')
+          .andWhere('term = :term')
+          .andWhere('day = :day')
+          .andWhere('("startTime", "endTime") OVERLAPS (:startTime::TIME, :endTime::TIME)');
+        if (excludeParent) {
+          subQuery.andWhere('"parentId" <> :excludeParent', { excludeParent });
+        }
+        return subQuery.setParameters(roomInfo);
+      }, 'b', 'r.id = b."roomId"')
+      .select('r.id', 'id')
+      .addSelect('r.campus', 'campus')
+      .addSelect('r.name', 'name')
+      .addSelect('r.capacity', 'capacity')
+      .addSelect('array_agg("b"."meetingTitle")', 'meetings')
+      .groupBy('r.id')
+      .addGroupBy('r.campus')
+      .addGroupBy('r.name')
+      .addGroupBy('r.capacity')
       .orderBy('r.campus', 'ASC')
-      .addOrderBy('r.name', 'ASC')
-      .getMany() as unknown[] as RoomQueryResult[];
-    return result.map(({ meetings, ...row }) => ({
+      .addOrderBy('r.name', 'ASC');
+    const result = await roomQuery
+      .getRawMany();
+    return result.map(({ meetings, ...row }: RoomQueryResult) => ({
       ...row,
-      meetingTitles: meetings.map(({ meetingTitle }) => meetingTitle),
+      meetingTitles: meetings
+        .filter((title) => !!title),
     }));
   }
 }

@@ -1,4 +1,5 @@
 import React, { FunctionComponent, ReactElement } from 'react';
+import { spy, SinonSpy } from 'sinon';
 import {
   cs50CourseInstance, ac209aCourseInstance, ac209aCourseInstanceWithoutRooms,
 } from 'testData';
@@ -12,8 +13,13 @@ import { offeredEnumToString } from 'common/constants/offered';
 import {
   retrieveValue, tableFields, formatInstructors, formatMeetings,
 } from '../tableFields';
+import { PGTime } from '../../../../../common/utils/PGTime';
 
 describe('tableFields', function () {
+  let updateSpy: SinonSpy;
+  beforeEach(function () {
+    updateSpy = spy();
+  });
   describe('helper functions', function () {
     describe('retrieveValue', function () {
       it('should return a function to get course-level fields', function () {
@@ -120,7 +126,10 @@ describe('tableFields', function () {
             const fallMeetings = formatMeetings(TERM.FALL);
             const TestComponent: FunctionComponent = (): ReactElement => (
               <div>
-                {fallMeetings(ac209aCourseInstance)}
+                {fallMeetings(
+                  ac209aCourseInstance,
+                  { updateHandler: updateSpy }
+                )}
               </div>
             );
             const { getAllByRole } = render(
@@ -132,7 +141,17 @@ describe('tableFields', function () {
               .map(({
                 day, startTime, endTime, room,
               }): string => (
-                `${dayEnumToString(day)}${startTime}-${endTime}${room.name}${room.campus}`));
+                `${
+                  dayEnumToString(day)
+                }${
+                  PGTime.toDisplay(startTime)
+                } - ${
+                  PGTime.toDisplay(endTime)
+                }${
+                  room.name
+                }${
+                  room.campus
+                }`));
             deepStrictEqual(entries, timesList);
           });
         });
@@ -141,7 +160,10 @@ describe('tableFields', function () {
             const fallMeetings = formatMeetings(TERM.FALL);
             const TestComponent: FunctionComponent = (): ReactElement => (
               <div>
-                {fallMeetings(ac209aCourseInstanceWithoutRooms)}
+                {fallMeetings(
+                  ac209aCourseInstanceWithoutRooms,
+                  { updateHandler: updateSpy }
+                )}
               </div>
             );
             const { getAllByRole } = render(
@@ -151,23 +173,32 @@ describe('tableFields', function () {
               .map(({ textContent }): string => textContent);
             const timesList = ac209aCourseInstance.fall.meetings
               .map(({ day, startTime, endTime }): string => (
-                `${dayEnumToString(day)}${startTime}-${endTime}`));
+                `${
+                  dayEnumToString(day)
+                }${
+                  PGTime.toDisplay(startTime)
+                } - ${
+                  PGTime.toDisplay(endTime)
+                }`));
             deepStrictEqual(entries, timesList);
           });
         });
       });
       context('When semester does not have data', function () {
-        it('Should return null', function () {
+        it('Should return an empty list', function () {
           const springTimes = formatMeetings(TERM.SPRING);
           const TestComponent: FunctionComponent = (): ReactElement => (
             <div>
-              {springTimes(ac209aCourseInstance)}
+              {springTimes(
+                ac209aCourseInstance,
+                { updateHandler: updateSpy }
+              )}
             </div>
           );
-          render(
+          const { queryAllByRole } = render(
             <TestComponent />
           );
-          strictEqual(document.body.textContent, '');
+          strictEqual(queryAllByRole('listitem').length, 0);
         });
       });
     });

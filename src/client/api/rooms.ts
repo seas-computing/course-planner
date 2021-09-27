@@ -9,7 +9,12 @@ import request from './request';
 export const getRoomAvailability = async (roomInfo: RoomRequest):
 Promise<RoomResponse[]> => {
   const response = await request
-    .get('/api/rooms', { params: roomInfo });
+    .get(
+      '/api/rooms',
+      {
+        params: roomInfo,
+      }
+    );
   return response.data as RoomResponse[];
 };
 
