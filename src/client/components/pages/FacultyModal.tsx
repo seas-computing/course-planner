@@ -68,9 +68,9 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
   const metadata = useContext(MetadataContext);
 
   /**
- * Keeps track of whether the user has altered fields in the form to determine
- * whether to show a confirmation dialog on modal close
- */
+   * Keeps track of whether the user has altered fields in the form to determine
+   * whether to show a confirmation dialog on modal close
+   */
   const [
     isChanged,
     setIsChanged,
@@ -225,6 +225,12 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
       setFacultyErrorMessage('');
       setFacultyModalFocus();
     }
+  }, [isVisible, currentFaculty]);
+
+  /**
+   * Used to add the before unload listener in the case that a form field is changed
+   */
+  useEffect(() => {
     /**
      * Checks to see if there are any unsaved changes in the modal when the user
      * refreshes the page. If there are unsaved changes, the browser displays a
@@ -243,7 +249,7 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
     return () => {
       window.removeEventListener('beforeunload', onBeforeUnload);
     };
-  }, [isVisible, currentFaculty, isChanged]);
+  }, [isChanged]);
 
   /**
    * Called when the modal is closed. If there are any unsaved changes,
