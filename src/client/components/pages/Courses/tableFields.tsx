@@ -31,6 +31,7 @@ import { TermKey } from 'common/constants/term';
 import styled from 'styled-components';
 import MeetingModal from './MeetingModal';
 import { PGTime } from '../../../../common/utils/PGTime';
+import InstructorModal from './InstructorModal';
 
 /**
  * Simple helper function that takes a property name and optionally a semester
@@ -76,34 +77,66 @@ export const retrieveValue = (
  */
 
 export const formatInstructors = (
-  sem: TERM
-): (arg0: CourseInstanceResponseDTO
-  ) => ReactNode => (
-  course: CourseInstanceResponseDTO
+  term: TERM
+) => (
+  course: CourseInstanceResponseDTO,
+  {
+    updateHandler,
+  }: ValueGetterOptions
 ): ReactNode => {
-  const semKey = sem.toLowerCase() as TermKey;
-  const { [semKey]: { instructors } } = course;
-  return instructors.length === 0
-    ? null
-    : (
-      <>
-        <TableCellList>
-          {instructors.map(
+  const semKey = term.toLowerCase() as TermKey;
+  const {
+    id: parentId,
+    [semKey]: instance,
+  } = course;
+  const { calendarYear, instructors } = instance;
+  const [modalVisible, setModalVisible] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const currentSemester = {
+    term,
+    calendarYear,
+  };
+  return (
+    <>
+      <TableCellList>
+        {instructors.length === 0
+          ? null
+          : instructors.map(
             ({ id, displayName }): ReactElement => (
               <TableCellListItem key={id}>
                 {displayName}
               </TableCellListItem>
             )
           )}
-        </TableCellList>
-        <BorderlessButton
-          onClick={(): void => {}}
-          variant={VARIANT.INFO}
-        >
-          <FontAwesomeIcon icon={faEdit} />
-        </BorderlessButton>
-      </>
-    );
+      </TableCellList>
+      <BorderlessButton
+        id={`${parentId}-${term}-edit-instructors-button`}
+        onClick={() => { setModalVisible(true); }}
+        variant={VARIANT.INFO}
+        forwardRef={buttonRef}
+      >
+        <FontAwesomeIcon icon={faEdit} />
+      </BorderlessButton>
+      <InstructorModal
+        isVisible={modalVisible}
+        currentSemester={currentSemester}
+        currentCourse={course}
+        onClose={() => {
+          setModalVisible(false);
+          setTimeout(() => { buttonRef.current?.focus(); });
+        }}
+        onSave={(newInstructorList, message?: string) => {
+          updateHandler({
+            ...course,
+            [semKey]: {
+              ...course[semKey],
+              instructors: newInstructorList,
+            },
+          }, message);
+        }}
+      />
+    </>
+  );
 };
 
 /**
