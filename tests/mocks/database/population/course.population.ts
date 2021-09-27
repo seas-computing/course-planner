@@ -78,6 +78,7 @@ export class CoursePopulationService
         course.private = courseData.private;
         course.sameAs = courseData.sameAs;
         course.isSEAS = courseData.isSEAS;
+        course.termPattern = courseData.termPattern;
         course.area = allAreas.find(
           ({ name }): boolean => name === courseData.area
         );
