@@ -32,7 +32,6 @@ import { TestingStrategy } from '../../mocks/authentication/testing.strategy';
 import { AUTH_MODE, IS_SEAS } from '../../../src/common/constants';
 import { BadRequestExceptionPipe } from '../../../src/server/utils/BadRequestExceptionPipe';
 import { PopulationModule } from '../../mocks/database/population/population.module';
-import { CourseAdmin } from 'client/components/pages';
 
 describe('End-to-end Course Admin updating', function () {
   let db: MockDB;
@@ -112,6 +111,7 @@ describe('End-to-end Course Admin updating', function () {
     });
     context('Creating a course', function () {
       beforeEach(async function () {
+        await renderResult.findByText(title, { exact: false });
         await renderResult.findByText('Create New Course');
         const createCourseButton = await renderResult.findByText('Create New Course', { exact: false });
         fireEvent.click(createCourseButton);
@@ -126,10 +126,10 @@ describe('End-to-end Course Admin updating', function () {
         fireEvent.change(termPatternSelect, { target: { value: `${physicsCourse.termPattern}` } });
       });
       context('when the modal submit button is clicked', function () {
-        it.only('should not show the unsaved changes warning', async function () {
+        it('should not show the unsaved changes warning', async function () {
           const submitButton = renderResult.getByText('Submit');
           fireEvent.click(submitButton);
-          await waitForElementToBeRemoved(() => renderResult.queryByText('Select an existing area'));
+          await waitForElementToBeRemoved(() => renderResult.queryByText('Submit'));
           const modal = renderResult.queryByRole('dialog');
           strictEqual(modal, null);
         });
