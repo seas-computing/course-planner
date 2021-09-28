@@ -41,6 +41,7 @@ abstract class Instance {
   public offered: OFFERED;
 
   @ApiProperty({
+    type: InstructorResponseDTO,
     isArray: true,
     example: [
       {
