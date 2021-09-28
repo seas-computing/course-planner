@@ -42,22 +42,12 @@ import {
   sortResults,
 } from '../../../utils/helperFunctions';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
-import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 
 describe('Faculty Schedule API', function () {
   let authStub: SinonStub;
   let api: HttpServer;
   let testModule: TestingModule;
-  let db: MockDB;
-  before(async function () {
-    this.timeout(120000);
-    db = new MockDB();
-    return db.init();
-  });
-  after(async function () {
-    await db.stop();
-  });
 
   beforeEach(async function () {
     authStub = stub(TestingStrategy.prototype, 'login');
@@ -94,7 +84,7 @@ describe('Faculty Schedule API', function () {
       ],
     })
       .overrideProvider(ConfigService)
-      .useValue(new ConfigService(db.connectionEnv))
+      .useValue(new ConfigService(this.database.connectionEnv))
       .compile();
 
     const nestApp = await testModule.createNestApplication()

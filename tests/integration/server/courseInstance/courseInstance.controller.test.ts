@@ -29,26 +29,14 @@ import * as dummy from 'testData';
 import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
-import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import { PGTime } from '../../../../src/common/utils/PGTime';
 
 describe('CourseInstance API', function () {
   let testModule: TestingModule;
-  let db: MockDB;
   let meetingRepository: Repository<Meeting>;
   let api: HttpServer;
   let authStub: SinonStub;
-
-  before(async function () {
-    this.timeout(120000);
-    db = new MockDB();
-    return db.init();
-  });
-
-  after(async function () {
-    await db.stop();
-  });
 
   beforeEach(async function () {
     authStub = stub(TestingStrategy.prototype, 'login');
@@ -85,7 +73,7 @@ describe('CourseInstance API', function () {
       ],
     })
       .overrideProvider(ConfigService)
-      .useValue(new ConfigService(db.connectionEnv))
+      .useValue(new ConfigService(this.database.connectionEnv))
       .compile();
     meetingRepository = testModule.get(getRepositoryToken(Meeting));
     const nestApp = await testModule
