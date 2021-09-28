@@ -21,7 +21,6 @@ import App from 'client/components/App';
 import { strictEqual } from 'assert';
 import { MetadataModule } from 'server/metadata/metadata.module';
 import mockAdapter from '../../mocks/api/adapter';
-import MockDB from '../../mocks/database/MockDB';
 import { ConfigModule } from '../../../src/server/config/config.module';
 import { ConfigService } from '../../../src/server/config/config.service';
 import { AuthModule } from '../../../src/server/auth/auth.module';
@@ -32,21 +31,14 @@ import { BadRequestExceptionPipe } from '../../../src/server/utils/BadRequestExc
 import { PopulationModule } from '../../mocks/database/population/population.module';
 
 describe('End-to-end Faculty Admin updating', function () {
-  let db: MockDB;
   let testModule: TestingModule;
   let facultyRepository: Repository<Faculty>;
   const facultyName = 'David Malan';
   const [firstName, lastName] = facultyName.split(' ');
-  before(async function () {
-    db = new MockDB();
-    return db.init();
-  });
-  after(async function () {
-    return db.stop();
-  });
+
   beforeEach(async function () {
     stub(TestingStrategy.prototype, 'login').resolves(dummy.adminUser);
-    const fakeConfig = new ConfigService(db.connectionEnv);
+    const fakeConfig = new ConfigService(this.database.connectionEnv);
     testModule = await Test.createTestingModule({
       imports: [
         SessionModule.forRoot({

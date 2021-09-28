@@ -24,7 +24,6 @@ import { Course } from 'server/course/course.entity';
 import { CourseModule } from 'server/course/course.module';
 import { physicsCourse } from 'testData';
 import mockAdapter from '../../mocks/api/adapter';
-import MockDB from '../../mocks/database/MockDB';
 import { ConfigModule } from '../../../src/server/config/config.module';
 import { ConfigService } from '../../../src/server/config/config.service';
 import { AuthModule } from '../../../src/server/auth/auth.module';
@@ -34,20 +33,13 @@ import { BadRequestExceptionPipe } from '../../../src/server/utils/BadRequestExc
 import { PopulationModule } from '../../mocks/database/population/population.module';
 
 describe('End-to-end Course Admin updating', function () {
-  let db: MockDB;
   let testModule: TestingModule;
   let courseRepository: Repository<Course>;
   const title = 'Introduction to Soft Matter';
-  before(async function () {
-    db = new MockDB();
-    return db.init();
-  });
-  after(async function () {
-    return db.stop();
-  });
+
   beforeEach(async function () {
     stub(TestingStrategy.prototype, 'login').resolves(dummy.adminUser);
-    const fakeConfig = new ConfigService(db.connectionEnv);
+    const fakeConfig = new ConfigService(this.database.connectionEnv);
     testModule = await Test.createTestingModule({
       imports: [
         SessionModule.forRoot({
