@@ -4,11 +4,11 @@ import {
   stub,
 } from 'sinon';
 import {
-  render,
   RenderResult,
   fireEvent,
   waitForElementToBeRemoved,
   wait,
+  render,
 } from '@testing-library/react';
 import { TypeOrmModule, TypeOrmModuleOptions, getRepositoryToken } from '@nestjs/typeorm';
 import request from 'client/api/request';
@@ -22,6 +22,7 @@ import { strictEqual } from 'assert';
 import { MetadataModule } from 'server/metadata/metadata.module';
 import { Course } from 'server/course/course.entity';
 import { CourseModule } from 'server/course/course.module';
+import { physicsCourse } from 'testData';
 import mockAdapter from '../../mocks/api/adapter';
 import MockDB from '../../mocks/database/MockDB';
 import { ConfigModule } from '../../../src/server/config/config.module';
@@ -31,6 +32,7 @@ import { TestingStrategy } from '../../mocks/authentication/testing.strategy';
 import { AUTH_MODE, IS_SEAS } from '../../../src/common/constants';
 import { BadRequestExceptionPipe } from '../../../src/server/utils/BadRequestExceptionPipe';
 import { PopulationModule } from '../../mocks/database/population/population.module';
+import { CourseAdmin } from 'client/components/pages';
 
 describe('End-to-end Course Admin updating', function () {
   let db: MockDB;
@@ -107,6 +109,45 @@ describe('End-to-end Course Admin updating', function () {
           <App />
         </MemoryRouter>
       );
+    });
+    context('Creating a course', function () {
+      beforeEach(async function () {
+        await renderResult.findByText('Create New Course');
+        const createCourseButton = await renderResult.findByText('Create New Course', { exact: false });
+        fireEvent.click(createCourseButton);
+        await renderResult.findByText(/Select an existing area/);
+        const existingAreaSelect = renderResult.getByLabelText('Existing Area', { exact: true }) as HTMLSelectElement;
+        const courseTitleInput = renderResult.getByLabelText('Course Title', { exact: false }) as HTMLInputElement;
+        const isSEASSelect = renderResult.getByLabelText('Is SEAS', { exact: false }) as HTMLSelectElement;
+        const termPatternSelect = renderResult.getByLabelText('Term Pattern', { exact: false }) as HTMLSelectElement;
+        fireEvent.change(existingAreaSelect, { target: { value: `${physicsCourse.area.name}` } });
+        console.log('Area value: ', existingAreaSelect.value);
+        fireEvent.change(courseTitleInput, { target: { value: `${physicsCourse.title}` } });
+        console.log('Title value: ', courseTitleInput.value);
+        fireEvent.change(isSEASSelect, { target: { value: `${physicsCourse.isSEAS}` } });
+        console.log('isSEAS value: ', isSEASSelect.value);
+        fireEvent.change(termPatternSelect, { target: { value: `${physicsCourse.termPattern}` } });
+        console.log('Term Pattern value: ', termPatternSelect.value);
+      });
+      context('when the modal submit button is clicked', function () {
+        it.only('should not show the unsaved changes warning', async function () {
+          const submitButton = renderResult.getByText('Submit');
+          fireEvent.click(submitButton);
+          await waitForElementToBeRemoved(() => renderResult.queryByText('Select an existing area'));
+          const modal = renderResult.queryByRole('dialog');
+          strictEqual(modal, null);
+        });
+      });
+      context('when the modal submit button is not clicked', function () {
+        it('should show the unsaved changes warning', async function () {
+          const windowConfirmStub = stub(window, 'confirm');
+          windowConfirmStub.returns(true);
+          // Attempt to close the modal without saving
+          const cancelButton = await renderResult.findByText('Cancel');
+          fireEvent.click(cancelButton);
+          strictEqual(windowConfirmStub.callCount, 1);
+        });
+      });
     });
     context('Updating existing course information', function () {
       beforeEach(async function () {

@@ -111,6 +111,8 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
    */
   const metadata = useContext(MetadataContext);
 
+  console.log('Metadata areas in CourseModal: ', metadata.areas); // fdo
+
   /**
    * Keeps track of whether the user has altered fields in the form to determine
    * whether to show a confirmation dialog on modal close
@@ -292,6 +294,16 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
     }
   };
 
+  const areaOptions = [{ value: '', label: '' }]
+    .concat(metadata.areas.map((area): {
+      value: string;label: string;
+    } => ({
+      value: area,
+      label: area,
+    })));
+
+  console.log('Area options in Course Modal: ', areaOptions); // fdo
+
   return (
     <Modal
       ariaLabelledBy="editCourse"
@@ -339,15 +351,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
               label={displayNames.existingArea}
               isLabelVisible={false}
               // Insert an empty option so that no area is pre-selected in dropdown
-              options={
-                [{ value: '', label: '' }]
-                  .concat(metadata.areas.map((area): {
-                    value: string;label: string;
-                  } => ({
-                    value: area,
-                    label: area,
-                  })))
-              }
+              options={areaOptions}
             />
             <RadioButton
               label="Create a new area"
@@ -527,6 +531,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
               return;
             }
             if (onClose != null) {
+              setIsChanged(false);
               onClose();
             }
           }}
