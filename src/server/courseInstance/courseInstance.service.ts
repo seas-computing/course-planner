@@ -222,16 +222,13 @@ export class CourseInstanceService {
         facultyCourseInstances: updates,
       }
     );
-    if (instructorUpdate) {
-      return instructorUpdate
-        .facultyCourseInstances
-        .map(({ faculty, order }) => ({
-          id: faculty.id,
-          notes: faculty.notes,
-          displayName: `${faculty.lastName}, ${faculty.firstName}`,
-          order,
-        }));
-    }
-    throw new Error('Unable to update instructor list');
+    return instructorUpdate
+      .facultyCourseInstances
+      .map(({ faculty, order }) => ({
+        id: faculty.id,
+        notes: faculty.notes,
+        displayName: `${faculty.lastName}, ${faculty.firstName}`,
+        order,
+      }));
   }
 }
