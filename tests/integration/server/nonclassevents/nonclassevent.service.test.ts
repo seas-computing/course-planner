@@ -10,19 +10,11 @@ import { deepStrictEqual, notStrictEqual, strictEqual } from 'assert';
 import { Meeting } from 'server/meeting/meeting.entity';
 import { Repository } from 'typeorm';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
-import MockDB from '../../../mocks/database/MockDB';
 
 describe('NonClassEvent Service', function () {
   let testModule: TestingModule;
-  let db: MockDB;
   let service: NonClassEventService;
-  before(async function () {
-    db = new MockDB();
-    await db.init();
-  });
-  after(async function () {
-    await db.stop();
-  });
+
   beforeEach(async function () {
     testModule = await Test.createTestingModule({
       imports: [
@@ -47,7 +39,7 @@ describe('NonClassEvent Service', function () {
       ],
     })
       .overrideProvider(ConfigService)
-      .useValue(new ConfigService(db.connectionEnv))
+      .useValue(new ConfigService(this.database.connectionEnv))
       .compile();
     service = testModule.get(NonClassEventService);
     await testModule.createNestApplication().init();

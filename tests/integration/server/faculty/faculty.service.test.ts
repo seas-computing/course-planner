@@ -11,7 +11,6 @@ import { appliedMathFacultyMemberRequest, bioengineeringFacultyMember } from 'te
 import { Area } from 'server/area/area.entity';
 import { AuthModule } from 'server/auth/auth.module';
 import { AUTH_MODE } from 'common/constants';
-import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
@@ -19,17 +18,8 @@ describe('Faculty service', function () {
   let facultyService: FacultyService;
   let facultyRepository: Repository<Faculty>;
   let areaRepository: Repository<Area>;
-  let db: MockDB;
   let testModule: TestingModule;
 
-  before(async function () {
-    this.timeout(120000);
-    db = new MockDB();
-    return db.init();
-  });
-  after(async function () {
-    await db.stop();
-  });
   beforeEach(async function () {
     testModule = await Test.createTestingModule({
       imports: [
@@ -62,7 +52,7 @@ describe('Faculty service', function () {
       ],
     })
       .overrideProvider(ConfigService)
-      .useValue(new ConfigService(db.connectionEnv))
+      .useValue(new ConfigService(this.database.connectionEnv))
       .compile();
 
     facultyService = testModule.get<FacultyService>(FacultyService);
