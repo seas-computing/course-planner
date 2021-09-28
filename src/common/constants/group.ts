@@ -12,6 +12,13 @@ enum GROUP {
    * Users who have read-only privileges
    */
   READ_ONLY = 'harvard:org:schools:seas:managed:seas-course-planning:authorized-all-users-seas-course-planning',
+
+  /**
+   * Users who have permission to interact with the non-class event API
+   *
+   * @todo Put a real value from grouper in here
+   */
+  NON_CLASS = '',
 }
 
 export default GROUP;

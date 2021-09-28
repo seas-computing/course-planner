@@ -24,7 +24,7 @@ import { NonClassEventService } from './nonClassEvent.service';
 import { NonClassParent } from './nonclassparent.entity';
 
 @ApiTags('Non-Class Events')
-@UseGuards(Authentication)
+@UseGuards(Authentication, new RequireGroup(GROUP.NON_CLASS))
 @Controller('api/non-class-events')
 @ApiForbiddenResponse({ description: 'The user is not authenticated' })
 @ApiUnauthorizedResponse({
