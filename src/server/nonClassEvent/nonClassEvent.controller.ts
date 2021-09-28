@@ -9,7 +9,16 @@ import CreateNonClassParentDTO from 'common/dto/nonClassMeetings/CreateNonClassP
 import { InjectRepository } from '@nestjs/typeorm';
 import { Area } from 'server/area/area.entity';
 import { Repository } from 'typeorm';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import { RequireGroup } from 'server/auth/group.guard';
+import { GROUP } from 'common/constants';
 import { NonClassParentView } from './NonClassParentView.entity';
 import { NonClassEventService } from './nonClassEvent.service';
 import { NonClassParent } from './nonclassparent.entity';
@@ -17,6 +26,10 @@ import { NonClassParent } from './nonclassparent.entity';
 @ApiTags('Non-Class Events')
 @UseGuards(Authentication)
 @Controller('api/non-class-events')
+@ApiForbiddenResponse({ description: 'The user is not authenticated' })
+@ApiUnauthorizedResponse({
+  description: 'The user is authenticated, but lacks the permissions to access this endpoint',
+})
 export class NonClassEventController {
   @Inject(ConfigService)
   private config: ConfigService;
@@ -33,6 +46,7 @@ export class NonClassEventController {
    * @param acyr The academic year to query by. Defaults to the current academic year if not specified
    */
   @Get('/')
+  @ApiOperation({ summary: 'Retrieve all non-class events in the database' })
   public async find(
     @Query('acyr') acyr?: number
   ): Promise<Record<string, NonClassMeetingResponseDTO[]>> {
@@ -62,6 +76,14 @@ export class NonClassEventController {
   }
 
   @Post('/')
+  @ApiOperation({
+    summary: 'Create a new non-class parent',
+    description: 'Creates a new non-class parent and populates all related non-class events (one assocaited with each semester in the database)',
+  })
+  @ApiOkResponse({
+    type: NonClassParent,
+    description: 'The non-class parent was created along with one non-class event for each semester in the database',
+  })
   public async create(parent: CreateNonClassParentDTO):
   Promise<NonClassParent> {
     const area = await this.areaRepository.findOne({
