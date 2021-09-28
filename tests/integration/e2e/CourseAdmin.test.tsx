@@ -121,13 +121,9 @@ describe('End-to-end Course Admin updating', function () {
         const isSEASSelect = renderResult.getByLabelText('Is SEAS', { exact: false }) as HTMLSelectElement;
         const termPatternSelect = renderResult.getByLabelText('Term Pattern', { exact: false }) as HTMLSelectElement;
         fireEvent.change(existingAreaSelect, { target: { value: `${physicsCourse.area.name}` } });
-        console.log('Area value: ', existingAreaSelect.value);
         fireEvent.change(courseTitleInput, { target: { value: `${physicsCourse.title}` } });
-        console.log('Title value: ', courseTitleInput.value);
         fireEvent.change(isSEASSelect, { target: { value: `${physicsCourse.isSEAS}` } });
-        console.log('isSEAS value: ', isSEASSelect.value);
         fireEvent.change(termPatternSelect, { target: { value: `${physicsCourse.termPattern}` } });
-        console.log('Term Pattern value: ', termPatternSelect.value);
       });
       context('when the modal submit button is clicked', function () {
         it.only('should not show the unsaved changes warning', async function () {

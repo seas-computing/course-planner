@@ -111,8 +111,6 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
    */
   const metadata = useContext(MetadataContext);
 
-  console.log('Metadata areas in CourseModal: ', metadata.areas); // fdo
-
   /**
    * Keeps track of whether the user has altered fields in the form to determine
    * whether to show a confirmation dialog on modal close
@@ -301,8 +299,6 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
       value: area,
       label: area,
     })));
-
-  console.log('Area options in Course Modal: ', areaOptions); // fdo
 
   return (
     <Modal

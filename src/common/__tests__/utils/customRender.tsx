@@ -51,7 +51,6 @@ const customRender = (
   }
   if (!metadataContext) {
     metadataContext = testMetadata;
-    console.log('Test metadata areas in customRender: ', testMetadata.areas); // fdo
   }
   if (!routerEntries) {
     routerEntries = ['/'];
