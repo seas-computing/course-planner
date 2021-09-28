@@ -127,8 +127,7 @@ export class CourseInstanceController {
    * (updating the order of other instructors, if applicable). An empty array
    * removes all instructors from the course
    */
-  @UseGuards(new RequireGroup(GROUP.ADMIN))
-  @UseGuards(Authentication)
+  @UseGuards(Authentication, new RequireGroup(GROUP.ADMIN))
   @ApiTags('Course Instance')
   @ApiOperation({ summary: 'Update the list of instructors associated with a course' })
   @ApiOkResponse({
