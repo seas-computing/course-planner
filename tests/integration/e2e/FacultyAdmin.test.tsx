@@ -8,6 +8,7 @@ import {
   RenderResult,
   fireEvent,
   waitForElementToBeRemoved,
+  within,
 } from '@testing-library/react';
 import { TypeOrmModule, TypeOrmModuleOptions, getRepositoryToken } from '@nestjs/typeorm';
 import request from 'client/api/request';
@@ -29,6 +30,7 @@ import { AUTH_MODE, FACULTY_TYPE } from '../../../src/common/constants';
 import { FacultyModule } from '../../../src/server/faculty/faculty.module';
 import { BadRequestExceptionPipe } from '../../../src/server/utils/BadRequestExceptionPipe';
 import { PopulationModule } from '../../mocks/database/population/population.module';
+import { faculty } from '../../mocks/database/population/data';
 
 describe('End-to-end Faculty Admin updating', function () {
   let testModule: TestingModule;
@@ -92,6 +94,7 @@ describe('End-to-end Faculty Admin updating', function () {
   });
   describe('Updating Faculty', function () {
     let renderResult: RenderResult;
+    const facultyMember = faculty[0];
     beforeEach(async function () {
       await facultyRepository.findOneOrFail({ lastName });
       renderResult = render(
@@ -99,6 +102,48 @@ describe('End-to-end Faculty Admin updating', function () {
           <App />
         </MemoryRouter>
       );
+    });
+    context('Creating a new faculty member', function () {
+      beforeEach(async function () {
+        // Area, HUID, last name, category
+        await renderResult.findByText(lastName, { exact: false });
+        await renderResult.findByText('Create New Faculty');
+        const createFacultyButton = await renderResult.findByText('Create New Faculty', { exact: false });
+        fireEvent.click(createFacultyButton);
+        await renderResult.findByText(/Submit/);
+        const facultyAreaSelect = renderResult.getByLabelText('Edit Faculty Course Area', { exact: false }) as HTMLSelectElement;
+        const huidInput = renderResult.getByLabelText('Edit Faculty HUID', { exact: false }) as HTMLInputElement;
+        const modal = renderResult.getByRole('dialog');
+        const lastNameInput = within(modal).getByLabelText('Edit Faculty Last Name', { exact: false }) as HTMLInputElement;
+        const facultyCategorySelect = renderResult.getByLabelText('Edit Faculty Category', { exact: false }) as HTMLSelectElement;
+        fireEvent.change(facultyAreaSelect,
+          { target: { value: facultyMember.area } });
+        fireEvent.change(huidInput,
+          { target: { value: facultyMember.HUID } });
+        fireEvent.change(lastNameInput,
+          { target: { value: facultyMember.lastName } });
+        fireEvent.change(facultyCategorySelect,
+          { target: { value: facultyMember.category } });
+      });
+      context('when the modal submit button is clicked', function () {
+        it('should not show the unsaved changes warning', async function () {
+          const submitButton = renderResult.getByText('Submit');
+          fireEvent.click(submitButton);
+          await waitForElementToBeRemoved(() => renderResult.queryByText('Submit'));
+          const modal = renderResult.queryByRole('dialog');
+          strictEqual(modal, null);
+        });
+      });
+      context('when the modal submit button is not clicked', function () {
+        it('should show the unsaved changes warning', async function () {
+          const windowConfirmStub = stub(window, 'confirm');
+          windowConfirmStub.returns(true);
+          // Attempt to close the modal without saving
+          const cancelButton = await renderResult.findByText('Cancel');
+          fireEvent.click(cancelButton);
+          strictEqual(windowConfirmStub.callCount, 1);
+        });
+      });
     });
     context('Updating existing faculty information', function () {
       beforeEach(async function () {
