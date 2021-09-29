@@ -192,8 +192,8 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
                       })))
                   }
                   value={facultyAreaValue}
-                  name="facultyArea"
-                  id="facultyArea"
+                  name="filterByFacultyArea"
+                  id="filterByFacultyArea"
                   label="The table will be filtered as selected in the faculty area dropdown filter"
                   isLabelVisible={false}
                   hideError
@@ -204,8 +204,8 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
               </TableHeadingCell>
               <TableHeadingCell scope="col">
                 <TextInput
-                  id="huid"
-                  name="huid"
+                  id="filterByHUID"
+                  name="filterByHUID"
                   value={HUIDValue}
                   placeholder="Filter by HUID"
                   label="The table will be filtered as characters are typed in this HUID filter field"
@@ -218,8 +218,8 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
               </TableHeadingCell>
               <TableHeadingCell scope="col">
                 <TextInput
-                  id="lastName"
-                  name="lastName"
+                  id="filterLastName"
+                  name="filterByLastName"
                   value={lastNameValue}
                   placeholder="Filter by Last Name"
                   label="The table will be filtered as characters are typed in this last name filter field"
@@ -232,8 +232,8 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
               </TableHeadingCell>
               <TableHeadingCell scope="col">
                 <TextInput
-                  id="firstName"
-                  name="firstName"
+                  id="filterByFirstName"
+                  name="filterByFirstName"
                   value={firstNameValue}
                   placeholder="Filter by First Name"
                   label="The table will be filtered as characters are typed in this first name filter field"

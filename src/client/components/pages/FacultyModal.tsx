@@ -290,7 +290,7 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
           <Dropdown
             id="courseArea"
             name="courseArea"
-            label="Area"
+            label="Edit Faculty Course Area"
             // Insert an empty option so that no area is pre-selected in dropdown
             options={
               [{ value: '', label: '' }]
@@ -309,7 +309,7 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
           <TextInput
             id="HUID"
             name="HUID"
-            label="HUID"
+            label="Edit Faculty HUID"
             labelPosition={POSITION.TOP}
             placeholder="e.g. 12345678"
             onChange={updateFormFields}
@@ -320,7 +320,7 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
           <TextInput
             id="firstName"
             name="firstName"
-            label="First name"
+            label="Edit Faculty First Name"
             labelPosition={POSITION.TOP}
             placeholder="e.g. Jane"
             onChange={updateFormFields}
@@ -329,7 +329,7 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
           <TextInput
             id="lastName"
             name="lastName"
-            label="Last name"
+            label="Edit Faculty Last Name"
             labelPosition={POSITION.TOP}
             placeholder="e.g. Smith"
             onChange={updateFormFields}
@@ -340,7 +340,7 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
           <Dropdown
             id="category"
             name="category"
-            label="Category"
+            label="Edit Faculty Category"
             /**
              * Insert an empty option so that no category is pre-selected in dropdown
              */
@@ -362,7 +362,7 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
           <TextInput
             id="jointWith"
             name="jointWith"
-            label="Joint with..."
+            label="Edit Faculty Joint With..."
             labelPosition={POSITION.TOP}
             placeholder="Add 'Joint With' entry"
             onChange={updateFormFields}
@@ -371,7 +371,7 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
           <TextInput
             id="notes"
             name="notes"
-            label="Notes"
+            label="Edit Faculty Notes"
             labelPosition={POSITION.TOP}
             placeholder="e.g. Prefers Room X"
             onChange={updateFormFields}

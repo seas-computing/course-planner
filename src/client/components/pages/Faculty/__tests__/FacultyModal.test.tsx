@@ -37,13 +37,13 @@ describe('Faculty Modal', function () {
           ));
         });
         it('renders a modal with all empty form fields', function () {
-          const courseAreaSelect = getByLabelText('Area', { exact: false }) as HTMLSelectElement;
-          const huidInput = getByLabelText('HUID', { exact: false }) as HTMLInputElement;
-          const firstNameInput = getByLabelText('First name', { exact: false }) as HTMLInputElement;
-          const lastNameInput = getByLabelText('Last name', { exact: false }) as HTMLInputElement;
-          const facultyCategorySelect = getByLabelText('Category', { exact: false }) as HTMLSelectElement;
-          const jointWithInput = getByLabelText('Joint with', { exact: false }) as HTMLInputElement;
-          const notesInput = getByLabelText('Notes', { exact: false }) as HTMLInputElement;
+          const courseAreaSelect = getByLabelText('Edit Faculty Course Area', { exact: false }) as HTMLSelectElement;
+          const huidInput = getByLabelText('Edit Faculty HUID', { exact: false }) as HTMLInputElement;
+          const firstNameInput = getByLabelText('Edit Faculty First Name', { exact: false }) as HTMLInputElement;
+          const lastNameInput = getByLabelText('Edit Faculty Last Name', { exact: false }) as HTMLInputElement;
+          const facultyCategorySelect = getByLabelText('Edit Faculty Category', { exact: false }) as HTMLSelectElement;
+          const jointWithInput = getByLabelText('Edit Faculty Joint With', { exact: false }) as HTMLInputElement;
+          const notesInput = getByLabelText('Edit Faculty Notes', { exact: false }) as HTMLInputElement;
           strictEqual(courseAreaSelect.value, '');
           strictEqual(huidInput.value, '');
           strictEqual(firstNameInput.value, '');
@@ -66,13 +66,13 @@ describe('Faculty Modal', function () {
           ));
         });
         it('populates the modal fields according to the current faculty selected', function () {
-          const courseAreaSelect = getByLabelText('Area', { exact: false }) as HTMLSelectElement;
-          const huidInput = getByLabelText('HUID', { exact: false }) as HTMLInputElement;
-          const firstNameInput = getByLabelText('First name', { exact: false }) as HTMLInputElement;
-          const lastNameInput = getByLabelText('Last name', { exact: false }) as HTMLInputElement;
-          const facultyCategorySelect = getByLabelText('Category', { exact: false }) as HTMLSelectElement;
-          const jointWithInput = getByLabelText('Joint with', { exact: false }) as HTMLInputElement;
-          const notesInput = getByLabelText('Notes', { exact: false }) as HTMLInputElement;
+          const courseAreaSelect = getByLabelText('Edit Faculty Course Area', { exact: false }) as HTMLSelectElement;
+          const huidInput = getByLabelText('Edit Faculty HUID', { exact: false }) as HTMLInputElement;
+          const firstNameInput = getByLabelText('Edit Faculty First Name', { exact: false }) as HTMLInputElement;
+          const lastNameInput = getByLabelText('Edit Faculty Last Name', { exact: false }) as HTMLInputElement;
+          const facultyCategorySelect = getByLabelText('Edit Faculty Category', { exact: false }) as HTMLSelectElement;
+          const jointWithInput = getByLabelText('Edit Faculty Joint With', { exact: false }) as HTMLInputElement;
+          const notesInput = getByLabelText('Edit Faculty Notes', { exact: false }) as HTMLInputElement;
           strictEqual(
             courseAreaSelect.value,
             appliedMathFacultyMemberResponse.area.name
@@ -118,7 +118,7 @@ describe('Faculty Modal', function () {
       });
       describe('Area', function () {
         it('is a required field', async function () {
-          const courseAreaSelect = getByLabelText('Area', { exact: false }) as HTMLSelectElement;
+          const courseAreaSelect = getByLabelText('Edit Faculty Course Area', { exact: false }) as HTMLSelectElement;
           fireEvent.change(courseAreaSelect, { target: { value: '' } });
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
@@ -130,7 +130,7 @@ describe('Faculty Modal', function () {
       });
       describe('HUID', function () {
         it('is a required field', async function () {
-          const huidInput = getByLabelText('HUID', { exact: false }) as HTMLInputElement;
+          const huidInput = getByLabelText('Edit Faculty HUID', { exact: false }) as HTMLInputElement;
           fireEvent.change(huidInput, { target: { value: '' } });
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
@@ -140,7 +140,7 @@ describe('Faculty Modal', function () {
           );
         });
         it('raises an appropriate error message when not valid', async function () {
-          const huidInput = getByLabelText('HUID', { exact: false }) as HTMLInputElement;
+          const huidInput = getByLabelText('Edit Faculty HUID', { exact: false }) as HTMLInputElement;
           fireEvent.change(huidInput, { target: { value: '123' } });
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
@@ -169,7 +169,7 @@ describe('Faculty Modal', function () {
       });
       describe('First name', function () {
         it('is not a required field', function () {
-          const firstNameInput = getByLabelText('First name', { exact: false }) as HTMLInputElement;
+          const firstNameInput = getByLabelText('Edit Faculty First Name', { exact: false }) as HTMLInputElement;
           fireEvent.change(firstNameInput, { target: { value: '' } });
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
@@ -178,7 +178,7 @@ describe('Faculty Modal', function () {
       });
       describe('Last name', function () {
         it('is a required field', async function () {
-          const lastNameInput = getByLabelText('Last name', { exact: false }) as HTMLInputElement;
+          const lastNameInput = getByLabelText('Edit Faculty Last Name', { exact: false }) as HTMLInputElement;
           fireEvent.change(lastNameInput, { target: { value: '' } });
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
@@ -190,7 +190,7 @@ describe('Faculty Modal', function () {
       });
       describe('Category', function () {
         it('is a required field', async function () {
-          const facultyCategorySelect = getByLabelText('Category', { exact: false }) as HTMLSelectElement;
+          const facultyCategorySelect = getByLabelText('Edit Faculty Category', { exact: false }) as HTMLSelectElement;
           fireEvent.change(facultyCategorySelect, { target: { value: '' } });
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
@@ -202,7 +202,7 @@ describe('Faculty Modal', function () {
       });
       describe('Joint With', function () {
         it('is not a required field', function () {
-          const jointWithInput = getByLabelText('Joint with', { exact: false }) as HTMLInputElement;
+          const jointWithInput = getByLabelText('Edit Faculty Joint With', { exact: false }) as HTMLInputElement;
           fireEvent.change(jointWithInput, { target: { value: '' } });
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
@@ -211,7 +211,7 @@ describe('Faculty Modal', function () {
       });
       describe('Notes', function () {
         it('is not a required field', function () {
-          const notesInput = getByLabelText('Notes', { exact: false }) as HTMLInputElement;
+          const notesInput = getByLabelText('Edit Faculty Notes', { exact: false }) as HTMLInputElement;
           fireEvent.change(notesInput, { target: { value: '' } });
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
@@ -296,22 +296,22 @@ describe('Faculty Modal', function () {
                 onSuccess={onSuccessStub}
               />
             ));
-            const courseAreaSelect = getByLabelText('Area', { exact: false }) as HTMLSelectElement;
+            const courseAreaSelect = getByLabelText('Edit Faculty Course Area', { exact: false }) as HTMLSelectElement;
             fireEvent.change(
               courseAreaSelect,
               { target: { value: appliedMathFacultyMemberResponse.area.name } }
             );
-            const huidInput = getByLabelText('HUID', { exact: false }) as HTMLInputElement;
+            const huidInput = getByLabelText('Edit Faculty HUID', { exact: false }) as HTMLInputElement;
             fireEvent.change(
               huidInput,
               { target: { value: appliedMathFacultyMemberResponse.HUID } }
             );
-            const lastNameInput = getByLabelText('Last name', { exact: false }) as HTMLInputElement;
+            const lastNameInput = getByLabelText('Edit Faculty Last Name', { exact: false }) as HTMLInputElement;
             fireEvent.change(
               lastNameInput,
               { target: { value: appliedMathFacultyMemberResponse.lastName } }
             );
-            const facultyCategorySelect = getByLabelText('Category', { exact: false }) as HTMLSelectElement;
+            const facultyCategorySelect = getByLabelText('Edit Faculty Category', { exact: false }) as HTMLSelectElement;
             fireEvent.change(
               facultyCategorySelect,
               { target: { value: appliedMathFacultyMemberResponse.category } }
