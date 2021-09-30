@@ -135,7 +135,7 @@ describe.only('NonClassEvent controller', function () {
       );
     });
   });
-  describe.only('create', function () {
+  describe('create', function () {
     it('creates non class parents within an existing area', async function () {
       const mockArea = rawAreaList[0];
       mockAreaRepository.findOneOrFail.resolves(mockArea);
