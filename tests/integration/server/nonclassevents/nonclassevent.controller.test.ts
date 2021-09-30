@@ -2,7 +2,7 @@ import { ForbiddenException, HttpServer, HttpStatus } from '@nestjs/common';
 import { SinonStub, stub } from 'sinon';
 import { TestingModule, Test } from '@nestjs/testing';
 import { SessionModule } from 'nestjs-session';
-import { string } from 'testData';
+import { nonClassEventManager, string } from 'testData';
 import { ConfigModule } from 'server/config/config.module';
 import { AuthModule } from 'server/auth/auth.module';
 import { AUTH_MODE } from 'common/constants';
@@ -74,13 +74,6 @@ describe('Non Class Event API', function () {
 
     api = nestApp.getHttpServer() as HttpServer;
   });
-  afterEach(function () {
-    authStub.restore();
-    Object.values(mockNonClassEventService)
-      .forEach((sinonStub: SinonStub): void => {
-        sinonStub.reset();
-      });
-  });
   describe('GET /', function () {
     describe('User is not authenticated', function () {
       it('is inaccessible to unauthenticated users', async function () {
@@ -94,8 +87,10 @@ describe('Non Class Event API', function () {
       });
     });
     describe('User is authenticated', function () {
+      beforeEach(function () {
+        authStub.resolves(nonClassEventManager);
+      });
       it('it returns all the non-class events in the database', async function () {
-        authStub.resolves();
         mockNonClassEventService.find.resolves([
           computationalModelingofFluidsReadingGroup,
           dataScienceReadingGroup,
