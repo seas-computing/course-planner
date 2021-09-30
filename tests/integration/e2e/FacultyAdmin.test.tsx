@@ -105,9 +105,7 @@ describe('End-to-end Faculty Admin updating', function () {
     });
     context('Creating a new faculty member', function () {
       beforeEach(async function () {
-        // Area, HUID, last name, category
         await renderResult.findByText(lastName, { exact: false });
-        await renderResult.findByText('Create New Faculty');
         const createFacultyButton = await renderResult.findByText('Create New Faculty', { exact: false });
         fireEvent.click(createFacultyButton);
         await renderResult.findByText(/Submit/);

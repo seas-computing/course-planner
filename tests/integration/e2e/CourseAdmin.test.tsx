@@ -7,7 +7,6 @@ import {
   RenderResult,
   fireEvent,
   waitForElementToBeRemoved,
-  wait,
   render,
 } from '@testing-library/react';
 import { TypeOrmModule, TypeOrmModuleOptions, getRepositoryToken } from '@nestjs/typeorm';
@@ -104,7 +103,6 @@ describe('End-to-end Course Admin updating', function () {
     context('Creating a course', function () {
       beforeEach(async function () {
         await renderResult.findByText(title, { exact: false });
-        await renderResult.findByText('Create New Course');
         const createCourseButton = await renderResult.findByText('Create New Course', { exact: false });
         fireEvent.click(createCourseButton);
         await renderResult.findByText(/Select an existing area/);
@@ -151,7 +149,6 @@ describe('End-to-end Course Admin updating', function () {
           const isSEASSelector = await renderResult.findByLabelText('Is SEAS', { exact: false }) as HTMLSelectElement;
           fireEvent.change(isSEASSelector,
             { target: { value: IS_SEAS.N } });
-          await wait(() => {}, { timeout: 1000 }); // fdo
           const submitButton = renderResult.getByText('Submit');
           fireEvent.click(submitButton);
           await waitForElementToBeRemoved(() => renderResult.queryByText('Note: * denotes a required field'));
