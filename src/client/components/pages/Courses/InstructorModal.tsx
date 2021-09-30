@@ -64,6 +64,7 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
     setAllInstructors,
   ]);
 
+  const instanceIdentifier = `${catalogNumber}, ${term} ${calendarYear}`;
   return (
     <Modal
       ariaLabelledBy="edit-instructors-header"
@@ -72,7 +73,7 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
     >
       <ModalHeader>
         <span id="edit-instructors-header">
-          {`Edit Instructors for ${catalogNumber}, ${term} ${calendarYear}`}
+          {`Edit Instructors for ${instanceIdentifier}`}
         </span>
       </ModalHeader>
       <ModalBody>
@@ -80,6 +81,7 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
           {allInstructors.map(({ id, displayName }, index, { length }) => (
             <TableCellListItem key={id}>
               <BorderlessButton
+                alt={`Remove ${displayName} from ${instanceIdentifier}`}
                 variant={VARIANT.DANGER}
                 onClick={() => {}}
               >
@@ -87,12 +89,20 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
               </BorderlessButton>
               {displayName}
               {index > 0 ? (
-                <BorderlessButton variant={VARIANT.PRIMARY} onClick={() => {}}>
+                <BorderlessButton
+                  alt={`Move ${displayName} up to position ${index} in ${instanceIdentifier}`}
+                  variant={VARIANT.PRIMARY}
+                  onClick={() => {}}
+                >
                   <FontAwesomeIcon icon={faArrowUp} />
                 </BorderlessButton>
               ) : null}
               {index < length - 1 ? (
-                <BorderlessButton variant={VARIANT.PRIMARY} onClick={() => {}}>
+                <BorderlessButton
+                  alt={`Move ${displayName} down to Position ${index + 2} in ${instanceIdentifier}`}
+                  variant={VARIANT.PRIMARY}
+                  onClick={() => {}}
+                >
                   <FontAwesomeIcon icon={faArrowDown} />
                 </BorderlessButton>
               ) : null}

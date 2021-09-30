@@ -87,6 +87,7 @@ export const formatInstructors = (
   const semKey = term.toLowerCase() as TermKey;
   const {
     id: parentId,
+    catalogNumber,
     [semKey]: instance,
   } = course;
   const { calendarYear, instructors } = instance;
@@ -110,6 +111,7 @@ export const formatInstructors = (
           )}
       </TableCellList>
       <BorderlessButton
+        alt={`Edit instructors for ${catalogNumber}, ${term} ${calendarYear}`}
         id={`${parentId}-${term}-edit-instructors-button`}
         onClick={() => { setModalVisible(true); }}
         variant={VARIANT.INFO}
