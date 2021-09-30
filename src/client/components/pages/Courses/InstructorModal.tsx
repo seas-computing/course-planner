@@ -20,13 +20,30 @@ import { TermKey } from '../../../../common/constants/term';
 import { InstructorResponseDTO } from '../../../../common/dto/courses/InstructorResponse.dto';
 
 interface InstructorModalProps {
+  /**
+   * True if the modal should be open
+   */
   isVisible: boolean;
+  /*
+   * Information about the semester associated with the instance that is being
+   * edited
+   */
   currentSemester: {
     term: TERM,
     calendarYear: string,
   };
+  /**
+   * Full details of the course/instances whose instructors are being edited
+   */
   currentCourse: CourseInstanceResponseDTO
+  /**
+   * A function that will close the modal when called
+   */
   closeModal: () => void;
+  /**
+   * A hook that will be called with the result of saving the instructor list
+   * to the server
+   */
   onSave: (arg0: InstructorResponseDTO[]) => void;
 }
 
@@ -50,7 +67,7 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
   } = currentCourse;
 
   /**
-   * Keep a local copy of teh instructors that we can modify before committing
+   * Keep a local copy of the instructors that we can modify before committing
    * to the server
    */
   const [

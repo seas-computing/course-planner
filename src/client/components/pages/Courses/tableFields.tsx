@@ -91,7 +91,14 @@ export const formatInstructors = (
     [semKey]: instance,
   } = course;
   const { calendarYear, instructors } = instance;
+  /**
+   * Control the visibility of the Isntructor modal
+   */
   const [modalVisible, setModalVisible] = useState(false);
+  /**
+   * Save a ref to the edit button so we can return focus after closing the
+   * modal
+   */
   const buttonRef = useRef<HTMLButtonElement>(null);
   const currentSemester = {
     term,
