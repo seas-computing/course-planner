@@ -145,7 +145,7 @@ describe.only('NonClassEvent controller', function () {
         mockArea
       );
     });
-    it('reteurns the newly created non-class parent data', async function () {
+    it('returns the newly created non-class parent data', async function () {
       const mockArea = rawAreaList[0];
       mockAreaRepository.findOneOrFail.resolves(mockArea);
       mockNonClassEventService.createWithNonClassEvents
