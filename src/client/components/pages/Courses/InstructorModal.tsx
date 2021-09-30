@@ -2,7 +2,15 @@ import React, {
   FunctionComponent, ReactElement, useState, useEffect,
 } from 'react';
 import {
-  Modal, ModalHeader, ModalFooter, ModalBody, Button, VARIANT, BorderlessButton, TableCellList, TableCellListItem,
+  Modal,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  Button,
+  VARIANT,
+  BorderlessButton,
+  List,
+  ListItem,
 } from 'mark-one';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt, faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
@@ -77,9 +85,9 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
         </span>
       </ModalHeader>
       <ModalBody>
-        <TableCellList>
+        <List>
           {allInstructors.map(({ id, displayName }, index, { length }) => (
-            <TableCellListItem key={id}>
+            <ListItem key={id}>
               <BorderlessButton
                 alt={`Remove ${displayName} from ${instanceIdentifier}`}
                 variant={VARIANT.DANGER}
@@ -106,9 +114,9 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
                   <FontAwesomeIcon icon={faArrowDown} />
                 </BorderlessButton>
               ) : null}
-            </TableCellListItem>
+            </ListItem>
           ))}
-        </TableCellList>
+        </List>
       </ModalBody>
       <ModalFooter>
         <Button
