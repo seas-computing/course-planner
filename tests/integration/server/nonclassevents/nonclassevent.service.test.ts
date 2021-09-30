@@ -16,6 +16,8 @@ import { NonClassParent } from 'server/nonClassEvent/nonclassparent.entity';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import MockDB from '../../../mocks/database/MockDB';
 import { PGTime } from '../../../../src/common/utils/PGTime';
+import { AUTH_MODE } from 'common/constants';
+import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 describe('NonClassEvent Service', function () {
   let testModule: TestingModule;
@@ -48,7 +50,10 @@ describe('NonClassEvent Service', function () {
           }),
           inject: [ConfigService],
         }),
-        AuthModule,
+        AuthModule.register({
+          strategies: [TestingStrategy],
+          defaultStrategy: AUTH_MODE.TEST,
+        }),
         PopulationModule,
         SemesterModule,
         NonClassEventModule,
