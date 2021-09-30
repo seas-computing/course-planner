@@ -30,7 +30,7 @@
     "lodash.get": "^4.4.2",
     "lodash.groupby": "^4.6.0",
     "loglevel": "^1.6.8",
-    "mark-one": "^0.2.5",
+    "mark-one": "^0.3.1",
     "morgan": "^1.10.0",
     "nestjs-redis": "^1.3.3",
     "nestjs-session": "^1.0.0",
