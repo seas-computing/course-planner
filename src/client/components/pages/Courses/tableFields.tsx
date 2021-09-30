@@ -123,7 +123,7 @@ export const formatInstructors = (
         isVisible={modalVisible}
         currentSemester={currentSemester}
         currentCourse={course}
-        onClose={() => {
+        closeModal={() => {
           setModalVisible(false);
           setTimeout(() => { buttonRef.current?.focus(); });
         }}

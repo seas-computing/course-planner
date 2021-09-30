@@ -26,7 +26,7 @@ interface InstructorModalProps {
     calendarYear: string,
   };
   currentCourse: CourseInstanceResponseDTO
-  onClose: () => void;
+  closeModal: () => void;
   onSave: (arg0: InstructorResponseDTO[]) => void;
 }
 
@@ -38,7 +38,7 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
   isVisible,
   currentCourse,
   currentSemester,
-  onClose,
+  closeModal,
 }): ReactElement => {
   const { term, calendarYear } = currentSemester;
   const semKey = term.toLowerCase() as TermKey;
@@ -76,7 +76,7 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
   return (
     <Modal
       ariaLabelledBy="edit-instructors-header"
-      closeHandler={onClose}
+      closeHandler={closeModal}
       isVisible={isVisible}
     >
       <ModalHeader>
@@ -127,7 +127,7 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
           Save
         </Button>
         <Button
-          onClick={onClose}
+          onClick={closeModal}
           variant={VARIANT.SECONDARY}
           disabled={false}
         >
