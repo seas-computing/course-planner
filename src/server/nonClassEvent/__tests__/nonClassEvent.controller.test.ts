@@ -36,7 +36,7 @@ const mockParentRepository = {
   findOne: stub(),
 };
 
-describe.only('NonClassEvent controller', function () {
+describe('NonClassEvent controller', function () {
   let controller: NonClassEventController;
   beforeEach(async function () {
     const testModule: TestingModule = await Test.createTestingModule({
