@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Body,
   Controller, Get, Inject, Post, Query, UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from 'server/config/config.service';
@@ -84,7 +85,11 @@ export class NonClassEventController {
     type: NonClassParent,
     description: 'The non-class parent was created along with one non-class event for each semester in the database',
   })
-  public async create(parent: CreateNonClassParentDTO):
+  @ApiBody({
+    type: CreateNonClassParentDTO,
+    required: true,
+  })
+  public async create(@Body() parent: CreateNonClassParentDTO):
   Promise<NonClassParent> {
     const area = await this.areaRepository.findOne({
       where: {
