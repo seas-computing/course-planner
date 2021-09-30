@@ -13,10 +13,11 @@ import { appliedMathematicsReadingGroup } from 'testData';
 import { Semester } from 'server/semester/semester.entity';
 import { Area } from 'server/area/area.entity';
 import { NonClassParent } from 'server/nonClassEvent/nonclassparent.entity';
+import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
+import { AUTH_MODE } from 'common/constants';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import MockDB from '../../../mocks/database/MockDB';
 import { PGTime } from '../../../../src/common/utils/PGTime';
-import { AUTH_MODE } from 'common/constants';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 describe('NonClassEvent Service', function () {
@@ -153,9 +154,12 @@ describe('NonClassEvent Service', function () {
   });
   describe('createWithNonClassEvents', function () {
     let parentRepository: Repository<NonClassParent>;
+    let eventRepository: Repository<NonClassEvent>;
     beforeEach(async function () {
       parentRepository = testModule
         .get<Repository<NonClassParent>>(getRepositoryToken(NonClassParent));
+      eventRepository = testModule
+        .get<Repository<NonClassEvent>>(getRepositoryToken(NonClassEvent));
       await parentRepository.query(`TRUNCATE "${parentRepository.metadata.tableName}" CASCADE;`);
     });
     it('creates one non-class parent', async function () {
@@ -172,14 +176,23 @@ describe('NonClassEvent Service', function () {
     });
     it('creates one non-class event per semester', async function () {
       const area = await areaRepository.findOne();
-      const semesterCount = await semesterRepository.count();
+      const semesterIds = (await semesterRepository.find())
+        .map(({ id }) => id);
 
-      const parent = await service.createWithNonClassEvents({
+      const { id } = await service.createWithNonClassEvents({
         area,
         title: appliedMathematicsReadingGroup.title,
       });
 
-      strictEqual(parent.nonClassEvents.length, semesterCount);
+      const eventSemesterIds = (await eventRepository.find({
+        relations: ['semester'],
+        where: {
+          nonClassParent: id,
+        },
+      }))
+        .map(({ semester }) => semester.id);
+
+      deepStrictEqual(eventSemesterIds.sort(), semesterIds.sort());
     });
     it('returns the newly created non-class parent', async function () {
       const area = await areaRepository.findOne();
