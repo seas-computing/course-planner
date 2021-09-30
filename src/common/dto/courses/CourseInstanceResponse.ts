@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   DAY, OFFERED, TERM_PATTERN, IS_SEAS,
 } from 'common/constants';
+import { InstructorResponseDTO } from './InstructorResponse.dto';
 
 export interface CourseInstanceResponseMeeting {
   id: string;
@@ -40,6 +41,7 @@ abstract class Instance {
   public offered: OFFERED;
 
   @ApiProperty({
+    type: InstructorResponseDTO,
     isArray: true,
     example: [
       {
@@ -55,11 +57,7 @@ abstract class Instance {
     ],
     default: [],
   })
-  public instructors: {
-    id: string;
-    displayName: string;
-    notes?: string;
-  }[] = [];
+  public instructors: InstructorResponseDTO[] = [];
 
   @ApiProperty({
     example: [
