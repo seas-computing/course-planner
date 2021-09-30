@@ -38,8 +38,6 @@ const mockParentRepository = {
 
 describe.only('NonClassEvent controller', function () {
   let controller: NonClassEventController;
-  let configService: ConfigService;
-
   beforeEach(async function () {
     const testModule: TestingModule = await Test.createTestingModule({
       imports: [
@@ -87,7 +85,7 @@ describe.only('NonClassEvent controller', function () {
       // off-by-one error
       const currentAcdemicYear = 2012;
       mockNonClassEventService.find.resolves([]);
-      stub(configService, 'academicYear').get(() => currentAcdemicYear);
+      stub(ConfigService.prototype, 'academicYear').get(() => currentAcdemicYear);
 
       await controller.find();
 
@@ -150,8 +148,10 @@ describe.only('NonClassEvent controller', function () {
     it('reteurns the newly created non-class parent data', async function () {
       const mockArea = rawAreaList[0];
       mockAreaRepository.findOneOrFail.resolves(mockArea);
-      mockParentRepository.findOne.resolves(nonClassParent);
+      mockNonClassEventService.createWithNonClassEvents
+        .resolves(nonClassParent);
 
+      mockParentRepository.findOne.resolves(nonClassParent);
       const parent = await controller.create(createNonClassParent);
 
       strictEqual(
