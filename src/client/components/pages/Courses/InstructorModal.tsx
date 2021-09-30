@@ -17,7 +17,7 @@ import { faTrashAlt, faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-
 import CourseInstanceResponseDTO from '../../../../common/dto/courses/CourseInstanceResponse';
 import { TERM } from '../../../../common/constants';
 import { TermKey } from '../../../../common/constants/term';
-import { Faculty } from '../../../../server/faculty/faculty.entity';
+import { InstructorResponseDTO } from '../../../../common/dto/courses/InstructorResponse.dto';
 
 interface InstructorModalProps {
   isVisible: boolean;
@@ -27,7 +27,7 @@ interface InstructorModalProps {
   };
   currentCourse: CourseInstanceResponseDTO
   onClose: () => void;
-  onSave: (arg0: Faculty[]) => void;
+  onSave: (arg0: InstructorResponseDTO[]) => void;
 }
 
 /**
