@@ -32,15 +32,7 @@ export const cs50CourseInstance: CourseInstanceResponseDTO = {
     studyCardEnrollment: null,
     actualEnrollment: null,
     instructors: [],
-    meetings: [
-      {
-        id: null,
-        day: null,
-        startTime: null,
-        endTime: null,
-        room: null,
-      },
-    ],
+    meetings: [],
   },
   fall: {
     id: '1ee96ccd-a36a-4602-8793-88e1b862add4',
@@ -70,8 +62,8 @@ export const cs50CourseInstance: CourseInstanceResponseDTO = {
       {
         id: 'afc4ee36-b0cf-4cd7-97b7-b51b3323280a',
         day: DAY.FRI,
-        startTime: '10:00 AM',
-        endTime: '12:00 PM',
+        startTime: '10:00:00',
+        endTime: '12:00:00',
         room: {
           id: 'afc4ee36-b0cf-4cd7-97b7-b51b3323280d',
           campus: 'Cambridge',
@@ -81,8 +73,8 @@ export const cs50CourseInstance: CourseInstanceResponseDTO = {
       {
         id: 'f21f783c-2204-4f32-8459-4b84095bbcc0',
         day: DAY.TUE,
-        startTime: '10:00 AM',
-        endTime: '12:00 PM',
+        startTime: '10:00:00',
+        endTime: '12:00:00',
         room: {
           id: 'afc4ee36-b0cf-4cd7-97b7-b51b3323280d',
           campus: 'Cambridge',
@@ -92,8 +84,8 @@ export const cs50CourseInstance: CourseInstanceResponseDTO = {
       {
         id: 'be6235a9-3425-4b03-aa90-9a69997ad1cf',
         day: DAY.THU,
-        startTime: '11:00 AM',
-        endTime: '11:30 PM',
+        startTime: '11:00:00',
+        endTime: '23:30:00',
         room: null,
       },
     ],
@@ -124,15 +116,7 @@ export const am105CourseInstance: CourseInstanceResponseDTO = {
     studyCardEnrollment: null,
     actualEnrollment: null,
     instructors: [],
-    meetings: [
-      {
-        id: null,
-        day: null,
-        startTime: null,
-        endTime: null,
-        room: null,
-      },
-    ],
+    meetings: [],
   },
   spring: {
     id: '336248cd-003d-4e61-8c9e-ad71ff8c0858',
@@ -151,8 +135,8 @@ export const am105CourseInstance: CourseInstanceResponseDTO = {
       {
         id: '86bff820-6378-4d37-b017-6862f099c5c8',
         day: DAY.THU,
-        startTime: '10:00 AM',
-        endTime: '12:00 PM',
+        startTime: '10:00:00',
+        endTime: '12:00:00',
         room: {
           id: 'a176d455-a04b-4da8-a6b9-a3cf9ff5f6d4',
           campus: 'Cambridge',
@@ -196,8 +180,8 @@ export const es095CourseInstance: CourseInstanceResponseDTO = {
       {
         id: 'bb64bef2-584c-4a40-8d3f-34137580472e',
         day: DAY.TUE,
-        startTime: '03:00 PM',
-        endTime: '05:45 PM',
+        startTime: '15:00:00',
+        endTime: '17:45:00',
         room: {
           id: 'bb64bef2-584c-4a40-8d3f-34137580472f',
           campus: 'Cambridge',
@@ -224,8 +208,8 @@ export const es095CourseInstance: CourseInstanceResponseDTO = {
       {
         id: 'a405c124-391d-4584-b7f2-6c4442dcd4a4',
         day: DAY.THU,
-        startTime: '04:00 PM',
-        endTime: '06:00 PM',
+        startTime: '16:00:00',
+        endTime: '18:00:00',
         room: {
           id: 'bb64bef2-584c-4a40-8d3f-34137580472f',
           campus: 'Cambridge',
@@ -260,15 +244,7 @@ export const ac209aCourseInstance: CourseInstanceResponseDTO = {
     studyCardEnrollment: null,
     actualEnrollment: null,
     instructors: [],
-    meetings: [
-      {
-        id: null,
-        day: null,
-        startTime: null,
-        endTime: null,
-        room: null,
-      },
-    ],
+    meetings: [],
   },
   fall: {
     id: 'b0aca4ce-e90b-47e4-97be-2187b3b7a621',
@@ -293,8 +269,8 @@ export const ac209aCourseInstance: CourseInstanceResponseDTO = {
       {
         id: '0a3b2708-6191-4e1a-857b-6d3352836955',
         day: DAY.MON,
-        startTime: '01:30 PM',
-        endTime: '02:45 PM',
+        startTime: '13:30:00',
+        endTime: '14:45:00',
         room: {
           id: '533bc88d-3652-43c9-9936-56e280b57d6f',
           campus: 'Cambridge',
@@ -304,8 +280,8 @@ export const ac209aCourseInstance: CourseInstanceResponseDTO = {
       {
         id: '533bc88d-3652-43c9-9936-56e280b57d6e',
         day: DAY.WED,
-        startTime: '01:30 PM',
-        endTime: '02:45 PM',
+        startTime: '13:30:00',
+        endTime: '14:45:00',
         room: {
           id: '533bc88d-3652-43c9-9936-56e280b57d6f',
           campus: 'Cambridge',
@@ -341,15 +317,7 @@ export const ac209aCourseInstanceWithoutRooms
     studyCardEnrollment: null,
     actualEnrollment: null,
     instructors: [],
-    meetings: [
-      {
-        id: null,
-        day: null,
-        startTime: null,
-        endTime: null,
-        room: null,
-      },
-    ],
+    meetings: [],
   },
   fall: {
     id: 'b0aca4ce-e90b-47e4-97be-2187b3b7a621',
@@ -374,15 +342,15 @@ export const ac209aCourseInstanceWithoutRooms
       {
         id: '0a3b2708-6191-4e1a-857b-6d3352836955',
         day: DAY.MON,
-        startTime: '01:30 PM',
-        endTime: '02:45 PM',
+        startTime: '13:30:00',
+        endTime: '14:45:00',
         room: null,
       },
       {
         id: '533bc88d-3652-43c9-9936-56e280b57d6e',
         day: DAY.WED,
-        startTime: '01:30 PM',
-        endTime: '02:45 PM',
+        startTime: '13:30:00',
+        endTime: '14:45:00',
         room: null,
       },
     ],

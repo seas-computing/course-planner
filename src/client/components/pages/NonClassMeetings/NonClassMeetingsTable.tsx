@@ -22,6 +22,7 @@ import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { dayEnumToString } from 'common/constants/day';
 import { MeetingGrid, MeetingGridSection } from 'client/components/pages/Courses/tableFields';
 import { CampusIcon, CellLayout } from 'client/components/general';
+import { PGTime } from '../../../../common/utils/PGTime';
 
 interface NonClassMeetingsTableProps {
   /**
@@ -128,7 +129,7 @@ const NonClassMeetingsTable: FunctionComponent<NonClassMeetingsTableProps> = ({
                       <MeetingGrid>
                         <MeetingGridSection area="time">
                           <div>{dayEnumToString(day)}</div>
-                          <div>{`${startTime}-${endTime}`}</div>
+                          <div>{`${PGTime.toDisplay(startTime)} - ${PGTime.toDisplay(endTime)}`}</div>
                         </MeetingGridSection>
                         {room && (
                           <>
@@ -167,7 +168,7 @@ const NonClassMeetingsTable: FunctionComponent<NonClassMeetingsTableProps> = ({
                       <MeetingGrid>
                         <MeetingGridSection area="time">
                           <div>{dayEnumToString(day)}</div>
-                          <div>{`${startTime}-${endTime}`}</div>
+                          <div>{`${PGTime.toDisplay(startTime)} - ${PGTime.toDisplay(endTime)}`}</div>
                         </MeetingGridSection>
                         {room && (
                           <>

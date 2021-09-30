@@ -14,7 +14,6 @@ import {
   computerScienceCourse,
   physicsCourse,
 } from 'testData';
-import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
@@ -22,16 +21,8 @@ describe('Course service', function () {
   let courseService: CourseService;
   let courseRepository: Repository<Course>;
   let areaRepository: Repository<Area>;
-  let db: MockDB;
   let testModule: TestingModule;
 
-  before(async function () {
-    db = new MockDB();
-    await db.init();
-  });
-  after(async function () {
-    await db.stop();
-  });
   beforeEach(async function () {
     testModule = await Test.createTestingModule({
       imports: [
@@ -64,7 +55,7 @@ describe('Course service', function () {
       ],
     })
       .overrideProvider(ConfigService)
-      .useValue(new ConfigService(db.connectionEnv))
+      .useValue(new ConfigService(this.database.connectionEnv))
       .compile();
 
     courseService = testModule.get<CourseService>(CourseService);

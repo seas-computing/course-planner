@@ -23,12 +23,10 @@ import { ConfigService } from 'server/config/config.service';
 import { NonClassParent } from 'server/nonClassEvent/nonclassparent.entity';
 import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
 import { PopulationModule } from '../population.module';
-import MockDB from '../../MockDB';
 import * as testData from '../data';
 
 describe('Population Service', function () {
   let testModule: TestingModule;
-  let db: MockDB;
   let areaRepository: Repository<Area>;
   let semesterRepository: Repository<Semester>;
   let roomRepository: Repository<Room>;
@@ -40,19 +38,6 @@ describe('Population Service', function () {
   let courseRepository: Repository<Course>;
   let courseInstanceRepository: Repository<CourseInstance>;
 
-  before(async function () {
-    // set the test timeout to 2 minutes to give the database container time to
-    // come online
-    this.timeout(120000);
-    // Our test database needs to be set up before any of our tests run
-    db = new MockDB();
-    return db.init();
-  });
-  after(function () {
-    // we need to stop the container after test suite finishes, in case any
-    // other suites will be using the back end.
-    return db.stop();
-  });
   beforeEach(async function () {
     testModule = await Test.createTestingModule({
       imports: [
@@ -74,7 +59,7 @@ describe('Population Service', function () {
       ],
     })
       .overrideProvider(ConfigService)
-      .useValue(new ConfigService(db.connectionEnv))
+      .useValue(new ConfigService(this.database.connectionEnv))
       .compile();
   });
   describe('Automatic population', function () {
@@ -339,7 +324,7 @@ describe('Population Service', function () {
       // close the module, triggering beforeApplicationShutdown hook
       await testModule.close();
       // Open a direct connection to the db with TypeORM
-      const config = new ConfigService(db.connectionEnv);
+      const config = new ConfigService(this.database.connectionEnv);
       typeormConnection = await createConnection({
         ...config.dbOptions,
         synchronize: true,

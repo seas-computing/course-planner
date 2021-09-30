@@ -13,6 +13,7 @@ import { offeredEnumToString } from 'common/constants/offered';
 import {
   retrieveValue, tableFields, formatInstructors, formatMeetings,
 } from '../tableFields';
+import { PGTime } from '../../../../../common/utils/PGTime';
 
 describe('tableFields', function () {
   let updateSpy: SinonSpy;
@@ -140,7 +141,17 @@ describe('tableFields', function () {
               .map(({
                 day, startTime, endTime, room,
               }): string => (
-                `${dayEnumToString(day)}${startTime}-${endTime}${room.name}${room.campus}`));
+                `${
+                  dayEnumToString(day)
+                }${
+                  PGTime.toDisplay(startTime)
+                } - ${
+                  PGTime.toDisplay(endTime)
+                }${
+                  room.name
+                }${
+                  room.campus
+                }`));
             deepStrictEqual(entries, timesList);
           });
         });
@@ -162,7 +173,13 @@ describe('tableFields', function () {
               .map(({ textContent }): string => textContent);
             const timesList = ac209aCourseInstance.fall.meetings
               .map(({ day, startTime, endTime }): string => (
-                `${dayEnumToString(day)}${startTime}-${endTime}`));
+                `${
+                  dayEnumToString(day)
+                }${
+                  PGTime.toDisplay(startTime)
+                } - ${
+                  PGTime.toDisplay(endTime)
+                }`));
             deepStrictEqual(entries, timesList);
           });
         });

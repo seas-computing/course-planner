@@ -1,6 +1,7 @@
 import {
   Inject, Injectable, OnApplicationBootstrap, BeforeApplicationShutdown,
 } from '@nestjs/common';
+import { getConnection } from 'typeorm';
 import { SemesterPopulationService } from './semester.population';
 import { AreaPopulationService } from './area.population';
 import { RoomPopulationService } from './room.population';
@@ -66,11 +67,10 @@ export class PopulationService implements
    * the schemas, after the nest app closes.
    */
   public async beforeApplicationShutdown(): Promise<void> {
-    await this.nonClassEventPopulationService.drop();
-    await this.courseService.drop();
-    await this.facultyService.drop();
-    await this.roomService.drop();
-    await this.semesterService.drop();
-    await this.areaService.drop();
+    const connection = getConnection();
+    const queryRunner = connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.clearDatabase();
+    return queryRunner.release();
   }
 }

@@ -51,7 +51,7 @@ export default abstract class RoomRequest {
     example: '14:45:00',
   })
   @IsNotEmpty()
-  @Matches(PGTime.regex)
+  @Matches(PGTime.strictRegex)
   @IsOccurringBefore('endTime')
   public startTime: string;
 
@@ -63,7 +63,7 @@ export default abstract class RoomRequest {
     example: '16:30:00',
   })
   @IsNotEmpty()
-  @Matches(PGTime.regex)
+  @Matches(PGTime.strictRegex)
   @IsOccurringAfter('startTime')
   public endTime: string;
 

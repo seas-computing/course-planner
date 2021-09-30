@@ -24,7 +24,6 @@ import { MeetingTimesList } from './MeetingTimesList';
 import RoomSelection from './RoomSelection';
 import RoomRequest from '../../../../common/dto/room/RoomRequest.dto';
 import CourseInstanceResponseDTO, { CourseInstanceResponseMeeting } from '../../../../common/dto/courses/CourseInstanceResponse';
-import { convert12To24HourTime } from '../../../../common/utils/timeHelperFunctions';
 import { updateMeetingList } from '../../../api';
 import { MeetingRequestDTO } from '../../../../common/dto/meeting/MeetingRequest.dto';
 import { MeetingResponseDTO } from '../../../../common/dto/meeting/MeetingResponse.dto';
@@ -220,6 +219,17 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   ] = useState<RoomRequest>(null);
 
   /**
+   * Keeps track of whether the user has altered fields in the form to determine
+   * whether to show a confirmation dialog on modal close
+   */
+  const [
+    isChanged,
+    setIsChanged,
+  ] = useState(false);
+
+  const confirmMessage = "You have unsaved changes. Click 'OK' to disregard changes, or 'Cancel' to continue editing.";
+
+  /**
    * When the modal becomes visible, focus the header, load the current list of
    * meetings, and reset the currentEditMeeting to null
    */
@@ -227,11 +237,28 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     if (isVisible) {
       setSaveError('');
       setMeetingModalFocus();
-      setAllMeetings(instanceMeetings);
     } else {
       setCurrentEditMeeting(null);
       setShowRoomsData(null);
     }
+    /**
+     * Checks to see if there are any unsaved changes in the modal when the user
+     * refreshes the page. If there are unsaved changes, the browser displays a
+     * warning message to confirm the page reload. If the user selects cancel, the
+     * user can continue making changes in the modal.
+     */
+    const onBeforeUnload = (event: Event) => {
+      if (!isChanged) return;
+      event.preventDefault();
+      // Need to disable this rule for browser compatibility reasons
+      // eslint-disable-next-line no-param-reassign
+      event.returnValue = false;
+      return confirmMessage;
+    };
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', onBeforeUnload);
+    };
   },
   [
     isVisible,
@@ -239,7 +266,41 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     instanceMeetings,
     setCurrentEditMeeting,
     setShowRoomsData,
+    isChanged,
   ]);
+
+  /**
+   * Only set the meetings in the modal if the modal is visible and the
+   * meetings haven't already yet been set.
+   */
+  useEffect(() => {
+    if (isVisible) {
+      setAllMeetings(instanceMeetings);
+    }
+  },
+  [
+    isVisible,
+    instanceMeetings,
+    setAllMeetings,
+  ]);
+
+  /**
+   * Called when the modal is closed. If there are any unsaved changes,
+   * a warning message appears, and the user must confirm discarding the unsaved
+   * changes in order to close the modal. If the user selects cancel, the user
+   * can continue making changes in the modal.
+   */
+  const onModalClose = () => {
+    if (isChanged) {
+      // eslint-disable-next-line no-alert
+      if (window.confirm(confirmMessage)) {
+        setIsChanged(false);
+        onClose();
+      }
+    } else {
+      onClose();
+    }
+  };
 
   /**
    * The current value of the error message when creating or editing a meeting time
@@ -275,6 +336,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   ): void => {
     setSaveError('');
     if (!saving) {
+      setIsChanged(true);
       setCurrentEditMeeting((meeting) => ({
         ...meeting,
         ...update,
@@ -359,15 +421,8 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
    */
   const searchForRooms = () => {
     if (!saving && validateTimes()) {
-      let { startTime, endTime } = currentEditMeeting;
+      const { startTime, endTime } = currentEditMeeting;
       const { day } = currentEditMeeting;
-      // TODO: Once we adddress #358 this should not be necessary
-      if (/M$/.test(startTime)) {
-        startTime = convert12To24HourTime(startTime);
-      }
-      if (/M$/.test(endTime)) {
-        endTime = convert12To24HourTime(endTime);
-      }
       setShowRoomsData({
         term,
         calendarYear,
@@ -387,6 +442,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
    */
   const removeMeeting = (meeting: CourseInstanceResponseMeeting) => {
     if (!saving) {
+      setIsChanged(true);
       if (currentEditMeeting && meeting.id === currentEditMeeting.id) {
         setCurrentEditMeeting(null);
         setShowRoomsData(null);
@@ -447,7 +503,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   return (
     <Modal
       ariaLabelledBy="editMeeting"
-      closeHandler={onClose}
+      closeHandler={onModalClose}
       isVisible={isVisible}
     >
       <ModalHeader
@@ -529,7 +585,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
           Save
         </Button>
         <Button
-          onClick={onClose}
+          onClick={onModalClose}
           variant={VARIANT.SECONDARY}
           disabled={saving}
         >

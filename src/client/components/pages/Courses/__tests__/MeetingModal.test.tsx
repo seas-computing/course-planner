@@ -19,10 +19,6 @@ import {
 import { TERM } from 'common/constants';
 import DAY, { dayEnumToString } from 'common/constants/day';
 import { TermKey } from 'common/constants/term';
-import {
-  convert12To24HourTime,
-  convertTo12HourDisplayTime,
-} from 'common/utils/timeHelperFunctions';
 import React, { useState } from 'react';
 import { SinonStub, stub } from 'sinon';
 import { render } from 'test-utils';
@@ -33,6 +29,7 @@ import * as meetingAPI from 'client/api/meetings';
 import { Button, VARIANT } from 'mark-one';
 import axios from 'axios';
 import MeetingModal from '../MeetingModal';
+import { PGTime } from '../../../../../common/utils/PGTime';
 
 describe('Meeting Modal', function () {
   let renderResult: RenderResult;
@@ -122,7 +119,13 @@ describe('Meeting Modal', function () {
         describe('On Initial Rendering', function () {
           it('displays each of the existing meeting times', function () {
             const expectedMeetingTimes = testCourseInstance.fall.meetings
-              .map((meeting) => `${dayEnumToString(meeting.day)}, ${meeting.startTime} to ${meeting.endTime}`);
+              .map((meeting) => `${
+                dayEnumToString(meeting.day)
+              }, ${
+                PGTime.toDisplay(meeting.startTime)
+              } to ${
+                PGTime.toDisplay(meeting.endTime)
+              }`);
             return Promise.all(
               expectedMeetingTimes.map((meeting) => waitForElement(
                 () => getByText(meeting, { exact: false })
@@ -163,22 +166,22 @@ describe('Meeting Modal', function () {
             it('displays the correct initial start time', function () {
               const startTimeDropdown = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;
               strictEqual(
-                convertTo12HourDisplayTime(startTimeDropdown.value),
+                startTimeDropdown.value,
                 cs50InitialMeeting.startTime
               );
             });
             it('displays the correct initial end time', function () {
               const endTimeDropdown = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
               strictEqual(
-                convertTo12HourDisplayTime(endTimeDropdown.value),
+                endTimeDropdown.value,
                 cs50InitialMeeting.endTime
               );
             });
             context('when a timeslot is selected', function () {
               const timeslot = '12:00 PM-1:00 PM';
               const times = timeslot.split('-');
-              const expectedStartTime = convert12To24HourTime(times[0]);
-              const expectedEndTime = convert12To24HourTime(times[1]);
+              const expectedStartTime = PGTime.fromDisplay(times[0]);
+              const expectedEndTime = PGTime.fromDisplay(times[1]);
               beforeEach(async function () {
                 const timepicker = await waitForElement(() => findByLabelText('Timeslot Button'));
                 fireEvent.click(timepicker);
@@ -186,11 +189,17 @@ describe('Meeting Modal', function () {
               });
               it('populates the start time text input field with the expected time', function () {
                 const startTimeInput = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;
-                strictEqual(startTimeInput.value, expectedStartTime);
+                strictEqual(
+                  startTimeInput.value,
+                  expectedStartTime.inputString
+                );
               });
               it('populates the end time text input field with the expected time', function () {
                 const endTimeInput = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
-                strictEqual(endTimeInput.value, expectedEndTime);
+                strictEqual(
+                  endTimeInput.value,
+                  expectedEndTime.inputString
+                );
               });
               context('after navigating to a different meeting', function () {
                 beforeEach(async function () {
@@ -202,11 +211,17 @@ describe('Meeting Modal', function () {
                 });
                 it('preserves the updated start time', function () {
                   const startTimeInput = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;
-                  strictEqual(startTimeInput.value, expectedStartTime);
+                  strictEqual(
+                    startTimeInput.value,
+                    expectedStartTime.inputString
+                  );
                 });
                 it('preserves the updated end time', function () {
                   const endTimeInput = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
-                  strictEqual(endTimeInput.value, expectedEndTime);
+                  strictEqual(
+                    endTimeInput.value,
+                    expectedEndTime.inputString
+                  );
                 });
               });
               context('after clicking the "Show Rooms" button', function () {
@@ -254,7 +269,10 @@ describe('Meeting Modal', function () {
                   const editCS50InitialMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50InitialMeeting.id));
                   fireEvent.click(editCS50InitialMeetingButton);
                   const startTimeInput = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;
-                  strictEqual(startTimeInput.value, expectedStartTime);
+                  strictEqual(
+                    startTimeInput.value,
+                    expectedStartTime.inputString
+                  );
                 });
                 it('preserves the updated end time', async function () {
                   const closeButton = getByText('Close');
@@ -263,7 +281,7 @@ describe('Meeting Modal', function () {
                   const editCS50InitialMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50InitialMeeting.id));
                   fireEvent.click(editCS50InitialMeetingButton);
                   const endTimeInput = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
-                  strictEqual(endTimeInput.value, expectedEndTime);
+                  strictEqual(endTimeInput.value, expectedEndTime.inputString);
                 });
               });
               context('after clicking the "Add New Time" button', function () {
@@ -290,14 +308,20 @@ describe('Meeting Modal', function () {
                     const editCS50InitialMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50InitialMeeting.id));
                     fireEvent.click(editCS50InitialMeetingButton);
                     const startTimeInput = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;
-                    strictEqual(startTimeInput.value, expectedStartTime);
+                    strictEqual(
+                      startTimeInput.value,
+                      expectedStartTime.inputString
+                    );
                   });
                   it('preserves the originally updated end time', async function () {
                     // Reopen the original meeting to check value
                     const editCS50InitialMeetingButton = await waitForElement(() => document.getElementById('editMeetingButton' + cs50InitialMeeting.id));
                     fireEvent.click(editCS50InitialMeetingButton);
                     const endTimeInput = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
-                    strictEqual(endTimeInput.value, expectedEndTime);
+                    strictEqual(
+                      endTimeInput.value,
+                      expectedEndTime.inputString
+                    );
                   });
                 });
               });
@@ -454,7 +478,7 @@ describe('Meeting Modal', function () {
                     fireEvent.click(editCS50InitialMeetingButton);
                     strictEqual(
                       startTimeDropdown.value,
-                      convert12To24HourTime(updatedStartTime)
+                      updatedStartTime
                     );
                   });
                 });
@@ -507,7 +531,7 @@ describe('Meeting Modal', function () {
                     fireEvent.click(editCS50InitialMeetingButton);
                     strictEqual(
                       startTimeDropdown.value,
-                      convert12To24HourTime(updatedStartTime)
+                      updatedStartTime
                     );
                   });
                 });
@@ -538,7 +562,7 @@ describe('Meeting Modal', function () {
                     fireEvent.click(editCS50InitialMeetingButton);
                     strictEqual(
                       startTimeDropdown.value,
-                      convert12To24HourTime(updatedStartTime)
+                      updatedStartTime
                     );
                   });
                 });
@@ -588,7 +612,7 @@ describe('Meeting Modal', function () {
               });
               context('when changed to a value later than end time', function () {
                 const errorMessage = 'End time must be later than start time.';
-                const updatedStartTime = convert12To24HourTime('11:59 PM');
+                const updatedStartTime = PGTime.fromDisplay('11:59 PM');
                 beforeEach(function () {
                   const startTimeDropdown = getByLabelText('Meeting Start Time', { exact: false }) as HTMLInputElement;
                   fireEvent.change(startTimeDropdown,
@@ -646,7 +670,7 @@ describe('Meeting Modal', function () {
                     fireEvent.click(editCS50InitialMeetingButton);
                     strictEqual(
                       endTimeDropdown.value,
-                      convert12To24HourTime(updatedEndTime)
+                      updatedEndTime
                     );
                   });
                 });
@@ -699,7 +723,7 @@ describe('Meeting Modal', function () {
                     fireEvent.click(editCS50InitialMeetingButton);
                     strictEqual(
                       endTimeDropdown.value,
-                      convert12To24HourTime(updatedEndTime)
+                      updatedEndTime
                     );
                   });
                 });
@@ -730,7 +754,7 @@ describe('Meeting Modal', function () {
                     fireEvent.click(editCS50InitialMeetingButton);
                     strictEqual(
                       endTimeDropdown.value,
-                      convert12To24HourTime(updatedEndTime)
+                      updatedEndTime
                     );
                   });
                 });
@@ -780,7 +804,7 @@ describe('Meeting Modal', function () {
               });
               context('when changed to a value earlier than start time', function () {
                 const errorMessage = 'End time must be later than start time.';
-                const updatedEndTime = convert12To24HourTime('12:01 AM');
+                const updatedEndTime = PGTime.fromDisplay('12:01 AM');
                 beforeEach(function () {
                   const endTimeDropdown = getByLabelText('Meeting End Time', { exact: false }) as HTMLInputElement;
                   fireEvent.change(endTimeDropdown,
@@ -1146,6 +1170,7 @@ describe('Meeting Modal', function () {
           fireEvent.click(getByText('Close'));
           let mondays = queryAllByText(/Monday/);
           strictEqual(mondays.length, 1);
+          stub(window, 'confirm').returns(true);
           // Close and reopen modal
           fireEvent.click(getByText('Cancel'));
           fireEvent.click(getByText('OPEN'));

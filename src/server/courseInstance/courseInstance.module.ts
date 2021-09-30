@@ -11,12 +11,18 @@ import { CourseInstanceService } from './courseInstance.service';
 import { CourseInstanceController } from './courseInstance.controller';
 import { ScheduleBlockView } from './ScheduleBlockView.entity';
 import { ScheduleEntryView } from './ScheduleEntryView.entity';
+import { CourseInstance } from './courseinstance.entity';
+import { Faculty } from '../faculty/faculty.entity';
+import { FacultyCourseInstance } from './facultycourseinstance.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       Course,
+      CourseInstance,
       CourseListingView,
+      Faculty,
+      FacultyCourseInstance,
       MultiYearPlanInstanceView,
       MultiYearPlanView,
       ScheduleBlockView,

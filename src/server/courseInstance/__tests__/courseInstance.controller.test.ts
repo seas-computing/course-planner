@@ -22,7 +22,13 @@ import { MultiYearPlanInstanceView } from '../MultiYearPlanInstanceView.entity';
 import { ScheduleBlockView } from '../ScheduleBlockView.entity';
 import { ScheduleEntryView } from '../ScheduleEntryView.entity';
 import { ScheduleViewResponseDTO } from '../../../common/dto/schedule/schedule.dto';
-import { TERM } from '../../../common/constants';
+import { TERM, AUTH_MODE } from '../../../common/constants';
+import { CourseInstance } from '../courseinstance.entity';
+import { Faculty } from '../../faculty/faculty.entity';
+import { FacultyCourseInstance } from '../facultycourseinstance.entity';
+import { AuthModule } from '../../auth/auth.module';
+import { TestingStrategy } from '../../../../tests/mocks/authentication/testing.strategy';
+import { ConfigModule } from '../../config/config.module';
 
 describe('Course Instance Controller', function () {
   let ciController: CourseInstanceController;
@@ -39,6 +45,13 @@ describe('Course Instance Controller', function () {
   beforeEach(async function () {
     const testModule = await Test.createTestingModule({
       controllers: [CourseInstanceController],
+      imports: [
+        ConfigModule,
+        AuthModule.register({
+          strategies: [TestingStrategy],
+          defaultStrategy: AUTH_MODE.TEST,
+        }),
+      ],
       providers: [
         {
           provide: getRepositoryToken(Semester),
@@ -68,6 +81,18 @@ describe('Course Instance Controller', function () {
           provide: getRepositoryToken(Course),
           useValue: mockRepository,
         },
+        {
+          provide: getRepositoryToken(CourseInstance),
+          useValue: mockRepository,
+        },
+        {
+          provide: getRepositoryToken(Faculty),
+          useValue: mockRepository,
+        },
+        {
+          provide: getRepositoryToken(FacultyCourseInstance),
+          useValue: mockRepository,
+        },
         ConfigService,
         CourseInstanceService,
         SemesterService,
@@ -75,6 +100,8 @@ describe('Course Instance Controller', function () {
     })
       .overrideGuard(Authentication)
       .useValue(true)
+      .overrideProvider(ConfigService)
+      .useValue(new ConfigService())
       .compile();
 
     semesterService = testModule

@@ -23,19 +23,19 @@ describe('ScheduleView', function () {
       ));
     });
     it('Should render morning hours in am time', function () {
-      const eleven = queryByText('11am');
+      const eleven = queryByText('11 AM');
       notStrictEqual(eleven, null);
     });
     it('Should render noon as 12pm', function () {
-      const noon = queryByText('12pm');
+      const noon = queryByText('12 PM');
       notStrictEqual(noon, null);
     });
     it('Should render afternoon hours in pm time', function () {
-      const one = queryByText('1pm');
+      const one = queryByText('1 PM');
       notStrictEqual(one, null);
     });
     it('Should not render the final hour', function () {
-      const two = queryByText('8pm');
+      const two = queryByText('8 PM');
       strictEqual(two, null);
     });
   });

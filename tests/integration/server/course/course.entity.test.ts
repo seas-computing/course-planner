@@ -7,7 +7,6 @@ import { ConfigService } from 'server/config/config.service';
 import { Area } from 'server/area/area.entity';
 import { strictEqual } from 'assert';
 import { CourseModule } from 'server/course/course.module';
-import MockDB from '../../../mocks/database/MockDB';
 import { AuthModule } from '../../../../src/server/auth/auth.module';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import { AUTH_MODE } from '../../../../src/common/constants';
@@ -16,17 +15,7 @@ describe('Course Entity', function () {
   let courseRepository: Repository<Course>;
   let testCourse: Course;
   let savedCourse: Course;
-  let db: MockDB;
   let testModule: TestingModule;
-
-  before(async function () {
-    db = new MockDB();
-    await db.init();
-  });
-
-  after(async function () {
-    await db.stop();
-  });
 
   beforeEach(async function () {
     testModule = await Test.createTestingModule({
@@ -52,7 +41,7 @@ describe('Course Entity', function () {
       ],
     })
       .overrideProvider(ConfigService)
-      .useValue(new ConfigService(db.connectionEnv))
+      .useValue(new ConfigService(this.database.connectionEnv))
       .compile();
 
     courseRepository = testModule.get(getRepositoryToken(Course));

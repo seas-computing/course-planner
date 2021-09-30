@@ -40,7 +40,6 @@ import { SessionModule } from 'nestjs-session';
 import CourseModal from 'client/components/pages/Courses/CourseModal';
 import { Repository } from 'typeorm';
 import { Area } from 'server/area/area.entity';
-import MockDB from '../../../mocks/database/MockDB';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import { CourseService } from '../../../../src/server/course/course.service';
 import { Course } from '../../../../src/server/course/course.entity';
@@ -74,18 +73,10 @@ describe('Course Admin Modal Behavior', function () {
   let courseService: CourseService;
   let courseRepository: Repository<Course>;
 
-  let db: MockDB;
   let testModule: TestingModule;
   let api: HttpServer;
   let supertestedApi: supertest.SuperTest<supertest.Test>;
 
-  before(async function () {
-    db = new MockDB();
-    await db.init();
-  });
-  after(async function () {
-    await db.stop();
-  });
   beforeEach(async function () {
     authStub = stub(TestingStrategy.prototype, 'login');
     authStub.resolves(adminUser);
@@ -126,7 +117,7 @@ describe('Course Admin Modal Behavior', function () {
       ],
     })
       .overrideProvider(ConfigService)
-      .useValue(new ConfigService(db.connectionEnv))
+      .useValue(new ConfigService(this.database.connectionEnv))
       .compile();
     courseService = testModule.get<CourseService>(CourseService);
     courseRepository = testModule.get(getRepositoryToken(Course));

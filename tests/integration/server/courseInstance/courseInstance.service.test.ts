@@ -1,4 +1,6 @@
-import { strictEqual, notStrictEqual, deepStrictEqual } from 'assert';
+import {
+  strictEqual, notStrictEqual, deepStrictEqual, ok,
+} from 'assert';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule, getRepositoryToken, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { CourseInstanceModule } from 'server/courseInstance/courseInstance.module';
@@ -7,7 +9,7 @@ import { CourseInstanceService } from 'server/courseInstance/courseInstance.serv
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { Course } from 'server/course/course.entity';
 import { CourseInstance } from 'server/courseInstance/courseinstance.entity';
-import { OFFERED } from 'common/constants';
+import { OFFERED, AUTH_MODE } from 'common/constants';
 import { Meeting } from 'server/meeting/meeting.entity';
 import { ConfigService } from 'server/config/config.service';
 import { ConfigModule } from 'server/config/config.module';
@@ -20,25 +22,16 @@ import {
 } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import { Repository } from 'typeorm';
 import { testFourYearPlanAcademicYears } from 'testData';
-import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
-import { PGTime } from '../../../../src/common/utils/PGTime';
+import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 describe('Course Instance Service', function () {
   let testModule: TestingModule;
-  let db: MockDB;
   let ciService: CourseInstanceService;
   let courseRepository: Repository<Course>;
   let instanceRepository: Repository<CourseInstance>;
   let meetingRepository: Repository<Meeting>;
-  before(async function () {
-    this.timeout(120000);
-    db = new MockDB();
-    return db.init();
-  });
-  after(async function () {
-    await db.stop();
-  });
+
   beforeEach(async function () {
     testModule = await Test.createTestingModule({
       imports: [
@@ -56,14 +49,17 @@ describe('Course Instance Service', function () {
           }),
           inject: [ConfigService],
         }),
-        AuthModule,
+        AuthModule.register({
+          strategies: [TestingStrategy],
+          defaultStrategy: AUTH_MODE.TEST,
+        }),
         PopulationModule,
         SemesterModule,
         CourseInstanceModule,
       ],
     })
       .overrideProvider(ConfigService)
-      .useValue(new ConfigService(db.connectionEnv))
+      .useValue(new ConfigService(this.database.connectionEnv))
       .compile();
     ciService = testModule.get(CourseInstanceService);
     await testModule.createNestApplication().init();
@@ -161,28 +157,6 @@ describe('Course Instance Service', function () {
           relations: ['room', 'room.building'],
         });
       });
-      it('Should format the startTimes and endTimes as HH:MM AM', function () {
-        notStrictEqual(result.length, 0);
-        result.forEach(({ spring, fall }) => {
-          [spring, fall].forEach(({ meetings }) => {
-            meetings.forEach(({ id, startTime, endTime }) => {
-              if (id) {
-                const {
-                  startTime: dbStartTime,
-                  endTime: dbEndTime,
-                } = dbMeetings
-                  .find(
-                    ({ id: dbID }) => dbID === id
-                  );
-                const pgDBStartTime = new PGTime(dbStartTime);
-                const pgDBEndTime = new PGTime(dbEndTime);
-                strictEqual(startTime, pgDBStartTime.displayTime);
-                strictEqual(endTime, pgDBEndTime.displayTime);
-              }
-            });
-          });
-        });
-      });
       it('Should concatenate the room and building name', function () {
         notStrictEqual(result.length, 0);
         result.forEach(({ spring, fall }) => {
@@ -197,6 +171,53 @@ describe('Course Instance Service', function () {
             });
           });
         });
+      });
+    });
+    describe('Ordering', function () {
+      it('should order by area => prefix => integer => letter', function () {
+        for (let i = 0; i < result.length; i++) {
+          if (result[i + 1]) {
+            const {
+              area: areaA,
+              catalogNumber: catalogNumberA,
+            } = result[i];
+            const {
+              area: areaB,
+              catalogNumber: catalogNumberB,
+            } = result[i + 1];
+            if (areaA === areaB) {
+              const [prefixA, ...numberA] = catalogNumberA.split(' ');
+              const [prefixB, ...numberB] = catalogNumberB.split(' ');
+              if (prefixA === prefixB) {
+                const integerA = parseInt(numberA.join('').replace(/\D*/g, ''), 10);
+                const integerB = parseInt(numberB.join('').replace(/\D*/g, ''), 10);
+                if (integerA === integerB) {
+                  const letterA = numberA.join().replace(/^\d*/g, '');
+                  const letterB = numberB.join().replace(/^\d*/g, '');
+                  ok(
+                    letterA < letterB,
+                    `${catalogNumberB} (${areaB}) sorted before ${catalogNumberA} (${areaA})`
+                  );
+                } else {
+                  ok(
+                    integerA < integerB,
+                    `${catalogNumberB} (${areaB}) sorted before ${catalogNumberA} (${areaA})`
+                  );
+                }
+              } else {
+                ok(
+                  prefixA < prefixB,
+                  `${catalogNumberB} (${areaB}) sorted before ${catalogNumberA} (${areaA})`
+                );
+              }
+            } else {
+              ok(
+                areaA < areaB,
+                `${catalogNumberB} (${areaB}) sorted before ${catalogNumberA} (${areaA})`
+              );
+            }
+          }
+        }
       });
     });
   });

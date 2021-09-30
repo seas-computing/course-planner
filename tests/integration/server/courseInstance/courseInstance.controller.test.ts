@@ -2,7 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SessionModule } from 'nestjs-session';
 import { stub, SinonStub } from 'sinon';
 import request, { Response } from 'supertest';
-import { Repository } from 'typeorm';
+import {
+  Repository, Not, In, EntityNotFoundError,
+} from 'typeorm';
 import {
   HttpStatus,
   HttpServer,
@@ -12,6 +14,7 @@ import {
   strictEqual,
   deepStrictEqual,
   notStrictEqual,
+  rejects,
 } from 'assert';
 import {
   TypeOrmModule,
@@ -29,26 +32,21 @@ import * as dummy from 'testData';
 import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
-import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import { PGTime } from '../../../../src/common/utils/PGTime';
+import { CourseInstance } from '../../../../src/server/courseInstance/courseinstance.entity';
+import { Faculty } from '../../../../src/server/faculty/faculty.entity';
+import { FacultyCourseInstance } from '../../../../src/server/courseInstance/facultycourseinstance.entity';
+import { FacultyListingView } from '../../../../src/server/faculty/FacultyListingView.entity';
+import { InstructorRequestDTO } from '../../../../src/common/dto/courses/InstructorRequest.dto';
 
 describe('CourseInstance API', function () {
   let testModule: TestingModule;
-  let db: MockDB;
   let meetingRepository: Repository<Meeting>;
+  let facultyRepository: Repository<Faculty>;
+  let fciRepository: Repository<FacultyCourseInstance>;
   let api: HttpServer;
   let authStub: SinonStub;
-
-  before(async function () {
-    this.timeout(120000);
-    db = new MockDB();
-    return db.init();
-  });
-
-  after(async function () {
-    await db.stop();
-  });
 
   beforeEach(async function () {
     authStub = stub(TestingStrategy.prototype, 'login');
@@ -85,9 +83,11 @@ describe('CourseInstance API', function () {
       ],
     })
       .overrideProvider(ConfigService)
-      .useValue(new ConfigService(db.connectionEnv))
+      .useValue(new ConfigService(this.database.connectionEnv))
       .compile();
     meetingRepository = testModule.get(getRepositoryToken(Meeting));
+    facultyRepository = testModule.get(getRepositoryToken(Faculty));
+    fciRepository = testModule.get(getRepositoryToken(FacultyCourseInstance));
     const nestApp = await testModule
       .createNestApplication()
       .useGlobalPipes(new BadRequestExceptionPipe())
@@ -576,6 +576,461 @@ describe('CourseInstance API', function () {
               'Tests did not run, possibly because data does not include multiple courses in the same block'
             );
           });
+        });
+      });
+    });
+  });
+
+  describe('PUT /:id/instructors', function () {
+    let response: Response;
+    let testFaculty: Faculty;
+    let testInstance: CourseInstance;
+    let assignedInstructors: InstructorRequestDTO[];
+    let testAssignmentId: string;
+    let originalInstanceAssignments: string[];
+    beforeEach(async function () {
+      // Find a courseInstance that has multiple faculty
+      ({
+        id: testAssignmentId,
+        faculty: testFaculty,
+        courseInstance: testInstance,
+      } = await fciRepository.findOne(
+        {
+          where: {
+            order: 1,
+          },
+          relations: [
+            'faculty',
+            'faculty.facultyCourseInstances',
+            'courseInstance',
+            'courseInstance.facultyCourseInstances',
+            'courseInstance.facultyCourseInstances.faculty',
+          ],
+        }
+      ));
+      // convert Faculty to InstructorRequestDTO's
+      assignedInstructors = testInstance.facultyCourseInstances
+        .map(({ faculty }) => ({
+          id: faculty.id,
+          displayName: `${faculty.lastName}, ${faculty.firstName}`,
+        }));
+      originalInstanceAssignments = testInstance.facultyCourseInstances
+        .map(({ id }) => id);
+    });
+    context('As an admin user', function () {
+      beforeEach(function () {
+        authStub.resolves(dummy.adminUser);
+      });
+      describe('Adding an instructor', function () {
+        let instructorToAdd: InstructorRequestDTO;
+        let originalInstructorAssignments: string[];
+        beforeEach(async function () {
+          // find a faculty member who is not currently assigned to that
+          // course but does have other courses assignments. We need to do this
+          // through the facultyCourseInstance Repository, because the
+          // facultyRepository doesn't let us query for faculty who have
+          // facultyCourseInstance entities associated with them
+          const { faculty: dbInstructor } = await fciRepository.findOne({
+            where: {
+              faculty: {
+                id: Not(In(assignedInstructors.map(({ id }) => id))),
+              },
+            },
+            relations: [
+              'faculty',
+              'faculty.facultyCourseInstances',
+            ],
+          });
+          instructorToAdd = ({
+            id: dbInstructor.id,
+            displayName: `${dbInstructor.lastName}, ${dbInstructor.firstName}`,
+          });
+          originalInstructorAssignments = dbInstructor
+            .facultyCourseInstances
+            .map(({ id }) => id);
+        });
+        context('To the beginning of the list', function () {
+          beforeEach(async function () {
+            response = await request(api)
+              .put(`/api/course-instances/${testInstance.id}/instructors`)
+              .send({
+                instructors: [
+                  instructorToAdd,
+                  ...assignedInstructors,
+                ],
+              });
+          });
+          it('Should return OK', function () {
+            strictEqual(response.statusCode, HttpStatus.OK);
+          });
+          it('Should include the new instructor in the correct place in the list', function () {
+            const [firstInstructor] = response.body;
+            strictEqual(firstInstructor.id, instructorToAdd.id);
+          });
+          it('Should save the new instructor list in the database', async function () {
+            const savedInstructors = await fciRepository.find({
+              where: {
+                courseInstance: testInstance.id,
+              },
+              order: {
+                order: 'ASC',
+              },
+              relations: ['faculty'],
+            });
+            const savedInstructorIds = savedInstructors
+              .map(({ faculty }) => faculty.id);
+            deepStrictEqual(
+              savedInstructorIds,
+              [instructorToAdd, ...assignedInstructors].map(({ id }) => id)
+            );
+          });
+          it('Should delete the old instructor assignments from the courseInstance', async function () {
+            return Promise.all(
+              originalInstanceAssignments
+                .map(async (assignmentId) => rejects(
+                  () => fciRepository.findOneOrFail(assignmentId),
+                  EntityNotFoundError
+                ))
+            );
+          });
+          it('Should not delete the other courseInstance assignments from the faculty', async function () {
+            const savedAssignments = await fciRepository.find(
+              {
+                where: {
+                  faculty: instructorToAdd.id,
+                  courseInstance: Not(testInstance.id),
+                },
+              }
+            );
+            notStrictEqual(savedAssignments.length, 0);
+            deepStrictEqual(
+              savedAssignments
+                .map(({ id }) => id)
+                .sort(),
+              originalInstructorAssignments.sort()
+            );
+          });
+        });
+        context('To the end of the list', function () {
+          beforeEach(async function () {
+            response = await request(api)
+              .put(`/api/course-instances/${testInstance.id}/instructors`)
+              .send({
+                instructors: [
+                  ...assignedInstructors,
+                  instructorToAdd,
+                ],
+              });
+          });
+          it('Should return OK', function () {
+            strictEqual(response.statusCode, HttpStatus.OK);
+          });
+          it('Should include the new instructor in the correct place in the list', function () {
+            const lastInstructor = response.body[response.body.length - 1];
+            strictEqual(lastInstructor.id, instructorToAdd.id);
+          });
+          it('Should save the new instructor list in the database', async function () {
+            const savedInstructors = await fciRepository.find({
+              where: {
+                courseInstance: testInstance.id,
+              },
+              order: {
+                order: 'ASC',
+              },
+              relations: ['faculty'],
+            });
+            const savedInstructorIds = savedInstructors
+              .map(({ faculty }) => faculty.id);
+            deepStrictEqual(
+              savedInstructorIds,
+              ([...assignedInstructors, instructorToAdd]).map(({ id }) => id)
+            );
+          });
+          it('Should delete the old instructor assignments from the courseInstance', async function () {
+            return Promise.all(
+              originalInstanceAssignments
+                .map(async (assignmentId) => rejects(
+                  () => fciRepository.findOneOrFail(assignmentId),
+                  EntityNotFoundError
+                ))
+            );
+          });
+          it('Should not delete the other courseInstance assignments from the faculty', async function () {
+            const savedAssignments = await fciRepository.find(
+              {
+                where: {
+                  faculty: instructorToAdd.id,
+                  courseInstance: Not(testInstance.id),
+                },
+              }
+            );
+            notStrictEqual(savedAssignments.length, 0);
+            deepStrictEqual(
+              savedAssignments
+                .map(({ id }) => id)
+                .sort(),
+              originalInstructorAssignments.sort()
+            );
+          });
+        });
+      });
+      describe('Reordering instructors', function () {
+        let reorderedInstructors: InstructorRequestDTO[];
+        beforeEach(async function () {
+          const [
+            firstInstructor,
+            secondInstructor,
+            ...otherInstructors
+          ] = assignedInstructors;
+          reorderedInstructors = [
+            secondInstructor,
+            ...otherInstructors,
+            firstInstructor,
+          ];
+          response = await request(api)
+            .put(`/api/course-instances/${testInstance.id}/instructors`)
+            .send({
+              instructors: reorderedInstructors,
+            });
+        });
+        it('Should return OK', function () {
+          strictEqual(response.statusCode, HttpStatus.OK);
+        });
+        it('Should return the instructors in the correct order', function () {
+          const returnedInstructorIds = Array.isArray(response.body)
+            ? response.body.map(({ id }: FacultyListingView) => id)
+            : [];
+          deepStrictEqual(
+            returnedInstructorIds,
+            reorderedInstructors.map(({ id }) => id)
+          );
+        });
+        it('Should save the new instructor list in the database', async function () {
+          const savedInstructors = await fciRepository.find({
+            where: {
+              courseInstance: testInstance.id,
+            },
+            order: {
+              order: 'ASC',
+            },
+            relations: ['faculty'],
+          });
+          const savedInstructorIds = savedInstructors
+            .map(({ faculty }) => faculty.id);
+          deepStrictEqual(
+            savedInstructorIds,
+            reorderedInstructors.map(({ id }) => id)
+          );
+        });
+        it('Should delete the old instructor assignments from the courseInstance', async function () {
+          return Promise.all(
+            originalInstanceAssignments
+              .map(async (assignmentId) => rejects(
+                () => fciRepository.findOneOrFail(assignmentId),
+                EntityNotFoundError
+              ))
+          );
+        });
+      });
+      describe('Removing an instructor', function () {
+        let originalInstructorAssignments: string[];
+        let testFacultyIndex: number;
+        beforeEach(async function () {
+          originalInstructorAssignments = testFaculty
+            .facultyCourseInstances
+            .map(({ id }) => id);
+          testFacultyIndex = assignedInstructors
+            .findIndex(({ id }) => id === testFaculty.id);
+          assignedInstructors.splice(testFacultyIndex, 1);
+          response = await request(api)
+            .put(`/api/course-instances/${testInstance.id}/instructors`)
+            .send({
+              instructors: assignedInstructors,
+            });
+        });
+        it('Should return OK', function () {
+          strictEqual(response.statusCode, HttpStatus.OK);
+        });
+        it('Should not include the instructor in the list', function () {
+          notStrictEqual(response.body.length, 0);
+          const instructorIndex = Array.isArray(response.body)
+            ? response.body.findIndex((id) => id === testFaculty.id)
+            : null;
+          strictEqual(instructorIndex, -1);
+        });
+        it('Should save the new instructor list in the database', async function () {
+          const savedInstructors = await fciRepository.find({
+            where: {
+              courseInstance: testInstance.id,
+            },
+            order: {
+              order: 'ASC',
+            },
+            relations: ['faculty'],
+          });
+          const savedInstructorIds = savedInstructors
+            .map(({ faculty }) => faculty.id);
+          deepStrictEqual(
+            savedInstructorIds,
+            assignedInstructors.map(({ id }) => id)
+          );
+        });
+        it('Should delete the old instructor assignments from the courseInstance', async function () {
+          return Promise.all(
+            originalInstanceAssignments
+              .map(async (assignmentId) => rejects(
+                () => fciRepository.findOneOrFail(assignmentId),
+                EntityNotFoundError
+              ))
+          );
+        });
+        it('Should not delete the other courseInstance assignments from the faculty', async function () {
+          const savedAssignments = await fciRepository.find(
+            {
+              where: {
+                faculty: testFaculty.id,
+              },
+              order: {
+                id: 'ASC',
+              },
+            }
+          );
+          notStrictEqual(savedAssignments.length, 0);
+          deepStrictEqual(
+            savedAssignments
+              .map(({ id }) => id)
+              .sort(),
+            originalInstructorAssignments
+              .filter((id) => id !== testAssignmentId)
+              .sort()
+          );
+        });
+      });
+      describe('Removing all instructors', function () {
+        beforeEach(async function () {
+          response = await request(api)
+            .put(`/api/course-instances/${testInstance.id}/instructors`)
+            .send({
+              instructors: [],
+            });
+        });
+        it('Should return OK', function () {
+          strictEqual(response.statusCode, HttpStatus.OK);
+        });
+        it('Should return an empty list', function () {
+          strictEqual(response.body.length, 0);
+        });
+        it('Should delete all instance assignments in the database', async function () {
+          const updatedAssignments = await fciRepository.find({
+            where: {
+              id: In(originalInstanceAssignments),
+            },
+          });
+          strictEqual(updatedAssignments.length, 0);
+        });
+      });
+      describe('With invalid faculty Ids', function () {
+        beforeEach(async function () {
+          response = await request(api)
+            .put(`/api/course-instances/${testInstance.id}/instructors`)
+            .send({
+              instructors: [{
+                displayName: 'user, fake',
+                // Send a non-faculty ID
+                id: testAssignmentId,
+              }],
+            });
+        });
+        it('Should return a NOT_FOUND error', function () {
+          strictEqual(response.status, HttpStatus.NOT_FOUND);
+        });
+        it('Should not change the data in the database', async function () {
+          const dbAssignments = await fciRepository.find({
+            where: {
+              courseInstance: testInstance.id,
+            },
+            order: {
+              id: 'ASC',
+            },
+          });
+          deepStrictEqual(
+            dbAssignments.map(({ id }) => id),
+            originalInstanceAssignments.sort()
+          );
+        });
+      });
+      describe('With invalid courseInstance id', function () {
+        beforeEach(async function () {
+          response = await request(api)
+            .put(`/api/course-instances/${testFaculty.id}/instructors`)
+            .send({
+              instructors: [],
+            });
+        });
+        it('Should return a NOT_FOUND error', function () {
+          strictEqual(response.status, HttpStatus.NOT_FOUND);
+        });
+      });
+    });
+    context('As read-only user', function () {
+      beforeEach(function () {
+        authStub.resolves(dummy.readOnlyUser);
+      });
+      describe('Trying to remove instructors', function () {
+        beforeEach(async function () {
+          response = await request(api)
+            .put(`/api/course-instances/${testInstance.id}/instructors`)
+            .send({
+              instructors: [],
+            });
+        });
+        it('Should return a FORBIDDEN Error', function () {
+          strictEqual(response.statusCode, HttpStatus.FORBIDDEN);
+        });
+        it('Should not change the data in the database', async function () {
+          const dbAssignments = await fciRepository.find({
+            where: {
+              courseInstance: testInstance.id,
+            },
+            order: {
+              id: 'ASC',
+            },
+          });
+          deepStrictEqual(
+            dbAssignments.map(({ id }) => id),
+            originalInstanceAssignments.sort()
+          );
+        });
+      });
+    });
+    context('As a regular user', function () {
+      beforeEach(function () {
+        authStub.resolves(dummy.regularUser);
+      });
+      describe('Trying to remove instructors', function () {
+        beforeEach(async function () {
+          response = await request(api)
+            .put(`/api/course-instances/${testInstance.id}/instructors`)
+            .send({
+              instructors: [],
+            });
+        });
+        it('Should return a FORBIDDEN Error', function () {
+          strictEqual(response.statusCode, HttpStatus.FORBIDDEN);
+        });
+        it('Should not change the data in the database', async function () {
+          const dbAssignments = await fciRepository.find({
+            where: {
+              courseInstance: testInstance.id,
+            },
+            order: {
+              id: 'ASC',
+            },
+          });
+          deepStrictEqual(
+            dbAssignments.map(({ id }) => id),
+            originalInstanceAssignments.sort()
+          );
         });
       });
     });

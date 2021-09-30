@@ -22,18 +22,10 @@ import { TestingStrategy } from '../../../mocks/authentication/testing.strategy'
 
 describe('NonClassEvent Service', function () {
   let testModule: TestingModule;
-  let db: MockDB;
   let service: NonClassEventService;
   let semesterRepository: Repository<Semester>;
   let areaRepository: Repository<Area>;
 
-  before(async function () {
-    db = new MockDB();
-    await db.init();
-  });
-  after(async function () {
-    await db.stop();
-  });
   beforeEach(async function () {
     testModule = await Test.createTestingModule({
       imports: [
@@ -61,7 +53,7 @@ describe('NonClassEvent Service', function () {
       ],
     })
       .overrideProvider(ConfigService)
-      .useValue(new ConfigService(db.connectionEnv))
+      .useValue(new ConfigService(this.database.connectionEnv))
       .compile();
     service = testModule.get(NonClassEventService);
     semesterRepository = testModule.get(getRepositoryToken(Semester));
@@ -101,34 +93,6 @@ describe('NonClassEvent Service', function () {
         meetingRepository = testModule.get(getRepositoryToken(Meeting));
         dbMeetings = await meetingRepository.find({
           relations: ['room', 'room.building'],
-        });
-      });
-      it('Should format the startTimes and endTimes as hh:mm aa', async function () {
-        const expectedAcdemicYear = 2020;
-
-        const events = await service.find(expectedAcdemicYear);
-
-        notStrictEqual(events.length, 0);
-        events.forEach(({ spring, fall }) => {
-          [spring, fall].forEach(({ meetings }) => {
-            meetings.forEach(({ id, startTime, endTime }) => {
-              if (id) {
-                const {
-                  startTime: dbStartTime,
-                  endTime: dbEndTime,
-                } = dbMeetings
-                  .find(
-                    ({ id: dbID }) => dbID === id
-                  );
-                // We're using Jan 1 as the date because JS is being too clever
-                // and always trying to componsate for DST for us.
-                const fmtDBStartTime = new PGTime(dbStartTime);
-                const fmtDBEndTime = new PGTime(dbEndTime);
-                strictEqual(startTime, fmtDBStartTime.displayTime);
-                strictEqual(endTime, fmtDBEndTime.displayTime);
-              }
-            });
-          });
         });
       });
       it('Should concatenate the room and building name', async function () {
