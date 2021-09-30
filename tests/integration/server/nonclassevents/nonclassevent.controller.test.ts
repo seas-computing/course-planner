@@ -1,4 +1,6 @@
-import { ForbiddenException, HttpServer, HttpStatus, UnauthorizedException } from '@nestjs/common';
+import {
+  ForbiddenException, HttpServer, HttpStatus, UnauthorizedException,
+} from '@nestjs/common';
 import { SinonStub, stub } from 'sinon';
 import { TestingModule, Test } from '@nestjs/testing';
 import { SessionModule } from 'nestjs-session';

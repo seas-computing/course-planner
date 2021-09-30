@@ -14,10 +14,10 @@ import { Area } from 'server/area/area.entity';
 import { BadRequestException } from '@nestjs/common';
 import { AuthModule } from 'server/auth/auth.module';
 import { AUTH_MODE } from 'common/constants';
+import { EntityNotFoundError } from 'typeorm';
 import { NonClassEventService } from '../nonClassEvent.service';
 import { NonClassEventController } from '../nonClassEvent.controller';
 import { TestingStrategy } from '../../../../tests/mocks/authentication/testing.strategy';
-import { EntityNotFoundError } from 'typeorm';
 
 const mockNonClassEventService = {
   find: stub(),
