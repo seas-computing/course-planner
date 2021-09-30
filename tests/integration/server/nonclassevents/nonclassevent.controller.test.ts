@@ -24,7 +24,7 @@ import { Area } from 'server/area/area.entity';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 const mockAreaRepository = {
-  findOne: stub(),
+  findOneOrFail: stub(),
 };
 
 const mockNonClassEventService = {
@@ -156,7 +156,7 @@ describe('Non Class Event API', function () {
           authStub.resolves(nonClassEventManager);
         });
         it('creates non-class parent data', async function () {
-          mockAreaRepository.findOne.resolves(rawAreaList[0]);
+          mockAreaRepository.findOneOrFail.resolves(rawAreaList[0]);
 
           const response = await request(api)
             .post('/api/non-class-events')

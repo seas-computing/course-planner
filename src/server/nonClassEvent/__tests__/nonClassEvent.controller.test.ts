@@ -12,8 +12,12 @@ import {
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Area } from 'server/area/area.entity';
 import { BadRequestException } from '@nestjs/common';
+import { AuthModule } from 'server/auth/auth.module';
+import { AUTH_MODE } from 'common/constants';
 import { NonClassEventService } from '../nonClassEvent.service';
 import { NonClassEventController } from '../nonClassEvent.controller';
+import { TestingStrategy } from '../../../../tests/mocks/authentication/testing.strategy';
+import { EntityNotFoundError } from 'typeorm';
 
 const mockNonClassEventService = {
   find: stub(),
@@ -21,7 +25,7 @@ const mockNonClassEventService = {
 };
 
 const mockAreaRepository = {
-  findOne: stub(),
+  findOneOrFail: stub(),
 };
 
 describe('NonClassEvent controller', function () {
@@ -30,6 +34,12 @@ describe('NonClassEvent controller', function () {
 
   beforeEach(async function () {
     const testModule: TestingModule = await Test.createTestingModule({
+      imports: [
+        AuthModule.register({
+          strategies: [TestingStrategy],
+          defaultStrategy: AUTH_MODE.TEST,
+        }),
+      ],
       controllers: [NonClassEventController],
       providers: [
         ConfigService,
@@ -116,7 +126,7 @@ describe('NonClassEvent controller', function () {
   describe('create', function () {
     it('creates non class parents within an existing area', async function () {
       const mockArea = rawAreaList[0];
-      mockAreaRepository.findOne.resolves(mockArea);
+      mockAreaRepository.findOneOrFail.resolves(mockArea);
 
       await controller.create(createNonClassParent);
 
@@ -126,12 +136,17 @@ describe('NonClassEvent controller', function () {
       );
     });
     it('throws BadRequestException for an invalid area', function () {
-      mockAreaRepository.findOne.resolves(null);
+      mockAreaRepository.findOneOrFail.rejects(EntityNotFoundError);
 
       void rejects(() => controller.create({
         ...createNonClassParent,
         area: 'I don\'t exist',
       }), BadRequestException);
+    });
+    it('allows other errors to bubble', function () {
+      mockAreaRepository.findOneOrFail.rejects(Error);
+
+      void rejects(() => controller.create(createNonClassParent), Error);
     });
   });
 });
