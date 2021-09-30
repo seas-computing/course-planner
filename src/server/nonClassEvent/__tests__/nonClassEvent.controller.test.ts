@@ -4,11 +4,14 @@ import { stub } from 'sinon';
 import {
   strictEqual, deepStrictEqual, rejects,
 } from 'assert';
-import { rawAreaList, year, createNonClassParent } from 'testData';
 import {
+  rawAreaList,
+  year,
+  createNonClassParent,
   computationalModelingofFluidsReadingGroup,
   dataScienceReadingGroup,
-} from 'common/__tests__/data/nonClassEvents';
+  nonClassParent,
+} from 'testData';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Area } from 'server/area/area.entity';
 import { BadRequestException } from '@nestjs/common';
@@ -18,6 +21,7 @@ import { EntityNotFoundError } from 'typeorm';
 import { NonClassEventService } from '../nonClassEvent.service';
 import { NonClassEventController } from '../nonClassEvent.controller';
 import { TestingStrategy } from '../../../../tests/mocks/authentication/testing.strategy';
+import { NonClassParent } from '../nonclassparent.entity';
 
 const mockNonClassEventService = {
   find: stub(),
@@ -28,7 +32,11 @@ const mockAreaRepository = {
   findOneOrFail: stub(),
 };
 
-describe('NonClassEvent controller', function () {
+const mockParentRepository = {
+  findOne: stub(),
+};
+
+describe.only('NonClassEvent controller', function () {
   let controller: NonClassEventController;
   let configService: ConfigService;
 
@@ -50,6 +58,10 @@ describe('NonClassEvent controller', function () {
         {
           provide: getRepositoryToken(Area),
           useValue: mockAreaRepository,
+        },
+        {
+          provide: getRepositoryToken(NonClassParent),
+          useValue: mockParentRepository,
         },
       ],
     })
@@ -123,7 +135,7 @@ describe('NonClassEvent controller', function () {
       );
     });
   });
-  describe('create', function () {
+  describe.only('create', function () {
     it('creates non class parents within an existing area', async function () {
       const mockArea = rawAreaList[0];
       mockAreaRepository.findOneOrFail.resolves(mockArea);
@@ -133,6 +145,18 @@ describe('NonClassEvent controller', function () {
       strictEqual(
         mockNonClassEventService.createWithNonClassEvents.args[0][0].area,
         mockArea
+      );
+    });
+    it('reteurns the newly created non-class parent data', async function () {
+      const mockArea = rawAreaList[0];
+      mockAreaRepository.findOneOrFail.resolves(mockArea);
+      mockParentRepository.findOne.resolves(nonClassParent);
+
+      const parent = await controller.create(createNonClassParent);
+
+      strictEqual(
+        parent,
+        nonClassParent
       );
     });
     it('throws BadRequestException for an invalid area', function () {

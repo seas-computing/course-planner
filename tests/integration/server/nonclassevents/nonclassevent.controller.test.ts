@@ -23,6 +23,7 @@ import { NonClassEventController } from 'server/nonClassEvent/nonClassEvent.cont
 import { NonClassParentView } from 'server/nonClassEvent/NonClassParentView.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Area } from 'server/area/area.entity';
+import { NonClassParent } from 'server/nonClassEvent/nonclassparent.entity';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 const mockAreaRepository = {
@@ -32,6 +33,10 @@ const mockAreaRepository = {
 const mockNonClassEventService = {
   find: stub(),
   createWithNonClassEvents: stub(),
+};
+
+const mockParentRepository = {
+  findOne: stub(),
 };
 
 describe('Non Class Event API', function () {
@@ -64,6 +69,10 @@ describe('Non Class Event API', function () {
         {
           provide: getRepositoryToken(Area),
           useValue: mockAreaRepository,
+        },
+        {
+          provide: getRepositoryToken(NonClassParent),
+          useValue: mockParentRepository,
         },
       ],
       controllers: [

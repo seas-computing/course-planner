@@ -1,6 +1,7 @@
 import { DAY } from 'common/constants';
 import CreateNonClassParentDTO from 'common/dto/nonClassMeetings/CreateNonClassParent.dto';
 import NonClassMeetingResponseDTO from 'common/dto/nonClassMeetings/NonClassMeeting.dto';
+import { NonClassParent } from 'server/nonClassEvent/nonclassparent.entity';
 
 /**
  * Data Science Reading Group
@@ -236,4 +237,18 @@ export const createNonClassParent: CreateNonClassParentDTO = {
   notes: null,
   expectedSize: 190,
   title: 'Data Science Reading Group',
+};
+
+/**
+ * A version of [[dataScienceReadingGroup]] but re-shaped to
+ * match [[NonClassParent]].
+ */
+export const nonClassParent: Partial<NonClassParent> = {
+  id: '49ac4edb-26ce-46d1-9e17-cc552939a3be',
+  title: 'Data Science Reading Group',
+  notes: null,
+  expectedSize: 190,
+  contactName: 'Jim Waldo',
+  contactEmail: null,
+  contactPhone: '(128) 229-9918',
 };

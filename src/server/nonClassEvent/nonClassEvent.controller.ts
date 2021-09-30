@@ -12,6 +12,7 @@ import { Area } from 'server/area/area.entity';
 import { EntityNotFoundError, Repository } from 'typeorm';
 import {
   ApiBody,
+  ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiOkResponse,
   ApiOperation,
@@ -20,6 +21,7 @@ import {
 } from '@nestjs/swagger';
 import { RequireGroup } from 'server/auth/group.guard';
 import { GROUP } from 'common/constants';
+import { NonClassParentResponse } from 'common/dto/nonClassMeetings/NonClassParentResponse.dto';
 import { NonClassParentView } from './NonClassParentView.entity';
 import { NonClassEventService } from './nonClassEvent.service';
 import { NonClassParent } from './nonclassparent.entity';
@@ -40,6 +42,9 @@ export class NonClassEventController {
 
   @InjectRepository(Area)
   private areaRepository: Repository<Area>;
+
+  @InjectRepository(NonClassParent)
+  private parentRepository: Repository<NonClassParent>;
 
   /**
    * Retrieves all non class meetings for the specified (or current) academic year.
@@ -81,8 +86,8 @@ export class NonClassEventController {
     summary: 'Create a new non-class parent',
     description: 'Creates a new non-class parent and populates all related non-class events (one assocaited with each semester in the database)',
   })
-  @ApiOkResponse({
-    type: NonClassParent,
+  @ApiCreatedResponse({
+    type: NonClassParentResponse,
     description: 'The non-class parent was created along with one non-class event for each semester in the database',
   })
   @ApiBody({
@@ -90,17 +95,18 @@ export class NonClassEventController {
     required: true,
   })
   public async create(@Body() { area, ...parent }: CreateNonClassParentDTO):
-  Promise<NonClassParent> {
+  Promise<NonClassParentResponse> {
     try {
       const dbArea = await this.areaRepository.findOneOrFail({
         where: {
           name: area,
         },
       });
-      return this.service.createWithNonClassEvents({
+      const { id } = await this.service.createWithNonClassEvents({
         ...parent,
         area: dbArea,
       });
+      return this.parentRepository.findOne(id);
     } catch (e) {
       if (e instanceof EntityNotFoundError) {
         throw new BadRequestException(`Cannot create new non-cass parent for invalid area: ${area}`);
