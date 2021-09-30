@@ -16,8 +16,6 @@ import { NonClassParent } from 'server/nonClassEvent/nonclassparent.entity';
 import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
 import { AUTH_MODE } from 'common/constants';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
-import MockDB from '../../../mocks/database/MockDB';
-import { PGTime } from '../../../../src/common/utils/PGTime';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 describe('NonClassEvent Service', function () {
