@@ -66,8 +66,6 @@ describe('NonClassEvent controller', function () {
       .compile();
     controller = testModule
       .get<NonClassEventController>(NonClassEventController);
-    configService = testModule
-      .get<ConfigService>(ConfigService);
   });
   afterEach(function () {
     mockNonClassEventService.find.resetHistory();
