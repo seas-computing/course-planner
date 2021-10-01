@@ -14,10 +14,24 @@ import {
 } from 'mark-one';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt, faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
+import styled from 'styled-components';
 import CourseInstanceResponseDTO from '../../../../common/dto/courses/CourseInstanceResponse';
 import { TERM } from '../../../../common/constants';
 import { TermKey } from '../../../../common/constants/term';
 import { InstructorResponseDTO } from '../../../../common/dto/courses/InstructorResponse.dto';
+
+/**
+* Implement flexbox inside our ListItem to handle row spacing for handling
+* spacing inside the instructor list entries
+*/
+const InstructorListItem = styled(ListItem)`
+  display: flex;
+  justify-content: start;
+  align-items: baseline;
+  & .instructor-name {
+    flex-grow: 1;
+  }
+`;
 
 interface InstructorModalProps {
   /**
@@ -104,7 +118,7 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
       <ModalBody>
         <List>
           {allInstructors.map(({ id, displayName }, index, { length }) => (
-            <ListItem key={id}>
+            <InstructorListItem key={id}>
               <BorderlessButton
                 alt={`Remove ${displayName} from ${instanceIdentifier}`}
                 variant={VARIANT.DANGER}
@@ -112,7 +126,9 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
               >
                 <FontAwesomeIcon icon={faTrashAlt} />
               </BorderlessButton>
-              {displayName}
+              <span className="instructor-name" id={`instructor-${index + 1}`}>
+                {displayName}
+              </span>
               {index > 0 ? (
                 <BorderlessButton
                   alt={`Move ${displayName} up to position ${index} in ${instanceIdentifier}`}
@@ -121,7 +137,16 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
                 >
                   <FontAwesomeIcon icon={faArrowUp} />
                 </BorderlessButton>
-              ) : null}
+              ) : (
+                <BorderlessButton
+                  disabled
+                  alt={`${displayName} cannot be moved up`}
+                  variant={VARIANT.DEFAULT}
+                  onClick={() => {}}
+                >
+                  <FontAwesomeIcon icon={faArrowUp} />
+                </BorderlessButton>
+              )}
               {index < length - 1 ? (
                 <BorderlessButton
                   alt={`Move ${displayName} down to Position ${index + 2} in ${instanceIdentifier}`}
@@ -130,8 +155,17 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
                 >
                   <FontAwesomeIcon icon={faArrowDown} />
                 </BorderlessButton>
-              ) : null}
-            </ListItem>
+              ) : (
+                <BorderlessButton
+                  disabled
+                  alt={`${displayName} cannot be moved down`}
+                  variant={VARIANT.DEFAULT}
+                  onClick={() => {}}
+                >
+                  <FontAwesomeIcon icon={faArrowDown} />
+                </BorderlessButton>
+              )}
+            </InstructorListItem>
           ))}
         </List>
       </ModalBody>
