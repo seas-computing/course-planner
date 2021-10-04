@@ -1,5 +1,9 @@
 import React, {
-  FunctionComponent, ReactElement, useState, useEffect,
+  FunctionComponent,
+  ReactElement,
+  useState,
+  useEffect,
+  useRef,
 } from 'react';
 import {
   Modal,
@@ -81,6 +85,17 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
   } = currentCourse;
 
   /**
+   * Ref to attach to the internal modal header
+   */
+  const modalHeaderRef = useRef<HTMLHeadingElement>(null);
+
+  /**
+   * Shift the focus to the modal header when it appears on the page
+   */
+  const setMeetingModalFocus = (): void => {
+    setTimeout(() => modalHeaderRef.current?.focus());
+  };
+  /**
    * Keep a local copy of the instructors that we can modify before committing
    * to the server
    */
@@ -96,6 +111,7 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
   useEffect(() => {
     if (isVisible) {
       setAllInstructors(instanceInstructors);
+      setMeetingModalFocus();
     }
   }, [
     isVisible,
@@ -110,7 +126,10 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
       closeHandler={closeModal}
       isVisible={isVisible}
     >
-      <ModalHeader>
+      <ModalHeader
+        forwardRef={modalHeaderRef}
+        tabIndex={0}
+      >
         <span id="edit-instructors-header">
           {`Edit Instructors for ${instanceIdentifier}`}
         </span>
