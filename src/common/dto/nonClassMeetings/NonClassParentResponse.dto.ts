@@ -40,7 +40,7 @@ export class NonClassParentResponse {
   public notes?: string;
 
   @ApiProperty({
-    example: 'e77babce-1a85-4d5f-9d24-1c581b6bf6bb',
+    example: 20,
     nullable: true,
   })
   public expectedSize?: number;
