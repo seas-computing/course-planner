@@ -163,7 +163,7 @@ describe('NonClassEvent controller', function () {
         new EntityNotFoundError(Area, string)
       );
 
-      void rejects(() => controller.create({
+      return rejects(() => controller.create({
         ...createNonClassParent,
         area: 'I don\'t exist',
       }), BadRequestException);
@@ -171,7 +171,7 @@ describe('NonClassEvent controller', function () {
     it('allows other errors to bubble', function () {
       mockAreaRepository.findOneOrFail.rejects(new Error(string));
 
-      void rejects(() => controller.create(createNonClassParent), Error);
+      return rejects(() => controller.create(createNonClassParent), Error);
     });
   });
 });
