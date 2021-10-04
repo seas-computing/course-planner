@@ -8,6 +8,7 @@ import {
   VARIANT,
   LoadSpinner,
   fromTheme,
+  ModalMessage,
 } from 'mark-one';
 import React, {
   FunctionComponent,
@@ -570,7 +571,11 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
                 role="alert"
                 aria-live="assertive"
               >
-                {saveError}
+                <ModalMessage
+                  variant={VARIANT.NEGATIVE}
+                >
+                  {saveError}
+                </ModalMessage>
               </ErrorMessage>
             )}
           </ErrorSection>
