@@ -85,7 +85,6 @@ describe('CourseInstance API', function () {
       .useValue(new ConfigService(this.database.connectionEnv))
       .compile();
     meetingRepository = testModule.get(getRepositoryToken(Meeting));
-    facultyRepository = testModule.get(getRepositoryToken(Faculty));
     fciRepository = testModule.get(getRepositoryToken(FacultyCourseInstance));
     const nestApp = await testModule
       .createNestApplication()
