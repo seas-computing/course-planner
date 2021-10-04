@@ -11,6 +11,7 @@ import {
   computationalModelingofFluidsReadingGroup,
   dataScienceReadingGroup,
   nonClassParent,
+  string,
 } from 'testData';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Area } from 'server/area/area.entity';
@@ -158,7 +159,9 @@ describe('NonClassEvent controller', function () {
       );
     });
     it('throws BadRequestException for an invalid area', function () {
-      mockAreaRepository.findOneOrFail.rejects(EntityNotFoundError);
+      mockAreaRepository.findOneOrFail.rejects(
+        new EntityNotFoundError(Area, string)
+      );
 
       void rejects(() => controller.create({
         ...createNonClassParent,
@@ -166,7 +169,7 @@ describe('NonClassEvent controller', function () {
       }), BadRequestException);
     });
     it('allows other errors to bubble', function () {
-      mockAreaRepository.findOneOrFail.rejects(Error);
+      mockAreaRepository.findOneOrFail.rejects(new Error(string));
 
       void rejects(() => controller.create(createNonClassParent), Error);
     });
