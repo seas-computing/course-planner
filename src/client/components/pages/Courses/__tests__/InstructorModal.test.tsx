@@ -78,7 +78,7 @@ describe('InstructorModal', function () {
         );
         notStrictEqual(deleteButton, null);
       });
-      it('Should not render any arrow buttons', function () {
+      it('Should not render any active arrow buttons', function () {
         const entries = renderResult.queryAllByRole('listitem');
         const arrowButtons = within(entries[0]).queryAllByLabelText(
           new RegExp(`Move ${instructorNames[0]} (up|down)`)
@@ -123,7 +123,7 @@ describe('InstructorModal', function () {
         );
         strictEqual(deleteButtons.length, 2);
       });
-      it('Should only render a down arrow for the first instructor', function () {
+      it('Should only render an active down arrow for the first instructor', function () {
         const entries = renderResult.getAllByRole('listitem');
         const upArrowButton = within(entries[0]).queryAllByLabelText(
           `Move ${instructorNames[0]} up`,
@@ -136,7 +136,7 @@ describe('InstructorModal', function () {
         strictEqual(upArrowButton.length, 0);
         strictEqual(downArrowButton.length, 1);
       });
-      it('Should only render an up arrow for the second instructor', function () {
+      it('Should only render an active up arrow for the second instructor', function () {
         const entries = renderResult.getAllByRole('listitem');
         const upArrowButton = within(entries[1]).queryAllByLabelText(
           `Move ${instructorNames[1]} up to position 1`,
@@ -188,7 +188,7 @@ describe('InstructorModal', function () {
         );
         strictEqual(deleteButtons.length, 3);
       });
-      it('Should only render a down arrow for the first instructor', function () {
+      it('Should only render an active down arrow for the first instructor', function () {
         const entries = renderResult.getAllByRole('listitem');
         const upArrowButton = within(entries[0]).queryAllByLabelText(
           `Move ${instructorNames[0]} up`,
@@ -201,7 +201,7 @@ describe('InstructorModal', function () {
         strictEqual(upArrowButton.length, 0);
         strictEqual(downArrowButton.length, 1);
       });
-      it('Should render both an up and a down arrow for the second instructor', function () {
+      it('Should render both an active up and an active down arrow for the second instructor', function () {
         const entries = renderResult.getAllByRole('listitem');
         const upArrowButton = within(entries[1]).queryAllByLabelText(
           `Move ${instructorNames[1]} up to position 1`,
@@ -214,7 +214,7 @@ describe('InstructorModal', function () {
         strictEqual(upArrowButton.length, 1);
         strictEqual(downArrowButton.length, 1);
       });
-      it('Should render only an up arrow for the third instructor', function () {
+      it('Should render only an active up arrow for the third instructor', function () {
         const entries = renderResult.getAllByRole('listitem');
         const upArrowButton = within(entries[2]).queryAllByLabelText(
           `Move ${instructorNames[2]} up to position 2`,
