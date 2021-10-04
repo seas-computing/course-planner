@@ -110,6 +110,7 @@ export class NonClassEventController {
       if (e instanceof EntityNotFoundError) {
         throw new BadRequestException(`Cannot create new non-cass parent for invalid area: ${area}`);
       }
+      throw e;
     }
   }
 }

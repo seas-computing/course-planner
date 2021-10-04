@@ -12,6 +12,7 @@ import {
   dataScienceReadingGroup,
   nonClassParent,
   string,
+  jsError,
 } from 'testData';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Area } from 'server/area/area.entity';
@@ -169,9 +170,12 @@ describe('NonClassEvent controller', function () {
       }), BadRequestException);
     });
     it('allows other errors to bubble', function () {
-      mockAreaRepository.findOneOrFail.rejects(new Error(string));
+      mockAreaRepository.findOneOrFail.rejects(jsError);
 
-      return rejects(() => controller.create(createNonClassParent), Error);
+      return rejects(
+        () => controller.create(createNonClassParent),
+        jsError
+      );
     });
   });
 });
