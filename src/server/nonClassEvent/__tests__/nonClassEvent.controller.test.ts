@@ -38,7 +38,7 @@ const mockParentRepository = {
   findOne: stub(),
 };
 
-describe('NonClassEvent controller', function () {
+describe.only('NonClassEvent controller', function () {
   let controller: NonClassEventController;
   beforeEach(async function () {
     const testModule: TestingModule = await Test.createTestingModule({
@@ -137,6 +137,8 @@ describe('NonClassEvent controller', function () {
     it('creates non class parents within an existing area', async function () {
       const mockArea = rawAreaList[0];
       mockAreaRepository.findOneOrFail.resolves(mockArea);
+      mockNonClassEventService.createWithNonClassEvents
+        .resolves(nonClassParent);
 
       await controller.create(createNonClassParent);
 
