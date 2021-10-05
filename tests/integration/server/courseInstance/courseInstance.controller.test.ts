@@ -43,7 +43,6 @@ import { InstructorRequestDTO } from '../../../../src/common/dto/courses/Instruc
 describe('CourseInstance API', function () {
   let testModule: TestingModule;
   let meetingRepository: Repository<Meeting>;
-  let facultyRepository: Repository<Faculty>;
   let fciRepository: Repository<FacultyCourseInstance>;
   let api: HttpServer;
   let authStub: SinonStub;
@@ -86,7 +85,6 @@ describe('CourseInstance API', function () {
       .useValue(new ConfigService(this.database.connectionEnv))
       .compile();
     meetingRepository = testModule.get(getRepositoryToken(Meeting));
-    facultyRepository = testModule.get(getRepositoryToken(Faculty));
     fciRepository = testModule.get(getRepositoryToken(FacultyCourseInstance));
     const nestApp = await testModule
       .createNestApplication()

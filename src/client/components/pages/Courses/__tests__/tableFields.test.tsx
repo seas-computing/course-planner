@@ -3,7 +3,7 @@ import { spy, SinonSpy } from 'sinon';
 import {
   cs50CourseInstance, ac209aCourseInstance, ac209aCourseInstanceWithoutRooms,
 } from 'testData';
-import { strictEqual, deepStrictEqual } from 'assert';
+import { strictEqual, deepStrictEqual, notStrictEqual } from 'assert';
 import {
   TERM, COURSE_TABLE_COLUMN, isSEASEnumToString, IS_SEAS,
 } from 'common/constants';
@@ -94,26 +94,72 @@ describe('tableFields', function () {
       });
     });
     describe('formatInstructors', function () {
+      let TestComponent: FunctionComponent<unknown>;
       context('When course has data', function () {
-        it('Should return a component that renders instructors as a list', function () {
+        beforeEach(function () {
           const fallInstructors = formatInstructors(TERM.FALL);
-          const { getAllByRole } = render(
+          TestComponent = () => (
             <div>
-              {fallInstructors(ac209aCourseInstance)}
+              {fallInstructors(ac209aCourseInstance, { updateHandler: spy() })}
             </div>
           );
+        });
+        it('Should return a component that renders instructors as a list', function () {
+          const { getAllByRole } = render(<TestComponent />);
           const entries = getAllByRole('listitem')
             .map(({ textContent }): string => textContent);
           const instructorList = ac209aCourseInstance.fall.instructors
             .map(({ displayName }): string => displayName);
           deepStrictEqual(entries, instructorList);
         });
+        it('Should render an edit button', function () {
+          const { queryByLabelText } = render(<TestComponent />);
+          const editButtonRegex = new RegExp(
+            `edit instructors.*?${
+              ac209aCourseInstance.catalogNumber
+            }.*?${
+              TERM.FALL
+            }.*?${
+              ac209aCourseInstance.fall.calendarYear
+            }`,
+            'i'
+          );
+          const editButton = queryByLabelText(editButtonRegex);
+          notStrictEqual(
+            editButton,
+            null
+          );
+        });
       });
-      context('When semester does not have data', function () {
-        it('Should return null', function () {
+      context('When semester does not have any instructors', function () {
+        beforeEach(function () {
           const springInstructors = formatInstructors(TERM.SPRING);
-          strictEqual(
-            springInstructors(ac209aCourseInstance),
+          TestComponent = () => (
+            <div>
+              {springInstructors(
+                ac209aCourseInstance,
+                {
+                  updateHandler: spy(),
+                }
+              )}
+            </div>
+          );
+        });
+        it('Should render an edit button', function () {
+          const { queryByLabelText } = render(<TestComponent />);
+          const editButtonRegex = new RegExp(
+            `edit instructors.*?${
+              ac209aCourseInstance.catalogNumber
+            }.*?${
+              TERM.SPRING
+            }.*?${
+              ac209aCourseInstance.spring.calendarYear
+            }`,
+            'i'
+          );
+          const editButton = queryByLabelText(editButtonRegex);
+          notStrictEqual(
+            editButton,
             null
           );
         });
