@@ -15,11 +15,12 @@ import {
   Schedule,
   NonClassMeetings,
 } from '../pages';
-import { UserContext } from '../../context';
+import { MetadataContext, UserContext } from '../../context';
 
 const AppRouter: FunctionComponent = (): ReactElement => {
   const currentUser = useContext(UserContext);
-  if (currentUser) {
+  const currentMetadata = useContext(MetadataContext);
+  if (currentUser && currentMetadata?.currentAcademicYear) {
     return (
       <Switch>
         <Redirect exact from="/" to="/courses" />
