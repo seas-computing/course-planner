@@ -24,7 +24,6 @@ import { NonClassParentResponse } from 'common/dto/nonClassMeetings/NonClassPare
 import { NonClassParentView } from './NonClassParentView.entity';
 import { NonClassEventService } from './nonClassEvent.service';
 import { NonClassParent } from './nonclassparent.entity';
-import { appliedMath } from 'testData';
 
 @ApiTags('Non-Class Events')
 @UseGuards(Authentication, new RequireGroup(GROUP.NON_CLASS))
