@@ -10,7 +10,8 @@ import {
   computationalModelingofFluidsReadingGroup,
   dataScienceReadingGroup,
   createNonClassParent,
-  rawAreaList,
+  appliedMath,
+  nonClassParent,
 } from 'testData';
 import { ConfigModule } from 'server/config/config.module';
 import { AuthModule } from 'server/auth/auth.module';
@@ -167,7 +168,9 @@ describe('Non Class Event API', function () {
           authStub.resolves(nonClassEventManager);
         });
         it('creates non-class parent data', async function () {
-          mockAreaRepository.findOneOrFail.resolves(rawAreaList[0]);
+          mockAreaRepository.findOneOrFail.resolves(appliedMath);
+          mockNonClassEventService.createWithNonClassEvents
+            .resolves(nonClassParent);
 
           const response = await request(api)
             .post('/api/non-class-events')

@@ -24,6 +24,7 @@ import { NonClassParentResponse } from 'common/dto/nonClassMeetings/NonClassPare
 import { NonClassParentView } from './NonClassParentView.entity';
 import { NonClassEventService } from './nonClassEvent.service';
 import { NonClassParent } from './nonclassparent.entity';
+import { appliedMath } from 'testData';
 
 @ApiTags('Non-Class Events')
 @UseGuards(Authentication, new RequireGroup(GROUP.NON_CLASS))
@@ -96,11 +97,7 @@ export class NonClassEventController {
   public async create(@Body() { area, ...parent }: CreateNonClassParentDTO):
   Promise<NonClassParentResponse> {
     try {
-      const dbArea = await this.areaRepository.findOneOrFail({
-        where: {
-          name: area,
-        },
-      });
+      const dbArea = await this.areaRepository.findOneOrFail(area);
       const { id } = await this.service.createWithNonClassEvents({
         ...parent,
         area: dbArea,
