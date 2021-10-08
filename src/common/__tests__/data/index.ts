@@ -10,4 +10,3 @@ export * from './metadata';
 export * from './meetings';
 export * from './locations';
 export * from './nonClassEvents';
-export * from './errors';
