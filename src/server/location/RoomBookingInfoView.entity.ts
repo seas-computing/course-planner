@@ -6,7 +6,7 @@ import { Meeting } from '../meeting/meeting.entity';
 import { DAY, TERM } from '../../common/constants';
 import { CourseInstance } from '../courseInstance/courseinstance.entity';
 import { NonClassEvent } from '../nonClassEvent/nonclassevent.entity';
-import { NonClassParent } from '../nonClassParent/nonclassparent.entity';
+import { NonClassParent } from '../nonClassEvent/nonclassparent.entity';
 import { Course } from '../course/course.entity';
 import { Semester } from '../semester/semester.entity';
 import { Building } from './building.entity';

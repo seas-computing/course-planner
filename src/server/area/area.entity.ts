@@ -1,4 +1,4 @@
-import { NonClassParent } from 'server/nonClassParent/nonclassparent.entity';
+import { NonClassParent } from 'server/nonClassEvent/nonclassparent.entity';
 import {
   Entity, Column, OneToMany, ObjectType,
 } from 'typeorm';

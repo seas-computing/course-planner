@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEmail, IsInt, IsNotEmpty, IsOptional, IsPhoneNumber, IsUUID,
 } from 'class-validator';
@@ -19,7 +19,7 @@ export default abstract class CreateNonClassParentDTO {
   @IsNotEmpty()
   public title: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'The contact name for this non-class parent',
     example: 'James Waldo',
     nullable: true,
@@ -27,7 +27,7 @@ export default abstract class CreateNonClassParentDTO {
   @IsOptional()
   public contactName?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'The contact email for this non-class parent',
     example: 'j.waldo@seas.harvard.edu',
     nullable: true,
@@ -36,7 +36,7 @@ export default abstract class CreateNonClassParentDTO {
   @IsOptional()
   public contactEmail?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'The contact phone number for this non-class parent',
     example: '(123) 456-7890',
     nullable: true,
@@ -45,7 +45,7 @@ export default abstract class CreateNonClassParentDTO {
   @IsPhoneNumber('US')
   public contactPhone?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'Any misc. notes users wish to record alongside the non class parent',
     example: 'Only occurs in odd-numbered years',
     nullable: true,
@@ -53,7 +53,7 @@ export default abstract class CreateNonClassParentDTO {
   @IsOptional()
   public notes?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'Non class parent predicted enrollment size',
     example: 82,
     nullable: true,
