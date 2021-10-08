@@ -22,7 +22,12 @@ export const rawAreaList = [
 /**
  * An example of an [[Area]] entity
  */
-export const appliedMath = Object.assign(new Area(), {
+export const appliedMath: Area = {
   id: '4d4e622a-a843-43e1-8f53-c99532583178',
   name: 'AM',
-} as Partial<Area>);
+  nonClassParents: [],
+  courses: [],
+  faculty: [],
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
