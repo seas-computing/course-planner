@@ -8,6 +8,7 @@ import {
   VARIANT,
   LoadSpinner,
   fromTheme,
+  ModalMessage,
 } from 'mark-one';
 import React, {
   FunctionComponent,
@@ -65,18 +66,15 @@ interface MeetingModalProps {
 /**
  * Utility component to style content within meeting modal body
  */
-const MeetingModalBodyGrid = styled.div<{showError: boolean}>`
+const MeetingModalBodyGrid = styled.div`
   width: 75vw;
   height: 75vh;
   display: grid;
   grid-template-areas:
     "meet room"
     "note room"
-    "err err"
   ;
-  grid-template-rows: ${({ showError }) => (showError
-    ? 'auto 1fr min-content'
-    : 'auto 1fr 0')};
+  grid-template-rows: 'auto 1fr';
   grid-template-columns: 1fr 1fr;
   grid-column-gap: ${fromTheme('ws', 'xlarge')};
 `;
@@ -133,22 +131,6 @@ const RoomAvailabilityBody = styled.div`
 
 const NotesSection = styled.div`
   grid-area: note;
-`;
-
-const ErrorSection = styled.div`
-  grid-area: err;
-  display: flex;
-  flex-direction: column;
-  justify-content: end;
-  align-items: center;
-`;
-
-const ErrorMessage = styled.p`
-  font-family: ${fromTheme('font', 'bold', 'family')};
-  font-size: ${fromTheme('font', 'bold', 'size')};
-  font-weight: ${fromTheme('font', 'bold', 'weight')};
-  color: ${fromTheme('color', 'text', 'negative')};
-  text-align: center;
 `;
 
 const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
@@ -513,7 +495,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
         {`Meetings for ${catalogNumber} - ${term} ${calendarYear}`}
       </ModalHeader>
       <ModalBody>
-        <MeetingModalBodyGrid showError={!!saveError || saving}>
+        <MeetingModalBodyGrid>
           <MeetingScheduler>
             <MeetingSchedulerHeader>{`Meeting times for ${catalogNumber}`}</MeetingSchedulerHeader>
             <MeetingSchedulerBody>
@@ -563,17 +545,6 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
               />
             </RoomAvailabilityBody>
           </RoomAvailability>
-          <ErrorSection>
-            {saving && <LoadSpinner>Saving Meetings</LoadSpinner>}
-            {!!saveError && (
-              <ErrorMessage
-                role="alert"
-                aria-live="assertive"
-              >
-                {saveError}
-              </ErrorMessage>
-            )}
-          </ErrorSection>
         </MeetingModalBodyGrid>
       </ModalBody>
       <ModalFooter>
@@ -584,6 +555,14 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
         >
           Save
         </Button>
+        {saving && <LoadSpinner>Saving Meetings</LoadSpinner>}
+        {!!saveError && (
+          <ModalMessage
+            variant={VARIANT.NEGATIVE}
+          >
+            {saveError}
+          </ModalMessage>
+        )}
         <Button
           onClick={onModalClose}
           variant={VARIANT.SECONDARY}
