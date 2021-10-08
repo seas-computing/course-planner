@@ -4,19 +4,30 @@ import {
   Query,
   Inject,
   BadRequestException,
+  UseGuards,
+  Body,
+  Put,
+  Param,
+  NotFoundException,
 } from '@nestjs/common';
 import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiNotFoundResponse,
 } from '@nestjs/swagger';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import { ConfigService } from 'server/config/config.service';
-import { NUM_YEARS, TERM } from 'common/constants';
+import { NUM_YEARS, TERM, GROUP } from 'common/constants';
 import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
 import { SemesterService } from 'server/semester/semester.service';
+import { EntityNotFoundError } from 'typeorm';
 import { CourseInstanceService } from './courseInstance.service';
+import { InstructorResponseDTO } from '../../common/dto/courses/InstructorResponse.dto';
+import { RequireGroup } from '../auth/group.guard';
+import { Authentication } from '../auth/authentication.guard';
+import { InstructorRequestDTO } from '../../common/dto/courses/InstructorRequest.dto';
 
 @Controller('api/course-instances')
 export class CourseInstanceController {
@@ -107,5 +118,40 @@ export class CourseInstanceController {
       return [];
     }
     return this.ciService.getCourseSchedule(term, year);
+  }
+
+  /**
+   * Updates the list of instructors associated with a course instance.
+   * Instructors will be assigned in the order of the array. Omitting an
+   * instructor from the array removes that instructor from the course
+   * (updating the order of other instructors, if applicable). An empty array
+   * removes all instructors from the course
+   */
+  @UseGuards(Authentication, new RequireGroup(GROUP.ADMIN))
+  @ApiTags('Course Instance')
+  @ApiOperation({ summary: 'Update the list of instructors associated with a course' })
+  @ApiOkResponse({
+    type: InstructorResponseDTO,
+    description: 'An array of instructor objects that can be merged back into the course instance data',
+    isArray: true,
+  })
+  @ApiNotFoundResponse({
+    description: 'Returned if the faculty or course instance provided do not exist in the database',
+  })
+  @Put('/:id/instructors')
+  public async updateInstructorList(
+    @Body('instructors') instructors: InstructorRequestDTO[],
+      @Param('id') courseInstanceId: string
+  ): Promise<InstructorResponseDTO[]> {
+    try {
+      const results = await this.ciService
+        .assignInstructors(courseInstanceId, instructors);
+      return results;
+    } catch (error) {
+      if (error instanceof EntityNotFoundError) {
+        throw new NotFoundException(error.message);
+      }
+      throw error;
+    }
   }
 }
