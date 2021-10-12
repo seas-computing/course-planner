@@ -1,5 +1,5 @@
 import { DAY } from 'common/constants';
-import CreateNonClassParentDTO from 'common/dto/nonClassMeetings/CreateNonClassParent.dto';
+import SaveNonClassParentDTO from 'common/dto/nonClassMeetings/SaveNonClassParent.dto';
 import NonClassMeetingResponseDTO from 'common/dto/nonClassMeetings/NonClassMeeting.dto';
 import { NonClassParent } from 'server/nonClassEvent/nonclassparent.entity';
 
@@ -227,9 +227,9 @@ export const appliedMathematicsReadingGroup: NonClassMeetingResponseDTO = {
  * Create Non-class Parent
  *
  * Version of [[dataScienceReadingGroup]] but changed to match
- * [[CreateNonClassParentDTO]].
+ * [[SaveNonClassParentDTO]].
  */
-export const createNonClassParent: CreateNonClassParentDTO = {
+export const createNonClassParent: SaveNonClassParentDTO = {
   area: 'FAS',
   contactName: 'Jim Waldo',
   contactEmail: null,
