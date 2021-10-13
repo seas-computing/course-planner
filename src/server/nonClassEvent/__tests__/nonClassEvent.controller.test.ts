@@ -5,7 +5,7 @@ import {
   strictEqual, deepStrictEqual, rejects,
 } from 'assert';
 import {
-  rawAreaList,
+  appliedMath,
   year,
   createNonClassParent,
   computationalModelingofFluidsReadingGroup,
@@ -135,8 +135,7 @@ describe('NonClassEvent controller', function () {
   });
   describe('create', function () {
     it('creates non class parents within an existing area', async function () {
-      const mockArea = rawAreaList[0];
-      mockAreaRepository.findOneOrFail.resolves(mockArea);
+      mockAreaRepository.findOneOrFail.resolves(appliedMath);
       mockNonClassEventService.createWithNonClassEvents
         .resolves(nonClassParent);
 
@@ -144,12 +143,11 @@ describe('NonClassEvent controller', function () {
 
       strictEqual(
         mockNonClassEventService.createWithNonClassEvents.args[0][0].area,
-        mockArea
+        appliedMath
       );
     });
     it('returns the newly created non-class parent data', async function () {
-      const mockArea = rawAreaList[0];
-      mockAreaRepository.findOneOrFail.resolves(mockArea);
+      mockAreaRepository.findOneOrFail.resolves(appliedMath);
       mockNonClassEventService.createWithNonClassEvents
         .resolves(nonClassParent);
 
