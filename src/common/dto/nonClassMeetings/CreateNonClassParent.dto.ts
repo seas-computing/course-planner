@@ -3,7 +3,7 @@ import {
   IsEmail, IsInt, IsNotEmpty, IsOptional, IsPhoneNumber, IsUUID,
 } from 'class-validator';
 
-export default abstract class SaveNonClassParentDTO {
+export default abstract class CreateNonClassParentDTO {
   @ApiProperty({
     type: 'string',
     example: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',

@@ -6,7 +6,7 @@ import {
 import { ConfigService } from 'server/config/config.service';
 import { Authentication } from 'server/auth/authentication.guard';
 import NonClassMeetingResponseDTO from 'common/dto/nonClassMeetings/NonClassMeeting.dto';
-import SaveNonClassParentDTO from 'common/dto/nonClassMeetings/SaveNonClassParent.dto';
+import CreateNonClassParentDTO from 'common/dto/nonClassMeetings/CreateNonClassParent.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Area } from 'server/area/area.entity';
 import { EntityNotFoundError, Repository } from 'typeorm';
@@ -90,10 +90,10 @@ export class NonClassEventController {
     description: 'The non-class parent was created along with one non-class event for each semester in the database',
   })
   @ApiBody({
-    type: SaveNonClassParentDTO,
+    type: CreateNonClassParentDTO,
     required: true,
   })
-  public async create(@Body() { area, ...parent }: SaveNonClassParentDTO):
+  public async create(@Body() { area, ...parent }: CreateNonClassParentDTO):
   Promise<NonClassParentResponse> {
     try {
       const dbArea = await this.areaRepository.findOneOrFail(area);
