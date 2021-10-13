@@ -230,6 +230,7 @@ export const appliedMathematicsReadingGroup: NonClassMeetingResponseDTO = {
  * [[CreateNonClassParentDTO]].
  */
 export const createNonClassParent: CreateNonClassParentDTO = {
+  area: 'e257e0bb-9875-4688-a7f8-91906c45fce2',
   contactName: 'Jim Waldo',
   contactEmail: null,
   contactPhone: '(128) 229-9918',
