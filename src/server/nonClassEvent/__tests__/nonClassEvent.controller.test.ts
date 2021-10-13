@@ -8,11 +8,13 @@ import {
   appliedMath,
   year,
   createNonClassParent,
+  updateNonClassParent,
   computationalModelingofFluidsReadingGroup,
   dataScienceReadingGroup,
   nonClassParent,
   string,
   error,
+  uuid,
 } from 'testData';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Area } from 'server/area/area.entity';
@@ -36,6 +38,7 @@ const mockAreaRepository = {
 
 const mockParentRepository = {
   findOne: stub(),
+  save: stub(),
 };
 
 describe('NonClassEvent controller', function () {
@@ -71,6 +74,8 @@ describe('NonClassEvent controller', function () {
   });
   afterEach(function () {
     mockNonClassEventService.find.resetHistory();
+    mockAreaRepository.findOneOrFail.resetHistory();
+    mockParentRepository.save.resetHistory();
   });
   describe('find', function () {
     it('retrieves all results for the specified academic year', async function () {
@@ -174,6 +179,58 @@ describe('NonClassEvent controller', function () {
 
       return rejects(
         () => controller.create(createNonClassParent),
+        error
+      );
+    });
+  });
+  describe('update', function () {
+    it('updates the specified non-class parent', async function () {
+      mockAreaRepository.findOneOrFail.resolves(appliedMath);
+      mockParentRepository.save.resolves(nonClassParent);
+
+      await controller.update(uuid, updateNonClassParent);
+
+      strictEqual(mockParentRepository.save.args[0][0].id, uuid);
+    });
+    it('returns the updated non-class parent data', async function () {
+      mockAreaRepository.findOneOrFail.resolves(appliedMath);
+      mockParentRepository.save.resolves(nonClassParent);
+
+      mockParentRepository.findOne.resolves(nonClassParent);
+      const parent = await controller.update(uuid, updateNonClassParent);
+
+      strictEqual(
+        parent,
+        nonClassParent
+      );
+    });
+    it('does not update the area if one is not supplied', async function () {
+      mockParentRepository.save.resolves(nonClassParent);
+      const {
+        area,
+        ...nonClassParentWithoutArea
+      } = updateNonClassParent;
+
+      await controller.update(uuid, nonClassParentWithoutArea);
+
+      strictEqual(mockAreaRepository.findOneOrFail.called, false);
+      strictEqual(mockParentRepository.save.args[0][0].area, undefined);
+    });
+    it('throws BadRequestException for an invalid area', function () {
+      mockAreaRepository.findOneOrFail.rejects(
+        new EntityNotFoundError(Area, string)
+      );
+
+      return rejects(() => controller.update(uuid, {
+        ...updateNonClassParent,
+        area: 'I don\'t exist',
+      }), BadRequestException);
+    });
+    it('allows other errors to bubble', function () {
+      mockAreaRepository.findOneOrFail.rejects(error);
+
+      return rejects(
+        () => controller.update(uuid, updateNonClassParent),
         error
       );
     });

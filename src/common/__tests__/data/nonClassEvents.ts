@@ -1,6 +1,7 @@
 import { DAY } from 'common/constants';
 import CreateNonClassParentDTO from 'common/dto/nonClassMeetings/CreateNonClassParent.dto';
 import NonClassMeetingResponseDTO from 'common/dto/nonClassMeetings/NonClassMeeting.dto';
+import UpdateNonClassParentDTO from 'common/dto/nonClassMeetings/UpdateNonClassParent.dto';
 import { NonClassParent } from 'server/nonClassEvent/nonclassparent.entity';
 
 /**
@@ -237,6 +238,30 @@ export const createNonClassParent: CreateNonClassParentDTO = {
   notes: null,
   expectedSize: 190,
   title: 'Data Science Reading Group',
+};
+
+/**
+ * Update Non-class Parent
+ *
+ * Version of [[dataScienceReadingGroup]] but changed to match
+ * [[UpdateNonClassParentDTO]]. Since all fields on this DTO are optional, some
+ * fields have been deliberately omitted from this data structure to demonstrate
+ * that fact.
+ *
+ * The fields that remain were chosen to try and give a wide variety of types.
+ * Of the remaining fields, there are:
+ * - A UUID
+ * - A string
+ * - A  null field
+ * - A numeric field
+ * - A phone number
+ */
+export const updateNonClassParent: UpdateNonClassParentDTO = {
+  area: 'e257e0bb-9875-4688-a7f8-91906c45fce2',
+  contactName: 'Jim Waldo',
+  contactPhone: '(128) 229-9918',
+  notes: null,
+  expectedSize: 190,
 };
 
 /**

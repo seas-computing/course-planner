@@ -60,3 +60,12 @@ export const error = new Error('Error');
  */
 
 export const refDate = new Date(2021, 0, 1);
+
+/**
+ * Random UUIDv4 UUID.
+ *
+ * Generated completely arbitarily using https://www.uuidgenerator.net this is
+ * used for test cases where you need to use a UUID for _something_ but the
+ * actual UUID value is irrelevant
+ */
+export const uuid = 'be0c4160-4ea6-4638-bb6b-021556ae7149';

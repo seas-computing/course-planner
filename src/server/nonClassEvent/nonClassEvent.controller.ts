@@ -1,7 +1,7 @@
 import {
   BadRequestException,
   Body,
-  Controller, Get, Inject, Post, Query, UseGuards,
+  Controller, Get, Inject, Post, Put, Query, UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from 'server/config/config.service';
 import { Authentication } from 'server/auth/authentication.guard';
@@ -24,6 +24,7 @@ import { NonClassParentResponse } from 'common/dto/nonClassMeetings/NonClassPare
 import { NonClassParentView } from './NonClassParentView.entity';
 import { NonClassEventService } from './nonClassEvent.service';
 import { NonClassParent } from './nonclassparent.entity';
+import UpdateNonClassParentDTO from 'common/dto/nonClassMeetings/UpdateNonClassParent.dto';
 
 @ApiTags('Non-Class Events')
 @UseGuards(Authentication, new RequireGroup(GROUP.NON_CLASS))
@@ -105,6 +106,26 @@ export class NonClassEventController {
     } catch (e) {
       if (e instanceof EntityNotFoundError) {
         throw new BadRequestException(`Cannot create new non-class parent for invalid area: ${area}`);
+      }
+      throw e;
+    }
+  }
+
+  public async update(id: string, { area, ...parent }: UpdateNonClassParentDTO):
+  Promise<NonClassParentResponse> {
+    try {
+      const nonClassParent: Partial<NonClassParent> = {
+        id,
+        ...parent,
+      };
+      if (area) {
+        const dbArea = await this.areaRepository.findOneOrFail(area);
+        nonClassParent.area = dbArea;
+      }
+      return this.parentRepository.save(nonClassParent);
+    } catch (e) {
+      if (e instanceof EntityNotFoundError) {
+        throw new BadRequestException(`Cannot update non-class parent for invalid area: ${area}`);
       }
       throw e;
     }
