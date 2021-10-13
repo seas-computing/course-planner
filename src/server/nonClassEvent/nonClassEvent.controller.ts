@@ -104,7 +104,7 @@ export class NonClassEventController {
       return this.parentRepository.findOne(id);
     } catch (e) {
       if (e instanceof EntityNotFoundError) {
-        throw new BadRequestException(`Cannot create new non-cass parent for invalid area: ${area}`);
+        throw new BadRequestException(`Cannot create new non-class parent for invalid area: ${area}`);
       }
       throw e;
     }
