@@ -19,7 +19,6 @@ import React, {
 } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
-import { instructorDisplayNameToFirstLast } from '../utils/instructorDisplayNameToFirstLast';
 import { MeetingTimesList } from './MeetingTimesList';
 import RoomSelection from './RoomSelection';
 import RoomRequest from '../../../../common/dto/room/RoomRequest.dto';
@@ -27,14 +26,6 @@ import CourseInstanceResponseDTO, { CourseInstanceResponseMeeting } from '../../
 import { updateMeetingList } from '../../../api';
 import { MeetingRequestDTO } from '../../../../common/dto/meeting/MeetingRequest.dto';
 import { MeetingResponseDTO } from '../../../../common/dto/meeting/MeetingResponse.dto';
-
-/**
- * A component that applies styling for text that indicates the faculty has
- * no associated notes
- */
-const StyledFacultyNote = styled.span`
-  font-style: italic;
-`;
 
 interface MeetingModalProps {
   /**
@@ -45,6 +36,10 @@ interface MeetingModalProps {
    * The current course instance being edited
    */
   currentCourse: CourseInstanceResponseDTO;
+  /**
+   * The notes for the current instance being edited
+   */
+  notes: ReactElement;
   /**
    * The semester within the current course being edited
    */
@@ -157,6 +152,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   currentCourse,
   currentSemester,
   onSave,
+  notes,
 }): ReactElement {
   /**
    * The current value of the Meeting Modal ref
@@ -179,7 +175,6 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     [semKey]: {
       id: instanceId,
       meetings: instanceMeetings,
-      instructors: instanceInstructors,
     },
   } = currentCourse;
 
@@ -531,27 +526,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
             </MeetingSchedulerBody>
           </MeetingScheduler>
           <NotesSection>
-            <h3>
-              Faculty Notes
-            </h3>
-            <div>
-              {instanceInstructors.map((instructor) => (
-                <div key={instructor.displayName}>
-                  <h4>
-                    {instructorDisplayNameToFirstLast(
-                      instructor.displayName
-                    )}
-                  </h4>
-                  <p>
-                    {
-                      !instructor.notes
-                        ? <StyledFacultyNote>No Notes</StyledFacultyNote>
-                        : instructor.notes
-                    }
-                  </p>
-                </div>
-              ))}
-            </div>
+            {notes}
           </NotesSection>
           <RoomAvailability>
             <RoomAvailabilityHeader>Room Availability</RoomAvailabilityHeader>
