@@ -12,6 +12,7 @@ import {
 import React, {
   FunctionComponent,
   ReactElement,
+  ReactNode,
   Ref,
   useEffect,
   useRef,
@@ -39,7 +40,7 @@ interface MeetingModalProps {
   /**
    * The notes for the current instance being edited
    */
-  notes: ReactElement;
+  notes: ReactNode;
   /**
    * The semester within the current course being edited
    */

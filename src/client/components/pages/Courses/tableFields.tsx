@@ -180,6 +180,44 @@ export const MeetingGridSection = styled.div<{area: string}>`
 `;
 
 /**
+ * Helper function to format faculty notes
+ */
+export const formatFacultyNotes = (
+  term: TERM,
+  course: CourseInstanceResponseDTO
+): ReactElement => {
+  const semKey = term.toLowerCase() as TermKey;
+  const {
+    [semKey]: instance,
+  } = course;
+  return (
+    <>
+      <h3>
+        Faculty Notes
+      </h3>
+      <div>
+        {instance.instructors.map((instructor) => (
+          <div key={instructor.displayName}>
+            <h4>
+              {instructorDisplayNameToFirstLast(
+                instructor.displayName
+              )}
+            </h4>
+            <p>
+              {
+                !instructor.notes
+                  ? <StyledFacultyNote>No Notes</StyledFacultyNote>
+                  : instructor.notes
+              }
+            </p>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+};
+
+/**
  * Helper function to format day, time, and room into a single list
  */
 
@@ -248,31 +286,7 @@ export const formatMeetings = (
         isVisible={modalVisible}
         currentSemester={currentSemester}
         currentCourse={course}
-        notes={(
-          <>
-            <h3>
-              Faculty Notes
-            </h3>
-            <div>
-              {instance.instructors.map((instructor) => (
-                <div key={instructor.displayName}>
-                  <h4>
-                    {instructorDisplayNameToFirstLast(
-                      instructor.displayName
-                    )}
-                  </h4>
-                  <p>
-                    {
-                      !instructor.notes
-                        ? <StyledFacultyNote>No Notes</StyledFacultyNote>
-                        : instructor.notes
-                    }
-                  </p>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
+        notes={formatFacultyNotes(term, course)}
         onClose={() => {
           setModalVisible(false);
           setTimeout(() => { buttonRef.current?.focus(); });
