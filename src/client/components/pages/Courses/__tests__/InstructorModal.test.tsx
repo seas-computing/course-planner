@@ -45,7 +45,8 @@ describe('InstructorModal', function () {
         );
       });
       it('Should not render any instructors', function () {
-        const instructors = renderResult.queryAllByRole('listitem');
+        const instructors = renderResult.queryAllByRole('listitem')
+          .filter((li) => (within(li).queryByLabelText(/remove/i)));
         strictEqual(instructors.length, 0);
       });
     });
@@ -73,7 +74,8 @@ describe('InstructorModal', function () {
         );
       });
       it("Should render the instructor's display name", function () {
-        const instructors = renderResult.queryAllByRole('listitem');
+        const instructors = renderResult.queryAllByRole('listitem')
+          .filter((li) => (within(li).queryByLabelText(/remove/i)));
         strictEqual(instructors.length, 1);
         const renderedNames = instructors
           .map(({ textContent }) => textContent);
@@ -87,7 +89,8 @@ describe('InstructorModal', function () {
         notStrictEqual(deleteButton, null);
       });
       it('Should not render any active arrow buttons', function () {
-        const entries = renderResult.queryAllByRole('listitem');
+        const entries = renderResult.queryAllByRole('listitem')
+          .filter((li) => (within(li).queryByLabelText(/remove/i)));
         const arrowButtons = within(entries[0]).queryAllByLabelText(
           new RegExp(`Move ${instructorNames[0]} (up|down)`)
         );
@@ -119,7 +122,8 @@ describe('InstructorModal', function () {
         );
       });
       it("Should render the instructors' display names", function () {
-        const instructors = renderResult.queryAllByRole('listitem');
+        const instructors = renderResult.queryAllByRole('listitem')
+          .filter((li) => (within(li).queryByLabelText(/remove/i)));
         strictEqual(instructors.length, 2);
         const renderedNames = instructors
           .map(({ textContent }) => textContent);
@@ -132,7 +136,8 @@ describe('InstructorModal', function () {
         strictEqual(deleteButtons.length, 2);
       });
       it('Should only render an active down arrow for the first instructor', function () {
-        const entries = renderResult.getAllByRole('listitem');
+        const entries = renderResult.getAllByRole('listitem')
+          .filter((li) => (within(li).queryByLabelText(/remove/i)));
         const upArrowButton = within(entries[0]).queryAllByLabelText(
           `Move ${instructorNames[0]} up`,
           { exact: false }
@@ -145,7 +150,8 @@ describe('InstructorModal', function () {
         strictEqual(downArrowButton.length, 1);
       });
       it('Should only render an active up arrow for the second instructor', function () {
-        const entries = renderResult.getAllByRole('listitem');
+        const entries = renderResult.getAllByRole('listitem')
+          .filter((li) => (within(li).queryByLabelText(/remove/i)));
         const upArrowButton = within(entries[1]).queryAllByLabelText(
           `Move ${instructorNames[1]} up to position 1`,
           { exact: false }
@@ -184,7 +190,8 @@ describe('InstructorModal', function () {
         );
       });
       it("Should render the instructors' display names", function () {
-        const instructors = renderResult.queryAllByRole('listitem');
+        const instructors = renderResult.queryAllByRole('listitem')
+          .filter((li) => (within(li).queryByLabelText(/remove/i)));
         strictEqual(instructors.length, 3);
         const renderedNames = instructors
           .map(({ textContent }) => textContent);
@@ -197,7 +204,8 @@ describe('InstructorModal', function () {
         strictEqual(deleteButtons.length, 3);
       });
       it('Should only render an active down arrow for the first instructor', function () {
-        const entries = renderResult.getAllByRole('listitem');
+        const entries = renderResult.getAllByRole('listitem')
+          .filter((li) => (within(li).queryByLabelText(/remove/i)));
         const upArrowButton = within(entries[0]).queryAllByLabelText(
           `Move ${instructorNames[0]} up`,
           { exact: false }
@@ -210,7 +218,8 @@ describe('InstructorModal', function () {
         strictEqual(downArrowButton.length, 1);
       });
       it('Should render both an active up and an active down arrow for the second instructor', function () {
-        const entries = renderResult.getAllByRole('listitem');
+        const entries = renderResult.getAllByRole('listitem')
+          .filter((li) => (within(li).queryByLabelText(/remove/i)));
         const upArrowButton = within(entries[1]).queryAllByLabelText(
           `Move ${instructorNames[1]} up to position 1`,
           { exact: false }
@@ -223,7 +232,8 @@ describe('InstructorModal', function () {
         strictEqual(downArrowButton.length, 1);
       });
       it('Should render only an active up arrow for the third instructor', function () {
-        const entries = renderResult.getAllByRole('listitem');
+        const entries = renderResult.getAllByRole('listitem')
+          .filter((li) => (within(li).queryByLabelText(/remove/i)));
         const upArrowButton = within(entries[2]).queryAllByLabelText(
           `Move ${instructorNames[2]} up to position 2`,
           { exact: false }
