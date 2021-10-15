@@ -13,6 +13,7 @@ import { AuthModule } from 'server/auth/auth.module';
 import { AUTH_MODE } from 'common/constants';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
+import { InstructorResponseDTO } from '../../../../src/common/dto/courses/InstructorResponse.dto';
 
 describe('Faculty service', function () {
   let facultyService: FacultyService;
@@ -63,135 +64,164 @@ describe('Faculty service', function () {
   afterEach(async function () {
     await testModule.close();
   });
-  it('returns all faculty members in the database', async function () {
-    const facultyCount = await facultyRepository.count({
-      relations: ['area'],
+  describe('find', function () {
+    it('returns all faculty members in the database', async function () {
+      const facultyCount = await facultyRepository.count({
+        relations: ['area'],
+      });
+
+      const returnedFaculty = await facultyService.find();
+
+      strictEqual(returnedFaculty.length, facultyCount);
+    });
+    it('sorts faculty members by area', async function () {
+      await facultyRepository.query(`TRUNCATE ${Faculty.name} CASCADE`);
+      const [
+        appliedMath,
+        bioengineering,
+      ] = await areaRepository.save([
+        {
+          name: appliedMathFacultyMemberRequest.area,
+        },
+        {
+          name: bioengineeringFacultyMember.area,
+        },
+      ]);
+
+      // Save two faculty members in the database with their faculty areas
+      // deliberately not in alphabetical order
+      await facultyRepository.save([
+        {
+          ...bioengineeringFacultyMember,
+          area: bioengineering,
+        },
+        {
+          ...appliedMathFacultyMemberRequest,
+          area: appliedMath,
+        },
+      ]);
+
+      const faculty = await facultyService.find();
+
+      deepStrictEqual(
+        faculty.map(({ area }) => area.name),
+        [
+          appliedMath.name,
+          bioengineering.name,
+        ]
+      );
+    });
+    it('sorts faculty members by last name in ascending order', async function () {
+      await facultyRepository.query(`TRUNCATE ${Faculty.name} CASCADE`);
+      const [appliedMath] = await areaRepository.save([
+        {
+          name: appliedMathFacultyMemberRequest.area,
+        },
+      ]);
+      // Save two example faculty members in the database, deliberately not
+      // in alphabetical order
+      const [
+        faculty1,
+        faculty2,
+      ] = await facultyRepository.save([
+        {
+          ...appliedMathFacultyMemberRequest,
+          // Slightly weird lastName to force the sorting and prove that it's
+          // working
+          lastName: 'zzzzzzzzz',
+          area: appliedMath,
+        },
+        {
+          ...bioengineeringFacultyMember,
+          // Slightly weird lastName to force the sorting and prove that it's
+          // working
+          lastName: 'aaaaaaaaa',
+          area: appliedMath,
+        },
+      ]);
+
+      const actualFaculty = await facultyService.find();
+      const actualLastNames = [
+        ...new Set(actualFaculty.map(({ lastName }) => lastName)),
+      ];
+
+      // Faculty 2 should come before faculty 1 because we're sorting by
+      // lastname ASC (aaa comes before zzz)
+      deepStrictEqual(actualLastNames, [
+        faculty2.lastName,
+        faculty1.lastName,
+      ]);
     });
 
-    const returnedFaculty = await facultyService.find();
+    it('sorts faculty members by first name in ascending order', async function () {
+      await facultyRepository.query(`TRUNCATE ${Faculty.name} CASCADE`);
+      const [appliedMath] = await areaRepository.save([
+        {
+          name: appliedMathFacultyMemberRequest.area,
+        },
+      ]);
+      // Save two example faculty members in the database, deliberately not
+      // in alphabetical order
+      const [
+        faculty1,
+        faculty2,
+      ] = await facultyRepository.save([
+        {
+          ...appliedMathFacultyMemberRequest,
+          // Slightly weird first and last names to force the sorting and prove
+          // that it's working
+          firstName: 'zzzzzzzzz',
+          lastName: 'zzzzzzzzz',
+          area: appliedMath,
+        },
+        {
+          ...bioengineeringFacultyMember,
+          // Slightly weird first and last names to force the sorting and prove
+          // that it's working
+          firstName: 'zaaaazzzz',
+          lastName: 'zzzzzzzzz',
+          area: appliedMath,
+        },
+      ]);
 
-    strictEqual(returnedFaculty.length, facultyCount);
+      const actualFaculty = await facultyService.find();
+      const actualLastNames = [
+        ...new Set(actualFaculty.map(({ firstName }) => firstName)),
+      ];
+
+      // Faculty 2 should come before faculty 1 because we're sorting by
+      // lastname ASC (aaa comes before zzz)
+      deepStrictEqual(actualLastNames, [
+        faculty2.firstName,
+        faculty1.firstName,
+      ]);
+    });
   });
-  it('sorts faculty members by area', async function () {
-    await facultyRepository.query(`TRUNCATE ${Faculty.name} CASCADE`);
-    const [
-      appliedMath,
-      bioengineering,
-    ] = await areaRepository.save([
-      {
-        name: appliedMathFacultyMemberRequest.area,
-      },
-      {
-        name: bioengineeringFacultyMember.area,
-      },
-    ]);
-
-    // Save two faculty members in the database with their faculty areas
-    // deliberately not in alphabetical order
-    await facultyRepository.save([
-      {
-        ...bioengineeringFacultyMember,
-        area: bioengineering,
-      },
-      {
-        ...appliedMathFacultyMemberRequest,
-        area: appliedMath,
-      },
-    ]);
-
-    const faculty = await facultyService.find();
-
-    deepStrictEqual(
-      faculty.map(({ area }) => area.name),
-      [
-        appliedMath.name,
-        bioengineering.name,
-      ]
-    );
-  });
-  it('sorts faculty members by last name in ascending order', async function () {
-    await facultyRepository.query(`TRUNCATE ${Faculty.name} CASCADE`);
-    const [appliedMath] = await areaRepository.save([
-      {
-        name: appliedMathFacultyMemberRequest.area,
-      },
-    ]);
-    // Save two example faculty members in the database, deliberately not
-    // in alphabetical order
-    const [
-      faculty1,
-      faculty2,
-    ] = await facultyRepository.save([
-      {
-        ...appliedMathFacultyMemberRequest,
-        // Slightly weird lastName to force the sorting and prove that it's
-        // working
-        lastName: 'zzzzzzzzz',
-        area: appliedMath,
-      },
-      {
-        ...bioengineeringFacultyMember,
-        // Slightly weird lastName to force the sorting and prove that it's
-        // working
-        lastName: 'aaaaaaaaa',
-        area: appliedMath,
-      },
-    ]);
-
-    const actualFaculty = await facultyService.find();
-    const actualLastNames = [
-      ...new Set(actualFaculty.map(({ lastName }) => lastName)),
-    ];
-
-    // Faculty 2 should come before faculty 1 because we're sorting by
-    // lastname ASC (aaa comes before zzz)
-    deepStrictEqual(actualLastNames, [
-      faculty2.lastName,
-      faculty1.lastName,
-    ]);
-  });
-
-  it('sorts faculty members by first name in ascending order', async function () {
-    await facultyRepository.query(`TRUNCATE ${Faculty.name} CASCADE`);
-    const [appliedMath] = await areaRepository.save([
-      {
-        name: appliedMathFacultyMemberRequest.area,
-      },
-    ]);
-    // Save two example faculty members in the database, deliberately not
-    // in alphabetical order
-    const [
-      faculty1,
-      faculty2,
-    ] = await facultyRepository.save([
-      {
-        ...appliedMathFacultyMemberRequest,
-        // Slightly weird first and last names to force the sorting and prove
-        // that it's working
-        firstName: 'zzzzzzzzz',
-        lastName: 'zzzzzzzzz',
-        area: appliedMath,
-      },
-      {
-        ...bioengineeringFacultyMember,
-        // Slightly weird first and last names to force the sorting and prove
-        // that it's working
-        firstName: 'zaaaazzzz',
-        lastName: 'zzzzzzzzz',
-        area: appliedMath,
-      },
-    ]);
-
-    const actualFaculty = await facultyService.find();
-    const actualLastNames = [
-      ...new Set(actualFaculty.map(({ firstName }) => firstName)),
-    ];
-
-    // Faculty 2 should come before faculty 1 because we're sorting by
-    // lastname ASC (aaa comes before zzz)
-    deepStrictEqual(actualLastNames, [
-      faculty2.firstName,
-      faculty1.firstName,
-    ]);
+  describe('getInstructorList', function () {
+    let result: InstructorResponseDTO[];
+    beforeEach(async function () {
+      result = await facultyService.getInstructorList();
+    });
+    it('returns all of the faculty', async function () {
+      const facultyCount = await facultyRepository.count();
+      strictEqual(result.length, facultyCount);
+    });
+    it('orders by the display name', function () {
+      const sortedResult = [...result].sort(
+        (
+          { displayName: a },
+          { displayName: b }
+        ) => {
+          if (a < b) {
+            return -1;
+          }
+          if (b < a) {
+            return 1;
+          }
+          return 0;
+        }
+      );
+      deepStrictEqual(result, sortedResult);
+    });
   });
 });
