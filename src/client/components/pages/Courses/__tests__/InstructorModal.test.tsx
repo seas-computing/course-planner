@@ -1,7 +1,9 @@
 import React from 'react';
 import { render } from 'test-utils';
 import { TERM } from 'common/constants';
-import { RenderResult, within } from '@testing-library/react';
+import {
+  fireEvent, RenderResult, within,
+} from '@testing-library/react';
 import * as dummy from 'testData';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { stub, SinonStub } from 'sinon';
@@ -244,6 +246,41 @@ describe('InstructorModal', function () {
         );
         strictEqual(upArrowButton.length, 1);
         strictEqual(downArrowButton.length, 0);
+      });
+    });
+  });
+  describe('Adding Instructors', function () {
+    beforeEach(function () {
+      testCourse = {
+        ...dummy.cs50CourseInstance,
+      };
+      instructorFetchStub.resolves([
+        ...dummy.cs50CourseInstance.fall.instructors,
+        ...dummy.ac209aCourseInstance.fall.instructors,
+      ]);
+      renderResult = render(
+        <InstructorModal
+          isVisible
+          currentCourse={testCourse}
+          currentSemester={{ term, calendarYear }}
+          closeModal={closeStub}
+          onSave={saveStub}
+        />
+      );
+    });
+    context('When searching for an instructor who is already assigned', function () {
+      it('Should show a no results message', async function () {
+        const [firstFaculty] = testCourse.fall.instructors;
+        const addInstructorInput = renderResult.getByRole('textbox');
+        fireEvent.change(
+          addInstructorInput,
+          {
+            target: {
+              value: firstFaculty.displayName,
+            },
+          }
+        );
+        return renderResult.findByText(`No results for "${firstFaculty.displayName}"`);
       });
     });
   });
