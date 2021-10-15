@@ -15,14 +15,18 @@ import {
   BorderlessButton,
   List,
   ListItem,
+  ModalMessage,
 } from 'mark-one';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt, faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
 import styled from 'styled-components';
+import { ComboboxOption } from 'mark-one/lib/Forms/Combobox';
 import CourseInstanceResponseDTO from '../../../../common/dto/courses/CourseInstanceResponse';
 import { TERM } from '../../../../common/constants';
 import { TermKey } from '../../../../common/constants/term';
 import { InstructorResponseDTO } from '../../../../common/dto/courses/InstructorResponse.dto';
+import { getAllInstructors } from '../../../api/faculty';
+import { ManageFacultyResponseDTO } from '../../../../common/dto/faculty/ManageFacultyResponse.dto';
 
 /**
 * Implement flexbox inside our ListItem to handle row spacing for handling
@@ -105,18 +109,45 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
   ] = useState<{displayName: string, id: string}[]>([]);
 
   /**
+   * Save a complete list of all instructors in local state
+   */
+  const [
+    fullInstructorList,
+    setFullInstructorList,
+  ] = useState<(ComboboxOption & Partial<ManageFacultyResponseDTO>)[]>([]);
+
+  /**
+   * Store any error messages generated inside the modal
+   */
+  const [errorMessage, setErrorMessage] = useState('');
+
+  /**
    * Load the instance instructors into our local state value when the modal
-   * opens
+   * opens, then fetch the complete list of instructors from the server
    */
   useEffect(() => {
     if (isVisible) {
       setAllInstructors(instanceInstructors);
       setMeetingModalFocus();
+      getAllInstructors()
+        .then((facultyList) => {
+          setFullInstructorList(facultyList.map(({
+            displayName: label,
+            id: value,
+          }) => ({
+            label,
+            value,
+          })));
+        })
+        .catch((error: Error) => {
+          setErrorMessage(error.message);
+        });
     }
   }, [
     isVisible,
     instanceInstructors,
     setAllInstructors,
+    setFullInstructorList,
   ]);
 
   const instanceIdentifier = `${catalogNumber}, ${term} ${calendarYear}`;
@@ -196,6 +227,12 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
         >
           Save
         </Button>
+        {errorMessage
+          ? (
+            <ModalMessage variant={VARIANT.NEGATIVE}>
+              {errorMessage}
+            </ModalMessage>
+          ) : null}
         <Button
           onClick={closeModal}
           variant={VARIANT.SECONDARY}
