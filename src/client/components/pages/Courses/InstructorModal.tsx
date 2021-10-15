@@ -15,6 +15,7 @@ import {
   BorderlessButton,
   List,
   ListItem,
+  Combobox,
   ModalMessage,
 } from 'mark-one';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -167,57 +168,94 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
       </ModalHeader>
       <ModalBody>
         <List>
+          <>
             {localInstructors.map(
               ({ id, displayName }, index, { length }) => (
-            <InstructorListItem key={id}>
-              <BorderlessButton
-                alt={`Remove ${displayName} from ${instanceIdentifier}`}
-                variant={VARIANT.DANGER}
-                onClick={() => {}}
-              >
-                <FontAwesomeIcon icon={faTrashAlt} />
-              </BorderlessButton>
-              <span className="instructor-name" id={`instructor-${index + 1}`}>
-                {displayName}
-              </span>
-              {index > 0 ? (
-                <BorderlessButton
-                  alt={`Move ${displayName} up to position ${index} in ${instanceIdentifier}`}
-                  variant={VARIANT.PRIMARY}
-                  onClick={() => {}}
-                >
-                  <FontAwesomeIcon icon={faArrowUp} />
-                </BorderlessButton>
-              ) : (
-                <BorderlessButton
-                  disabled
-                  alt={`${displayName} cannot be moved up`}
-                  variant={VARIANT.DEFAULT}
-                  onClick={() => {}}
-                >
-                  <FontAwesomeIcon icon={faArrowUp} />
-                </BorderlessButton>
-              )}
-              {index < length - 1 ? (
-                <BorderlessButton
-                  alt={`Move ${displayName} down to Position ${index + 2} in ${instanceIdentifier}`}
-                  variant={VARIANT.PRIMARY}
-                  onClick={() => {}}
-                >
-                  <FontAwesomeIcon icon={faArrowDown} />
-                </BorderlessButton>
-              ) : (
-                <BorderlessButton
-                  disabled
-                  alt={`${displayName} cannot be moved down`}
-                  variant={VARIANT.DEFAULT}
-                  onClick={() => {}}
-                >
-                  <FontAwesomeIcon icon={faArrowDown} />
-                </BorderlessButton>
-              )}
-            </InstructorListItem>
-          ))}
+                <InstructorListItem key={id}>
+                  <BorderlessButton
+                    alt={`Remove ${displayName} from ${instanceIdentifier}`}
+                    variant={VARIANT.DANGER}
+                    onClick={() => {}}
+                  >
+                    <FontAwesomeIcon icon={faTrashAlt} />
+                  </BorderlessButton>
+                  <span className="instructor-name" id={`instructor-${index + 1}`}>
+                    {displayName}
+                  </span>
+                  {index > 0 ? (
+                    <BorderlessButton
+                      alt={`Move ${displayName} up to position ${index} in ${instanceIdentifier}`}
+                      variant={VARIANT.PRIMARY}
+                      onClick={() => {}}
+                    >
+                      <FontAwesomeIcon icon={faArrowUp} />
+                    </BorderlessButton>
+                  ) : (
+                    <BorderlessButton
+                      disabled
+                      alt={`${displayName} cannot be moved up`}
+                      variant={VARIANT.DEFAULT}
+                      onClick={() => {}}
+                    >
+                      <FontAwesomeIcon icon={faArrowUp} />
+                    </BorderlessButton>
+                  )}
+                  {index < length - 1 ? (
+                    <BorderlessButton
+                      alt={`Move ${displayName} down to Position ${index + 2} in ${instanceIdentifier}`}
+                      variant={VARIANT.PRIMARY}
+                      onClick={() => {}}
+                    >
+                      <FontAwesomeIcon icon={faArrowDown} />
+                    </BorderlessButton>
+                  ) : (
+                    <BorderlessButton
+                      disabled
+                      alt={`${displayName} cannot be moved down`}
+                      variant={VARIANT.DEFAULT}
+                      onClick={() => {}}
+                    >
+                      <FontAwesomeIcon icon={faArrowDown} />
+                    </BorderlessButton>
+                  )}
+                </InstructorListItem>
+              )
+            )}
+            <ListItem as="div">
+              <Combobox
+                options={fullInstructorList
+                  .filter(
+                    ({ value }) => (
+                      localInstructors
+                        .findIndex(
+                          ({ id }) => value === id
+                        ) === -1)
+                  )}
+                label={`Add new Instructor to ${instanceIdentifier}`}
+                currentValue={null}
+                isLabelVisible={false}
+                placeholder="Add new instructor"
+                filterFunction={
+                  (option, inputValue) => {
+                    const inputWords = inputValue.split(' ');
+                    const inputRegExp = new RegExp(inputWords.join('|'), 'i');
+                    return inputRegExp.test(option.label);
+                  }
+                }
+                onOptionSelected={({
+                  selectedItem: {
+                    label: displayName,
+                    value: id,
+                  },
+                }) => {
+                  setLocalInstructors(
+                    (list) => ([...list, { id, displayName }])
+                  );
+                  setIsChanged(true);
+                }}
+              />
+            </ListItem>
+          </>
         </List>
       </ModalBody>
       <ModalFooter>
