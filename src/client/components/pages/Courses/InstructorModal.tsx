@@ -71,6 +71,14 @@ interface InstructorModalProps {
 }
 
 /**
+* Sets a min-height double the max-height of the Combobox dropdown, to keep it
+* visible when adding instructors
+*/
+const InstructorModalBody = styled(ModalBody)`
+  min-height: 32em;
+`;
+
+/**
 * Displays a list of the instructors associated with a course instance and
 * provides way to add, remove and rearrange them
 */
@@ -166,7 +174,7 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
           {`Edit Instructors for ${instanceIdentifier}`}
         </span>
       </ModalHeader>
-      <ModalBody>
+      <InstructorModalBody>
         <List>
           <>
             {localInstructors.map(
@@ -257,7 +265,7 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
             </ListItem>
           </>
         </List>
-      </ModalBody>
+      </InstructorModalBody>
       <ModalFooter>
         <Button
           onClick={() => {}}
