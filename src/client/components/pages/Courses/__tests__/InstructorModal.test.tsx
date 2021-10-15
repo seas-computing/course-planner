@@ -283,5 +283,33 @@ describe('InstructorModal', function () {
         return renderResult.findByText(`No results for "${firstFaculty.displayName}"`);
       });
     });
+    context('Selecting a valid instructor', function () {
+      it('Should add the instructor to the list', async function () {
+        const { length: initialListItemCount } = renderResult.getAllByRole('listitem')
+          .filter((li) => (within(li).queryByLabelText(/remove/i)));
+        const [firstValidFaculty] = dummy.ac209aCourseInstance.fall.instructors;
+        const addInstructorInput = renderResult.getByRole('textbox');
+        fireEvent.change(
+          addInstructorInput,
+          {
+            target: {
+              value: firstValidFaculty.displayName.split(',')[0],
+            },
+          }
+        );
+        const validInstructorName = await renderResult.findByText(
+          firstValidFaculty.displayName
+        );
+        fireEvent.click(validInstructorName);
+        // Wait for the add instructor input to revert
+        await renderResult.findByPlaceholderText('Add new instructor');
+        const newEntries = renderResult.getAllByRole('listitem')
+          .filter((li) => (within(li).queryByLabelText(/remove/i)));
+        const { length: updatedListItemCount } = newEntries;
+        strictEqual(updatedListItemCount, initialListItemCount + 1);
+        // Check for the faculty name in the list
+        return renderResult.findByText(firstValidFaculty.displayName);
+      });
+    });
   });
 });
