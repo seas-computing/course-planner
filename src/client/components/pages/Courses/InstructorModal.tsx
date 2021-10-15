@@ -100,12 +100,12 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
     setTimeout(() => modalHeaderRef.current?.focus());
   };
   /**
-   * Keep a local copy of the instructors that we can modify before committing
-   * to the server
+   * Keep a local copy of the course instance instructors that we can modify
+   * before committing to the server
    */
   const [
-    allInstructors,
-    setAllInstructors,
+    localInstructors,
+    setLocalInstructors,
   ] = useState<{displayName: string, id: string}[]>([]);
 
   /**
@@ -127,7 +127,7 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
    */
   useEffect(() => {
     if (isVisible) {
-      setAllInstructors(instanceInstructors);
+      setLocalInstructors(instanceInstructors);
       setMeetingModalFocus();
       getAllInstructors()
         .then((facultyList) => {
@@ -146,7 +146,7 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
   }, [
     isVisible,
     instanceInstructors,
-    setAllInstructors,
+    setLocalInstructors,
     setFullInstructorList,
   ]);
 
@@ -167,7 +167,8 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
       </ModalHeader>
       <ModalBody>
         <List>
-          {allInstructors.map(({ id, displayName }, index, { length }) => (
+            {localInstructors.map(
+              ({ id, displayName }, index, { length }) => (
             <InstructorListItem key={id}>
               <BorderlessButton
                 alt={`Remove ${displayName} from ${instanceIdentifier}`}
