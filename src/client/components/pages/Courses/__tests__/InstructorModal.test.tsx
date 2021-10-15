@@ -4,19 +4,27 @@ import { TERM } from 'common/constants';
 import { RenderResult, within } from '@testing-library/react';
 import * as dummy from 'testData';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
-import { stub } from 'sinon';
+import { stub, SinonStub } from 'sinon';
 import { strictEqual, deepStrictEqual, notStrictEqual } from 'assert';
+import * as facultyAPI from '../../../../api/faculty';
 import InstructorModal from '../InstructorModal';
 
 describe('InstructorModal', function () {
   let renderResult: RenderResult;
   let testCourse: CourseInstanceResponseDTO;
   let instructorNames: string[];
+  let instructorFetchStub: SinonStub;
   const term = TERM.FALL;
   const { calendarYear } = dummy.cs50CourseInstance.fall;
   const closeStub = stub();
   const saveStub = stub();
+  beforeEach(function () {
+    instructorFetchStub = stub(facultyAPI, 'getAllInstructors');
+  });
   describe('Rendering Instructor list', function () {
+    beforeEach(function () {
+      instructorFetchStub.resolves([]);
+    });
     context('With No Instructors', function () {
       beforeEach(function () {
         testCourse = {
