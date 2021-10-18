@@ -1,3 +1,6 @@
+import {
+  waitForElement,
+} from '@testing-library/react';
 import React, { FunctionComponent, ReactElement } from 'react';
 import { spy, SinonSpy } from 'sinon';
 import {
@@ -11,7 +14,11 @@ import { render } from 'test-utils';
 import { dayEnumToString } from 'common/constants/day';
 import { offeredEnumToString } from 'common/constants/offered';
 import {
-  retrieveValue, tableFields, formatInstructors, formatMeetings,
+  retrieveValue,
+  tableFields,
+  formatInstructors,
+  formatMeetings,
+  formatFacultyNotes,
 } from '../tableFields';
 import { PGTime } from '../../../../../common/utils/PGTime';
 
@@ -245,6 +252,63 @@ describe('tableFields', function () {
             <TestComponent />
           );
           strictEqual(queryAllByRole('listitem').length, 0);
+        });
+      });
+    });
+    describe('formatFacultyNotes', function () {
+      context('when the faculty member has associated notes', function () {
+        it('displays the faculty notes associated with the course instance', async function () {
+          const TestComponent: FunctionComponent = (): ReactElement => (
+            <div>
+              {formatFacultyNotes(TERM.FALL, ac209aCourseInstance)}
+            </div>
+          );
+          const { getByText } = render(
+            <TestComponent />
+          );
+          const facultyWithNotes = (ac209aCourseInstance.fall.instructors
+            .filter((instructor) => (instructor.notes !== '' && instructor.notes !== null)));
+          const expectedNotes = facultyWithNotes
+            .map((faculty) => faculty.notes);
+          return Promise.all(expectedNotes.map((note) => waitForElement(
+            () => getByText(note)
+          )));
+        });
+      });
+      context('when the faculty member does not have associated notes', function () {
+        context('when faculty notes is an empty string', function () {
+          it('displays the text "No Notes"', function () {
+            const TestComponent: FunctionComponent = (): ReactElement => (
+              <div>
+                {formatFacultyNotes(TERM.FALL, cs50CourseInstance)}
+              </div>
+            );
+            const { getByText } = render(
+              <TestComponent />
+            );
+            const facultyWithoutNotes = (cs50CourseInstance.fall.instructors
+              .filter((instructor) => (instructor.notes === '')));
+            const modalNotes = getByText('Faculty Notes', { exact: false }).nextElementSibling;
+            const noNotesLength = (modalNotes as HTMLElement).textContent.match(/s*No Notes\s*$/g).length;
+            strictEqual(facultyWithoutNotes.length, noNotesLength);
+          });
+        });
+        context('when faculty notes is null', function () {
+          it('displays the text "No Notes"', function () {
+            const TestComponent: FunctionComponent = (): ReactElement => (
+              <div>
+                {formatFacultyNotes(TERM.FALL, cs50CourseInstance)}
+              </div>
+            );
+            const { getByText } = render(
+              <TestComponent />
+            );
+            const facultyWithNullNotes = (cs50CourseInstance.fall.instructors
+              .filter((instructor) => (instructor.notes === null)));
+            const modalNotes = getByText('Faculty Notes', { exact: false }).nextElementSibling;
+            const noNotesLength = (modalNotes as HTMLElement).textContent.match(/s*No Notes\s*$/g).length;
+            strictEqual(facultyWithNullNotes.length, noNotesLength);
+          });
         });
       });
     });
