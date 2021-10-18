@@ -355,4 +355,37 @@ describe('InstructorModal', function () {
       });
     });
   });
+  describe('Removing Instructors', function () {
+    beforeEach(function () {
+      testCourse = {
+        ...dummy.cs50CourseInstance,
+      };
+      instructorFetchStub.resolves([]);
+      renderResult = render(
+        <InstructorModal
+          isVisible
+          currentCourse={testCourse}
+          currentSemester={{ term, calendarYear }}
+          closeModal={closeStub}
+          onSave={saveStub}
+        />
+      );
+    });
+    context('Clicking the remove button', function () {
+      it('Should remove the instructor from the list', function () {
+        const [oldFirst, oldSecond, oldThird] = testCourse.fall.instructors;
+        const removeFirst = renderResult.getByLabelText(`Remove ${oldFirst.displayName}`, { exact: false });
+        fireEvent.click(removeFirst);
+        const [newFirst, newSecond, newThird] = renderResult.getAllByRole('listitem')
+          .filter((li) => (within(li).queryByLabelText(/remove/i)))
+          .map(({ textContent }) => textContent);
+        strictEqual(oldSecond.displayName, newFirst);
+        strictEqual(oldThird.displayName, newSecond);
+        strictEqual(newThird, undefined);
+        const oldFirstEntry = renderResult
+          .queryByText(oldFirst.displayName, { exact: false });
+        strictEqual(oldFirstEntry, null);
+      });
+    });
+  });
 });
