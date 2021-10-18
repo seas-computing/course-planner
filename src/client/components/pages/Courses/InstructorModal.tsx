@@ -15,14 +15,19 @@ import {
   BorderlessButton,
   List,
   ListItem,
+  Combobox,
+  ModalMessage,
 } from 'mark-one';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt, faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
 import styled from 'styled-components';
+import { ComboboxOption } from 'mark-one/lib/Forms/Combobox';
 import CourseInstanceResponseDTO from '../../../../common/dto/courses/CourseInstanceResponse';
 import { TERM } from '../../../../common/constants';
 import { TermKey } from '../../../../common/constants/term';
 import { InstructorResponseDTO } from '../../../../common/dto/courses/InstructorResponse.dto';
+import { getAllInstructors } from '../../../api/faculty';
+import { ManageFacultyResponseDTO } from '../../../../common/dto/faculty/ManageFacultyResponse.dto';
 
 /**
 * Implement flexbox inside our ListItem to handle row spacing for handling
@@ -66,6 +71,14 @@ interface InstructorModalProps {
 }
 
 /**
+* Sets a min-height double the max-height of the Combobox dropdown, to keep it
+* visible when adding instructors
+*/
+const InstructorModalBody = styled(ModalBody)`
+  min-height: 32em;
+`;
+
+/**
 * Displays a list of the instructors associated with a course instance and
 * provides way to add, remove and rearrange them
 */
@@ -85,6 +98,59 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
   } = currentCourse;
 
   /**
+   * Keeps track of whether the user has altered fields in the form to determine
+   * whether to show a confirmation dialog on modal close
+   */
+  const [
+    isChanged,
+    setIsChanged,
+  ] = useState(false);
+
+  const confirmMessage = "You have unsaved changes. Click 'OK' to disregard changes, or 'Cancel' to continue editing.";
+
+  /**
+   * Used to add the before unload listener in the case that a form field is changed
+   */
+  useEffect(() => {
+    /**
+     * Checks to see if there are any unsaved changes in the modal when the user
+     * refreshes the page. If there are unsaved changes, the browser displays a
+     * warning message to confirm the page reload. If the user selects cancel, the
+     * user can continue making changes in the modal.
+     */
+    const onBeforeUnload = (event: Event) => {
+      if (!isChanged) return;
+      event.preventDefault();
+      // Need to disable this rule for browser compatibility reasons
+      // eslint-disable-next-line no-param-reassign
+      event.returnValue = false;
+      return confirmMessage;
+    };
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', onBeforeUnload);
+    };
+  }, [isChanged]);
+
+  /**
+   * Called when the modal is closed. If there are any unsaved changes,
+   * a warning message appears, and the user must confirm discarding the unsaved
+   * changes in order to close the modal. If the user selects cancel, the user
+   * can continue making changes in the modal.
+   */
+  const confirmAndClose = () => {
+    if (isChanged) {
+      // eslint-disable-next-line no-alert
+      if (window.confirm(confirmMessage)) {
+        setIsChanged(false);
+        closeModal();
+      }
+    } else {
+      closeModal();
+    }
+  };
+
+  /**
    * Ref to attach to the internal modal header
    */
   const modalHeaderRef = useRef<HTMLHeadingElement>(null);
@@ -96,34 +162,61 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
     setTimeout(() => modalHeaderRef.current?.focus());
   };
   /**
-   * Keep a local copy of the instructors that we can modify before committing
-   * to the server
+   * Keep a local copy of the course instance instructors that we can modify
+   * before committing to the server
    */
   const [
-    allInstructors,
-    setAllInstructors,
+    localInstructors,
+    setLocalInstructors,
   ] = useState<{displayName: string, id: string}[]>([]);
 
   /**
+   * Save a complete list of all instructors in local state
+   */
+  const [
+    fullInstructorList,
+    setFullInstructorList,
+  ] = useState<(ComboboxOption & Partial<ManageFacultyResponseDTO>)[]>([]);
+
+  /**
+   * Store any error messages generated inside the modal
+   */
+  const [errorMessage, setErrorMessage] = useState('');
+
+  /**
    * Load the instance instructors into our local state value when the modal
-   * opens
+   * opens, then fetch the complete list of instructors from the server
    */
   useEffect(() => {
     if (isVisible) {
-      setAllInstructors(instanceInstructors);
+      setLocalInstructors(instanceInstructors);
       setMeetingModalFocus();
+      getAllInstructors()
+        .then((facultyList) => {
+          setFullInstructorList(facultyList.map(({
+            displayName: label,
+            id: value,
+          }) => ({
+            label,
+            value,
+          })));
+        })
+        .catch((error: Error) => {
+          setErrorMessage(error.message);
+        });
     }
   }, [
     isVisible,
     instanceInstructors,
-    setAllInstructors,
+    setLocalInstructors,
+    setFullInstructorList,
   ]);
 
   const instanceIdentifier = `${catalogNumber}, ${term} ${calendarYear}`;
   return (
     <Modal
       ariaLabelledBy="edit-instructors-header"
-      closeHandler={closeModal}
+      closeHandler={confirmAndClose}
       isVisible={isVisible}
     >
       <ModalHeader
@@ -134,60 +227,98 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
           {`Edit Instructors for ${instanceIdentifier}`}
         </span>
       </ModalHeader>
-      <ModalBody>
+      <InstructorModalBody>
         <List>
-          {allInstructors.map(({ id, displayName }, index, { length }) => (
-            <InstructorListItem key={id}>
-              <BorderlessButton
-                alt={`Remove ${displayName} from ${instanceIdentifier}`}
-                variant={VARIANT.DANGER}
-                onClick={() => {}}
-              >
-                <FontAwesomeIcon icon={faTrashAlt} />
-              </BorderlessButton>
-              <span className="instructor-name" id={`instructor-${index + 1}`}>
-                {displayName}
-              </span>
-              {index > 0 ? (
-                <BorderlessButton
-                  alt={`Move ${displayName} up to position ${index} in ${instanceIdentifier}`}
-                  variant={VARIANT.PRIMARY}
-                  onClick={() => {}}
-                >
-                  <FontAwesomeIcon icon={faArrowUp} />
-                </BorderlessButton>
-              ) : (
-                <BorderlessButton
-                  disabled
-                  alt={`${displayName} cannot be moved up`}
-                  variant={VARIANT.DEFAULT}
-                  onClick={() => {}}
-                >
-                  <FontAwesomeIcon icon={faArrowUp} />
-                </BorderlessButton>
-              )}
-              {index < length - 1 ? (
-                <BorderlessButton
-                  alt={`Move ${displayName} down to Position ${index + 2} in ${instanceIdentifier}`}
-                  variant={VARIANT.PRIMARY}
-                  onClick={() => {}}
-                >
-                  <FontAwesomeIcon icon={faArrowDown} />
-                </BorderlessButton>
-              ) : (
-                <BorderlessButton
-                  disabled
-                  alt={`${displayName} cannot be moved down`}
-                  variant={VARIANT.DEFAULT}
-                  onClick={() => {}}
-                >
-                  <FontAwesomeIcon icon={faArrowDown} />
-                </BorderlessButton>
-              )}
-            </InstructorListItem>
-          ))}
+          <>
+            {localInstructors.map(
+              ({ id, displayName }, index, { length }) => (
+                <InstructorListItem key={id}>
+                  <BorderlessButton
+                    alt={`Remove ${displayName} from ${instanceIdentifier}`}
+                    variant={VARIANT.DANGER}
+                    onClick={() => {}}
+                  >
+                    <FontAwesomeIcon icon={faTrashAlt} />
+                  </BorderlessButton>
+                  <span className="instructor-name" id={`instructor-${index + 1}`}>
+                    {displayName}
+                  </span>
+                  {index > 0 ? (
+                    <BorderlessButton
+                      alt={`Move ${displayName} up to position ${index} in ${instanceIdentifier}`}
+                      variant={VARIANT.PRIMARY}
+                      onClick={() => {}}
+                    >
+                      <FontAwesomeIcon icon={faArrowUp} />
+                    </BorderlessButton>
+                  ) : (
+                    <BorderlessButton
+                      disabled
+                      alt={`${displayName} cannot be moved up`}
+                      variant={VARIANT.DEFAULT}
+                      onClick={() => {}}
+                    >
+                      <FontAwesomeIcon icon={faArrowUp} />
+                    </BorderlessButton>
+                  )}
+                  {index < length - 1 ? (
+                    <BorderlessButton
+                      alt={`Move ${displayName} down to Position ${index + 2} in ${instanceIdentifier}`}
+                      variant={VARIANT.PRIMARY}
+                      onClick={() => {}}
+                    >
+                      <FontAwesomeIcon icon={faArrowDown} />
+                    </BorderlessButton>
+                  ) : (
+                    <BorderlessButton
+                      disabled
+                      alt={`${displayName} cannot be moved down`}
+                      variant={VARIANT.DEFAULT}
+                      onClick={() => {}}
+                    >
+                      <FontAwesomeIcon icon={faArrowDown} />
+                    </BorderlessButton>
+                  )}
+                </InstructorListItem>
+              )
+            )}
+            <ListItem as="div">
+              <Combobox
+                options={fullInstructorList
+                  .filter(
+                    ({ value }) => (
+                      localInstructors
+                        .findIndex(
+                          ({ id }) => value === id
+                        ) === -1)
+                  )}
+                label={`Add new Instructor to ${instanceIdentifier}`}
+                currentValue={null}
+                isLabelVisible={false}
+                placeholder="Add new instructor"
+                filterFunction={
+                  (option, inputValue) => {
+                    const inputWords = inputValue.split(' ');
+                    const inputRegExp = new RegExp(inputWords.join('|'), 'i');
+                    return inputRegExp.test(option.label);
+                  }
+                }
+                onOptionSelected={({
+                  selectedItem: {
+                    label: displayName,
+                    value: id,
+                  },
+                }) => {
+                  setLocalInstructors(
+                    (list) => ([...list, { id, displayName }])
+                  );
+                  setIsChanged(true);
+                }}
+              />
+            </ListItem>
+          </>
         </List>
-      </ModalBody>
+      </InstructorModalBody>
       <ModalFooter>
         <Button
           onClick={() => {}}
@@ -196,8 +327,14 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
         >
           Save
         </Button>
+        {errorMessage
+          ? (
+            <ModalMessage variant={VARIANT.NEGATIVE}>
+              {errorMessage}
+            </ModalMessage>
+          ) : null}
         <Button
-          onClick={closeModal}
+          onClick={confirmAndClose}
           variant={VARIANT.SECONDARY}
           disabled={false}
         >
