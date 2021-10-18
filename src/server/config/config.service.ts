@@ -21,7 +21,7 @@ import { RoomListingView } from 'server/location/RoomListingView.entity';
 import { Meeting } from 'server/meeting/meeting.entity';
 import { MeetingListingView } from 'server/meeting/MeetingListingView.entity';
 import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
-import { NonClassParent } from 'server/nonClassParent/nonclassparent.entity';
+import { NonClassParent } from 'server/nonClassEvent/nonclassparent.entity';
 import { Semester } from 'server/semester/semester.entity';
 import { SemesterView } from 'server/semester/SemesterView.entity';
 import { View } from 'server/view/view.entity';

@@ -24,6 +24,9 @@ import { MeetingListingView } from './MeetingListingView.entity';
   ],
   controllers: [MeetingController],
   providers: [MeetingService],
-  exports: [MeetingService],
+  exports: [
+    MeetingService,
+    TypeOrmModule,
+  ],
 })
 export class MeetingModule { }

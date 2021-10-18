@@ -1,8 +1,18 @@
-import { ForbiddenException, HttpServer, HttpStatus } from '@nestjs/common';
+import {
+  ForbiddenException, HttpServer, HttpStatus, UnauthorizedException,
+} from '@nestjs/common';
 import { SinonStub, stub } from 'sinon';
 import { TestingModule, Test } from '@nestjs/testing';
 import { SessionModule } from 'nestjs-session';
-import { string } from 'testData';
+import {
+  nonClassEventManager,
+  string,
+  computationalModelingofFluidsReadingGroup,
+  dataScienceReadingGroup,
+  createNonClassParent,
+  appliedMath,
+  nonClassParent,
+} from 'testData';
 import { ConfigModule } from 'server/config/config.module';
 import { AuthModule } from 'server/auth/auth.module';
 import { AUTH_MODE } from 'common/constants';
@@ -11,15 +21,23 @@ import { strictEqual, deepStrictEqual } from 'assert';
 import request from 'supertest';
 import { NonClassEventService } from 'server/nonClassEvent/nonClassEvent.service';
 import { NonClassEventController } from 'server/nonClassEvent/nonClassEvent.controller';
-import {
-  computationalModelingofFluidsReadingGroup,
-  dataScienceReadingGroup,
-} from 'common/__tests__/data/nonClassEvents';
 import { NonClassParentView } from 'server/nonClassEvent/NonClassParentView.entity';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Area } from 'server/area/area.entity';
+import { NonClassParent } from 'server/nonClassEvent/nonclassparent.entity';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
+
+const mockAreaRepository = {
+  findOneOrFail: stub(),
+};
 
 const mockNonClassEventService = {
   find: stub(),
+  createWithNonClassEvents: stub(),
+};
+
+const mockParentRepository = {
+  findOne: stub(),
 };
 
 describe('Non Class Event API', function () {
@@ -49,6 +67,14 @@ describe('Non Class Event API', function () {
           provide: NonClassEventService,
           useValue: mockNonClassEventService,
         },
+        {
+          provide: getRepositoryToken(Area),
+          useValue: mockAreaRepository,
+        },
+        {
+          provide: getRepositoryToken(NonClassParent),
+          useValue: mockParentRepository,
+        },
       ],
       controllers: [
         NonClassEventController,
@@ -64,13 +90,6 @@ describe('Non Class Event API', function () {
 
     api = nestApp.getHttpServer() as HttpServer;
   });
-  afterEach(function () {
-    authStub.restore();
-    Object.values(mockNonClassEventService)
-      .forEach((sinonStub: SinonStub): void => {
-        sinonStub.reset();
-      });
-  });
   describe('GET /', function () {
     describe('User is not authenticated', function () {
       it('is inaccessible to unauthenticated users', async function () {
@@ -84,8 +103,10 @@ describe('Non Class Event API', function () {
       });
     });
     describe('User is authenticated', function () {
+      beforeEach(function () {
+        authStub.resolves(nonClassEventManager);
+      });
       it('it returns all the non-class events in the database', async function () {
-        authStub.resolves();
         mockNonClassEventService.find.resolves([
           computationalModelingofFluidsReadingGroup,
           dataScienceReadingGroup,
@@ -104,6 +125,64 @@ describe('Non Class Event API', function () {
             dataScienceReadingGroup,
           ]
         );
+      });
+    });
+  });
+  describe('POST /', function () {
+    describe('User is not authenticated', function () {
+      it('is inaccessible to unauthenticated users', async function () {
+        authStub.rejects(new ForbiddenException());
+
+        const response = await request(api)
+          .post('/api/non-class-events')
+          .send(createNonClassParent);
+
+        strictEqual(response.ok, false);
+        strictEqual(response.status, HttpStatus.FORBIDDEN);
+        strictEqual(
+          mockNonClassEventService.createWithNonClassEvents.called,
+          false
+        );
+      });
+    });
+    describe('User is authenticated', function () {
+      describe('User is not authorized', function () {
+        beforeEach(function () {
+          authStub.rejects(new UnauthorizedException());
+        });
+        it('is inaccessible to unauthorized users', async function () {
+          const response = await request(api)
+            .post('/api/non-class-events')
+            .send(createNonClassParent);
+
+          strictEqual(response.ok, false);
+          strictEqual(response.status, HttpStatus.UNAUTHORIZED);
+          strictEqual(
+            mockNonClassEventService.createWithNonClassEvents.called,
+            false
+          );
+        });
+      });
+      describe('User is authorized', function () {
+        beforeEach(function () {
+          authStub.resolves(nonClassEventManager);
+        });
+        it('creates non-class parent data', async function () {
+          mockAreaRepository.findOneOrFail.resolves(appliedMath);
+          mockNonClassEventService.createWithNonClassEvents
+            .resolves(nonClassParent);
+
+          const response = await request(api)
+            .post('/api/non-class-events')
+            .send(createNonClassParent);
+
+          strictEqual(response.ok, true);
+          strictEqual(response.status, HttpStatus.CREATED);
+          strictEqual(
+            mockNonClassEventService.createWithNonClassEvents.called,
+            true
+          );
+        });
       });
     });
   });
