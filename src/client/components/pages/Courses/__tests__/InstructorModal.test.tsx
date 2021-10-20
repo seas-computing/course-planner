@@ -312,4 +312,47 @@ describe('InstructorModal', function () {
       });
     });
   });
+  describe('Reorganizing Instructors', function () {
+    beforeEach(function () {
+      testCourse = {
+        ...dummy.cs50CourseInstance,
+      };
+      instructorFetchStub.resolves([]);
+      renderResult = render(
+        <InstructorModal
+          isVisible
+          currentCourse={testCourse}
+          currentSemester={{ term, calendarYear }}
+          closeModal={closeStub}
+          onSave={saveStub}
+        />
+      );
+    });
+    context('Moving an instructor down', function () {
+      it('Should swap places with the instructor below', function () {
+        const [oldFirst, oldSecond, oldThird] = testCourse.fall.instructors;
+        const moveFirstDownButton = renderResult.getByLabelText(`Move ${oldFirst.displayName} down to position 2`, { exact: false });
+        fireEvent.click(moveFirstDownButton);
+        const [newFirst, newSecond, newThird] = renderResult.getAllByRole('listitem')
+          .filter((li) => (within(li).queryByLabelText(/remove/i)))
+          .map(({ textContent }) => textContent);
+        strictEqual(oldFirst.displayName, newSecond);
+        strictEqual(oldSecond.displayName, newFirst);
+        strictEqual(oldThird.displayName, newThird);
+      });
+    });
+    context('Moving an instructor up', function () {
+      it('Should swap places with the instructor above', function () {
+        const [oldFirst, oldSecond, oldThird] = testCourse.fall.instructors;
+        const moveThirdUpButton = renderResult.getByLabelText(`Move ${oldThird.displayName} up to position 2`, { exact: false });
+        fireEvent.click(moveThirdUpButton);
+        const [newFirst, newSecond, newThird] = renderResult.getAllByRole('listitem')
+          .filter((li) => (within(li).queryByLabelText(/remove/i)))
+          .map(({ textContent }) => textContent);
+        strictEqual(oldFirst.displayName, newFirst);
+        strictEqual(oldSecond.displayName, newThird);
+        strictEqual(oldThird.displayName, newSecond);
+      });
+    });
+  });
 });

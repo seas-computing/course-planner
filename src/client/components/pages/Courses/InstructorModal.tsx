@@ -212,6 +212,23 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
     setFullInstructorList,
   ]);
 
+  /**
+   * Swaps an instructor between two positions in the localInstructors array
+   * and updates the value of the instructorOrder field to match.
+   */
+  const moveInstructor = (oldIndex: number, newIndex: number): void => {
+    setLocalInstructors((list) => {
+      const newList = [...list];
+      const [thisInstructor] = newList.splice(oldIndex, 1);
+      newList.splice(newIndex, 0, thisInstructor);
+      return newList.map((instructor, index) => ({
+        ...instructor,
+        instructorOrder: index,
+      }));
+    });
+    setIsChanged(true);
+  };
+
   const instanceIdentifier = `${catalogNumber}, ${term} ${calendarYear}`;
   return (
     <Modal
@@ -247,7 +264,9 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
                     <BorderlessButton
                       alt={`Move ${displayName} up to position ${index} in ${instanceIdentifier}`}
                       variant={VARIANT.PRIMARY}
-                      onClick={() => {}}
+                      onClick={() => {
+                        moveInstructor(index, index - 1);
+                      }}
                     >
                       <FontAwesomeIcon icon={faArrowUp} />
                     </BorderlessButton>
@@ -263,9 +282,11 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
                   )}
                   {index < length - 1 ? (
                     <BorderlessButton
-                      alt={`Move ${displayName} down to Position ${index + 2} in ${instanceIdentifier}`}
+                      alt={`Move ${displayName} down to position ${index + 2} in ${instanceIdentifier}`}
                       variant={VARIANT.PRIMARY}
-                      onClick={() => {}}
+                      onClick={() => {
+                        moveInstructor(index, index + 1);
+                      }}
                     >
                       <FontAwesomeIcon icon={faArrowDown} />
                     </BorderlessButton>
