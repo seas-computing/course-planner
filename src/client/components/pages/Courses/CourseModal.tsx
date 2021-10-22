@@ -50,11 +50,11 @@ interface CourseModalProps {
    * Handler to be invoked when the modal closes
    * e.g. to clear data entered into a form
    */
-  onClose?: () => void;
+  onClose: () => void;
   /**
    * Handler to be invoked when the edit is successful
    */
-  onSuccess?: (course: ManageCourseResponseDTO) => Promise<void>;
+  onSuccess: (course: ManageCourseResponseDTO) => Promise<void>;
 }
 
 interface FormErrors {
@@ -544,6 +544,10 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
       </ModalFooter>
     </Modal>
   );
+};
+
+CourseModal.defaultProps = {
+  currentCourse: null,
 };
 
 export default CourseModal;

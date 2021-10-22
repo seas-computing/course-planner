@@ -168,7 +168,6 @@
     "react/no-did-update-set-state": "warn",
     "react/prefer-stateless-function": "off",
     "react/prop-types": "off",
-    "react/require-default-props": "warn",
     "testing-library/no-manual-cleanup": "error"
   },
   "settings": {

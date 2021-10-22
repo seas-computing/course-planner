@@ -57,6 +57,8 @@ describe('Course Modal', function () {
         ({ getByLabelText, queryAllByRole } = render(
           <CourseModal
             isVisible
+            onClose={() => {}}
+            onSuccess={() => null}
           />
         ));
       });
@@ -126,6 +128,8 @@ describe('Course Modal', function () {
           <CourseModal
             isVisible
             currentCourse={physicsCourseResponse}
+            onClose={() => {}}
+            onSuccess={() => null}
           />
         ));
       });
@@ -236,6 +240,8 @@ describe('Course Modal', function () {
       ({ getByLabelText } = render(
         <CourseModal
           isVisible
+          onClose={() => {}}
+          onSuccess={() => null}
         />
       ));
     });

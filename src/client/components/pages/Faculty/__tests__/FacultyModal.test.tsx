@@ -33,7 +33,11 @@ describe('Faculty Modal', function () {
       context('when currentFaculty is null', function () {
         beforeEach(function () {
           ({ getByLabelText, queryAllByRole } = render(
-            <FacultyModal isVisible />
+            <FacultyModal
+              isVisible
+              onClose={() => {}}
+              onSuccess={() => null}
+            />
           ));
         });
         it('renders a modal with all empty form fields', function () {
@@ -62,6 +66,8 @@ describe('Faculty Modal', function () {
             <FacultyModal
               isVisible
               currentFaculty={appliedMathFacultyMemberResponse}
+              onClose={() => {}}
+              onSuccess={() => null}
             />
           ));
         });
@@ -113,6 +119,8 @@ describe('Faculty Modal', function () {
           <FacultyModal
             isVisible
             currentFaculty={appliedMathFacultyMemberResponse}
+            onClose={() => {}}
+            onSuccess={() => null}
           />
         ));
       });
@@ -294,6 +302,7 @@ describe('Faculty Modal', function () {
               <FacultyModal
                 isVisible
                 onSuccess={onSuccessStub}
+                onClose={() => {}}
               />
             ));
             const courseAreaSelect = getByLabelText('Edit Faculty Course Area', { exact: false }) as HTMLSelectElement;
@@ -338,6 +347,7 @@ describe('Faculty Modal', function () {
               <FacultyModal
                 isVisible
                 onSuccess={onSuccessStub}
+                onClose={() => {}}
               />
             ));
             const submitButton = getByText('Submit');

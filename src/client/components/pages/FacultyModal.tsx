@@ -45,11 +45,11 @@ interface FacultyModalProps {
    * Handler to be invoked when the modal closes
    * e.g. to clear data entered into a form
    */
-  onClose?: () => void;
+  onClose: () => void;
   /**
    * Handler to be invoked when the edit is successful
    */
-  onSuccess?: (faculty: ManageFacultyResponseDTO) => Promise<void>;
+  onSuccess: (faculty: ManageFacultyResponseDTO) => Promise<void>;
 }
 
 /**
@@ -414,6 +414,10 @@ const FacultyModal: FunctionComponent<FacultyModalProps> = function ({
       </ModalFooter>
     </Modal>
   );
+};
+
+FacultyModal.defaultProps = {
+  currentFaculty: null,
 };
 
 export default FacultyModal;

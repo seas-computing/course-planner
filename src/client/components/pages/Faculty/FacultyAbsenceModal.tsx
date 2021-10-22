@@ -39,7 +39,7 @@ interface AbsenceModalProps {
   /**
    * Handler to be invoked when the edit is successful
    */
-  onSuccess?: () => void;
+  onSuccess: () => void;
   /**
    * Handler to be invoked when the modal is canceled
    */
