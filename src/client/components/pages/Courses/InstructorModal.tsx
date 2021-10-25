@@ -214,13 +214,17 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
 
   /**
    * Swaps an instructor between two positions in the localInstructors array
-   * and updates the value of the instructorOrder field to match.
+   * and updates the value of the instructorOrder field to match. If the second
+   * value is null, the instructor at the oldIndex will be removed from the
+   * list.
    */
   const moveInstructor = (oldIndex: number, newIndex: number): void => {
     setLocalInstructors((list) => {
       const newList = [...list];
       const [thisInstructor] = newList.splice(oldIndex, 1);
-      newList.splice(newIndex, 0, thisInstructor);
+      if (newIndex !== null) {
+        newList.splice(newIndex, 0, thisInstructor);
+      }
       return newList.map((instructor, index) => ({
         ...instructor,
         instructorOrder: index,
@@ -253,7 +257,9 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
                   <BorderlessButton
                     alt={`Remove ${displayName} from ${instanceIdentifier}`}
                     variant={VARIANT.DANGER}
-                    onClick={() => {}}
+                    onClick={() => {
+                      moveInstructor(index, null);
+                    }}
                   >
                     <FontAwesomeIcon icon={faTrashAlt} />
                   </BorderlessButton>
