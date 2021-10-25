@@ -23,3 +23,14 @@ export const readOnlyUser = new User({
   email: 'readOnlyUser@seas.harvard.edu',
   groups: [GROUP.READ_ONLY],
 });
+
+/**
+ * A [[User]] authorized to manage non-class events
+ */
+export const nonClassEventManager = new User({
+  firstName: 'Non-class Event',
+  lastName: 'Manager',
+  eppn: 'MLKJIHGFEDCBAZ@harvard.edu',
+  email: 'nonClasseventManager@seas.harvard.edu',
+  groups: [GROUP.NON_CLASS],
+});

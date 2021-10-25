@@ -19,7 +19,8 @@ export class FacultyCourseInstance extends BaseEntity {
   @ManyToOne(
     (): ObjectType<CourseInstance> => CourseInstance,
     ({ facultyCourseInstances }):
-    FacultyCourseInstance[] => facultyCourseInstances
+    FacultyCourseInstance[] => facultyCourseInstances,
+    { orphanedRowAction: 'delete' }
   )
   public courseInstance: CourseInstance;
 
@@ -30,7 +31,8 @@ export class FacultyCourseInstance extends BaseEntity {
   @ManyToOne(
     (): ObjectType<Faculty> => Faculty,
     ({ facultyCourseInstances }):
-    FacultyCourseInstance[] => facultyCourseInstances
+    FacultyCourseInstance[] => facultyCourseInstances,
+    { orphanedRowAction: 'delete' }
   )
   public faculty: Faculty;
 }

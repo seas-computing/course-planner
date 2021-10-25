@@ -1,12 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Semester } from 'server/semester/semester.entity';
-import { NonClassParent } from 'server/nonClassParent/nonclassparent.entity';
+import { NonClassParent } from 'server/nonClassEvent/nonclassparent.entity';
 import { Area } from 'server/area/area.entity';
-import { Meeting } from 'server/meeting/meeting.entity';
-import { Campus } from 'server/location/campus.entity';
-import { Room } from 'server/location/room.entity';
-import { Building } from 'server/location/building.entity';
+import { LocationModule } from 'server/location/location.module';
+import { SemesterModule } from 'server/semester/semester.module';
+import { MeetingModule } from 'server/meeting/meeting.module';
 import { NonClassEventController } from './nonClassEvent.controller';
 import { NonClassEventService } from './nonClassEvent.service';
 import { NonClassEvent } from './nonclassevent.entity';
@@ -17,16 +15,14 @@ import { NonClassEventView } from './NonClassEvent.view.entity';
   imports: [
     TypeOrmModule.forFeature([
       Area,
-      Semester,
       NonClassParent,
       NonClassEvent,
       NonClassParentView,
       NonClassEventView,
-      Meeting,
-      Room,
-      Building,
-      Campus,
     ]),
+    SemesterModule,
+    MeetingModule,
+    LocationModule,
   ],
   providers: [
     NonClassEventService,

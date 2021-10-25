@@ -5,14 +5,30 @@ import { MeetingListingView } from 'server/meeting/MeetingListingView.entity';
 import { RoomListingView } from 'server/location/RoomListingView.entity';
 import { NonClassParentView } from './NonClassParentView.entity';
 import { NonClassEventView } from './NonClassEvent.view.entity';
+import { Semester } from '../semester/semester.entity';
+import { NonClassParent } from './nonclassparent.entity';
+import { NonClassEvent } from './nonclassevent.entity';
 
 export class NonClassEventService {
   @InjectRepository(NonClassParentView)
-  private parentRepository: Repository<NonClassParentView>;
+  private parentViewRepository: Repository<NonClassParentView>;
 
+  @InjectRepository(Semester)
+  private semesterRepository: Repository<Semester>;
+
+  @InjectRepository(NonClassParent)
+  private parentRepository: Repository<NonClassParent>;
+
+  @InjectRepository(NonClassEvent)
+  private eventRepository: Repository<NonClassEvent>;
+
+  /**
+   * Returns an array of [[NonClassParentView]] shaped [[NonClassParent]]s for
+   * the specified calendar year.
+   */
   public async find(calendarYear: number):
   Promise<NonClassParentView[]> {
-    const nonClassEvents = this.parentRepository.createQueryBuilder('p')
+    const nonClassEvents = this.parentViewRepository.createQueryBuilder('p')
       .leftJoinAndMapOne(
         'p.spring',
         NonClassEventView, 'spring',
@@ -55,5 +71,21 @@ export class NonClassEventService {
       )
       .orderBy('p.area', 'ASC');
     return nonClassEvents.getMany();
+  }
+
+  /**
+   * Creates a [[NonClassParent]], as well as all assocaited [[NonClassEvent]]s
+   * (one per [[Semester]])
+   */
+  public async createWithNonClassEvents(parent: Partial<NonClassParent>):
+  Promise<NonClassParent> {
+    const semesters = await this.semesterRepository.find({});
+
+    return this.parentRepository.save({
+      ...parent,
+      nonClassEvents: semesters.map((semester) => ({
+        ...this.eventRepository.create({ semester }),
+      })),
+    });
   }
 }

@@ -36,6 +36,7 @@ import { AbsenceRequestDTO } from 'common/dto/faculty/AbsenceRequest.dto';
 import { Faculty } from './faculty.entity';
 import { FacultyService } from './faculty.service';
 import { FacultyScheduleService } from './facultySchedule.service';
+import { InstructorResponseDTO } from '../../common/dto/courses/InstructorResponse.dto';
 
 @ApiTags('Faculty')
 @UseGuards(Authentication)
@@ -70,6 +71,22 @@ export class FacultyController {
   })
   public async getAll(): Promise<ManageFacultyResponseDTO[]> {
     return this.facultyService.find();
+  }
+
+  /**
+   * Returns a list of all faculty in the database, formatted for display as
+   * instructors associated with a course
+   */
+  @UseGuards(new RequireGroup(GROUP.ADMIN))
+  @Get('/instructors')
+  @ApiOperation({ summary: 'Retrieve instructors in the database' })
+  @ApiOkResponse({
+    type: InstructorResponseDTO,
+    description: 'An array of instructors',
+    isArray: true,
+  })
+  public async getInstructors(): Promise<InstructorResponseDTO[]> {
+    return this.facultyService.getInstructorList();
   }
 
   /**

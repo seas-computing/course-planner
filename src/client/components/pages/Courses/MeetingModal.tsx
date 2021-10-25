@@ -8,10 +8,12 @@ import {
   VARIANT,
   LoadSpinner,
   fromTheme,
+  ModalMessage,
 } from 'mark-one';
 import React, {
   FunctionComponent,
   ReactElement,
+  ReactNode,
   Ref,
   useEffect,
   useRef,
@@ -19,7 +21,6 @@ import React, {
 } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
-import { instructorDisplayNameToFirstLast } from '../utils/instructorDisplayNameToFirstLast';
 import { MeetingTimesList } from './MeetingTimesList';
 import RoomSelection from './RoomSelection';
 import RoomRequest from '../../../../common/dto/room/RoomRequest.dto';
@@ -27,14 +28,6 @@ import CourseInstanceResponseDTO, { CourseInstanceResponseMeeting } from '../../
 import { updateMeetingList } from '../../../api';
 import { MeetingRequestDTO } from '../../../../common/dto/meeting/MeetingRequest.dto';
 import { MeetingResponseDTO } from '../../../../common/dto/meeting/MeetingResponse.dto';
-
-/**
- * A component that applies styling for text that indicates the faculty has
- * no associated notes
- */
-const StyledFacultyNote = styled.span`
-  font-style: italic;
-`;
 
 interface MeetingModalProps {
   /**
@@ -45,6 +38,10 @@ interface MeetingModalProps {
    * The current course instance being edited
    */
   currentCourse: CourseInstanceResponseDTO;
+  /**
+   * The notes for the current instance being edited
+   */
+  notes: ReactNode;
   /**
    * The semester within the current course being edited
    */
@@ -65,18 +62,15 @@ interface MeetingModalProps {
 /**
  * Utility component to style content within meeting modal body
  */
-const MeetingModalBodyGrid = styled.div<{showError: boolean}>`
+const MeetingModalBodyGrid = styled.div`
   width: 75vw;
   height: 75vh;
   display: grid;
   grid-template-areas:
     "meet room"
     "note room"
-    "err err"
   ;
-  grid-template-rows: ${({ showError }) => (showError
-    ? 'auto 1fr min-content'
-    : 'auto 1fr 0')};
+  grid-template-rows: 'auto 1fr';
   grid-template-columns: 1fr 1fr;
   grid-column-gap: ${fromTheme('ws', 'xlarge')};
 `;
@@ -135,28 +129,13 @@ const NotesSection = styled.div`
   grid-area: note;
 `;
 
-const ErrorSection = styled.div`
-  grid-area: err;
-  display: flex;
-  flex-direction: column;
-  justify-content: end;
-  align-items: center;
-`;
-
-const ErrorMessage = styled.p`
-  font-family: ${fromTheme('font', 'bold', 'family')};
-  font-size: ${fromTheme('font', 'bold', 'size')};
-  font-weight: ${fromTheme('font', 'bold', 'weight')};
-  color: ${fromTheme('color', 'text', 'negative')};
-  text-align: center;
-`;
-
 const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   isVisible,
   onClose,
   currentCourse,
   currentSemester,
   onSave,
+  notes,
 }): ReactElement {
   /**
    * The current value of the Meeting Modal ref
@@ -179,7 +158,6 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     [semKey]: {
       id: instanceId,
       meetings: instanceMeetings,
-      instructors: instanceInstructors,
     },
   } = currentCourse;
 
@@ -513,7 +491,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
         {`Meetings for ${catalogNumber} - ${term} ${calendarYear}`}
       </ModalHeader>
       <ModalBody>
-        <MeetingModalBodyGrid showError={!!saveError || saving}>
+        <MeetingModalBodyGrid>
           <MeetingScheduler>
             <MeetingSchedulerHeader>{`Meeting times for ${catalogNumber}`}</MeetingSchedulerHeader>
             <MeetingSchedulerBody>
@@ -531,27 +509,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
             </MeetingSchedulerBody>
           </MeetingScheduler>
           <NotesSection>
-            <h3>
-              Faculty Notes
-            </h3>
-            <div>
-              {instanceInstructors.map((instructor) => (
-                <div key={instructor.displayName}>
-                  <h4>
-                    {instructorDisplayNameToFirstLast(
-                      instructor.displayName
-                    )}
-                  </h4>
-                  <p>
-                    {
-                      !instructor.notes
-                        ? <StyledFacultyNote>No Notes</StyledFacultyNote>
-                        : instructor.notes
-                    }
-                  </p>
-                </div>
-              ))}
-            </div>
+            {notes}
           </NotesSection>
           <RoomAvailability>
             <RoomAvailabilityHeader>Room Availability</RoomAvailabilityHeader>
@@ -563,17 +521,6 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
               />
             </RoomAvailabilityBody>
           </RoomAvailability>
-          <ErrorSection>
-            {saving && <LoadSpinner>Saving Meetings</LoadSpinner>}
-            {!!saveError && (
-              <ErrorMessage
-                role="alert"
-                aria-live="assertive"
-              >
-                {saveError}
-              </ErrorMessage>
-            )}
-          </ErrorSection>
         </MeetingModalBodyGrid>
       </ModalBody>
       <ModalFooter>
@@ -584,6 +531,14 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
         >
           Save
         </Button>
+        {saving && <LoadSpinner>Saving Meetings</LoadSpinner>}
+        {!!saveError && (
+          <ModalMessage
+            variant={VARIANT.NEGATIVE}
+          >
+            {saveError}
+          </ModalMessage>
+        )}
         <Button
           onClick={onModalClose}
           variant={VARIANT.SECONDARY}

@@ -20,7 +20,6 @@ import request from 'client/api/request';
 import { Repository } from 'typeorm';
 import { strictEqual, deepStrictEqual, notStrictEqual } from 'assert';
 import mockAdapter from '../../mocks/api/adapter';
-import MockDB from '../../mocks/database/MockDB';
 import { ConfigModule } from '../../../src/server/config/config.module';
 import { ConfigService } from '../../../src/server/config/config.service';
 import { AuthModule } from '../../../src/server/auth/auth.module';
@@ -42,23 +41,16 @@ import { PGTime } from '../../../src/common/utils/PGTime';
 import { CourseInstance } from '../../../src/server/courseInstance/courseinstance.entity';
 
 describe('End-to-end Course Instance updating', function () {
-  let db: MockDB;
   let testModule: TestingModule;
   let courseRepository: Repository<Course>;
   let meetingRepository: Repository<Meeting>;
   const currentAcademicYear = 2019;
   const currentTerm = TERM.FALL;
   const courseNumber = 'AM 205';
-  before(async function () {
-    db = new MockDB();
-    return db.init();
-  });
-  after(async function () {
-    return db.stop();
-  });
+
   beforeEach(async function () {
     stub(TestingStrategy.prototype, 'login').resolves(dummy.adminUser);
-    const fakeConfig = new ConfigService(db.connectionEnv);
+    const fakeConfig = new ConfigService(this.database.connectionEnv);
     // Stub out the academicYear getter to lock us to a known year. Otherwise,
     // tests might fail in the future if our test data include that year.
     stub(fakeConfig, 'academicYear').get(() => currentAcademicYear);

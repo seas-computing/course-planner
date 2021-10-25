@@ -18,6 +18,7 @@ import { LocationService } from './location.service';
   ],
   exports: [
     LocationService,
+    TypeOrmModule,
   ],
 })
 export class LocationModule { }

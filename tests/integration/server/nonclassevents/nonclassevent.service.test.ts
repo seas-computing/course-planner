@@ -9,20 +9,21 @@ import { NonClassEventService } from 'server/nonClassEvent/nonClassEvent.service
 import { deepStrictEqual, notStrictEqual, strictEqual } from 'assert';
 import { Meeting } from 'server/meeting/meeting.entity';
 import { Repository } from 'typeorm';
+import { appliedMathematicsReadingGroup } from 'testData';
+import { Semester } from 'server/semester/semester.entity';
+import { Area } from 'server/area/area.entity';
+import { NonClassParent } from 'server/nonClassEvent/nonclassparent.entity';
+import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
+import { AUTH_MODE } from 'common/constants';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
-import MockDB from '../../../mocks/database/MockDB';
+import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 describe('NonClassEvent Service', function () {
   let testModule: TestingModule;
-  let db: MockDB;
   let service: NonClassEventService;
-  before(async function () {
-    db = new MockDB();
-    await db.init();
-  });
-  after(async function () {
-    await db.stop();
-  });
+  let semesterRepository: Repository<Semester>;
+  let areaRepository: Repository<Area>;
+
   beforeEach(async function () {
     testModule = await Test.createTestingModule({
       imports: [
@@ -40,16 +41,21 @@ describe('NonClassEvent Service', function () {
           }),
           inject: [ConfigService],
         }),
-        AuthModule,
+        AuthModule.register({
+          strategies: [TestingStrategy],
+          defaultStrategy: AUTH_MODE.TEST,
+        }),
         PopulationModule,
         SemesterModule,
         NonClassEventModule,
       ],
     })
       .overrideProvider(ConfigService)
-      .useValue(new ConfigService(db.connectionEnv))
+      .useValue(new ConfigService(this.database.connectionEnv))
       .compile();
     service = testModule.get(NonClassEventService);
+    semesterRepository = testModule.get(getRepositoryToken(Semester));
+    areaRepository = testModule.get(getRepositoryToken(Area));
     await testModule.createNestApplication().init();
   });
   afterEach(async function () {
@@ -106,6 +112,60 @@ describe('NonClassEvent Service', function () {
           });
         });
       });
+    });
+  });
+  describe('createWithNonClassEvents', function () {
+    let parentRepository: Repository<NonClassParent>;
+    let eventRepository: Repository<NonClassEvent>;
+    beforeEach(async function () {
+      parentRepository = testModule
+        .get<Repository<NonClassParent>>(getRepositoryToken(NonClassParent));
+      eventRepository = testModule
+        .get<Repository<NonClassEvent>>(getRepositoryToken(NonClassEvent));
+      await parentRepository.query(`TRUNCATE "${parentRepository.metadata.tableName}" CASCADE;`);
+    });
+    it('creates one non-class parent', async function () {
+      const area = await areaRepository.findOne();
+
+      await service.createWithNonClassEvents({
+        area,
+        title: appliedMathematicsReadingGroup.title,
+      });
+
+      const dbParents = await parentRepository.count();
+
+      strictEqual(dbParents, 1);
+    });
+    it('creates one non-class event per semester', async function () {
+      const area = await areaRepository.findOne();
+      const semesterIds = (await semesterRepository.find())
+        .map(({ id }) => id);
+
+      const { id } = await service.createWithNonClassEvents({
+        area,
+        title: appliedMathematicsReadingGroup.title,
+      });
+
+      const eventSemesterIds = (await eventRepository.find({
+        relations: ['semester'],
+        where: {
+          nonClassParent: id,
+        },
+      }))
+        .map(({ semester }) => semester.id);
+
+      deepStrictEqual(eventSemesterIds.sort(), semesterIds.sort());
+    });
+    it('returns the newly created non-class parent', async function () {
+      const area = await areaRepository.findOne();
+
+      const parent = await service.createWithNonClassEvents({
+        area,
+        title: appliedMathematicsReadingGroup.title,
+      });
+
+      notStrictEqual(parent.id, null);
+      strictEqual(parent.title, appliedMathematicsReadingGroup.title);
     });
   });
 });

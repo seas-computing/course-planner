@@ -29,7 +29,6 @@ import RoomRequest from 'common/dto/room/RoomRequest.dto';
 import flatMap from 'lodash.flatmap';
 import { Repository } from 'typeorm';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
-import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import { rooms } from '../../../mocks/database/population/data/rooms';
 import { courses } from '../../../mocks/database/population/data/courses';
@@ -41,21 +40,10 @@ import { Course } from '../../../../src/server/course/course.entity';
 
 describe('Location API', function () {
   let testModule: TestingModule;
-  let db: MockDB;
   let authStub: SinonStub;
   let api: HttpServer;
   let locationRepo: Repository<Room>;
   let courseInstanceRepo: Repository<CourseInstance>;
-
-  before(async function () {
-    this.timeout(120000);
-    db = new MockDB();
-    return db.init();
-  });
-
-  after(async function () {
-    await db.stop();
-  });
 
   beforeEach(async function () {
     authStub = stub(TestingStrategy.prototype, 'login');
@@ -91,7 +79,7 @@ describe('Location API', function () {
       ],
     })
       .overrideProvider(ConfigService)
-      .useValue(new ConfigService(db.connectionEnv))
+      .useValue(new ConfigService(this.database.connectionEnv))
 
       .compile();
 

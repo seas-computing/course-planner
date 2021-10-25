@@ -31,6 +31,16 @@ import { TermKey } from 'common/constants/term';
 import styled from 'styled-components';
 import MeetingModal from './MeetingModal';
 import { PGTime } from '../../../../common/utils/PGTime';
+import InstructorModal from './InstructorModal';
+import { instructorDisplayNameToFirstLast } from '../utils/instructorDisplayNameToFirstLast';
+
+/**
+ * A component that applies styling for text that indicates the faculty has
+ * no associated notes
+ */
+const StyledFacultyNote = styled.span`
+ font-style: italic;
+`;
 
 /**
  * Simple helper function that takes a property name and optionally a semester
@@ -76,34 +86,75 @@ export const retrieveValue = (
  */
 
 export const formatInstructors = (
-  sem: TERM
-): (arg0: CourseInstanceResponseDTO
-  ) => ReactNode => (
-  course: CourseInstanceResponseDTO
+  term: TERM
+) => (
+  course: CourseInstanceResponseDTO,
+  {
+    updateHandler,
+  }: ValueGetterOptions
 ): ReactNode => {
-  const semKey = sem.toLowerCase() as TermKey;
-  const { [semKey]: { instructors } } = course;
-  return instructors.length === 0
-    ? null
-    : (
-      <>
-        <TableCellList>
-          {instructors.map(
+  const semKey = term.toLowerCase() as TermKey;
+  const {
+    id: parentId,
+    catalogNumber,
+    [semKey]: instance,
+  } = course;
+  const { calendarYear, instructors } = instance;
+  /**
+   * Control the visibility of the Isntructor modal
+   */
+  const [modalVisible, setModalVisible] = useState(false);
+  /**
+   * Save a ref to the edit button so we can return focus after closing the
+   * modal
+   */
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const currentSemester = {
+    term,
+    calendarYear,
+  };
+  return (
+    <>
+      <TableCellList>
+        {instructors.length === 0
+          ? null
+          : instructors.map(
             ({ id, displayName }): ReactElement => (
               <TableCellListItem key={id}>
                 {displayName}
               </TableCellListItem>
             )
           )}
-        </TableCellList>
-        <BorderlessButton
-          onClick={(): void => {}}
-          variant={VARIANT.INFO}
-        >
-          <FontAwesomeIcon icon={faEdit} />
-        </BorderlessButton>
-      </>
-    );
+      </TableCellList>
+      <BorderlessButton
+        alt={`Edit instructors for ${catalogNumber}, ${term} ${calendarYear}`}
+        id={`${parentId}-${term}-edit-instructors-button`}
+        onClick={() => { setModalVisible(true); }}
+        variant={VARIANT.INFO}
+        forwardRef={buttonRef}
+      >
+        <FontAwesomeIcon icon={faEdit} />
+      </BorderlessButton>
+      <InstructorModal
+        isVisible={modalVisible}
+        currentSemester={currentSemester}
+        currentCourse={course}
+        closeModal={() => {
+          setModalVisible(false);
+          setTimeout(() => { buttonRef.current?.focus(); });
+        }}
+        onSave={(newInstructorList, message?: string) => {
+          updateHandler({
+            ...course,
+            [semKey]: {
+              ...course[semKey],
+              instructors: newInstructorList,
+            },
+          }, message);
+        }}
+      />
+    </>
+  );
 };
 
 /**
@@ -127,6 +178,44 @@ export const MeetingGridSection = styled.div<{area: string}>`
   flex-direction: column;
   align-items: flex-start;
 `;
+
+/**
+ * Helper function to format faculty notes
+ */
+export const formatFacultyNotes = (
+  term: TERM,
+  course: CourseInstanceResponseDTO
+): ReactElement => {
+  const semKey = term.toLowerCase() as TermKey;
+  const {
+    [semKey]: instance,
+  } = course;
+  return (
+    <>
+      <h3>
+        Faculty Notes
+      </h3>
+      <div>
+        {instance.instructors.map((instructor) => (
+          <div key={instructor.displayName}>
+            <h4>
+              {instructorDisplayNameToFirstLast(
+                instructor.displayName
+              )}
+            </h4>
+            <p>
+              {
+                !instructor.notes
+                  ? <StyledFacultyNote>No Notes</StyledFacultyNote>
+                  : instructor.notes
+              }
+            </p>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+};
 
 /**
  * Helper function to format day, time, and room into a single list
@@ -197,6 +286,7 @@ export const formatMeetings = (
         isVisible={modalVisible}
         currentSemester={currentSemester}
         currentCourse={course}
+        notes={formatFacultyNotes(term, course)}
         onClose={() => {
           setModalVisible(false);
           setTimeout(() => { buttonRef.current?.focus(); });

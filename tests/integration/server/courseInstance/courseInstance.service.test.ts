@@ -9,7 +9,7 @@ import { CourseInstanceService } from 'server/courseInstance/courseInstance.serv
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { Course } from 'server/course/course.entity';
 import { CourseInstance } from 'server/courseInstance/courseinstance.entity';
-import { OFFERED } from 'common/constants';
+import { OFFERED, AUTH_MODE } from 'common/constants';
 import { Meeting } from 'server/meeting/meeting.entity';
 import { ConfigService } from 'server/config/config.service';
 import { ConfigModule } from 'server/config/config.module';
@@ -22,24 +22,16 @@ import {
 } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import { Repository } from 'typeorm';
 import { testFourYearPlanAcademicYears } from 'testData';
-import MockDB from '../../../mocks/database/MockDB';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
+import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 describe('Course Instance Service', function () {
   let testModule: TestingModule;
-  let db: MockDB;
   let ciService: CourseInstanceService;
   let courseRepository: Repository<Course>;
   let instanceRepository: Repository<CourseInstance>;
   let meetingRepository: Repository<Meeting>;
-  before(async function () {
-    this.timeout(120000);
-    db = new MockDB();
-    return db.init();
-  });
-  after(async function () {
-    await db.stop();
-  });
+
   beforeEach(async function () {
     testModule = await Test.createTestingModule({
       imports: [
@@ -57,14 +49,17 @@ describe('Course Instance Service', function () {
           }),
           inject: [ConfigService],
         }),
-        AuthModule,
+        AuthModule.register({
+          strategies: [TestingStrategy],
+          defaultStrategy: AUTH_MODE.TEST,
+        }),
         PopulationModule,
         SemesterModule,
         CourseInstanceModule,
       ],
     })
       .overrideProvider(ConfigService)
-      .useValue(new ConfigService(db.connectionEnv))
+      .useValue(new ConfigService(this.database.connectionEnv))
       .compile();
     ciService = testModule.get(CourseInstanceService);
     await testModule.createNestApplication().init();

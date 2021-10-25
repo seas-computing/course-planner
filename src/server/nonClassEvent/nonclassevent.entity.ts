@@ -6,7 +6,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { BaseEntity } from '../base/base.entity';
-import { NonClassParent } from '../nonClassParent/nonclassparent.entity';
+import { NonClassParent } from './nonclassparent.entity';
 import { Semester } from '../semester/semester.entity';
 import { Meeting } from '../meeting/meeting.entity';
 

@@ -220,6 +220,7 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
                 <TableCell>
                   <BorderlessButton
                     id={computeEditCourseButtonId(course)}
+                    alt={`Edit course information for ${course.title}`}
                     variant={VARIANT.INFO}
                     onClick={
                       (): void => {

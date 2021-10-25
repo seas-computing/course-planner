@@ -12,6 +12,11 @@ import { FacultyListingView } from 'server/faculty/FacultyListingView.entity';
 import { MultiYearPlanInstanceView } from './MultiYearPlanInstanceView.entity';
 import { ScheduleViewResponseDTO } from '../../common/dto/schedule/schedule.dto';
 import { ScheduleBlockView } from './ScheduleBlockView.entity';
+import { FacultyCourseInstance } from './facultycourseinstance.entity';
+import { Faculty } from '../faculty/faculty.entity';
+import { CourseInstance } from './courseinstance.entity';
+import { InstructorRequestDTO } from '../../common/dto/courses/InstructorRequest.dto';
+import { InstructorResponseDTO } from '../../common/dto/courses/InstructorResponse.dto';
 
 /**
  * @class CourseInstanceService
@@ -29,6 +34,15 @@ export class CourseInstanceService {
 
   @InjectRepository(Course)
   protected courseEntityRepository: Repository<Course>;
+
+  @InjectRepository(CourseInstance)
+  private readonly courseInstanceRepository: Repository<CourseInstance>;
+
+  @InjectRepository(Faculty)
+  private readonly facultyRepository: Repository<Faculty>;
+
+  @InjectRepository(FacultyCourseInstance)
+  private readonly instructorRepository: Repository<FacultyCourseInstance>;
 
   @InjectRepository(ScheduleBlockView)
   private readonly courseScheduleRepository: Repository<ScheduleBlockView>;
@@ -170,5 +184,51 @@ export class CourseInstanceService {
       .addOrderBy('"coursePrefix"', 'ASC')
       .addOrderBy('"courseNumber"', 'ASC')
       .getMany() as Promise<ScheduleViewResponseDTO[]>;
+  }
+
+  /**
+   * Accepts a list of instructorIds and a courseInstanceId, assigns the
+   * faculty in the order they appear in the array, then returns the instructor
+   * data formatted for display
+   */
+  public async assignInstructors(
+    courseInstanceId: string,
+    instructors: InstructorRequestDTO[]
+  ): Promise<InstructorResponseDTO[]> {
+    // Pull the instructors from the database to ensure that they actually
+    // exist. Using .map() instead of .findByIds() to ensure order is unchanged
+    const dbInstructors = await Promise.all(
+      instructors.map(
+        ({ id }) => this.facultyRepository.findOneOrFail(id)
+      )
+    );
+    const courseInstance = await this.courseInstanceRepository
+      .findOneOrFail(courseInstanceId);
+    const updates = dbInstructors.map(
+      (faculty, order): FacultyCourseInstance => (
+        this.instructorRepository.create({
+          courseInstance,
+          faculty,
+          order,
+        }))
+    );
+
+    // Adding the list of updates to the course isntances, instead of saving
+    // them directly, to ensure that the new list of instructors replaces the
+    // old one.
+    const instructorUpdate = await this.courseInstanceRepository.save(
+      {
+        ...courseInstance,
+        facultyCourseInstances: updates,
+      }
+    );
+    return instructorUpdate
+      .facultyCourseInstances
+      .map(({ faculty, order }) => ({
+        id: faculty.id,
+        notes: faculty.notes,
+        displayName: `${faculty.lastName}, ${faculty.firstName}`,
+        order,
+      }));
   }
 }

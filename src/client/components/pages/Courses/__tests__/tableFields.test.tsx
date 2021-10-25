@@ -1,9 +1,12 @@
+import {
+  waitForElement,
+} from '@testing-library/react';
 import React, { FunctionComponent, ReactElement } from 'react';
 import { spy, SinonSpy } from 'sinon';
 import {
   cs50CourseInstance, ac209aCourseInstance, ac209aCourseInstanceWithoutRooms,
 } from 'testData';
-import { strictEqual, deepStrictEqual } from 'assert';
+import { strictEqual, deepStrictEqual, notStrictEqual } from 'assert';
 import {
   TERM, COURSE_TABLE_COLUMN, isSEASEnumToString, IS_SEAS,
 } from 'common/constants';
@@ -11,7 +14,11 @@ import { render } from 'test-utils';
 import { dayEnumToString } from 'common/constants/day';
 import { offeredEnumToString } from 'common/constants/offered';
 import {
-  retrieveValue, tableFields, formatInstructors, formatMeetings,
+  retrieveValue,
+  tableFields,
+  formatInstructors,
+  formatMeetings,
+  formatFacultyNotes,
 } from '../tableFields';
 import { PGTime } from '../../../../../common/utils/PGTime';
 
@@ -94,26 +101,72 @@ describe('tableFields', function () {
       });
     });
     describe('formatInstructors', function () {
+      let TestComponent: FunctionComponent<unknown>;
       context('When course has data', function () {
-        it('Should return a component that renders instructors as a list', function () {
+        beforeEach(function () {
           const fallInstructors = formatInstructors(TERM.FALL);
-          const { getAllByRole } = render(
+          TestComponent = () => (
             <div>
-              {fallInstructors(ac209aCourseInstance)}
+              {fallInstructors(ac209aCourseInstance, { updateHandler: spy() })}
             </div>
           );
+        });
+        it('Should return a component that renders instructors as a list', function () {
+          const { getAllByRole } = render(<TestComponent />);
           const entries = getAllByRole('listitem')
             .map(({ textContent }): string => textContent);
           const instructorList = ac209aCourseInstance.fall.instructors
             .map(({ displayName }): string => displayName);
           deepStrictEqual(entries, instructorList);
         });
+        it('Should render an edit button', function () {
+          const { queryByLabelText } = render(<TestComponent />);
+          const editButtonRegex = new RegExp(
+            `edit instructors.*?${
+              ac209aCourseInstance.catalogNumber
+            }.*?${
+              TERM.FALL
+            }.*?${
+              ac209aCourseInstance.fall.calendarYear
+            }`,
+            'i'
+          );
+          const editButton = queryByLabelText(editButtonRegex);
+          notStrictEqual(
+            editButton,
+            null
+          );
+        });
       });
-      context('When semester does not have data', function () {
-        it('Should return null', function () {
+      context('When semester does not have any instructors', function () {
+        beforeEach(function () {
           const springInstructors = formatInstructors(TERM.SPRING);
-          strictEqual(
-            springInstructors(ac209aCourseInstance),
+          TestComponent = () => (
+            <div>
+              {springInstructors(
+                ac209aCourseInstance,
+                {
+                  updateHandler: spy(),
+                }
+              )}
+            </div>
+          );
+        });
+        it('Should render an edit button', function () {
+          const { queryByLabelText } = render(<TestComponent />);
+          const editButtonRegex = new RegExp(
+            `edit instructors.*?${
+              ac209aCourseInstance.catalogNumber
+            }.*?${
+              TERM.SPRING
+            }.*?${
+              ac209aCourseInstance.spring.calendarYear
+            }`,
+            'i'
+          );
+          const editButton = queryByLabelText(editButtonRegex);
+          notStrictEqual(
+            editButton,
             null
           );
         });
@@ -199,6 +252,63 @@ describe('tableFields', function () {
             <TestComponent />
           );
           strictEqual(queryAllByRole('listitem').length, 0);
+        });
+      });
+    });
+    describe('formatFacultyNotes', function () {
+      context('when the faculty member has associated notes', function () {
+        it('displays the faculty notes associated with the course instance', async function () {
+          const TestComponent: FunctionComponent = (): ReactElement => (
+            <div>
+              {formatFacultyNotes(TERM.FALL, ac209aCourseInstance)}
+            </div>
+          );
+          const { getByText } = render(
+            <TestComponent />
+          );
+          const facultyWithNotes = (ac209aCourseInstance.fall.instructors
+            .filter((instructor) => (instructor.notes !== '' && instructor.notes !== null)));
+          const expectedNotes = facultyWithNotes
+            .map((faculty) => faculty.notes);
+          return Promise.all(expectedNotes.map((note) => waitForElement(
+            () => getByText(note)
+          )));
+        });
+      });
+      context('when the faculty member does not have associated notes', function () {
+        context('when faculty notes is an empty string', function () {
+          it('displays the text "No Notes"', function () {
+            const TestComponent: FunctionComponent = (): ReactElement => (
+              <div>
+                {formatFacultyNotes(TERM.FALL, cs50CourseInstance)}
+              </div>
+            );
+            const { getByText } = render(
+              <TestComponent />
+            );
+            const facultyWithoutNotes = (cs50CourseInstance.fall.instructors
+              .filter((instructor) => (instructor.notes === '')));
+            const modalNotes = getByText('Faculty Notes', { exact: false }).nextElementSibling;
+            const noNotesLength = (modalNotes as HTMLElement).textContent.match(/s*No Notes\s*$/g).length;
+            strictEqual(facultyWithoutNotes.length, noNotesLength);
+          });
+        });
+        context('when faculty notes is null', function () {
+          it('displays the text "No Notes"', function () {
+            const TestComponent: FunctionComponent = (): ReactElement => (
+              <div>
+                {formatFacultyNotes(TERM.FALL, cs50CourseInstance)}
+              </div>
+            );
+            const { getByText } = render(
+              <TestComponent />
+            );
+            const facultyWithNullNotes = (cs50CourseInstance.fall.instructors
+              .filter((instructor) => (instructor.notes === null)));
+            const modalNotes = getByText('Faculty Notes', { exact: false }).nextElementSibling;
+            const noNotesLength = (modalNotes as HTMLElement).textContent.match(/s*No Notes\s*$/g).length;
+            strictEqual(facultyWithNullNotes.length, noNotesLength);
+          });
         });
       });
     });

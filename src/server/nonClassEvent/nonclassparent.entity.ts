@@ -3,7 +3,7 @@ import {
   Entity, Column, ObjectType, OneToMany, ManyToOne,
 } from 'typeorm';
 import { BaseEntity } from '../base/base.entity';
-import { NonClassEvent } from '../nonClassEvent/nonclassevent.entity';
+import { NonClassEvent } from './nonclassevent.entity';
 
 /**
  * Parent entity to non-class events. Designed to be analogous to {@link Course}

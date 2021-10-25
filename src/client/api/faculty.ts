@@ -5,6 +5,7 @@ import { UpdateFacultyDTO } from 'common/dto/faculty/UpdateFaculty.dto';
 import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
 import { AbsenceRequestDTO } from 'common/dto/faculty/AbsenceRequest.dto';
 import request from './request';
+import { InstructorResponseDTO } from '../../common/dto/courses/InstructorResponse.dto';
 
 /**
  * Retrieves all faculty for the Faculty Admin tab
@@ -15,6 +16,14 @@ Promise<ManageFacultyResponseDTO[]> => {
   return response.data as ManageFacultyResponseDTO[];
 };
 
+/**
+ * Retrieves all instuctors for the instructor modal on the courses tab
+ */
+export const getAllInstructors = async ():
+Promise<InstructorResponseDTO[]> => {
+  const response = await request.get('/api/faculty/instructors');
+  return response.data as InstructorResponseDTO[];
+};
 /**
  * Submits a POST request to create a new faculty for the Faculty Admin tab
  */

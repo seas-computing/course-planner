@@ -1,9 +1,12 @@
 let specGlobs = [];
+process.env.MOCHA_NEEDS_DATABASE = process.env.MOCHA_NEEDS_DATABASE || '1';
 if (process.argv.includes('--client')) {
+  process.env.MOCHA_NEEDS_DATABASE = '0';
   specGlobs.push('src/client/**/__tests__/*.test.ts');
   specGlobs.push('src/client/**/__tests__/*.test.tsx');
 }
 if (process.argv.includes('--server')) {
+  process.env.MOCHA_NEEDS_DATABASE = '0';
   specGlobs.push('src/server/**/__tests__/*.test.ts');
   specGlobs.push('src/server/**/__tests__/*.test.tsx');
 }
@@ -18,6 +21,7 @@ module.exports = {
   timeout: 30000,
   file: '.mochainit.ts',
   recursive: true,
+  global: ['database'],
   require: [
     'ts-node/register',
     'raf/polyfill',

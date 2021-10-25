@@ -1,4 +1,4 @@
-import { NonClassParent } from 'server/nonClassParent/nonclassparent.entity';
+import { NonClassParent } from 'server/nonClassEvent/nonclassparent.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
