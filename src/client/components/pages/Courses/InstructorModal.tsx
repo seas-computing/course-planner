@@ -218,11 +218,11 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
    * value is not included, the instructor at the oldIndex will be removed from
    * the list.
    */
-  const moveInstructor = (oldIndex: number, newIndex?: number): void => {
+  const moveInstructor = (oldIndex: number, newIndex: number): void => {
     setLocalInstructors((list) => {
       const newList = [...list];
       const [thisInstructor] = newList.splice(oldIndex, 1);
-      if (newIndex !== undefined && newIndex !== null) {
+      if (newIndex !== null) {
         newList.splice(newIndex, 0, thisInstructor);
       }
       return newList.map((instructor, index) => ({
