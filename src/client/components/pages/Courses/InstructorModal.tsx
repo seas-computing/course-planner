@@ -215,8 +215,8 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
   /**
    * Swaps an instructor between two positions in the localInstructors array
    * and updates the value of the instructorOrder field to match. If the second
-   * value is not included, the instructor at the oldIndex will be removed from
-   * the list.
+   * value is null, the instructor at the oldIndex will be removed from the
+   * list.
    */
   const moveInstructor = (oldIndex: number, newIndex: number): void => {
     setLocalInstructors((list) => {
