@@ -336,9 +336,10 @@ describe('InstructorModal', function () {
         const [newFirst, newSecond, newThird] = renderResult.getAllByRole('listitem')
           .filter((li) => (within(li).queryByLabelText(/remove/i)))
           .map(({ textContent }) => textContent);
-        strictEqual(oldFirst.displayName, newSecond);
-        strictEqual(oldSecond.displayName, newFirst);
-        strictEqual(oldThird.displayName, newThird);
+        deepStrictEqual(
+          [oldFirst.displayName, oldSecond.displayName, oldThird.displayName],
+          [newSecond, newFirst, newThird]
+        );
       });
     });
     context('Moving an instructor up', function () {
@@ -349,9 +350,10 @@ describe('InstructorModal', function () {
         const [newFirst, newSecond, newThird] = renderResult.getAllByRole('listitem')
           .filter((li) => (within(li).queryByLabelText(/remove/i)))
           .map(({ textContent }) => textContent);
-        strictEqual(oldFirst.displayName, newFirst);
-        strictEqual(oldSecond.displayName, newThird);
-        strictEqual(oldThird.displayName, newSecond);
+        deepStrictEqual(
+          [oldFirst.displayName, oldSecond.displayName, oldThird.displayName],
+          [newFirst, newThird, newSecond]
+        );
       });
     });
   });
@@ -379,8 +381,10 @@ describe('InstructorModal', function () {
         const [newFirst, newSecond, newThird] = renderResult.getAllByRole('listitem')
           .filter((li) => (within(li).queryByLabelText(/remove/i)))
           .map(({ textContent }) => textContent);
-        strictEqual(oldSecond.displayName, newFirst);
-        strictEqual(oldThird.displayName, newSecond);
+        deepStrictEqual(
+          [oldSecond.displayName, oldThird.displayName],
+          [newFirst, newSecond]
+        );
         strictEqual(newThird, undefined);
         const oldFirstEntry = renderResult
           .queryByText(oldFirst.displayName, { exact: false });
