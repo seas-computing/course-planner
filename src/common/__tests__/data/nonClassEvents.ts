@@ -15,7 +15,7 @@ export const dataScienceReadingGroup: NonClassMeetingResponseDTO = {
   id: '9548f85e-d613-48d2-94fe-63dbaf95084c',
   contactName: 'Jim Waldo',
   contactEmail: null,
-  contactPhone: '(128) 229-9918',
+  contactPhone: '(800) 229-9918',
   notes: null,
   expectedSize: 190,
   title: 'Data Science Reading Group',
@@ -234,7 +234,7 @@ export const createNonClassParent: CreateNonClassParentDTO = {
   area: 'e257e0bb-9875-4688-a7f8-91906c45fce2',
   contactName: 'Jim Waldo',
   contactEmail: null,
-  contactPhone: '(128) 229-9918',
+  contactPhone: '(800) 229-9918',
   notes: null,
   expectedSize: 190,
   title: 'Data Science Reading Group',
@@ -259,7 +259,7 @@ export const createNonClassParent: CreateNonClassParentDTO = {
 export const updateNonClassParent: UpdateNonClassParentDTO = {
   area: 'e257e0bb-9875-4688-a7f8-91906c45fce2',
   contactName: 'Jim Waldo',
-  contactPhone: '(128) 229-9918',
+  contactPhone: '(800) 229-9918',
   notes: null,
   expectedSize: 190,
 };
@@ -275,5 +275,5 @@ export const nonClassParent: Partial<NonClassParent> = {
   expectedSize: 190,
   contactName: 'Jim Waldo',
   contactEmail: null,
-  contactPhone: '(128) 229-9918',
+  contactPhone: '(800) 229-9918',
 };
