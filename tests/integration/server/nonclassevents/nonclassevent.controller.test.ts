@@ -1,5 +1,9 @@
 import {
-  ForbiddenException, HttpServer, HttpStatus, UnauthorizedException,
+  ForbiddenException,
+  HttpServer,
+  HttpStatus,
+  INestApplication,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { SinonStub, stub } from 'sinon';
 import { TestingModule, Test } from '@nestjs/testing';
@@ -12,6 +16,9 @@ import {
   createNonClassParent,
   appliedMath,
   nonClassParent,
+  updateNonClassParent,
+  uuid,
+  regularUser,
 } from 'testData';
 import { ConfigModule } from 'server/config/config.module';
 import { AuthModule } from 'server/auth/auth.module';
@@ -22,9 +29,14 @@ import request from 'supertest';
 import { NonClassEventService } from 'server/nonClassEvent/nonClassEvent.service';
 import { NonClassEventController } from 'server/nonClassEvent/nonClassEvent.controller';
 import { NonClassParentView } from 'server/nonClassEvent/NonClassParentView.entity';
-import { getRepositoryToken } from '@nestjs/typeorm';
+import { getRepositoryToken, TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { Area } from 'server/area/area.entity';
 import { NonClassParent } from 'server/nonClassEvent/nonclassparent.entity';
+import { NonClassEventModule } from 'server/nonClassEvent/nonclassevent.module';
+import { Repository } from 'typeorm';
+import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
+import UpdateNonClassParentDTO from 'common/dto/nonClassMeetings/UpdateNonClassParent.dto';
+import { PopulationModule } from '../../../mocks/database/population/population.module';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 const mockAreaRepository = {
@@ -42,55 +54,59 @@ const mockParentRepository = {
 
 describe('Non Class Event API', function () {
   let authStub: SinonStub;
-  let api: HttpServer;
-
-  beforeEach(async function () {
+  beforeEach(function () {
     authStub = stub(TestingStrategy.prototype, 'login');
-
-    const moduleRef: TestingModule = await Test.createTestingModule({
-      imports: [
-        SessionModule.forRoot({
-          session: {
-            secret: string,
-            resave: true,
-            saveUninitialized: true,
-          },
-        }),
-        ConfigModule,
-        AuthModule.register({
-          strategies: [TestingStrategy],
-          defaultStrategy: AUTH_MODE.TEST,
-        }),
-      ],
-      providers: [
-        {
-          provide: NonClassEventService,
-          useValue: mockNonClassEventService,
-        },
-        {
-          provide: getRepositoryToken(Area),
-          useValue: mockAreaRepository,
-        },
-        {
-          provide: getRepositoryToken(NonClassParent),
-          useValue: mockParentRepository,
-        },
-      ],
-      controllers: [
-        NonClassEventController,
-      ],
-    })
-      .overrideProvider(ConfigService)
-      .useValue(new ConfigService({ NODE_ENV: 'development' }))
-
-      .compile();
-
-    const nestApp = await moduleRef.createNestApplication()
-      .init();
-
-    api = nestApp.getHttpServer() as HttpServer;
   });
   describe('GET /', function () {
+    let api: HttpServer;
+    let app: INestApplication;
+    beforeEach(async function () {
+      const moduleRef: TestingModule = await Test.createTestingModule({
+        imports: [
+          SessionModule.forRoot({
+            session: {
+              secret: string,
+              resave: true,
+              saveUninitialized: true,
+            },
+          }),
+          ConfigModule,
+          AuthModule.register({
+            strategies: [TestingStrategy],
+            defaultStrategy: AUTH_MODE.TEST,
+          }),
+        ],
+        providers: [
+          {
+            provide: NonClassEventService,
+            useValue: mockNonClassEventService,
+          },
+          {
+            provide: getRepositoryToken(Area),
+            useValue: mockAreaRepository,
+          },
+          {
+            provide: getRepositoryToken(NonClassParent),
+            useValue: mockParentRepository,
+          },
+        ],
+        controllers: [
+          NonClassEventController,
+        ],
+      })
+        .overrideProvider(ConfigService)
+        .useValue(new ConfigService({ NODE_ENV: 'development' }))
+
+        .compile();
+
+      app = await moduleRef.createNestApplication()
+        .init();
+
+      api = app.getHttpServer() as HttpServer;
+    });
+    afterEach(async function () {
+      return app.close();
+    });
     describe('User is not authenticated', function () {
       it('is inaccessible to unauthenticated users', async function () {
         authStub.rejects(new ForbiddenException());
@@ -129,6 +145,55 @@ describe('Non Class Event API', function () {
     });
   });
   describe('POST /', function () {
+    let api: HttpServer;
+    let app: INestApplication;
+    beforeEach(async function () {
+      const moduleRef: TestingModule = await Test.createTestingModule({
+        imports: [
+          SessionModule.forRoot({
+            session: {
+              secret: string,
+              resave: true,
+              saveUninitialized: true,
+            },
+          }),
+          ConfigModule,
+          AuthModule.register({
+            strategies: [TestingStrategy],
+            defaultStrategy: AUTH_MODE.TEST,
+          }),
+        ],
+        providers: [
+          {
+            provide: NonClassEventService,
+            useValue: mockNonClassEventService,
+          },
+          {
+            provide: getRepositoryToken(Area),
+            useValue: mockAreaRepository,
+          },
+          {
+            provide: getRepositoryToken(NonClassParent),
+            useValue: mockParentRepository,
+          },
+        ],
+        controllers: [
+          NonClassEventController,
+        ],
+      })
+        .overrideProvider(ConfigService)
+        .useValue(new ConfigService({ NODE_ENV: 'development' }))
+
+        .compile();
+
+      app = await moduleRef.createNestApplication()
+        .init();
+
+      api = app.getHttpServer() as HttpServer;
+    });
+    afterEach(async function () {
+      return app.close();
+    });
     describe('User is not authenticated', function () {
       it('is inaccessible to unauthenticated users', async function () {
         authStub.rejects(new ForbiddenException());
