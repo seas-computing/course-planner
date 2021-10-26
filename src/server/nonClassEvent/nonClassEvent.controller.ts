@@ -1,7 +1,7 @@
 import {
   BadRequestException,
   Body,
-  Controller, Get, Inject, Post, Put, Query, UseGuards,
+  Controller, Get, Inject, Param, Post, Put, Query, UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from 'server/config/config.service';
 import { Authentication } from 'server/auth/authentication.guard';
@@ -14,6 +14,7 @@ import {
   ApiBody,
   ApiCreatedResponse,
   ApiForbiddenResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
@@ -21,10 +22,10 @@ import {
 import { RequireGroup } from 'server/auth/group.guard';
 import { GROUP } from 'common/constants';
 import { NonClassParentResponse } from 'common/dto/nonClassMeetings/NonClassParentResponse.dto';
+import UpdateNonClassParentDTO from 'common/dto/nonClassMeetings/UpdateNonClassParent.dto';
 import { NonClassParentView } from './NonClassParentView.entity';
 import { NonClassEventService } from './nonClassEvent.service';
 import { NonClassParent } from './nonclassparent.entity';
-import UpdateNonClassParentDTO from 'common/dto/nonClassMeetings/UpdateNonClassParent.dto';
 
 @ApiTags('Non-Class Events')
 @UseGuards(Authentication, new RequireGroup(GROUP.NON_CLASS))
@@ -111,8 +112,24 @@ export class NonClassEventController {
     }
   }
 
-  public async update(id: string, { area, ...parent }: UpdateNonClassParentDTO):
-  Promise<NonClassParentResponse> {
+  @Put(':id')
+  @ApiOperation({
+    summary: 'Update an existing non-class parent',
+    description: 'Updates an existing non-class parent only. Changes to non-class events must be made using the non-class event API',
+  })
+  @ApiOkResponse({
+    type: NonClassParentResponse,
+    description: 'The non-class parent was updated',
+  })
+  @ApiBody({
+    type: UpdateNonClassParentDTO,
+    required: true,
+  })
+  public async update(
+    @Param('id') id: string,
+      @Body() { area, ...parent }: UpdateNonClassParentDTO
+  ):
+      Promise<NonClassParentResponse> {
     try {
       const nonClassParent: Partial<NonClassParent> = {
         id,
@@ -122,7 +139,8 @@ export class NonClassEventController {
         const dbArea = await this.areaRepository.findOneOrFail(area);
         nonClassParent.area = dbArea;
       }
-      return this.parentRepository.save(nonClassParent);
+      await this.parentRepository.save(nonClassParent);
+      return this.parentRepository.findOne(id);
     } catch (e) {
       if (e instanceof EntityNotFoundError) {
         throw new BadRequestException(`Cannot update non-class parent for invalid area: ${area}`);

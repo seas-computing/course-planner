@@ -24,7 +24,7 @@ import { ConfigModule } from 'server/config/config.module';
 import { AuthModule } from 'server/auth/auth.module';
 import { AUTH_MODE } from 'common/constants';
 import { ConfigService } from 'server/config/config.service';
-import { strictEqual, deepStrictEqual } from 'assert';
+import { strictEqual, deepStrictEqual, notStrictEqual } from 'assert';
 import request from 'supertest';
 import { NonClassEventService } from 'server/nonClassEvent/nonClassEvent.service';
 import { NonClassEventController } from 'server/nonClassEvent/nonClassEvent.controller';
@@ -247,6 +247,117 @@ describe('Non Class Event API', function () {
             mockNonClassEventService.createWithNonClassEvents.called,
             true
           );
+        });
+      });
+    });
+  });
+  describe('PUT /:id', function () {
+    let api: HttpServer;
+    let nonClassParentRepository: Repository<NonClassParent>;
+    let existingNonClassParent: NonClassParent;
+    let app: INestApplication;
+    beforeEach(async function () {
+      const module: TestingModule = await Test.createTestingModule({
+        imports: [
+          SessionModule.forRoot({
+            session: {
+              secret: string,
+              resave: true,
+              saveUninitialized: true,
+            },
+          }),
+          ConfigModule,
+          TypeOrmModule.forRootAsync({
+            imports: [ConfigModule],
+            useFactory: (
+              config: ConfigService
+            ): TypeOrmModuleOptions => ({
+              ...config.dbOptions,
+              synchronize: true,
+              autoLoadEntities: true,
+              retryAttempts: 10,
+              retryDelay: 10000,
+            }),
+            inject: [ConfigService],
+          }),
+          AuthModule.register({
+            strategies: [TestingStrategy],
+            defaultStrategy: AUTH_MODE.TEST,
+          }),
+          NonClassEventModule,
+          PopulationModule,
+        ],
+      })
+        .overrideProvider(ConfigService)
+        .useValue(new ConfigService(this.database.connectionEnv))
+        .compile();
+
+      app = await module.createNestApplication()
+        .useGlobalPipes(new BadRequestExceptionPipe())
+        .init();
+      nonClassParentRepository = module
+        .get<Repository<NonClassParent>>(getRepositoryToken(NonClassParent));
+
+      existingNonClassParent = await nonClassParentRepository
+        .findOne({ relations: ['area'] });
+
+      api = app.getHttpServer() as HttpServer;
+    });
+    afterEach(function () {
+      return app.close();
+    });
+    describe('User is not authenticated', function () {
+      it('is inaccessible to unauthenticated users', async function () {
+        authStub.rejects(new ForbiddenException());
+
+        const response = await request(api)
+          .put(`/api/non-class-events/${uuid}`)
+          .send(updateNonClassParent);
+
+        strictEqual(response.status, HttpStatus.FORBIDDEN);
+      });
+    });
+    describe('User is authenticated', function () {
+      describe('User is not authorized', function () {
+        beforeEach(function () {
+          authStub.rejects(new UnauthorizedException());
+        });
+        it('is inaccessible to unauthorized users', async function () {
+          const response = await request(api)
+            .put(`/api/non-class-events/${uuid}`)
+            .send(updateNonClassParent);
+
+          strictEqual(response.status, HttpStatus.UNAUTHORIZED);
+        });
+      });
+      describe('User is authorized', function () {
+        beforeEach(function () {
+          authStub.resolves(nonClassEventManager);
+        });
+        it('updates non-class parent data', async function () {
+          const { status, body: response } = await request(api)
+            .put(`/api/non-class-events/${existingNonClassParent.id}`)
+            .send({
+              ...updateNonClassParent,
+              area: existingNonClassParent.area.id,
+              contactName: regularUser.fullName,
+            } as UpdateNonClassParentDTO);
+
+          strictEqual(status, HttpStatus.OK);
+          strictEqual(existingNonClassParent.id, response.id);
+          notStrictEqual(
+            existingNonClassParent.contactName,
+            response.contactName
+          );
+        });
+        it('throws validation errors for invalid data', async function () {
+          const { status } = await request(api)
+            .put(`/api/non-class-events/${existingNonClassParent.id}`)
+            .send({
+              contactPhone: '1234',
+            } as UpdateNonClassParentDTO);
+
+          strictEqual(status, HttpStatus.BAD_REQUEST);
         });
       });
     });
