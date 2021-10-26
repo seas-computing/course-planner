@@ -2,13 +2,14 @@ import React from 'react';
 import { render } from 'test-utils';
 import { TERM } from 'common/constants';
 import {
-  fireEvent, RenderResult, within,
+  fireEvent, RenderResult, within, waitForElementToBeRemoved,
 } from '@testing-library/react';
 import * as dummy from 'testData';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { stub, SinonStub } from 'sinon';
 import { strictEqual, deepStrictEqual, notStrictEqual } from 'assert';
 import * as facultyAPI from '../../../../api/faculty';
+import * as courseAPI from '../../../../api/courses';
 import InstructorModal from '../InstructorModal';
 
 describe('InstructorModal', function () {
@@ -18,10 +19,12 @@ describe('InstructorModal', function () {
   let instructorFetchStub: SinonStub;
   const term = TERM.FALL;
   const { calendarYear } = dummy.cs50CourseInstance.fall;
-  const closeStub = stub();
-  const saveStub = stub();
+  let closeStub: SinonStub;
+  let saveStub: SinonStub;
   beforeEach(function () {
     instructorFetchStub = stub(facultyAPI, 'getAllInstructors');
+    closeStub = stub();
+    saveStub = stub();
   });
   describe('Rendering Instructor list', function () {
     beforeEach(function () {
@@ -389,6 +392,83 @@ describe('InstructorModal', function () {
         const oldFirstEntry = renderResult
           .queryByText(oldFirst.displayName, { exact: false });
         strictEqual(oldFirstEntry, null);
+      });
+    });
+  });
+  describe('Save button', function () {
+    let putStub: SinonStub;
+    beforeEach(function () {
+      putStub = stub(courseAPI, 'updateInstructorList');
+      testCourse = {
+        ...dummy.cs50CourseInstance,
+      };
+      instructorFetchStub.resolves([]);
+      renderResult = render(
+        <InstructorModal
+          isVisible
+          currentCourse={testCourse}
+          currentSemester={{ term, calendarYear }}
+          closeModal={closeStub}
+          onSave={saveStub}
+        />
+      );
+    });
+    context('When saving succeeds', function () {
+      beforeEach(function () {
+        putStub.resolves(testCourse.fall.instructors);
+        saveStub.returns(true);
+        saveStub.returns(true);
+        fireEvent.click(renderResult.getByText('Save'));
+      });
+      it('Should render a spinner', function () {
+        const spinner = renderResult.queryByText('Saving Instructors');
+        notStrictEqual(spinner, null);
+      });
+      it('Should call the api method', function () {
+        strictEqual(putStub.callCount, 1);
+      });
+      it('Should pass the result to onSave', async function () {
+        await waitForElementToBeRemoved(() => renderResult.getByText('Saving Instructors'));
+        strictEqual(saveStub.callCount, 1);
+        strictEqual(saveStub.calledWith(testCourse.fall.instructors), true);
+      });
+      it('Should close the modal', async function () {
+        await waitForElementToBeRemoved(() => renderResult.getByText('Saving Instructors'));
+        strictEqual(closeStub.callCount, 1);
+      });
+      it('Should not show an error message', async function () {
+        await waitForElementToBeRemoved(() => renderResult.getByText('Saving Instructors'));
+        const errorMessage = renderResult.queryAllByRole('alert');
+        strictEqual(errorMessage.length, 0);
+      });
+    });
+    context('When saving fails', function () {
+      beforeEach(function () {
+        putStub.rejects(dummy.error);
+        saveStub.returns(true);
+        saveStub.returns(true);
+        fireEvent.click(renderResult.getByText('Save'));
+      });
+      it('Should render a spinner', function () {
+        const spinner = renderResult.queryByText('Saving Instructors');
+        notStrictEqual(spinner, null);
+      });
+      it('Should call the api method', function () {
+        strictEqual(putStub.callCount, 1);
+      });
+      it('Should not call onSave', async function () {
+        await waitForElementToBeRemoved(() => renderResult.getByText('Saving Instructors'));
+        strictEqual(saveStub.callCount, 0);
+      });
+      it('Should not close the modal', async function () {
+        await waitForElementToBeRemoved(() => renderResult.getByText('Saving Instructors'));
+        strictEqual(closeStub.callCount, 0);
+      });
+      it('Should display the error message', async function () {
+        await waitForElementToBeRemoved(() => renderResult.getByText('Saving Instructors'));
+        const errorMessage = renderResult.queryAllByRole('alert');
+        strictEqual(errorMessage.length, 1);
+        strictEqual(errorMessage[0].textContent, dummy.error.message);
       });
     });
   });
