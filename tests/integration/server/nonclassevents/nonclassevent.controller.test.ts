@@ -24,7 +24,7 @@ import { ConfigModule } from 'server/config/config.module';
 import { AuthModule } from 'server/auth/auth.module';
 import { AUTH_MODE } from 'common/constants';
 import { ConfigService } from 'server/config/config.service';
-import { strictEqual, deepStrictEqual, notStrictEqual } from 'assert';
+import { strictEqual, deepStrictEqual } from 'assert';
 import request from 'supertest';
 import { NonClassEventService } from 'server/nonClassEvent/nonClassEvent.service';
 import { NonClassEventController } from 'server/nonClassEvent/nonClassEvent.controller';
@@ -345,10 +345,7 @@ describe('Non Class Event API', function () {
 
           strictEqual(status, HttpStatus.OK);
           strictEqual(existingNonClassParent.id, response.id);
-          notStrictEqual(
-            existingNonClassParent.contactName,
-            response.contactName
-          );
+          strictEqual(regularUser.fullName, response.contactName);
         });
         it('throws validation errors for invalid data', async function () {
           const { status } = await request(api)
