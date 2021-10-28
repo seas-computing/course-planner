@@ -1,6 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
-  IsEmail, IsInt, IsNotEmpty, IsOptional, IsPhoneNumber, IsUUID,
+  IsEmail,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsPhoneNumber,
+  IsUUID,
+  IsString,
+  MinLength,
 } from 'class-validator';
 
 export default abstract class UpdateNonClassParentDTO {
@@ -17,9 +24,10 @@ export default abstract class UpdateNonClassParentDTO {
     description: 'The title of this non class parent',
     example: 'Reading group',
   })
-  @IsOptional()
+  @IsString()
+  @MinLength(1)
   @IsNotEmpty()
-  public title?: string;
+  public title: string;
 
   @ApiPropertyOptional({
     description: 'The contact name for this non-class parent',
