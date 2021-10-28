@@ -257,6 +257,7 @@ export const createNonClassParent: CreateNonClassParentDTO = {
  * - A phone number
  */
 export const updateNonClassParent: UpdateNonClassParentDTO = {
+  title: 'A new title',
   area: 'e257e0bb-9875-4688-a7f8-91906c45fce2',
   contactName: 'Jim Waldo',
   contactPhone: '(617) 555-0123',
