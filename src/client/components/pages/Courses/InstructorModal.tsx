@@ -357,7 +357,11 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
                     label={`Add new Instructor to ${instanceIdentifier}`}
                     currentValue={null}
                     isLabelVisible={false}
-                    placeholder="Add new instructor"
+                    placeholder={
+                      fullInstructorList.length > 0
+                        ? 'Add new instructor'
+                        : 'Loading instructor data...'
+                    }
                     filterFunction={
                       (option, inputValue) => {
                         const inputWords = inputValue.split(' ');
