@@ -16,7 +16,6 @@ export default abstract class UpdateNonClassParentDTO {
     example: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
     description: 'Area primary key ID',
   })
-  @IsOptional()
   @IsUUID()
   public area?: string;
 
