@@ -1,7 +1,15 @@
 import {
   BadRequestException,
   Body,
-  Controller, Get, Inject, Param, Post, Put, Query, UseGuards,
+  Controller,
+  Get,
+  Inject,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Put,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from 'server/config/config.service';
 import { Authentication } from 'server/auth/authentication.guard';
@@ -126,7 +134,7 @@ export class NonClassEventController {
     required: true,
   })
   public async update(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
       @Body() { area, ...parent }: UpdateNonClassParentDTO
   ):
       Promise<NonClassParentResponse> {
