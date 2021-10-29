@@ -13,7 +13,7 @@ export const adminUser = new User({
   lastName: 'User',
   eppn: 'ABCDEFGHIJKLMN@harvard.edu',
   email: 'adminUser@seas.harvard.edu',
-  groups: [GROUP.ADMIN],
+  groups: [GROUP.ADMIN, GROUP.NON_CLASS],
 });
 
 export const readOnlyUser = new User({
