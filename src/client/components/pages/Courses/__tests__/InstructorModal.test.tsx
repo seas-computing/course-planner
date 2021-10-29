@@ -19,12 +19,12 @@ describe('InstructorModal', function () {
   let instructorFetchStub: SinonStub;
   const term = TERM.FALL;
   const { calendarYear } = dummy.cs50CourseInstance.fall;
-  let closeStub: SinonStub;
-  let saveStub: SinonStub;
+  let onCloseStub: SinonStub;
+  let onSaveStub: SinonStub;
   beforeEach(function () {
     instructorFetchStub = stub(facultyAPI, 'getAllInstructors');
-    closeStub = stub();
-    saveStub = stub();
+    onCloseStub = stub();
+    onSaveStub = stub();
   });
   describe('Rendering Instructor list', function () {
     beforeEach(function () {
@@ -44,8 +44,8 @@ describe('InstructorModal', function () {
             isVisible
             currentCourse={testCourse}
             currentSemester={{ term, calendarYear }}
-            closeModal={closeStub}
-            onSave={saveStub}
+            closeModal={onCloseStub}
+            onSave={onSaveStub}
           />
         );
       });
@@ -73,8 +73,8 @@ describe('InstructorModal', function () {
             isVisible
             currentCourse={testCourse}
             currentSemester={{ term, calendarYear }}
-            closeModal={closeStub}
-            onSave={saveStub}
+            closeModal={onCloseStub}
+            onSave={onSaveStub}
           />
         );
       });
@@ -121,8 +121,8 @@ describe('InstructorModal', function () {
             isVisible
             currentCourse={testCourse}
             currentSemester={{ term, calendarYear }}
-            closeModal={closeStub}
-            onSave={saveStub}
+            closeModal={onCloseStub}
+            onSave={onSaveStub}
           />
         );
       });
@@ -189,8 +189,8 @@ describe('InstructorModal', function () {
             isVisible
             currentCourse={testCourse}
             currentSemester={{ term, calendarYear }}
-            closeModal={closeStub}
-            onSave={saveStub}
+            closeModal={onCloseStub}
+            onSave={onSaveStub}
           />
         );
       });
@@ -266,8 +266,8 @@ describe('InstructorModal', function () {
           isVisible
           currentCourse={testCourse}
           currentSemester={{ term, calendarYear }}
-          closeModal={closeStub}
-          onSave={saveStub}
+          closeModal={onCloseStub}
+          onSave={onSaveStub}
         />
       );
     });
@@ -326,8 +326,8 @@ describe('InstructorModal', function () {
           isVisible
           currentCourse={testCourse}
           currentSemester={{ term, calendarYear }}
-          closeModal={closeStub}
-          onSave={saveStub}
+          closeModal={onCloseStub}
+          onSave={onSaveStub}
         />
       );
     });
@@ -371,8 +371,8 @@ describe('InstructorModal', function () {
           isVisible
           currentCourse={testCourse}
           currentSemester={{ term, calendarYear }}
-          closeModal={closeStub}
-          onSave={saveStub}
+          closeModal={onCloseStub}
+          onSave={onSaveStub}
         />
       );
     });
@@ -408,16 +408,16 @@ describe('InstructorModal', function () {
           isVisible
           currentCourse={testCourse}
           currentSemester={{ term, calendarYear }}
-          closeModal={closeStub}
-          onSave={saveStub}
+          closeModal={onCloseStub}
+          onSave={onSaveStub}
         />
       );
     });
     context('When saving succeeds', function () {
       beforeEach(function () {
         putStub.resolves(testCourse.fall.instructors);
-        saveStub.returns(true);
-        closeStub.returns(true);
+        onSaveStub.returns(true);
+        onCloseStub.returns(true);
         fireEvent.click(renderResult.getByText('Save'));
       });
       it('Should render a spinner', function () {
@@ -429,12 +429,12 @@ describe('InstructorModal', function () {
       });
       it('Should pass the result to onSave', async function () {
         await waitForElementToBeRemoved(() => renderResult.getByText('Saving Instructors'));
-        strictEqual(saveStub.callCount, 1);
-        strictEqual(saveStub.calledWith(testCourse.fall.instructors), true);
+        strictEqual(onSaveStub.callCount, 1);
+        strictEqual(onSaveStub.calledWith(testCourse.fall.instructors), true);
       });
       it('Should close the modal', async function () {
         await waitForElementToBeRemoved(() => renderResult.getByText('Saving Instructors'));
-        strictEqual(closeStub.callCount, 1);
+        strictEqual(onCloseStub.callCount, 1);
       });
       it('Should not show an error message', async function () {
         await waitForElementToBeRemoved(() => renderResult.getByText('Saving Instructors'));
@@ -445,8 +445,8 @@ describe('InstructorModal', function () {
     context('When saving fails', function () {
       beforeEach(function () {
         putStub.rejects(dummy.error);
-        saveStub.returns(true);
-        closeStub.returns(true);
+        onSaveStub.returns(true);
+        onCloseStub.returns(true);
         fireEvent.click(renderResult.getByText('Save'));
       });
       it('Should render a spinner', function () {
@@ -458,11 +458,11 @@ describe('InstructorModal', function () {
       });
       it('Should not call onSave', async function () {
         await waitForElementToBeRemoved(() => renderResult.getByText('Saving Instructors'));
-        strictEqual(saveStub.callCount, 0);
+        strictEqual(onSaveStub.callCount, 0);
       });
       it('Should not close the modal', async function () {
         await waitForElementToBeRemoved(() => renderResult.getByText('Saving Instructors'));
-        strictEqual(closeStub.callCount, 0);
+        strictEqual(onCloseStub.callCount, 0);
       });
       it('Should display the error message', async function () {
         await waitForElementToBeRemoved(() => renderResult.getByText('Saving Instructors'));
