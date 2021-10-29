@@ -5,6 +5,8 @@ import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse
 import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
 import { TERM } from 'common/constants';
 import request from './request';
+import { InstructorResponseDTO } from '../../common/dto/courses/InstructorResponse.dto';
+import { InstructorRequestDTO } from '../../common/dto/courses/InstructorRequest.dto';
 
 /**
  * Retrieves all courses
@@ -52,10 +54,23 @@ export const getCourseScheduleForSemester = async (
   return response.data as ScheduleViewResponseDTO[];
 };
 
+/**
+ * Update the list of instructors associated with a course instance
+ */
+export const updateInstructorList = async (
+  id: string,
+  instructors: InstructorRequestDTO[]
+): Promise<InstructorResponseDTO[]> => {
+  const response = await request
+    .put(`/api/course-instances/${id}/instructors`, { instructors });
+  return response.data as InstructorResponseDTO[];
+};
+
 export const CourseAPI = {
   getAllCourses,
   createCourse,
   editCourse,
   getCourseInstancesForYear,
   getCourseScheduleForSemester,
+  updateInstructorList,
 };
