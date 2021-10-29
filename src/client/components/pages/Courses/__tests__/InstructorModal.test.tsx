@@ -417,7 +417,7 @@ describe('InstructorModal', function () {
       beforeEach(function () {
         putStub.resolves(testCourse.fall.instructors);
         saveStub.returns(true);
-        saveStub.returns(true);
+        closeStub.returns(true);
         fireEvent.click(renderResult.getByText('Save'));
       });
       it('Should render a spinner', function () {
@@ -446,7 +446,7 @@ describe('InstructorModal', function () {
       beforeEach(function () {
         putStub.rejects(dummy.error);
         saveStub.returns(true);
-        saveStub.returns(true);
+        closeStub.returns(true);
         fireEvent.click(renderResult.getByText('Save'));
       });
       it('Should render a spinner', function () {
