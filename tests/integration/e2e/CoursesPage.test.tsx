@@ -665,7 +665,7 @@ describe('End-to-end Course Instance updating', function () {
               .findByText(instructorToAddDisplayName);
           });
           context('clicking Save', function () {
-            it('should Close the modal and add the name the list', async function () {
+            it('should Close the modal and add the name to the list', async function () {
               fireEvent.click(renderResult.getByText('Save'));
               await waitForElementToBeRemoved(() => renderResult.getByText('Saving Instructors'));
               // Make sure modal closed
@@ -694,7 +694,7 @@ describe('End-to-end Course Instance updating', function () {
               const newInstructorEntry = updatedInstructors.find(
                 ({ faculty }) => (faculty.id === instructorToAdd.id)
               );
-              // Check that the instructor has the
+              // Check that the instructor order has been updated in the database
               strictEqual(newInstructorEntry.order, assignedInstructors.length, 'Order in database is wrong');
               strictEqual(
                 `${newInstructorEntry.faculty.lastName}, ${newInstructorEntry.faculty.firstName}`,
@@ -792,7 +792,7 @@ describe('End-to-end Course Instance updating', function () {
               const removedInstructorIndex = updatedInstructors.findIndex(
                 ({ faculty }) => (faculty.id === instructorToRemove.id)
               );
-              // Check that the instructor has the
+              // Check that the instructor does not appear in the database list
               strictEqual(
                 removedInstructorIndex, -1, 'Instructor is still in database'
               );
