@@ -413,7 +413,7 @@ describe('InstructorModal', function () {
         />
       );
     });
-    context('When saving succeeds', function () {
+    context('When PUT call succeeds', function () {
       beforeEach(function () {
         putStub.resolves(testCourse.fall.instructors);
         onSaveStub.returns(true);
@@ -442,7 +442,7 @@ describe('InstructorModal', function () {
         strictEqual(errorMessage.length, 0);
       });
     });
-    context('When saving fails', function () {
+    context('When PUT call fails', function () {
       beforeEach(function () {
         putStub.rejects(dummy.error);
         onSaveStub.returns(true);
