@@ -1,11 +1,12 @@
 import React from 'react';
 import { strictEqual } from 'assert';
-import { render, fireEvent } from '@testing-library/react';
+import { fireEvent } from '@testing-library/react';
 import FakeTimers, { InstalledClock } from '@sinonjs/fake-timers';
 import { stub, SinonStub } from 'sinon';
 import * as dummy from 'testData';
 import { MESSAGE_TYPE } from 'client/classes';
 import { MessageContext } from 'client/context';
+import { render } from 'test-utils';
 import Message, { MessageProps } from '../Message';
 
 describe('Message', function () {
