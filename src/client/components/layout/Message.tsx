@@ -1,4 +1,6 @@
+import { GlobalMessage, VARIANT } from 'mark-one';
 import React, { useContext, ReactElement, FunctionComponent } from 'react';
+import styled from 'styled-components';
 import { MESSAGE_TYPE, MESSAGE_ACTION } from '../../classes';
 import { MessageContext } from '../../context';
 
@@ -7,6 +9,17 @@ export interface MessageProps {
   messageText: string;
   messageType: MESSAGE_TYPE;
 }
+
+/**
+ * A wrapper component for the Global Message component to position it at the
+ * bottom of the page
+ */
+const GlobalMessageWrapper = styled.div`
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+`;
 
 const Message: FunctionComponent<MessageProps> = ({
   messageCount,
@@ -31,17 +44,18 @@ const Message: FunctionComponent<MessageProps> = ({
 
   return (
     <div className={`app-message-${messageType}`}>
-      <strong>{messageText}</strong>
-      <div>
-        <button
-          type="button"
+      <GlobalMessageWrapper>
+        <GlobalMessage
+          variant={VARIANT.DANGER}
+          buttonAlt="Close alert dialog"
+          buttonLabel={messageCount > 0 ? `Next (${messageCount})` : 'clear'}
           onClick={(): void => {
             messageDispatch({ type: MESSAGE_ACTION.CLEAR });
           }}
         >
-          {messageCount > 0 ? `Next (${messageCount})` : 'clear'}
-        </button>
-      </div>
+          {messageText}
+        </GlobalMessage>
+      </GlobalMessageWrapper>
     </div>
   );
 };
