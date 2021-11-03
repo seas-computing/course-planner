@@ -1,8 +1,9 @@
-import { GlobalMessage, VARIANT } from 'mark-one';
+import { GlobalMessage } from 'mark-one';
 import React, { useContext, ReactElement, FunctionComponent } from 'react';
 import styled from 'styled-components';
 import { MESSAGE_TYPE, MESSAGE_ACTION } from '../../classes';
 import { MessageContext } from '../../context';
+import messageTypeToVariant from '../pages/utils/messageHelperFunctions';
 
 export interface MessageProps {
   messageCount: number;
@@ -46,7 +47,7 @@ const Message: FunctionComponent<MessageProps> = ({
     <div className={`app-message-${messageType}`}>
       <GlobalMessageWrapper>
         <GlobalMessage
-          variant={VARIANT.DANGER}
+          variant={messageTypeToVariant(messageType)}
           buttonAlt="Close alert dialog"
           buttonLabel={messageCount > 0 ? `Next (${messageCount})` : 'clear'}
           onClick={(): void => {
