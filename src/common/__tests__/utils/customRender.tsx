@@ -1,5 +1,7 @@
 import React, {
   ReactElement,
+  ReactNode,
+  useReducer,
 } from 'react';
 import {
   render,
@@ -10,8 +12,10 @@ import { MarkOneWrapper } from 'mark-one';
 import {
   MessageContext,
   DispatchMessage,
+  messageReducer,
 } from 'client/context';
 import { MetadataContext, MetadataContextValue } from 'client/context/MetadataContext';
+import { Message } from 'client/components/layout';
 import { metadata } from '../data/metadata';
 
 const currentMetadata = { ...metadata };
@@ -68,5 +72,92 @@ const customRender = (
   );
 };
 
+/**
+ * A set of options that can be used in the Messageable function component.
+ */
+interface MessageableProps {
+  /** The elements to be displayed inside the Header */
+  children: ReactNode;
+  metadataContext?: MetadataContextValue;
+  routerEntries?: string[];
+}
+
+/**
+ * Defines a set of additional options that can be passed as the second
+ * argument to a `render` call to stub/spy on specific properties.
+ */
+interface RenderWithMessagingOptions {
+  metadataContext?: MetadataContextValue;
+  routerEntries?: string[];
+}
+
+/**
+ * A component that includes the content of the queue of messages.
+ * This functional component is needed in order to use the hook useReducer.
+ * This component gets passed into the renderWithMessaging function.
+ */
+const Messagable = ({
+  children,
+  metadataContext,
+  routerEntries,
+}: MessageableProps) => {
+  const [{ currentMessage, queue }, dispatchMessage] = useReducer(
+    messageReducer,
+    {
+      queue: [],
+      currentMessage: undefined,
+    }
+  );
+  return (
+    <MemoryRouter initialEntries={routerEntries}>
+      <MarkOneWrapper>
+        <MessageContext.Provider value={dispatchMessage}>
+          <MetadataContext.Provider value={metadataContext}>
+            {children}
+            {currentMessage
+                && (
+                  <Message
+                    messageCount={queue.length}
+                    messageText={currentMessage.text}
+                    messageType={currentMessage.variant}
+                  />
+                )}
+          </MetadataContext.Provider>
+        </MessageContext.Provider>
+      </MarkOneWrapper>
+    </MemoryRouter>
+  );
+};
+
+Messagable.defaultProps = {
+  metadataContext: {},
+  routerEntries: [],
+};
+
+/**
+ * A function that renders all that is included in the Messageable function
+ * component, which includes the content of the message queue.
+ */
+const renderWithMessaging = (
+  ui: ReactElement,
+  options: RenderWithMessagingOptions = {}
+): RenderResult => {
+  let {
+    metadataContext,
+    routerEntries,
+  } = options;
+  if (!metadataContext) {
+    metadataContext = testMetadata;
+  }
+  if (!routerEntries) {
+    routerEntries = ['/'];
+  }
+  return render(
+    <Messagable metadataContext={metadataContext} routerEntries={routerEntries}>
+      {ui}
+    </Messagable>
+  );
+};
+
 export * from '@testing-library/react';
-export { customRender as render };
+export { customRender as render, renderWithMessaging };
