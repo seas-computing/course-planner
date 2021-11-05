@@ -1,10 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
   IsEnum,
   IsString,
   MinLength,
 } from 'class-validator';
 import { COURSE_TABLE_COLUMN } from 'common/constants';
+import { trimString } from '../utils';
 
 /**
  * Create View DTO
@@ -26,5 +28,6 @@ export class CreateViewDTO {
   })
   @IsString()
   @MinLength(1)
+  @Transform(trimString)
   public name: string;
 }
