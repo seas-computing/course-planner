@@ -33,16 +33,6 @@ const Message: FunctionComponent<MessageProps> = ({
 
   const messageDispatch = useContext(MessageContext);
 
-  /**
-   * auto-clear non-error messages after 5 seconds
-   */
-
-  if (messageType !== MESSAGE_TYPE.ERROR) {
-    setTimeout((): void => {
-      messageDispatch({ type: MESSAGE_ACTION.CLEAR });
-    }, 5000);
-  }
-
   return (
     <div className={`app-message-${messageType}`}>
       <GlobalMessageWrapper>

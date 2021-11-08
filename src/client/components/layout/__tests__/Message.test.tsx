@@ -56,7 +56,7 @@ describe('Message', function () {
       fireEvent.click(getByText('clear'));
       strictEqual(dispatchStub.callCount, 1);
     });
-    it('should automatically clear non-error messages after 5 seconds', function () {
+    it('should never automatically clear non-error messages', function () {
       render(
         <MessageContext.Provider value={dispatchStub}>
           <Message
@@ -67,11 +67,11 @@ describe('Message', function () {
         </MessageContext.Provider>
       );
       strictEqual(dispatchStub.callCount, 0);
-      clock.tick(5000);
-      strictEqual(dispatchStub.callCount, 1);
+      clock.tick(5000000);
+      strictEqual(dispatchStub.callCount, 0);
     });
 
-    it('should never automatically clear non-error messages', function () {
+    it('should never automatically clear error messages', function () {
       render(
         <MessageContext.Provider value={dispatchStub}>
           <Message
