@@ -6,6 +6,7 @@ import React, {
   useEffect,
   ChangeEvent,
   Ref,
+  useContext,
 } from 'react';
 import {
   VARIANT,
@@ -22,6 +23,8 @@ import { FacultyAPI } from 'client/api';
 import { ABSENCE_TYPE } from 'common/constants';
 import { absenceEnumToTitleCase } from 'common/utils/facultyHelperFunctions';
 import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
+import { AppMessage, MESSAGE_TYPE, MESSAGE_ACTION } from 'client/classes';
+import { MessageContext } from 'client/context';
 
 interface AbsenceModalProps {
   /**
@@ -112,6 +115,11 @@ FunctionComponent<AbsenceModalProps> = ({
   };
 
   /**
+   * The current value for the message context
+   */
+  const dispatchMessage = useContext(MessageContext);
+
+  /**
    * Sets the absence information for the currently selected absence, clears
    * any previous errors from the modal, and sets the modal focus to its header
    */
@@ -170,6 +178,10 @@ FunctionComponent<AbsenceModalProps> = ({
           onClick={async (): Promise<void> => {
             try {
               await submitAbsenceForm();
+              dispatchMessage({
+                message: new AppMessage('Faculty absence was updated.', MESSAGE_TYPE.SUCCESS),
+                type: MESSAGE_ACTION.PUSH,
+              });
               onSuccess();
             } catch (error) {
               setAbsenceErrorMessage((error as Error).message);

@@ -1,11 +1,12 @@
 import React from 'react';
 import { strictEqual } from 'assert';
-import { render, fireEvent } from '@testing-library/react';
+import { fireEvent } from '@testing-library/react';
 import FakeTimers, { InstalledClock } from '@sinonjs/fake-timers';
 import { stub, SinonStub } from 'sinon';
 import * as dummy from 'testData';
 import { MESSAGE_TYPE } from 'client/classes';
 import { MessageContext } from 'client/context';
+import { render } from 'test-utils';
 import Message, { MessageProps } from '../Message';
 
 describe('Message', function () {
@@ -55,7 +56,7 @@ describe('Message', function () {
       fireEvent.click(getByText('clear'));
       strictEqual(dispatchStub.callCount, 1);
     });
-    it('should automatically clear non-error messages after 5 seconds', function () {
+    it('should never automatically clear non-error messages', function () {
       render(
         <MessageContext.Provider value={dispatchStub}>
           <Message
@@ -66,11 +67,11 @@ describe('Message', function () {
         </MessageContext.Provider>
       );
       strictEqual(dispatchStub.callCount, 0);
-      clock.tick(5000);
-      strictEqual(dispatchStub.callCount, 1);
+      clock.tick(5000000);
+      strictEqual(dispatchStub.callCount, 0);
     });
 
-    it('should never automatically clear non-error messages', function () {
+    it('should never automatically clear error messages', function () {
       render(
         <MessageContext.Provider value={dispatchStub}>
           <Message

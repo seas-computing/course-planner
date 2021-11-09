@@ -256,6 +256,11 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
           }}
           onSuccess={async (): Promise<void> => {
             await loadCourses();
+            // display a success message after successful update and loading of courses
+            dispatchMessage({
+              message: new AppMessage('Course was updated.', MESSAGE_TYPE.SUCCESS),
+              type: MESSAGE_ACTION.PUSH,
+            });
           }}
         />
       </div>

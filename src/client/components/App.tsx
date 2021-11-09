@@ -114,13 +114,13 @@ const App: FunctionComponent = (): ReactElement => {
               <PageBody>
                 <AppHeader currentUser={currentUser} />
                 {currentMessage
-                    && (
-                      <Message
-                        messageCount={queue.length}
-                        messageText={currentMessage.text}
-                        messageType={currentMessage.variant}
-                      />
-                    )}
+                  && (
+                    <Message
+                      messageCount={queue.length}
+                      messageText={currentMessage.text}
+                      messageType={currentMessage.variant}
+                    />
+                  )}
                 <AppRouter />
               </PageBody>
             </MetadataContext.Provider>
