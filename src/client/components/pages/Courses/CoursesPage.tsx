@@ -38,6 +38,7 @@ const defaultView: ViewResponse = {
   name: 'Default',
   columns: [
     ...mandatoryColumns,
+    COURSE_TABLE_COLUMN.MEETINGS,
     COURSE_TABLE_COLUMN.IS_SEAS,
     COURSE_TABLE_COLUMN.OFFERED,
     COURSE_TABLE_COLUMN.INSTRUCTORS,
