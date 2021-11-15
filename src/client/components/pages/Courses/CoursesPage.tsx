@@ -13,9 +13,9 @@ import { CourseAPI } from 'client/api';
 import { MESSAGE_TYPE, MESSAGE_ACTION, AppMessage } from 'client/classes';
 import { OFFERED, COURSE_TABLE_COLUMN } from 'common/constants';
 import { ViewResponse } from 'common/dto/view/ViewResponse.dto';
+import { VerticalSpace } from 'client/components/layout';
 import CourseInstanceTable from './CourseInstanceTable';
 import { tableFields } from './tableFields';
-import { VerticalSpace } from 'client/components/layout';
 
 /**
  * These columns are ALWAYS shown regardless of user choice
