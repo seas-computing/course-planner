@@ -145,12 +145,10 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
               labelPosition={POSITION.LEFT}
               label="View"
               value={currentViewId}
-              options={[
-                ...views.map((view) => ({
-                  label: view.name,
-                  value: view.id,
-                })),
-              ]}
+              options={views.map((view) => ({
+                label: view.name,
+                value: view.id,
+              }))}
             />
             <CourseInstanceTable
               academicYear={acadYear}
