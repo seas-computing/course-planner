@@ -77,7 +77,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     views,
   ] = useState([
     defaultView,
-  ] as ViewResponse[]);
+  ]);
 
   const currentView = useMemo(
     () => views.find(({ id }) => id === currentViewId),
