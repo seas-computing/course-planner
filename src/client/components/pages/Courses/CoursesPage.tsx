@@ -22,7 +22,6 @@ import { tableFields } from './tableFields';
 const mandatoryColumns = [
   COURSE_TABLE_COLUMN.AREA,
   COURSE_TABLE_COLUMN.CATALOG_NUMBER,
-  COURSE_TABLE_COLUMN.NOTES,
   COURSE_TABLE_COLUMN.DETAILS,
 ];
 
@@ -42,6 +41,7 @@ const defaultView: ViewResponse = {
     COURSE_TABLE_COLUMN.IS_SEAS,
     COURSE_TABLE_COLUMN.OFFERED,
     COURSE_TABLE_COLUMN.INSTRUCTORS,
+    COURSE_TABLE_COLUMN.NOTES,
   ],
 };
 
