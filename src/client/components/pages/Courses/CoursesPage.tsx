@@ -4,35 +4,47 @@ import React, {
   useState,
   useEffect,
   useContext,
+  useMemo,
 } from 'react';
-import { LoadSpinner } from 'mark-one';
+import { Dropdown, LoadSpinner, POSITION } from 'mark-one';
 import { MessageContext } from 'client/context';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { CourseAPI } from 'client/api';
 import { MESSAGE_TYPE, MESSAGE_ACTION, AppMessage } from 'client/classes';
 import { OFFERED, COURSE_TABLE_COLUMN } from 'common/constants';
+import { ViewResponse } from 'common/dto/view/ViewResponse.dto';
+import { VerticalSpace } from 'client/components/layout';
 import CourseInstanceTable from './CourseInstanceTable';
 import { tableFields } from './tableFields';
 
-/*
- * TODO
- * Until the functionality for defining a retrieving custom view is implemented
- * we can just hard code/comment the columns to display
+/**
+ * These columns are ALWAYS shown regardless of user choice
  */
-const currentView = [
+const mandatoryColumns = [
   COURSE_TABLE_COLUMN.AREA,
   COURSE_TABLE_COLUMN.CATALOG_NUMBER,
-  COURSE_TABLE_COLUMN.TITLE,
-  COURSE_TABLE_COLUMN.SAME_AS,
-  COURSE_TABLE_COLUMN.IS_SEAS,
-  // COURSE_TABLE_COLUMN.IS_UNDERGRADUATE,
-  COURSE_TABLE_COLUMN.OFFERED,
-  COURSE_TABLE_COLUMN.INSTRUCTORS,
-  COURSE_TABLE_COLUMN.MEETINGS,
-  // COURSE_TABLE_COLUMN.ENROLLMENT,
-  COURSE_TABLE_COLUMN.NOTES,
   COURSE_TABLE_COLUMN.DETAILS,
 ];
+
+/**
+ * Default View
+ *
+ * This is the hard-coded default view that is showin in the dropdown when a
+ * user loads the page. Other views can be created, modified and deleted - but
+ * this default view can never be deleted or updated.
+ */
+const defaultView: ViewResponse = {
+  id: 'default',
+  name: 'Default',
+  columns: [
+    ...mandatoryColumns,
+    COURSE_TABLE_COLUMN.MEETINGS,
+    COURSE_TABLE_COLUMN.IS_SEAS,
+    COURSE_TABLE_COLUMN.OFFERED,
+    COURSE_TABLE_COLUMN.INSTRUCTORS,
+    COURSE_TABLE_COLUMN.NOTES,
+  ],
+};
 
 /*
  * TODO
@@ -55,6 +67,22 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     currentCourses,
     setCourses,
   ] = useState([] as CourseInstanceResponseDTO[]);
+
+  const [
+    currentViewId,
+    setCurrentViewId,
+  ] = useState(defaultView.id);
+
+  const [
+    views,
+  ] = useState([
+    defaultView,
+  ]);
+
+  const currentView = useMemo(
+    () => views.find(({ id }) => id === currentViewId),
+    [views, currentViewId]
+  );
 
   const dispatchMessage = useContext(MessageContext);
 
@@ -108,24 +136,42 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
           </div>
         )
         : (
-          <CourseInstanceTable
-            academicYear={acadYear}
-            courseList={
-              showRetired
-                ? currentCourses
-                : currentCourses.filter(
-                  ({ spring, fall }): boolean => (
-                    fall.offered !== OFFERED.RETIRED
-                        && spring.offered !== OFFERED.RETIRED)
+          <>
+            <VerticalSpace>
+              <Dropdown
+                id="select-view-dropdown"
+                name="select-view-dropdown"
+                onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
+                  setCurrentViewId(event.currentTarget.value);
+                }}
+                labelPosition={POSITION.LEFT}
+                label="View"
+                value={currentViewId}
+                options={views.map((view) => ({
+                  label: view.name,
+                  value: view.id,
+                }))}
+              />
+            </VerticalSpace>
+            <CourseInstanceTable
+              academicYear={acadYear}
+              courseList={
+                showRetired
+                  ? currentCourses
+                  : currentCourses.filter(
+                    ({ spring, fall }): boolean => (
+                      fall.offered !== OFFERED.RETIRED
+                          && spring.offered !== OFFERED.RETIRED)
+                  )
+              }
+              courseUpdateHandler={updateLocalCourse}
+              tableData={tableFields.filter(
+                ({ viewColumn }): boolean => (
+                  currentView.columns.includes(viewColumn)
                 )
-            }
-            courseUpdateHandler={updateLocalCourse}
-            tableData={tableFields.filter(
-              ({ viewColumn }): boolean => (
-                currentView.includes(viewColumn)
-              )
-            )}
-          />
+              )}
+            />
+          </>
         )}
     </div>
   );
