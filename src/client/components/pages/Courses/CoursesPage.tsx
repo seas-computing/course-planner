@@ -139,7 +139,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
             <Dropdown
               id="select-view-dropdown"
               name="select-view-dropdown"
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+              onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
                 setCurrentViewId(event.currentTarget.value);
               }}
               labelPosition={POSITION.LEFT}
