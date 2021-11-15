@@ -6,7 +6,13 @@ import React, {
   useContext,
   useMemo,
 } from 'react';
-import { Dropdown, LoadSpinner, POSITION } from 'mark-one';
+import {
+  Button,
+  Dropdown,
+  LoadSpinner,
+  POSITION,
+  VARIANT,
+} from 'mark-one';
 import { MessageContext } from 'client/context';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { CourseAPI } from 'client/api';
@@ -16,6 +22,9 @@ import { ViewResponse } from 'common/dto/view/ViewResponse.dto';
 import { VerticalSpace } from 'client/components/layout';
 import CourseInstanceTable from './CourseInstanceTable';
 import { tableFields } from './tableFields';
+import ViewModal from './ViewModal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faWrench } from '@fortawesome/free-solid-svg-icons';
 
 /**
  * These columns are ALWAYS shown regardless of user choice
@@ -79,6 +88,11 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     defaultView,
   ]);
 
+  const [
+    viewModalVisible,
+    setViewModalVisible,
+  ] = useState(false);
+
   const currentView = useMemo(
     () => views.find(({ id }) => id === currentViewId),
     [views, currentViewId]
@@ -138,20 +152,33 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
         : (
           <>
             <VerticalSpace>
+              <ViewModal isVisible={viewModalVisible} />
               <Dropdown
                 id="select-view-dropdown"
                 name="select-view-dropdown"
                 onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
                   setCurrentViewId(event.currentTarget.value);
                 }}
-                labelPosition={POSITION.LEFT}
-                label="View"
+                labelPosition={POSITION.TOP}
+                label="Views"
                 value={currentViewId}
                 options={views.map((view) => ({
                   label: view.name,
                   value: view.id,
                 }))}
               />
+              <Button
+                variant={VARIANT.INFO}
+                onClick={() => {
+                  setViewModalVisible(true);
+                }}
+              >
+                <FontAwesomeIcon
+                  icon={faWrench}
+                />
+                {' '}
+                Customize
+              </Button>
             </VerticalSpace>
             <CourseInstanceTable
               academicYear={acadYear}

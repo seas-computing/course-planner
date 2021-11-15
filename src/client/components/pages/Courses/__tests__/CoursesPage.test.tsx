@@ -7,14 +7,17 @@ import {
   QueryByText,
   FindByText,
   wait,
+  fireEvent,
+  AllByRole,
 } from 'test-utils';
 import { CourseAPI } from 'client/api';
 import { AppMessage, MESSAGE_TYPE, MESSAGE_ACTION } from 'client/classes';
 import { MessageReducerAction } from 'client/context';
 import { cs50CourseInstance } from 'testData';
 import CoursesPage from '../CoursesPage';
+import ViewModal from '../ViewModal';
 
-describe('Course Instances List', function () {
+describe('Course Page', function () {
   let getStub: SinonStub;
   let dispatchMessage: SinonStub;
   beforeEach(function () {
@@ -70,6 +73,26 @@ describe('Course Instances List', function () {
         deepStrictEqual(realMessage.message, testErrorAppMessage);
         strictEqual(realMessage.type, MESSAGE_ACTION.PUSH);
       });
+    });
+  });
+  describe('customize button', function () {
+    let findByText: BoundFunction<FindByText>;
+    let queryAllByRole: BoundFunction<AllByRole>;
+    beforeEach(function () {
+      getStub.resolves([
+        { ...cs50CourseInstance },
+      ]);
+      ({
+        findByText,
+        queryAllByRole,
+      } = render(<CoursesPage />));
+    });
+    it('causes ViewModal to be displayed', async function () {
+      const customizeButton = await findByText(/Customize/, { exact: true });
+
+      fireEvent.click(customizeButton);
+
+      strictEqual(queryAllByRole('dialog').length, 1);
     });
   });
 });
