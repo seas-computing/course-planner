@@ -15,6 +15,7 @@ import { OFFERED, COURSE_TABLE_COLUMN } from 'common/constants';
 import { ViewResponse } from 'common/dto/view/ViewResponse.dto';
 import CourseInstanceTable from './CourseInstanceTable';
 import { tableFields } from './tableFields';
+import { VerticalSpace } from 'client/components/layout';
 
 /**
  * These columns are ALWAYS shown regardless of user choice
@@ -136,20 +137,22 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
         )
         : (
           <>
-            <Dropdown
-              id="select-view-dropdown"
-              name="select-view-dropdown"
-              onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
-                setCurrentViewId(event.currentTarget.value);
-              }}
-              labelPosition={POSITION.LEFT}
-              label="View"
-              value={currentViewId}
-              options={views.map((view) => ({
-                label: view.name,
-                value: view.id,
-              }))}
-            />
+            <VerticalSpace>
+              <Dropdown
+                id="select-view-dropdown"
+                name="select-view-dropdown"
+                onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
+                  setCurrentViewId(event.currentTarget.value);
+                }}
+                labelPosition={POSITION.LEFT}
+                label="View"
+                value={currentViewId}
+                options={views.map((view) => ({
+                  label: view.name,
+                  value: view.id,
+                }))}
+              />
+            </VerticalSpace>
             <CourseInstanceTable
               academicYear={acadYear}
               courseList={
