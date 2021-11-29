@@ -5,15 +5,19 @@ import {
   BoundFunction,
   AllByRole,
   getRoles,
+  within,
+  fireEvent,
 } from 'test-utils';
 import { spy, SinonSpy } from 'sinon';
 import { cs50CourseInstance, es095CourseInstance } from 'testData';
 import { COURSE_TABLE_COLUMN } from 'common/constants';
 import CourseInstanceTable from '../CourseInstanceTable';
 import { tableFields } from '../tableFields';
+import * as filters from '../../Filter';
 
 describe('CourseInstanceTable', function () {
   let updateSpy: SinonSpy;
+  let filterSpy: SinonSpy;
   const academicYear = 2020;
   const courseList = [
     cs50CourseInstance,
@@ -21,6 +25,7 @@ describe('CourseInstanceTable', function () {
   ];
   beforeEach(function () {
     updateSpy = spy();
+    filterSpy = spy(filters, 'listFilter');
   });
   describe('Header rows', function () {
     context('With all fields visible', function () {
@@ -86,6 +91,33 @@ describe('CourseInstanceTable', function () {
           enrollmentValues,
           ['Pre', 'Study', 'Actual', 'Pre', 'Study', 'Actual']
         );
+      it('renders the filters in the third row', function () {
+        const [, , thirdRow] = getAllByRole('row');
+        const utils = within(thirdRow);
+        const area = utils.getAllByLabelText('The table will be filtered as selected in this area dropdown filter');
+        const isSEAS = utils.getAllByLabelText('The table will be filtered as selected in this Is SEAS dropdown filter');
+        strictEqual(area.length, 1, 'Error with area filter rendering');
+        strictEqual(isSEAS.length, 1, 'Error with isSEAS filter rendering');
+      });
+      context('when the area dropdown filter is changed', function () {
+        it('calls the listFilter function once for each filter', function () {
+          const [, , thirdRow] = getAllByRole('row');
+          const utils = within(thirdRow);
+          const area = utils.getAllByLabelText('The table will be filtered as selected in this area dropdown filter')[0];
+          filterSpy.resetHistory();
+          fireEvent.change(area, { target: { value: 'AM' } });
+          strictEqual(filterSpy.callCount, 1);
+        });
+      });
+      context('when the isSEAS dropdown filter is called', function () {
+        it('calls the listFilter function once for each filter', function () {
+          const [, , thirdRow] = getAllByRole('row');
+          const utils = within(thirdRow);
+          const isSEAS = utils.getAllByLabelText('The table will be filtered as selected in this Is SEAS dropdown filter')[0];
+          filterSpy.resetHistory();
+          fireEvent.change(isSEAS, { target: { value: 'No' } });
+          strictEqual(filterSpy.callCount, 1);
+        });
       });
     });
     context('With no semester fields visible', function () {
