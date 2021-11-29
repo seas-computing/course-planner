@@ -57,8 +57,8 @@ describe('App Router', function () {
     context('/', function () {
       context('When there is metadata in context', function () {
         it('renders the courses component', async function () {
-          const { findByText } = renderWithUserAndMetadata('/');
-          return findByText(/Is SEAS?/);
+          const { findAllByText } = renderWithUserAndMetadata('/');
+          return findAllByText(/Is SEAS?/);
         });
       });
       context('When there is no metadata in context', function () {
@@ -88,8 +88,8 @@ describe('App Router', function () {
     });
     context('/courses', function () {
       it('renders the Courses component', async function () {
-        const { findByText } = renderWithUserAndMetadata('/courses');
-        return findByText(/Is SEAS?/);
+        const { findAllByText } = renderWithUserAndMetadata('/courses');
+        return findAllByText(/Is SEAS?/);
       });
     });
     context('/four-year-plan', function () {
