@@ -79,12 +79,13 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
 
   const [areaValue, setAreaValue] = useState<string>('All');
 
-  const filteredCourses = (): CourseInstanceResponseDTO[] => {
-    let courses = [...courseList];
+  const filteredCourses = (courses:
+  { course: CourseInstanceResponseDTO, element: ReactElement }[]):
+  { course: CourseInstanceResponseDTO, element: ReactElement }[] => {
     if (areaValue !== 'All') {
-      courses = listFilter(
+      return listFilter(
         courses,
-        { field: 'area', value: areaValue, exact: true }
+        { field: 'course.area', value: areaValue, exact: true }
       );
     }
     return courses;
@@ -252,51 +253,57 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
         )}
       </TableHead>
       <TableBody>
-        {filteredCourses().map(
+        {filteredCourses(courseList.map(
           (
             course: CourseInstanceResponseDTO,
             index: number
-          ): ReactElement => (
-            <TableRow key={course.id} isStriped={index % 2 !== 0}>
-              {tableData.map(
-                (field: CourseInstanceListColumn): ReactElement => {
-                  if (field.viewColumn === COURSE_TABLE_COLUMN.CATALOG_NUMBER) {
-                    return (
-                      <TableRowHeadingCell
-                        scope="row"
-                        key={field.key}
-                        verticalAlignment={VALIGN.TOP}
-                      >
-                        <CellLayout>
-                          {field.getValue(course)}
-                        </CellLayout>
-                      </TableRowHeadingCell>
-                    );
-                  }
-                  return (
-                    <TableCell
-                      verticalAlignment={VALIGN.TOP}
-                      key={field.key}
-                      backgroundColor={
-                        field.viewColumn === COURSE_TABLE_COLUMN.AREA
-                          && getAreaColor(field.getValue(course) as string)
+          ): { course: CourseInstanceResponseDTO; element: ReactElement } => (
+            {
+              course,
+              element: (
+                <TableRow key={course.id} isStriped={index % 2 !== 0}>
+                  {tableData.map(
+                    (field: CourseInstanceListColumn): ReactElement => {
+                      if (field.viewColumn
+                        === COURSE_TABLE_COLUMN.CATALOG_NUMBER) {
+                        return (
+                          <TableRowHeadingCell
+                            scope="row"
+                            key={field.key}
+                            verticalAlignment={VALIGN.TOP}
+                          >
+                            <CellLayout>
+                              {field.getValue(course)}
+                            </CellLayout>
+                          </TableRowHeadingCell>
+                        );
                       }
-                    >
-                      <CellLayout>
-                        {field.getValue(
-                          course,
-                          {
-                            updateHandler: courseUpdateHandler,
+                      return (
+                        <TableCell
+                          verticalAlignment={VALIGN.TOP}
+                          key={field.key}
+                          backgroundColor={
+                            field.viewColumn === COURSE_TABLE_COLUMN.AREA
+                            && getAreaColor(field.getValue(course) as string)
                           }
-                        )}
-                      </CellLayout>
-                    </TableCell>
-                  );
-                }
-              )}
-            </TableRow>
-          )
-        )}
+                        >
+                          <CellLayout>
+                            {field.getValue(
+                              course,
+                              {
+                                updateHandler: courseUpdateHandler,
+                              }
+                            )}
+                          </CellLayout>
+                        </TableCell>
+                      );
+                    }
+                  )}
+                </TableRow>
+              ),
+            })
+        ))
+          .map(({ element }) => element)}
       </TableBody>
     </Table>
   );
