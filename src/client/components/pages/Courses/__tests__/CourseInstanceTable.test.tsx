@@ -84,13 +84,19 @@ describe('CourseInstanceTable', function () {
       it('renders the individual enrollment values into the third row', function () {
         const [, , thirdRow] = getAllByRole('row');
         const { columnheader } = getRoles(thirdRow);
-        const enrollmentValues = columnheader.map((elem) => (
-          elem.textContent
+        const preHeaders = columnheader.filter((elem) => (
+          elem.textContent === 'Pre'
         ));
-        deepStrictEqual(
-          enrollmentValues,
-          ['Pre', 'Study', 'Actual', 'Pre', 'Study', 'Actual']
-        );
+        const studyHeaders = columnheader.filter((elem) => (
+          elem.textContent === 'Study'
+        ));
+        const actualHeaders = columnheader.filter((elem) => (
+          elem.textContent === 'Actual'
+        ));
+        strictEqual(preHeaders.length, 2, 'Incorrect number of "Pre" columns');
+        strictEqual(studyHeaders.length, 2, 'Incorrect number of "Study" columns');
+        strictEqual(actualHeaders.length, 2, 'Incorrect number of "Actual" columns');
+      });
       it('renders the filters in the third row', function () {
         const [, , thirdRow] = getAllByRole('row');
         const utils = within(thirdRow);
