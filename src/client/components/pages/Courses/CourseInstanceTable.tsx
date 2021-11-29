@@ -17,7 +17,13 @@ import {
   Dropdown,
 } from 'mark-one';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
-import { COURSE_TABLE_COLUMN, COURSE_TABLE_COLUMN_GROUP, getAreaColor } from 'common/constants';
+import {
+  COURSE_TABLE_COLUMN,
+  COURSE_TABLE_COLUMN_GROUP,
+  getAreaColor,
+  isSEASEnumToString,
+  IS_SEAS,
+} from 'common/constants';
 import { CellLayout } from 'client/components/general';
 import { MetadataContext } from 'client/context';
 import { CourseInstanceListColumn } from './tableFields';
@@ -79,13 +85,22 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
 
   const [areaValue, setAreaValue] = useState<string>('All');
 
-  const filteredCourses = (courses:
+  const [isSEASValue, setIsSEASValue] = useState<string>('All');
+
+  const filteredCourses = (currentCourses:
   { course: CourseInstanceResponseDTO, element: ReactElement }[]):
   { course: CourseInstanceResponseDTO, element: ReactElement }[] => {
+    let courses = currentCourses;
     if (areaValue !== 'All') {
-      return listFilter(
+      courses = listFilter(
         courses,
         { field: 'course.area', value: areaValue, exact: true }
+      );
+    }
+    if (isSEASValue !== 'All') {
+      courses = listFilter(
+        courses,
+        { field: 'course.isSEAS', value: isSEASValue, exact: true }
       );
     }
     return courses;
@@ -143,7 +158,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
               <TableHeadingCell
                 key={key}
                 scope="col"
-                rowSpan={firstEnrollmentField > -1 && viewColumn !== COURSE_TABLE_COLUMN.AREA ? '2' : '1'}
+                rowSpan={firstEnrollmentField > -1 && (viewColumn !== COURSE_TABLE_COLUMN.AREA && viewColumn !== COURSE_TABLE_COLUMN.IS_SEAS) ? '2' : '1'}
               >
                 {name}
               </TableHeadingCell>
@@ -229,6 +244,42 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
                         onChange={
                           (event:React.ChangeEvent<HTMLInputElement>) => {
                             setAreaValue(event.currentTarget.value);
+                          }
+                        }
+                      />
+                    </TableHeadingCell>
+                  );
+                }
+                if (field.viewColumn === COURSE_TABLE_COLUMN.IS_SEAS) {
+                  return (
+                    <TableHeadingCell
+                      scope="col"
+                      key={field.key}
+                    >
+                      <Dropdown
+                        options={
+                          [{ value: 'All', label: 'All' }]
+                            .concat(Object.values(IS_SEAS)
+                              .map((isSEASOption):
+                              {value: string; label: string} => {
+                                const isSEASDisplayTitle = isSEASEnumToString(
+                                  isSEASOption
+                                );
+                                return {
+                                  value: isSEASOption,
+                                  label: isSEASDisplayTitle,
+                                };
+                              }))
+                        }
+                        value={isSEASValue}
+                        name="isSEASValue"
+                        id="isSEASValue"
+                        label="The table will be filtered as selected in this Is SEAS dropdown filter"
+                        isLabelVisible={false}
+                        hideError
+                        onChange={
+                          (event:React.ChangeEvent<HTMLInputElement>) => {
+                            setIsSEASValue(event.currentTarget.value);
                           }
                         }
                       />
