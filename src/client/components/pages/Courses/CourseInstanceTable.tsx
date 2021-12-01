@@ -23,9 +23,11 @@ import {
   getAreaColor,
   isSEASEnumToString,
   IS_SEAS,
+  OFFERED,
 } from 'common/constants';
 import { CellLayout } from 'client/components/general';
 import { MetadataContext } from 'client/context';
+import { offeredEnumToString } from 'common/constants/offered';
 import { CourseInstanceListColumn } from './tableFields';
 import { listFilter } from '../Filter';
 
@@ -87,6 +89,16 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
 
   const [isSEASValue, setIsSEASValue] = useState<string>('All');
 
+  /**
+   * The current value of the fall semester "offered" filter dropdown
+   */
+  const [fallOfferedValue, setFallOfferedValue] = useState<string>('All');
+
+  /**
+   * The current value of the spring semester "offered" filter dropdown
+   */
+  const [springOfferedValue, setSpringOfferedValue] = useState<string>('All');
+
   const filteredCourses = (currentCourses:
   { course: CourseInstanceResponseDTO, element: ReactElement }[]):
   { course: CourseInstanceResponseDTO, element: ReactElement }[] => {
@@ -101,6 +113,18 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
       courses = listFilter(
         courses,
         { field: 'course.isSEAS', value: isSEASValue, exact: true }
+      );
+    }
+    if (fallOfferedValue !== 'All') {
+      courses = listFilter(
+        courses,
+        { field: 'course.fall.offered', value: fallOfferedValue, exact: true }
+      );
+    }
+    if (springOfferedValue !== 'All') {
+      courses = listFilter(
+        courses,
+        { field: 'course.spring.offered', value: springOfferedValue, exact: true }
       );
     }
     return courses;
@@ -158,7 +182,10 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
               <TableHeadingCell
                 key={key}
                 scope="col"
-                rowSpan={firstEnrollmentField > -1 && (viewColumn !== COURSE_TABLE_COLUMN.AREA && viewColumn !== COURSE_TABLE_COLUMN.IS_SEAS) ? '2' : '1'}
+                rowSpan={firstEnrollmentField > -1 && (
+                  viewColumn !== COURSE_TABLE_COLUMN.AREA
+                  && viewColumn !== COURSE_TABLE_COLUMN.IS_SEAS
+                ) ? '2' : '1'}
               >
                 {name}
               </TableHeadingCell>
@@ -192,7 +219,9 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
                     <TableHeadingCell
                       key={field.key}
                       scope="col"
-                      rowSpan={firstEnrollmentField > -1 ? 2 : 1}
+                      rowSpan={firstEnrollmentField > -1 && (
+                        field.viewColumn !== COURSE_TABLE_COLUMN.OFFERED
+                      ) ? '2' : '1'}
                     >
                       {field.name}
                     </TableHeadingCell>
@@ -280,6 +309,52 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
                         onChange={
                           (event:React.ChangeEvent<HTMLInputElement>) => {
                             setIsSEASValue(event.currentTarget.value);
+                          }
+                        }
+                      />
+                    </TableHeadingCell>
+                  );
+                }
+                const isFall = field.columnGroup
+                  === COURSE_TABLE_COLUMN_GROUP.FALL;
+                if (field.viewColumn === COURSE_TABLE_COLUMN.OFFERED) {
+                  return (
+                    <TableHeadingCell
+                      scope="col"
+                      key={field.key}
+                    >
+                      <Dropdown
+                        options={
+                          [{ value: 'All', label: 'All' }]
+                            .concat(Object.values(OFFERED)
+                              .map((offeredOption):
+                              {value: string; label: string} => {
+                                const offeredDisplayTitle = offeredEnumToString(
+                                  offeredOption
+                                );
+                                return {
+                                  value: offeredOption,
+                                  label: offeredDisplayTitle,
+                                };
+                              }))
+                        }
+                        value={isFall
+                          ? fallOfferedValue
+                          : springOfferedValue}
+                        name={isFall ? 'fallOfferedValue' : 'springOfferedValue'}
+                        id={isFall ? 'fallOfferedValue' : 'springOfferedValue'}
+                        label={isFall
+                          ? 'The table will be filtered as selected in this fall offered dropdown filter'
+                          : 'The table will be filtered as selected in this spring offered dropdown filter'}
+                        isLabelVisible={false}
+                        hideError
+                        onChange={
+                          (event:React.ChangeEvent<HTMLInputElement>) => {
+                            if (isFall) {
+                              setFallOfferedValue(event.currentTarget.value);
+                            } else {
+                              setSpringOfferedValue(event.currentTarget.value);
+                            }
                           }
                         }
                       />
