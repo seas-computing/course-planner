@@ -85,8 +85,14 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
    */
   const metadata = useContext(MetadataContext);
 
+  /**
+   * The current value of the area filter dropdown
+   */
   const [areaValue, setAreaValue] = useState<string>('All');
 
+  /**
+   * The current value of the "Is SEAS" filter dropdown
+   */
   const [isSEASValue, setIsSEASValue] = useState<string>('All');
 
   /**
