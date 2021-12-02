@@ -108,8 +108,7 @@ describe('CourseInstanceTable', function () {
         const areaFilter = utils.getAllByLabelText(areaFilterLabel);
         const isSEASFilter = utils.getAllByLabelText(isSEASFilterLabel);
         const fallOfferedFilter = utils
-          
-        .getAllByLabelText(fallOfferedFilterLabel);
+          .getAllByLabelText(fallOfferedFilterLabel);
         const springOfferedFilter = utils
           .getAllByLabelText(springOfferedFilterLabel);
         strictEqual(areaFilter.length, 1, 'Error with area filter rendering');
