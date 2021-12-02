@@ -10,7 +10,8 @@ import {
 } from 'test-utils';
 import { spy, SinonSpy } from 'sinon';
 import { cs50CourseInstance, es095CourseInstance } from 'testData';
-import { COURSE_TABLE_COLUMN } from 'common/constants';
+import { COURSE_TABLE_COLUMN, isSEASEnumToString, IS_SEAS } from 'common/constants';
+import OFFERED, { offeredEnumToString } from 'common/constants/offered';
 import CourseInstanceTable from '../CourseInstanceTable';
 import { tableFields } from '../tableFields';
 import * as filters from '../../Filter';
@@ -44,6 +45,10 @@ describe('CourseInstanceTable', function () {
         COURSE_TABLE_COLUMN.DETAILS,
       ];
       let getAllByRole: BoundFunction<AllByRole>;
+      const areaFilterLabel = 'The table will be filtered as selected in this area dropdown filter';
+      const isSEASFilterLabel = 'The table will be filtered as selected in this Is SEAS dropdown filter';
+      const fallOfferedFilterLabel = 'The table will be filtered as selected in this fall offered dropdown filter';
+      const springOfferedFilterLabel = 'The table will be filtered as selected in this spring offered dropdown filter';
       beforeEach(function () {
         ({ getAllByRole } = render(
           <CourseInstanceTable
@@ -100,16 +105,23 @@ describe('CourseInstanceTable', function () {
       it('renders the filters in the third row', function () {
         const [, , thirdRow] = getAllByRole('row');
         const utils = within(thirdRow);
-        const area = utils.getAllByLabelText('The table will be filtered as selected in this area dropdown filter');
-        const isSEAS = utils.getAllByLabelText('The table will be filtered as selected in this Is SEAS dropdown filter');
-        strictEqual(area.length, 1, 'Error with area filter rendering');
-        strictEqual(isSEAS.length, 1, 'Error with isSEAS filter rendering');
+        const areaFilter = utils.getAllByLabelText(areaFilterLabel);
+        const isSEASFilter = utils.getAllByLabelText(isSEASFilterLabel);
+        const fallOfferedFilter = utils
+          
+        .getAllByLabelText(fallOfferedFilterLabel);
+        const springOfferedFilter = utils
+          .getAllByLabelText(springOfferedFilterLabel);
+        strictEqual(areaFilter.length, 1, 'Error with area filter rendering');
+        strictEqual(isSEASFilter.length, 1, 'Error with isSEAS filter rendering');
+        strictEqual(fallOfferedFilter.length, 1, 'Error with fall offered filter rendering');
+        strictEqual(springOfferedFilter.length, 1, 'Error with spring offered filter rendering');
       });
       context('when the area dropdown filter is changed', function () {
         it('calls the listFilter function once for each filter', function () {
           const [, , thirdRow] = getAllByRole('row');
           const utils = within(thirdRow);
-          const area = utils.getAllByLabelText('The table will be filtered as selected in this area dropdown filter')[0];
+          const area = utils.getByLabelText(areaFilterLabel);
           filterSpy.resetHistory();
           fireEvent.change(area, { target: { value: 'AM' } });
           strictEqual(filterSpy.callCount, 1);
@@ -119,9 +131,32 @@ describe('CourseInstanceTable', function () {
         it('calls the listFilter function once for each filter', function () {
           const [, , thirdRow] = getAllByRole('row');
           const utils = within(thirdRow);
-          const isSEAS = utils.getAllByLabelText('The table will be filtered as selected in this Is SEAS dropdown filter')[0];
+          const isSEAS = utils.getByLabelText(isSEASFilterLabel);
           filterSpy.resetHistory();
-          fireEvent.change(isSEAS, { target: { value: 'No' } });
+          fireEvent.change(isSEAS,
+            { target: { value: isSEASEnumToString(IS_SEAS.N) } });
+          strictEqual(filterSpy.callCount, 1);
+        });
+      });
+      context('when the fall offered dropdown filter is called', function () {
+        it('calls the listFilter function once for each filter', function () {
+          const [, , thirdRow] = getAllByRole('row');
+          const utils = within(thirdRow);
+          const fallOffered = utils.getByLabelText(fallOfferedFilterLabel);
+          filterSpy.resetHistory();
+          fireEvent.change(fallOffered,
+            { target: { value: offeredEnumToString(OFFERED.Y) } });
+          strictEqual(filterSpy.callCount, 1);
+        });
+      });
+      context('when the spring offered dropdown filter is called', function () {
+        it('calls the listFilter function once for each filter', function () {
+          const [, , thirdRow] = getAllByRole('row');
+          const utils = within(thirdRow);
+          const springOffered = utils.getByLabelText(springOfferedFilterLabel);
+          filterSpy.resetHistory();
+          fireEvent.change(springOffered,
+            { target: { value: offeredEnumToString(OFFERED.N) } });
           strictEqual(filterSpy.callCount, 1);
         });
       });
