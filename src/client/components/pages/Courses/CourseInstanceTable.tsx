@@ -1,6 +1,8 @@
 import React, {
   FunctionComponent,
   ReactElement,
+  useContext,
+  useState,
 } from 'react';
 import {
   Table,
@@ -12,11 +14,14 @@ import {
   TableHeadingSpacer,
   TableRowHeadingCell,
   VALIGN,
+  Dropdown,
 } from 'mark-one';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { COURSE_TABLE_COLUMN, COURSE_TABLE_COLUMN_GROUP, getAreaColor } from 'common/constants';
 import { CellLayout } from 'client/components/general';
+import { MetadataContext } from 'client/context';
 import { CourseInstanceListColumn } from './tableFields';
+import { listFilter } from '../Filter';
 
 interface CourseInstanceTableProps {
   /**
@@ -67,6 +72,24 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
       viewColumn === COURSE_TABLE_COLUMN.ENROLLMENT
     ));
 
+  /**
+   * The current value for the metadata context
+   */
+  const metadata = useContext(MetadataContext);
+
+  const [areaValue, setAreaValue] = useState<string>('All');
+
+  const filteredCourses = (): CourseInstanceResponseDTO[] => {
+    let courses = [...courseList];
+    if (areaValue !== 'All') {
+      courses = listFilter(
+        courses,
+        { field: 'area', value: areaValue, exact: true }
+      );
+    }
+    return courses;
+  };
+
   return (
     <Table>
       <colgroup span={courseColumns.length} />
@@ -115,11 +138,11 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
           */}
         <TableRow>
           <>
-            {courseColumns.map(({ key, name }): ReactElement => (
+            {courseColumns.map(({ key, name, viewColumn }): ReactElement => (
               <TableHeadingCell
                 key={key}
                 scope="col"
-                rowSpan={firstEnrollmentField > -1 ? '2' : '1'}
+                rowSpan={firstEnrollmentField > -1 && viewColumn !== COURSE_TABLE_COLUMN.AREA ? '2' : '1'}
               >
                 {name}
               </TableHeadingCell>
@@ -182,6 +205,35 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
           <TableRow>
             {tableData.map(
               (field: CourseInstanceListColumn): ReactElement => {
+                if (field.viewColumn === COURSE_TABLE_COLUMN.AREA) {
+                  return (
+                    <TableHeadingCell
+                      scope="col"
+                      key={field.key}
+                    >
+                      <Dropdown
+                        options={
+                          [{ value: 'All', label: 'All' }]
+                            .concat(metadata.areas.map((area) => ({
+                              value: area,
+                              label: area,
+                            })))
+                        }
+                        value={areaValue}
+                        name="areaValue"
+                        id="areaValue"
+                        label="The table will be filtered as selected in this area dropdown filter"
+                        isLabelVisible={false}
+                        hideError
+                        onChange={
+                          (event:React.ChangeEvent<HTMLInputElement>) => {
+                            setAreaValue(event.currentTarget.value);
+                          }
+                        }
+                      />
+                    </TableHeadingCell>
+                  );
+                }
                 if (field.viewColumn === COURSE_TABLE_COLUMN.ENROLLMENT) {
                   return (
                     <TableHeadingCell
@@ -200,7 +252,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
         )}
       </TableHead>
       <TableBody>
-        {courseList.map(
+        {filteredCourses().map(
           (
             course: CourseInstanceResponseDTO,
             index: number
