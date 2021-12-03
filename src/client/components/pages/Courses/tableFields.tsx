@@ -4,6 +4,7 @@ import React, {
   ReactText,
   useState,
   useRef,
+  useMemo,
 } from 'react';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import {
@@ -58,26 +59,29 @@ export const retrieveValue = (
 ): (arg0: CourseInstanceResponseDTO
   ) => ReactNode => (
   course: CourseInstanceResponseDTO
-): ReactText => {
-  let rawValue: ReactText;
-  if (sem) {
-    const semKey = sem.toLowerCase() as TermKey;
-    if (semKey in course && prop in course[semKey]) {
-      rawValue = course[semKey][prop] as ReactText;
+): ReactNode => {
+  const determineValueText = useMemo(() => {
+    let rawValue: ReactText;
+    if (sem) {
+      const semKey = sem.toLowerCase() as TermKey;
+      if (semKey in course && prop in course[semKey]) {
+        rawValue = course[semKey][prop] as ReactText;
+      }
+    } else if (prop && prop in course) {
+      rawValue = course[prop] as ReactText;
     }
-  } else if (prop && prop in course) {
-    rawValue = course[prop] as ReactText;
-  }
-  if (typeof rawValue === 'boolean') {
-    return rawValue ? 'Yes' : 'No';
-  }
-  if (rawValue in OFFERED) {
-    return offeredEnumToString(rawValue as OFFERED);
-  }
-  if (rawValue in IS_SEAS) {
-    return isSEASEnumToString(rawValue as IS_SEAS);
-  }
-  return rawValue;
+    if (typeof rawValue === 'boolean') {
+      return rawValue ? 'Yes' : 'No';
+    }
+    if (rawValue in OFFERED) {
+      return offeredEnumToString(rawValue as OFFERED);
+    }
+    if (rawValue in IS_SEAS) {
+      return isSEASEnumToString(rawValue as IS_SEAS);
+    }
+    return rawValue;
+  }, [course]);
+  return determineValueText;
 };
 
 /**
@@ -109,52 +113,66 @@ export const formatInstructors = (
    * modal
    */
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const currentSemester = {
-    term,
+  const renderInstructorList = useMemo<ReactElement>(() => {
+    const currentSemester = {
+      term,
+      calendarYear,
+    };
+    return (
+      <>
+        <TableCellList>
+          {instructors.length === 0
+            ? null
+            : instructors.map(
+              ({ id, displayName }): ReactElement => (
+                <TableCellListItem key={id}>
+                  {displayName}
+                </TableCellListItem>
+              )
+            )}
+        </TableCellList>
+        <BorderlessButton
+          alt={`Edit instructors for ${catalogNumber}, ${term} ${calendarYear}`}
+          id={`${parentId}-${term}-edit-instructors-button`}
+          onClick={() => { setModalVisible(true); }}
+          variant={VARIANT.INFO}
+          forwardRef={buttonRef}
+        >
+          <FontAwesomeIcon icon={faEdit} />
+        </BorderlessButton>
+        <InstructorModal
+          isVisible={modalVisible}
+          currentSemester={currentSemester}
+          currentCourse={course}
+          closeModal={() => {
+            setModalVisible(false);
+            setTimeout(() => { buttonRef.current?.focus(); });
+          }}
+          onSave={(newInstructorList, message?: string) => {
+            updateHandler({
+              ...course,
+              [semKey]: {
+                ...course[semKey],
+                instructors: newInstructorList,
+              },
+            }, message);
+          }}
+        />
+      </>
+    );
+  },
+  [
+    instructors,
     calendarYear,
-  };
-  return (
-    <>
-      <TableCellList>
-        {instructors.length === 0
-          ? null
-          : instructors.map(
-            ({ id, displayName }): ReactElement => (
-              <TableCellListItem key={id}>
-                {displayName}
-              </TableCellListItem>
-            )
-          )}
-      </TableCellList>
-      <BorderlessButton
-        alt={`Edit instructors for ${catalogNumber}, ${term} ${calendarYear}`}
-        id={`${parentId}-${term}-edit-instructors-button`}
-        onClick={() => { setModalVisible(true); }}
-        variant={VARIANT.INFO}
-        forwardRef={buttonRef}
-      >
-        <FontAwesomeIcon icon={faEdit} />
-      </BorderlessButton>
-      <InstructorModal
-        isVisible={modalVisible}
-        currentSemester={currentSemester}
-        currentCourse={course}
-        closeModal={() => {
-          setModalVisible(false);
-          setTimeout(() => { buttonRef.current?.focus(); });
-        }}
-        onSave={(newInstructorList, message?: string) => {
-          updateHandler({
-            ...course,
-            [semKey]: {
-              ...course[semKey],
-              instructors: newInstructorList,
-            },
-          }, message);
-        }}
-      />
-    </>
-  );
+    catalogNumber,
+    course,
+    modalVisible,
+    parentId,
+    semKey,
+    updateHandler,
+  ]);
+
+  return renderInstructorList;
 };
 
 /**
@@ -238,71 +256,116 @@ export const formatMeetings = (
   const { calendarYear, meetings } = instance;
   const [modalVisible, setModalVisible] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const currentSemester = {
-    term,
+  const renderMeetingList = useMemo<ReactElement>(() => {
+    const currentSemester = {
+      term,
+      calendarYear,
+    };
+    return (
+      <>
+        <TableCellList>
+          {(meetings[0] !== undefined && meetings[0]?.day !== null)
+          && meetings.map(({
+            id,
+            room,
+            day,
+            startTime,
+            endTime,
+          }): ReactElement => (
+            <TableCellListItem key={id}>
+              <MeetingGrid>
+                <MeetingGridSection area="time">
+                  <div>{dayEnumToString(day)}</div>
+                  <div>{`${PGTime.toDisplay(startTime)} - ${PGTime.toDisplay(endTime)}`}</div>
+                </MeetingGridSection>
+                {room && (
+                  <>
+                    <MeetingGridSection area="room">
+                      {room.name}
+                    </MeetingGridSection>
+                    <MeetingGridSection area="campus">
+                      <CampusIcon>{room.campus}</CampusIcon>
+                    </MeetingGridSection>
+                  </>
+                )}
+              </MeetingGrid>
+            </TableCellListItem>
+          ))}
+        </TableCellList>
+        <BorderlessButton
+          id={`${parentId}-${term}-edit-meetings-button`}
+          alt={`Edit meetings for ${catalogNumber} in ${semKey} ${calendarYear}`}
+          onClick={() => { setModalVisible(true); }}
+          variant={VARIANT.INFO}
+          forwardRef={buttonRef}
+        >
+          <FontAwesomeIcon icon={faEdit} />
+        </BorderlessButton>
+        <MeetingModal
+          isVisible={modalVisible}
+          currentSemester={currentSemester}
+          currentCourse={course}
+          notes={formatFacultyNotes(term, course)}
+          onClose={() => {
+            setModalVisible(false);
+            setTimeout(() => { buttonRef.current?.focus(); });
+          }}
+          onSave={(newMeetingList, message?: string) => {
+            updateHandler({
+              ...course,
+              [semKey]: {
+                ...course[semKey],
+                meetings: newMeetingList,
+              },
+            }, message);
+          }}
+        />
+      </>
+    );
+  },
+  [
     calendarYear,
-  };
-  return (
-    <>
-      <TableCellList>
-        {(meetings[0] !== undefined && meetings[0]?.day !== null)
-        && meetings.map(({
-          id,
-          room,
-          day,
-          startTime,
-          endTime,
-        }): ReactElement => (
-          <TableCellListItem key={id}>
-            <MeetingGrid>
-              <MeetingGridSection area="time">
-                <div>{dayEnumToString(day)}</div>
-                <div>{`${PGTime.toDisplay(startTime)} - ${PGTime.toDisplay(endTime)}`}</div>
-              </MeetingGridSection>
-              {room && (
-                <>
-                  <MeetingGridSection area="room">
-                    {room.name}
-                  </MeetingGridSection>
-                  <MeetingGridSection area="campus">
-                    <CampusIcon>{room.campus}</CampusIcon>
-                  </MeetingGridSection>
-                </>
-              )}
-            </MeetingGrid>
-          </TableCellListItem>
-        ))}
-      </TableCellList>
+    catalogNumber,
+    course,
+    meetings,
+    modalVisible,
+    parentId,
+    semKey,
+    updateHandler,
+  ]);
+  return renderMeetingList;
+};
+
+const formatNotes = () => ({ notes }: CourseInstanceResponseDTO): ReactNode => {
+  const renderNotes = useMemo(() => {
+    const hasNotes = notes && notes.trim().length > 0;
+    const titleText = hasNotes ? 'View/Edit Notes' : 'Add Notes';
+    return (
       <BorderlessButton
-        id={`${parentId}-${term}-edit-meetings-button`}
-        alt={`Edit meetings for ${catalogNumber} in ${semKey} ${calendarYear}`}
-        onClick={() => { setModalVisible(true); }}
         variant={VARIANT.INFO}
-        forwardRef={buttonRef}
+        onClick={(): void => { }}
+        aria-label={titleText}
       >
-        <FontAwesomeIcon icon={faEdit} />
+        <FontAwesomeIcon
+          title={titleText}
+          icon={hasNotes ? withNotes : withoutNotes}
+        />
       </BorderlessButton>
-      <MeetingModal
-        isVisible={modalVisible}
-        currentSemester={currentSemester}
-        currentCourse={course}
-        notes={formatFacultyNotes(term, course)}
-        onClose={() => {
-          setModalVisible(false);
-          setTimeout(() => { buttonRef.current?.focus(); });
-        }}
-        onSave={(newMeetingList, message?: string) => {
-          updateHandler({
-            ...course,
-            [semKey]: {
-              ...course[semKey],
-              meetings: newMeetingList,
-            },
-          }, message);
-        }}
-      />
-    </>
-  );
+    );
+  }, [notes]);
+  return renderNotes;
+};
+
+const formatDetails = () => (): ReactNode => {
+  const renderDetails = useMemo(() => (
+    <BorderlessButton
+      variant={VARIANT.INFO}
+      onClick={(): void => { }}
+    >
+      <FontAwesomeIcon icon={faFolderOpen} />
+    </BorderlessButton>
+  ), []);
+  return renderDetails;
 };
 
 /**
@@ -483,35 +546,14 @@ export const tableFields: CourseInstanceListColumn[] = [
     key: 'notes',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.META,
     viewColumn: COURSE_TABLE_COLUMN.NOTES,
-    getValue: ({ notes }: CourseInstanceResponseDTO): ReactElement => {
-      const hasNotes = notes && notes.trim().length > 0;
-      const titleText = hasNotes ? 'View/Edit Notes' : 'Add Notes';
-      return (
-        <BorderlessButton
-          variant={VARIANT.INFO}
-          onClick={(): void => { }}
-          aria-label={titleText}
-        >
-          <FontAwesomeIcon
-            title={titleText}
-            icon={hasNotes ? withNotes : withoutNotes}
-          />
-        </BorderlessButton>
-      );
-    },
+    getValue: formatNotes(),
+
   },
   {
     name: 'Details',
     key: 'details',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.META,
     viewColumn: COURSE_TABLE_COLUMN.DETAILS,
-    getValue: (): ReactElement => (
-      <BorderlessButton
-        variant={VARIANT.INFO}
-        onClick={(): void => { }}
-      >
-        <FontAwesomeIcon icon={faFolderOpen} />
-      </BorderlessButton>
-    ),
+    getValue: formatDetails(),
   },
 ];
