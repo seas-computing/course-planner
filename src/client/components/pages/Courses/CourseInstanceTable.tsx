@@ -205,11 +205,6 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
             ))}
           </>
         </TableRow>
-        {/*
-          * The third layers of headers will only include the sub-values for
-          * Enrollment, so it will only be rendered if the "Enrollment" column
-          * is visible.
-          */}
         <TableRow>
           {tableData.map(
             (field: CourseInstanceListColumn): ReactElement => {
