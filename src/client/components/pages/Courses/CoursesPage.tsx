@@ -6,13 +6,17 @@ import React, {
   useContext,
 } from 'react';
 import { LoadSpinner } from 'mark-one';
-import { MessageContext } from 'client/context';
+import { MessageContext, MetadataContext } from 'client/context';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { CourseAPI } from 'client/api';
 import { MESSAGE_TYPE, MESSAGE_ACTION, AppMessage } from 'client/classes';
-import { OFFERED, COURSE_TABLE_COLUMN } from 'common/constants';
+import { OFFERED, COURSE_TABLE_COLUMN, IS_SEAS } from 'common/constants';
+import get from 'lodash.get';
+import merge from 'lodash.merge';
+import set from 'lodash.set';
 import CourseInstanceTable from './CourseInstanceTable';
 import { tableFields } from './tableFields';
+import { listFilter } from '../Filter';
 
 /*
  * TODO
@@ -44,6 +48,17 @@ const showRetired = false;
 // TODO: Get the actual current academic year instead of hard coding
 const acadYear = 2019;
 
+interface SemesterFilterState {
+  offered: OFFERED | 'All';
+}
+
+export interface FilterState {
+  area: string;
+  isSEAS: IS_SEAS | 'All';
+  spring: SemesterFilterState;
+  fall: SemesterFilterState;
+}
+
 /**
  * Component representing the list of CourseInstances in a given Academic year
  */
@@ -59,6 +74,45 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   const dispatchMessage = useContext(MessageContext);
 
   const [fetching, setFetching] = useState(false);
+
+  /**
+   * The current value of each of the course instance table filters
+   */
+  const [filters, setFilters] = useState<FilterState>({
+    area: 'All',
+    isSEAS: 'All',
+    spring: {
+      offered: 'All',
+    },
+    fall: {
+      offered: 'All',
+    },
+  });
+
+  const genericFilterUpdate = (field: string, value: string) => {
+    setFilters((currentFilters) => {
+      // Make a copy of the existing filters
+      const newFilters = merge({}, currentFilters);
+      set(newFilters, field, value);
+      return newFilters;
+    });
+  };
+
+  const filteredCourses = (givenCourses: CourseInstanceResponseDTO[]):
+  CourseInstanceResponseDTO[] => {
+    let courses = givenCourses;
+    const filterPaths = ['area', 'isSEAS', 'fall.offered', 'spring.offered'];
+    filterPaths.forEach((filterPath) => {
+      const filterValue = get(filters, filterPath) as string;
+      if (filterValue !== 'All') {
+        courses = listFilter(
+          courses,
+          { field: `course.${filterPath}`, value: filterValue, exact: true }
+        );
+      }
+    });
+    return courses;
+  };
 
   useEffect((): void => {
     setFetching(true);
@@ -98,6 +152,13 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
       });
     }
   };
+  const currentCourseList = showRetired
+    ? currentCourses
+    : currentCourses.filter(
+      ({ spring, fall }): boolean => (
+        fall.offered !== OFFERED.RETIRED
+            && spring.offered !== OFFERED.RETIRED)
+    );
 
   return (
     <div className="course-instance-table">
@@ -110,21 +171,15 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
         : (
           <CourseInstanceTable
             academicYear={acadYear}
-            courseList={
-              showRetired
-                ? currentCourses
-                : currentCourses.filter(
-                  ({ spring, fall }): boolean => (
-                    fall.offered !== OFFERED.RETIRED
-                        && spring.offered !== OFFERED.RETIRED)
-                )
-            }
+            courseList={filteredCourses(currentCourseList)}
             courseUpdateHandler={updateLocalCourse}
+            genericFilterUpdate={genericFilterUpdate}
             tableData={tableFields.filter(
               ({ viewColumn }): boolean => (
                 currentView.includes(viewColumn)
               )
             )}
+            filters={filters}
           />
         )}
     </div>
