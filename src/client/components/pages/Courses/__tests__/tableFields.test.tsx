@@ -1,7 +1,9 @@
 import {
   waitForElement,
 } from '@testing-library/react';
-import React, { FunctionComponent, ReactElement } from 'react';
+import React, {
+  FunctionComponent, ReactElement,
+} from 'react';
 import { spy, SinonSpy } from 'sinon';
 import {
   cs50CourseInstance, ac209aCourseInstance, ac209aCourseInstanceWithoutRooms,
@@ -19,8 +21,10 @@ import {
   formatInstructors,
   formatMeetings,
   formatFacultyNotes,
+  CourseInstanceListColumn,
 } from '../tableFields';
 import { PGTime } from '../../../../../common/utils/PGTime';
+import CourseInstanceResponseDTO from '../../../../../common/dto/courses/CourseInstanceResponse';
 
 describe('tableFields', function () {
   let updateSpy: SinonSpy;
@@ -29,73 +33,108 @@ describe('tableFields', function () {
   });
   describe('helper functions', function () {
     describe('retrieveValue', function () {
+      const TestComponent = (
+        {
+          getValue,
+          course,
+        }: {
+          getValue: CourseInstanceListColumn['getValue'],
+          course: CourseInstanceResponseDTO}
+      ) => (
+        <p>
+          {getValue(course)}
+        </p>
+      );
       it('should return a function to get course-level fields', function () {
-        const getValue = retrieveValue('catalogNumber');
-        strictEqual(
-          getValue(cs50CourseInstance),
+        const { getByText } = render(
+          <TestComponent
+            getValue={retrieveValue('catalogNumber')}
+            course={cs50CourseInstance}
+          />
+        );
+        return getByText(
           cs50CourseInstance.catalogNumber
         );
       });
-      it('Should return a function to get a semester level field', function () {
-        const getValueFall = retrieveValue('actualEnrollment', TERM.FALL);
-        const getValueSpring = retrieveValue('actualEnrollment', TERM.SPRING);
-        strictEqual(
-          getValueFall(cs50CourseInstance),
-          cs50CourseInstance.fall.actualEnrollment
+      it('Should return a function to get a semester-level field', function () {
+        const { getByText } = render(
+          <TestComponent
+            getValue={retrieveValue('actualEnrollment', TERM.FALL)}
+            course={cs50CourseInstance}
+          />
         );
-        strictEqual(
-          getValueSpring(cs50CourseInstance),
-          cs50CourseInstance.spring.actualEnrollment
+        return getByText(
+          cs50CourseInstance.fall.actualEnrollment.toString()
         );
       });
       it('should return a function that converts true booleans to "Yes"', function () {
-        const getBooleanValue = retrieveValue('isUndergraduate');
-        strictEqual(
-          getBooleanValue({ ...cs50CourseInstance, isUndergraduate: true }),
-          'Yes'
+        const { getByText } = render(
+          <TestComponent
+            getValue={retrieveValue('isUndergraduate')}
+            course={cs50CourseInstance}
+          />
         );
+        return getByText('Yes');
       });
       it('should return a function that converts false booleans to "No"', function () {
-        const getBooleanValue = retrieveValue('isUndergraduate');
-        strictEqual(
-          getBooleanValue({ ...cs50CourseInstance, isUndergraduate: false }),
-          'No'
+        const { getByText } = render(
+          <TestComponent
+            getValue={retrieveValue('isUndergraduate')}
+            course={{ ...cs50CourseInstance, isUndergraduate: false }}
+          />
         );
+        return getByText('No');
       });
       it('Should return a function that converts OFFERED values to strings', function () {
-        const getValueFall = retrieveValue('offered', TERM.FALL);
-        strictEqual(
-          getValueFall(cs50CourseInstance),
+        const { getByText } = render(
+          <TestComponent
+            getValue={retrieveValue('offered', TERM.FALL)}
+            course={cs50CourseInstance}
+          />
+        );
+        return getByText(
           offeredEnumToString(cs50CourseInstance.fall.offered)
         );
       });
       it('Should return a function that converts IS_SEAS.Y to "Yes"', function () {
-        const getIsSEASValue = retrieveValue('isSEAS');
-        strictEqual(
-          getIsSEASValue({
-            ...cs50CourseInstance,
-            isSEAS: IS_SEAS.Y,
-          }),
+        const { getByText } = render(
+          <TestComponent
+            getValue={retrieveValue('isSEAS')}
+            course={{
+              ...cs50CourseInstance,
+              isSEAS: IS_SEAS.Y,
+            }}
+          />
+        );
+        return getByText(
           isSEASEnumToString(IS_SEAS.Y)
         );
       });
       it('Should return a function that converts IS_SEAS.N to "No"', function () {
-        const getIsSEASValue = retrieveValue('isSEAS');
-        strictEqual(
-          getIsSEASValue({
-            ...cs50CourseInstance,
-            isSEAS: IS_SEAS.N,
-          }),
+        const { getByText } = render(
+          <TestComponent
+            getValue={retrieveValue('isSEAS')}
+            course={{
+              ...cs50CourseInstance,
+              isSEAS: IS_SEAS.N,
+            }}
+          />
+        );
+        return getByText(
           isSEASEnumToString(IS_SEAS.N)
         );
       });
       it('Should return a function that converts IS_SEAS.EPS to "EPS"', function () {
-        const getIsSEASValue = retrieveValue('isSEAS');
-        strictEqual(
-          getIsSEASValue({
-            ...cs50CourseInstance,
-            isSEAS: IS_SEAS.EPS,
-          }),
+        const { getByText } = render(
+          <TestComponent
+            getValue={retrieveValue('isSEAS')}
+            course={{
+              ...cs50CourseInstance,
+              isSEAS: IS_SEAS.EPS,
+            }}
+          />
+        );
+        return getByText(
           isSEASEnumToString(IS_SEAS.EPS)
         );
       });
@@ -313,14 +352,27 @@ describe('tableFields', function () {
       });
     });
     describe('Notes field', function () {
+      const TestComponent = (
+        {
+          getValue,
+          course,
+        }: {
+          getValue: CourseInstanceListColumn['getValue'],
+          course: CourseInstanceResponseDTO}
+      ) => (
+        <p>
+          {getValue(course)}
+        </p>
+      );
       context('Course with Notes', function () {
         it('renders a button to view/edit notes', function () {
           const notesField = tableFields.find(({ viewColumn }): boolean => (
             viewColumn === COURSE_TABLE_COLUMN.NOTES));
           const { queryByLabelText } = render(
-            <div>
-              {notesField.getValue(ac209aCourseInstance)}
-            </div>
+            <TestComponent
+              getValue={notesField.getValue}
+              course={ac209aCourseInstance}
+            />
           );
           const icon = queryByLabelText('View/Edit Notes');
           strictEqual(icon !== null, true);
@@ -331,9 +383,10 @@ describe('tableFields', function () {
           const notesField = tableFields.find(({ viewColumn }): boolean => (
             viewColumn === COURSE_TABLE_COLUMN.NOTES));
           const { queryByLabelText } = render(
-            <div>
-              {notesField.getValue(cs50CourseInstance)}
-            </div>
+            <TestComponent
+              getValue={notesField.getValue}
+              course={cs50CourseInstance}
+            />
           );
           const icon = queryByLabelText('Add Notes');
           strictEqual(icon !== null, true);
