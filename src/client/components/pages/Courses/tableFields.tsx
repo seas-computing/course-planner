@@ -140,24 +140,26 @@ export const formatInstructors = (
         >
           <FontAwesomeIcon icon={faEdit} />
         </BorderlessButton>
-        <InstructorModal
-          isVisible={modalVisible}
-          currentSemester={currentSemester}
-          currentCourse={course}
-          closeModal={() => {
-            setModalVisible(false);
-            setTimeout(() => { buttonRef.current?.focus(); });
-          }}
-          onSave={(newInstructorList, message?: string) => {
-            updateHandler({
-              ...course,
-              [semKey]: {
-                ...course[semKey],
-                instructors: newInstructorList,
-              },
-            }, message);
-          }}
-        />
+        { modalVisible ? (
+          <InstructorModal
+            isVisible={modalVisible}
+            currentSemester={currentSemester}
+            currentCourse={course}
+            closeModal={() => {
+              setModalVisible(false);
+              setTimeout(() => { buttonRef.current?.focus(); });
+            }}
+            onSave={(newInstructorList, message?: string) => {
+              updateHandler({
+                ...course,
+                [semKey]: {
+                  ...course[semKey],
+                  instructors: newInstructorList,
+                },
+              }, message);
+            }}
+          />
+        ) : null}
       </>
     );
   },
@@ -301,25 +303,27 @@ export const formatMeetings = (
         >
           <FontAwesomeIcon icon={faEdit} />
         </BorderlessButton>
-        <MeetingModal
-          isVisible={modalVisible}
-          currentSemester={currentSemester}
-          currentCourse={course}
-          notes={formatFacultyNotes(term, course)}
-          onClose={() => {
-            setModalVisible(false);
-            setTimeout(() => { buttonRef.current?.focus(); });
-          }}
-          onSave={(newMeetingList, message?: string) => {
-            updateHandler({
-              ...course,
-              [semKey]: {
-                ...course[semKey],
-                meetings: newMeetingList,
-              },
-            }, message);
-          }}
-        />
+        { modalVisible ? (
+          <MeetingModal
+            isVisible={modalVisible}
+            currentSemester={currentSemester}
+            currentCourse={course}
+            notes={formatFacultyNotes(term, course)}
+            onClose={() => {
+              setModalVisible(false);
+              setTimeout(() => { buttonRef.current?.focus(); });
+            }}
+            onSave={(newMeetingList, message?: string) => {
+              updateHandler({
+                ...course,
+                [semKey]: {
+                  ...course[semKey],
+                  meetings: newMeetingList,
+                },
+              }, message);
+            }}
+          />
+        ) : null}
       </>
     );
   },
