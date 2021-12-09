@@ -15,7 +15,6 @@ import { AppMessage, MESSAGE_TYPE, MESSAGE_ACTION } from 'client/classes';
 import { MessageReducerAction } from 'client/context';
 import { cs50CourseInstance } from 'testData';
 import CoursesPage from '../CoursesPage';
-import ViewModal from '../ViewModal';
 
 describe('Course Page', function () {
   let getStub: SinonStub;

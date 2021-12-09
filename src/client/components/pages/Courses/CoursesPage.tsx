@@ -17,11 +17,11 @@ import { MESSAGE_TYPE, MESSAGE_ACTION, AppMessage } from 'client/classes';
 import { OFFERED, COURSE_TABLE_COLUMN, MANDATORY_COLUMNS } from 'common/constants';
 import { ViewResponse } from 'common/dto/view/ViewResponse.dto';
 import { VerticalSpace } from 'client/components/layout';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faWrench } from '@fortawesome/free-solid-svg-icons';
 import CourseInstanceTable from './CourseInstanceTable';
 import { tableFields } from './tableFields';
 import ViewModal from './ViewModal';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faWrench } from '@fortawesome/free-solid-svg-icons';
 import SemesterTable from './SemesterTable';
 import { modalFields } from './modalFields';
 
