@@ -17,7 +17,7 @@ import { MessageContext } from 'client/context';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { CourseAPI } from 'client/api';
 import { MESSAGE_TYPE, MESSAGE_ACTION, AppMessage } from 'client/classes';
-import { OFFERED, COURSE_TABLE_COLUMN } from 'common/constants';
+import { OFFERED, COURSE_TABLE_COLUMN, MANDATORY_COLUMNS } from 'common/constants';
 import { ViewResponse } from 'common/dto/view/ViewResponse.dto';
 import { VerticalSpace } from 'client/components/layout';
 import CourseInstanceTable from './CourseInstanceTable';
@@ -26,14 +26,6 @@ import ViewModal from './ViewModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWrench } from '@fortawesome/free-solid-svg-icons';
 
-/**
- * These columns are ALWAYS shown regardless of user choice
- */
-const mandatoryColumns = [
-  COURSE_TABLE_COLUMN.AREA,
-  COURSE_TABLE_COLUMN.CATALOG_NUMBER,
-  COURSE_TABLE_COLUMN.DETAILS,
-];
 
 /**
  * Default View
@@ -46,7 +38,7 @@ const defaultView: ViewResponse = {
   id: 'default',
   name: 'Default',
   columns: [
-    ...mandatoryColumns,
+    ...MANDATORY_COLUMNS,
     COURSE_TABLE_COLUMN.MEETINGS,
     COURSE_TABLE_COLUMN.IS_SEAS,
     COURSE_TABLE_COLUMN.OFFERED,
