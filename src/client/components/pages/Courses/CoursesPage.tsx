@@ -4,13 +4,10 @@ import React, {
   useState,
   useEffect,
   useContext,
-  useMemo,
 } from 'react';
 import {
   Button,
-  Dropdown,
   LoadSpinner,
-  POSITION,
   VARIANT,
 } from 'mark-one';
 import { MessageContext } from 'client/context';
@@ -70,25 +67,14 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   ] = useState([] as CourseInstanceResponseDTO[]);
 
   const [
-    currentViewId,
-    setCurrentViewId,
-  ] = useState(defaultView.id);
-
-  const [
-    views,
-  ] = useState([
-    defaultView,
-  ]);
-
-  const [
     viewModalVisible,
     setViewModalVisible,
   ] = useState(false);
 
-  const currentView = useMemo(
-    () => views.find(({ id }) => id === currentViewId),
-    [views, currentViewId]
-  );
+  const [
+    currentViewColumns,
+    setCurrentViewColumns,
+  ] = useState([] as COURSE_TABLE_COLUMN[]);
 
   const dispatchMessage = useContext(MessageContext);
 
@@ -98,6 +84,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     setFetching(true);
     CourseAPI.getCourseInstancesForYear(acadYear)
       .then((courses: CourseInstanceResponseDTO[]): void => {
+        setCurrentViewColumns(defaultView.columns);
         setCourses(courses);
       })
       .catch((err: Error): void => {
@@ -145,20 +132,6 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
           <>
             <VerticalSpace>
               <ViewModal isVisible={viewModalVisible} />
-              <Dropdown
-                id="select-view-dropdown"
-                name="select-view-dropdown"
-                onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
-                  setCurrentViewId(event.currentTarget.value);
-                }}
-                labelPosition={POSITION.TOP}
-                label="Views"
-                value={currentViewId}
-                options={views.map((view) => ({
-                  label: view.name,
-                  value: view.id,
-                }))}
-              />
               <Button
                 variant={VARIANT.INFO}
                 onClick={() => {
@@ -186,7 +159,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
               courseUpdateHandler={updateLocalCourse}
               tableData={tableFields.filter(
                 ({ viewColumn }): boolean => (
-                  currentView.columns.includes(viewColumn)
+                  currentViewColumns.includes(viewColumn)
                 )
               )}
             />
