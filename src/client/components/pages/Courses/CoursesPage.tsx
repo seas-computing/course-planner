@@ -142,7 +142,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
                   icon={faWrench}
                 />
                 {' '}
-                Customize
+                Customize View
               </Button>
             </VerticalSpace>
             <CourseInstanceTable

@@ -60,7 +60,7 @@ const ViewModal: FunctionComponent<ViewModalProps> = ({
           variant={VARIANT.SECONDARY}
           disabled={false}
         >
-          Cancel
+          Done
         </Button>
       </ModalFooter>
     </Modal>
