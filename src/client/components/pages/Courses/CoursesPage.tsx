@@ -142,17 +142,15 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
                   columns={modalFields}
                   checked={currentViewColumns}
                   onChange={(viewColumn) => {
+                    let columns = [];
                     if (currentViewColumns.includes(viewColumn)) {
-                      setCurrentViewColumns([
-                        ...currentViewColumns
-                          .filter((col) => col !== viewColumn),
-                      ]);
+                      columns = currentViewColumns
+                        .filter((col) => col !== viewColumn);
                     } else {
-                      setCurrentViewColumns([
-                        ...currentViewColumns,
-                        viewColumn,
-                      ]);
+                      columns = currentViewColumns
+                        .concat([viewColumn]);
                     }
+                    setCurrentViewColumns(columns);
                   }}
                 />
               </ViewModal>
