@@ -22,7 +22,8 @@ import { tableFields } from './tableFields';
 import ViewModal from './ViewModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWrench } from '@fortawesome/free-solid-svg-icons';
-
+import SemesterTable from './SemesterTable';
+import { modalFields } from './modalFields';
 
 /**
  * Default View
@@ -131,7 +132,30 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
         : (
           <>
             <VerticalSpace>
-              <ViewModal isVisible={viewModalVisible} />
+              <ViewModal
+                isVisible={viewModalVisible}
+                onClose={() => {
+                  setViewModalVisible(false);
+                }}
+              >
+                <SemesterTable
+                  columns={modalFields}
+                  checked={currentViewColumns}
+                  onChange={(viewColumn) => {
+                    if (currentViewColumns.includes(viewColumn)) {
+                      setCurrentViewColumns([
+                        ...currentViewColumns
+                          .filter((col) => col !== viewColumn),
+                      ]);
+                    } else {
+                      setCurrentViewColumns([
+                        ...currentViewColumns,
+                        viewColumn,
+                      ]);
+                    }
+                  }}
+                />
+              </ViewModal>
               <Button
                 variant={VARIANT.INFO}
                 onClick={() => {

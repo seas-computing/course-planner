@@ -17,6 +17,11 @@ interface ViewModalProps {
    * True if the modal should be open
    */
   isVisible: boolean;
+
+  /**
+   * Handler to be invoked when the modal closes
+   */
+  onClose: () => void;
 }
 
 /**
@@ -25,6 +30,8 @@ interface ViewModalProps {
 */
 const ViewModal: FunctionComponent<ViewModalProps> = ({
   isVisible,
+  onClose,
+  children,
 }): ReactElement => {
   /**
    * Ref to attach to the internal modal header
@@ -45,20 +52,14 @@ const ViewModal: FunctionComponent<ViewModalProps> = ({
         </span>
       </ModalHeader>
       <ModalBody>
-        <p>...</p>
+        { children }
       </ModalBody>
       <ModalFooter>
         <Button
-          onClick={() => {}}
-          variant={VARIANT.PRIMARY}
-          disabled={false}
-        >
-          Save
-        </Button>
-        <Button
-          onClick={() => {}}
-          variant={VARIANT.SECONDARY}
-          disabled={false}
+          onClick={() => {
+            onClose();
+          }}
+          variant={VARIANT.BASE}
         >
           Done
         </Button>

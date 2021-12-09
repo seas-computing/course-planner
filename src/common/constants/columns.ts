@@ -25,6 +25,7 @@ export enum COURSE_TABLE_COLUMN_GROUP {
   FALL='FALL',
   COURSE='COURSE',
   META='META',
+  SEMESTER='SEMESTER',
 }
 
 /**
