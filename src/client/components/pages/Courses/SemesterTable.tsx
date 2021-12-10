@@ -47,15 +47,9 @@ const SemesterTable: FunctionComponent<SemesterTableProps> = ({
   return (
     <Form label="Customize View">
       <Table>
-        <>
-          {
-            [
-              courseColumns,
-              semesterColumns,
-              metaColumns,
-            ].map(({ length }) => (<colgroup span={length} />))
-          }
-        </>
+        <colgroup span={courseColumns.length} />
+        <colgroup span={semesterColumns.length} />
+        <colgroup span={metaColumns.length} />
         <TableHead>
           <TableRow noHighlight>
             <TableHeadingSpacer colSpan={courseColumns.length} />
