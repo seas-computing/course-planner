@@ -13,7 +13,7 @@ import {
   TableBody,
   Form,
 } from 'mark-one';
-import { COURSE_TABLE_COLUMN, MANDATORY_COLUMNS } from 'common/constants';
+import { COURSE_TABLE_COLUMN, COURSE_TABLE_COLUMN_GROUP, MANDATORY_COLUMNS } from 'common/constants';
 import { ModalFieldsColumn } from './modalFields';
 
 interface SemesterTableProps {
@@ -34,46 +34,68 @@ const SemesterTable: FunctionComponent<SemesterTableProps> = ({
   columns,
   checked,
   onChange,
-}): ReactElement => (
-  <Form label="Customize View">
-    <Table>
-      <TableHead>
-        <TableRow noHighlight>
-          <TableHeadingSpacer colSpan={5} />
-          <TableHeadingCell colSpan="5">Semester</TableHeadingCell>
-          <TableHeadingSpacer />
-        </TableRow>
-        <TableRow>
+}): ReactElement => {
+  const courseColumns = columns.filter(
+    ({ columnGroup }) => columnGroup === COURSE_TABLE_COLUMN_GROUP.COURSE
+  );
+  const semesterColumns = columns.filter(
+    ({ columnGroup }) => columnGroup === COURSE_TABLE_COLUMN_GROUP.SEMESTER
+  );
+  const metaColumns = columns.filter(
+    ({ columnGroup }) => columnGroup === COURSE_TABLE_COLUMN_GROUP.META
+  );
+  return (
+    <Form label="Customize View">
+      <Table>
+        <>
           {
-            columns.map(({ name, key }) => (
-              <TableHeadingCell key={key}>{ name }</TableHeadingCell>
-            ))
+            [
+              courseColumns,
+              semesterColumns,
+              metaColumns,
+            ].map(({ length }) => (<colgroup span={length} />))
           }
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        <TableRow noHighlight>
-          {
-            columns.map(({ name, viewColumn, key }) => (
-              <TableCell key={key}>
-                <Checkbox
-                  isLabelVisible={false}
-                  disabled={MANDATORY_COLUMNS.includes(viewColumn)}
-                  checked={
-                    checked.concat(MANDATORY_COLUMNS).includes(viewColumn)
-                  }
-                  onChange={() => {
-                    onChange(viewColumn);
-                  }}
-                  label={name}
-                />
-              </TableCell>
-            ))
-          }
-        </TableRow>
-      </TableBody>
-    </Table>
-  </Form>
-);
+        </>
+        <TableHead>
+          <TableRow noHighlight>
+            <TableHeadingSpacer colSpan={courseColumns.length} />
+            <TableHeadingCell colSpan={semesterColumns.length}>
+              Semester
+            </TableHeadingCell>
+            <TableHeadingSpacer colSpan={metaColumns.length} />
+          </TableRow>
+          <TableRow>
+            {
+              columns.map(({ name, key }) => (
+                <TableHeadingCell key={key}>{ name }</TableHeadingCell>
+              ))
+            }
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow noHighlight>
+            {
+              columns.map(({ name, viewColumn, key }) => (
+                <TableCell key={key}>
+                  <Checkbox
+                    isLabelVisible={false}
+                    disabled={MANDATORY_COLUMNS.includes(viewColumn)}
+                    checked={
+                      checked.concat(MANDATORY_COLUMNS).includes(viewColumn)
+                    }
+                    onChange={() => {
+                      onChange(viewColumn);
+                    }}
+                    label={name}
+                  />
+                </TableCell>
+              ))
+            }
+          </TableRow>
+        </TableBody>
+      </Table>
+    </Form>
+  );
+};
 
 export default SemesterTable;
