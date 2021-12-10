@@ -121,6 +121,20 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     }
   };
 
+  /**
+   * Show/hide columns from the course instance table
+   *
+   * @param viewColumn The column that triggered the change handler
+   */
+  const toggleColumn = (viewColumn: COURSE_TABLE_COLUMN): void => {
+    setCurrentViewColumns((columns: COURSE_TABLE_COLUMN[]) => {
+      if (columns.includes(viewColumn)) {
+        return columns.filter((col) => col !== viewColumn);
+      }
+      return columns.concat([viewColumn]);
+    });
+  };
+
   return (
     <div className="course-instance-table">
       {fetching
@@ -141,17 +155,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
                 <SemesterTable
                   columns={modalFields}
                   checked={currentViewColumns}
-                  onChange={(viewColumn) => {
-                    let columns = [];
-                    if (currentViewColumns.includes(viewColumn)) {
-                      columns = currentViewColumns
-                        .filter((col) => col !== viewColumn);
-                    } else {
-                      columns = currentViewColumns
-                        .concat([viewColumn]);
-                    }
-                    setCurrentViewColumns(columns);
-                  }}
+                  onChange={toggleColumn}
                 />
               </ViewModal>
               <Button
