@@ -127,21 +127,45 @@ describe('Schedule Page', function () {
     });
   });
   context('When the API call returns data', function () {
-    it('Should render the data into the schedule', async function () {
-      apiStub.resolves(dummy.testCourseScheduleData);
-      const { queryByText } = render(
-        <SchedulePage />
-      );
-      await waitForElementToBeRemoved(() => queryByText(
-        'Fetching Course Schedule'
-      ));
-      strictEqual(apiStub.callCount, 1);
-      const [testSessionBlock] = dummy.testCourseScheduleData;
-      const [testCourseBlock] = testSessionBlock.courses;
-      const sessionBlock = queryByText(testSessionBlock.coursePrefix);
-      const courseListing = queryByText(testCourseBlock.courseNumber);
-      strictEqual(!!sessionBlock, true);
-      strictEqual(!!courseListing, true);
+    context('when data is empty', function () {
+      it('shows an error message saying there is no data', async function () {
+        apiStub.resolves([]);
+        const fakeDispatchMessage = stub();
+        const { getByText } = render(
+          <SchedulePage />,
+          {
+            dispatchMessage: fakeDispatchMessage,
+          }
+        );
+        await waitForElementToBeRemoved(() => getByText(
+          'Fetching Course Schedule'
+        ));
+
+        const dispachArgs = fakeDispatchMessage.args[0][0];
+        const errorMsg = dispachArgs.message.text as string;
+        strictEqual(
+          errorMsg.includes('There is no schedule data'),
+          true
+        );
+      });
+    });
+    context('when data is not empty', function () {
+      it('Should render the data into the schedule', async function () {
+        apiStub.resolves(dummy.testCourseScheduleData);
+        const { queryByText } = render(
+          <SchedulePage />
+        );
+        await waitForElementToBeRemoved(() => queryByText(
+          'Fetching Course Schedule'
+        ));
+        strictEqual(apiStub.callCount, 1);
+        const [testSessionBlock] = dummy.testCourseScheduleData;
+        const [testCourseBlock] = testSessionBlock.courses;
+        const sessionBlock = queryByText(testSessionBlock.coursePrefix);
+        const courseListing = queryByText(testCourseBlock.courseNumber);
+        strictEqual(!!sessionBlock, true);
+        strictEqual(!!courseListing, true);
+      });
     });
   });
   context('When the API call fails', function () {

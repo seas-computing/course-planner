@@ -65,7 +65,17 @@ const SchedulePage: FunctionComponent = () => {
 
     getCourseScheduleForSemester(currentCalendarYear, currentTerm)
       .then((data):void => {
-        setSchedule(data);
+        if (data.length === 0) {
+          dispatchMessage({
+            message: new AppMessage(
+              `There is no schedule data for ${currentTerm} ${currentCalendarYear}.`,
+              MESSAGE_TYPE.ERROR
+            ),
+            type: MESSAGE_ACTION.PUSH,
+          });
+        } else {
+          setSchedule(data);
+        }
       })
       .catch(():void => {
         dispatchMessage({
