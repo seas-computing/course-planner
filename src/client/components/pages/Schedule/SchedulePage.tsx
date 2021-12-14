@@ -6,7 +6,7 @@ import { getCourseScheduleForSemester } from 'client/api/courses';
 import { TERM } from 'common/constants';
 import { LoadSpinner } from 'mark-one';
 import { AppMessage, MESSAGE_TYPE, MESSAGE_ACTION } from 'client/classes';
-import { MessageContext } from 'client/context';
+import { MessageContext, MetadataContext } from 'client/context';
 import ScheduleView from './ScheduleView';
 
 /**
@@ -19,8 +19,6 @@ import ScheduleView from './ScheduleView';
 
 const FIRST_HOUR = 8;
 const LAST_HOUR = 20;
-const calendarYear = 2019;
-const term = TERM.FALL;
 
 /**
  * This is the top-level page component for the Schedule. It's responsible for
@@ -40,6 +38,12 @@ const SchedulePage: FunctionComponent = () => {
   const dispatchMessage = useContext(MessageContext);
 
   /**
+   * Provides the current Academic Year from the server
+   * Later, we may add the current Term to metadata
+   */
+  const { currentAcademicYear } = useContext(MetadataContext);
+
+  /**
    * Whether an API request is in progress
    */
   const [isFetching, setFetching] = useState<boolean>(false);
@@ -50,7 +54,16 @@ const SchedulePage: FunctionComponent = () => {
    */
   useEffect(():void => {
     setFetching(true);
-    getCourseScheduleForSemester(calendarYear, term)
+    let currentCalendarYear = currentAcademicYear;
+    const today = new Date();
+    let currentTerm = TERM.SPRING;
+    // Check if current month is later than or equal to July
+    if (today.getMonth() >= 6) {
+      currentTerm = TERM.FALL;
+      currentCalendarYear -= 1;
+    }
+
+    getCourseScheduleForSemester(currentCalendarYear, currentTerm)
       .then((data):void => {
         setSchedule(data);
       })
@@ -65,7 +78,7 @@ const SchedulePage: FunctionComponent = () => {
       }).finally(() => {
         setFetching(false);
       });
-  }, [setSchedule, dispatchMessage, setFetching]);
+  }, [setSchedule, dispatchMessage, setFetching, currentAcademicYear]);
 
   if (isFetching) {
     return (

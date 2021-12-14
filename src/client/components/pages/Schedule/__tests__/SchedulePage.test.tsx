@@ -1,59 +1,121 @@
 import React from 'react';
-import { render, waitForElementToBeRemoved, RenderResult } from 'test-utils';
-import { stub, SinonStub, useFakeTimers, SinonFakeTimers } from 'sinon';
+import { render, waitForElementToBeRemoved } from 'test-utils';
+import {
+  stub,
+  SinonStub,
+  useFakeTimers,
+} from 'sinon';
 import * as CourseAPI from 'client/api/courses';
 import { strictEqual } from 'assert';
 import * as dummy from 'testData';
 import { MetadataContextValue } from 'client/context/MetadataContext';
+import { TERM } from 'common/constants';
 import SchedulePage from '../SchedulePage';
 
 describe('Schedule Page', function () {
   let dispatchMessage: SinonStub;
   let apiStub: SinonStub;
-  let clock: SinonFakeTimers;
+  const testAcademicYear = 1999;
   const metadata = new MetadataContextValue(
-    { ...dummy.metadata, currentAcademicYear: 1999 },
+    { ...dummy.metadata, currentAcademicYear: testAcademicYear },
     () => {}
   );
-
   beforeEach(function () {
     dispatchMessage = stub();
     apiStub = stub(CourseAPI, 'getCourseScheduleForSemester');
   });
-  describe.only('Requesting Semester Data', function () {
+  describe('Requesting Semester Data', function () {
+    let calendarYear: number;
+    let term: TERM;
+    beforeEach(function () {
+      apiStub.resolves([]);
+    });
     context('When current date is before July 1', function () {
       beforeEach(function () {
-        console.log('Withnout timers', Date.now());
-        apiStub.resolves([]);
-        const fakeDate = new Date(1999, 5, 30);
-        clock = useFakeTimers(fakeDate); 
+        const fakeDate = new Date(testAcademicYear, 5, 30);
+        useFakeTimers(fakeDate);
         render(
           <SchedulePage />,
           { metadataContext: metadata }
         );
+        ([calendarYear, term] = apiStub.args[0]);
       });
-      it.only('Should fetch Spring data', function () {
-        // Get academic year from contxt API
-        // Get month from date object
-        const [calendarYear, term] = apiStub.args[0];
-        console.log(term, calendarYear);
-        console.log('with timers', Date.now());
-        //strictEqual(term.includes(/Spring/), true);
+      it('Should fetch Spring data', function () {
+        strictEqual(term, TERM.SPRING);
       });
-      it('Should use the academicYear in metadata');
-    })
-    context('When current date is July 1 or later', function () {
+      it('Should use the academicYear in metadata', function () {
+        strictEqual(calendarYear, testAcademicYear);
+      });
+    });
+    context('When current date is after July 1', function () {
       beforeEach(function () {
-        apiStub.resolves([]);
+        const fakeDate = new Date(testAcademicYear, 11, 1);
+        useFakeTimers(fakeDate);
         render(
           <SchedulePage />,
           { metadataContext: metadata }
         );
+        ([calendarYear, term] = apiStub.args[0]);
       });
-      it('Should fetch Fall data');
-      it('Should use the year before the academicYear in metadata')
-    })
-  })
+      it('Should fetch Fall data', function () {
+        strictEqual(term, TERM.FALL);
+      });
+      it('Should use the year before the academicYear in metadata', function () {
+        strictEqual(calendarYear, testAcademicYear - 1);
+      });
+    });
+    context('When current date is July 1', function () {
+      beforeEach(function () {
+        const fakeDate = new Date(testAcademicYear, 6, 1);
+        useFakeTimers(fakeDate);
+        render(
+          <SchedulePage />,
+          { metadataContext: metadata }
+        );
+        ([calendarYear, term] = apiStub.args[0]);
+      });
+      it('Should fetch Fall data', function () {
+        strictEqual(term, TERM.FALL);
+      });
+      it('Should use the year before the academicYear in metadata', function () {
+        strictEqual(calendarYear, testAcademicYear - 1);
+      });
+    });
+    context('When current date is new year\'s day', function () {
+      beforeEach(function () {
+        const fakeDate = new Date(testAcademicYear, 0, 1);
+        useFakeTimers(fakeDate);
+        render(
+          <SchedulePage />,
+          { metadataContext: metadata }
+        );
+        ([calendarYear, term] = apiStub.args[0]);
+      });
+      it('Should fetch spring data', function () {
+        strictEqual(term, TERM.SPRING);
+      });
+      it('Should use the academicYear in metadata', function () {
+        strictEqual(calendarYear, testAcademicYear);
+      });
+    });
+    context('When current date is new year\'s eve', function () {
+      beforeEach(function () {
+        const fakeDate = new Date(testAcademicYear, 11, 31);
+        useFakeTimers(fakeDate);
+        render(
+          <SchedulePage />,
+          { metadataContext: metadata }
+        );
+        ([calendarYear, term] = apiStub.args[0]);
+      });
+      it('Should fetch fall data', function () {
+        strictEqual(term, TERM.FALL);
+      });
+      it('Should use the year before the academicYear in metadata', function () {
+        strictEqual(calendarYear, testAcademicYear - 1);
+      });
+    });
+  });
   context('While fetching data', function () {
     it('Should display the spinner', function () {
       apiStub.resolves([]);
