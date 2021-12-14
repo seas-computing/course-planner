@@ -12,6 +12,7 @@ import {
   TableCellListItem,
   VARIANT,
   fromTheme,
+  Dropdown,
 } from 'mark-one';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStickyNote as withNotes, faFolderOpen, faEdit } from '@fortawesome/free-solid-svg-icons';
@@ -33,6 +34,7 @@ import MeetingModal from './MeetingModal';
 import { PGTime } from '../../../../common/utils/PGTime';
 import InstructorModal from './InstructorModal';
 import { instructorDisplayNameToFirstLast } from '../utils/instructorDisplayNameToFirstLast';
+import { FilterState } from './filters.d';
 
 /**
  * A component that applies styling for text that indicates the faculty has
@@ -344,6 +346,51 @@ export interface CourseInstanceListColumn {
     arg0: CourseInstanceResponseDTO,
     arg1?: ValueGetterOptions
   ) => ReactNode;
+  getFilter?: (
+    filters: FilterState,
+    genericFilterUpdate: (field: string, value: string) => void,
+    filterOptions: Record<string, {value: string, label: string}[]>
+  ) => ReactElement;
+}
+
+type GetterFunction = (filters: FilterState,
+  genericFilterUpdate: (field: string, value: string) => void,
+  filterOptions: Record<string, {value: string, label: string}[]>
+) => ReactElement;
+
+function generateDropdown<
+  Field extends keyof FilterState,
+  Subfield extends keyof FilterState[Field]
+>(field: Field, subField?: Field extends 'spring' | 'fall' ? Subfield : never): (GetterFunction) {
+  return (filters, genericFilterUpdate, filterOptions) => {
+    let filterValue;
+    let updateField;
+    if (subField) {
+      updateField = `${field}.${subField.toString()}`;
+      ({ [field]: { [subField]: filterValue } } = filters);
+    } else {
+      updateField = field;
+      ({ [field]: filterValue } = filters);
+    }
+    return (
+      <Dropdown
+        options={[{ value: 'All', label: 'All' }]
+          .concat(filterOptions[field])}
+        value={filterValue as string}
+        name={field}
+        id={field}
+        label={`The table will be filtered as selected in this ${field} ${subField && subField.toString()} dropdown filter`}
+        isLabelVisible={false}
+        hideError
+        onChange={(evt) => {
+          genericFilterUpdate(
+            updateField,
+            (evt.target as HTMLSelectElement)?.value
+          );
+        }}
+      />
+    );
+  };
 }
 
 /**
@@ -358,6 +405,7 @@ export const tableFields: CourseInstanceListColumn[] = [
     columnGroup: COURSE_TABLE_COLUMN_GROUP.COURSE,
     viewColumn: COURSE_TABLE_COLUMN.AREA,
     getValue: retrieveValue('area'),
+    getFilter: generateDropdown('area'),
   },
   {
     name: 'Course',
@@ -386,6 +434,7 @@ export const tableFields: CourseInstanceListColumn[] = [
     columnGroup: COURSE_TABLE_COLUMN_GROUP.COURSE,
     viewColumn: COURSE_TABLE_COLUMN.IS_SEAS,
     getValue: retrieveValue('isSEAS'),
+    getFilter: generateDropdown('isSEAS'),
   },
   {
     name: 'Is Undergraduate?',
@@ -400,6 +449,7 @@ export const tableFields: CourseInstanceListColumn[] = [
     columnGroup: COURSE_TABLE_COLUMN_GROUP.FALL,
     viewColumn: COURSE_TABLE_COLUMN.OFFERED,
     getValue: retrieveValue('offered', TERM.FALL),
+    getFilter: generateDropdown('fall', 'offered'),
   },
   {
     name: 'Instructors',
@@ -442,6 +492,7 @@ export const tableFields: CourseInstanceListColumn[] = [
     columnGroup: COURSE_TABLE_COLUMN_GROUP.SPRING,
     viewColumn: COURSE_TABLE_COLUMN.OFFERED,
     getValue: retrieveValue('offered', TERM.SPRING),
+    getFilter: generateDropdown('spring', 'offered'),
   },
   {
     name: 'Instructors',

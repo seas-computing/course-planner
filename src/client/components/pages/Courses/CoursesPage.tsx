@@ -5,18 +5,23 @@ import React, {
   useEffect,
   useContext,
 } from 'react';
-import { LoadSpinner } from 'mark-one';
-import { MessageContext, MetadataContext } from 'client/context';
+import {
+  LoadSpinner,
+  TableCell, TableRow, TableRowHeadingCell, VALIGN,
+} from 'mark-one';
+import { MessageContext } from 'client/context';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { CourseAPI } from 'client/api';
 import { MESSAGE_TYPE, MESSAGE_ACTION, AppMessage } from 'client/classes';
-import { OFFERED, COURSE_TABLE_COLUMN, IS_SEAS } from 'common/constants';
+import { OFFERED, COURSE_TABLE_COLUMN, getAreaColor } from 'common/constants';
 import get from 'lodash.get';
 import merge from 'lodash.merge';
 import set from 'lodash.set';
+import { CellLayout } from 'client/components/general';
 import CourseInstanceTable from './CourseInstanceTable';
-import { tableFields } from './tableFields';
+import { CourseInstanceListColumn, tableFields } from './tableFields';
 import { listFilter } from '../Filter';
+import { FilterState } from './filters.d';
 
 /*
  * TODO
@@ -47,17 +52,6 @@ const showRetired = false;
 
 // TODO: Get the actual current academic year instead of hard coding
 const acadYear = 2019;
-
-interface SemesterFilterState {
-  offered: OFFERED | 'All';
-}
-
-export interface FilterState {
-  area: string;
-  isSEAS: IS_SEAS | 'All';
-  spring: SemesterFilterState;
-  fall: SemesterFilterState;
-}
 
 /**
  * Component representing the list of CourseInstances in a given Academic year
@@ -98,16 +92,18 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     });
   };
 
-  const filteredCourses = (givenCourses: CourseInstanceResponseDTO[]):
-  CourseInstanceResponseDTO[] => {
+  const filteredCourses = (givenCourses:
+  { course: CourseInstanceResponseDTO, element: ReactElement }[]):
+  { course: CourseInstanceResponseDTO, element: ReactElement }[] => {
     let courses = givenCourses;
+    // Provides a list of the paths for the filters in the Course Instance table
     const filterPaths = ['area', 'isSEAS', 'fall.offered', 'spring.offered'];
     filterPaths.forEach((filterPath) => {
       const filterValue = get(filters, filterPath) as string;
       if (filterValue !== 'All') {
         courses = listFilter(
           courses,
-          { field: `course.${filterPath}`, value: filterValue, exact: true }
+          { field: `${filterPath}`, value: filterValue, exact: true }
         );
       }
     });
@@ -152,6 +148,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
       });
     }
   };
+
   const currentCourseList = showRetired
     ? currentCourses
     : currentCourses.filter(
@@ -159,6 +156,62 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
         fall.offered !== OFFERED.RETIRED
             && spring.offered !== OFFERED.RETIRED)
     );
+
+  const tableData = tableFields.filter(
+    ({ viewColumn }): boolean => (
+      currentView.includes(viewColumn)
+    )
+  );
+
+  const filteredCourseList = filteredCourses(currentCourseList.map(
+    (course: CourseInstanceResponseDTO,
+      index: number):
+    { course: CourseInstanceResponseDTO; element: ReactElement } => (
+      {
+        course,
+        element: (
+          <TableRow key={course.id} isStriped={index % 2 !== 0}>
+            {tableData.map(
+              (field: CourseInstanceListColumn): ReactElement => {
+                if (field.viewColumn
+                  === COURSE_TABLE_COLUMN.CATALOG_NUMBER) {
+                  return (
+                    <TableRowHeadingCell
+                      scope="row"
+                      key={field.key}
+                      verticalAlignment={VALIGN.TOP}
+                    >
+                      <CellLayout>
+                        {field.getValue(course)}
+                      </CellLayout>
+                    </TableRowHeadingCell>
+                  );
+                }
+                return (
+                  <TableCell
+                    verticalAlignment={VALIGN.TOP}
+                    key={field.key}
+                    backgroundColor={
+                      field.viewColumn === COURSE_TABLE_COLUMN.AREA
+                      && getAreaColor(field.getValue(course) as string)
+                    }
+                  >
+                    <CellLayout>
+                      {field.getValue(
+                        course,
+                        {
+                          updateHandler: updateLocalCourse,
+                        }
+                      )}
+                    </CellLayout>
+                  </TableCell>
+                );
+              }
+            )}
+          </TableRow>
+        ),
+      })
+  ));
 
   return (
     <div className="course-instance-table">
@@ -171,14 +224,9 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
         : (
           <CourseInstanceTable
             academicYear={acadYear}
-            courseList={filteredCourses(currentCourseList)}
-            courseUpdateHandler={updateLocalCourse}
+            courseList={filteredCourseList.map(({ element }) => element)}
             genericFilterUpdate={genericFilterUpdate}
-            tableData={tableFields.filter(
-              ({ viewColumn }): boolean => (
-                currentView.includes(viewColumn)
-              )
-            )}
+            tableData={tableData}
             filters={filters}
           />
         )}
