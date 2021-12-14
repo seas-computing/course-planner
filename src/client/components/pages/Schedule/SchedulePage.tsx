@@ -4,9 +4,10 @@ import React, {
 import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
 import { getCourseScheduleForSemester } from 'client/api/courses';
 import { TERM } from 'common/constants';
-import { LoadSpinner } from 'mark-one';
+import { Dropdown, LoadSpinner } from 'mark-one';
 import { AppMessage, MESSAGE_TYPE, MESSAGE_ACTION } from 'client/classes';
 import { MessageContext, MetadataContext } from 'client/context';
+import { VerticalSpace } from 'client/components/layout';
 import ScheduleView from './ScheduleView';
 
 /**
@@ -89,24 +90,26 @@ const SchedulePage: FunctionComponent = () => {
         setFetching(false);
       });
   }, [setSchedule, dispatchMessage, setFetching, currentAcademicYear]);
-
-  if (isFetching) {
-    return (
-      <LoadSpinner>
-        Fetching Course Schedule
-      </LoadSpinner>
-    );
-  }
-  if (schedule.length > 0) {
-    return (
-      <ScheduleView
-        schedule={schedule}
-        firstHour={FIRST_HOUR}
-        lastHour={LAST_HOUR}
-      />
-    );
-  }
-  return null;
+  return (
+    <>
+      <VerticalSpace>
+        <Dropdown />
+      </VerticalSpace>
+      {isFetching
+        ? (
+          <LoadSpinner>
+            Fetching Course Schedule
+          </LoadSpinner>
+        )
+        : (
+          <ScheduleView
+            schedule={schedule}
+            firstHour={FIRST_HOUR}
+            lastHour={LAST_HOUR}
+          />
+        )}
+    </>
+  );
 };
 
 export default SchedulePage;
