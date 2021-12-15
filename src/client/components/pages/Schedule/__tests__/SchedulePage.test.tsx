@@ -23,6 +23,7 @@ describe('Schedule Page', function () {
   let dispatchMessage: SinonStub;
   let apiStub: SinonStub;
   const testAcademicYear = 1999;
+  let clock: InstalledClock;
   const metadata = new MetadataContextValue(
     {
       ...dummy.metadata,
@@ -42,19 +43,23 @@ describe('Schedule Page', function () {
   afterEach(function () {
     apiStub.restore();
   });
-  describe.only('Semester Dropdown', function () {
+  describe('Semester Dropdown', function () {
     let renderResult: RenderResult;
-
     beforeEach(function () {
       apiStub.resolves([]);
       const fakeDate = new Date(testAcademicYear, 5, 30);
-      useFakeTimers(fakeDate);
+      clock = FakeTimers.install({
+        toFake: ['Date'],
+      });
+      clock.tick(fakeDate.valueOf());
       renderResult = render(
         <SchedulePage />,
         { metadataContext: metadata }
       );
     });
-
+    afterEach(function () {
+      clock.uninstall();
+    });
     it('renders the list of existing semesters', function () {
       const { semesters: metadataSemesters } = metadata;
       const { getByLabelText } = renderResult;
@@ -64,8 +69,9 @@ describe('Schedule Page', function () {
 
       deepStrictEqual(metadataSemesters, options);
     });
-    it('defaults to the current semester', function () {
-      const { getByLabelText } = renderResult;
+    it.only('defaults to the current semester', async function () {
+      const { getByText, getByLabelText } = renderResult;
+      await waitForElementToBeRemoved(() => getByText('Fetching Course Schedule'));
       const dropdown = getByLabelText(/semester/i) as HTMLSelectElement;
       const currentValue = dropdown.value;
       strictEqual(currentValue, `${termEnumToTitleCase(TERM.SPRING)} ${testAcademicYear}`);
@@ -86,7 +92,6 @@ describe('Schedule Page', function () {
   describe('Requesting Semester Data', function () {
     let calendarYear: number;
     let term: TERM;
-    let clock: InstalledClock;
     beforeEach(function () {
       apiStub.resolves([]);
       clock = FakeTimers.install({
