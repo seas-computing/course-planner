@@ -3,8 +3,8 @@ import { render, waitForElementToBeRemoved } from 'test-utils';
 import {
   stub,
   SinonStub,
-  useFakeTimers,
 } from 'sinon';
+import FakeTimers, { InstalledClock } from '@sinonjs/fake-timers';
 import * as CourseAPI from 'client/api/courses';
 import { strictEqual } from 'assert';
 import * as dummy from 'testData';
@@ -24,16 +24,26 @@ describe('Schedule Page', function () {
     dispatchMessage = stub();
     apiStub = stub(CourseAPI, 'getCourseScheduleForSemester');
   });
+  afterEach(function () {
+    apiStub.restore();
+  });
   describe('Requesting Semester Data', function () {
     let calendarYear: number;
     let term: TERM;
+    let clock: InstalledClock;
     beforeEach(function () {
       apiStub.resolves([]);
+      clock = FakeTimers.install({
+        toFake: ['Date'],
+      });
+    });
+    afterEach(function () {
+      clock.uninstall();
     });
     context('When current date is before July 1', function () {
       beforeEach(function () {
         const fakeDate = new Date(testAcademicYear, 5, 30);
-        useFakeTimers(fakeDate);
+        clock.tick(fakeDate.valueOf());
         render(
           <SchedulePage />,
           { metadataContext: metadata }
@@ -50,7 +60,7 @@ describe('Schedule Page', function () {
     context('When current date is after July 1', function () {
       beforeEach(function () {
         const fakeDate = new Date(testAcademicYear, 11, 1);
-        useFakeTimers(fakeDate);
+        clock.tick(fakeDate.valueOf());
         render(
           <SchedulePage />,
           { metadataContext: metadata }
@@ -67,7 +77,7 @@ describe('Schedule Page', function () {
     context('When current date is July 1', function () {
       beforeEach(function () {
         const fakeDate = new Date(testAcademicYear, 6, 1);
-        useFakeTimers(fakeDate);
+        clock.tick(fakeDate.valueOf());
         render(
           <SchedulePage />,
           { metadataContext: metadata }
@@ -84,7 +94,7 @@ describe('Schedule Page', function () {
     context('When current date is new year\'s day', function () {
       beforeEach(function () {
         const fakeDate = new Date(testAcademicYear, 0, 1);
-        useFakeTimers(fakeDate);
+        clock.tick(fakeDate.valueOf());
         render(
           <SchedulePage />,
           { metadataContext: metadata }
@@ -101,7 +111,7 @@ describe('Schedule Page', function () {
     context('When current date is new year\'s eve', function () {
       beforeEach(function () {
         const fakeDate = new Date(testAcademicYear, 11, 31);
-        useFakeTimers(fakeDate);
+        clock.tick(fakeDate.valueOf());
         render(
           <SchedulePage />,
           { metadataContext: metadata }
