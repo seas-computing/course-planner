@@ -16,6 +16,7 @@ import { strictEqual, deepStrictEqual } from 'assert';
 import * as dummy from 'testData';
 import { MetadataContextValue } from 'client/context/MetadataContext';
 import { TERM } from 'common/constants';
+import { termEnumToTitleCase } from 'common/utils/termHelperFunctions';
 import SchedulePage from '../SchedulePage';
 
 describe('Schedule Page', function () {
@@ -23,7 +24,15 @@ describe('Schedule Page', function () {
   let apiStub: SinonStub;
   const testAcademicYear = 1999;
   const metadata = new MetadataContextValue(
-    { ...dummy.metadata, currentAcademicYear: testAcademicYear },
+    {
+      ...dummy.metadata,
+      currentAcademicYear: testAcademicYear,
+      semesters: [
+        ...dummy.metadata.semesters,
+        `${termEnumToTitleCase(TERM.SPRING)} ${testAcademicYear}`,
+        `${termEnumToTitleCase(TERM.FALL)} ${testAcademicYear}`,
+      ],
+    },
     () => {}
   );
   beforeEach(function () {
@@ -59,12 +68,12 @@ describe('Schedule Page', function () {
       const { getByLabelText } = renderResult;
       const dropdown = getByLabelText(/semester/i) as HTMLSelectElement;
       const currentValue = dropdown.value;
-      strictEqual(currentValue, `${TERM.SPRING} ${testAcademicYear}`);
+      strictEqual(currentValue, `${termEnumToTitleCase(TERM.SPRING)} ${testAcademicYear}`);
     });
     it('requests the selected semester data', async function () {
       const { getByLabelText, getByText } = renderResult;
       const dropdown = getByLabelText(/semester/i) as HTMLSelectElement;
-      fireEvent.change(dropdown, { target: { value: `${TERM.FALL} ${testAcademicYear}` } });
+      fireEvent.change(dropdown, { target: { value: `${termEnumToTitleCase(TERM.FALL)} ${testAcademicYear}` } });
       await waitForElementToBeRemoved(() => getByText(
         'Fetching Course Schedule'
       ));
