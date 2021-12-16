@@ -75,7 +75,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   const [
     currentViewColumns,
     setCurrentViewColumns,
-  ] = useState([] as COURSE_TABLE_COLUMN[]);
+  ] = useState(defaultView.columns);
 
   const dispatchMessage = useContext(MessageContext);
 
@@ -85,7 +85,6 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     setFetching(true);
     CourseAPI.getCourseInstancesForYear(acadYear)
       .then((courses: CourseInstanceResponseDTO[]): void => {
-        setCurrentViewColumns(defaultView.columns);
         setCourses(courses);
       })
       .catch((err: Error): void => {
