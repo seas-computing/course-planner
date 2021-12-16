@@ -158,11 +158,7 @@ const SchedulePage: FunctionComponent = () => {
             name="schedule-semester-selector"
             label="Select Semester"
             labelPosition={POSITION.LEFT}
-            value={
-              selectedSemester
-                ? `${selectedSemester.term} ${selectedSemester.calendarYear}`
-                : ''
-            }
+            value={`${selectedSemester.term} ${selectedSemester.calendarYear}`}
             options={semesterOptions}
             onChange={updateTerm}
           />

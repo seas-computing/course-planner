@@ -16,7 +16,6 @@ import { strictEqual, deepStrictEqual } from 'assert';
 import * as dummy from 'testData';
 import { MetadataContextValue } from 'client/context/MetadataContext';
 import { TERM } from 'common/constants';
-import { termEnumToTitleCase } from 'common/utils/termHelperFunctions';
 import SchedulePage from '../SchedulePage';
 
 describe('Schedule Page', function () {
@@ -30,8 +29,8 @@ describe('Schedule Page', function () {
       currentAcademicYear: testAcademicYear,
       semesters: [
         ...dummy.metadata.semesters,
-        `${termEnumToTitleCase(TERM.SPRING)} ${testAcademicYear}`,
-        `${termEnumToTitleCase(TERM.FALL)} ${testAcademicYear}`,
+        `${TERM.SPRING} ${testAcademicYear}`,
+        `${TERM.FALL} ${testAcademicYear}`,
       ],
     },
     () => {}
@@ -65,21 +64,21 @@ describe('Schedule Page', function () {
       const { getByLabelText } = renderResult;
       const dropdown = getByLabelText(/semester/i);
       const options = within(dropdown).getAllByRole('option')
-        .map(({ textContent }) => textContent);
+        .map(({ value }: HTMLOptionElement) => value);
 
       deepStrictEqual(metadataSemesters, options);
     });
-    it.only('defaults to the current semester', async function () {
+    it('defaults to the current semester', async function () {
       const { getByText, getByLabelText } = renderResult;
       await waitForElementToBeRemoved(() => getByText('Fetching Course Schedule'));
       const dropdown = getByLabelText(/semester/i) as HTMLSelectElement;
       const currentValue = dropdown.value;
-      strictEqual(currentValue, `${termEnumToTitleCase(TERM.SPRING)} ${testAcademicYear}`);
+      strictEqual(currentValue, `${TERM.SPRING} ${testAcademicYear}`);
     });
     it('requests the selected semester data', async function () {
       const { getByLabelText, getByText } = renderResult;
       const dropdown = getByLabelText(/semester/i) as HTMLSelectElement;
-      fireEvent.change(dropdown, { target: { value: `${termEnumToTitleCase(TERM.FALL)} ${testAcademicYear}` } });
+      fireEvent.change(dropdown, { target: { value: `${TERM.FALL} ${testAcademicYear}` } });
       await waitForElementToBeRemoved(() => getByText(
         'Fetching Course Schedule'
       ));
