@@ -1,3 +1,4 @@
+import { TERM } from 'common/constants';
 import { MetadataResponse } from 'common/dto/metadata/MetadataResponse.dto';
 
 /**
@@ -14,10 +15,10 @@ const areas = ['ACS', 'AM', 'AP', 'BE', 'CS', 'EE', 'ESE', 'General', 'Mat & ME'
  * Example of a list of semesters
  */
 const semesters = [
-  'Fall 2020',
-  'Spring 2021',
-  'Fall 2021',
-  'Spring 2022',
+  `${TERM.FALL} 2020`,
+  `${TERM.SPRING} 2021`,
+  `${TERM.FALL} 2021`,
+  `${TERM.SPRING} 2022`,
 ];
 
 /**
