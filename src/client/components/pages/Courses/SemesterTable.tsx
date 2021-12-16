@@ -78,7 +78,9 @@ const SemesterTable: FunctionComponent<SemesterTableProps> = ({
                       checked.concat(MANDATORY_COLUMNS).includes(viewColumn)
                     }
                     onChange={() => {
-                      onChange(viewColumn);
+                      if (!MANDATORY_COLUMNS.includes(viewColumn)) {
+                        onChange(viewColumn);
+                      }
                     }}
                     label={name}
                   />
