@@ -23,8 +23,20 @@ describe('CourseInstanceTable', function () {
     cs50CourseInstance,
     es095CourseInstance,
   ];
+  const testFilters: FilterState = {
+    area: 'All',
+    isSEAS: 'All',
+    spring: {
+      offered: 'All',
+    },
+    fall: {
+      offered: 'All',
+    },
+  };
   beforeEach(function () {
     updateSpy = spy();
+    openMeetingModalSpy = spy();
+    openInstructorModalSpy = spy();
   });
   describe('Header rows', function () {
     context('With all fields visible', function () {
@@ -52,12 +64,16 @@ describe('CourseInstanceTable', function () {
           <CourseInstanceTable
             academicYear={academicYear}
             courseList={courseList}
-            courseUpdateHandler={updateSpy}
+            genericFilterUpdate={updateSpy}
             tableData={tableFields.filter(
               ({ viewColumn }): boolean => (
                 testView.includes(viewColumn)
               )
             )}
+            filters={testFilters}
+            openMeetingModal={openMeetingModalSpy}
+            openInstructorModal={openInstructorModalSpy}
+            buttonRef={null}
           />
         )
         );
@@ -127,23 +143,27 @@ describe('CourseInstanceTable', function () {
           <CourseInstanceTable
             academicYear={academicYear}
             courseList={courseList}
-            courseUpdateHandler={updateSpy}
+            genericFilterUpdate={updateSpy}
             tableData={tableFields.filter(
               ({ viewColumn }): boolean => (
                 testView.includes(viewColumn)
               )
             )}
+            filters={testFilters}
+            openMeetingModal={openMeetingModalSpy}
+            openInstructorModal={openInstructorModalSpy}
+            buttonRef={null}
           />
         )
         );
       });
-      it('Only renders one row of headers', function () {
+      it('renders two rows of headers', function () {
         const allRows = getAllByRole('row');
         const headerRows = allRows.filter((row) => {
           const roles = getRoles(row);
           return 'columnheader' in roles && roles.columnheader.length > 0;
         });
-        strictEqual(headerRows.length, 1);
+        strictEqual(headerRows.length, 2);
       });
       it('Only includes the specified titles', function () {
         const [firstRow] = getAllByRole('row');
@@ -164,24 +184,28 @@ describe('CourseInstanceTable', function () {
         ({ getAllByRole } = render(
           <CourseInstanceTable
             academicYear={academicYear}
-            courseUpdateHandler={updateSpy}
+            genericFilterUpdate={updateSpy}
             courseList={courseList}
             tableData={tableFields.filter(
               ({ viewColumn }): boolean => (
                 testView.includes(viewColumn)
               )
             )}
+            filters={testFilters}
+            openMeetingModal={openMeetingModalSpy}
+            openInstructorModal={openInstructorModalSpy}
+            buttonRef={null}
           />
         )
         );
       });
-      it('Only renders two rows of headers', function () {
+      it('Renders three rows of headers', function () {
         const allRows = getAllByRole('row');
         const headerRows = allRows.filter((row) => {
           const roles = getRoles(row);
           return 'columnheader' in roles && roles.columnheader.length > 0;
         });
-        strictEqual(headerRows.length, 2);
+        strictEqual(headerRows.length, 3);
       });
       it('Renders the semesters into the top header row', function () {
         const [topRow] = getAllByRole('row');
@@ -218,12 +242,16 @@ describe('CourseInstanceTable', function () {
         <CourseInstanceTable
           academicYear={academicYear}
           courseList={courseList}
-          courseUpdateHandler={updateSpy}
+          genericFilterUpdate={updateSpy}
           tableData={tableFields.filter(
             ({ viewColumn }): boolean => (
               testView.includes(viewColumn)
             )
           )}
+          filters={testFilters}
+          openMeetingModal={openMeetingModalSpy}
+          openInstructorModal={openInstructorModalSpy}
+          buttonRef={null}
         />
       )
       );
