@@ -211,10 +211,6 @@ export const formatMeetings = (
   } = course;
   const { calendarYear, meetings } = instance;
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const currentSemester = {
-    term,
-    calendarYear,
-  };
   return (
     <>
       <TableCellList>
@@ -323,21 +319,26 @@ function generateDropdown<
   return (filters, genericFilterUpdate, filterOptions) => {
     let filterValue;
     let updateField;
+    let filterOptionsField;
     if (subField) {
       updateField = `${field}.${subField.toString()}`;
       ({ [field]: { [subField]: filterValue } } = filters);
+      filterOptionsField = subField;
     } else {
       updateField = field;
       ({ [field]: filterValue } = filters);
+      filterOptionsField = field;
     }
     return (
       <Dropdown
         options={[{ value: 'All', label: 'All' }]
-          .concat(filterOptions[field])}
+          .concat(filterOptions[filterOptionsField as FilterOptions])}
         value={filterValue as string}
         name={field}
         id={field}
-        label={`The table will be filtered as selected in this ${field} ${subField && subField.toString()} dropdown filter`}
+        label={subField
+          ? `The table will be filtered as selected in this ${field} ${subField.toString()} dropdown filter`
+          : `The table will be filtered as selected in this ${field} dropdown filter`}
         isLabelVisible={false}
         hideError
         onChange={(evt) => {

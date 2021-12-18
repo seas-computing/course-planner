@@ -16,3 +16,9 @@ export interface FilterState {
   spring: SemesterFilterState;
   fall: SemesterFilterState;
 }
+
+/**
+ * Describes the options available for the filter dropdowns in the
+ * course instance table
+ */
+export type FilterOptions = 'area' | 'isSEAS' | 'offered';
