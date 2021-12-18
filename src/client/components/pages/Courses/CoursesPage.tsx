@@ -88,6 +88,32 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   const [fetching, setFetching] = useState(false);
 
   /**
+   * Keeps track of the information needed to display the meeting modal for a
+   * specific course and term
+   */
+  const [
+    meetingModalData,
+    setMeetingModalData,
+  ] = useState<ModalData>({
+    term: null,
+    course: null,
+    visible: false,
+  });
+
+  /**
+   * Keeps track of the information needed to display the instructor modal for a
+   * specific course and term
+   */
+  const [
+    instructorModalData,
+    setInstructorModalData,
+  ] = useState<ModalData>({
+    term: null,
+    course: null,
+    visible: false,
+  });
+
+  /**
    * The current value of each of the course instance table filters
    */
   const [filters, setFilters] = useState<FilterState>({
@@ -114,6 +140,27 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     });
   };
 
+  /**
+   * Takes the requested course and term information to display the requested
+   * meeting modal
+   */
+  const openMeetingModal = (course: CourseInstanceResponseDTO, term: TERM) => {
+    setMeetingModalData({ course, term, visible: true });
+  };
+
+  /**
+   * Takes the requested course and term information to display the requested
+   * meeting modal
+   */
+  const openInstructorModal = (
+    course: CourseInstanceResponseDTO,
+    term: TERM
+  ) => {
+    setInstructorModalData({ course, term, visible: true });
+  };
+
+  useEffect(() => {
+    let courses = [...currentCourses];
     // Provides a list of the paths for the filters in the Course Instance table
     const filterPaths = ['area', 'isSEAS', 'fall.offered', 'spring.offered'];
     filterPaths.forEach((filterPath) => {
@@ -201,6 +248,65 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
               openInstructorModal={openInstructorModal}
               buttonRef={buttonRef}
             />
+            {meetingModalData.visible
+              ? (
+                <MeetingModal
+                  isVisible={meetingModalData.visible}
+                  currentSemester={{
+                    term: meetingModalData.term,
+                    calendarYear: acadYear.toString(),
+                  }}
+                  currentCourse={meetingModalData.course}
+                  notes={formatFacultyNotes(
+                    meetingModalData.term,
+                    meetingModalData.course
+                  )}
+                  onClose={() => {
+                    setMeetingModalData({ visible: false });
+                    setTimeout(() => { buttonRef.current?.focus(); });
+                  }}
+                  onSave={(newMeetingList, message?: string) => {
+                    const { course, term } = meetingModalData;
+                    const semKey = term.toLowerCase() as TermKey;
+                    updateLocalCourse({
+                      ...course,
+                      [semKey]: {
+                        ...course[semKey],
+                        meetings: newMeetingList,
+                      },
+                    }, message);
+                  }}
+                />
+              )
+              : null}
+            {instructorModalData.visible
+              ? (
+                <InstructorModal
+                  isVisible={instructorModalData.visible}
+                  currentSemester={{
+                    term: instructorModalData.term,
+                    calendarYear: acadYear.toString(),
+                  }}
+                  currentCourse={instructorModalData.course}
+                  closeModal={() => {
+                    setInstructorModalData({ visible: false });
+                    setTimeout(() => { buttonRef.current?.focus(); });
+                  }}
+                  onSave={(newInstructorList, message?: string) => {
+                    const { course, term } = instructorModalData;
+                    const semKey = term.toLowerCase() as TermKey;
+                    updateLocalCourse({
+                      ...course,
+                      [semKey]: {
+                        ...course[semKey],
+                        instructors: newInstructorList,
+                      },
+                    }, message);
+                  }}
+                />
+              )
+              : null}
+          </>
         )}
     </div>
   );

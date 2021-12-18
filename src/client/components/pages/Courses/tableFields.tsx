@@ -2,8 +2,7 @@ import React, {
   ReactElement,
   ReactNode,
   ReactText,
-  useState,
-  useRef,
+  Ref,
 } from 'react';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import {
@@ -30,11 +29,9 @@ import { dayEnumToString } from 'common/constants/day';
 import { offeredEnumToString } from 'common/constants/offered';
 import { TermKey } from 'common/constants/term';
 import styled from 'styled-components';
-import MeetingModal from './MeetingModal';
 import { PGTime } from '../../../../common/utils/PGTime';
-import InstructorModal from './InstructorModal';
 import { instructorDisplayNameToFirstLast } from '../utils/instructorDisplayNameToFirstLast';
-import { FilterState } from './filters.d';
+import { FilterOptions, FilterState } from './filters.d';
 
 /**
  * A component that applies styling for text that indicates the faculty has
@@ -92,7 +89,7 @@ export const formatInstructors = (
 ) => (
   course: CourseInstanceResponseDTO,
   {
-    updateHandler,
+    openInstructorModal,
   }: ValueGetterOptions
 ): ReactNode => {
   const semKey = term.toLowerCase() as TermKey;
@@ -103,18 +100,10 @@ export const formatInstructors = (
   } = course;
   const { calendarYear, instructors } = instance;
   /**
-   * Control the visibility of the Isntructor modal
-   */
-  const [modalVisible, setModalVisible] = useState(false);
-  /**
    * Save a ref to the edit button so we can return focus after closing the
    * modal
    */
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const currentSemester = {
-    term,
-    calendarYear,
-  };
   return (
     <>
       <TableCellList>
@@ -131,30 +120,12 @@ export const formatInstructors = (
       <BorderlessButton
         alt={`Edit instructors for ${catalogNumber}, ${term} ${calendarYear}`}
         id={`${parentId}-${term}-edit-instructors-button`}
-        onClick={() => { setModalVisible(true); }}
+        onClick={() => { openInstructorModal(course, term); }}
         variant={VARIANT.INFO}
         forwardRef={buttonRef}
       >
         <FontAwesomeIcon icon={faEdit} />
       </BorderlessButton>
-      <InstructorModal
-        isVisible={modalVisible}
-        currentSemester={currentSemester}
-        currentCourse={course}
-        closeModal={() => {
-          setModalVisible(false);
-          setTimeout(() => { buttonRef.current?.focus(); });
-        }}
-        onSave={(newInstructorList, message?: string) => {
-          updateHandler({
-            ...course,
-            [semKey]: {
-              ...course[semKey],
-              instructors: newInstructorList,
-            },
-          }, message);
-        }}
-      />
     </>
   );
 };
@@ -228,7 +199,8 @@ export const formatMeetings = (
 ) => (
   course: CourseInstanceResponseDTO,
   {
-    updateHandler,
+    openMeetingModal,
+    buttonRef,
   }: ValueGetterOptions
 ): ReactNode => {
   const semKey = term.toLowerCase() as TermKey;
@@ -238,7 +210,6 @@ export const formatMeetings = (
     catalogNumber,
   } = course;
   const { calendarYear, meetings } = instance;
-  const [modalVisible, setModalVisible] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const currentSemester = {
     term,
@@ -278,31 +249,12 @@ export const formatMeetings = (
       <BorderlessButton
         id={`${parentId}-${term}-edit-meetings-button`}
         alt={`Edit meetings for ${catalogNumber} in ${semKey} ${calendarYear}`}
-        onClick={() => { setModalVisible(true); }}
+        onClick={() => { openMeetingModal(course, term); }}
         variant={VARIANT.INFO}
         forwardRef={buttonRef}
       >
         <FontAwesomeIcon icon={faEdit} />
       </BorderlessButton>
-      <MeetingModal
-        isVisible={modalVisible}
-        currentSemester={currentSemester}
-        currentCourse={course}
-        notes={formatFacultyNotes(term, course)}
-        onClose={() => {
-          setModalVisible(false);
-          setTimeout(() => { buttonRef.current?.focus(); });
-        }}
-        onSave={(newMeetingList, message?: string) => {
-          updateHandler({
-            ...course,
-            [semKey]: {
-              ...course[semKey],
-              meetings: newMeetingList,
-            },
-          }, message);
-        }}
-      />
     </>
   );
 };
@@ -312,10 +264,16 @@ export const formatMeetings = (
  */
 export interface ValueGetterOptions {
   /**
-   * A handler for updating the client state of the course wihtout needing to
-   * refresh data from the server
+   * Controls the opening of the meeting modal with the requested course and term
    */
-  updateHandler?: (course: CourseInstanceResponseDTO, message?: string) => void;
+  openMeetingModal?: (course: CourseInstanceResponseDTO, term: TERM) => void;
+  /**
+   * Controls the opening of the instructor modal with the requested course and term
+   */
+  openInstructorModal?: (course: CourseInstanceResponseDTO, term: TERM) => void;
+  /**
+   * The current ref value of the focused button
+   */
 }
 
 /**
