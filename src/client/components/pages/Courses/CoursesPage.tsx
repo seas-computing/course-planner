@@ -4,24 +4,27 @@ import React, {
   useState,
   useEffect,
   useContext,
+  Ref,
+  useRef,
 } from 'react';
 import {
   LoadSpinner,
-  TableCell, TableRow, TableRowHeadingCell, VALIGN,
 } from 'mark-one';
 import { MessageContext } from 'client/context';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { CourseAPI } from 'client/api';
 import { MESSAGE_TYPE, MESSAGE_ACTION, AppMessage } from 'client/classes';
-import { OFFERED, COURSE_TABLE_COLUMN, getAreaColor } from 'common/constants';
+import { OFFERED, COURSE_TABLE_COLUMN } from 'common/constants';
 import get from 'lodash.get';
 import merge from 'lodash.merge';
 import set from 'lodash.set';
-import { CellLayout } from 'client/components/general';
+import TERM, { TermKey } from 'common/constants/term';
 import CourseInstanceTable from './CourseInstanceTable';
-import { CourseInstanceListColumn, tableFields } from './tableFields';
+import { formatFacultyNotes, tableFields } from './tableFields';
 import { listFilter } from '../Filter';
 import { FilterState } from './filters.d';
+import MeetingModal from './MeetingModal';
+import InstructorModal from './InstructorModal';
 
 /*
  * TODO
@@ -45,13 +48,19 @@ const currentView = [
 
 /*
  * TODO
- * Until the functionality for setting "Show Retired Courses" is iomplemented
+ * Until the functionality for setting "Show Retired Courses" is implemented
  * this will be hard-coded here
  */
 const showRetired = false;
 
 // TODO: Get the actual current academic year instead of hard coding
 const acadYear = 2019;
+
+interface ModalData {
+  term?: TERM;
+  course?: CourseInstanceResponseDTO;
+  visible: boolean;
+}
 
 /**
  * Component representing the list of CourseInstances in a given Academic year
@@ -66,6 +75,15 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   ] = useState([] as CourseInstanceResponseDTO[]);
 
   const dispatchMessage = useContext(MessageContext);
+
+  /**
+   * Keeps track of the list of courses to be displayed as users interact with
+   * the table filters
+   */
+  const [
+    filteredCourses,
+    setFilteredCourses,
+  ] = useState<CourseInstanceResponseDTO[]>([]);
 
   const [fetching, setFetching] = useState(false);
 
@@ -83,6 +101,10 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     },
   });
 
+  /**
+   * Handles keeping track of the group of filters as the user interacts with
+   * the filter dropdowns
+   */
   const genericFilterUpdate = (field: string, value: string) => {
     setFilters((currentFilters) => {
       // Make a copy of the existing filters
@@ -92,10 +114,6 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     });
   };
 
-  const filteredCourses = (givenCourses:
-  { course: CourseInstanceResponseDTO, element: ReactElement }[]):
-  { course: CourseInstanceResponseDTO, element: ReactElement }[] => {
-    let courses = givenCourses;
     // Provides a list of the paths for the filters in the Course Instance table
     const filterPaths = ['area', 'isSEAS', 'fall.offered', 'spring.offered'];
     filterPaths.forEach((filterPath) => {
@@ -107,8 +125,16 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
         );
       }
     });
-    return courses;
-  };
+    // Hides the retired courses
+    if (!showRetired) {
+      courses = courses.filter(
+        ({ spring, fall }): boolean => (
+          fall.offered !== OFFERED.RETIRED
+              && spring.offered !== OFFERED.RETIRED)
+      );
+    }
+    setFilteredCourses(courses);
+  }, [filters, currentCourses, setFilteredCourses]);
 
   useEffect((): void => {
     setFetching(true);
@@ -149,69 +175,11 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     }
   };
 
-  const currentCourseList = showRetired
-    ? currentCourses
-    : currentCourses.filter(
-      ({ spring, fall }): boolean => (
-        fall.offered !== OFFERED.RETIRED
-            && spring.offered !== OFFERED.RETIRED)
-    );
-
   const tableData = tableFields.filter(
     ({ viewColumn }): boolean => (
       currentView.includes(viewColumn)
     )
   );
-
-  const filteredCourseList = filteredCourses(currentCourseList.map(
-    (course: CourseInstanceResponseDTO,
-      index: number):
-    { course: CourseInstanceResponseDTO; element: ReactElement } => (
-      {
-        course,
-        element: (
-          <TableRow key={course.id} isStriped={index % 2 !== 0}>
-            {tableData.map(
-              (field: CourseInstanceListColumn): ReactElement => {
-                if (field.viewColumn
-                  === COURSE_TABLE_COLUMN.CATALOG_NUMBER) {
-                  return (
-                    <TableRowHeadingCell
-                      scope="row"
-                      key={field.key}
-                      verticalAlignment={VALIGN.TOP}
-                    >
-                      <CellLayout>
-                        {field.getValue(course)}
-                      </CellLayout>
-                    </TableRowHeadingCell>
-                  );
-                }
-                return (
-                  <TableCell
-                    verticalAlignment={VALIGN.TOP}
-                    key={field.key}
-                    backgroundColor={
-                      field.viewColumn === COURSE_TABLE_COLUMN.AREA
-                      && getAreaColor(field.getValue(course) as string)
-                    }
-                  >
-                    <CellLayout>
-                      {field.getValue(
-                        course,
-                        {
-                          updateHandler: updateLocalCourse,
-                        }
-                      )}
-                    </CellLayout>
-                  </TableCell>
-                );
-              }
-            )}
-          </TableRow>
-        ),
-      })
-  ));
 
   return (
     <div className="course-instance-table">
@@ -222,13 +190,17 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
           </div>
         )
         : (
-          <CourseInstanceTable
-            academicYear={acadYear}
-            courseList={filteredCourseList.map(({ element }) => element)}
-            genericFilterUpdate={genericFilterUpdate}
-            tableData={tableData}
-            filters={filters}
-          />
+          <>
+            <CourseInstanceTable
+              academicYear={acadYear}
+              courseList={filteredCourses}
+              genericFilterUpdate={genericFilterUpdate}
+              tableData={tableData}
+              filters={filters}
+              openMeetingModal={openMeetingModal}
+              openInstructorModal={openInstructorModal}
+              buttonRef={buttonRef}
+            />
         )}
     </div>
   );

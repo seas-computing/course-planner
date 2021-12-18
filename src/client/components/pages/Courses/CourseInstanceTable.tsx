@@ -1,6 +1,7 @@
 import React, {
   FunctionComponent,
   ReactElement,
+  Ref,
   useContext,
 } from 'react';
 import {
@@ -10,16 +11,23 @@ import {
   TableRow,
   TableHeadingCell,
   TableHeadingSpacer,
+  TableRowHeadingCell,
+  TableCell,
+  VALIGN,
 } from 'mark-one';
 import {
   COURSE_TABLE_COLUMN,
   COURSE_TABLE_COLUMN_GROUP,
+  getAreaColor,
   isSEASEnumToString,
   IS_SEAS,
   OFFERED,
+  TERM,
 } from 'common/constants';
 import { MetadataContext } from 'client/context';
 import { offeredEnumToString } from 'common/constants/offered';
+import { CellLayout } from 'client/components/general';
+import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { CourseInstanceListColumn } from './tableFields';
 import { FilterState } from './filters.d';
 
@@ -27,7 +35,7 @@ interface CourseInstanceTableProps {
   /**
    * The list of courses to be shown in the table
    */
-  courseList: ReactElement[];
+  courseList: CourseInstanceResponseDTO[];
   /**
    * The data to display
    */
@@ -44,6 +52,18 @@ interface CourseInstanceTableProps {
    * The current values of the table column filters
    */
   filters: FilterState;
+  /**
+   * Controls the opening of the meeting modal with the requested course and term
+   */
+  openMeetingModal: (course: CourseInstanceResponseDTO, term: TERM) => void;
+  /**
+   * Controls the opening of the instructor modal with the requested course and term
+   */
+  openInstructorModal: (course: CourseInstanceResponseDTO, term: TERM) => void;
+  /**
+   * The ref value of the edit faculty absence button
+   */
+  buttonRef: Ref<HTMLButtonElement>;
 }
 
 /**
@@ -55,6 +75,9 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
   tableData,
   genericFilterUpdate,
   filters,
+  openMeetingModal,
+  openInstructorModal,
+  buttonRef,
 }): ReactElement => {
   const courseColumns = tableData.filter(
     ({ columnGroup }): boolean => (
@@ -246,7 +269,49 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
         </TableRow>
       </TableHead>
       <TableBody>
-        {courseList}
+        {courseList.map((course, index) => (
+          <TableRow key={course.id} isStriped={index % 2 !== 0}>
+            {tableData.map(
+              (field: CourseInstanceListColumn): ReactElement => {
+                if (field.viewColumn
+                === COURSE_TABLE_COLUMN.CATALOG_NUMBER) {
+                  return (
+                    <TableRowHeadingCell
+                      scope="row"
+                      key={field.key}
+                      verticalAlignment={VALIGN.TOP}
+                    >
+                      <CellLayout>
+                        {field.getValue(course)}
+                      </CellLayout>
+                    </TableRowHeadingCell>
+                  );
+                }
+                return (
+                  <TableCell
+                    verticalAlignment={VALIGN.TOP}
+                    key={field.key}
+                    backgroundColor={
+                      field.viewColumn === COURSE_TABLE_COLUMN.AREA
+                    && getAreaColor(field.getValue(course) as string)
+                    }
+                  >
+                    <CellLayout>
+                      {field.getValue(
+                        course,
+                        {
+                          openMeetingModal,
+                          openInstructorModal,
+                          buttonRef,
+                        }
+                      )}
+                    </CellLayout>
+                  </TableCell>
+                );
+              }
+            )}
+          </TableRow>
+        ))}
       </TableBody>
     </Table>
   );
