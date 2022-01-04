@@ -74,6 +74,7 @@ describe('CourseInstanceTable', function () {
             openMeetingModal={openMeetingModalSpy}
             openInstructorModal={openInstructorModalSpy}
             buttonRef={null}
+            modalButtonId=""
           />
         )
         );
@@ -153,6 +154,7 @@ describe('CourseInstanceTable', function () {
             openMeetingModal={openMeetingModalSpy}
             openInstructorModal={openInstructorModalSpy}
             buttonRef={null}
+            modalButtonId=""
           />
         )
         );
@@ -195,6 +197,7 @@ describe('CourseInstanceTable', function () {
             openMeetingModal={openMeetingModalSpy}
             openInstructorModal={openInstructorModalSpy}
             buttonRef={null}
+            modalButtonId=""
           />
         )
         );
@@ -252,6 +255,7 @@ describe('CourseInstanceTable', function () {
           openMeetingModal={openMeetingModalSpy}
           openInstructorModal={openInstructorModalSpy}
           buttonRef={null}
+          modalButtonId=""
         />
       )
       );

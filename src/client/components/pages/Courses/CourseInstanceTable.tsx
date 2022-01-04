@@ -64,6 +64,10 @@ interface CourseInstanceTableProps {
    * The ref value of the edit faculty absence button
    */
   buttonRef: Ref<HTMLButtonElement>;
+  /**
+   * The id of the edit button corresponding to the opened modal
+   */
+  modalButtonId: string;
 }
 
 /**
@@ -78,6 +82,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
   openMeetingModal,
   openInstructorModal,
   buttonRef,
+  modalButtonId,
 }): ReactElement => {
   const courseColumns = tableData.filter(
     ({ columnGroup }): boolean => (
@@ -303,6 +308,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
                           openMeetingModal,
                           openInstructorModal,
                           buttonRef,
+                          modalButtonId,
                         }
                       )}
                     </CellLayout>

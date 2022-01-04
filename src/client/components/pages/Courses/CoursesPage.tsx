@@ -6,10 +6,9 @@ import React, {
   useContext,
   Ref,
   useRef,
+  useMemo,
 } from 'react';
-import {
-  LoadSpinner,
-} from 'mark-one';
+import { Dropdown, LoadSpinner, POSITION } from 'mark-one';
 import { MessageContext } from 'client/context';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { CourseAPI } from 'client/api';
@@ -19,6 +18,8 @@ import get from 'lodash.get';
 import merge from 'lodash.merge';
 import set from 'lodash.set';
 import TERM, { TermKey } from 'common/constants/term';
+import { ViewResponse } from 'common/dto/view/ViewResponse.dto';
+import { VerticalSpace } from 'client/components/layout';
 import CourseInstanceTable from './CourseInstanceTable';
 import { formatFacultyNotes, tableFields } from './tableFields';
 import { listFilter } from '../Filter';
@@ -26,25 +27,34 @@ import { FilterState } from './filters.d';
 import MeetingModal from './MeetingModal';
 import InstructorModal from './InstructorModal';
 
-/*
- * TODO
- * Until the functionality for defining a retrieving custom view is implemented
- * we can just hard code/comment the columns to display
+/**
+ * These columns are ALWAYS shown regardless of user choice
  */
-const currentView = [
+const mandatoryColumns = [
   COURSE_TABLE_COLUMN.AREA,
   COURSE_TABLE_COLUMN.CATALOG_NUMBER,
-  COURSE_TABLE_COLUMN.TITLE,
-  COURSE_TABLE_COLUMN.SAME_AS,
-  COURSE_TABLE_COLUMN.IS_SEAS,
-  // COURSE_TABLE_COLUMN.IS_UNDERGRADUATE,
-  COURSE_TABLE_COLUMN.OFFERED,
-  COURSE_TABLE_COLUMN.INSTRUCTORS,
-  COURSE_TABLE_COLUMN.MEETINGS,
-  // COURSE_TABLE_COLUMN.ENROLLMENT,
-  COURSE_TABLE_COLUMN.NOTES,
   COURSE_TABLE_COLUMN.DETAILS,
 ];
+
+/**
+ * Default View
+ *
+ * This is the hard-coded default view that is showin in the dropdown when a
+ * user loads the page. Other views can be created, modified and deleted - but
+ * this default view can never be deleted or updated.
+ */
+const defaultView: ViewResponse = {
+  id: 'default',
+  name: 'Default',
+  columns: [
+    ...mandatoryColumns,
+    COURSE_TABLE_COLUMN.MEETINGS,
+    COURSE_TABLE_COLUMN.IS_SEAS,
+    COURSE_TABLE_COLUMN.OFFERED,
+    COURSE_TABLE_COLUMN.INSTRUCTORS,
+    COURSE_TABLE_COLUMN.NOTES,
+  ],
+};
 
 /*
  * TODO
@@ -73,6 +83,22 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     currentCourses,
     setCourses,
   ] = useState([] as CourseInstanceResponseDTO[]);
+
+  const [
+    currentViewId,
+    setCurrentViewId,
+  ] = useState(defaultView.id);
+
+  const [
+    views,
+  ] = useState([
+    defaultView,
+  ]);
+
+  const currentView = useMemo(
+    () => views.find(({ id }) => id === currentViewId),
+    [views, currentViewId]
+  );
 
   const dispatchMessage = useContext(MessageContext);
 
@@ -114,6 +140,14 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   });
 
   /**
+   * The id of the edit button that was clicked to open the modal is used to
+   * determine whether the ref should be set to that button so that when the
+   * modal closes, the focus is returned to the edit button of the corresponding
+   * modal.
+   */
+  const [modalButtonId, setModalButtonId] = useState<string>('');
+
+  /**
    * The current ref value of the focused button
    */
   const buttonRef: Ref<HTMLButtonElement> = useRef(null);
@@ -151,6 +185,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
    */
   const openMeetingModal = (course: CourseInstanceResponseDTO, term: TERM) => {
     setMeetingModalData({ course, term, visible: true });
+    setModalButtonId(`meetings-${course.id}-${term}`);
   };
 
   /**
@@ -162,6 +197,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     term: TERM
   ) => {
     setInstructorModalData({ course, term, visible: true });
+    setModalButtonId(`instructors-${course.id}-${term}`);
   };
 
   useEffect(() => {
@@ -227,12 +263,6 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     }
   };
 
-  const tableData = tableFields.filter(
-    ({ viewColumn }): boolean => (
-      currentView.includes(viewColumn)
-    )
-  );
-
   return (
     <div className="course-instance-table">
       {fetching
@@ -243,14 +273,35 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
         )
         : (
           <>
+            <VerticalSpace>
+              <Dropdown
+                id="select-view-dropdown"
+                name="select-view-dropdown"
+                onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
+                  setCurrentViewId(event.currentTarget.value);
+                }}
+                labelPosition={POSITION.LEFT}
+                label="View"
+                value={currentViewId}
+                options={views.map((view) => ({
+                  label: view.name,
+                  value: view.id,
+                }))}
+              />
+            </VerticalSpace>
             <CourseInstanceTable
               academicYear={acadYear}
               courseList={filteredCourses}
               genericFilterUpdate={genericFilterUpdate}
-              tableData={tableData}
+              tableData={tableFields.filter(
+                ({ viewColumn }): boolean => (
+                  currentView.columns.includes(viewColumn)
+                )
+              )}
               filters={filters}
               openMeetingModal={openMeetingModal}
               openInstructorModal={openInstructorModal}
+              modalButtonId={modalButtonId}
               buttonRef={buttonRef}
             />
             {meetingModalData.visible
