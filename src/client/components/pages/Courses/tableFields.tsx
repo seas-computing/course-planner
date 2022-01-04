@@ -3,6 +3,7 @@ import React, {
   ReactNode,
   ReactText,
   Ref,
+  useState,
 } from 'react';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import {
@@ -90,6 +91,7 @@ export const formatInstructors = (
   course: CourseInstanceResponseDTO,
   {
     openInstructorModal,
+    buttonRef,
   }: ValueGetterOptions
 ): ReactNode => {
   const semKey = term.toLowerCase() as TermKey;
@@ -100,10 +102,10 @@ export const formatInstructors = (
   } = course;
   const { calendarYear, instructors } = instance;
   /**
-   * Save a ref to the edit button so we can return focus after closing the
-   * modal
+   * Keeps track of which edit instructor button was clicked to determine which
+   * button should regain focus when the instructor modal is closed
    */
-  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [editInstructorId, setEditInstructorId] = useState<string>(null);
   return (
     <>
       <TableCellList>
@@ -120,9 +122,14 @@ export const formatInstructors = (
       <BorderlessButton
         alt={`Edit instructors for ${catalogNumber}, ${term} ${calendarYear}`}
         id={`${parentId}-${term}-edit-instructors-button`}
-        onClick={() => { openInstructorModal(course, term); }}
+        onClick={() => {
+          setEditInstructorId(parentId);
+          openInstructorModal(course, term);
+        }}
         variant={VARIANT.INFO}
-        forwardRef={buttonRef}
+        // Set the ref only if this button was clicked to open the modal
+        forwardRef={editInstructorId
+          && editInstructorId === parentId ? buttonRef : null}
       >
         <FontAwesomeIcon icon={faEdit} />
       </BorderlessButton>
@@ -210,7 +217,11 @@ export const formatMeetings = (
     catalogNumber,
   } = course;
   const { calendarYear, meetings } = instance;
-  const buttonRef = useRef<HTMLButtonElement>(null);
+  /**
+   * Keeps track of which edit meeting button was clicked to determine which
+   * button should regain focus when the meeting modal is closed
+   */
+  const [editedMeetingId, setEditedMeetingId] = useState<string>(null);
   return (
     <>
       <TableCellList>
@@ -245,9 +256,14 @@ export const formatMeetings = (
       <BorderlessButton
         id={`${parentId}-${term}-edit-meetings-button`}
         alt={`Edit meetings for ${catalogNumber} in ${semKey} ${calendarYear}`}
-        onClick={() => { openMeetingModal(course, term); }}
+        onClick={() => {
+          setEditedMeetingId(parentId);
+          openMeetingModal(course, term);
+        }}
         variant={VARIANT.INFO}
-        forwardRef={buttonRef}
+        // Set the ref only if this button was clicked to open the modal
+        forwardRef={editedMeetingId
+          && editedMeetingId === parentId ? buttonRef : null}
       >
         <FontAwesomeIcon icon={faEdit} />
       </BorderlessButton>
@@ -270,6 +286,7 @@ export interface ValueGetterOptions {
   /**
    * The current ref value of the focused button
    */
+  buttonRef?: Ref<HTMLButtonElement>;
 }
 
 /**

@@ -114,6 +114,11 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   });
 
   /**
+   * The current ref value of the focused button
+   */
+  const buttonRef: Ref<HTMLButtonElement> = useRef(null);
+
+  /**
    * The current value of each of the course instance table filters
    */
   const [filters, setFilters] = useState<FilterState>({
