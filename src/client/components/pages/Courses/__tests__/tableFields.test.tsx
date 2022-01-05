@@ -23,9 +23,9 @@ import {
 import { PGTime } from '../../../../../common/utils/PGTime';
 
 describe('tableFields', function () {
-  let updateSpy: SinonSpy;
+  let openModalSpy: SinonSpy;
   beforeEach(function () {
-    updateSpy = spy();
+    openModalSpy = spy();
   });
   describe('helper functions', function () {
     describe('retrieveValue', function () {
@@ -107,7 +107,8 @@ describe('tableFields', function () {
           const fallInstructors = formatInstructors(TERM.FALL);
           TestComponent = () => (
             <div>
-              {fallInstructors(ac209aCourseInstance, { updateHandler: spy() })}
+              {fallInstructors(ac209aCourseInstance,
+                { openInstructorModal: openModalSpy, buttonRef: null })}
             </div>
           );
         });
@@ -145,9 +146,7 @@ describe('tableFields', function () {
             <div>
               {springInstructors(
                 ac209aCourseInstance,
-                {
-                  updateHandler: spy(),
-                }
+                { openInstructorModal: openModalSpy, buttonRef: null }
               )}
             </div>
           );
@@ -181,7 +180,7 @@ describe('tableFields', function () {
               <div>
                 {fallMeetings(
                   ac209aCourseInstance,
-                  { updateHandler: updateSpy }
+                  { openInstructorModal: openModalSpy, buttonRef: null }
                 )}
               </div>
             );
@@ -215,7 +214,7 @@ describe('tableFields', function () {
               <div>
                 {fallMeetings(
                   ac209aCourseInstanceWithoutRooms,
-                  { updateHandler: updateSpy }
+                  { openInstructorModal: openModalSpy, buttonRef: null }
                 )}
               </div>
             );
@@ -244,7 +243,7 @@ describe('tableFields', function () {
             <div>
               {springTimes(
                 ac209aCourseInstance,
-                { updateHandler: updateSpy }
+                { openInstructorModal: openModalSpy, buttonRef: null }
               )}
             </div>
           );
