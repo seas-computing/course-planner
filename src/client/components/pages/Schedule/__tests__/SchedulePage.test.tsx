@@ -1,12 +1,18 @@
 import React from 'react';
-import { render, waitForElementToBeRemoved } from 'test-utils';
+import {
+  render,
+  waitForElementToBeRemoved,
+  within,
+  RenderResult,
+  fireEvent,
+} from 'test-utils';
 import {
   stub,
   SinonStub,
 } from 'sinon';
 import FakeTimers, { InstalledClock } from '@sinonjs/fake-timers';
 import * as CourseAPI from 'client/api/courses';
-import { strictEqual } from 'assert';
+import { strictEqual, deepStrictEqual } from 'assert';
 import * as dummy from 'testData';
 import { MetadataContextValue } from 'client/context/MetadataContext';
 import { TERM } from 'common/constants';
@@ -16,8 +22,17 @@ describe('Schedule Page', function () {
   let dispatchMessage: SinonStub;
   let apiStub: SinonStub;
   const testAcademicYear = 1999;
+  let clock: InstalledClock;
   const metadata = new MetadataContextValue(
-    { ...dummy.metadata, currentAcademicYear: testAcademicYear },
+    {
+      ...dummy.metadata,
+      currentAcademicYear: testAcademicYear,
+      semesters: [
+        ...dummy.metadata.semesters,
+        `${TERM.SPRING} ${testAcademicYear}`,
+        `${TERM.FALL} ${testAcademicYear}`,
+      ],
+    },
     () => {}
   );
   beforeEach(function () {
@@ -27,10 +42,55 @@ describe('Schedule Page', function () {
   afterEach(function () {
     apiStub.restore();
   });
+  describe('Semester Dropdown', function () {
+    let renderResult: RenderResult;
+    beforeEach(function () {
+      apiStub.resolves([]);
+      const fakeDate = new Date(testAcademicYear, 5, 30);
+      clock = FakeTimers.install({
+        toFake: ['Date'],
+      });
+      clock.tick(fakeDate.valueOf());
+      renderResult = render(
+        <SchedulePage />,
+        { metadataContext: metadata }
+      );
+    });
+    afterEach(function () {
+      clock.uninstall();
+    });
+    it('renders the list of existing semesters', function () {
+      const { semesters: metadataSemesters } = metadata;
+      const { getByLabelText } = renderResult;
+      const dropdown = getByLabelText(/semester/i);
+      const options = within(dropdown).getAllByRole('option')
+        .map(({ value }: HTMLOptionElement) => value);
+
+      deepStrictEqual(metadataSemesters, options);
+    });
+    it('defaults to the current semester', async function () {
+      const { getByText, getByLabelText } = renderResult;
+      await waitForElementToBeRemoved(() => getByText('Fetching Course Schedule'));
+      const dropdown = getByLabelText(/semester/i) as HTMLSelectElement;
+      const currentValue = dropdown.value;
+      strictEqual(currentValue, `${TERM.SPRING} ${testAcademicYear}`);
+    });
+    it('requests the selected semester data', async function () {
+      const { getByLabelText, getByText } = renderResult;
+      const dropdown = getByLabelText(/semester/i) as HTMLSelectElement;
+      fireEvent.change(dropdown, { target: { value: `${TERM.FALL} ${testAcademicYear}` } });
+      await waitForElementToBeRemoved(() => getByText(
+        'Fetching Course Schedule'
+      ));
+      // check the second call to the API
+      const [calendarYear, term] = apiStub.args[1];
+      strictEqual(calendarYear, testAcademicYear);
+      strictEqual(term, TERM.FALL);
+    });
+  });
   describe('Requesting Semester Data', function () {
     let calendarYear: number;
     let term: TERM;
-    let clock: InstalledClock;
     beforeEach(function () {
       apiStub.resolves([]);
       clock = FakeTimers.install({

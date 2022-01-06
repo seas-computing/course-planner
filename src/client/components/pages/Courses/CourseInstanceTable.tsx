@@ -1,6 +1,8 @@
 import React, {
   FunctionComponent,
   ReactElement,
+  Ref,
+  useContext,
 } from 'react';
 import {
   Table,
@@ -8,15 +10,26 @@ import {
   TableBody,
   TableRow,
   TableHeadingCell,
-  TableCell,
   TableHeadingSpacer,
   TableRowHeadingCell,
+  TableCell,
   VALIGN,
 } from 'mark-one';
-import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
-import { COURSE_TABLE_COLUMN, COURSE_TABLE_COLUMN_GROUP, getAreaColor } from 'common/constants';
+import {
+  COURSE_TABLE_COLUMN,
+  COURSE_TABLE_COLUMN_GROUP,
+  getAreaColor,
+  isSEASEnumToString,
+  IS_SEAS,
+  OFFERED,
+  TERM,
+} from 'common/constants';
+import { MetadataContext } from 'client/context';
+import { offeredEnumToString } from 'common/constants/offered';
 import { CellLayout } from 'client/components/general';
+import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { CourseInstanceListColumn } from './tableFields';
+import { FilterState } from './filters.d';
 
 interface CourseInstanceTableProps {
   /**
@@ -32,9 +45,29 @@ interface CourseInstanceTableProps {
    */
   academicYear: number;
   /**
-  * A handler to merge an updated course back into the complete list
-  */
-  courseUpdateHandler: (course: CourseInstanceResponseDTO) => void;
+   * A handler to update the courses as the user changes the filters
+   */
+  genericFilterUpdate: (field: string, value: string) => void;
+  /**
+   * The current values of the table column filters
+   */
+  filters: FilterState;
+  /**
+   * Controls the opening of the meeting modal with the requested course and term
+   */
+  openMeetingModal: (course: CourseInstanceResponseDTO, term: TERM) => void;
+  /**
+   * Controls the opening of the instructor modal with the requested course and term
+   */
+  openInstructorModal: (course: CourseInstanceResponseDTO, term: TERM) => void;
+  /**
+   * The ref value of the edit faculty absence button
+   */
+  buttonRef: Ref<HTMLButtonElement>;
+  /**
+   * The id of the edit button corresponding to the opened modal
+   */
+  modalButtonId: string;
 }
 
 /**
@@ -44,7 +77,12 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
   academicYear,
   courseList,
   tableData,
-  courseUpdateHandler,
+  genericFilterUpdate,
+  filters,
+  openMeetingModal,
+  openInstructorModal,
+  buttonRef,
+  modalButtonId,
 }): ReactElement => {
   const courseColumns = tableData.filter(
     ({ columnGroup }): boolean => (
@@ -66,6 +104,11 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
     .findIndex(({ viewColumn }): boolean => (
       viewColumn === COURSE_TABLE_COLUMN.ENROLLMENT
     ));
+
+  /**
+   * The current value for the metadata context
+   */
+  const metadata = useContext(MetadataContext);
 
   return (
     <Table>
@@ -115,11 +158,11 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
           */}
         <TableRow>
           <>
-            {courseColumns.map(({ key, name }): ReactElement => (
+            {courseColumns.map(({ key, name, getFilter }): ReactElement => (
               <TableHeadingCell
                 key={key}
                 scope="col"
-                rowSpan={firstEnrollmentField > -1 ? '2' : '1'}
+                rowSpan={getFilter ? '1' : '2'}
               >
                 {name}
               </TableHeadingCell>
@@ -153,7 +196,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
                     <TableHeadingCell
                       key={field.key}
                       scope="col"
-                      rowSpan={firstEnrollmentField > -1 ? 2 : 1}
+                      rowSpan={field.getFilter ? '1' : '2'}
                     >
                       {field.name}
                     </TableHeadingCell>
@@ -166,85 +209,115 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
               <TableHeadingCell
                 key={key}
                 scope="col"
-                rowSpan={firstEnrollmentField > -1 ? 2 : 1}
+                rowSpan={2}
               >
                 {name}
               </TableHeadingCell>
             ))}
           </>
         </TableRow>
-        {/*
-          * The third layers of headers will only include the sub-values for
-          * Enrollment, so it will only be rendered if the "Enrollment" column
-          * is visible.
-          */}
-        {firstEnrollmentField > -1 && (
-          <TableRow>
-            {tableData.map(
-              (field: CourseInstanceListColumn): ReactElement => {
-                if (field.viewColumn === COURSE_TABLE_COLUMN.ENROLLMENT) {
-                  return (
-                    <TableHeadingCell
-                      scope="col"
-                      key={field.key}
-                    >
-                      {field.name}
-                    </TableHeadingCell>
-                  );
-                }
-                return null;
+        <TableRow>
+          {tableData.map(
+            (field: CourseInstanceListColumn): ReactElement => {
+              const filterOptions = {
+                area: metadata.areas.map((area) => ({
+                  value: area,
+                  label: area,
+                })),
+                isSEAS: Object.values(IS_SEAS)
+                  .map((isSEASOption):
+                  {value: string; label: string} => {
+                    const isSEASDisplayTitle = isSEASEnumToString(
+                      isSEASOption
+                    );
+                    return {
+                      value: isSEASOption,
+                      label: isSEASDisplayTitle,
+                    };
+                  }),
+                offered: Object.values(OFFERED)
+                  .map((offeredOption):
+                  {value: string; label: string} => {
+                    const offeredDisplayTitle = offeredEnumToString(
+                      offeredOption
+                    );
+                    return {
+                      value: offeredOption,
+                      label: offeredDisplayTitle,
+                    };
+                  }),
+              };
+              if (field.viewColumn === COURSE_TABLE_COLUMN.ENROLLMENT) {
+                return (
+                  <TableHeadingCell
+                    scope="col"
+                    key={field.key}
+                  >
+                    {field.name}
+                  </TableHeadingCell>
+                );
               }
-
-            )}
-          </TableRow>
-        )}
+              return field.getFilter ? (
+                <TableHeadingCell
+                  scope="col"
+                  key={field.key}
+                >
+                  {field.getFilter(
+                    filters,
+                    genericFilterUpdate,
+                    filterOptions
+                  )}
+                </TableHeadingCell>
+              ) : null;
+            }
+          )}
+        </TableRow>
       </TableHead>
       <TableBody>
-        {courseList.map(
-          (
-            course: CourseInstanceResponseDTO,
-            index: number
-          ): ReactElement => (
-            <TableRow key={course.id} isStriped={index % 2 !== 0}>
-              {tableData.map(
-                (field: CourseInstanceListColumn): ReactElement => {
-                  if (field.viewColumn === COURSE_TABLE_COLUMN.CATALOG_NUMBER) {
-                    return (
-                      <TableRowHeadingCell
-                        scope="row"
-                        key={field.key}
-                        verticalAlignment={VALIGN.TOP}
-                      >
-                        <CellLayout>
-                          {field.getValue(course)}
-                        </CellLayout>
-                      </TableRowHeadingCell>
-                    );
-                  }
+        {courseList.map((course, index) => (
+          <TableRow key={course.id} isStriped={index % 2 !== 0}>
+            {tableData.map(
+              (field: CourseInstanceListColumn): ReactElement => {
+                if (field.viewColumn
+                === COURSE_TABLE_COLUMN.CATALOG_NUMBER) {
                   return (
-                    <TableCell
-                      verticalAlignment={VALIGN.TOP}
+                    <TableRowHeadingCell
+                      scope="row"
                       key={field.key}
-                      backgroundColor={
-                        field.viewColumn === COURSE_TABLE_COLUMN.AREA
-                          && getAreaColor(field.getValue(course) as string)
-                      }
+                      verticalAlignment={VALIGN.TOP}
                     >
                       <CellLayout>
-                        {field.getValue(
-                          course,
-                          {
-                            updateHandler: courseUpdateHandler,
-                          }
-                        )}
+                        {field.getValue(course)}
                       </CellLayout>
-                    </TableCell>
+                    </TableRowHeadingCell>
                   );
                 }
-              )}
-            </TableRow>
-          )
-        )}
+                return (
+                  <TableCell
+                    verticalAlignment={VALIGN.TOP}
+                    key={field.key}
+                    backgroundColor={
+                      field.viewColumn === COURSE_TABLE_COLUMN.AREA
+                    && getAreaColor(field.getValue(course) as string)
+                    }
+                  >
+                    <CellLayout>
+                      {field.getValue(
+                        course,
+                        {
+                          openMeetingModal,
+                          openInstructorModal,
+                          buttonRef,
+                          modalButtonId,
+                        }
+                      )}
+                    </CellLayout>
+                  </TableCell>
+                );
+              }
+            )}
+          </TableRow>
+        ))}
       </TableBody>
     </Table>
   );

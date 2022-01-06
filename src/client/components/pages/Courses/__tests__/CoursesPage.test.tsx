@@ -1,6 +1,11 @@
 import React from 'react';
 import { strictEqual, deepStrictEqual } from 'assert';
-import { stub, SinonStub } from 'sinon';
+import {
+  stub,
+  spy,
+  SinonStub,
+  SinonSpy,
+} from 'sinon';
 import {
   render,
   BoundFunction,
@@ -9,16 +14,21 @@ import {
   wait,
   fireEvent,
   AllByRole,
+  within,
 } from 'test-utils';
 import { CourseAPI } from 'client/api';
 import { AppMessage, MESSAGE_TYPE, MESSAGE_ACTION } from 'client/classes';
 import { MessageReducerAction } from 'client/context';
 import { cs50CourseInstance } from 'testData';
+import { isSEASEnumToString, IS_SEAS, OFFERED } from 'common/constants';
+import { offeredEnumToString } from 'common/constants/offered';
 import CoursesPage from '../CoursesPage';
+import * as filters from '../../Filter';
 
 describe('Course Page', function () {
   let getStub: SinonStub;
   let dispatchMessage: SinonStub;
+  let filterSpy: SinonSpy;
   beforeEach(function () {
     getStub = stub(CourseAPI, 'getCourseInstancesForYear');
     dispatchMessage = stub();
@@ -71,6 +81,64 @@ describe('Course Page', function () {
         const realMessage = dispatchMessage.args[0][0] as MessageReducerAction;
         deepStrictEqual(realMessage.message, testErrorAppMessage);
         strictEqual(realMessage.type, MESSAGE_ACTION.PUSH);
+      });
+    });
+  });
+
+  describe('Filtering data', function () {
+    let getAllByRole: BoundFunction<AllByRole>;
+    const areaFilterLabel = 'The table will be filtered as selected in this area dropdown filter';
+    const isSEASFilterLabel = 'The table will be filtered as selected in this isSEAS dropdown filter';
+    const fallOfferedFilterLabel = 'The table will be filtered as selected in this fall offered dropdown filter';
+    const springOfferedFilterLabel = 'The table will be filtered as selected in this spring offered dropdown filter';
+    beforeEach(function () {
+      filterSpy = spy(filters, 'listFilter');
+      getStub.resolves([
+        { ...cs50CourseInstance },
+      ]);
+      ({ getAllByRole } = render(<CoursesPage />));
+    });
+    context('when the area dropdown filter is changed', function () {
+      it('calls the listFilter function once for each filter', function () {
+        const [, , thirdRow] = getAllByRole('row');
+        const utils = within(thirdRow);
+        const area = utils.getByLabelText(areaFilterLabel);
+        filterSpy.resetHistory();
+        fireEvent.change(area, { target: { value: 'AM' } });
+        strictEqual(filterSpy.callCount, 1);
+      });
+    });
+    context('when the isSEAS dropdown filter is called', function () {
+      it('calls the listFilter function once for each filter', function () {
+        const [, , thirdRow] = getAllByRole('row');
+        const utils = within(thirdRow);
+        const isSEAS = utils.getByLabelText(isSEASFilterLabel);
+        filterSpy.resetHistory();
+        fireEvent.change(isSEAS,
+          { target: { value: isSEASEnumToString(IS_SEAS.N) } });
+        strictEqual(filterSpy.callCount, 1);
+      });
+    });
+    context('when the fall offered dropdown filter is called', function () {
+      it('calls the listFilter function once for each filter', function () {
+        const [, , thirdRow] = getAllByRole('row');
+        const utils = within(thirdRow);
+        const fallOffered = utils.getByLabelText(fallOfferedFilterLabel);
+        filterSpy.resetHistory();
+        fireEvent.change(fallOffered,
+          { target: { value: offeredEnumToString(OFFERED.Y) } });
+        strictEqual(filterSpy.callCount, 1);
+      });
+    });
+    context('when the spring offered dropdown filter is called', function () {
+      it('calls the listFilter function once for each filter', function () {
+        const [, , thirdRow] = getAllByRole('row');
+        const utils = within(thirdRow);
+        const springOffered = utils.getByLabelText(springOfferedFilterLabel);
+        filterSpy.resetHistory();
+        fireEvent.change(springOffered,
+          { target: { value: offeredEnumToString(OFFERED.N) } });
+        strictEqual(filterSpy.callCount, 1);
       });
     });
   });
