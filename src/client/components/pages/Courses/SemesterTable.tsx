@@ -17,8 +17,16 @@ import { COURSE_TABLE_COLUMN, COURSE_TABLE_COLUMN_GROUP, MANDATORY_COLUMNS } fro
 import { ModalFieldsColumn } from './modalFields';
 
 interface SemesterTableProps {
+  /**
+   * List of columns that should be displayed for show/hide
+   */
   columns: ModalFieldsColumn[],
 
+  /**
+   * Of the columns above, the unique column reference to columns that should
+   * be considered visible (or the checkbox checked). Columns present in
+   * `columns`, but not here will be displayed unchecked.
+   */
   checked: COURSE_TABLE_COLUMN[],
 
   /**
