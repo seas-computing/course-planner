@@ -42,6 +42,9 @@ const ViewModal: FunctionComponent<ViewModalProps> = ({
     <Modal
       ariaLabelledBy="view-modal-header"
       isVisible={isVisible}
+      closeHandler={() => {
+        onClose();
+      }}
     >
       <ModalHeader
         forwardRef={modalHeaderRef}
