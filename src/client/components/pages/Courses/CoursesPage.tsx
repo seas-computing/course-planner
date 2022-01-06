@@ -146,6 +146,11 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   const buttonRef: Ref<HTMLButtonElement> = useRef(null);
 
   /**
+   * Ref to the Customize View button
+   */
+  const customizeViewButtonRef: Ref<HTMLButtonElement> = useRef(null);
+
+  /**
    * The current value of each of the course instance table filters
    */
   const [filters, setFilters] = useState<FilterState>({
@@ -295,7 +300,9 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
               </ViewModal>
               <Button
                 variant={VARIANT.INFO}
+                forwardRef={customizeViewButtonRef}
                 onClick={() => {
+                  customizeViewButtonRef.current.focus();
                   setViewModalVisible(true);
                 }}
               >

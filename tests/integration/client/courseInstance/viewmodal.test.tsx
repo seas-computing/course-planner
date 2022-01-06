@@ -13,7 +13,7 @@ import { CourseAPI } from 'client/api';
 import { stub } from 'sinon';
 import { strictEqual } from 'assert';
 
-describe('Customize view modal', function () {
+describe.only('Customize view modal', function () {
   let coursePage: RenderResult;
   let modal: HTMLElement;
   let table: HTMLElement;
@@ -56,5 +56,15 @@ describe('Customize view modal', function () {
     fireEvent.click(optionalColumnCheckbox);
 
     return within(table).findByText('Same As');
+  });
+  it('re-focuses the "Customize view" button on close', async function () {
+    const doneButton = within(modal).getByText('Done');
+    fireEvent.click(doneButton);
+
+    const button = await coursePage.findByText(
+      'Customize View',
+      { exact: false }
+    );
+    strictEqual(document.activeElement as HTMLElement, button);
   });
 });
