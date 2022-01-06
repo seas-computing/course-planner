@@ -25,8 +25,8 @@ interface ViewModalProps {
 }
 
 /**
-* Displays a list of the instructors associated with a course instance and
-* provides way to add, remove and rearrange them
+* Displays the [[SemesterTable]] used for customizing the currently visible
+* columns in the [[CourseInstanceTable]]
 */
 const ViewModal: FunctionComponent<ViewModalProps> = ({
   isVisible,

@@ -28,7 +28,7 @@ interface SemesterTableProps {
 }
 
 /**
- * Component representing the list of CourseInstances in a given Academic year
+ * Component to show/hide columns in the CourseInstance cable
  */
 const SemesterTable: FunctionComponent<SemesterTableProps> = ({
   columns,
