@@ -290,6 +290,9 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
                 isVisible={viewModalVisible}
                 onClose={() => {
                   setViewModalVisible(false);
+                  setTimeout(() => {
+                    customizeViewButtonRef.current.focus();
+                  });
                 }}
               >
                 <SemesterTable
@@ -302,7 +305,6 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
                 variant={VARIANT.INFO}
                 forwardRef={customizeViewButtonRef}
                 onClick={() => {
-                  customizeViewButtonRef.current.focus();
                   setViewModalVisible(true);
                 }}
               >
