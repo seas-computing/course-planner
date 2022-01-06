@@ -13,7 +13,7 @@ import { CourseAPI } from 'client/api';
 import { stub } from 'sinon';
 import { strictEqual } from 'assert';
 
-describe.only('Customize view modal', function () {
+describe('Customize view modal', function () {
   let coursePage: RenderResult;
   let modal: HTMLElement;
   let table: HTMLElement;
