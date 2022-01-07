@@ -25,4 +25,14 @@ export enum COURSE_TABLE_COLUMN_GROUP {
   FALL='FALL',
   COURSE='COURSE',
   META='META',
+  SEMESTER='SEMESTER',
 }
+
+/**
+ * These columns are ALWAYS shown regardless of user choice
+ */
+export const MANDATORY_COLUMNS = [
+  COURSE_TABLE_COLUMN.AREA,
+  COURSE_TABLE_COLUMN.CATALOG_NUMBER,
+  COURSE_TABLE_COLUMN.DETAILS,
+];

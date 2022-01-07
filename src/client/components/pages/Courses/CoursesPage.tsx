@@ -6,35 +6,34 @@ import React, {
   useContext,
   Ref,
   useRef,
-  useMemo,
 } from 'react';
-import { Dropdown, LoadSpinner, POSITION } from 'mark-one';
+import {
+  Button,
+  LoadSpinner,
+  VARIANT,
+} from 'mark-one';
 import { MessageContext } from 'client/context';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { CourseAPI } from 'client/api';
 import { MESSAGE_TYPE, MESSAGE_ACTION, AppMessage } from 'client/classes';
-import { OFFERED, COURSE_TABLE_COLUMN } from 'common/constants';
+import { OFFERED, COURSE_TABLE_COLUMN, MANDATORY_COLUMNS } from 'common/constants';
 import get from 'lodash.get';
 import merge from 'lodash.merge';
 import set from 'lodash.set';
 import TERM, { TermKey } from 'common/constants/term';
 import { ViewResponse } from 'common/dto/view/ViewResponse.dto';
 import { VerticalSpace } from 'client/components/layout';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faWrench } from '@fortawesome/free-solid-svg-icons';
 import CourseInstanceTable from './CourseInstanceTable';
+import ViewModal from './ViewModal';
+import SemesterTable from './SemesterTable';
+import { modalFields } from './modalFields';
 import { formatFacultyNotes, tableFields } from './tableFields';
 import { listFilter } from '../Filter';
 import { FilterState } from './filters.d';
 import MeetingModal from './MeetingModal';
 import InstructorModal from './InstructorModal';
-
-/**
- * These columns are ALWAYS shown regardless of user choice
- */
-const mandatoryColumns = [
-  COURSE_TABLE_COLUMN.AREA,
-  COURSE_TABLE_COLUMN.CATALOG_NUMBER,
-  COURSE_TABLE_COLUMN.DETAILS,
-];
 
 /**
  * Default View
@@ -47,7 +46,7 @@ const defaultView: ViewResponse = {
   id: 'default',
   name: 'Default',
   columns: [
-    ...mandatoryColumns,
+    ...MANDATORY_COLUMNS,
     COURSE_TABLE_COLUMN.MEETINGS,
     COURSE_TABLE_COLUMN.IS_SEAS,
     COURSE_TABLE_COLUMN.OFFERED,
@@ -85,20 +84,14 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   ] = useState([] as CourseInstanceResponseDTO[]);
 
   const [
-    currentViewId,
-    setCurrentViewId,
-  ] = useState(defaultView.id);
+    viewModalVisible,
+    setViewModalVisible,
+  ] = useState(false);
 
   const [
-    views,
-  ] = useState([
-    defaultView,
-  ]);
-
-  const currentView = useMemo(
-    () => views.find(({ id }) => id === currentViewId),
-    [views, currentViewId]
-  );
+    currentViewColumns,
+    setCurrentViewColumns,
+  ] = useState(defaultView.columns);
 
   const dispatchMessage = useContext(MessageContext);
 
@@ -151,6 +144,11 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
    * The current ref value of the focused button
    */
   const buttonRef: Ref<HTMLButtonElement> = useRef(null);
+
+  /**
+   * Ref to the Customize View button
+   */
+  const customizeViewButtonRef: Ref<HTMLButtonElement> = useRef(null);
 
   /**
    * The current value of each of the course instance table filters
@@ -263,6 +261,20 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     }
   };
 
+  /**
+   * Show/hide columns from the course instance table
+   *
+   * @param viewColumn The column that triggered the change handler
+   */
+  const toggleColumn = (viewColumn: COURSE_TABLE_COLUMN): void => {
+    setCurrentViewColumns((columns: COURSE_TABLE_COLUMN[]) => {
+      if (columns.includes(viewColumn)) {
+        return columns.filter((col) => col !== viewColumn);
+      }
+      return columns.concat([viewColumn]);
+    });
+  };
+
   return (
     <div className="course-instance-table">
       {fetching
@@ -274,20 +286,34 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
         : (
           <>
             <VerticalSpace>
-              <Dropdown
-                id="select-view-dropdown"
-                name="select-view-dropdown"
-                onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
-                  setCurrentViewId(event.currentTarget.value);
+              <ViewModal
+                isVisible={viewModalVisible}
+                onClose={() => {
+                  setViewModalVisible(false);
+                  setTimeout(() => {
+                    customizeViewButtonRef.current.focus();
+                  });
                 }}
-                labelPosition={POSITION.LEFT}
-                label="View"
-                value={currentViewId}
-                options={views.map((view) => ({
-                  label: view.name,
-                  value: view.id,
-                }))}
-              />
+              >
+                <SemesterTable
+                  columns={modalFields}
+                  checked={currentViewColumns}
+                  onChange={toggleColumn}
+                />
+              </ViewModal>
+              <Button
+                variant={VARIANT.INFO}
+                forwardRef={customizeViewButtonRef}
+                onClick={() => {
+                  setViewModalVisible(true);
+                }}
+              >
+                <FontAwesomeIcon
+                  icon={faWrench}
+                />
+                {' '}
+                Customize View
+              </Button>
             </VerticalSpace>
             <CourseInstanceTable
               academicYear={acadYear}
@@ -295,7 +321,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
               genericFilterUpdate={genericFilterUpdate}
               tableData={tableFields.filter(
                 ({ viewColumn }): boolean => (
-                  currentView.columns.includes(viewColumn)
+                  currentViewColumns.includes(viewColumn)
                 )
               )}
               filters={filters}

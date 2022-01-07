@@ -12,9 +12,9 @@ import {
   QueryByText,
   FindByText,
   wait,
+  fireEvent,
   AllByRole,
   within,
-  fireEvent,
 } from 'test-utils';
 import { CourseAPI } from 'client/api';
 import { AppMessage, MESSAGE_TYPE, MESSAGE_ACTION } from 'client/classes';
@@ -25,7 +25,7 @@ import { offeredEnumToString } from 'common/constants/offered';
 import CoursesPage from '../CoursesPage';
 import * as filters from '../../Filter';
 
-describe('Course Instances List', function () {
+describe('Course Page', function () {
   let getStub: SinonStub;
   let dispatchMessage: SinonStub;
   let filterSpy: SinonSpy;
@@ -84,6 +84,7 @@ describe('Course Instances List', function () {
       });
     });
   });
+
   describe('Filtering data', function () {
     let getAllByRole: BoundFunction<AllByRole>;
     const areaFilterLabel = 'The table will be filtered as selected in this area dropdown filter';
@@ -139,6 +140,26 @@ describe('Course Instances List', function () {
           { target: { value: offeredEnumToString(OFFERED.N) } });
         strictEqual(filterSpy.callCount, 1);
       });
+    });
+  });
+  describe('customize button', function () {
+    let findByText: BoundFunction<FindByText>;
+    let queryAllByRole: BoundFunction<AllByRole>;
+    beforeEach(function () {
+      getStub.resolves([
+        { ...cs50CourseInstance },
+      ]);
+      ({
+        findByText,
+        queryAllByRole,
+      } = render(<CoursesPage />));
+    });
+    it('causes ViewModal to be displayed', async function () {
+      const customizeButton = await findByText(/Customize/, { exact: true });
+
+      fireEvent.click(customizeButton);
+
+      strictEqual(queryAllByRole('dialog').length, 1);
     });
   });
 });
