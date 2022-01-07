@@ -67,4 +67,10 @@ describe('Customize view modal', function () {
     );
     strictEqual(document.activeElement as HTMLElement, button);
   });
+  it('focuses the header on open', function () {
+    strictEqual(
+      (document.activeElement as HTMLElement).textContent,
+      'Customize View'
+    );
+  });
 });

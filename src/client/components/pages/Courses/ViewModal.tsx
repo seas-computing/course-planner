@@ -1,6 +1,7 @@
 import React, {
   FunctionComponent,
   ReactElement,
+  useEffect,
   useRef,
 } from 'react';
 import {
@@ -37,6 +38,12 @@ const ViewModal: FunctionComponent<ViewModalProps> = ({
    * Ref to attach to the internal modal header
    */
   const modalHeaderRef = useRef<HTMLHeadingElement>(null);
+
+  useEffect((): void => {
+    if (isVisible) {
+      modalHeaderRef.current.focus();
+    }
+  }, [isVisible]);
 
   return (
     <Modal
