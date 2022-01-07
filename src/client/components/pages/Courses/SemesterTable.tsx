@@ -36,7 +36,7 @@ interface SemesterTableProps {
 }
 
 /**
- * Component to show/hide columns in the CourseInstance cable
+ * Component to show/hide columns in the CourseInstance table
  */
 const SemesterTable: FunctionComponent<SemesterTableProps> = ({
   columns,
