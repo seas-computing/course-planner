@@ -12,6 +12,7 @@ import {
   VARIANT,
   fromTheme,
   Dropdown,
+  TextInput,
 } from 'mark-one';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStickyNote as withNotes, faFolderOpen, faEdit } from '@fortawesome/free-solid-svg-icons';
@@ -356,6 +357,46 @@ function generateDropdown<
           genericFilterUpdate(
             updateField,
             (evt.target as HTMLSelectElement)?.value
+          );
+        }}
+      />
+    );
+  };
+}
+
+/**
+ * A function that creates a Text Input element, which will be used as a filter
+ * field, for the field that is provided.
+ */
+function generateTextField<
+  Field extends keyof FilterState,
+  Subfield extends keyof FilterState[Field]
+>(field: Field, subField?: Field extends 'spring' | 'fall' ? Subfield : never): (GetterFunction) {
+  return (filters, genericFilterUpdate) => {
+    let filterValue;
+    let updateField;
+    if (subField) {
+      updateField = `${field}.${subField.toString()}`;
+      ({ [field]: { [subField]: filterValue } } = filters);
+    } else {
+      updateField = field;
+      ({ [field]: filterValue } = filters);
+    }
+    return (
+      <TextInput
+        id={field}
+        name={field}
+        value={filterValue as string}
+        placeholder={`Filter by ${field}`}
+        label={subField
+          ? `The table will be filtered as characters are typed in this ${field} ${subField.toString()} filter field`
+          : `The table will be filtered as characters are typed in this ${field} filter field`}
+        isLabelVisible={false}
+        hideError
+        onChange={(evt) => {
+          genericFilterUpdate(
+            updateField,
+            (evt.target as HTMLInputElement)?.value
           );
         }}
       />
