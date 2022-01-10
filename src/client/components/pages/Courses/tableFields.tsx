@@ -310,15 +310,19 @@ export interface CourseInstanceListColumn {
   getFilter?: (
     filters: FilterState,
     genericFilterUpdate: (field: string, value: string) => void,
-    filterOptions: Record<string, {value: string, label: string}[]>
+    filterOptions?: Record<string, {value: string, label: string}[]>
   ) => ReactElement;
 }
 
 type GetterFunction = (filters: FilterState,
   genericFilterUpdate: (field: string, value: string) => void,
-  filterOptions: Record<string, {value: string, label: string}[]>
+  filterOptions?: Record<string, {value: string, label: string}[]>
 ) => ReactElement;
 
+/**
+ * A function that creates a Dropdown element, which will be used as a filter
+ * field, for the field that is provided.
+ */
 function generateDropdown<
   Field extends keyof FilterState,
   Subfield extends keyof FilterState[Field]
