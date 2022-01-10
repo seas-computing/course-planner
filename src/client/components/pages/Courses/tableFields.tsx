@@ -424,6 +424,7 @@ export const tableFields: CourseInstanceListColumn[] = [
     columnGroup: COURSE_TABLE_COLUMN_GROUP.COURSE,
     viewColumn: COURSE_TABLE_COLUMN.CATALOG_NUMBER,
     getValue: retrieveValue('catalogNumber'),
+    getFilter: generateTextField('catalogNumber'),
   },
   {
     name: 'Title',

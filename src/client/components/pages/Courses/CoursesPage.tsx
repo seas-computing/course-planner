@@ -155,6 +155,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
    */
   const [filters, setFilters] = useState<FilterState>({
     area: 'All',
+    catalogNumber: 'All',
     isSEAS: 'All',
     spring: {
       offered: 'All',
@@ -201,13 +202,23 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   useEffect(() => {
     let courses = [...currentCourses];
     // Provides a list of the paths for the filters in the Course Instance table
-    const filterPaths = ['area', 'isSEAS', 'fall.offered', 'spring.offered'];
-    filterPaths.forEach((filterPath) => {
+    const dropdownFilterPaths = ['area', 'isSEAS', 'fall.offered', 'spring.offered'];
+    dropdownFilterPaths.forEach((filterPath) => {
       const filterValue = get(filters, filterPath) as string;
       if (filterValue !== 'All') {
         courses = listFilter(
           courses,
           { field: `${filterPath}`, value: filterValue, exact: true }
+        );
+      }
+    });
+    const textFilterPaths = ['catalogNumber'];
+    textFilterPaths.forEach((filterPath) => {
+      const filterValue = get(filters, filterPath) as string;
+      if (filterValue !== 'All') {
+        courses = listFilter(
+          courses,
+          { field: `${filterPath}`, value: filterValue, exact: false }
         );
       }
     });
