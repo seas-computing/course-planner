@@ -219,7 +219,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     const textFilterPaths = ['catalogNumber', 'title', 'fall.instructors', 'spring.instructors'];
     textFilterPaths.forEach((filterPath) => {
       const filterValue = get(filters, filterPath) as string;
-      if (filterValue !== 'All') {
+      if (filterValue !== '') {
         if (filterPath === 'fall.instructors' || filterPath === 'spring.instructors') {
           const filterValueLower = filterValue.toLowerCase();
           courses = courses.filter((course) => {
