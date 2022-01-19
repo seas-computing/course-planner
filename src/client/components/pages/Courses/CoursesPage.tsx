@@ -30,7 +30,7 @@ import CourseInstanceTable from './CourseInstanceTable';
 import ViewModal from './ViewModal';
 import SemesterTable from './SemesterTable';
 import { modalFields } from './modalFields';
-import { formatFacultyNotes, tableFields } from './tableFields';
+import { CourseInstanceListColumn, formatFacultyNotes, tableFields } from './tableFields';
 import { listFilter } from '../Filter';
 import { FilterState } from './filters.d';
 import MeetingModal from './MeetingModal';
@@ -93,6 +93,19 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     currentViewColumns,
     setCurrentViewColumns,
   ] = useState(defaultView.columns);
+
+  const [
+    tableData,
+    setTableData,
+  ] = useState<CourseInstanceListColumn[]>(tableFields);
+
+  useEffect(() => {
+    setTableData(tableFields.filter(
+      ({ viewColumn }): boolean => (
+        currentViewColumns.includes(viewColumn)
+      )
+    ));
+  }, [currentViewColumns, setTableData]);
 
   const dispatchMessage = useContext(MessageContext);
 
@@ -330,11 +343,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
               academicYear={acadYear}
               courseList={filteredCourses}
               genericFilterUpdate={genericFilterUpdate}
-              tableData={tableFields.filter(
-                ({ viewColumn }): boolean => (
-                  currentViewColumns.includes(viewColumn)
-                )
-              )}
+              tableData={tableData}
               filters={filters}
               openMeetingModal={openMeetingModal}
               openInstructorModal={openInstructorModal}
