@@ -1,7 +1,10 @@
 import React, {
   ReactElement,
   ReactNode,
-  useReducer,
+  useRef,
+  Dispatch,
+  useState,
+  useEffect,
 } from 'react';
 import {
   render,
@@ -12,7 +15,7 @@ import { MarkOneWrapper } from 'mark-one';
 import {
   MessageContext,
   DispatchMessage,
-  messageReducer,
+  MessageReducerAction,
 } from 'client/context';
 import { MetadataContext, MetadataContextValue } from 'client/context/MetadataContext';
 import { Message } from 'client/components/layout';
@@ -101,31 +104,26 @@ const Messagable = ({
   metadataContext,
   routerEntries,
 }: MessageableProps) => {
-  const [{ currentMessage, queue }, dispatchMessage] = useReducer(
-    messageReducer,
-    {
-      queue: [],
-      currentMessage: undefined,
+  const dispatchMessageRef = useRef<Dispatch<MessageReducerAction>>();
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => {
+    if (dispatchMessageRef.current) {
+      setLoaded(true);
     }
-  );
+  }, [dispatchMessageRef, setLoaded]);
   return (
-    <MemoryRouter initialEntries={routerEntries}>
+    <div>
       <MarkOneWrapper>
-        <MessageContext.Provider value={dispatchMessage}>
-          <MetadataContext.Provider value={metadataContext}>
-            {children}
-            {currentMessage
-                && (
-                  <Message
-                    messageCount={queue.length}
-                    messageText={currentMessage.text}
-                    messageType={currentMessage.variant}
-                  />
-                )}
-          </MetadataContext.Provider>
-        </MessageContext.Provider>
+        <MemoryRouter initialEntries={routerEntries}>
+          <MessageContext.Provider value={dispatchMessageRef.current}>
+            <MetadataContext.Provider value={metadataContext}>
+              <Message dispatchMessageRef={dispatchMessageRef} />
+              {loaded ? children : null}
+            </MetadataContext.Provider>
+          </MessageContext.Provider>
+        </MemoryRouter>
       </MarkOneWrapper>
-    </MemoryRouter>
+    </div>
   );
 };
 
