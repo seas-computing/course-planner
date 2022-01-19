@@ -192,35 +192,37 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
    * Handles keeping track of the group of filters as the user interacts with
    * the filter dropdowns
    */
-  const genericFilterUpdate = (field: string, value: string) => {
+  const genericFilterUpdate = useCallback((field: string, value: string) => {
     setFilters((currentFilters) => {
       // Make a copy of the existing filters
       const newFilters = merge({}, currentFilters);
       set(newFilters, field, value);
       return newFilters;
     });
-  };
+  }, [setFilters]);
 
   /**
    * Takes the requested course and term information to display the requested
    * meeting modal
    */
-  const openMeetingModal = (course: CourseInstanceResponseDTO, term: TERM) => {
-    setMeetingModalData({ course, term, visible: true });
-    setModalButtonId(`meetings-${course.id}-${term}`);
-  };
+  const openMeetingModal = useCallback(
+    (course: CourseInstanceResponseDTO, term: TERM) => {
+      setMeetingModalData({ course, term, visible: true });
+      setModalButtonId(`meetings-${term.toLowerCase()}-${course.id}`);
+    }, [setMeetingModalData, setModalButtonId]
+  );
 
   /**
    * Takes the requested course and term information to display the requested
    * meeting modal
    */
-  const openInstructorModal = (
+  const openInstructorModal = useCallback((
     course: CourseInstanceResponseDTO,
     term: TERM
   ) => {
     setInstructorModalData({ course, term, visible: true });
-    setModalButtonId(`instructors-${course.id}-${term}`);
-  };
+    setModalButtonId(`instructors-${term.toLowerCase()}-${course.id}`);
+  }, [setInstructorModalData, setModalButtonId]);
 
   useEffect(() => {
     let courses = [...currentCourses];
@@ -268,7 +270,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   * to accept the results of an update returned from the server, without
   * needing a full refresh of the data.
   */
-  const updateLocalCourse = (
+  const updateLocalCourse = useCallback((
     course: CourseInstanceResponseDTO,
     message?: string
   ): void => {
@@ -283,21 +285,21 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
         type: MESSAGE_ACTION.PUSH,
       });
     }
-  };
+  }, [currentCourses, dispatchMessage]);
 
   /**
    * Show/hide columns from the course instance table
    *
    * @param viewColumn The column that triggered the change handler
    */
-  const toggleColumn = (viewColumn: COURSE_TABLE_COLUMN): void => {
+  const toggleColumn = useCallback((viewColumn: COURSE_TABLE_COLUMN): void => {
     setCurrentViewColumns((columns: COURSE_TABLE_COLUMN[]) => {
       if (columns.includes(viewColumn)) {
         return columns.filter((col) => col !== viewColumn);
       }
       return columns.concat([viewColumn]);
     });
-  };
+  }, [setCurrentViewColumns]);
 
   return (
     <div className="course-instance-table">
