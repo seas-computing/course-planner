@@ -161,9 +161,11 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     isSEAS: 'All',
     spring: {
       offered: 'All',
+      instructors: '',
     },
     fall: {
       offered: 'All',
+      instructors: '',
     },
   });
 
@@ -214,14 +216,24 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
         );
       }
     });
-    const textFilterPaths = ['catalogNumber'];
+    const textFilterPaths = ['catalogNumber', 'title', 'fall.instructors', 'spring.instructors'];
     textFilterPaths.forEach((filterPath) => {
       const filterValue = get(filters, filterPath) as string;
       if (filterValue !== 'All') {
-        courses = listFilter(
-          courses,
-          { field: `${filterPath}`, value: filterValue, exact: false }
-        );
+        if (filterPath === 'fall.instructors' || filterPath === 'spring.instructors') {
+          const filterValueLower = filterValue.toLowerCase();
+          courses = courses.filter((course) => {
+            const instructors = get(course, filterPath, []) as
+            InstructorResponseDTO[];
+            return instructors.some((instructor) => instructor.displayName
+              .toLowerCase().indexOf(filterValueLower) !== -1);
+          });
+        } else {
+          courses = listFilter(
+            courses,
+            { field: `${filterPath}`, value: filterValue, exact: false }
+          );
+        }
       }
     });
     // Hides the retired courses

@@ -470,6 +470,7 @@ export const tableFields: CourseInstanceListColumn[] = [
     columnGroup: COURSE_TABLE_COLUMN_GROUP.FALL,
     viewColumn: COURSE_TABLE_COLUMN.INSTRUCTORS,
     getValue: formatInstructors(TERM.FALL),
+    getFilter: generateTextField('fall', 'instructors'),
   },
   {
     name: 'Meetings',
@@ -513,6 +514,7 @@ export const tableFields: CourseInstanceListColumn[] = [
     columnGroup: COURSE_TABLE_COLUMN_GROUP.SPRING,
     viewColumn: COURSE_TABLE_COLUMN.INSTRUCTORS,
     getValue: formatInstructors(TERM.SPRING),
+    getFilter: generateTextField('spring', 'instructors'),
   },
   {
     name: 'Meetings',

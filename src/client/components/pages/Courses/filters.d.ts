@@ -5,6 +5,7 @@ import { IS_SEAS, OFFERED } from 'common/constants';
  */
 export interface SemesterFilterState {
   offered: OFFERED | 'All';
+  instructors: string;
 }
 
 /**

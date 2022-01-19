@@ -30,9 +30,11 @@ describe('CourseInstanceTable', function () {
     isSEAS: 'All',
     spring: {
       offered: 'All',
+      instructors: '',
     },
     fall: {
       offered: 'All',
+      instructors: '',
     },
   };
   beforeEach(function () {
