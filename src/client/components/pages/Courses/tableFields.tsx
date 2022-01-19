@@ -90,7 +90,6 @@ export const formatInstructors = (
     course,
     openInstructorModal,
     buttonRef,
-    modalButtonId,
   }: FieldContentProps
 ): ReactElement => {
   const semKey = term.toLowerCase() as TermKey;
@@ -120,7 +119,7 @@ export const formatInstructors = (
           openInstructorModal(course, term);
         }}
         variant={VARIANT.INFO}
-        forwardRef={`instructors-${parentId}-${term}` === modalButtonId ? buttonRef : null}
+        forwardRef={buttonRef}
       >
         <FontAwesomeIcon icon={faEdit} />
       </BorderlessButton>
@@ -200,7 +199,6 @@ export const formatMeetings = (
     course,
     openMeetingModal,
     buttonRef,
-    modalButtonId,
   }: FieldContentProps
 ): ReactElement => {
   const semKey = term.toLowerCase() as TermKey;
@@ -248,8 +246,7 @@ export const formatMeetings = (
           openMeetingModal(course, term);
         }}
         variant={VARIANT.INFO}
-        // Set the ref only if this button was clicked to open the modal
-        forwardRef={`meetings-${parentId}-${term}` === modalButtonId ? buttonRef : null}
+        forwardRef={buttonRef}
       >
         <FontAwesomeIcon icon={faEdit} />
       </BorderlessButton>
@@ -278,10 +275,6 @@ export interface FieldContentProps {
    * The current ref value of the focused button
    */
   buttonRef?: Ref<HTMLButtonElement>;
-  /**
-   * The id of the edit button corresponding to the currently opened modal
-   */
-  modalButtonId?: string;
 }
 
 /**

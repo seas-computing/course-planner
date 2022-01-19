@@ -6,6 +6,7 @@ import React, {
   useContext,
   Ref,
   useRef,
+  useCallback,
 } from 'react';
 import {
   Button,
@@ -144,6 +145,16 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
    * The current ref value of the focused button
    */
   const buttonRef: Ref<HTMLButtonElement> = useRef(null);
+
+  const getButtonRef = useCallback(
+    (buttonId: string): typeof buttonRef => {
+      if (buttonId === modalButtonId) {
+        return buttonRef;
+      }
+      return null;
+    },
+    [modalButtonId]
+  );
 
   /**
    * Ref to the Customize View button
@@ -327,8 +338,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
               filters={filters}
               openMeetingModal={openMeetingModal}
               openInstructorModal={openInstructorModal}
-              modalButtonId={modalButtonId}
-              buttonRef={buttonRef}
+              getButtonRef={getButtonRef}
             />
             {meetingModalData.visible
               ? (
