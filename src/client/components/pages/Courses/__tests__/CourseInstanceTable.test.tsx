@@ -25,7 +25,8 @@ describe('CourseInstanceTable', function () {
   ];
   const testFilters: FilterState = {
     area: 'All',
-    catalogNumber: 'All',
+    catalogNumber: '',
+    title: '',
     isSEAS: 'All',
     spring: {
       offered: 'All',

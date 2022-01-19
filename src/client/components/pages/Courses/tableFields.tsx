@@ -432,6 +432,7 @@ export const tableFields: CourseInstanceListColumn[] = [
     columnGroup: COURSE_TABLE_COLUMN_GROUP.COURSE,
     viewColumn: COURSE_TABLE_COLUMN.TITLE,
     getValue: retrieveValue('title'),
+    getFilter: generateTextField('title'),
   },
   {
     name: 'Same As',

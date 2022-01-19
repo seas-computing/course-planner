@@ -25,6 +25,7 @@ import { ViewResponse } from 'common/dto/view/ViewResponse.dto';
 import { VerticalSpace } from 'client/components/layout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWrench } from '@fortawesome/free-solid-svg-icons';
+import { InstructorResponseDTO } from 'common/dto/courses/InstructorResponse.dto';
 import CourseInstanceTable from './CourseInstanceTable';
 import ViewModal from './ViewModal';
 import SemesterTable from './SemesterTable';
@@ -155,7 +156,8 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
    */
   const [filters, setFilters] = useState<FilterState>({
     area: 'All',
-    catalogNumber: 'All',
+    catalogNumber: '',
+    title: '',
     isSEAS: 'All',
     spring: {
       offered: 'All',
