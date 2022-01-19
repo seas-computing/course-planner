@@ -93,16 +93,17 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
   closeModal,
   onSave,
 }): ReactElement => {
-  const { term, calendarYear } = currentSemester;
-  const semKey = term.toLowerCase() as TermKey;
-  const {
-    catalogNumber,
-    [semKey]: {
-      id: instanceId,
-      instructors: instanceInstructors,
-    },
-  } = currentCourse;
+  const [
+    currentCourseInstance,
+    setCurrentCourseInstance,
+  ] = useState<CourseInstanceResponseDTO['fall'|'spring']>(null);
 
+  useEffect(() => {
+    if (currentSemester && currentCourse) {
+      const currentTermKey = currentSemester.term.toLowerCase() as TermKey;
+      setCurrentCourseInstance(currentCourse[currentTermKey]);
+    }
+  }, [currentSemester, currentCourse]);
   /**
    * Keeps track of whether the user has altered fields in the form to determine
    * whether to show a confirmation dialog on modal close
@@ -194,8 +195,8 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
    * opens, then fetch the complete list of instructors from the server
    */
   useEffect(() => {
-    if (isVisible) {
-      setLocalInstructors(instanceInstructors);
+    if (isVisible && currentCourseInstance) {
+      setLocalInstructors(currentCourseInstance.instructors);
       setMeetingModalFocus();
       getAllInstructors()
         .then((facultyList) => {
@@ -213,7 +214,7 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
     }
   }, [
     isVisible,
-    instanceInstructors,
+    currentCourseInstance,
     setLocalInstructors,
     setFullInstructorList,
   ]);
@@ -251,7 +252,10 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
   const saveInstructorList = async () => {
     try {
       setSaving(true);
-      const results = await updateInstructorList(instanceId, localInstructors);
+      const results = await updateInstructorList(
+        currentCourseInstance.id,
+        localInstructors
+      );
       onSave(results);
       setIsChanged(false);
       closeModal();
@@ -263,7 +267,15 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
     }
   };
 
-  const instanceIdentifier = `${catalogNumber}, ${term} ${calendarYear}`;
+  const instanceIdentifier = currentCourse && currentSemester
+    ? `${
+      currentCourse.catalogNumber
+    }, ${
+      currentSemester.term
+    } ${
+      currentSemester.calendarYear
+    }`
+    : '';
   return (
     <Modal
       ariaLabelledBy="edit-instructors-header"

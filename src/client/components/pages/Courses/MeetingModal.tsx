@@ -41,7 +41,7 @@ interface MeetingModalProps {
   /**
    * The notes for the current instance being edited
    */
-  notes: ReactNode;
+  getNotes: () => ReactNode;
   /**
    * The semester within the current course being edited
    */
@@ -135,7 +135,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   currentCourse,
   currentSemester,
   onSave,
-  notes,
+  getNotes,
 }): ReactElement {
   /**
    * The current value of the Meeting Modal ref
@@ -151,15 +151,17 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     setTimeout((): void => modalHeaderRef.current?.focus());
   };
 
-  const { term, calendarYear } = currentSemester;
-  const semKey = term.toLowerCase() as TermKey;
-  const {
-    catalogNumber,
-    [semKey]: {
-      id: instanceId,
-      meetings: instanceMeetings,
-    },
-  } = currentCourse;
+  const [
+    currentCourseInstance,
+    setCurrentCourseInstance,
+  ] = useState<CourseInstanceResponseDTO['fall'|'spring']>(null);
+
+  useEffect(() => {
+    if (currentSemester && currentCourse) {
+      const currentTermKey = currentSemester.term.toLowerCase() as TermKey;
+      setCurrentCourseInstance(currentCourse[currentTermKey]);
+    }
+  }, [currentSemester, currentCourse]);
 
   /**
    * Keeps track of the current meetings for this instance. This is updated as
@@ -241,7 +243,6 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
   [
     isVisible,
     setAllMeetings,
-    instanceMeetings,
     setCurrentEditMeeting,
     setShowRoomsData,
     isChanged,
@@ -252,14 +253,13 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
    * meetings haven't already yet been set.
    */
   useEffect(() => {
-    if (isVisible) {
-      setAllMeetings(instanceMeetings);
+    if (isVisible && currentCourseInstance) {
+      setAllMeetings(currentCourseInstance.meetings);
     }
   },
   [
     isVisible,
-    instanceMeetings,
-    setAllMeetings,
+    currentCourseInstance,
   ]);
 
   /**
@@ -402,12 +402,11 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
       const { startTime, endTime } = currentEditMeeting;
       const { day } = currentEditMeeting;
       setShowRoomsData({
-        term,
-        calendarYear,
+        ...currentSemester,
         startTime,
         endTime,
         day,
-        excludeParent: instanceId,
+        excludeParent: currentCourseInstance.id,
       });
     }
   };
@@ -456,7 +455,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
       let savedMeetings: MeetingResponseDTO[];
       try {
         savedMeetings = await updateMeetingList(
-          instanceId,
+          currentCourseInstance.id,
           updatesToSend
         );
       } catch (err) {
@@ -478,6 +477,15 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     }
   };
 
+  const instanceIdentifier = currentCourse && currentSemester
+    ? `${
+      currentCourse.catalogNumber
+    }, ${
+      currentSemester.term
+    } ${
+      currentSemester.calendarYear
+    }`
+    : '';
   return (
     <Modal
       ariaLabelledBy="editMeeting"
@@ -488,12 +496,12 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
         forwardRef={modalHeaderRef}
         tabIndex={0}
       >
-        {`Meetings for ${catalogNumber} - ${term} ${calendarYear}`}
+        {`Meetings for ${instanceIdentifier}`}
       </ModalHeader>
       <ModalBody>
         <MeetingModalBodyGrid>
           <MeetingScheduler>
-            <MeetingSchedulerHeader>{`Meeting times for ${catalogNumber}`}</MeetingSchedulerHeader>
+            <MeetingSchedulerHeader>{`Meeting times for ${instanceIdentifier}`}</MeetingSchedulerHeader>
             <MeetingSchedulerBody>
               <MeetingTimesList
                 allMeetings={allMeetings}
@@ -509,7 +517,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
             </MeetingSchedulerBody>
           </MeetingScheduler>
           <NotesSection>
-            {notes}
+            {getNotes()}
           </NotesSection>
           <RoomAvailability>
             <RoomAvailabilityHeader>Room Availability</RoomAvailabilityHeader>

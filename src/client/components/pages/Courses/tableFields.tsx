@@ -156,6 +156,9 @@ export const formatFacultyNotes = (
   term: TERM,
   course: CourseInstanceResponseDTO
 ): ReactElement => {
+  if (!term || !course) {
+    return null;
+  }
   const semKey = term.toLowerCase() as TermKey;
   const {
     [semKey]: instance,

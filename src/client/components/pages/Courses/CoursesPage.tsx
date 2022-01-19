@@ -351,64 +351,60 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
               openInstructorModal={openInstructorModal}
               getButtonRef={getButtonRef}
             />
-            {meetingModalData.visible
-              ? (
-                <MeetingModal
-                  isVisible={meetingModalData.visible}
-                  currentSemester={{
-                    term: meetingModalData.term,
-                    calendarYear: acadYear.toString(),
-                  }}
-                  currentCourse={meetingModalData.course}
-                  notes={formatFacultyNotes(
-                    meetingModalData.term,
-                    meetingModalData.course
-                  )}
-                  onClose={() => {
-                    setMeetingModalData({ visible: false });
-                    setTimeout(() => { buttonRef.current?.focus(); });
-                  }}
-                  onSave={(newMeetingList, message?: string) => {
-                    const { course, term } = meetingModalData;
-                    const semKey = term.toLowerCase() as TermKey;
-                    updateLocalCourse({
-                      ...course,
-                      [semKey]: {
-                        ...course[semKey],
-                        meetings: newMeetingList,
-                      },
-                    }, message);
-                  }}
-                />
-              )
-              : null}
-            {instructorModalData.visible
-              ? (
-                <InstructorModal
-                  isVisible={instructorModalData.visible}
-                  currentSemester={{
-                    term: instructorModalData.term,
-                    calendarYear: acadYear.toString(),
-                  }}
-                  currentCourse={instructorModalData.course}
-                  closeModal={() => {
-                    setInstructorModalData({ visible: false });
-                    setTimeout(() => { buttonRef.current?.focus(); });
-                  }}
-                  onSave={(newInstructorList, message?: string) => {
-                    const { course, term } = instructorModalData;
-                    const semKey = term.toLowerCase() as TermKey;
-                    updateLocalCourse({
-                      ...course,
-                      [semKey]: {
-                        ...course[semKey],
-                        instructors: newInstructorList,
-                      },
-                    }, message);
-                  }}
-                />
-              )
-              : null}
+            <MeetingModal
+              isVisible={meetingModalData.visible}
+              currentSemester={{
+                term: meetingModalData.term,
+                calendarYear: acadYear.toString(),
+              }}
+              currentCourse={meetingModalData.visible
+                ? meetingModalData.course
+                : null}
+              getNotes={() => (
+                formatFacultyNotes(
+                  meetingModalData.term,
+                  meetingModalData.course
+                )
+              )}
+              onClose={() => {
+                setMeetingModalData({ visible: false });
+                setTimeout(() => { buttonRef.current?.focus(); });
+              }}
+              onSave={(newMeetingList, message?: string) => {
+                const { course, term } = meetingModalData;
+                const semKey = term.toLowerCase() as TermKey;
+                updateLocalCourse({
+                  ...course,
+                  [semKey]: {
+                    ...course[semKey],
+                    meetings: newMeetingList,
+                  },
+                }, message);
+              }}
+            />
+            <InstructorModal
+              isVisible={instructorModalData.visible}
+              currentSemester={{
+                term: instructorModalData.term,
+                calendarYear: acadYear.toString(),
+              }}
+              currentCourse={instructorModalData.course}
+              closeModal={() => {
+                setInstructorModalData({ visible: false });
+                setTimeout(() => { buttonRef.current?.focus(); });
+              }}
+              onSave={(newInstructorList, message?: string) => {
+                const { course, term } = instructorModalData;
+                const semKey = term.toLowerCase() as TermKey;
+                updateLocalCourse({
+                  ...course,
+                  [semKey]: {
+                    ...course[semKey],
+                    instructors: newInstructorList,
+                  },
+                }, message);
+              }}
+            />
           </>
         )}
     </div>
