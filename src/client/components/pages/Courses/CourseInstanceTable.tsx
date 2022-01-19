@@ -325,4 +325,16 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
   );
 };
 
-export default CourseInstanceTable;
+/**
+ * Memoize the redered content of the CourseInstanceTable, and only update if
+ * the actual list of courses, the set of columnns or the filters change
+ * (returning true from the second argument skips updating).
+ */
+export default React.memo(
+  CourseInstanceTable,
+  (prev, next) => (
+    prev.tableData === next.tableData
+  && prev.filters === next.filters
+  && prev.courseList === next.courseList
+  )
+);
