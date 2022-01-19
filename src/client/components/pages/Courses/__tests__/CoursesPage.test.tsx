@@ -19,7 +19,7 @@ import {
 import { CourseAPI } from 'client/api';
 import { AppMessage, MESSAGE_TYPE, MESSAGE_ACTION } from 'client/classes';
 import { MessageReducerAction } from 'client/context';
-import { cs50CourseInstance } from 'testData';
+import { am105CourseInstance, cs50CourseInstance } from 'testData';
 import { isSEASEnumToString, IS_SEAS, OFFERED } from 'common/constants';
 import { offeredEnumToString } from 'common/constants/offered';
 import CoursesPage from '../CoursesPage';
@@ -87,16 +87,20 @@ describe('Course Page', function () {
 
   describe('Filtering data', function () {
     let getAllByRole: BoundFunction<AllByRole>;
+    let findByText: BoundFunction<FindByText>;
     const areaFilterLabel = 'The table will be filtered as selected in this area dropdown filter';
     const isSEASFilterLabel = 'The table will be filtered as selected in this isSEAS dropdown filter';
     const fallOfferedFilterLabel = 'The table will be filtered as selected in this fall offered dropdown filter';
     const springOfferedFilterLabel = 'The table will be filtered as selected in this spring offered dropdown filter';
+    const catalogNumberLabel = 'The table will be filtered as characters are typed in this catalogNumber filter field';
+    const titleLabel = 'The table will be filtered as characters are typed in this title filter field';
     beforeEach(function () {
       filterSpy = spy(filters, 'listFilter');
       getStub.resolves([
         { ...cs50CourseInstance },
+        { ...am105CourseInstance },
       ]);
-      ({ getAllByRole } = render(<CoursesPage />));
+      ({ getAllByRole, findByText } = render(<CoursesPage />));
     });
     context('when the area dropdown filter is changed', function () {
       it('calls the listFilter function once for each filter', function () {
@@ -138,6 +142,37 @@ describe('Course Page', function () {
         filterSpy.resetHistory();
         fireEvent.change(springOffered,
           { target: { value: offeredEnumToString(OFFERED.N) } });
+        strictEqual(filterSpy.callCount, 1);
+      });
+    });
+    context('when the catalogNumber text filter is called', function () {
+      it('calls the listFilter function once for each filter', function () {
+        const [, , thirdRow] = getAllByRole('row');
+        const utils = within(thirdRow);
+        const catalogNumber = utils.getByLabelText(catalogNumberLabel);
+        filterSpy.resetHistory();
+        fireEvent.change(catalogNumber,
+          { target: { value: 'CS' } });
+        strictEqual(filterSpy.callCount, 1);
+      });
+    });
+    context('when the title text filter is called', function () {
+      it('calls the listFilter function once for each filter', async function () {
+        // Since the title column is not shown in the default view, the view must be updated
+        const customizeViewButton = await findByText('Customize View', { exact: false });
+        fireEvent.click(customizeViewButton);
+        const modal = getAllByRole('dialog')[0];
+        const titleCheckbox = await within(modal)
+          .findByLabelText('Title');
+        fireEvent.click(titleCheckbox);
+        const doneButton = within(modal).getByText('Done');
+        fireEvent.click(doneButton);
+        const [, , thirdRow] = getAllByRole('row');
+        const utils = within(thirdRow);
+        const title = utils.getByLabelText(titleLabel);
+        filterSpy.resetHistory();
+        fireEvent.change(title,
+          { target: { value: 'AM 105' } });
         strictEqual(filterSpy.callCount, 1);
       });
     });
