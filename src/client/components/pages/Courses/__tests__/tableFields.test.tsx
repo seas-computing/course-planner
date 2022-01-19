@@ -13,6 +13,7 @@ import {
 import { render } from 'test-utils';
 import { dayEnumToString } from 'common/constants/day';
 import { offeredEnumToString } from 'common/constants/offered';
+import * as dummy from 'testData';
 import {
   retrieveValue,
   tableFields,
@@ -29,86 +30,112 @@ describe('tableFields', function () {
   });
   describe('helper functions', function () {
     describe('retrieveValue', function () {
-      it('should return a function to get course-level fields', function () {
-        const getValue = retrieveValue('catalogNumber');
-        strictEqual(
-          getValue(cs50CourseInstance),
-          cs50CourseInstance.catalogNumber
+      it('should return a component to render course-level fields', function () {
+        const CatalogNumber = retrieveValue('catalogNumber');
+        const { getByText } = render(
+          <CatalogNumber course={cs50CourseInstance} />
         );
+        return getByText(cs50CourseInstance.catalogNumber);
       });
-      it('Should return a function to get a semester level field', function () {
-        const getValueFall = retrieveValue('actualEnrollment', TERM.FALL);
-        const getValueSpring = retrieveValue('actualEnrollment', TERM.SPRING);
-        strictEqual(
-          getValueFall(cs50CourseInstance),
-          cs50CourseInstance.fall.actualEnrollment
+      it('Should return a component to render a fall level field', function () {
+        const FallEnrollment = retrieveValue('actualEnrollment', TERM.FALL);
+        const { getByText } = render(
+          <FallEnrollment course={cs50CourseInstance} />
         );
-        strictEqual(
-          getValueSpring(cs50CourseInstance),
-          cs50CourseInstance.spring.actualEnrollment
-        );
+        return getByText(`${cs50CourseInstance.fall.actualEnrollment}`);
       });
-      it('should return a function that converts true booleans to "Yes"', function () {
-        const getBooleanValue = retrieveValue('isUndergraduate');
-        strictEqual(
-          getBooleanValue({ ...cs50CourseInstance, isUndergraduate: true }),
-          'Yes'
+      it('Should return a component to render a spring level field', function () {
+        const SpringEnrollment = retrieveValue('actualEnrollment', TERM.SPRING);
+        const { getByText } = render(
+          <SpringEnrollment course={{
+            ...cs50CourseInstance,
+            spring: {
+              ...cs50CourseInstance.spring,
+              actualEnrollment: dummy.int,
+            },
+          }}
+          />
         );
+        return getByText(`${dummy.int}`);
       });
-      it('should return a function that converts false booleans to "No"', function () {
-        const getBooleanValue = retrieveValue('isUndergraduate');
-        strictEqual(
-          getBooleanValue({ ...cs50CourseInstance, isUndergraduate: false }),
-          'No'
+      it('should return a component that renders true booleans as "Yes"', function () {
+        const BooleanValue = retrieveValue('isUndergraduate');
+        const { getByText } = render(
+          <BooleanValue
+            course={{ ...cs50CourseInstance, isUndergraduate: true }}
+          />
         );
+        return getByText('Yes');
       });
-      it('Should return a function that converts OFFERED values to strings', function () {
-        const getValueFall = retrieveValue('offered', TERM.FALL);
-        strictEqual(
-          getValueFall(cs50CourseInstance),
+      it('should return a component that renders false booleans as "No"', function () {
+        const BooleanValue = retrieveValue('isUndergraduate');
+        const { getByText } = render(
+          <BooleanValue
+            course={{ ...cs50CourseInstance, isUndergraduate: false }}
+          />
+        );
+        return getByText('No');
+      });
+      it('Should return a component that renders OFFERED values as strings', function () {
+        const OfferedValue = retrieveValue('offered', TERM.FALL);
+        const { getByText } = render(
+          <OfferedValue
+            course={cs50CourseInstance}
+          />
+        );
+        return getByText(
           offeredEnumToString(cs50CourseInstance.fall.offered)
         );
       });
-      it('Should return a function that converts IS_SEAS.Y to "Yes"', function () {
-        const getIsSEASValue = retrieveValue('isSEAS');
-        strictEqual(
-          getIsSEASValue({
-            ...cs50CourseInstance,
-            isSEAS: IS_SEAS.Y,
-          }),
-          isSEASEnumToString(IS_SEAS.Y)
+      it('Should return a component that renders IS_SEAS.Y as "Yes"', function () {
+        const IsSEASValue = retrieveValue('isSEAS');
+        const { getByText } = render(
+          <IsSEASValue
+            course={{
+              ...cs50CourseInstance,
+              isSEAS: IS_SEAS.Y,
+            }}
+          />
         );
+        return getByText(isSEASEnumToString(IS_SEAS.Y));
       });
-      it('Should return a function that converts IS_SEAS.N to "No"', function () {
-        const getIsSEASValue = retrieveValue('isSEAS');
-        strictEqual(
-          getIsSEASValue({
-            ...cs50CourseInstance,
-            isSEAS: IS_SEAS.N,
-          }),
-          isSEASEnumToString(IS_SEAS.N)
+      it('Should return a component that renders IS_SEAS.N as "No"', function () {
+        const IsSEASValue = retrieveValue('isSEAS');
+        const { getByText } = render(
+          <IsSEASValue
+            course={{
+              ...cs50CourseInstance,
+              isSEAS: IS_SEAS.N,
+            }}
+          />
         );
+        return getByText(isSEASEnumToString(IS_SEAS.N));
       });
-      it('Should return a function that converts IS_SEAS.EPS to "EPS"', function () {
-        const getIsSEASValue = retrieveValue('isSEAS');
-        strictEqual(
-          getIsSEASValue({
-            ...cs50CourseInstance,
-            isSEAS: IS_SEAS.EPS,
-          }),
-          isSEASEnumToString(IS_SEAS.EPS)
+      it('Should return a component that renders IS_SEAS.EPS as "EPS"', function () {
+        const IsSEASValue = retrieveValue('isSEAS');
+        const { getByText } = render(
+          <IsSEASValue
+            course={{
+              ...cs50CourseInstance,
+              isSEAS: IS_SEAS.EPS,
+            }}
+          />
         );
+        return getByText(isSEASEnumToString(IS_SEAS.EPS));
       });
     });
     describe('formatInstructors', function () {
       let TestComponent: FunctionComponent<unknown>;
       context('When course has data', function () {
         beforeEach(function () {
-          const fallInstructors = formatInstructors(TERM.FALL);
+          const FallInstructors = formatInstructors(TERM.FALL);
           TestComponent = () => (
             <div>
-              {fallInstructors(ac209aCourseInstance,
-                { openInstructorModal: openModalSpy, buttonRef: null })}
+              <FallInstructors
+                course={ac209aCourseInstance}
+                openInstructorModal={openModalSpy}
+                buttonRef={null}
+              />
             </div>
           );
         });
@@ -141,13 +168,14 @@ describe('tableFields', function () {
       });
       context('When semester does not have any instructors', function () {
         beforeEach(function () {
-          const springInstructors = formatInstructors(TERM.SPRING);
+          const SpringInstructors = formatInstructors(TERM.SPRING);
           TestComponent = () => (
             <div>
-              {springInstructors(
-                ac209aCourseInstance,
-                { openInstructorModal: openModalSpy, buttonRef: null }
-              )}
+              <SpringInstructors
+                course={ac209aCourseInstance}
+                openInstructorModal={openModalSpy}
+                buttonRef={null}
+              />
             </div>
           );
         });
@@ -175,13 +203,14 @@ describe('tableFields', function () {
       context('When semester has data', function () {
         context('With times and rooms', function () {
           it('Should return a component that renders days, times and rooms as a list', function () {
-            const fallMeetings = formatMeetings(TERM.FALL);
+            const FallMeetings = formatMeetings(TERM.FALL);
             const TestComponent: FunctionComponent = (): ReactElement => (
               <div>
-                {fallMeetings(
-                  ac209aCourseInstance,
-                  { openInstructorModal: openModalSpy, buttonRef: null }
-                )}
+                <FallMeetings
+                  course={ac209aCourseInstance}
+                  openInstructorModal={openModalSpy}
+                  buttonRef={null}
+                />
               </div>
             );
             const { getAllByRole } = render(
@@ -209,13 +238,14 @@ describe('tableFields', function () {
         });
         context('With times but not rooms', function () {
           it('Should return a component that renders just days and times as a list', function () {
-            const fallMeetings = formatMeetings(TERM.FALL);
+            const FallMeetings = formatMeetings(TERM.FALL);
             const TestComponent: FunctionComponent = (): ReactElement => (
               <div>
-                {fallMeetings(
-                  ac209aCourseInstanceWithoutRooms,
-                  { openInstructorModal: openModalSpy, buttonRef: null }
-                )}
+                <FallMeetings
+                  course={ac209aCourseInstanceWithoutRooms}
+                  openInstructorModal={openModalSpy}
+                  buttonRef={null}
+                />
               </div>
             );
             const { getAllByRole } = render(
@@ -238,13 +268,14 @@ describe('tableFields', function () {
       });
       context('When semester does not have data', function () {
         it('Should return an empty list', function () {
-          const springTimes = formatMeetings(TERM.SPRING);
+          const SpringTimes = formatMeetings(TERM.SPRING);
           const TestComponent: FunctionComponent = (): ReactElement => (
             <div>
-              {springTimes(
-                ac209aCourseInstance,
-                { openInstructorModal: openModalSpy, buttonRef: null }
-              )}
+              <SpringTimes
+                course={ac209aCourseInstance}
+                openInstructorModal={openModalSpy}
+                buttonRef={null}
+              />
             </div>
           );
           const { queryAllByRole } = render(
@@ -316,10 +347,9 @@ describe('tableFields', function () {
         it('renders a button to view/edit notes', function () {
           const notesField = tableFields.find(({ viewColumn }): boolean => (
             viewColumn === COURSE_TABLE_COLUMN.NOTES));
+          const Notes = notesField.FieldContent;
           const { queryByLabelText } = render(
-            <div>
-              {notesField.getValue(ac209aCourseInstance)}
-            </div>
+            <Notes course={ac209aCourseInstance} />
           );
           const icon = queryByLabelText('View/Edit Notes');
           strictEqual(icon !== null, true);
@@ -329,10 +359,9 @@ describe('tableFields', function () {
         it('renders a button to add notes', function () {
           const notesField = tableFields.find(({ viewColumn }): boolean => (
             viewColumn === COURSE_TABLE_COLUMN.NOTES));
+          const Notes = notesField.FieldContent;
           const { queryByLabelText } = render(
-            <div>
-              {notesField.getValue(cs50CourseInstance)}
-            </div>
+            <Notes course={cs50CourseInstance} />
           );
           const icon = queryByLabelText('Add Notes');
           strictEqual(icon !== null, true);

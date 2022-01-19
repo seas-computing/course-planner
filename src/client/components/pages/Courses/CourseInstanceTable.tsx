@@ -278,6 +278,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
           <TableRow key={course.id} isStriped={index % 2 !== 0}>
             {tableData.map(
               (field: CourseInstanceListColumn): ReactElement => {
+                const { FieldContent } = field;
                 if (field.viewColumn
                 === COURSE_TABLE_COLUMN.CATALOG_NUMBER) {
                   return (
@@ -287,7 +288,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
                       verticalAlignment={VALIGN.TOP}
                     >
                       <CellLayout>
-                        {field.getValue(course)}
+                        <FieldContent course={course} />
                       </CellLayout>
                     </TableRowHeadingCell>
                   );
@@ -298,19 +299,25 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
                     key={field.key}
                     backgroundColor={
                       field.viewColumn === COURSE_TABLE_COLUMN.AREA
-                    && getAreaColor(field.getValue(course) as string)
+                    && getAreaColor(course.area)
                     }
                   >
                     <CellLayout>
-                      {field.getValue(
-                        course,
-                        {
-                          openMeetingModal,
-                          openInstructorModal,
-                          buttonRef,
-                          modalButtonId,
+                      <FieldContent
+                        course={course}
+                        openMeetingModal={
+                          field.viewColumn === COURSE_TABLE_COLUMN.MEETINGS
+                            ? openMeetingModal
+                            : null
                         }
-                      )}
+                        openInstructorModal={
+                          field.viewColumn === COURSE_TABLE_COLUMN.INSTRUCTORS
+                            ? openInstructorModal
+                            : null
+                        }
+                        modalButtonId={modalButtonId}
+                        buttonRef={buttonRef}
+                      />
                     </CellLayout>
                   </TableCell>
                 );

@@ -1,8 +1,8 @@
 import React, {
   ReactElement,
-  ReactNode,
   ReactText,
   Ref,
+  FunctionComponent,
 } from 'react';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import {
@@ -43,8 +43,8 @@ const StyledFacultyNote = styled.span`
 
 /**
  * Simple helper function that takes a property name and optionally a semester
- * and returns a function that accepts a Course object, then returns the value
- * associated with the property/semester.property.
+ * and returns a function component that renders the text value associated with
+ * the property/semester.property.
  *
  * This is mainly a way to simplify the looping logic required in the
  * CourseInstanceList
@@ -54,10 +54,9 @@ export const retrieveValue = (
   prop: keyof CourseInstanceResponseDTO
   | keyof CourseInstanceResponseDTO[TermKey],
   sem?: TERM
-): (arg0: CourseInstanceResponseDTO
-  ) => ReactNode => (
-  course: CourseInstanceResponseDTO
-): ReactText => {
+): FunctionComponent<FieldContentProps> => (
+  { course }: FieldContentProps
+) => {
   let rawValue: ReactText;
   if (sem) {
     const semKey = sem.toLowerCase() as TermKey;
@@ -68,32 +67,32 @@ export const retrieveValue = (
     rawValue = course[prop] as ReactText;
   }
   if (typeof rawValue === 'boolean') {
-    return rawValue ? 'Yes' : 'No';
+    rawValue = rawValue ? 'Yes' : 'No';
   }
   if (rawValue in OFFERED) {
-    return offeredEnumToString(rawValue as OFFERED);
+    rawValue = offeredEnumToString(rawValue as OFFERED);
   }
   if (rawValue in IS_SEAS) {
-    return isSEASEnumToString(rawValue as IS_SEAS);
+    rawValue = isSEASEnumToString(rawValue as IS_SEAS);
   }
-  return rawValue;
+  return <>{rawValue}</>;
 };
 
 /**
- * Helper function that returns a function that will format a course's
+ * Helper function that returns a functional component that renders a course's
  * instructors into a list
  */
 
 export const formatInstructors = (
   term: TERM
-) => (
-  course: CourseInstanceResponseDTO,
+):FunctionComponent<FieldContentProps> => React.memo((
   {
+    course,
     openInstructorModal,
     buttonRef,
     modalButtonId,
-  }: ValueGetterOptions
-): ReactNode => {
+  }: FieldContentProps
+): ReactElement => {
   const semKey = term.toLowerCase() as TermKey;
   const {
     id: parentId,
@@ -127,7 +126,7 @@ export const formatInstructors = (
       </BorderlessButton>
     </>
   );
-};
+});
 
 /**
  * Utility component to style the data about a meeting
@@ -190,19 +189,20 @@ export const formatFacultyNotes = (
 };
 
 /**
- * Helper function to format day, time, and room into a single list
+ * Helper function that returns a functional component that renders the day,
+ * time, and room in a single list
  */
 
 export const formatMeetings = (
   term: TERM
-) => (
-  course: CourseInstanceResponseDTO,
+): FunctionComponent<FieldContentProps> => React.memo((
   {
+    course,
     openMeetingModal,
     buttonRef,
     modalButtonId,
-  }: ValueGetterOptions
-): ReactNode => {
+  }: FieldContentProps
+): ReactElement => {
   const semKey = term.toLowerCase() as TermKey;
   const {
     [semKey]: instance,
@@ -255,12 +255,17 @@ export const formatMeetings = (
       </BorderlessButton>
     </>
   );
-};
+});
 
 /**
- * Descibes the additional options passed into the getValue function
+ * Descibes the additional options passed into the FieldContent functional
+ * component
  */
-export interface ValueGetterOptions {
+export interface FieldContentProps {
+  /**
+   * The course whose data will be rendered by FieldContent
+   */
+  course:CourseInstanceResponseDTO;
   /**
    * Controls the opening of the meeting modal with the requested course and term
    */
@@ -301,12 +306,10 @@ export interface CourseInstanceListColumn {
    */
   columnGroup: COURSE_TABLE_COLUMN_GROUP;
   /**
-   * A function that will retrieve the appropriate data to appear in the cell
+   * A functional component that will render the appropriate data to appear in
+   * the cell
    */
-  getValue: (
-    arg0: CourseInstanceResponseDTO,
-    arg1?: ValueGetterOptions
-  ) => ReactNode;
+  FieldContent: FunctionComponent<FieldContentProps>;
   getFilter?: (
     filters: FilterState,
     genericFilterUpdate: (field: string, value: string) => void,
@@ -370,7 +373,7 @@ export const tableFields: CourseInstanceListColumn[] = [
     key: 'area',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.COURSE,
     viewColumn: COURSE_TABLE_COLUMN.AREA,
-    getValue: retrieveValue('area'),
+    FieldContent: retrieveValue('area'),
     getFilter: generateDropdown('area'),
   },
   {
@@ -378,28 +381,28 @@ export const tableFields: CourseInstanceListColumn[] = [
     key: 'catalog-number',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.COURSE,
     viewColumn: COURSE_TABLE_COLUMN.CATALOG_NUMBER,
-    getValue: retrieveValue('catalogNumber'),
+    FieldContent: retrieveValue('catalogNumber'),
   },
   {
     name: 'Title',
     key: 'title',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.COURSE,
     viewColumn: COURSE_TABLE_COLUMN.TITLE,
-    getValue: retrieveValue('title'),
+    FieldContent: retrieveValue('title'),
   },
   {
     name: 'Same As',
     key: 'same-as',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.COURSE,
     viewColumn: COURSE_TABLE_COLUMN.SAME_AS,
-    getValue: retrieveValue('sameAs'),
+    FieldContent: retrieveValue('sameAs'),
   },
   {
     name: 'Is SEAS?',
     key: 'is-seas',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.COURSE,
     viewColumn: COURSE_TABLE_COLUMN.IS_SEAS,
-    getValue: retrieveValue('isSEAS'),
+    FieldContent: retrieveValue('isSEAS'),
     getFilter: generateDropdown('isSEAS'),
   },
   {
@@ -407,14 +410,14 @@ export const tableFields: CourseInstanceListColumn[] = [
     key: 'is-undergraduate',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.COURSE,
     viewColumn: COURSE_TABLE_COLUMN.IS_UNDERGRADUATE,
-    getValue: retrieveValue('isUndergraduate'),
+    FieldContent: retrieveValue('isUndergraduate'),
   },
   {
     name: 'Offered',
     key: 'offered-fall',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.FALL,
     viewColumn: COURSE_TABLE_COLUMN.OFFERED,
-    getValue: retrieveValue('offered', TERM.FALL),
+    FieldContent: retrieveValue('offered', TERM.FALL),
     getFilter: generateDropdown('fall', 'offered'),
   },
   {
@@ -422,42 +425,42 @@ export const tableFields: CourseInstanceListColumn[] = [
     key: 'instructors-fall',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.FALL,
     viewColumn: COURSE_TABLE_COLUMN.INSTRUCTORS,
-    getValue: formatInstructors(TERM.FALL),
+    FieldContent: formatInstructors(TERM.FALL),
   },
   {
     name: 'Meetings',
     key: 'meetings-fall',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.FALL,
     viewColumn: COURSE_TABLE_COLUMN.MEETINGS,
-    getValue: formatMeetings(TERM.FALL),
+    FieldContent: formatMeetings(TERM.FALL),
   },
   {
     name: 'Pre',
     key: 'pre-enrollment-fall',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.FALL,
     viewColumn: COURSE_TABLE_COLUMN.ENROLLMENT,
-    getValue: retrieveValue('preEnrollment', TERM.FALL),
+    FieldContent: retrieveValue('preEnrollment', TERM.FALL),
   },
   {
     name: 'Study',
     key: 'study-card-enrollment-fall',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.FALL,
     viewColumn: COURSE_TABLE_COLUMN.ENROLLMENT,
-    getValue: retrieveValue('studyCardEnrollment', TERM.FALL),
+    FieldContent: retrieveValue('studyCardEnrollment', TERM.FALL),
   },
   {
     name: 'Actual',
     key: 'actual-enrollment-fall',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.FALL,
     viewColumn: COURSE_TABLE_COLUMN.ENROLLMENT,
-    getValue: retrieveValue('actualEnrollment', TERM.FALL),
+    FieldContent: retrieveValue('actualEnrollment', TERM.FALL),
   },
   {
     name: 'Offered',
     key: 'offered-spring',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.SPRING,
     viewColumn: COURSE_TABLE_COLUMN.OFFERED,
-    getValue: retrieveValue('offered', TERM.SPRING),
+    FieldContent: retrieveValue('offered', TERM.SPRING),
     getFilter: generateDropdown('spring', 'offered'),
   },
   {
@@ -465,42 +468,43 @@ export const tableFields: CourseInstanceListColumn[] = [
     key: 'instructors-spring',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.SPRING,
     viewColumn: COURSE_TABLE_COLUMN.INSTRUCTORS,
-    getValue: formatInstructors(TERM.SPRING),
+    FieldContent: formatInstructors(TERM.SPRING),
   },
   {
     name: 'Meetings',
     key: 'meetings-spring',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.SPRING,
     viewColumn: COURSE_TABLE_COLUMN.MEETINGS,
-    getValue: formatMeetings(TERM.SPRING),
+    FieldContent: formatMeetings(TERM.SPRING),
   },
   {
     name: 'Pre',
     key: 'pre-enrollment-spring',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.SPRING,
     viewColumn: COURSE_TABLE_COLUMN.ENROLLMENT,
-    getValue: retrieveValue('preEnrollment', TERM.SPRING),
+    FieldContent: retrieveValue('preEnrollment', TERM.SPRING),
   },
   {
     name: 'Study',
     key: 'study-card-enrollment-spring',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.SPRING,
     viewColumn: COURSE_TABLE_COLUMN.ENROLLMENT,
-    getValue: retrieveValue('studyCardEnrollment', TERM.SPRING),
+    FieldContent: retrieveValue('studyCardEnrollment', TERM.SPRING),
   },
   {
     name: 'Actual',
     key: 'actual-enrollment-spring',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.SPRING,
     viewColumn: COURSE_TABLE_COLUMN.ENROLLMENT,
-    getValue: retrieveValue('actualEnrollment', TERM.SPRING),
+    FieldContent: retrieveValue('actualEnrollment', TERM.SPRING),
   },
   {
     name: 'Notes',
     key: 'notes',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.META,
     viewColumn: COURSE_TABLE_COLUMN.NOTES,
-    getValue: ({ notes }: CourseInstanceResponseDTO): ReactElement => {
+    FieldContent: ({ course }: FieldContentProps): ReactElement => {
+      const { notes } = course;
       const hasNotes = notes && notes.trim().length > 0;
       const titleText = hasNotes ? 'View/Edit Notes' : 'Add Notes';
       return (
@@ -522,7 +526,7 @@ export const tableFields: CourseInstanceListColumn[] = [
     key: 'details',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.META,
     viewColumn: COURSE_TABLE_COLUMN.DETAILS,
-    getValue: (): ReactElement => (
+    FieldContent: (): ReactElement => (
       <BorderlessButton
         variant={VARIANT.INFO}
         onClick={(): void => { }}
