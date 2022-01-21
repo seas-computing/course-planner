@@ -63,7 +63,7 @@ interface CourseInstanceTableProps {
   /**
    * The ref value of the edit faculty absence button
    */
-  getButtonRef: (buttonId: string) => Ref<HTMLButtonElement>;
+  setButtonRef: (nodeId: string) => (node: HTMLButtonElement) => void;
 }
 
 /**
@@ -77,7 +77,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
   filters,
   openMeetingModal,
   openInstructorModal,
-  getButtonRef,
+  setButtonRef,
 }): ReactElement => {
   const courseColumns = tableData.filter(
     ({ columnGroup }): boolean => (
@@ -274,9 +274,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
             {tableData.map(
               (field: CourseInstanceListColumn): ReactElement => {
                 const { FieldContent } = field;
-                const buttonRef = getButtonRef(`${field.key}-${course.id}`);
-                if (field.viewColumn
-                === COURSE_TABLE_COLUMN.CATALOG_NUMBER) {
+                if (field.viewColumn === COURSE_TABLE_COLUMN.CATALOG_NUMBER) {
                   return (
                     <TableRowHeadingCell
                       scope="row"
@@ -311,7 +309,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
                             ? openInstructorModal
                             : null
                         }
-                        buttonRef={buttonRef}
+                        buttonRef={setButtonRef(`${field.key}-${course.id}`)}
                       />
                     </CellLayout>
                   </TableCell>

@@ -157,16 +157,14 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   /**
    * The current ref value of the focused button
    */
-  const buttonRef: Ref<HTMLButtonElement> = useRef(null);
+  const refTable = useRef<Record<string, HTMLButtonElement>>({});
 
-  const getButtonRef = useCallback(
-    (buttonId: string): typeof buttonRef => {
-      if (buttonId === modalButtonId) {
-        return buttonRef;
+  const setButtonRef = useCallback(
+    (nodeId: string) => (node: HTMLButtonElement): void => {
+      if (nodeId && node) {
+        refTable.current[nodeId] = node;
       }
-      return null;
-    },
-    [modalButtonId]
+    }, [refTable]
   );
 
   /**
@@ -349,7 +347,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
               filters={filters}
               openMeetingModal={openMeetingModal}
               openInstructorModal={openInstructorModal}
-              getButtonRef={getButtonRef}
+              setButtonRef={setButtonRef}
             />
             <MeetingModal
               isVisible={meetingModalData.visible}
@@ -368,7 +366,11 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
               )}
               onClose={() => {
                 setMeetingModalData({ visible: false });
-                setTimeout(() => { buttonRef.current?.focus(); });
+                setTimeout(() => {
+                  if (modalButtonId && modalButtonId in refTable.current) {
+                    refTable.current[modalButtonId].focus();
+                  }
+                });
               }}
               onSave={(newMeetingList, message?: string) => {
                 const { course, term } = meetingModalData;
@@ -391,7 +393,11 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
               currentCourse={instructorModalData.course}
               closeModal={() => {
                 setInstructorModalData({ visible: false });
-                setTimeout(() => { buttonRef.current?.focus(); });
+                setTimeout(() => {
+                  if (modalButtonId && modalButtonId in refTable.current) {
+                    refTable.current[modalButtonId].focus();
+                  }
+                });
               }}
               onSave={(newInstructorList, message?: string) => {
                 const { course, term } = instructorModalData;
