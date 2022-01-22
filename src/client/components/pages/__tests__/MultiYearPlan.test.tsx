@@ -26,7 +26,7 @@ describe('MultiYearPlan', function () {
     dispatchMessage = stub();
     getStub.resolves(testData);
     listFilterSpy = spy(filters, 'listFilter');
-    facultyFilterSpy = spy(instructorFilters, 'filterByInstructorValues');
+    facultyFilterSpy = spy(instructorFilters, 'filterPlansByInstructors');
   });
   describe('rendering', function () {
     it('creates a table', async function () {
@@ -198,7 +198,7 @@ describe('MultiYearPlan', function () {
     describe('Instructors', function () {
       context('when a value is entered', function () {
         context('for all instructor fields', function () {
-          it('calls the filterByInstructorValues once per field', async function () {
+          it('calls the filterPlansByInstructors once per field', async function () {
             const { getAllByRole } = render(
               <MultiYearPlan />
             );
@@ -214,7 +214,7 @@ describe('MultiYearPlan', function () {
           });
         });
         context('for one instructor field', function () {
-          it('calls the filterByInstructorValues once', async function () {
+          it('calls the filterPlansByInstructors once', async function () {
             const { getAllByRole } = render(
               <MultiYearPlan />
             );
@@ -229,7 +229,7 @@ describe('MultiYearPlan', function () {
         });
       });
       context('when no value is entered', function () {
-        it('does not call the filterByInstructorValues function', async function () {
+        it('does not call the filterPlansByInstructors function', async function () {
           const { getAllByRole } = render(
             <MultiYearPlan />
           );

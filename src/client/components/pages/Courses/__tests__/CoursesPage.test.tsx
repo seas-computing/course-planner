@@ -24,11 +24,13 @@ import { isSEASEnumToString, IS_SEAS, OFFERED } from 'common/constants';
 import { offeredEnumToString } from 'common/constants/offered';
 import CoursesPage from '../CoursesPage';
 import * as filters from '../../Filter';
+import * as instructorFilters from '../../utils/filterByInstructorValues';
 
 describe('Course Page', function () {
   let getStub: SinonStub;
   let dispatchMessage: SinonStub;
-  let filterSpy: SinonSpy;
+  let listFilterSpy: SinonSpy;
+  let filterInstructorsSpy: SinonSpy;
   beforeEach(function () {
     getStub = stub(CourseAPI, 'getCourseInstancesForYear');
     dispatchMessage = stub();
@@ -94,8 +96,11 @@ describe('Course Page', function () {
     const springOfferedFilterLabel = 'The table will be filtered as selected in this spring offered dropdown filter';
     const catalogNumberLabel = 'The table will be filtered as characters are typed in this catalogNumber filter field';
     const titleLabel = 'The table will be filtered as characters are typed in this title filter field';
+    const fallInstructorsFilterLabel = 'The table will be filtered as characters are typed in this fall instructors filter field';
+    const springInstructorsFilterLabel = 'The table will be filtered as characters are typed in this spring instructors filter field';
     beforeEach(function () {
-      filterSpy = spy(filters, 'listFilter');
+      listFilterSpy = spy(filters, 'listFilter');
+      filterInstructorsSpy = spy(instructorFilters, 'filterCoursesByInstructors');
       getStub.resolves([
         { ...cs50CourseInstance },
         { ...am105CourseInstance },
@@ -107,9 +112,9 @@ describe('Course Page', function () {
         const [, , thirdRow] = getAllByRole('row');
         const utils = within(thirdRow);
         const area = utils.getByLabelText(areaFilterLabel);
-        filterSpy.resetHistory();
+        listFilterSpy.resetHistory();
         fireEvent.change(area, { target: { value: 'AM' } });
-        strictEqual(filterSpy.callCount, 1);
+        strictEqual(listFilterSpy.callCount, 1);
       });
     });
     context('when the isSEAS dropdown filter is called', function () {
@@ -117,10 +122,10 @@ describe('Course Page', function () {
         const [, , thirdRow] = getAllByRole('row');
         const utils = within(thirdRow);
         const isSEAS = utils.getByLabelText(isSEASFilterLabel);
-        filterSpy.resetHistory();
+        listFilterSpy.resetHistory();
         fireEvent.change(isSEAS,
           { target: { value: isSEASEnumToString(IS_SEAS.N) } });
-        strictEqual(filterSpy.callCount, 1);
+        strictEqual(listFilterSpy.callCount, 1);
       });
     });
     context('when the fall offered dropdown filter is called', function () {
@@ -128,10 +133,10 @@ describe('Course Page', function () {
         const [, , thirdRow] = getAllByRole('row');
         const utils = within(thirdRow);
         const fallOffered = utils.getByLabelText(fallOfferedFilterLabel);
-        filterSpy.resetHistory();
+        listFilterSpy.resetHistory();
         fireEvent.change(fallOffered,
           { target: { value: offeredEnumToString(OFFERED.Y) } });
-        strictEqual(filterSpy.callCount, 1);
+        strictEqual(listFilterSpy.callCount, 1);
       });
     });
     context('when the spring offered dropdown filter is called', function () {
@@ -139,10 +144,10 @@ describe('Course Page', function () {
         const [, , thirdRow] = getAllByRole('row');
         const utils = within(thirdRow);
         const springOffered = utils.getByLabelText(springOfferedFilterLabel);
-        filterSpy.resetHistory();
+        listFilterSpy.resetHistory();
         fireEvent.change(springOffered,
           { target: { value: offeredEnumToString(OFFERED.N) } });
-        strictEqual(filterSpy.callCount, 1);
+        strictEqual(listFilterSpy.callCount, 1);
       });
     });
     context('when the catalogNumber text filter is called', function () {
@@ -150,10 +155,10 @@ describe('Course Page', function () {
         const [, , thirdRow] = getAllByRole('row');
         const utils = within(thirdRow);
         const catalogNumber = utils.getByLabelText(catalogNumberLabel);
-        filterSpy.resetHistory();
+        listFilterSpy.resetHistory();
         fireEvent.change(catalogNumber,
           { target: { value: 'CS' } });
-        strictEqual(filterSpy.callCount, 1);
+        strictEqual(listFilterSpy.callCount, 1);
       });
     });
     context('when the title text filter is called', function () {
@@ -170,10 +175,34 @@ describe('Course Page', function () {
         const [, , thirdRow] = getAllByRole('row');
         const utils = within(thirdRow);
         const title = utils.getByLabelText(titleLabel);
-        filterSpy.resetHistory();
+        listFilterSpy.resetHistory();
         fireEvent.change(title,
           { target: { value: 'AM 105' } });
-        strictEqual(filterSpy.callCount, 1);
+        strictEqual(listFilterSpy.callCount, 1);
+      });
+    });
+    context('when the fall instructors text filter is called', function () {
+      it('calls the filterInstructorsSpy function once for each filter', function () {
+        const [, , thirdRow] = getAllByRole('row');
+        const utils = within(thirdRow);
+        const fallInstructors = utils
+          .getByLabelText(fallInstructorsFilterLabel);
+        filterInstructorsSpy.resetHistory();
+        fireEvent.change(fallInstructors,
+          { target: { value: 'Malan' } });
+        strictEqual(filterInstructorsSpy.callCount, 1);
+      });
+    });
+    context('when the spring instructors text filter is called', function () {
+      it('calls the filterInstructorsSpy function once for each filter', function () {
+        const [, , thirdRow] = getAllByRole('row');
+        const utils = within(thirdRow);
+        const springInstructors = utils
+          .getByLabelText(springInstructorsFilterLabel);
+        filterInstructorsSpy.resetHistory();
+        fireEvent.change(springInstructors,
+          { target: { value: 'Waldo' } });
+        strictEqual(filterInstructorsSpy.callCount, 1);
       });
     });
   });

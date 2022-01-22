@@ -33,7 +33,7 @@ import { MultiYearPlanAPI } from 'client/api/multiYearPlan';
 import { getSemestersFromYear, SemesterInfo } from 'common/utils/multiYearPlanHelperFunctions';
 import { getCatPrefixColor } from '../../../common/constants';
 import { listFilter } from './Filter';
-import { filterByInstructorValues } from './utils/filterByInstructorValues';
+import { filterPlansByInstructors } from './utils/filterByInstructorValues';
 
 /**
  * The component represents the Multi Year Plan page, which will be rendered at
@@ -93,7 +93,7 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
       multiYearPlans,
       { field: 'title', value: courseTitleValue, exact: false }
     );
-    multiYearPlans = filterByInstructorValues(multiYearPlans, instructorValues);
+    multiYearPlans = filterPlansByInstructors(multiYearPlans, instructorValues);
     if (catalogPrefixValue !== 'All') {
       multiYearPlans = listFilter(
         multiYearPlans,

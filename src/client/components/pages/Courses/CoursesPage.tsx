@@ -25,7 +25,6 @@ import { ViewResponse } from 'common/dto/view/ViewResponse.dto';
 import { VerticalSpace } from 'client/components/layout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWrench } from '@fortawesome/free-solid-svg-icons';
-import { InstructorResponseDTO } from 'common/dto/courses/InstructorResponse.dto';
 import CourseInstanceTable from './CourseInstanceTable';
 import ViewModal from './ViewModal';
 import SemesterTable from './SemesterTable';
@@ -35,6 +34,7 @@ import { listFilter } from '../Filter';
 import { FilterState } from './filters.d';
 import MeetingModal from './MeetingModal';
 import InstructorModal from './InstructorModal';
+import { filterCoursesByInstructors } from '../utils/filterByInstructorValues';
 
 /**
  * Default View
@@ -221,13 +221,9 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
       const filterValue = get(filters, filterPath) as string;
       if (filterValue !== '') {
         if (filterPath === 'fall.instructors' || filterPath === 'spring.instructors') {
-          const filterValueLower = filterValue.toLowerCase();
-          courses = courses.filter((course) => {
-            const instructors = get(course, filterPath, []) as
-            InstructorResponseDTO[];
-            return instructors.some((instructor) => instructor.displayName
-              .toLowerCase().indexOf(filterValueLower) !== -1);
-          });
+          courses = filterCoursesByInstructors(
+            courses, filterValue, filterPath
+          );
         } else {
           courses = listFilter(
             courses,

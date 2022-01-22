@@ -347,7 +347,7 @@ function generateDropdown<
           .concat(filterOptions[filterOptionsField as FilterOptions])}
         value={filterValue as string}
         name={field}
-        id={field}
+        id={subField ? `${field}${subField.toString()}` : `${field}`}
         label={subField
           ? `The table will be filtered as selected in this ${field} ${subField.toString()} dropdown filter`
           : `The table will be filtered as selected in this ${field} dropdown filter`}
@@ -384,7 +384,7 @@ function generateTextField<
     }
     return (
       <TextInput
-        id={field}
+        id={subField ? `${field}${subField.toString()}` : `${field}`}
         name={field}
         value={filterValue as string}
         placeholder={`Filter by ${field}`}
