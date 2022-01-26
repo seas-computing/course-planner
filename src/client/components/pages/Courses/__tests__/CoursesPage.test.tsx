@@ -108,7 +108,9 @@ describe('Course Page', function () {
         { ...am105CourseInstance },
       ]);
       ({ getAllByRole, findByText } = render(<CoursesPage />));
-      clock = FakeTimers.install();
+      clock = FakeTimers.install({
+        toFake: ['setTimeout'],
+      });
     });
     afterEach(function () {
       clock.uninstall();
