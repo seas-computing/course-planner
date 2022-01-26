@@ -22,6 +22,7 @@ import { MessageReducerAction } from 'client/context';
 import { am105CourseInstance, cs50CourseInstance } from 'testData';
 import { isSEASEnumToString, IS_SEAS, OFFERED } from 'common/constants';
 import { offeredEnumToString } from 'common/constants/offered';
+import FakeTimers, { InstalledClock } from '@sinonjs/fake-timers';
 import CoursesPage from '../CoursesPage';
 import * as filters from '../../Filter';
 import * as instructorFilters from '../../utils/filterByInstructorValues';
@@ -31,6 +32,7 @@ describe('Course Page', function () {
   let dispatchMessage: SinonStub;
   let listFilterSpy: SinonSpy;
   let filterInstructorsSpy: SinonSpy;
+  let clock: InstalledClock;
   beforeEach(function () {
     getStub = stub(CourseAPI, 'getCourseInstancesForYear');
     dispatchMessage = stub();
@@ -106,6 +108,10 @@ describe('Course Page', function () {
         { ...am105CourseInstance },
       ]);
       ({ getAllByRole, findByText } = render(<CoursesPage />));
+      clock = FakeTimers.install();
+    });
+    afterEach(function () {
+      clock.uninstall();
     });
     context('when the area dropdown filter is changed', function () {
       it('calls the listFilter function once for each filter', function () {
@@ -114,6 +120,9 @@ describe('Course Page', function () {
         const area = utils.getByLabelText(areaFilterLabel);
         listFilterSpy.resetHistory();
         fireEvent.change(area, { target: { value: 'AM' } });
+        // Filter changes are debounced within 100 ms of changes, so we are using
+        // a fake time to make 200 ms pass after changing the filter value.
+        clock.tick(200);
         strictEqual(listFilterSpy.callCount, 1);
       });
     });
@@ -125,6 +134,9 @@ describe('Course Page', function () {
         listFilterSpy.resetHistory();
         fireEvent.change(isSEAS,
           { target: { value: isSEASEnumToString(IS_SEAS.N) } });
+        // Filter changes are debounced within 100 ms of changes, so we are using
+        // a fake time to make 200 ms pass after changing the filter value.
+        clock.tick(200);
         strictEqual(listFilterSpy.callCount, 1);
       });
     });
@@ -136,6 +148,9 @@ describe('Course Page', function () {
         listFilterSpy.resetHistory();
         fireEvent.change(fallOffered,
           { target: { value: offeredEnumToString(OFFERED.Y) } });
+        // Filter changes are debounced within 100 ms of changes, so we are using
+        // a fake time to make 200 ms pass after changing the filter value.
+        clock.tick(200);
         strictEqual(listFilterSpy.callCount, 1);
       });
     });
@@ -147,6 +162,9 @@ describe('Course Page', function () {
         listFilterSpy.resetHistory();
         fireEvent.change(springOffered,
           { target: { value: offeredEnumToString(OFFERED.N) } });
+        // Filter changes are debounced within 100 ms of changes, so we are using
+        // a fake time to make 200 ms pass after changing the filter value.
+        clock.tick(200);
         strictEqual(listFilterSpy.callCount, 1);
       });
     });
@@ -158,6 +176,9 @@ describe('Course Page', function () {
         listFilterSpy.resetHistory();
         fireEvent.change(catalogNumber,
           { target: { value: 'CS' } });
+        // Filter changes are debounced within 100 ms of changes, so we are using
+        // a fake time to make 200 ms pass after changing the filter value.
+        clock.tick(200);
         strictEqual(listFilterSpy.callCount, 1);
       });
     });
@@ -178,6 +199,9 @@ describe('Course Page', function () {
         listFilterSpy.resetHistory();
         fireEvent.change(title,
           { target: { value: 'AM 105' } });
+        // Filter changes are debounced within 100 ms of changes, so we are using
+        // a fake time to make 200 ms pass after changing the filter value.
+        clock.tick(200);
         strictEqual(listFilterSpy.callCount, 1);
       });
     });
@@ -190,6 +214,9 @@ describe('Course Page', function () {
         filterInstructorsSpy.resetHistory();
         fireEvent.change(fallInstructors,
           { target: { value: 'Malan' } });
+        // Filter changes are debounced within 100 ms of changes, so we are using
+        // a fake time to make 200 ms pass after changing the filter value.
+        clock.tick(200);
         strictEqual(filterInstructorsSpy.callCount, 1);
       });
     });
@@ -202,6 +229,9 @@ describe('Course Page', function () {
         filterInstructorsSpy.resetHistory();
         fireEvent.change(springInstructors,
           { target: { value: 'Waldo' } });
+        // Filter changes are debounced within 100 ms of changes, so we are using
+        // a fake time to make 200 ms pass after changing the filter value.
+        clock.tick(200);
         strictEqual(filterInstructorsSpy.callCount, 1);
       });
     });
