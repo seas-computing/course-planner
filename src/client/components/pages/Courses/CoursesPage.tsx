@@ -6,6 +6,7 @@ import React, {
   useContext,
   Ref,
   useRef,
+  useCallback,
   useMemo,
 } from 'react';
 import {
@@ -187,26 +188,27 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
    * Takes the requested course and term information to display the requested
    * meeting modal
    */
-  const openMeetingModal = (course: CourseInstanceResponseDTO, term: TERM) => {
+  const openMeetingModal = useCallback((course: CourseInstanceResponseDTO,
+    term: TERM) => {
     setMeetingModalData({ course, term, visible: true });
     setModalButtonId(`meetings-${course.id}-${term}`);
-  };
+  }, [setMeetingModalData, setModalButtonId]);
 
   /**
    * Takes the requested course and term information to display the requested
    * meeting modal
    */
-  const openInstructorModal = (
+  const openInstructorModal = useCallback((
     course: CourseInstanceResponseDTO,
     term: TERM
   ) => {
     setInstructorModalData({ course, term, visible: true });
     setModalButtonId(`instructors-${course.id}-${term}`);
-  };
+  }, [setInstructorModalData, setModalButtonId]);
+
   const filterTimeoutId = useRef(null);
 
   useEffect(() => {
-    let courses = [...currentCourses];
     // Cancel upcoming timeout if this block is called again
     if (filterTimeoutId.current != null) {
       clearTimeout(filterTimeoutId.current);
