@@ -6,6 +6,7 @@ import React, {
   useContext,
   Ref,
   useRef,
+  useMemo,
 } from 'react';
 import {
   Button,
@@ -202,46 +203,56 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     setInstructorModalData({ course, term, visible: true });
     setModalButtonId(`instructors-${course.id}-${term}`);
   };
+  const filterTimeoutId = useRef(null);
 
   useEffect(() => {
     let courses = [...currentCourses];
-    // Provides a list of the paths for the filters in the Course Instance table
-    const dropdownFilterPaths = ['area', 'isSEAS', 'fall.offered', 'spring.offered'];
-    dropdownFilterPaths.forEach((filterPath) => {
-      const filterValue = get(filters, filterPath) as string;
-      if (filterValue !== 'All') {
-        courses = listFilter(
-          courses,
-          { field: `${filterPath}`, value: filterValue, exact: true }
-        );
-      }
-    });
-    const textFilterPaths = ['catalogNumber', 'title', 'fall.instructors', 'spring.instructors'];
-    textFilterPaths.forEach((filterPath) => {
-      const filterValue = get(filters, filterPath) as string;
-      if (filterValue !== '') {
-        if (filterPath === 'fall.instructors' || filterPath === 'spring.instructors') {
-          courses = filterCoursesByInstructors(
-            courses, filterValue, filterPath
-          );
-        } else {
+    // Cancel upcoming timeout if this block is called again
+    if (filterTimeoutId.current != null) {
+      clearTimeout(filterTimeoutId.current);
+    }
+    filterTimeoutId.current = setTimeout(() => {
+      // Prevent trying to clear an unrelated timeout ID
+      filterTimeoutId.current = null;
+      let courses = [...currentCourses];
+      // Provides a list of the paths for the filters in the Course Instance table
+      const dropdownFilterPaths = ['area', 'isSEAS', 'fall.offered', 'spring.offered'];
+      dropdownFilterPaths.forEach((filterPath) => {
+        const filterValue = get(filters, filterPath) as string;
+        if (filterValue !== 'All') {
           courses = listFilter(
             courses,
-            { field: `${filterPath}`, value: filterValue, exact: false }
+            { field: `${filterPath}`, value: filterValue, exact: true }
           );
         }
+      });
+      const textFilterPaths = ['catalogNumber', 'title', 'fall.instructors', 'spring.instructors'];
+      textFilterPaths.forEach((filterPath) => {
+        const filterValue = get(filters, filterPath) as string;
+        if (filterValue !== '') {
+          if (filterPath === 'fall.instructors' || filterPath === 'spring.instructors') {
+            courses = filterCoursesByInstructors(
+              courses, filterValue, filterPath
+            );
+          } else {
+            courses = listFilter(
+              courses,
+              { field: `${filterPath}`, value: filterValue, exact: false }
+            );
+          }
+        }
+      });
+      // Hides the retired courses
+      if (!showRetired) {
+        courses = courses.filter(
+          ({ spring, fall }): boolean => (
+            fall.offered !== OFFERED.RETIRED
+                && spring.offered !== OFFERED.RETIRED)
+        );
       }
-    });
-    // Hides the retired courses
-    if (!showRetired) {
-      courses = courses.filter(
-        ({ spring, fall }): boolean => (
-          fall.offered !== OFFERED.RETIRED
-              && spring.offered !== OFFERED.RETIRED)
-      );
-    }
-    setFilteredCourses(courses);
-  }, [filters, currentCourses, setFilteredCourses]);
+      setFilteredCourses(courses);
+    }, 100);
+  }, [filters, currentCourses, filterTimeoutId]);
 
   useEffect((): void => {
     setFetching(true);
@@ -296,6 +307,16 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     });
   };
 
+  /**
+   * Memoize the table data so that it does not need to render unnecessarily
+   * while typing in the text filter fields of the Course Instance table.
+   */
+  const tableData = useMemo(() => tableFields.filter(
+    ({ viewColumn }): boolean => (
+      currentViewColumns.includes(viewColumn)
+    )
+  ), [currentViewColumns]);
+
   return (
     <div className="course-instance-table">
       {fetching
@@ -340,11 +361,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
               academicYear={acadYear}
               courseList={filteredCourses}
               genericFilterUpdate={genericFilterUpdate}
-              tableData={tableFields.filter(
-                ({ viewColumn }): boolean => (
-                  currentViewColumns.includes(viewColumn)
-                )
-              )}
+              tableData={tableData}
               filters={filters}
               openMeetingModal={openMeetingModal}
               openInstructorModal={openInstructorModal}
