@@ -993,9 +993,6 @@ describe('Meeting Modal', function () {
             strictEqual(onSaveStub.callCount, 1);
             deepStrictEqual(onSaveStub.args[0][0], testMeetingResponses);
           });
-          it('Should call the onClose handler', function () {
-            strictEqual(onCloseStub.callCount, 1);
-          });
         });
         context('When the save operation fails', function () {
           context('With a server Error', function () {

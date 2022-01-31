@@ -432,10 +432,6 @@ describe('InstructorModal', function () {
         strictEqual(onSaveStub.callCount, 1);
         strictEqual(onSaveStub.calledWith(testCourse.fall.instructors), true);
       });
-      it('Should close the modal', async function () {
-        await waitForElementToBeRemoved(() => renderResult.getByText('Saving Instructors'));
-        strictEqual(onCloseStub.callCount, 1);
-      });
       it('Should not show an error message', async function () {
         await waitForElementToBeRemoved(() => renderResult.getByText('Saving Instructors'));
         const errorMessage = renderResult.queryAllByRole('alert');
