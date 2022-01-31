@@ -144,6 +144,30 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   const [modalButtonId, setModalButtonId] = useState<string>('');
 
   /**
+   * This state shows that the user has completed some action indicating that the meeting modal
+   * should close. The value of the state is checked in the useEffect after the filtered
+   * course instances are set and before the closeMeetingModal function is called
+   * so that the table data is updated before the meeting modal closes.
+   * Without setting the filtered table data before closing the meeting modal, the
+   * meeting modal will close and non-updated table data will be shown temporarily.
+   */
+  const [shouldCloseMeetingModal, setShouldCloseMeetingModal] = useState(false);
+
+  /**
+   * This state shows that the user has completed some action indicating that the
+   * instructor modal should close. The value of the state is checked in the
+   * useEffect after the filtered course instances are set and before the
+   * closeInstructorModal function is called so that the table data is updated
+   * before the meeting modal closes.
+   * Without setting the filtered table data before closing the meeting modal, the
+   * instructor modal will close and non-updated table data will be shown
+   * temporarily.
+   */
+  const [
+    shouldCloseInstructorModal,
+    setShouldCloseInstructorModal] = useState(false);
+
+  /**
    * The current ref value of the focused button
    */
   const buttonRef: Ref<HTMLButtonElement> = useRef(null);
@@ -195,6 +219,15 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   }, [setMeetingModalData, setModalButtonId]);
 
   /**
+   * Handles closing the meeting modal and setting the focus back to the button
+   * that opened the modal.
+   */
+  const closeMeetingModal = () => {
+    setMeetingModalData({ visible: false });
+    setTimeout(() => { buttonRef.current?.focus(); });
+  };
+
+  /**
    * Takes the requested course and term information to display the requested
    * meeting modal
    */
@@ -205,6 +238,11 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     setInstructorModalData({ course, term, visible: true });
     setModalButtonId(`instructors-${course.id}-${term}`);
   }, [setInstructorModalData, setModalButtonId]);
+
+  const closeInstructorModal = () => {
+    setInstructorModalData({ visible: false });
+    setTimeout(() => { buttonRef.current?.focus(); });
+  };
 
   const filterTimeoutId = useRef(null);
 
@@ -253,8 +291,20 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
         );
       }
       setFilteredCourses(courses);
+      if (shouldCloseMeetingModal) {
+        setShouldCloseMeetingModal(false);
+        closeMeetingModal();
+      }
+      if (shouldCloseInstructorModal) {
+        setShouldCloseInstructorModal(false);
+        closeInstructorModal();
+      }
     }, 100);
-  }, [filters, currentCourses, filterTimeoutId]);
+  }, [filters,
+    currentCourses,
+    filterTimeoutId,
+    shouldCloseMeetingModal,
+    shouldCloseInstructorModal]);
 
   useEffect((): void => {
     setFetching(true);
@@ -383,10 +433,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
                     meetingModalData.term,
                     meetingModalData.course
                   )}
-                  onClose={() => {
-                    setMeetingModalData({ visible: false });
-                    setTimeout(() => { buttonRef.current?.focus(); });
-                  }}
+                  onClose={closeMeetingModal}
                   onSave={(newMeetingList, message?: string) => {
                     const { course, term } = meetingModalData;
                     const semKey = term.toLowerCase() as TermKey;
@@ -397,6 +444,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
                         meetings: newMeetingList,
                       },
                     }, message);
+                    setShouldCloseMeetingModal(true);
                   }}
                 />
               )
@@ -410,10 +458,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
                     calendarYear: acadYear.toString(),
                   }}
                   currentCourse={instructorModalData.course}
-                  closeModal={() => {
-                    setInstructorModalData({ visible: false });
-                    setTimeout(() => { buttonRef.current?.focus(); });
-                  }}
+                  closeModal={closeInstructorModal}
                   onSave={(newInstructorList, message?: string) => {
                     const { course, term } = instructorModalData;
                     const semKey = term.toLowerCase() as TermKey;
@@ -424,6 +469,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
                         instructors: newInstructorList,
                       },
                     }, message);
+                    setShouldCloseInstructorModal(true);
                   }}
                 />
               )
