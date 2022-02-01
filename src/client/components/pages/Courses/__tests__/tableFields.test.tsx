@@ -268,10 +268,10 @@ describe('tableFields', function () {
       });
       context('When semester does not have data', function () {
         it('Should return an empty list', function () {
-          const SpringTimes = formatMeetings(TERM.SPRING);
+          const SpringMeetings = formatMeetings(TERM.SPRING);
           const TestComponent: FunctionComponent = (): ReactElement => (
             <div>
-              <SpringTimes
+              <SpringMeetings
                 course={ac209aCourseInstance}
                 openInstructorModal={openModalSpy}
                 buttonRef={null}
