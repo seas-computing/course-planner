@@ -7,6 +7,7 @@ import React, {
   Ref,
   useRef,
   useCallback,
+  useMemo,
 } from 'react';
 import {
   Button,
@@ -30,7 +31,7 @@ import CourseInstanceTable from './CourseInstanceTable';
 import ViewModal from './ViewModal';
 import SemesterTable from './SemesterTable';
 import { modalFields } from './modalFields';
-import { CourseInstanceListColumn, formatFacultyNotes, tableFields } from './tableFields';
+import { formatFacultyNotes, tableFields } from './tableFields';
 import { listFilter } from '../Filter';
 import { FilterState } from './filters.d';
 import MeetingModal from './MeetingModal';
@@ -94,18 +95,11 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     setCurrentViewColumns,
   ] = useState(defaultView.columns);
 
-  const [
-    tableData,
-    setTableData,
-  ] = useState<CourseInstanceListColumn[]>(tableFields);
-
-  useEffect(() => {
-    setTableData(tableFields.filter(
-      ({ viewColumn }): boolean => (
-        currentViewColumns.includes(viewColumn)
-      )
-    ));
-  }, [currentViewColumns, setTableData]);
+  const tableData = useMemo(() => tableFields.filter(
+    ({ viewColumn }): boolean => (
+      currentViewColumns.includes(viewColumn)
+    )
+  ), [currentViewColumns]);
 
   const dispatchMessage = useContext(MessageContext);
 
