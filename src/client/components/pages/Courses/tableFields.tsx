@@ -265,7 +265,7 @@ export interface FieldContentProps {
   /**
    * The course whose data will be rendered by FieldContent
    */
-  course:CourseInstanceResponseDTO;
+  course: CourseInstanceResponseDTO;
   /**
    * Controls the opening of the meeting modal with the requested course and term
    */
