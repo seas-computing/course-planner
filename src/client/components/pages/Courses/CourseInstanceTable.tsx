@@ -1,5 +1,6 @@
 import React, {
   FunctionComponent,
+  memo,
   ReactElement,
   Ref,
   useContext,
@@ -70,7 +71,7 @@ interface CourseInstanceTableProps {
  * in the text filter fields without having to re-render the entire table
  * contents in between key strokes.
  */
-const MemoizedCourseInstanceTableBody = React.memo(CourseInstanceTableBody);
+const MemoizedCourseInstanceTableBody = memo(CourseInstanceTableBody);
 
 /**
  * Component representing the list of CourseInstances in a given Academic year
