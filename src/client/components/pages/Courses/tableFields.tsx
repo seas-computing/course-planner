@@ -258,7 +258,7 @@ export const formatMeetings = (
 });
 
 /**
- * Descibes the additional options passed into the FieldContent functional
+ * Describes the additional options passed into the FieldContent functional
  * component
  */
 export interface FieldContentProps {
