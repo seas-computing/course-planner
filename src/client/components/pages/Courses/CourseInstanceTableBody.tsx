@@ -7,6 +7,9 @@ import {
 import React, { FunctionComponent, ReactElement, Ref } from 'react';
 import { CourseInstanceListColumn } from './tableFields';
 
+type OpenModalCallback = (
+  course: CourseInstanceResponseDTO, term: TERM) => void;
+
 interface CourseInstanceTableBodyProps {
   /**
    * The list of courses to be shown in the table
@@ -19,11 +22,11 @@ interface CourseInstanceTableBodyProps {
   /**
    * Controls the opening of the meeting modal with the requested course and term
    */
-  openMeetingModal: (course: CourseInstanceResponseDTO, term: TERM) => void;
+  openMeetingModal: OpenModalCallback
   /**
    * Controls the opening of the instructor modal with the requested course and term
    */
-  openInstructorModal: (course: CourseInstanceResponseDTO, term: TERM) => void;
+  openInstructorModal: OpenModalCallback
   /**
    * The ref value of the edit faculty absence button
    */
