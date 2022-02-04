@@ -4,7 +4,7 @@ import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse
 import {
   TableBody, TableRow, TableRowHeadingCell, VALIGN, TableCell,
 } from 'mark-one';
-import React, { FunctionComponent, ReactElement, Ref } from 'react';
+import React, { FunctionComponent, ReactElement } from 'react';
 import { CourseInstanceListColumn } from './tableFields';
 
 type OpenModalCallback = (
