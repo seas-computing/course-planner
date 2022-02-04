@@ -8,13 +8,15 @@ import React, {
   useRef,
   useCallback,
   useMemo,
+  ChangeEvent,
 } from 'react';
 import {
   Button,
   LoadSpinner,
   VARIANT,
+  Dropdown,
 } from 'mark-one';
-import { MessageContext } from 'client/context';
+import { MessageContext, MetadataContext } from 'client/context';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { CourseAPI } from 'client/api';
 import { MESSAGE_TYPE, MESSAGE_ACTION, AppMessage } from 'client/classes';
@@ -27,6 +29,7 @@ import { ViewResponse } from 'common/dto/view/ViewResponse.dto';
 import { VerticalSpace } from 'client/components/layout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWrench } from '@fortawesome/free-solid-svg-icons';
+import { DropdownProps } from 'mark-one/lib/Forms/Dropdown';
 import CourseInstanceTable from './CourseInstanceTable';
 import ViewModal from './ViewModal';
 import SemesterTable from './SemesterTable';
@@ -83,9 +86,6 @@ const defaultView: ViewResponse = {
  * this will be hard-coded here
  */
 const showRetired = false;
-
-// TODO: Get the actual current academic year instead of hard coding
-const acadYear = 2019;
 
 interface ModalData {
   term?: TERM;
@@ -319,9 +319,34 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     };
   }, [filters]);
 
+  const { currentAcademicYear, semesters } = useContext(MetadataContext);
+
+  const academicYearOptions = useMemo(
+    () => semesters.reduce<DropdownProps['options']>(
+      (years, semester) => {
+        if (semester.startsWith(TERM.SPRING)) {
+          const academicYear = parseInt(
+            semester.replace(/\D/g, ''),
+            10
+          );
+          return years.concat([{
+            label: `Fall ${academicYear - 1} - Spring ${academicYear}`,
+            value: academicYear.toString(),
+          }]);
+        }
+        return years;
+      }, []
+    ), [semesters]
+  );
+
+  const [
+    selectedAcademicYear,
+    setSelectedAcademicYear,
+  ] = useState(currentAcademicYear);
+
   useEffect((): void => {
     setFetching(true);
-    CourseAPI.getCourseInstancesForYear(acadYear)
+    CourseAPI.getCourseInstancesForYear(selectedAcademicYear)
       .then((courses: CourseInstanceResponseDTO[]): void => {
         setCourses(courses);
       })
@@ -334,7 +359,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
       .finally((): void => {
         setFetching(false);
       });
-  }, [dispatchMessage]);
+  }, [selectedAcademicYear, dispatchMessage]);
 
   /**
   * Method for updating a course in the local client list of courses. Intended
@@ -421,9 +446,24 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
                 {' '}
                 Customize View
               </Button>
+              <Dropdown
+                id="academic-year-selector"
+                name="academic-year-selector"
+                label="Academic Year"
+                isLabelVisible
+                options={academicYearOptions}
+                value={selectedAcademicYear.toString()}
+                onChange={
+                  ({
+                    target: { value },
+                  }: ChangeEvent<HTMLSelectElement>) => {
+                    setSelectedAcademicYear(parseInt(value, 10));
+                  }
+                }
+              />
             </VerticalSpace>
             <CourseInstanceTable
-              academicYear={acadYear}
+              academicYear={selectedAcademicYear}
               courseList={filteredCourses}
               genericFilterUpdate={genericFilterUpdate}
               tableData={tableData}
@@ -436,7 +476,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
               isVisible={meetingModalData.visible}
               currentSemester={{
                 term: meetingModalData.term,
-                calendarYear: acadYear.toString(),
+                calendarYear: selectedAcademicYear.toString(),
               }}
               currentCourse={meetingModalData.visible
                 ? meetingModalData.course
@@ -465,7 +505,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
               isVisible={instructorModalData.visible}
               currentSemester={{
                 term: instructorModalData.term,
-                calendarYear: acadYear.toString(),
+                calendarYear: selectedAcademicYear.toString(),
               }}
               currentCourse={instructorModalData.course}
               closeModal={closeInstructorModal}
