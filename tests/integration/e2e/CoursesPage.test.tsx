@@ -209,9 +209,7 @@ describe('End-to-end Course Instance updating', function () {
           // click save
           const saveButton = renderResult.getByText('Save');
           fireEvent.click(saveButton);
-          await waitForElementToBeRemoved(() => renderResult.queryByText('Saving Meetings'));
-          const modal = renderResult.queryByRole('dialog');
-          strictEqual(modal, null);
+          return waitForElementToBeRemoved(() => renderResult.queryByRole('dialog'));
         });
         it('Should show a success message', async function () {
           // click save
@@ -265,9 +263,7 @@ describe('End-to-end Course Instance updating', function () {
           // click save
           const saveButton = renderResult.getByText('Save');
           fireEvent.click(saveButton);
-          await waitForElementToBeRemoved(() => renderResult.queryByText('Saving Meetings'));
-          const modal = renderResult.queryByRole('dialog');
-          strictEqual(modal, null);
+          return waitForElementToBeRemoved(() => renderResult.queryByRole('dialog'));
         });
         it('Should show a success message', async function () {
           // click save
@@ -280,7 +276,7 @@ describe('End-to-end Course Instance updating', function () {
           // click save
           const saveButton = renderResult.getByText('Save');
           fireEvent.click(saveButton);
-          await waitForElementToBeRemoved(() => renderResult.queryByText('Saving Meetings'));
+          await waitForElementToBeRemoved(() => renderResult.queryByRole('dialog'));
           // get the entries listed in the UI
           const meetingEntries = within(editButton.parentElement)
             .queryAllByRole('listitem');
@@ -349,7 +345,7 @@ describe('End-to-end Course Instance updating', function () {
           // click save
           const saveButton = renderResult.getByText('Save');
           fireEvent.click(saveButton);
-          await waitForElementToBeRemoved(() => renderResult.queryByText('Saving Meetings'));
+          await waitForElementToBeRemoved(() => renderResult.queryByRole('dialog'));
           const modal = renderResult.queryByRole('dialog');
           strictEqual(modal, null);
         });
@@ -364,7 +360,7 @@ describe('End-to-end Course Instance updating', function () {
           // click save
           const saveButton = renderResult.getByText('Save');
           fireEvent.click(saveButton);
-          await waitForElementToBeRemoved(() => renderResult.queryByText('Saving Meetings'));
+          await waitForElementToBeRemoved(() => renderResult.queryByRole('dialog'));
           const meetingEntries = within(editButton.parentElement)
             .queryAllByRole('listitem');
           deepStrictEqual(meetingEntries, []);
@@ -420,7 +416,7 @@ describe('End-to-end Course Instance updating', function () {
             // click save
             const saveButton = renderResult.getByText('Save');
             fireEvent.click(saveButton);
-            await waitForElementToBeRemoved(() => renderResult.queryByText('Saving Meetings'));
+            await waitForElementToBeRemoved(() => renderResult.queryByRole('dialog'));
             const modal = renderResult.queryByRole('dialog');
             strictEqual(modal, null);
           });
@@ -551,7 +547,7 @@ describe('End-to-end Course Instance updating', function () {
           // click save
           const saveButton = renderResult.getByText('Save');
           fireEvent.click(saveButton);
-          await waitForElementToBeRemoved(() => renderResult.queryByText('Saving Meetings'));
+          await waitForElementToBeRemoved(() => renderResult.queryByRole('dialog'));
           const modal = renderResult.queryByRole('dialog');
           strictEqual(modal, null);
         });
@@ -667,7 +663,7 @@ describe('End-to-end Course Instance updating', function () {
           context('clicking Save', function () {
             it('should Close the modal and add the name to the list', async function () {
               fireEvent.click(renderResult.getByText('Save'));
-              await waitForElementToBeRemoved(() => renderResult.getByText('Saving Instructors'));
+              await waitForElementToBeRemoved(() => renderResult.queryByRole('dialog'));
               // Make sure modal closed
               const modal = renderResult.queryByRole('dialog');
               strictEqual(modal, null, 'Modal did not close');
@@ -768,7 +764,7 @@ describe('End-to-end Course Instance updating', function () {
           context('clicking Save', function () {
             it('Should Close the modal and remove the name from the list', async function () {
               fireEvent.click(renderResult.getByText('Save'));
-              await waitForElementToBeRemoved(() => renderResult.getByText('Saving Instructors'));
+              await waitForElementToBeRemoved(() => renderResult.queryByRole('dialog'));
               // Make sure message appeared
               const successMessage = await renderResult.findByText('Course updated', { exact: false });
               notStrictEqual(successMessage, null, 'Success message did not appear');
@@ -856,7 +852,7 @@ describe('End-to-end Course Instance updating', function () {
           context('clicking Save', function () {
             it('should Close the modal and remove all names from the list', async function () {
               fireEvent.click(renderResult.getByText('Save'));
-              await waitForElementToBeRemoved(() => renderResult.getByText('Saving Instructors'));
+              await waitForElementToBeRemoved(() => renderResult.queryByRole('dialog'));
               // Make sure message appeared
               const successMessage = await renderResult.findByText('Course updated', { exact: false });
               notStrictEqual(successMessage, null, 'Success message did not appear');
@@ -936,7 +932,7 @@ describe('End-to-end Course Instance updating', function () {
         context('clicking Save', function () {
           it('Should Close the modal and reorder the names in the list', async function () {
             fireEvent.click(renderResult.getByText('Save'));
-            await waitForElementToBeRemoved(() => renderResult.getByText('Saving Instructors'));
+            await waitForElementToBeRemoved(() => renderResult.queryByRole('dialog'));
             // Make sure message appeared
             const successMessage = await renderResult.findByText('Course updated', { exact: false });
             notStrictEqual(successMessage, null, 'Success message did not appear');
@@ -1079,7 +1075,7 @@ describe('End-to-end Course Instance updating', function () {
           context('clicking Save', function () {
             it('should Close the modal and add the name the list', async function () {
               fireEvent.click(renderResult.getByText('Save'));
-              await waitForElementToBeRemoved(() => renderResult.getByText('Saving Instructors'));
+              await waitForElementToBeRemoved(() => renderResult.queryByRole('dialog'));
               // Make sure modal closed
               const modal = renderResult.queryByRole('dialog');
               strictEqual(modal, null, 'Modal did not close');

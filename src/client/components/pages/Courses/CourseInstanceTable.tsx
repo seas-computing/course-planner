@@ -1,5 +1,6 @@
 import React, {
   FunctionComponent,
+  memo,
   ReactElement,
   Ref,
   useContext,
@@ -7,18 +8,13 @@ import React, {
 import {
   Table,
   TableHead,
-  TableBody,
   TableRow,
   TableHeadingCell,
   TableHeadingSpacer,
-  TableRowHeadingCell,
-  TableCell,
-  VALIGN,
 } from 'mark-one';
 import {
   COURSE_TABLE_COLUMN,
   COURSE_TABLE_COLUMN_GROUP,
-  getAreaColor,
   isSEASEnumToString,
   IS_SEAS,
   OFFERED,
@@ -26,10 +22,10 @@ import {
 } from 'common/constants';
 import { MetadataContext } from 'client/context';
 import { offeredEnumToString } from 'common/constants/offered';
-import { CellLayout } from 'client/components/general';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { CourseInstanceListColumn } from './tableFields';
 import { FilterState } from './filters.d';
+import CourseInstanceTableBody from './CourseInstanceTableBody';
 
 interface CourseInstanceTableProps {
   /**
@@ -69,6 +65,13 @@ interface CourseInstanceTableProps {
    */
   modalButtonId: string;
 }
+
+/**
+ * Memoize the table body in order to allow users to quickly see what they type
+ * in the text filter fields without having to re-render the entire table
+ * contents in between key strokes.
+ */
+const MemoizedCourseInstanceTableBody = memo(CourseInstanceTableBody);
 
 /**
  * Component representing the list of CourseInstances in a given Academic year
@@ -273,52 +276,14 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
           )}
         </TableRow>
       </TableHead>
-      <TableBody>
-        {courseList.map((course, index) => (
-          <TableRow key={course.id} isStriped={index % 2 !== 0}>
-            {tableData.map(
-              (field: CourseInstanceListColumn): ReactElement => {
-                if (field.viewColumn
-                === COURSE_TABLE_COLUMN.CATALOG_NUMBER) {
-                  return (
-                    <TableRowHeadingCell
-                      scope="row"
-                      key={field.key}
-                      verticalAlignment={VALIGN.TOP}
-                    >
-                      <CellLayout>
-                        {field.getValue(course)}
-                      </CellLayout>
-                    </TableRowHeadingCell>
-                  );
-                }
-                return (
-                  <TableCell
-                    verticalAlignment={VALIGN.TOP}
-                    key={field.key}
-                    backgroundColor={
-                      field.viewColumn === COURSE_TABLE_COLUMN.AREA
-                    && getAreaColor(field.getValue(course) as string)
-                    }
-                  >
-                    <CellLayout>
-                      {field.getValue(
-                        course,
-                        {
-                          openMeetingModal,
-                          openInstructorModal,
-                          buttonRef,
-                          modalButtonId,
-                        }
-                      )}
-                    </CellLayout>
-                  </TableCell>
-                );
-              }
-            )}
-          </TableRow>
-        ))}
-      </TableBody>
+      <MemoizedCourseInstanceTableBody
+        courseList={courseList}
+        tableData={tableData}
+        openMeetingModal={openMeetingModal}
+        openInstructorModal={openInstructorModal}
+        buttonRef={buttonRef}
+        modalButtonId={modalButtonId}
+      />
     </Table>
   );
 };

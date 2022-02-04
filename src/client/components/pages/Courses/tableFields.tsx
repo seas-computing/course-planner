@@ -12,6 +12,7 @@ import {
   VARIANT,
   fromTheme,
   Dropdown,
+  TextInput,
 } from 'mark-one';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStickyNote as withNotes, faFolderOpen, faEdit } from '@fortawesome/free-solid-svg-icons';
@@ -310,15 +311,19 @@ export interface CourseInstanceListColumn {
   getFilter?: (
     filters: FilterState,
     genericFilterUpdate: (field: string, value: string) => void,
-    filterOptions: Record<string, {value: string, label: string}[]>
+    filterOptions?: Record<string, {value: string, label: string}[]>
   ) => ReactElement;
 }
 
 type GetterFunction = (filters: FilterState,
   genericFilterUpdate: (field: string, value: string) => void,
-  filterOptions: Record<string, {value: string, label: string}[]>
+  filterOptions?: Record<string, {value: string, label: string}[]>
 ) => ReactElement;
 
+/**
+ * A function that creates a Dropdown element, which will be used as a filter
+ * field, for the field that is provided.
+ */
 function generateDropdown<
   Field extends keyof FilterState,
   Subfield extends keyof FilterState[Field]
@@ -342,7 +347,7 @@ function generateDropdown<
           .concat(filterOptions[filterOptionsField as FilterOptions])}
         value={filterValue as string}
         name={field}
-        id={field}
+        id={subField ? `${field}${subField.toString()}` : `${field}`}
         label={subField
           ? `The table will be filtered as selected in this ${field} ${subField.toString()} dropdown filter`
           : `The table will be filtered as selected in this ${field} dropdown filter`}
@@ -352,6 +357,46 @@ function generateDropdown<
           genericFilterUpdate(
             updateField,
             (evt.target as HTMLSelectElement)?.value
+          );
+        }}
+      />
+    );
+  };
+}
+
+/**
+ * A function that creates a Text Input element, which will be used as a filter
+ * field, for the field that is provided.
+ */
+function generateTextField<
+  Field extends keyof FilterState,
+  Subfield extends keyof FilterState[Field]
+>(field: Field, subField?: Field extends 'spring' | 'fall' ? Subfield : never): (GetterFunction) {
+  return (filters, genericFilterUpdate) => {
+    let filterValue;
+    let updateField;
+    if (subField) {
+      updateField = `${field}.${subField.toString()}`;
+      ({ [field]: { [subField]: filterValue } } = filters);
+    } else {
+      updateField = field;
+      ({ [field]: filterValue } = filters);
+    }
+    return (
+      <TextInput
+        id={subField ? `${field}${subField.toString()}` : `${field}`}
+        name={field}
+        value={filterValue as string}
+        placeholder={`Filter by ${field}`}
+        label={subField
+          ? `The table will be filtered as characters are typed in this ${field} ${subField.toString()} filter field`
+          : `The table will be filtered as characters are typed in this ${field} filter field`}
+        isLabelVisible={false}
+        hideError
+        onChange={(evt) => {
+          genericFilterUpdate(
+            updateField,
+            (evt.target as HTMLInputElement)?.value
           );
         }}
       />
@@ -379,6 +424,7 @@ export const tableFields: CourseInstanceListColumn[] = [
     columnGroup: COURSE_TABLE_COLUMN_GROUP.COURSE,
     viewColumn: COURSE_TABLE_COLUMN.CATALOG_NUMBER,
     getValue: retrieveValue('catalogNumber'),
+    getFilter: generateTextField('catalogNumber'),
   },
   {
     name: 'Title',
@@ -386,6 +432,7 @@ export const tableFields: CourseInstanceListColumn[] = [
     columnGroup: COURSE_TABLE_COLUMN_GROUP.COURSE,
     viewColumn: COURSE_TABLE_COLUMN.TITLE,
     getValue: retrieveValue('title'),
+    getFilter: generateTextField('title'),
   },
   {
     name: 'Same As',
@@ -423,6 +470,7 @@ export const tableFields: CourseInstanceListColumn[] = [
     columnGroup: COURSE_TABLE_COLUMN_GROUP.FALL,
     viewColumn: COURSE_TABLE_COLUMN.INSTRUCTORS,
     getValue: formatInstructors(TERM.FALL),
+    getFilter: generateTextField('fall', 'instructors'),
   },
   {
     name: 'Meetings',
@@ -466,6 +514,7 @@ export const tableFields: CourseInstanceListColumn[] = [
     columnGroup: COURSE_TABLE_COLUMN_GROUP.SPRING,
     viewColumn: COURSE_TABLE_COLUMN.INSTRUCTORS,
     getValue: formatInstructors(TERM.SPRING),
+    getFilter: generateTextField('spring', 'instructors'),
   },
   {
     name: 'Meetings',

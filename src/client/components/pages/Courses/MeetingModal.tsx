@@ -473,7 +473,6 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
       }
       if (savedMeetings) {
         onSave(savedMeetings);
-        onClose();
       }
     }
   };

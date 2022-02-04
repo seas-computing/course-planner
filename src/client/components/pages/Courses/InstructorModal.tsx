@@ -254,7 +254,6 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
       const results = await updateInstructorList(instanceId, localInstructors);
       onSave(results);
       setIsChanged(false);
-      closeModal();
     } catch (error) {
       const { message } = error as Error;
       setErrorMessage(message);
