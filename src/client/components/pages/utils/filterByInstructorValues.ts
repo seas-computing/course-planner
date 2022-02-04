@@ -1,9 +1,12 @@
+import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
+import { InstructorResponseDTO } from 'common/dto/courses/InstructorResponse.dto';
 import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
+import get from 'lodash.get';
 
 /**
  * Filters the array of multi-year plans by the faculty display name
  */
-export const filterByInstructorValues = (
+export const filterPlansByInstructors = (
   multiYearPlans: MultiYearPlanResponseDTO[],
   instructorValues: Record<number, string>
 ): MultiYearPlanResponseDTO[] => {
@@ -29,4 +32,22 @@ export const filterByInstructorValues = (
   return plans;
 };
 
-export default filterByInstructorValues;
+/**
+ * Filters the courses based on the instructor list using the filter value
+ * provided. The listFilter function cannot be used for this case, because
+ * the value of instructors is an array objects as opposed to a string.
+ */
+export const filterCoursesByInstructors = (
+  courses: CourseInstanceResponseDTO[],
+  filterValue: string,
+  filterPath: string
+): CourseInstanceResponseDTO[] => {
+  const filterValueLower = filterValue.toLowerCase();
+  const filteredList = courses.filter((course) => {
+    const instructors = get(course, filterPath, []) as
+          InstructorResponseDTO[];
+    return instructors.some((instructor) => instructor.displayName
+      .toLowerCase().indexOf(filterValueLower) !== -1);
+  });
+  return filteredList;
+};

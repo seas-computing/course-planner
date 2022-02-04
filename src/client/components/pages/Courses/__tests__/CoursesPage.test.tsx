@@ -19,16 +19,20 @@ import {
 import { CourseAPI } from 'client/api';
 import { AppMessage, MESSAGE_TYPE, MESSAGE_ACTION } from 'client/classes';
 import { MessageReducerAction } from 'client/context';
-import { cs50CourseInstance } from 'testData';
+import { am105CourseInstance, cs50CourseInstance } from 'testData';
 import { isSEASEnumToString, IS_SEAS, OFFERED } from 'common/constants';
 import { offeredEnumToString } from 'common/constants/offered';
+import FakeTimers, { InstalledClock } from '@sinonjs/fake-timers';
 import CoursesPage from '../CoursesPage';
 import * as filters from '../../Filter';
+import * as instructorFilters from '../../utils/filterByInstructorValues';
 
 describe('Course Page', function () {
   let getStub: SinonStub;
   let dispatchMessage: SinonStub;
-  let filterSpy: SinonSpy;
+  let listFilterSpy: SinonSpy;
+  let filterInstructorsSpy: SinonSpy;
+  let clock: InstalledClock;
   beforeEach(function () {
     getStub = stub(CourseAPI, 'getCourseInstancesForYear');
     dispatchMessage = stub();
@@ -87,25 +91,41 @@ describe('Course Page', function () {
 
   describe('Filtering data', function () {
     let getAllByRole: BoundFunction<AllByRole>;
+    let findByText: BoundFunction<FindByText>;
     const areaFilterLabel = 'The table will be filtered as selected in this area dropdown filter';
     const isSEASFilterLabel = 'The table will be filtered as selected in this isSEAS dropdown filter';
     const fallOfferedFilterLabel = 'The table will be filtered as selected in this fall offered dropdown filter';
     const springOfferedFilterLabel = 'The table will be filtered as selected in this spring offered dropdown filter';
+    const catalogNumberLabel = 'The table will be filtered as characters are typed in this catalogNumber filter field';
+    const titleLabel = 'The table will be filtered as characters are typed in this title filter field';
+    const fallInstructorsFilterLabel = 'The table will be filtered as characters are typed in this fall instructors filter field';
+    const springInstructorsFilterLabel = 'The table will be filtered as characters are typed in this spring instructors filter field';
     beforeEach(function () {
-      filterSpy = spy(filters, 'listFilter');
+      listFilterSpy = spy(filters, 'listFilter');
+      filterInstructorsSpy = spy(instructorFilters, 'filterCoursesByInstructors');
       getStub.resolves([
         { ...cs50CourseInstance },
+        { ...am105CourseInstance },
       ]);
-      ({ getAllByRole } = render(<CoursesPage />));
+      ({ getAllByRole, findByText } = render(<CoursesPage />));
+      clock = FakeTimers.install({
+        toFake: ['setTimeout'],
+      });
+    });
+    afterEach(function () {
+      clock.uninstall();
     });
     context('when the area dropdown filter is changed', function () {
       it('calls the listFilter function once for each filter', function () {
         const [, , thirdRow] = getAllByRole('row');
         const utils = within(thirdRow);
         const area = utils.getByLabelText(areaFilterLabel);
-        filterSpy.resetHistory();
+        listFilterSpy.resetHistory();
         fireEvent.change(area, { target: { value: 'AM' } });
-        strictEqual(filterSpy.callCount, 1);
+        // Filter changes are debounced within 100 ms of changes, so we are using
+        // a fake time to make 200 ms pass after changing the filter value.
+        clock.tick(200);
+        strictEqual(listFilterSpy.callCount, 1);
       });
     });
     context('when the isSEAS dropdown filter is called', function () {
@@ -113,10 +133,13 @@ describe('Course Page', function () {
         const [, , thirdRow] = getAllByRole('row');
         const utils = within(thirdRow);
         const isSEAS = utils.getByLabelText(isSEASFilterLabel);
-        filterSpy.resetHistory();
+        listFilterSpy.resetHistory();
         fireEvent.change(isSEAS,
           { target: { value: isSEASEnumToString(IS_SEAS.N) } });
-        strictEqual(filterSpy.callCount, 1);
+        // Filter changes are debounced within 100 ms of changes, so we are using
+        // a fake time to make 200 ms pass after changing the filter value.
+        clock.tick(200);
+        strictEqual(listFilterSpy.callCount, 1);
       });
     });
     context('when the fall offered dropdown filter is called', function () {
@@ -124,10 +147,13 @@ describe('Course Page', function () {
         const [, , thirdRow] = getAllByRole('row');
         const utils = within(thirdRow);
         const fallOffered = utils.getByLabelText(fallOfferedFilterLabel);
-        filterSpy.resetHistory();
+        listFilterSpy.resetHistory();
         fireEvent.change(fallOffered,
           { target: { value: offeredEnumToString(OFFERED.Y) } });
-        strictEqual(filterSpy.callCount, 1);
+        // Filter changes are debounced within 100 ms of changes, so we are using
+        // a fake time to make 200 ms pass after changing the filter value.
+        clock.tick(200);
+        strictEqual(listFilterSpy.callCount, 1);
       });
     });
     context('when the spring offered dropdown filter is called', function () {
@@ -135,10 +161,80 @@ describe('Course Page', function () {
         const [, , thirdRow] = getAllByRole('row');
         const utils = within(thirdRow);
         const springOffered = utils.getByLabelText(springOfferedFilterLabel);
-        filterSpy.resetHistory();
+        listFilterSpy.resetHistory();
         fireEvent.change(springOffered,
           { target: { value: offeredEnumToString(OFFERED.N) } });
-        strictEqual(filterSpy.callCount, 1);
+        // Filter changes are debounced within 100 ms of changes, so we are using
+        // a fake time to make 200 ms pass after changing the filter value.
+        clock.tick(200);
+        strictEqual(listFilterSpy.callCount, 1);
+      });
+    });
+    context('when the catalogNumber text filter is called', function () {
+      it('calls the listFilter function once for each filter', function () {
+        const [, , thirdRow] = getAllByRole('row');
+        const utils = within(thirdRow);
+        const catalogNumber = utils.getByLabelText(catalogNumberLabel);
+        listFilterSpy.resetHistory();
+        fireEvent.change(catalogNumber,
+          { target: { value: 'CS' } });
+        // Filter changes are debounced within 100 ms of changes, so we are using
+        // a fake time to make 200 ms pass after changing the filter value.
+        clock.tick(200);
+        strictEqual(listFilterSpy.callCount, 1);
+      });
+    });
+    context('when the title text filter is called', function () {
+      it('calls the listFilter function once for each filter', async function () {
+        // Since the title column is not shown in the default view, the view must be updated
+        const customizeViewButton = await findByText('Customize View', { exact: false });
+        fireEvent.click(customizeViewButton);
+        const modal = getAllByRole('dialog')[0];
+        const titleCheckbox = await within(modal)
+          .findByLabelText('Title');
+        fireEvent.click(titleCheckbox);
+        const doneButton = within(modal).getByText('Done');
+        fireEvent.click(doneButton);
+        const [, , thirdRow] = getAllByRole('row');
+        const utils = within(thirdRow);
+        const title = utils.getByLabelText(titleLabel);
+        listFilterSpy.resetHistory();
+        fireEvent.change(title,
+          { target: { value: 'AM 105' } });
+        // Filter changes are debounced within 100 ms of changes, so we are using
+        // a fake time to make 200 ms pass after changing the filter value.
+        clock.tick(200);
+        strictEqual(listFilterSpy.callCount, 1);
+      });
+    });
+    context('when the fall instructors text filter is called', function () {
+      it('calls the filterInstructorsSpy function once for each filter', function () {
+        const [, , thirdRow] = getAllByRole('row');
+        const utils = within(thirdRow);
+        const fallInstructors = utils
+          .getByLabelText(fallInstructorsFilterLabel);
+        filterInstructorsSpy.resetHistory();
+        fireEvent.change(fallInstructors,
+          { target: { value: 'Malan' } });
+        // Filter changes are debounced within 100 ms of changes, so we are using
+        // a fake time to make 200 ms pass after changing the filter value.
+        clock.tick(200);
+        strictEqual(filterInstructorsSpy.callCount, 1);
+      });
+    });
+    context('when the spring instructors text filter is called', function () {
+      it('calls the filterInstructorsSpy function once for each filter', function () {
+        const [, , thirdRow] = getAllByRole('row');
+        const utils = within(thirdRow);
+        const springInstructors = utils
+          .getByLabelText(springInstructorsFilterLabel);
+        filterInstructorsSpy.resetHistory();
+        fireEvent.change(springInstructors,
+          { target: { value: 'Waldo' } });
+        // Filter changes are debounced within 100 ms of changes, so we are using
+        // a fake time to make 200 ms pass after changing the filter value.
+        clock.tick(200);
+        strictEqual(filterInstructorsSpy.callCount, 1);
       });
     });
   });
