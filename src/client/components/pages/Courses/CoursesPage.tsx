@@ -39,6 +39,25 @@ import InstructorModal from './InstructorModal';
 import { filterCoursesByInstructors } from '../utils/filterByInstructorValues';
 
 /**
+ * The initial, empty state for the filters
+ */
+
+const emptyFilters: FilterState = {
+  area: 'All',
+  catalogNumber: '',
+  title: '',
+  isSEAS: 'All',
+  spring: {
+    offered: 'All',
+    instructors: '',
+  },
+  fall: {
+    offered: 'All',
+    instructors: '',
+  },
+};
+
+/**
  * Default View
  *
  * This is the hard-coded default view that is showin in the dropdown when a
@@ -98,15 +117,6 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
 
   const dispatchMessage = useContext(MessageContext);
 
-  /**
-   * Keeps track of the list of courses to be displayed as users interact with
-   * the table filters
-   */
-  const [
-    filteredCourses,
-    setFilteredCourses,
-  ] = useState<CourseInstanceResponseDTO[]>([]);
-
   const [fetching, setFetching] = useState(false);
 
   /**
@@ -144,30 +154,6 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   const [modalButtonId, setModalButtonId] = useState<string>('');
 
   /**
-   * This state shows that the user has completed some action indicating that the meeting modal
-   * should close. The value of the state is checked in the useEffect after the filtered
-   * course instances are set and before the closeMeetingModal function is called
-   * so that the table data is updated before the meeting modal closes.
-   * Without setting the filtered table data before closing the meeting modal, the
-   * meeting modal will close and non-updated table data will be shown temporarily.
-   */
-  const [shouldCloseMeetingModal, setShouldCloseMeetingModal] = useState(false);
-
-  /**
-   * This state shows that the user has completed some action indicating that the
-   * instructor modal should close. The value of the state is checked in the
-   * useEffect after the filtered course instances are set and before the
-   * closeInstructorModal function is called so that the table data is updated
-   * before the meeting modal closes.
-   * Without setting the filtered table data before closing the meeting modal, the
-   * instructor modal will close and non-updated table data will be shown
-   * temporarily.
-   */
-  const [
-    shouldCloseInstructorModal,
-    setShouldCloseInstructorModal] = useState(false);
-
-  /**
    * The current ref value of the focused button
    */
   const refTable = useRef<Record<string, HTMLButtonElement>>({});
@@ -186,22 +172,18 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   const customizeViewButtonRef: Ref<HTMLButtonElement> = useRef(null);
 
   /**
-   * The current value of each of the course instance table filters
+   * The current value of each of the course instance table filters. These
+   * filter values are only used to control what's shown in the actual filter
+   * inputs
    */
-  const [filters, setFilters] = useState<FilterState>({
-    area: 'All',
-    catalogNumber: '',
-    title: '',
-    isSEAS: 'All',
-    spring: {
-      offered: 'All',
-      instructors: '',
-    },
-    fall: {
-      offered: 'All',
-      instructors: '',
-    },
-  });
+  const [filters, setFilters] = useState<FilterState>(emptyFilters);
+
+  /**
+   * The current value of the filters used to update the course list.
+   * Separating this from the regular filters above gives us more control over
+   * when we update the filters and makes the debouncing logic cleaner
+   */
+  const [activeFilters, setActiveFilters] = useState<FilterState>(emptyFilters);
 
   /**
    * Handles keeping track of the group of filters as the user interacts with
@@ -261,8 +243,59 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     });
   }, [modalButtonId]);
 
+  /**
+   * Applies our activeFilters against our currentCourses, memoizing the result
+   */
+  const filteredCourses = useMemo(() => {
+    let courses = [...currentCourses];
+    // Provides a list of the paths for the filters in the Course Instance table
+    const dropdownFilterPaths = ['area', 'isSEAS', 'fall.offered', 'spring.offered'];
+    dropdownFilterPaths.forEach((filterPath) => {
+      const filterValue = get(activeFilters, filterPath) as string;
+      if (filterValue !== 'All') {
+        courses = listFilter(
+          courses,
+          { field: `${filterPath}`, value: filterValue, exact: true }
+        );
+      }
+    });
+    const textFilterPaths = ['catalogNumber', 'title', 'fall.instructors', 'spring.instructors'];
+    textFilterPaths.forEach((filterPath) => {
+      const filterValue = get(activeFilters, filterPath) as string;
+      if (filterValue !== '') {
+        if (filterPath === 'fall.instructors' || filterPath === 'spring.instructors') {
+          courses = filterCoursesByInstructors(
+            courses, filterValue, filterPath
+          );
+        } else {
+          courses = listFilter(
+            courses,
+            { field: `${filterPath}`, value: filterValue, exact: false }
+          );
+        }
+      }
+    });
+    // Hides the retired courses
+    if (!showRetired) {
+      courses = courses.filter(
+        ({ spring, fall }): boolean => (
+          fall.offered !== OFFERED.RETIRED
+                && spring.offered !== OFFERED.RETIRED)
+      );
+    }
+    return courses;
+  }, [currentCourses, activeFilters]);
+
+  /**
+   * Track the current timeout from our debouncing process, below
+   */
   const filterTimeoutId = useRef(null);
 
+  /**
+   * Handle debouncing the shift from our "working" filters state to our
+   * activeFilters state, which will cause the memoized filteredCourses value
+   * above to recompute.
+   */
   useEffect(() => {
     // Cancel upcoming timeout if this block is called again
     if (filterTimeoutId.current != null) {
@@ -271,61 +304,20 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     filterTimeoutId.current = setTimeout(() => {
       // Prevent trying to clear an unrelated timeout ID
       filterTimeoutId.current = null;
-      let courses = [...currentCourses];
-      // Provides a list of the paths for the filters in the Course Instance table
-      const dropdownFilterPaths = ['area', 'isSEAS', 'fall.offered', 'spring.offered'];
-      dropdownFilterPaths.forEach((filterPath) => {
-        const filterValue = get(filters, filterPath) as string;
-        if (filterValue !== 'All') {
-          courses = listFilter(
-            courses,
-            { field: `${filterPath}`, value: filterValue, exact: true }
-          );
-        }
+      setActiveFilters({
+        ...filters,
+        spring: {
+          ...filters.spring,
+        },
+        fall: {
+          ...filters.fall,
+        },
       });
-      const textFilterPaths = ['catalogNumber', 'title', 'fall.instructors', 'spring.instructors'];
-      textFilterPaths.forEach((filterPath) => {
-        const filterValue = get(filters, filterPath) as string;
-        if (filterValue !== '') {
-          if (filterPath === 'fall.instructors' || filterPath === 'spring.instructors') {
-            courses = filterCoursesByInstructors(
-              courses, filterValue, filterPath
-            );
-          } else {
-            courses = listFilter(
-              courses,
-              { field: `${filterPath}`, value: filterValue, exact: false }
-            );
-          }
-        }
-      });
-      // Hides the retired courses
-      if (!showRetired) {
-        courses = courses.filter(
-          ({ spring, fall }): boolean => (
-            fall.offered !== OFFERED.RETIRED
-                && spring.offered !== OFFERED.RETIRED)
-        );
-      }
-      setFilteredCourses(courses);
-      if (shouldCloseMeetingModal) {
-        setShouldCloseMeetingModal(false);
-        closeMeetingModal();
-      }
-      if (shouldCloseInstructorModal) {
-        setShouldCloseInstructorModal(false);
-        closeInstructorModal();
-      }
     }, 100);
-  }, [
-    filters,
-    currentCourses,
-    filterTimeoutId,
-    closeMeetingModal,
-    closeInstructorModal,
-    shouldCloseMeetingModal,
-    shouldCloseInstructorModal,
-  ]);
+    return () => {
+      clearTimeout(filterTimeoutId.current);
+    };
+  }, [filters]);
 
   useEffect((): void => {
     setFetching(true);
@@ -466,7 +458,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
                     meetings: newMeetingList,
                   },
                 }, message);
-                setShouldCloseMeetingModal(true);
+                closeMeetingModal();
               }}
             />
             <InstructorModal
@@ -487,7 +479,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
                     instructors: newInstructorList,
                   },
                 }, message);
-                setShouldCloseInstructorModal(true);
+                closeInstructorModal();
               }}
             />
           </>
