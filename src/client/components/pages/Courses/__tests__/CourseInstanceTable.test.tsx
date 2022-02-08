@@ -77,8 +77,7 @@ describe('CourseInstanceTable', function () {
             filters={testFilters}
             openMeetingModal={openMeetingModalSpy}
             openInstructorModal={openInstructorModalSpy}
-            buttonRef={null}
-            modalButtonId=""
+            setButtonRef={() => () => {}}
           />
         )
         );
@@ -157,8 +156,7 @@ describe('CourseInstanceTable', function () {
             filters={testFilters}
             openMeetingModal={openMeetingModalSpy}
             openInstructorModal={openInstructorModalSpy}
-            buttonRef={null}
-            modalButtonId=""
+            setButtonRef={() => () => {}}
           />
         )
         );
@@ -200,8 +198,7 @@ describe('CourseInstanceTable', function () {
             filters={testFilters}
             openMeetingModal={openMeetingModalSpy}
             openInstructorModal={openInstructorModalSpy}
-            buttonRef={null}
-            modalButtonId=""
+            setButtonRef={() => () => {}}
           />
         )
         );
@@ -258,8 +255,7 @@ describe('CourseInstanceTable', function () {
           filters={testFilters}
           openMeetingModal={openMeetingModalSpy}
           openInstructorModal={openInstructorModalSpy}
-          buttonRef={null}
-          modalButtonId=""
+          setButtonRef={() => () => {}}
         />
       )
       );

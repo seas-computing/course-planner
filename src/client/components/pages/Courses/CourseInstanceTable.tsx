@@ -2,7 +2,6 @@ import React, {
   FunctionComponent,
   memo,
   ReactElement,
-  Ref,
   useContext,
 } from 'react';
 import {
@@ -59,11 +58,7 @@ interface CourseInstanceTableProps {
   /**
    * The ref value of the edit faculty absence button
    */
-  buttonRef: Ref<HTMLButtonElement>;
-  /**
-   * The id of the edit button corresponding to the opened modal
-   */
-  modalButtonId: string;
+  setButtonRef: (nodeId: string) => (node: HTMLButtonElement) => void;
 }
 
 /**
@@ -84,8 +79,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
   filters,
   openMeetingModal,
   openInstructorModal,
-  buttonRef,
-  modalButtonId,
+  setButtonRef,
 }): ReactElement => {
   const courseColumns = tableData.filter(
     ({ columnGroup }): boolean => (
@@ -281,11 +275,22 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
         tableData={tableData}
         openMeetingModal={openMeetingModal}
         openInstructorModal={openInstructorModal}
-        buttonRef={buttonRef}
-        modalButtonId={modalButtonId}
+        setButtonRef={setButtonRef}
       />
     </Table>
   );
 };
 
-export default CourseInstanceTable;
+/**
+ * Memoize the redered content of the CourseInstanceTable, and only update if
+ * the actual list of courses, the set of columnns or the filters change
+ * (returning true from the second argument skips updating).
+ */
+export default React.memo(
+  CourseInstanceTable,
+  (prev, next) => (
+    prev.tableData === next.tableData
+  && prev.filters === next.filters
+  && prev.courseList === next.courseList
+  )
+);

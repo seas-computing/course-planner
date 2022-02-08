@@ -4,7 +4,7 @@ import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse
 import {
   TableBody, TableRow, TableRowHeadingCell, VALIGN, TableCell,
 } from 'mark-one';
-import React, { FunctionComponent, ReactElement, Ref } from 'react';
+import React, { FunctionComponent, ReactElement } from 'react';
 import { CourseInstanceListColumn } from './tableFields';
 
 type OpenModalCallback = (
@@ -30,11 +30,7 @@ interface CourseInstanceTableBodyProps {
   /**
    * The ref value of the edit faculty absence button
    */
-  buttonRef: Ref<HTMLButtonElement>;
-  /**
-   * The id of the edit button corresponding to the opened modal
-   */
-  modalButtonId: string;
+  setButtonRef: (nodeId: string) => (node: HTMLButtonElement) => void;
 }
 
 /**
@@ -48,16 +44,15 @@ FunctionComponent<CourseInstanceTableBodyProps> = ({
   tableData,
   openMeetingModal,
   openInstructorModal,
-  buttonRef,
-  modalButtonId,
+  setButtonRef,
 }): ReactElement => (
   <TableBody>
     {courseList.map((course, index) => (
       <TableRow key={course.id} isStriped={index % 2 !== 0}>
         {tableData.map(
           (field: CourseInstanceListColumn): ReactElement => {
-            if (field.viewColumn
-                  === COURSE_TABLE_COLUMN.CATALOG_NUMBER) {
+            const { FieldContent } = field;
+            if (field.viewColumn === COURSE_TABLE_COLUMN.CATALOG_NUMBER) {
               return (
                 <TableRowHeadingCell
                   scope="row"
@@ -65,7 +60,7 @@ FunctionComponent<CourseInstanceTableBodyProps> = ({
                   verticalAlignment={VALIGN.TOP}
                 >
                   <CellLayout>
-                    {field.getValue(course)}
+                    <FieldContent course={course} />
                   </CellLayout>
                 </TableRowHeadingCell>
               );
@@ -76,19 +71,24 @@ FunctionComponent<CourseInstanceTableBodyProps> = ({
                 key={field.key}
                 backgroundColor={
                   field.viewColumn === COURSE_TABLE_COLUMN.AREA
-                      && getAreaColor(field.getValue(course) as string)
+                    && getAreaColor(course.area)
                 }
               >
                 <CellLayout>
-                  {field.getValue(
-                    course,
-                    {
-                      openMeetingModal,
-                      openInstructorModal,
-                      buttonRef,
-                      modalButtonId,
+                  <FieldContent
+                    course={course}
+                    openMeetingModal={
+                      field.viewColumn === COURSE_TABLE_COLUMN.MEETINGS
+                        ? openMeetingModal
+                        : null
                     }
-                  )}
+                    openInstructorModal={
+                      field.viewColumn === COURSE_TABLE_COLUMN.INSTRUCTORS
+                        ? openInstructorModal
+                        : null
+                    }
+                    buttonRef={setButtonRef(`${field.key}-${course.id}`)}
+                  />
                 </CellLayout>
               </TableCell>
             );

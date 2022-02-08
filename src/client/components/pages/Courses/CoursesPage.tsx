@@ -39,6 +39,25 @@ import InstructorModal from './InstructorModal';
 import { filterCoursesByInstructors } from '../utils/filterByInstructorValues';
 
 /**
+ * The initial, empty state for the filters
+ */
+
+const emptyFilters: FilterState = {
+  area: 'All',
+  catalogNumber: '',
+  title: '',
+  isSEAS: 'All',
+  spring: {
+    offered: 'All',
+    instructors: '',
+  },
+  fall: {
+    offered: 'All',
+    instructors: '',
+  },
+};
+
+/**
  * Default View
  *
  * This is the hard-coded default view that is showin in the dropdown when a
@@ -98,15 +117,6 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
 
   const dispatchMessage = useContext(MessageContext);
 
-  /**
-   * Keeps track of the list of courses to be displayed as users interact with
-   * the table filters
-   */
-  const [
-    filteredCourses,
-    setFilteredCourses,
-  ] = useState<CourseInstanceResponseDTO[]>([]);
-
   const [fetching, setFetching] = useState(false);
 
   /**
@@ -144,33 +154,17 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   const [modalButtonId, setModalButtonId] = useState<string>('');
 
   /**
-   * This state shows that the user has completed some action indicating that the meeting modal
-   * should close. The value of the state is checked in the useEffect after the filtered
-   * course instances are set and before the closeMeetingModal function is called
-   * so that the table data is updated before the meeting modal closes.
-   * Without setting the filtered table data before closing the meeting modal, the
-   * meeting modal will close and non-updated table data will be shown temporarily.
-   */
-  const [shouldCloseMeetingModal, setShouldCloseMeetingModal] = useState(false);
-
-  /**
-   * This state shows that the user has completed some action indicating that the
-   * instructor modal should close. The value of the state is checked in the
-   * useEffect after the filtered course instances are set and before the
-   * closeInstructorModal function is called so that the table data is updated
-   * before the meeting modal closes.
-   * Without setting the filtered table data before closing the meeting modal, the
-   * instructor modal will close and non-updated table data will be shown
-   * temporarily.
-   */
-  const [
-    shouldCloseInstructorModal,
-    setShouldCloseInstructorModal] = useState(false);
-
-  /**
    * The current ref value of the focused button
    */
-  const buttonRef: Ref<HTMLButtonElement> = useRef(null);
+  const refTable = useRef<Record<string, HTMLButtonElement>>({});
+
+  const setButtonRef = useCallback(
+    (nodeId: string) => (node: HTMLButtonElement): void => {
+      if (nodeId && node) {
+        refTable.current[nodeId] = node;
+      }
+    }, [refTable]
+  );
 
   /**
    * Ref to the Customize View button
@@ -178,54 +172,55 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   const customizeViewButtonRef: Ref<HTMLButtonElement> = useRef(null);
 
   /**
-   * The current value of each of the course instance table filters
+   * The current value of each of the course instance table filters. These
+   * filter values are only used to control what's shown in the actual filter
+   * inputs
    */
-  const [filters, setFilters] = useState<FilterState>({
-    area: 'All',
-    catalogNumber: '',
-    title: '',
-    isSEAS: 'All',
-    spring: {
-      offered: 'All',
-      instructors: '',
-    },
-    fall: {
-      offered: 'All',
-      instructors: '',
-    },
-  });
+  const [filters, setFilters] = useState<FilterState>(emptyFilters);
+
+  /**
+   * The current value of the filters used to update the course list.
+   * Separating this from the regular filters above gives us more control over
+   * when we update the filters and makes the debouncing logic cleaner
+   */
+  const [activeFilters, setActiveFilters] = useState<FilterState>(emptyFilters);
 
   /**
    * Handles keeping track of the group of filters as the user interacts with
    * the filter dropdowns
    */
-  const genericFilterUpdate = (field: string, value: string) => {
+  const genericFilterUpdate = useCallback((field: string, value: string) => {
     setFilters((currentFilters) => {
       // Make a copy of the existing filters
       const newFilters = merge({}, currentFilters);
       set(newFilters, field, value);
       return newFilters;
     });
-  };
+  }, [setFilters]);
 
   /**
    * Takes the requested course and term information to display the requested
    * meeting modal
    */
-  const openMeetingModal = useCallback((course: CourseInstanceResponseDTO,
-    term: TERM) => {
-    setMeetingModalData({ course, term, visible: true });
-    setModalButtonId(`meetings-${course.id}-${term}`);
-  }, [setMeetingModalData, setModalButtonId]);
+  const openMeetingModal = useCallback(
+    (course: CourseInstanceResponseDTO, term: TERM) => {
+      setMeetingModalData({ course, term, visible: true });
+      setModalButtonId(`meetings-${term.toLowerCase()}-${course.id}`);
+    }, [setMeetingModalData, setModalButtonId]
+  );
 
   /**
    * Handles closing the meeting modal and setting the focus back to the button
    * that opened the modal.
    */
-  const closeMeetingModal = () => {
+  const closeMeetingModal = useCallback(() => {
     setMeetingModalData({ visible: false });
-    setTimeout(() => { buttonRef.current?.focus(); });
-  };
+    setTimeout(() => {
+      if (modalButtonId && modalButtonId in refTable.current) {
+        refTable.current[modalButtonId].focus();
+      }
+    });
+  }, [modalButtonId]);
 
   /**
    * Takes the requested course and term information to display the requested
@@ -236,16 +231,71 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     term: TERM
   ) => {
     setInstructorModalData({ course, term, visible: true });
-    setModalButtonId(`instructors-${course.id}-${term}`);
+    setModalButtonId(`instructors-${term.toLowerCase()}-${course.id}`);
   }, [setInstructorModalData, setModalButtonId]);
 
-  const closeInstructorModal = () => {
+  const closeInstructorModal = useCallback(() => {
     setInstructorModalData({ visible: false });
-    setTimeout(() => { buttonRef.current?.focus(); });
-  };
+    setTimeout(() => {
+      if (modalButtonId && modalButtonId in refTable.current) {
+        refTable.current[modalButtonId].focus();
+      }
+    });
+  }, [modalButtonId]);
 
+  /**
+   * Applies our activeFilters against our currentCourses, memoizing the result
+   */
+  const filteredCourses = useMemo(() => {
+    let courses = [...currentCourses];
+    // Provides a list of the paths for the filters in the Course Instance table
+    const dropdownFilterPaths = ['area', 'isSEAS', 'fall.offered', 'spring.offered'];
+    dropdownFilterPaths.forEach((filterPath) => {
+      const filterValue = get(activeFilters, filterPath) as string;
+      if (filterValue !== 'All') {
+        courses = listFilter(
+          courses,
+          { field: `${filterPath}`, value: filterValue, exact: true }
+        );
+      }
+    });
+    const textFilterPaths = ['catalogNumber', 'title', 'fall.instructors', 'spring.instructors'];
+    textFilterPaths.forEach((filterPath) => {
+      const filterValue = get(activeFilters, filterPath) as string;
+      if (filterValue !== '') {
+        if (filterPath === 'fall.instructors' || filterPath === 'spring.instructors') {
+          courses = filterCoursesByInstructors(
+            courses, filterValue, filterPath
+          );
+        } else {
+          courses = listFilter(
+            courses,
+            { field: `${filterPath}`, value: filterValue, exact: false }
+          );
+        }
+      }
+    });
+    // Hides the retired courses
+    if (!showRetired) {
+      courses = courses.filter(
+        ({ spring, fall }): boolean => (
+          fall.offered !== OFFERED.RETIRED
+                && spring.offered !== OFFERED.RETIRED)
+      );
+    }
+    return courses;
+  }, [currentCourses, activeFilters]);
+
+  /**
+   * Track the current timeout from our debouncing process, below
+   */
   const filterTimeoutId = useRef(null);
 
+  /**
+   * Handle debouncing the shift from our "working" filters state to our
+   * activeFilters state, which will cause the memoized filteredCourses value
+   * above to recompute.
+   */
   useEffect(() => {
     // Cancel upcoming timeout if this block is called again
     if (filterTimeoutId.current != null) {
@@ -254,57 +304,20 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     filterTimeoutId.current = setTimeout(() => {
       // Prevent trying to clear an unrelated timeout ID
       filterTimeoutId.current = null;
-      let courses = [...currentCourses];
-      // Provides a list of the paths for the filters in the Course Instance table
-      const dropdownFilterPaths = ['area', 'isSEAS', 'fall.offered', 'spring.offered'];
-      dropdownFilterPaths.forEach((filterPath) => {
-        const filterValue = get(filters, filterPath) as string;
-        if (filterValue !== 'All') {
-          courses = listFilter(
-            courses,
-            { field: `${filterPath}`, value: filterValue, exact: true }
-          );
-        }
+      setActiveFilters({
+        ...filters,
+        spring: {
+          ...filters.spring,
+        },
+        fall: {
+          ...filters.fall,
+        },
       });
-      const textFilterPaths = ['catalogNumber', 'title', 'fall.instructors', 'spring.instructors'];
-      textFilterPaths.forEach((filterPath) => {
-        const filterValue = get(filters, filterPath) as string;
-        if (filterValue !== '') {
-          if (filterPath === 'fall.instructors' || filterPath === 'spring.instructors') {
-            courses = filterCoursesByInstructors(
-              courses, filterValue, filterPath
-            );
-          } else {
-            courses = listFilter(
-              courses,
-              { field: `${filterPath}`, value: filterValue, exact: false }
-            );
-          }
-        }
-      });
-      // Hides the retired courses
-      if (!showRetired) {
-        courses = courses.filter(
-          ({ spring, fall }): boolean => (
-            fall.offered !== OFFERED.RETIRED
-                && spring.offered !== OFFERED.RETIRED)
-        );
-      }
-      setFilteredCourses(courses);
-      if (shouldCloseMeetingModal) {
-        setShouldCloseMeetingModal(false);
-        closeMeetingModal();
-      }
-      if (shouldCloseInstructorModal) {
-        setShouldCloseInstructorModal(false);
-        closeInstructorModal();
-      }
     }, 100);
-  }, [filters,
-    currentCourses,
-    filterTimeoutId,
-    shouldCloseMeetingModal,
-    shouldCloseInstructorModal]);
+    return () => {
+      clearTimeout(filterTimeoutId.current);
+    };
+  }, [filters]);
 
   useEffect((): void => {
     setFetching(true);
@@ -328,7 +341,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   * to accept the results of an update returned from the server, without
   * needing a full refresh of the data.
   */
-  const updateLocalCourse = (
+  const updateLocalCourse = useCallback((
     course: CourseInstanceResponseDTO,
     message?: string
   ): void => {
@@ -343,21 +356,21 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
         type: MESSAGE_ACTION.PUSH,
       });
     }
-  };
+  }, [currentCourses, dispatchMessage]);
 
   /**
    * Show/hide columns from the course instance table
    *
    * @param viewColumn The column that triggered the change handler
    */
-  const toggleColumn = (viewColumn: COURSE_TABLE_COLUMN): void => {
+  const toggleColumn = useCallback((viewColumn: COURSE_TABLE_COLUMN): void => {
     setCurrentViewColumns((columns: COURSE_TABLE_COLUMN[]) => {
       if (columns.includes(viewColumn)) {
         return columns.filter((col) => col !== viewColumn);
       }
       return columns.concat([viewColumn]);
     });
-  };
+  }, [setCurrentViewColumns]);
 
   /**
    * Memoize the table data so that it does not need to render unnecessarily
@@ -417,63 +430,58 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
               filters={filters}
               openMeetingModal={openMeetingModal}
               openInstructorModal={openInstructorModal}
-              modalButtonId={modalButtonId}
-              buttonRef={buttonRef}
+              setButtonRef={setButtonRef}
             />
-            {meetingModalData.visible
-              ? (
-                <MeetingModal
-                  isVisible={meetingModalData.visible}
-                  currentSemester={{
-                    term: meetingModalData.term,
-                    calendarYear: acadYear.toString(),
-                  }}
-                  currentCourse={meetingModalData.course}
-                  notes={formatFacultyNotes(
-                    meetingModalData.term,
-                    meetingModalData.course
-                  )}
-                  onClose={closeMeetingModal}
-                  onSave={(newMeetingList, message?: string) => {
-                    const { course, term } = meetingModalData;
-                    const semKey = term.toLowerCase() as TermKey;
-                    updateLocalCourse({
-                      ...course,
-                      [semKey]: {
-                        ...course[semKey],
-                        meetings: newMeetingList,
-                      },
-                    }, message);
-                    setShouldCloseMeetingModal(true);
-                  }}
-                />
-              )
-              : null}
-            {instructorModalData.visible
-              ? (
-                <InstructorModal
-                  isVisible={instructorModalData.visible}
-                  currentSemester={{
-                    term: instructorModalData.term,
-                    calendarYear: acadYear.toString(),
-                  }}
-                  currentCourse={instructorModalData.course}
-                  closeModal={closeInstructorModal}
-                  onSave={(newInstructorList, message?: string) => {
-                    const { course, term } = instructorModalData;
-                    const semKey = term.toLowerCase() as TermKey;
-                    updateLocalCourse({
-                      ...course,
-                      [semKey]: {
-                        ...course[semKey],
-                        instructors: newInstructorList,
-                      },
-                    }, message);
-                    setShouldCloseInstructorModal(true);
-                  }}
-                />
-              )
-              : null}
+            <MeetingModal
+              isVisible={meetingModalData.visible}
+              currentSemester={{
+                term: meetingModalData.term,
+                calendarYear: acadYear.toString(),
+              }}
+              currentCourse={meetingModalData.visible
+                ? meetingModalData.course
+                : null}
+              getNotes={() => (
+                formatFacultyNotes(
+                  meetingModalData.term,
+                  meetingModalData.course
+                )
+              )}
+              onClose={closeMeetingModal}
+              onSave={(newMeetingList, message?: string) => {
+                const { course, term } = meetingModalData;
+                const semKey = term.toLowerCase() as TermKey;
+                updateLocalCourse({
+                  ...course,
+                  [semKey]: {
+                    ...course[semKey],
+                    meetings: newMeetingList,
+                  },
+                }, message);
+                closeMeetingModal();
+              }}
+            />
+            <InstructorModal
+              isVisible={instructorModalData.visible}
+              currentSemester={{
+                term: instructorModalData.term,
+                calendarYear: acadYear.toString(),
+              }}
+              currentCourse={instructorModalData.course}
+              closeModal={closeInstructorModal}
+              onSave={(newInstructorList, message?: string) => {
+                const { course, term } = instructorModalData;
+                const semKey = term.toLowerCase() as TermKey;
+                updateLocalCourse({
+                  ...course,
+                  [semKey]: {
+                    ...course[semKey],
+                    instructors: newInstructorList,
+                  },
+                }, message);
+                closeInstructorModal();
+              }}
+            />
           </>
         )}
     </div>
