@@ -409,59 +409,55 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
 
   return (
     <div className="course-instance-table">
-      {fetching
-        ? (
-          <div>
-            <LoadSpinner>Fetching Course Data</LoadSpinner>
-          </div>
-        )
-        : (
-          <>
-            <VerticalSpace>
-              <ViewModal
-                isVisible={viewModalVisible}
-                onClose={() => {
-                  setViewModalVisible(false);
-                  setTimeout(() => {
-                    customizeViewButtonRef.current.focus();
-                  });
-                }}
-              >
-                <SemesterTable
-                  columns={modalFields}
-                  checked={currentViewColumns}
-                  onChange={toggleColumn}
-                />
-              </ViewModal>
-              <Button
-                variant={VARIANT.INFO}
-                forwardRef={customizeViewButtonRef}
-                onClick={() => {
-                  setViewModalVisible(true);
-                }}
-              >
-                <FontAwesomeIcon
-                  icon={faWrench}
-                />
-                {' '}
-                Customize View
-              </Button>
-              <Dropdown
-                id="academic-year-selector"
-                name="academic-year-selector"
-                label="Academic Year"
-                isLabelVisible
-                options={academicYearOptions}
-                value={selectedAcademicYear.toString()}
-                onChange={
-                  ({
-                    target: { value },
-                  }: ChangeEvent<HTMLSelectElement>) => {
-                    setSelectedAcademicYear(parseInt(value, 10));
-                  }
-                }
-              />
-            </VerticalSpace>
+      <VerticalSpace>
+        <ViewModal
+          isVisible={viewModalVisible}
+          onClose={() => {
+            setViewModalVisible(false);
+            setTimeout(() => {
+              customizeViewButtonRef.current.focus();
+            });
+          }}
+        >
+          <SemesterTable
+            columns={modalFields}
+            checked={currentViewColumns}
+            onChange={toggleColumn}
+          />
+        </ViewModal>
+        <Button
+          variant={VARIANT.INFO}
+          forwardRef={customizeViewButtonRef}
+          onClick={() => {
+            setViewModalVisible(true);
+          }}
+        >
+          <FontAwesomeIcon
+            icon={faWrench}
+          />
+          {' '}
+          Customize View
+        </Button>
+        <Dropdown
+          id="academic-year-selector"
+          name="academic-year-selector"
+          label="Academic Year"
+          isLabelVisible
+          options={academicYearOptions}
+          value={selectedAcademicYear.toString()}
+          onChange={
+            ({
+              target: { value },
+            }: ChangeEvent<HTMLSelectElement>) => {
+              setSelectedAcademicYear(parseInt(value, 10));
+            }
+          }
+        />
+      </VerticalSpace>
+      {
+        fetching
+          ? <LoadSpinner>Fetching Course Data</LoadSpinner>
+          : (
             <CourseInstanceTable
               academicYear={selectedAcademicYear}
               courseList={filteredCourses}
@@ -472,58 +468,58 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
               openInstructorModal={openInstructorModal}
               setButtonRef={setButtonRef}
             />
-            <MeetingModal
-              isVisible={meetingModalData.visible}
-              currentSemester={{
-                term: meetingModalData.term,
-                calendarYear: selectedAcademicYear.toString(),
-              }}
-              currentCourse={meetingModalData.visible
-                ? meetingModalData.course
-                : null}
-              getNotes={() => (
-                formatFacultyNotes(
-                  meetingModalData.term,
-                  meetingModalData.course
-                )
-              )}
-              onClose={closeMeetingModal}
-              onSave={(newMeetingList, message?: string) => {
-                const { course, term } = meetingModalData;
-                const semKey = term.toLowerCase() as TermKey;
-                updateLocalCourse({
-                  ...course,
-                  [semKey]: {
-                    ...course[semKey],
-                    meetings: newMeetingList,
-                  },
-                }, message);
-                closeMeetingModal();
-              }}
-            />
-            <InstructorModal
-              isVisible={instructorModalData.visible}
-              currentSemester={{
-                term: instructorModalData.term,
-                calendarYear: selectedAcademicYear.toString(),
-              }}
-              currentCourse={instructorModalData.course}
-              closeModal={closeInstructorModal}
-              onSave={(newInstructorList, message?: string) => {
-                const { course, term } = instructorModalData;
-                const semKey = term.toLowerCase() as TermKey;
-                updateLocalCourse({
-                  ...course,
-                  [semKey]: {
-                    ...course[semKey],
-                    instructors: newInstructorList,
-                  },
-                }, message);
-                closeInstructorModal();
-              }}
-            />
-          </>
+          )
+      }
+      <MeetingModal
+        isVisible={meetingModalData.visible}
+        currentSemester={{
+          term: meetingModalData.term,
+          calendarYear: selectedAcademicYear.toString(),
+        }}
+        currentCourse={meetingModalData.visible
+          ? meetingModalData.course
+          : null}
+        getNotes={() => (
+          formatFacultyNotes(
+            meetingModalData.term,
+            meetingModalData.course
+          )
         )}
+        onClose={closeMeetingModal}
+        onSave={(newMeetingList, message?: string) => {
+          const { course, term } = meetingModalData;
+          const semKey = term.toLowerCase() as TermKey;
+          updateLocalCourse({
+            ...course,
+            [semKey]: {
+              ...course[semKey],
+              meetings: newMeetingList,
+            },
+          }, message);
+          closeMeetingModal();
+        }}
+      />
+      <InstructorModal
+        isVisible={instructorModalData.visible}
+        currentSemester={{
+          term: instructorModalData.term,
+          calendarYear: selectedAcademicYear.toString(),
+        }}
+        currentCourse={instructorModalData.course}
+        closeModal={closeInstructorModal}
+        onSave={(newInstructorList, message?: string) => {
+          const { course, term } = instructorModalData;
+          const semKey = term.toLowerCase() as TermKey;
+          updateLocalCourse({
+            ...course,
+            [semKey]: {
+              ...course[semKey],
+              instructors: newInstructorList,
+            },
+          }, message);
+          closeInstructorModal();
+        }}
+      />
     </div>
   );
 };
