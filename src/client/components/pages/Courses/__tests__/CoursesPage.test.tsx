@@ -18,9 +18,15 @@ import {
 } from 'test-utils';
 import { CourseAPI } from 'client/api';
 import { AppMessage, MESSAGE_TYPE, MESSAGE_ACTION } from 'client/classes';
-import { MessageReducerAction } from 'client/context';
+import { MessageReducerAction, MetadataContextValue } from 'client/context';
+import * as dummy from 'testData';
 import { am105CourseInstance, cs50CourseInstance } from 'testData';
-import { isSEASEnumToString, IS_SEAS, OFFERED } from 'common/constants';
+import {
+  isSEASEnumToString,
+  IS_SEAS,
+  OFFERED,
+  TERM,
+} from 'common/constants';
 import { offeredEnumToString } from 'common/constants/offered';
 import FakeTimers, { InstalledClock } from '@sinonjs/fake-timers';
 import CoursesPage from '../CoursesPage';
@@ -33,6 +39,7 @@ describe('Course Page', function () {
   let listFilterSpy: SinonSpy;
   let filterInstructorsSpy: SinonSpy;
   let clock: InstalledClock;
+  const currentAcademicYear = 2021;
   beforeEach(function () {
     getStub = stub(CourseAPI, 'getCourseInstancesForYear');
     dispatchMessage = stub();
@@ -51,16 +58,6 @@ describe('Course Page', function () {
       });
       // TODO: Test "showRetired" when implemented
       // TODO: Test custom views when implemented
-      // TODO: When the academic year is computed instead of hard-coded, bring
-      // back this test:
-      // it('requests data for the current academic year', function () {
-      // const today = new Date();
-      // let currentYear = today.getFullYear();
-      // if (today.getMonth() > 5) {
-      // currentYear = today.getFullYear() + 1;
-      // }
-      // strictEqual(getStub.args[0][0], currentYear);
-      // });
       it('renders the data in the table', async function () {
         await findByText('CS 050');
       });
@@ -88,7 +85,73 @@ describe('Course Page', function () {
       });
     });
   });
-
+  describe('Navigating Academic Years', function () {
+    let metadataContext: MetadataContextValue;
+    beforeEach(function () {
+      getStub.resolves([
+        { ...cs50CourseInstance },
+      ]);
+      metadataContext = new MetadataContextValue({
+        ...dummy.metadata,
+        currentAcademicYear,
+        semesters: [
+          `${TERM.FALL} 2020`,
+          `${TERM.SPRING} 2021`,
+          `${TERM.FALL} 2021`,
+          `${TERM.SPRING} 2022`,
+        ],
+      },
+      spy());
+    });
+    it('requests data for the current academic year on initial render', function () {
+      render(
+        <CoursesPage />,
+        { metadataContext }
+      );
+      strictEqual(getStub.args[0][0], currentAcademicYear);
+    });
+    it('Populates the academic year dropdown', function () {
+      const { getByLabelText } = render(
+        <CoursesPage />,
+        { metadataContext }
+      );
+      const academicYearDropdown = getByLabelText('Academic Year');
+      const dropdownOptions = within(academicYearDropdown)
+        .getAllByRole('option') as HTMLOptionElement[];
+      const dropdownLabels = dropdownOptions
+        .map(({ textContent }) => textContent);
+      deepStrictEqual(
+        dropdownLabels,
+        [
+          'Fall 2020 - Spring 2021',
+          'Fall 2021 - Spring 2022',
+        ]
+      );
+      const dropdownValues = dropdownOptions
+        .map(({ value }) => value);
+      deepStrictEqual(
+        dropdownValues,
+        ['2021', '2022']
+      );
+    });
+    it('Fetches new data when changing academic years', function () {
+      const nextAcademicYear = currentAcademicYear + 1;
+      const { getByLabelText } = render(
+        <CoursesPage />,
+        { metadataContext }
+      );
+      strictEqual(getStub.args[0][0], currentAcademicYear);
+      fireEvent.change(
+        getByLabelText('Academic Year'),
+        {
+          target: {
+            value: `${nextAcademicYear}`,
+          },
+        }
+      );
+      strictEqual(getStub.args[1][0], nextAcademicYear);
+    });
+  });
   describe('Filtering data', function () {
     let getAllByRole: BoundFunction<AllByRole>;
     let findByText: BoundFunction<FindByText>;
