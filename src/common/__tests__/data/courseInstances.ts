@@ -293,6 +293,59 @@ export const ac209aCourseInstance: CourseInstanceResponseDTO = {
 };
 
 /**
+ * The data object representing the retired Fracture Mechanics course, ES 247,
+ * in the 2018 academic year.
+ */
+export const es247RetiredCourseInstance: CourseInstanceResponseDTO = {
+  id: '4a2909c7-92d1-4613-b53b-cf75fdef7d26',
+  title: 'Fracture Mechanics',
+  area: 'ES',
+  isUndergraduate: true,
+  catalogNumber: 'ES 247',
+  sameAs: '',
+  isSEAS: IS_SEAS.Y,
+  notes: null,
+  termPattern: TERM_PATTERN.SPRING,
+  fall: {
+    id: 'c4bd3649-0841-4a7a-a317-8d856821e16e',
+    calendarYear: '2018',
+    offered: OFFERED.RETIRED,
+    preEnrollment: null,
+    studyCardEnrollment: null,
+    actualEnrollment: null,
+    instructors: [],
+    meetings: [],
+  },
+  spring: {
+    id: 'a16fa199-8b57-4082-b02c-207cd998ac8a',
+    calendarYear: '2017',
+    offered: OFFERED.RETIRED,
+    preEnrollment: null,
+    studyCardEnrollment: 140,
+    actualEnrollment: 123,
+    instructors: [
+      {
+        id: '373b53a0-8bc7-4af0-be21-5e0479a2215d',
+        displayName: 'Suo, Zhigang',
+      },
+    ],
+    meetings: [
+      {
+        id: 'f5fa6fbb-c1d7-47c3-ac0f-39d32628b64a',
+        day: DAY.FRI,
+        startTime: '10:00:00',
+        endTime: '12:00:00',
+        room: {
+          id: '1a2f2a93-132c-4bef-bf2d-4f431703f91d',
+          campus: 'Cambridge',
+          name: '1414 Massachusetts Avenue 437',
+        },
+      },
+    ],
+  },
+};
+
+/**
  * Data representing the graduate intro to data science course, AC 209A, in the
  * 2019 academic year. This course is offered in the fall, has multiple
  * meetings and multiple instructors, and has notes and sameAs data.
