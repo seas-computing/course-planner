@@ -122,6 +122,7 @@ describe('Course Page', function () {
       });
     });
     afterEach(function () {
+      clock.runAll();
       clock.uninstall();
     });
     context('when the area dropdown filter is changed', function () {
