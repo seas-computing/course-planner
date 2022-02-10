@@ -431,7 +431,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
                   label="Show Retired"
                   checked={showRetired}
                   onChange={() => setShowRetired(!showRetired)}
-                  labelPosition={POSITION.LEFT}
+                  labelPosition={POSITION.RIGHT}
                   hideError
                 />
               </MenuFlex>
