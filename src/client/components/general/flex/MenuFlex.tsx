@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 
 /**
- * A wrapper around the elements of options above the Courses table , used for
- * adding secondary layers of flex positioning.
+ * A wrapper used to add a secondary layer of flex positioning for a group
+ * of options.
  */
 export default styled.div`
   display: flex;
