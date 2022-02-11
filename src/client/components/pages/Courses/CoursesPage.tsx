@@ -8,6 +8,7 @@ import React, {
   useRef,
   useCallback,
   useMemo,
+  ChangeEvent,
 } from 'react';
 import {
   Button,
@@ -15,8 +16,9 @@ import {
   LoadSpinner,
   POSITION,
   VARIANT,
+  Dropdown,
 } from 'mark-one';
-import { MessageContext } from 'client/context';
+import { MessageContext, MetadataContext } from 'client/context';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { CourseAPI } from 'client/api';
 import { MESSAGE_TYPE, MESSAGE_ACTION, AppMessage } from 'client/classes';
@@ -30,6 +32,7 @@ import { VerticalSpace } from 'client/components/layout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWrench } from '@fortawesome/free-solid-svg-icons';
 import { MenuFlex } from 'client/components/general';
+import { DropdownProps } from 'mark-one/lib/Forms/Dropdown';
 import CourseInstanceTable from './CourseInstanceTable';
 import ViewModal from './ViewModal';
 import SemesterTable from './SemesterTable';
@@ -79,9 +82,6 @@ const defaultView: ViewResponse = {
     COURSE_TABLE_COLUMN.NOTES,
   ],
 };
-
-// TODO: Get the actual current academic year instead of hard coding
-const acadYear = 2019;
 
 interface ModalData {
   term?: TERM;
@@ -322,9 +322,34 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     };
   }, [filters]);
 
+  const { currentAcademicYear, semesters } = useContext(MetadataContext);
+
+  const academicYearOptions = useMemo(
+    () => semesters.reduce<DropdownProps['options']>(
+      (years, semester) => {
+        if (semester.startsWith(TERM.SPRING)) {
+          const academicYear = parseInt(
+            semester.replace(/\D/g, ''),
+            10
+          );
+          return years.concat([{
+            label: `Fall ${academicYear - 1} - Spring ${academicYear}`,
+            value: academicYear.toString(),
+          }]);
+        }
+        return years;
+      }, []
+    ), [semesters]
+  );
+
+  const [
+    selectedAcademicYear,
+    setSelectedAcademicYear,
+  ] = useState(currentAcademicYear);
+
   useEffect((): void => {
     setFetching(true);
-    CourseAPI.getCourseInstancesForYear(acadYear)
+    CourseAPI.getCourseInstancesForYear(selectedAcademicYear)
       .then((courses: CourseInstanceResponseDTO[]): void => {
         setCourses(courses);
       })
@@ -337,7 +362,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
       .finally((): void => {
         setFetching(false);
       });
-  }, [dispatchMessage]);
+  }, [selectedAcademicYear, dispatchMessage]);
 
   /**
   * Method for updating a course in the local client list of courses. Intended
@@ -387,57 +412,68 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
 
   return (
     <div className="course-instance-table">
-      {fetching
-        ? (
-          <div>
-            <LoadSpinner>Fetching Course Data</LoadSpinner>
-          </div>
-        )
-        : (
-          <>
-            <VerticalSpace>
-              <ViewModal
-                isVisible={viewModalVisible}
-                onClose={() => {
-                  setViewModalVisible(false);
-                  setTimeout(() => {
-                    customizeViewButtonRef.current.focus();
-                  });
-                }}
-              >
-                <SemesterTable
-                  columns={modalFields}
-                  checked={currentViewColumns}
-                  onChange={toggleColumn}
-                />
-              </ViewModal>
-              <MenuFlex>
-                <Button
-                  variant={VARIANT.INFO}
-                  forwardRef={customizeViewButtonRef}
-                  onClick={() => {
-                    setViewModalVisible(true);
-                  }}
-                >
-                  <FontAwesomeIcon
-                    icon={faWrench}
-                  />
-                  {' '}
-                  Customize View
-                </Button>
-                <Checkbox
-                  id="showRetiredCheckbox"
-                  name="showRetiredCheckbox"
-                  label="Show Retired"
-                  checked={showRetired}
-                  onChange={() => setShowRetired(!showRetired)}
-                  labelPosition={POSITION.RIGHT}
-                  hideError
-                />
-              </MenuFlex>
-            </VerticalSpace>
+      <VerticalSpace>
+        <ViewModal
+          isVisible={viewModalVisible}
+          onClose={() => {
+            setViewModalVisible(false);
+            setTimeout(() => {
+              customizeViewButtonRef.current.focus();
+            });
+          }}
+        >
+          <SemesterTable
+            columns={modalFields}
+            checked={currentViewColumns}
+            onChange={toggleColumn}
+          />
+        </ViewModal>
+        <MenuFlex>
+          <Button
+            variant={VARIANT.INFO}
+            forwardRef={customizeViewButtonRef}
+            onClick={() => {
+              setViewModalVisible(true);
+            }}
+          >
+            <FontAwesomeIcon
+              icon={faWrench}
+            />
+            {' '}
+            Customize View
+          </Button>
+          <Checkbox
+            id="showRetiredCheckbox"
+            name="showRetiredCheckbox"
+            label="Show Retired"
+            checked={showRetired}
+            onChange={() => setShowRetired(!showRetired)}
+            labelPosition={POSITION.RIGHT}
+            hideError
+          />
+          <Dropdown
+            id="academic-year-selector"
+            name="academic-year-selector"
+            label="Academic Year"
+            isLabelVisible
+            options={academicYearOptions}
+            value={selectedAcademicYear.toString()}
+            onChange={
+              ({
+                target: { value },
+              }: ChangeEvent<HTMLSelectElement>) => {
+                setSelectedAcademicYear(parseInt(value, 10));
+              }
+            }
+          />
+        </MenuFlex>
+      </VerticalSpace>
+      {
+        fetching
+          ? <LoadSpinner>Fetching Course Data</LoadSpinner>
+          : (
             <CourseInstanceTable
-              academicYear={acadYear}
+              academicYear={selectedAcademicYear}
               courseList={filteredCourses}
               genericFilterUpdate={genericFilterUpdate}
               tableData={tableData}
@@ -446,58 +482,58 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
               openInstructorModal={openInstructorModal}
               setButtonRef={setButtonRef}
             />
-            <MeetingModal
-              isVisible={meetingModalData.visible}
-              currentSemester={{
-                term: meetingModalData.term,
-                calendarYear: acadYear.toString(),
-              }}
-              currentCourse={meetingModalData.visible
-                ? meetingModalData.course
-                : null}
-              getNotes={() => (
-                formatFacultyNotes(
-                  meetingModalData.term,
-                  meetingModalData.course
-                )
-              )}
-              onClose={closeMeetingModal}
-              onSave={(newMeetingList, message?: string) => {
-                const { course, term } = meetingModalData;
-                const semKey = term.toLowerCase() as TermKey;
-                updateLocalCourse({
-                  ...course,
-                  [semKey]: {
-                    ...course[semKey],
-                    meetings: newMeetingList,
-                  },
-                }, message);
-                closeMeetingModal();
-              }}
-            />
-            <InstructorModal
-              isVisible={instructorModalData.visible}
-              currentSemester={{
-                term: instructorModalData.term,
-                calendarYear: acadYear.toString(),
-              }}
-              currentCourse={instructorModalData.course}
-              closeModal={closeInstructorModal}
-              onSave={(newInstructorList, message?: string) => {
-                const { course, term } = instructorModalData;
-                const semKey = term.toLowerCase() as TermKey;
-                updateLocalCourse({
-                  ...course,
-                  [semKey]: {
-                    ...course[semKey],
-                    instructors: newInstructorList,
-                  },
-                }, message);
-                closeInstructorModal();
-              }}
-            />
-          </>
+          )
+      }
+      <MeetingModal
+        isVisible={meetingModalData.visible}
+        currentSemester={{
+          term: meetingModalData.term,
+          calendarYear: selectedAcademicYear.toString(),
+        }}
+        currentCourse={meetingModalData.visible
+          ? meetingModalData.course
+          : null}
+        getNotes={() => (
+          formatFacultyNotes(
+            meetingModalData.term,
+            meetingModalData.course
+          )
         )}
+        onClose={closeMeetingModal}
+        onSave={(newMeetingList, message?: string) => {
+          const { course, term } = meetingModalData;
+          const semKey = term.toLowerCase() as TermKey;
+          updateLocalCourse({
+            ...course,
+            [semKey]: {
+              ...course[semKey],
+              meetings: newMeetingList,
+            },
+          }, message);
+          closeMeetingModal();
+        }}
+      />
+      <InstructorModal
+        isVisible={instructorModalData.visible}
+        currentSemester={{
+          term: instructorModalData.term,
+          calendarYear: selectedAcademicYear.toString(),
+        }}
+        currentCourse={instructorModalData.course}
+        closeModal={closeInstructorModal}
+        onSave={(newInstructorList, message?: string) => {
+          const { course, term } = instructorModalData;
+          const semKey = term.toLowerCase() as TermKey;
+          updateLocalCourse({
+            ...course,
+            [semKey]: {
+              ...course[semKey],
+              instructors: newInstructorList,
+            },
+          }, message);
+          closeInstructorModal();
+        }}
+      />
     </div>
   );
 };
