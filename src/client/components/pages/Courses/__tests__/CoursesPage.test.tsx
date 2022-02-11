@@ -15,12 +15,13 @@ import {
   fireEvent,
   AllByRole,
   within,
+  GetByText,
 } from 'test-utils';
 import { CourseAPI } from 'client/api';
 import { AppMessage, MESSAGE_TYPE, MESSAGE_ACTION } from 'client/classes';
 import { MessageReducerAction, MetadataContextValue } from 'client/context';
+import { am105CourseInstance, cs50CourseInstance, es247RetiredCourseInstance } from 'testData';
 import * as dummy from 'testData';
-import { am105CourseInstance, cs50CourseInstance } from 'testData';
 import {
   isSEASEnumToString,
   IS_SEAS,
@@ -155,6 +156,8 @@ describe('Course Page', function () {
   describe('Filtering data', function () {
     let getAllByRole: BoundFunction<AllByRole>;
     let findByText: BoundFunction<FindByText>;
+    let getByLabelText: BoundFunction<GetByText>;
+    let queryByText: BoundFunction<QueryByText>;
     const areaFilterLabel = 'The table will be filtered as selected in this area dropdown filter';
     const isSEASFilterLabel = 'The table will be filtered as selected in this isSEAS dropdown filter';
     const fallOfferedFilterLabel = 'The table will be filtered as selected in this fall offered dropdown filter';
@@ -169,13 +172,20 @@ describe('Course Page', function () {
       getStub.resolves([
         { ...cs50CourseInstance },
         { ...am105CourseInstance },
+        { ...es247RetiredCourseInstance },
       ]);
-      ({ getAllByRole, findByText } = render(<CoursesPage />));
+      ({
+        getAllByRole,
+        findByText,
+        getByLabelText,
+        queryByText,
+      } = render(<CoursesPage />));
       clock = FakeTimers.install({
         toFake: ['setTimeout'],
       });
     });
     afterEach(function () {
+      clock.runAll();
       clock.uninstall();
     });
     context('when the area dropdown filter is changed', function () {
@@ -298,6 +308,25 @@ describe('Course Page', function () {
         // a fake time to make 200 ms pass after changing the filter value.
         clock.tick(200);
         strictEqual(filterInstructorsSpy.callCount, 1);
+      });
+    });
+    context('when the show retired button is not checked', function () {
+      it('does not show the retired courses', function () {
+        // First, make sure that the Show Retired checkbox is not initially checked
+        const retiredCheckbox = getByLabelText('Show Retired', { exact: false }) as HTMLInputElement;
+        strictEqual(retiredCheckbox.checked, false, 'The "Show Retired" checkbox is checked when it should initially be unchecked');
+        strictEqual(
+          queryByText(es247RetiredCourseInstance.catalogNumber), null
+        );
+      });
+    });
+    context('when the show retired button is checked', function () {
+      it('shows the retired courses', async function () {
+        // First, make sure that the Show Retired checkbox is not initially checked
+        const retiredCheckbox = getByLabelText('Show Retired', { exact: false }) as HTMLInputElement;
+        strictEqual(retiredCheckbox.checked, false, 'The "Show Retired" checkbox is checked when it should initially be unchecked');
+        fireEvent.click(retiredCheckbox);
+        return findByText(es247RetiredCourseInstance.catalogNumber);
       });
     });
   });

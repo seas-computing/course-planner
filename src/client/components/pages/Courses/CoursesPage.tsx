@@ -12,7 +12,9 @@ import React, {
 } from 'react';
 import {
   Button,
+  Checkbox,
   LoadSpinner,
+  POSITION,
   VARIANT,
   Dropdown,
 } from 'mark-one';
@@ -29,6 +31,7 @@ import { ViewResponse } from 'common/dto/view/ViewResponse.dto';
 import { VerticalSpace } from 'client/components/layout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWrench } from '@fortawesome/free-solid-svg-icons';
+import { MenuFlex } from 'client/components/general';
 import { DropdownProps } from 'mark-one/lib/Forms/Dropdown';
 import CourseInstanceTable from './CourseInstanceTable';
 import ViewModal from './ViewModal';
@@ -79,13 +82,6 @@ const defaultView: ViewResponse = {
     COURSE_TABLE_COLUMN.NOTES,
   ],
 };
-
-/*
- * TODO
- * Until the functionality for setting "Show Retired Courses" is implemented
- * this will be hard-coded here
- */
-const showRetired = false;
 
 interface ModalData {
   term?: TERM;
@@ -186,6 +182,13 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   const [activeFilters, setActiveFilters] = useState<FilterState>(emptyFilters);
 
   /**
+   * Controls whether the retired courses are shown in the Course Instance table.
+   * By default, the "Show Retired Courses" checkbox is unchecked, meaning that
+   * the retired courses are not shown unless the checkbox is checked.
+   */
+  const [showRetired, setShowRetired] = useState(false);
+
+  /**
    * Handles keeping track of the group of filters as the user interacts with
    * the filter dropdowns
    */
@@ -284,7 +287,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
       );
     }
     return courses;
-  }, [currentCourses, activeFilters]);
+  }, [currentCourses, activeFilters, showRetired]);
 
   /**
    * Track the current timeout from our debouncing process, below
@@ -425,34 +428,45 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
             onChange={toggleColumn}
           />
         </ViewModal>
-        <Button
-          variant={VARIANT.INFO}
-          forwardRef={customizeViewButtonRef}
-          onClick={() => {
-            setViewModalVisible(true);
-          }}
-        >
-          <FontAwesomeIcon
-            icon={faWrench}
-          />
-          {' '}
-          Customize View
-        </Button>
-        <Dropdown
-          id="academic-year-selector"
-          name="academic-year-selector"
-          label="Academic Year"
-          isLabelVisible
-          options={academicYearOptions}
-          value={selectedAcademicYear.toString()}
-          onChange={
-            ({
-              target: { value },
-            }: ChangeEvent<HTMLSelectElement>) => {
-              setSelectedAcademicYear(parseInt(value, 10));
+        <MenuFlex>
+          <Button
+            variant={VARIANT.INFO}
+            forwardRef={customizeViewButtonRef}
+            onClick={() => {
+              setViewModalVisible(true);
+            }}
+          >
+            <FontAwesomeIcon
+              icon={faWrench}
+            />
+            {' '}
+            Customize View
+          </Button>
+          <Dropdown
+            id="academic-year-selector"
+            name="academic-year-selector"
+            label="Academic Year"
+            isLabelVisible
+            options={academicYearOptions}
+            value={selectedAcademicYear.toString()}
+            onChange={
+              ({
+                target: { value },
+              }: ChangeEvent<HTMLSelectElement>) => {
+                setSelectedAcademicYear(parseInt(value, 10));
+              }
             }
-          }
-        />
+          />
+          <Checkbox
+            id="showRetiredCheckbox"
+            name="showRetiredCheckbox"
+            label="Show Retired"
+            checked={showRetired}
+            onChange={() => setShowRetired(!showRetired)}
+            labelPosition={POSITION.RIGHT}
+            hideError
+          />
+        </MenuFlex>
       </VerticalSpace>
       {
         fetching
