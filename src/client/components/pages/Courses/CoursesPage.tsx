@@ -442,15 +442,6 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
             {' '}
             Customize View
           </Button>
-          <Checkbox
-            id="showRetiredCheckbox"
-            name="showRetiredCheckbox"
-            label="Show Retired"
-            checked={showRetired}
-            onChange={() => setShowRetired(!showRetired)}
-            labelPosition={POSITION.RIGHT}
-            hideError
-          />
           <Dropdown
             id="academic-year-selector"
             name="academic-year-selector"
@@ -465,6 +456,15 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
                 setSelectedAcademicYear(parseInt(value, 10));
               }
             }
+          />
+          <Checkbox
+            id="showRetiredCheckbox"
+            name="showRetiredCheckbox"
+            label="Show Retired"
+            checked={showRetired}
+            onChange={() => setShowRetired(!showRetired)}
+            labelPosition={POSITION.RIGHT}
+            hideError
           />
         </MenuFlex>
       </VerticalSpace>
