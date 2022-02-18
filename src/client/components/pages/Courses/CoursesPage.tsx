@@ -45,6 +45,7 @@ import InstructorModal from './InstructorModal';
 import { filterCoursesByInstructors } from '../utils/filterByInstructorValues';
 import OfferedModal from './OfferedModal';
 import downloadAttachment from '../utils/downloadAttachment';
+import NotesModal from './NotesModal';
 
 /**
  * The initial, empty state for the filters
@@ -86,10 +87,13 @@ const defaultView: ViewResponse = {
 };
 
 interface ModalData {
-  term?: TERM;
   course?: CourseInstanceResponseDTO;
   visible: boolean;
 }
+
+type CourseInstanceModalData = ModalData & {
+  term?: TERM;
+};
 
 /**
  * Component representing the list of CourseInstances in a given Academic year
@@ -124,8 +128,16 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   const [
     meetingModalData,
     setMeetingModalData,
-  ] = useState<ModalData>({
+  ] = useState<CourseInstanceModalData>({
     term: null,
+    course: null,
+    visible: false,
+  });
+
+  const [
+    notesModalData,
+    setNotesModalData,
+  ] = useState<ModalData>({
     course: null,
     visible: false,
   });
@@ -137,7 +149,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   const [
     instructorModalData,
     setInstructorModalData,
-  ] = useState<ModalData>({
+  ] = useState<CourseInstanceModalData>({
     term: null,
     course: null,
     visible: false,
@@ -150,7 +162,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   const [
     offeredModalData,
     setOfferedModalData,
-  ] = useState<ModalData>({
+  ] = useState<CourseInstanceModalData>({
     term: null,
     course: null,
     visible: false,
@@ -226,6 +238,14 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
       setModalButtonId(`meetings-${term.toLowerCase()}-${course.id}`);
     }, [setMeetingModalData, setModalButtonId]
   );
+
+  /**
+   * Takes the specified course and displays a modal to edit course notes
+   */
+  const openNotesModal = useCallback((course: CourseInstanceResponseDTO) => {
+    setNotesModalData({ course, visible: true });
+    // setModalButtonId(`edit-course-notes-${course.catalogNumber}`);
+  }, [setNotesModalData]);
 
   /**
    * Handles closing the meeting modal and setting the focus back to the button
@@ -596,6 +616,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
               openMeetingModal={openMeetingModal}
               openInstructorModal={openInstructorModal}
               openOfferedModal={openOfferedModal}
+              openNotesModal={openNotesModal}
               setButtonRef={setButtonRef}
             />
           )
@@ -629,6 +650,12 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
           closeMeetingModal();
         }}
       />
+      {notesModalData.visible ? (
+        <NotesModal
+          course={notesModalData.course}
+          isVisible={notesModalData.visible}
+        />
+      ) : null }
       <InstructorModal
         isVisible={instructorModalData.visible}
         currentSemester={{

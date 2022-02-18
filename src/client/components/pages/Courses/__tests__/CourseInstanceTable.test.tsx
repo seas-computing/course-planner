@@ -81,6 +81,7 @@ describe('CourseInstanceTable', function () {
             openInstructorModal={openInstructorModalSpy}
             openOfferedModal={openOfferedModalSpy}
             setButtonRef={() => () => {}}
+            openNotesModal={() => {}}
           />
         )
         );
@@ -161,6 +162,7 @@ describe('CourseInstanceTable', function () {
             openInstructorModal={openInstructorModalSpy}
             openOfferedModal={openOfferedModalSpy}
             setButtonRef={() => () => {}}
+            openNotesModal={() => {}}
           />
         )
         );
@@ -204,6 +206,7 @@ describe('CourseInstanceTable', function () {
             openInstructorModal={openInstructorModalSpy}
             openOfferedModal={openOfferedModalSpy}
             setButtonRef={() => () => {}}
+            openNotesModal={() => {}}
           />
         )
         );
@@ -262,6 +265,7 @@ describe('CourseInstanceTable', function () {
           openInstructorModal={openInstructorModalSpy}
           openOfferedModal={openOfferedModalSpy}
           setButtonRef={() => () => {}}
+          openNotesModal={() => {}}
         />
       )
       );

@@ -9,7 +9,7 @@ import { CourseInstanceListColumn } from './tableFields';
 import { useGroupGuard } from '../../../hooks/useGroupGuard';
 
 type OpenModalCallback = (
-  course: CourseInstanceResponseDTO, term: TERM) => void;
+  course: CourseInstanceResponseDTO, term?: TERM) => void;
 
 interface CourseInstanceTableBodyProps {
   /**
@@ -33,6 +33,10 @@ interface CourseInstanceTableBodyProps {
    */
   openOfferedModal: OpenModalCallback
   /**
+   * Controls the opening of the notes modal
+   */
+  openNotesModal: OpenModalCallback
+  /**
    * The ref value of the edit faculty absence button
    */
   setButtonRef: (nodeId: string) => (node: HTMLButtonElement) => void;
@@ -50,6 +54,7 @@ FunctionComponent<CourseInstanceTableBodyProps> = ({
   openMeetingModal,
   openInstructorModal,
   openOfferedModal,
+  openNotesModal,
   setButtonRef,
 }): ReactElement => {
   /**
@@ -103,6 +108,11 @@ FunctionComponent<CourseInstanceTableBodyProps> = ({
                       openOfferedModal={
                         field.viewColumn === COURSE_TABLE_COLUMN.OFFERED
                           ? openOfferedModal
+                          : null
+                      }
+                      openNotesModal={
+                        field.viewColumn === COURSE_TABLE_COLUMN.NOTES
+                          ? openNotesModal
                           : null
                       }
                       buttonRef={setButtonRef(`${field.key}-${course.id}`)}
