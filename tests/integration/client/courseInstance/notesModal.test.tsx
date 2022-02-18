@@ -6,6 +6,8 @@ import { SinonStub, stub } from 'sinon';
 import {
   render,
   RenderResult,
+  waitForElement,
+  fireEvent,
   waitForElementToBeRemoved,
 } from 'test-utils';
 import { cs50CourseInstance } from 'testData';
@@ -35,10 +37,12 @@ describe('Notes modal', function () {
     await waitForElementToBeRemoved(
       () => page.getByText('fetching', { exact: false })
     );
-    // const button = page.getByLabelText('notes', { exact: false });
-    // fireEvent.click(button);
+    const button = await waitForElement(
+      () => page.findByLabelText('notes', { exact: false })
+    );
+    fireEvent.click(button);
   });
   it('opens when the notes button is clicked beside a course', function () {
-    page.debug();
+    return page.getByRole('dialog');
   });
 });
