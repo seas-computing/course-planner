@@ -48,6 +48,7 @@ export class CourseInstanceController {
    * in the list of course instances.
    */
 
+  @UseGuards(Authentication, new RequireGroup(GROUP.READ_ONLY))
   @Get('/')
   public async getInstances(
     @Query('acadYear') year?: string
