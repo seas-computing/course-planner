@@ -28,6 +28,10 @@ interface CourseInstanceTableBodyProps {
    */
   openInstructorModal: OpenModalCallback
   /**
+   * Controls the opening of the offered modal with the requested course and term
+   */
+  openOfferedModal: OpenModalCallback
+  /**
    * The ref value of the edit faculty absence button
    */
   setButtonRef: (nodeId: string) => (node: HTMLButtonElement) => void;
@@ -44,6 +48,7 @@ FunctionComponent<CourseInstanceTableBodyProps> = ({
   tableData,
   openMeetingModal,
   openInstructorModal,
+  openOfferedModal,
   setButtonRef,
 }): ReactElement => (
   <TableBody>
@@ -85,6 +90,11 @@ FunctionComponent<CourseInstanceTableBodyProps> = ({
                     openInstructorModal={
                       field.viewColumn === COURSE_TABLE_COLUMN.INSTRUCTORS
                         ? openInstructorModal
+                        : null
+                    }
+                    openOfferedModal={
+                      field.viewColumn === COURSE_TABLE_COLUMN.OFFERED
+                        ? openOfferedModal
                         : null
                     }
                     buttonRef={setButtonRef(`${field.key}-${course.id}`)}
