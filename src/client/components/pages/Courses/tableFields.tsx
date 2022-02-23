@@ -91,6 +91,7 @@ export const formatInstructors = (
     course,
     openInstructorModal,
     buttonRef,
+    isEditable,
   }: FieldContentProps
 ): ReactElement => {
   const semKey = term.toLowerCase() as TermKey;
@@ -113,17 +114,19 @@ export const formatInstructors = (
             )
           )}
       </TableCellList>
-      <BorderlessButton
-        alt={`Edit instructors for ${catalogNumber}, ${term} ${calendarYear}`}
-        id={`${parentId}-${term}-edit-instructors-button`}
-        onClick={() => {
-          openInstructorModal(course, term);
-        }}
-        variant={VARIANT.INFO}
-        forwardRef={buttonRef}
-      >
-        <FontAwesomeIcon icon={faEdit} />
-      </BorderlessButton>
+      {isEditable && (
+        <BorderlessButton
+          alt={`Edit instructors for ${catalogNumber}, ${term} ${calendarYear}`}
+          id={`${parentId}-${term}-edit-instructors-button`}
+          onClick={() => {
+            openInstructorModal(course, term);
+          }}
+          variant={VARIANT.INFO}
+          forwardRef={buttonRef}
+        >
+          <FontAwesomeIcon icon={faEdit} />
+        </BorderlessButton>
+      )}
     </>
   );
 });
@@ -203,6 +206,7 @@ export const formatMeetings = (
     course,
     openMeetingModal,
     buttonRef,
+    isEditable,
   }: FieldContentProps
 ): ReactElement => {
   const semKey = term.toLowerCase() as TermKey;
@@ -243,17 +247,19 @@ export const formatMeetings = (
           </TableCellListItem>
         ))}
       </TableCellList>
-      <BorderlessButton
-        id={`${parentId}-${term}-edit-meetings-button`}
-        alt={`Edit meetings for ${catalogNumber} in ${semKey} ${calendarYear}`}
-        onClick={() => {
-          openMeetingModal(course, term);
-        }}
-        variant={VARIANT.INFO}
-        forwardRef={buttonRef}
-      >
-        <FontAwesomeIcon icon={faEdit} />
-      </BorderlessButton>
+      {isEditable && (
+        <BorderlessButton
+          id={`${parentId}-${term}-edit-meetings-button`}
+          alt={`Edit meetings for ${catalogNumber} in ${semKey} ${calendarYear}`}
+          onClick={() => {
+            openMeetingModal(course, term);
+          }}
+          variant={VARIANT.INFO}
+          forwardRef={buttonRef}
+        >
+          <FontAwesomeIcon icon={faEdit} />
+        </BorderlessButton>
+      )}
     </>
   );
 });
@@ -279,6 +285,10 @@ export interface FieldContentProps {
    * The current ref value of the focused button
    */
   buttonRef?: Ref<HTMLButtonElement>;
+  /**
+   * Whether the user should be able to edit the cell data
+   */
+  isEditable?: boolean;
 }
 
 /**
