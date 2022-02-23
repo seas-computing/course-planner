@@ -4,7 +4,6 @@ import {
   Route,
   Redirect,
 } from 'react-router-dom';
-import { LoadSpinner } from 'mark-one';
 import {
   NoMatch,
   CourseAdmin,
@@ -35,11 +34,7 @@ const AppRouter: FunctionComponent = (): ReactElement => {
       </Switch>
     );
   }
-  return (
-    <LoadSpinner>
-      Fetching User Data
-    </LoadSpinner>
-  );
+  return null;
 };
 
 export default AppRouter;
