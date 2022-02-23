@@ -8,6 +8,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const {
   APP_NAME,
   SERVER_URL,
+  PUBLIC_CLIENT_URL,
 } = process.env;
 
 /**
@@ -100,6 +101,7 @@ module.exports = {
     }),
     new webpack.DefinePlugin({
       'process.env.SERVER_URL': JSON.stringify(SERVER_URL),
+      'process.env.PUBLIC_CLIENT_URL': JSON.stringify(PUBLIC_CLIENT_URL),
     }),
     new HtmlWebpackRootPlugin(),
     new webpack.optimize.ModuleConcatenationPlugin(),
