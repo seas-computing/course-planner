@@ -12,7 +12,6 @@ import {
 } from 'common/constants';
 import { render } from 'test-utils';
 import { dayEnumToString } from 'common/constants/day';
-import { offeredEnumToString } from 'common/constants/offered';
 import * as dummy from 'testData';
 import {
   retrieveValue,
@@ -75,17 +74,6 @@ describe('tableFields', function () {
           />
         );
         return getByText('No');
-      });
-      it('Should return a component that renders OFFERED values as strings', function () {
-        const OfferedValue = retrieveValue('offered', TERM.FALL);
-        const { getByText } = render(
-          <OfferedValue
-            course={cs50CourseInstance}
-          />
-        );
-        return getByText(
-          offeredEnumToString(cs50CourseInstance.fall.offered)
-        );
       });
       it('Should return a component that renders IS_SEAS.Y as "Yes"', function () {
         const IsSEASValue = retrieveValue('isSEAS');
