@@ -1,4 +1,4 @@
-import React, { FunctionComponent, ReactElement, useContext } from 'react';
+import React, { FunctionComponent, ReactElement } from 'react';
 import {
   Switch,
   Route,
@@ -14,27 +14,45 @@ import {
   Schedule,
   NonClassMeetings,
 } from '../pages';
-import { MetadataContext, UserContext } from '../../context';
+import { useGroupGuard } from '../../hooks/useGroupGuard';
+
+/**
+ * Selects which body component to render based on the current URL path. The
+ * options will dynamically change based on the permissions of the logged-in
+ * users (or not logged in, for the info.seas view)
+ */
 
 const AppRouter: FunctionComponent = (): ReactElement => {
-  const currentUser = useContext(UserContext);
-  const currentMetadata = useContext(MetadataContext);
-  if (currentUser && currentMetadata?.currentAcademicYear) {
-    return (
-      <Switch>
-        <Redirect exact from="/" to="/courses" />
-        <Route exact path="/non-class-meetings" component={NonClassMeetings} />
-        <Route exact path="/courses" component={Courses} />
-        <Route exact path="/course-admin" component={CourseAdmin} />
-        <Route exact path="/faculty" component={Faculty} />
-        <Route exact path="/faculty-admin" component={FacultyAdmin} />
-        <Route exact path="/four-year-plan" component={MultiYearPlan} />
-        <Route exact path="/schedule" component={Schedule} />
-        <Route component={NoMatch} />
-      </Switch>
-    );
-  }
-  return null;
+  /**
+   * Check the user's permission to determine which pages should be available
+   */
+  const {
+    isAdmin,
+    isReadOnly,
+  } = useGroupGuard();
+
+  return (
+    <Switch>
+      <Redirect
+        exact
+        from="/"
+        to={isReadOnly ? '/courses' : '/four-year-plan'}
+      />
+      {isReadOnly
+          && <Route exact path="/non-class-meetings" component={NonClassMeetings} />}
+      {isReadOnly
+          && <Route exact path="/courses" component={Courses} />}
+      {isReadOnly
+          && <Route exact path="/faculty" component={Faculty} />}
+      <Route exact path="/four-year-plan" component={MultiYearPlan} />
+      <Route exact path="/schedule" component={Schedule} />
+      {isAdmin
+        && <Route exact path="/course-admin" component={CourseAdmin} />}
+      {isAdmin
+        && <Route exact path="/faculty-admin" component={FacultyAdmin} />}
+      <Route component={NoMatch} />
+    </Switch>
+  );
 };
 
 export default AppRouter;
