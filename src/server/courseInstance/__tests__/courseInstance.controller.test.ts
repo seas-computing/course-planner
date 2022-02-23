@@ -13,8 +13,11 @@ import {
   testMultiYearPlanStartYear,
   testFourYearPlanAcademicYears,
   testCourseScheduleData,
+  cs50CourseInstance,
 } from 'testData';
 import { BadRequestException } from '@nestjs/common';
+import { Area } from 'server/area/area.entity';
+import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { CourseInstanceService } from '../courseInstance.service';
 import { CourseInstanceController } from '../courseInstance.controller';
 import { MultiYearPlanView } from '../MultiYearPlanView.entity';
@@ -91,6 +94,10 @@ describe('Course Instance Controller', function () {
         },
         {
           provide: getRepositoryToken(FacultyCourseInstance),
+          useValue: mockRepository,
+        },
+        {
+          provide: getRepositoryToken(Area),
           useValue: mockRepository,
         },
         ConfigService,
@@ -210,6 +217,26 @@ describe('Course Instance Controller', function () {
           .getScheduleData(TERM.FALL, '1920');
         deepStrictEqual(result, []);
       });
+    });
+  });
+  describe('/:id', function () {
+    let putStub: SinonStub;
+    let result: CourseInstanceResponseDTO;
+    beforeEach(async function () {
+      putStub = stub(ciService, 'editCourseInstance').resolves(cs50CourseInstance);
+      result = await ciController
+        .updateCourseInstance(cs50CourseInstance, cs50CourseInstance.id);
+    });
+    it('should call the service method', function () {
+      strictEqual(putStub.callCount, 1);
+    });
+    it('should pass in the id and course instance', function () {
+      const [[id, instance]] = putStub.args;
+      strictEqual(id, cs50CourseInstance.id);
+      strictEqual(instance, cs50CourseInstance);
+    });
+    it('should return the value from the service', function () {
+      strictEqual(result, cs50CourseInstance);
     });
   });
 });
