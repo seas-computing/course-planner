@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { EntityNotFoundError, Repository } from 'typeorm';
 import { CourseListingView } from 'server/course/CourseListingView.entity';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { MultiYearPlanView } from 'server/courseInstance/MultiYearPlanView.entity';
@@ -9,6 +9,7 @@ import { TERM } from 'common/constants';
 import { SemesterView } from 'server/semester/SemesterView.entity';
 import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import { FacultyListingView } from 'server/faculty/FacultyListingView.entity';
+import { Area } from 'server/area/area.entity';
 import { MultiYearPlanInstanceView } from './MultiYearPlanInstanceView.entity';
 import { ScheduleViewResponseDTO } from '../../common/dto/schedule/schedule.dto';
 import { ScheduleBlockView } from './ScheduleBlockView.entity';
@@ -46,6 +47,9 @@ export class CourseInstanceService {
 
   @InjectRepository(ScheduleBlockView)
   private readonly courseScheduleRepository: Repository<ScheduleBlockView>;
+
+  @InjectRepository(Area)
+  private areaRepository: Repository<Area>;
 
   /**
    * Resolves a list of courses, which in turn contain sub-lists of instances
@@ -230,5 +234,35 @@ export class CourseInstanceService {
         displayName: `${faculty.lastName}, ${faculty.firstName}`,
         order,
       }));
+  }
+
+  public async editCourseInstance(
+    courseInstanceId: string,
+    instance: CourseInstanceResponseDTO
+  ): Promise<CourseInstanceResponseDTO> {
+    let existingArea: Area;
+    try {
+      existingArea = await this.areaRepository
+        .findOneOrFail({
+          where: {
+            name: instance.area,
+          },
+        });
+    } catch (e) {
+      if (e instanceof EntityNotFoundError) {
+        throw new NotFoundException('The entered Area does not exist');
+      }
+      throw e;
+    }
+    const courseInstance = await this.courseInstanceRepository
+      .findOneOrFail(courseInstanceId);
+    const instanceUpdate = await this.courseInstanceRepository.save(
+      {
+        ...courseInstance,
+        ...instance,
+        area: existingArea.name,
+      }
+    );
+    return instanceUpdate;
   }
 }

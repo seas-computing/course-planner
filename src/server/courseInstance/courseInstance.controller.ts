@@ -154,4 +154,32 @@ export class CourseInstanceController {
       throw error;
     }
   }
+
+  @UseGuards(Authentication, new RequireGroup(GROUP.ADMIN))
+  @ApiTags('Course Instance')
+  @ApiOperation({ summary: 'Update the course instance with revised course instance data' })
+  @ApiOkResponse({
+    type: CourseInstanceResponseDTO,
+    description: 'The revised course instance with updated data',
+  })
+  @ApiNotFoundResponse({
+    description: 'Returned if the course instance does not exist in the database',
+  })
+  @Put('/:id')
+  public async updateCourseInstance(
+    @Body('instance') instance: CourseInstanceResponseDTO,
+      @Param('id') courseInstanceId: string
+  )
+      : Promise<CourseInstanceResponseDTO> {
+    try {
+      const results = await this.ciService
+        .editCourseInstance(courseInstanceId, instance);
+      return results;
+    } catch (error) {
+      if (error instanceof EntityNotFoundError) {
+        throw new NotFoundException(error.message);
+      }
+      throw error;
+    }
+  }
 }
