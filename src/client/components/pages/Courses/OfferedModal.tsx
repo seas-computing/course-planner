@@ -87,13 +87,11 @@ const OfferedModal: FunctionComponent<OfferedModalProps> = ({
   });
 
   const updateFormFields = (event: ChangeEvent): void => {
-    console.log('got to updateFormFields');
     const target = event.target as FormField;
     setFormFields({
       ...form,
       [target.name]: target.value,
     });
-    console.log('here is the form: ', form);
   };
 
   const instanceIdentifier = currentCourseInstance && currentSemester
@@ -107,7 +105,6 @@ const OfferedModal: FunctionComponent<OfferedModalProps> = ({
     : '';
 
   useEffect(() => {
-    console.log('got to the use effect');
     if (currentSemester && currentCourseInstance) {
       const currentTermKey = currentSemester.term.toLowerCase() as TermKey;
       setFormFields({
