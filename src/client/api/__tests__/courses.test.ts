@@ -11,15 +11,19 @@ import {
   fail,
   rejects,
 } from 'assert';
+import { TermKey } from 'common/constants/term';
+import { cs50CourseInstance } from 'testData';
+import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import request, {
   AxiosResponse,
 } from '../request';
-import { TERM } from '../../../common/constants';
+import { OFFERED, TERM } from '../../../common/constants';
 
 describe('Course Admin API', function () {
   let result: ManageCourseResponseDTO[];
   let createCourseResult: ManageCourseResponseDTO;
   let editCourseResult: ManageCourseResponseDTO;
+  let editCourseInstanceResult: CourseInstanceResponseDTO;
   let getStub: SinonStub;
   let postStub: SinonStub;
   let putStub: SinonStub;
@@ -209,6 +213,54 @@ describe('Course Admin API', function () {
           () => CourseAPI.getCourseScheduleForSemester(2021, TERM.FALL),
           dummy.error
         );
+      });
+    });
+  });
+  describe('updateCourseInstance', function () {
+    beforeEach(function () {
+      putStub = stub(request, 'put');
+    });
+    const spring = TERM.SPRING.toLowerCase() as TermKey;
+    const newOfferedValue = OFFERED.Y;
+    const editedCourseInstance = {
+      ...cs50CourseInstance,
+      [spring]: {
+        ...cs50CourseInstance[spring],
+        offered: newOfferedValue,
+      },
+    };
+    context('when successfully editing a course instance', function () {
+      beforeEach(async function () {
+        putStub.resolves({
+          data: editedCourseInstance,
+        } as AxiosResponse<CourseInstanceResponseDTO>);
+        editCourseInstanceResult = await CourseAPI.updateCourseInstance(
+          cs50CourseInstance.id, editedCourseInstance
+        );
+      });
+      it('should make a request to /api/course-instances/:id', function () {
+        const [[path]] = putStub.args;
+        strictEqual(path, `/api/course-instances/${cs50CourseInstance.id}`);
+        strictEqual(putStub.callCount, 1);
+      });
+      it('should return the updated course', function () {
+        deepStrictEqual(editCourseInstanceResult, editedCourseInstance);
+      });
+    });
+    context('when failing to edit a course instance', function () {
+      const errorMessage = 'There was a problem with editing the course entry.';
+      beforeEach(function () {
+        putStub.rejects(new Error(errorMessage));
+      });
+      it('should throw an error', async function () {
+        try {
+          editCourseInstanceResult = await CourseAPI.updateCourseInstance(
+            cs50CourseInstance.id, editedCourseInstance
+          );
+          fail('Did not throw an error');
+        } catch (err) {
+          strictEqual((err as Error).message, errorMessage);
+        }
       });
     });
   });

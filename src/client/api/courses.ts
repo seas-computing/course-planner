@@ -66,6 +66,17 @@ export const updateInstructorList = async (
   return response.data as InstructorResponseDTO[];
 };
 
+/**
+ * Edit an existing course instance
+ */
+export const updateCourseInstance = async (
+  id: string,
+  instance: CourseInstanceResponseDTO
+):Promise<CourseInstanceResponseDTO> => {
+  const response = await request.put(`/api/course-instances/${id}`, instance);
+  return response.data as CourseInstanceResponseDTO;
+};
+
 export const CourseAPI = {
   getAllCourses,
   createCourse,
@@ -73,4 +84,5 @@ export const CourseAPI = {
   getCourseInstancesForYear,
   getCourseScheduleForSemester,
   updateInstructorList,
+  updateCourseInstance,
 };
