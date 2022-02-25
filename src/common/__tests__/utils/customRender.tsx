@@ -16,10 +16,13 @@ import {
   MessageContext,
   DispatchMessage,
   MessageReducerAction,
+  UserContext,
 } from 'client/context';
 import { MetadataContext, MetadataContextValue } from 'client/context/MetadataContext';
 import { Message } from 'client/components/layout';
 import { metadata } from '../data/metadata';
+import { adminUser } from '../data/users';
+import { User } from '../../classes';
 
 const currentMetadata = { ...metadata };
 
@@ -37,6 +40,7 @@ interface CustomRenderOptions {
   dispatchMessage?: DispatchMessage;
   metadataContext?: MetadataContextValue;
   routerEntries?: string[];
+  currentUser?: User;
 }
 
 /**
@@ -52,6 +56,7 @@ const customRender = (
     dispatchMessage,
     metadataContext,
     routerEntries,
+    currentUser,
   } = options;
   if (!dispatchMessage) {
     dispatchMessage = () => {};
@@ -62,14 +67,20 @@ const customRender = (
   if (!routerEntries) {
     routerEntries = ['/'];
   }
+  if (!currentUser) {
+    currentUser = adminUser;
+  }
   return render(
     <MemoryRouter initialEntries={routerEntries}>
       <MarkOneWrapper>
-        <MessageContext.Provider value={dispatchMessage}>
-          <MetadataContext.Provider value={metadataContext}>
-            {ui}
-          </MetadataContext.Provider>
-        </MessageContext.Provider>
+        <UserContext.Provider value={currentUser}>
+          <MessageContext.Provider value={dispatchMessage}>
+            <MetadataContext.Provider value={metadataContext}>
+              {ui}
+            </MetadataContext.Provider>
+          </MessageContext.Provider>
+
+        </UserContext.Provider>
       </MarkOneWrapper>
     </MemoryRouter>
   );
