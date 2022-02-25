@@ -34,3 +34,8 @@ export const nonClassEventManager = new User({
   email: 'nonClasseventManager@seas.harvard.edu',
   groups: [GROUP.NON_CLASS],
 });
+
+/**
+ * A "blank" user to simulate anonymous sessions
+ */
+export const nullUser = new User();
