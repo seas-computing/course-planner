@@ -219,24 +219,4 @@ describe('Course Instance Controller', function () {
       });
     });
   });
-  describe('/:id', function () {
-    let putStub: SinonStub;
-    let result: CourseInstanceResponseDTO;
-    beforeEach(async function () {
-      putStub = stub(ciService, 'editCourseInstance').resolves(cs50CourseInstance);
-      result = await ciController
-        .updateCourseInstance(cs50CourseInstance, cs50CourseInstance.id);
-    });
-    it('should call the service method', function () {
-      strictEqual(putStub.callCount, 1);
-    });
-    it('should pass in the id and course instance', function () {
-      const [[id, instance]] = putStub.args;
-      strictEqual(id, cs50CourseInstance.id);
-      strictEqual(instance, cs50CourseInstance);
-    });
-    it('should return the value from the service', function () {
-      strictEqual(result, cs50CourseInstance);
-    });
-  });
 });
