@@ -18,7 +18,7 @@ import {
   MetadataContextValue,
   MessageReducerAction,
 } from 'client/context';
-import { MarkOneWrapper, PageBody } from 'mark-one';
+import { MarkOneWrapper, PageBody, LoadSpinner } from 'mark-one';
 import { getCurrentUser } from 'client/api';
 import { getMetadata } from 'client/api/metadata';
 import { User } from 'common/classes';
@@ -65,6 +65,11 @@ const App: FunctionComponent = (): ReactElement => {
     setMetadata);
 
   /**
+   * Tracks whether we're still fetching the user and metadata
+   */
+  const [isDataFetching, setDataFetching] = useState(true);
+
+  /**
    * Get the currently authenticated user from the server on launch.
    * If it fails, display a message for the user
    */
@@ -72,24 +77,25 @@ const App: FunctionComponent = (): ReactElement => {
   useEffect((): void => {
     if (dispatchMessageRef.current) {
       const { current: dispatchMessage } = dispatchMessageRef;
+      setDataFetching(true);
       getCurrentUser()
         .then((user: User): void => {
-          if (user) {
-            setUser(user);
-            getMetadata()
-              .then((metadata: MetadataResponse): void => {
-                setMetadata(metadata);
-              })
-              .catch((): void => {
-                dispatchMessage({
-                  message: new AppMessage(
-                    'Unable to get metadata from server. If the problem persists, contact SEAS Computing',
-                    MESSAGE_TYPE.ERROR
-                  ),
-                  type: MESSAGE_ACTION.PUSH,
-                });
+          setUser(user);
+          getMetadata()
+            .then((metadata: MetadataResponse): void => {
+              setMetadata(metadata);
+              setDataFetching(false);
+            })
+            .catch((): void => {
+              dispatchMessage({
+                message: new AppMessage(
+                  'Unable to get metadata from server. If the problem persists, contact SEAS Computing',
+                  MESSAGE_TYPE.ERROR
+                ),
+                type: MESSAGE_ACTION.PUSH,
               });
-          }
+              setDataFetching(false);
+            });
         })
         .catch((): void => {
           dispatchMessage({
@@ -99,9 +105,10 @@ const App: FunctionComponent = (): ReactElement => {
             ),
             type: MESSAGE_ACTION.PUSH,
           });
+          setDataFetching(false);
         });
     }
-  }, [dispatchMessageRef]);
+  }, [dispatchMessageRef, setDataFetching]);
 
   return (
     <div className="app-content">
@@ -110,11 +117,21 @@ const App: FunctionComponent = (): ReactElement => {
           <MessageContext.Provider value={dispatchMessageRef.current}>
             <MetadataContext.Provider value={metadataContext}>
               <PageBody>
-                <AppHeader currentUser={currentUser} />
+                {isDataFetching
+                  ? (
+                    <LoadSpinner>
+                      Fetching User Data
+                    </LoadSpinner>
+                  )
+                  : (
+                    <>
+                      <AppHeader />
+                      <AppRouter />
+                    </>
+                  )}
                 <Message
                   dispatchMessageRef={dispatchMessageRef}
                 />
-                <AppRouter />
               </PageBody>
             </MetadataContext.Provider>
           </MessageContext.Provider>

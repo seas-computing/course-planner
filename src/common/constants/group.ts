@@ -18,7 +18,7 @@ enum GROUP {
    *
    * @todo Put a real value from grouper in here
    */
-  NON_CLASS = '',
+  NON_CLASS = 'FAKE:harvard:org:schools:seas:managed:seas-course-planning:roles-non-class-seas-course-planning',
 }
 
 export default GROUP;
