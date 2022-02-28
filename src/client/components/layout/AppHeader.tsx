@@ -1,4 +1,4 @@
-import React, { FunctionComponent, ReactElement } from 'react';
+import React, { FunctionComponent, ReactElement, useMemo } from 'react';
 import {
   Header,
   Logo,
@@ -48,7 +48,15 @@ const AppHeader:FunctionComponent = () => {
    * Get the current url path to determine which tab should be active
    */
   const { pathname: currentPath } = useLocation();
-  const serverURL = new URL(process.env.SERVER_URL).toString();
+
+  const serverURL = useMemo(() => (
+    new URL(
+      isLoggedIn ? '/logout' : '/login',
+      process.env.SERVER_URL
+    ).toString()
+  ),
+  [isLoggedIn]);
+
   return (
     <>
       <Header justify="space-between">
@@ -59,7 +67,7 @@ const AppHeader:FunctionComponent = () => {
         <HeaderFlex>
           <ExternalLink
             title={isLoggedIn ? 'Log Out' : 'Log In'}
-            href={`${serverURL}/${isLoggedIn ? 'logout' : 'login'}`}
+            href={serverURL}
           >
             {isLoggedIn ? 'Log Out' : 'Log In'}
             {' '}
