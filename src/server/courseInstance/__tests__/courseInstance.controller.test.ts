@@ -13,11 +13,9 @@ import {
   testMultiYearPlanStartYear,
   testFourYearPlanAcademicYears,
   testCourseScheduleData,
-  cs50CourseInstance,
 } from 'testData';
 import { BadRequestException } from '@nestjs/common';
 import { Area } from 'server/area/area.entity';
-import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { CourseInstanceService } from '../courseInstance.service';
 import { CourseInstanceController } from '../courseInstance.controller';
 import { MultiYearPlanView } from '../MultiYearPlanView.entity';
