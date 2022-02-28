@@ -217,12 +217,10 @@ const requestMethod = async (
     case 'post': {
       return request(api)
         .post(endpoint.path);
-      // .send(endpoint.requestBody);
     }
     case 'put': {
       return request(api)
         .put(endpoint.path);
-      // .send(endpoint.requestBody);
     }
     default: {
       throw new Error('Invalid request method provided');
