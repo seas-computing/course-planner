@@ -2,6 +2,7 @@ import { OFFERED, TERM } from 'common/constants';
 import { offeredEnumToString } from 'common/constants/offered';
 import { TermKey } from 'common/constants/term';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
+import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto';
 import {
   Button,
   Dropdown,
@@ -44,18 +45,18 @@ interface OfferedModalProps {
   /**
    * A function that will close the modal when called
    */
-  closeModal: () => void;
+  onClose: () => void;
   /**
    * Handler to be invoked when the modal is saved
    */
-  onSave: (newInstance: CourseInstanceResponseDTO) => void;
+  onSave: (updatedInstance: CourseInstanceUpdateDTO) => void;
 }
 
 const OfferedModal: FunctionComponent<OfferedModalProps> = ({
   isVisible,
   currentSemester,
   currentCourseInstance,
-  closeModal,
+  onClose,
   onSave,
 }): ReactElement => {
   /**
@@ -121,17 +122,19 @@ const OfferedModal: FunctionComponent<OfferedModalProps> = ({
   }, [isVisible]);
 
   const saveOffered = async () => {
+    setSaving(true);
+    let results: CourseInstanceUpdateDTO;
     try {
-      setSaving(true);
       const currentTermKey = currentSemester.term.toLowerCase() as TermKey;
-      const results = await updateCourseInstance(
-        currentCourseInstance.id,
+      results = await updateCourseInstance(
+        currentCourseInstance[currentTermKey].id,
         {
-          ...currentCourseInstance,
-          [currentTermKey]: {
-            ...currentCourseInstance[currentTermKey],
-            offered: form.offered,
-          },
+          offered: form.offered as OFFERED,
+          preEnrollment: currentCourseInstance[currentTermKey].preEnrollment,
+          studyCardEnrollment: currentCourseInstance[currentTermKey]
+            .studyCardEnrollment,
+          actualEnrollment: currentCourseInstance[currentTermKey]
+            .actualEnrollment,
         }
       );
       onSave(results);
@@ -146,7 +149,7 @@ const OfferedModal: FunctionComponent<OfferedModalProps> = ({
   return (
     <Modal
       ariaLabelledBy="edit-offered-modal"
-      closeHandler={closeModal}
+      closeHandler={onClose}
       isVisible={isVisible}
     >
       <ModalHeader
@@ -202,7 +205,7 @@ const OfferedModal: FunctionComponent<OfferedModalProps> = ({
             </ModalMessage>
           ) : null}
         <Button
-          onClick={closeModal}
+          onClick={onClose}
           variant={VARIANT.SECONDARY}
           disabled={false}
         >

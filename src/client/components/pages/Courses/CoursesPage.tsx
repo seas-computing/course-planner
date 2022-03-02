@@ -577,8 +577,8 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
           calendarYear: selectedAcademicYear.toString(),
         }}
         currentCourseInstance={offeredModalData.course}
-        closeModal={closeOfferedModal}
         onSave={() => {}}
+        onClose={closeOfferedModal}
       />
     </div>
   );
