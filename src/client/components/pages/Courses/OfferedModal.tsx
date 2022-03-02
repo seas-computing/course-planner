@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { OFFERED, TERM } from 'common/constants';
 import { offeredEnumToString } from 'common/constants/offered';
 import { TermKey } from 'common/constants/term';
@@ -137,12 +138,20 @@ const OfferedModal: FunctionComponent<OfferedModalProps> = ({
             .actualEnrollment,
         }
       );
-      onSave(results);
     } catch (error) {
-      const { message } = error as Error;
-      setErrorMessage(message);
+      if (axios.isAxiosError(error)) {
+        const serverError = error.response.data as Error;
+        setErrorMessage(serverError.message);
+      } else if (results === undefined) {
+        const { message } = error as Error;
+        setErrorMessage(`Failed to save meeting data. Please try again later.
+        ${message}`);
+      }
     } finally {
       setSaving(false);
+    }
+    if (results) {
+      onSave(results);
     }
   };
 
