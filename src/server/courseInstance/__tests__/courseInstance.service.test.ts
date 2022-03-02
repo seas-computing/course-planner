@@ -4,15 +4,9 @@ import {
   SinonStub,
 } from 'sinon';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import {
-  strictEqual,
-  deepStrictEqual,
-} from 'assert';
-import { Area } from 'server/area/area.entity';
-import { cs50CourseInstance } from 'testData';
+import { deepStrictEqual } from 'assert';
+import { cs50CourseInstance, cs50FallInstanceUpdate } from 'testData';
 import { OFFERED } from 'common/constants';
-import { EntityNotFoundError } from 'typeorm';
-import { NotFoundException } from '@nestjs/common';
 import { CourseListingView } from 'server/course/CourseListingView.entity';
 import { Course } from 'server/course/course.entity';
 import { Faculty } from 'server/faculty/faculty.entity';
@@ -21,17 +15,14 @@ import { CourseInstanceService } from '../courseInstance.service';
 import { MultiYearPlanView } from '../MultiYearPlanView.entity';
 import { FacultyCourseInstance } from '../facultycourseinstance.entity';
 import { ScheduleBlockView } from '../ScheduleBlockView.entity';
+import { CourseInstanceListingView } from '../CourseInstanceListingView.entity';
 
 describe('Course Instance service', function () {
   const mockRepository: Record<string, SinonStub> = {};
-  let mockAreaRepository: Record<string, SinonStub>;
-  let mockCourseInstanceRepository: Record<string, SinonStub>;
+  let mockInstanceRepository: Record<string, SinonStub>;
   let courseInstanceService: CourseInstanceService;
   beforeEach(async function () {
-    mockAreaRepository = {
-      findOneOrFail: stub(),
-    };
-    mockCourseInstanceRepository = {
+    mockInstanceRepository = {
       findOneOrFail: stub(),
       save: stub(),
     };
@@ -52,7 +43,7 @@ describe('Course Instance service', function () {
         },
         {
           provide: getRepositoryToken(CourseInstance),
-          useValue: mockCourseInstanceRepository,
+          useValue: mockInstanceRepository,
         },
         {
           provide: getRepositoryToken(Faculty),
@@ -67,8 +58,8 @@ describe('Course Instance service', function () {
           useValue: mockRepository,
         },
         {
-          provide: getRepositoryToken(Area),
-          useValue: mockAreaRepository,
+          provide: getRepositoryToken(CourseInstanceListingView),
+          useValue: mockRepository,
         },
         CourseInstanceService,
       ],
@@ -79,50 +70,24 @@ describe('Course Instance service', function () {
       .get<CourseInstanceService>(CourseInstanceService);
   });
   describe('editCourseInstance', function () {
-    context('when the area exists', function () {
-      const newSpringOfferedValue = OFFERED.N;
-      const expectedInstance = {
-        ...cs50CourseInstance,
-        spring: {
-          id: cs50CourseInstance.spring.id,
-          calendarYear: cs50CourseInstance.spring.calendarYear,
-          offered: newSpringOfferedValue,
-          preEnrollment: cs50CourseInstance.spring.preEnrollment,
-          studyCardEnrollment: cs50CourseInstance.spring
-            .studyCardEnrollment,
-          actualEnrollment: cs50CourseInstance.spring.actualEnrollment,
-          instructors: cs50CourseInstance.spring.instructors,
-          meetings: cs50CourseInstance.spring.meetings,
-        },
-      };
-      beforeEach(function () {
-        mockAreaRepository
-          .findOneOrFail
-          .resolves(cs50CourseInstance.area);
-        mockCourseInstanceRepository.findOneOrFail.resolves(cs50CourseInstance);
-        mockCourseInstanceRepository.save.resolves(expectedInstance);
-      });
-      it('returns the updated course instance', async function () {
-        const result = await courseInstanceService.editCourseInstance(
-          cs50CourseInstance.id, expectedInstance
-        );
-        deepStrictEqual(result, expectedInstance);
-      });
+    const newOfferedValue = OFFERED.N;
+    const expectedResponse = {
+      ...cs50FallInstanceUpdate,
+      offered: newOfferedValue,
+    };
+    beforeEach(function () {
+      mockInstanceRepository
+        .findOneOrFail.resolves(cs50CourseInstance);
+      mockInstanceRepository.save.resolves(expectedResponse);
     });
-    context('when area does not exist', function () {
-      beforeEach(function () {
-        mockAreaRepository.findOneOrFail.rejects(new EntityNotFoundError(Area, {
-          where: { name: 'fakeArea' },
-        }));
-      });
-      it('throws a Not Found Error', async function () {
-        try {
-          await courseInstanceService
-            .editCourseInstance(cs50CourseInstance.id, cs50CourseInstance);
-        } catch (e) {
-          strictEqual(e instanceof NotFoundException, true);
+    it('returns the updated instance', async function () {
+      const result = await courseInstanceService.editCourseInstance(
+        cs50CourseInstance.id, {
+          ...cs50FallInstanceUpdate,
+          offered: newOfferedValue,
         }
-      });
+      );
+      deepStrictEqual(result, expectedResponse);
     });
   });
 });
