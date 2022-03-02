@@ -30,6 +30,7 @@ import { FacultyCourseInstance } from '../facultycourseinstance.entity';
 import { AuthModule } from '../../auth/auth.module';
 import { TestingStrategy } from '../../../../tests/mocks/authentication/testing.strategy';
 import { ConfigModule } from '../../config/config.module';
+import { CourseInstanceListingView } from '../CourseInstanceListingView.entity';
 
 describe('Course Instance Controller', function () {
   let ciController: CourseInstanceController;
@@ -96,6 +97,10 @@ describe('Course Instance Controller', function () {
         },
         {
           provide: getRepositoryToken(Area),
+          useValue: mockRepository,
+        },
+        {
+          provide: getRepositoryToken(CourseInstanceListingView),
           useValue: mockRepository,
         },
         ConfigService,
