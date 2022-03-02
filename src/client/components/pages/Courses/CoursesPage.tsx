@@ -577,8 +577,19 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
           calendarYear: selectedAcademicYear.toString(),
         }}
         currentCourseInstance={offeredModalData.course}
-        onSave={() => {}}
         onClose={closeOfferedModal}
+        onSave={(instanceUpdate, message?: string) => {
+          const { course, term } = offeredModalData;
+          const semKey = term.toLowerCase() as TermKey;
+          updateLocalCourse({
+            ...course,
+            [semKey]: {
+              ...course[semKey],
+              ...instanceUpdate,
+            },
+          }, message);
+          closeOfferedModal();
+        }}
       />
     </div>
   );
