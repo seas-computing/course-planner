@@ -4,6 +4,7 @@ import { UpdateCourseDTO } from 'common/dto/courses/UpdateCourse.dto';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
 import { TERM } from 'common/constants';
+import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto';
 import request from './request';
 import { InstructorResponseDTO } from '../../common/dto/courses/InstructorResponse.dto';
 import { InstructorRequestDTO } from '../../common/dto/courses/InstructorRequest.dto';
@@ -71,10 +72,10 @@ export const updateInstructorList = async (
  */
 export const updateCourseInstance = async (
   id: string,
-  instance: CourseInstanceResponseDTO
-):Promise<CourseInstanceResponseDTO> => {
+  instance: CourseInstanceUpdateDTO
+):Promise<CourseInstanceUpdateDTO> => {
   const response = await request.put(`/api/course-instances/${id}`, instance);
-  return response.data as CourseInstanceResponseDTO;
+  return response.data as CourseInstanceUpdateDTO;
 };
 
 export const CourseAPI = {

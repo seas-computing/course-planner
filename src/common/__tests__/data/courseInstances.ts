@@ -7,6 +7,7 @@ import {
   IS_SEAS,
 } from 'common/constants';
 import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
+import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto';
 
 /**
  * The data object representing the intro to computer science course CS 50 in
@@ -1348,3 +1349,16 @@ export const testThreeYearPlan: MultiYearPlanResponseDTO[] = [{
     },
   ],
 }];
+
+/**
+ * The data object represents the request offered and enrollment data for the
+ * fall instance of Intro to Computer Science course CS 50.
+ * This object can be used as the request object to update the offered or
+ * enrollment data for the semester course instance.
+ */
+export const cs50FallInstanceUpdate: CourseInstanceUpdateDTO = {
+  offered: cs50CourseInstance.fall.offered,
+  preEnrollment: cs50CourseInstance.fall.preEnrollment,
+  studyCardEnrollment: cs50CourseInstance.fall.studyCardEnrollment,
+  actualEnrollment: cs50CourseInstance.fall.actualEnrollment,
+};

@@ -13,7 +13,7 @@ import {
 } from 'assert';
 import { TermKey } from 'common/constants/term';
 import { cs50CourseInstance } from 'testData';
-import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
+import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto';
 import request, {
   AxiosResponse,
 } from '../request';
@@ -23,7 +23,7 @@ describe('Course Admin API', function () {
   let result: ManageCourseResponseDTO[];
   let createCourseResult: ManageCourseResponseDTO;
   let editCourseResult: ManageCourseResponseDTO;
-  let editCourseInstanceResult: CourseInstanceResponseDTO;
+  let editCourseInstanceResult: CourseInstanceUpdateDTO;
   let getStub: SinonStub;
   let postStub: SinonStub;
   let putStub: SinonStub;
@@ -222,25 +222,29 @@ describe('Course Admin API', function () {
     });
     const spring = TERM.SPRING.toLowerCase() as TermKey;
     const newOfferedValue = OFFERED.Y;
-    const editedCourseInstance = {
-      ...cs50CourseInstance,
-      [spring]: {
-        ...cs50CourseInstance[spring],
-        offered: newOfferedValue,
-      },
+    const editedCourseInstance: CourseInstanceUpdateDTO = {
+      offered: newOfferedValue,
+      preEnrollment: null,
+      studyCardEnrollment: null,
+      actualEnrollment: null,
     };
     context('when successfully editing a course instance', function () {
       beforeEach(async function () {
         putStub.resolves({
           data: editedCourseInstance,
-        } as AxiosResponse<CourseInstanceResponseDTO>);
+        } as AxiosResponse<CourseInstanceUpdateDTO>);
         editCourseInstanceResult = await CourseAPI.updateCourseInstance(
-          cs50CourseInstance.id, editedCourseInstance
+          cs50CourseInstance[spring].id, {
+            offered: newOfferedValue,
+            preEnrollment: cs50CourseInstance[spring].preEnrollment,
+            studyCardEnrollment: cs50CourseInstance[spring].studyCardEnrollment,
+            actualEnrollment: cs50CourseInstance[spring].actualEnrollment,
+          }
         );
       });
       it('should make a request to /api/course-instances/:id', function () {
         const [[path]] = putStub.args;
-        strictEqual(path, `/api/course-instances/${cs50CourseInstance.id}`);
+        strictEqual(path, `/api/course-instances/${cs50CourseInstance[spring].id}`);
         strictEqual(putStub.callCount, 1);
       });
       it('should return the updated course', function () {
@@ -255,7 +259,7 @@ describe('Course Admin API', function () {
       it('should throw an error', async function () {
         try {
           editCourseInstanceResult = await CourseAPI.updateCourseInstance(
-            cs50CourseInstance.id, editedCourseInstance
+            cs50CourseInstance[spring].id, editedCourseInstance
           );
           fail('Did not throw an error');
         } catch (err) {
