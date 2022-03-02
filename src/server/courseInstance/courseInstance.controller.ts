@@ -23,6 +23,7 @@ import { NUM_YEARS, TERM, GROUP } from 'common/constants';
 import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
 import { SemesterService } from 'server/semester/semester.service';
 import { EntityNotFoundError } from 'typeorm';
+import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto';
 import { CourseInstanceService } from './courseInstance.service';
 import { InstructorResponseDTO } from '../../common/dto/courses/InstructorResponse.dto';
 import { RequireGroup } from '../auth/group.guard';
@@ -160,17 +161,17 @@ export class CourseInstanceController {
   @ApiOperation({ summary: 'Update the course instance with revised course instance data' })
   @ApiOkResponse({
     type: CourseInstanceResponseDTO,
-    description: 'The revised course instance with updated data',
+    description: 'The revised course instance with updated offered and enrollment data',
   })
   @ApiNotFoundResponse({
     description: 'Returned if the course instance does not exist in the database',
   })
   @Put('/:id')
   public async updateCourseInstance(
-    @Body('instance') instance: CourseInstanceResponseDTO,
+    @Body() instance: CourseInstanceUpdateDTO,
       @Param('id') courseInstanceId: string
   )
-      : Promise<CourseInstanceResponseDTO> {
+      : Promise<CourseInstanceUpdateDTO> {
     try {
       const results = await this.ciService
         .editCourseInstance(courseInstanceId, instance);
