@@ -49,12 +49,15 @@ const AppHeader:FunctionComponent = () => {
    */
   const { pathname: currentPath } = useLocation();
 
-  const serverURL = useMemo(() => (
-    new URL(
-      isLoggedIn ? '/logout' : '/login',
-      process.env.SERVER_URL
-    ).toString()
-  ),
+  const serverURL = useMemo(() => {
+    const server = new URL(process.env.SERVER_URL);
+    if (server.pathname.endsWith('/')) {
+      server.pathname += isLoggedIn ? 'logout' : 'login';
+    } else {
+      server.pathname += isLoggedIn ? '/logout' : '/login';
+    }
+    return server.toString();
+  },
   [isLoggedIn]);
 
   return (

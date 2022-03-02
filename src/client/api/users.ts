@@ -16,8 +16,10 @@ export const getCurrentUser = async (): Promise<User> => {
     return new User(response.data);
   } catch (err) {
     if ((err as AxiosError).response?.status === 401) {
-      const loginURL = new URL('/login', process.env.SERVER_URL).toString();
-      window.location.replace(loginURL);
+      const loginURL = new URL(process.env.SERVER_URL);
+      const path = loginURL.pathname;
+      loginURL.pathname += path.endsWith('/') ? 'login' : '/login';
+      window.location.replace(loginURL.toString());
     } else {
       throw err;
     }
