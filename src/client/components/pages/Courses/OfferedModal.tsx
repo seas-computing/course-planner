@@ -182,7 +182,7 @@ const OfferedModal: FunctionComponent<OfferedModalProps> = ({
               <Dropdown
                 id="offered"
                 name="offered"
-                label="Edit Offered Value"
+                label="Edit Offered Value Dropdown"
                 options={
                   Object.values(OFFERED)
                     .filter((value) => value !== OFFERED.RETIRED)
