@@ -21,6 +21,7 @@ services:
       - APP_NAME
       - CAS_URL
       - CLIENT_URL
+      - PUBLIC_CLIENT_URL
       - DB_HOSTNAME
       - DB_PORT
       - DB_DATABASE
@@ -58,6 +59,7 @@ services:
       - CLIENT_PORT
       - SERVER_URL
       - SERVER_PORT
+      - PUBLIC_CLIENT_URL
     user: "1000:1000"
     ports:
       - "127.0.0.1:${CLIENT_PORT}:${CLIENT_PORT}"

@@ -34,61 +34,97 @@ const AppRouter: FunctionComponent = (): ReactElement => {
     isReadOnly,
   } = useGroupGuard();
 
+  const publicHostname = new URL(process.env.PUBLIC_CLIENT_URL).hostname;
+
+  /**
+   * Render the routes for the public app, with 401 errors for pages that
+   * require authorization and 404 for all other routes
+   */
+  if (window.location.hostname === publicHostname) {
+    return (
+      <Switch>
+        <Redirect exact from="/" to="/four-year-plan" />
+        <Route exact path="/four-year-plan" component={MultiYearPlan} />
+        <Route exact path="/schedule" component={Schedule} />
+        <Route
+          exact
+          path={[
+            '/non-class-meetings',
+            '/courses',
+            '/faculty',
+            '/course-admin',
+            '/faculty-admin',
+          ]}
+          component={UnauthorizedPage}
+        />
+        <Route component={NoMatch} />
+      </Switch>
+    );
+  }
+
+  /**
+   * Render the routes for the private app, with 403 errors for pages that
+   * require higher permission levels and 404 for all other routes
+   */
   if (isLoggedIn) {
     return (
       <Switch>
-        <Redirect
-          exact
-          from="/"
-          to={isReadOnly ? '/courses' : '/four-year-plan'}
-        />
+        <Redirect exact from="/" to="/courses" />
         <Route
           exact
           path="/non-class-meetings"
-          component={isReadOnly
-            ? NonClassMeetings
-            : ForbiddenPage}
+          component={isReadOnly ? NonClassMeetings : ForbiddenPage}
         />
         <Route
           exact
           path="/courses"
-          component={
-            isReadOnly
-              ? Courses
-              : ForbiddenPage
-          }
+          component={isReadOnly ? Courses : ForbiddenPage}
         />
         <Route
           exact
           path="/faculty"
-          component={
-            isReadOnly
-              ? Faculty
-              : ForbiddenPage
-          }
+          component={isReadOnly ? Faculty : ForbiddenPage}
         />
         <Route exact path="/four-year-plan" component={MultiYearPlan} />
         <Route exact path="/schedule" component={Schedule} />
         <Route
           exact
           path="/course-admin"
-          component={
-            isAdmin
-              ? CourseAdmin : ForbiddenPage
-          }
+          component={isAdmin ? CourseAdmin : ForbiddenPage}
         />
         <Route
           exact
           path="/faculty-admin"
-          component={
-            isAdmin ? FacultyAdmin : ForbiddenPage
-          }
+          component={isAdmin ? FacultyAdmin : ForbiddenPage}
         />
         <Route component={NoMatch} />
       </Switch>
     );
   }
-  return (<UnauthorizedPage />);
+
+  /**
+   * A fallthrough router, equivalent to not being logged in on the private
+   * app. Renders 401 errors for all "real" routes, or 404 for everything else.
+   */
+  return (
+    <Switch>
+      <Route
+        exact
+        path={[
+          '/',
+          '/non-class-meetings',
+          '/courses',
+          '/faculty',
+          '/four-year-plan',
+          '/schedule',
+          '/course-admin',
+          '/faculty-admin',
+        ]}
+        component={UnauthorizedPage}
+      />
+      <Route component={NoMatch} />
+    </Switch>
+  );
 };
 
 export default AppRouter;

@@ -1,4 +1,4 @@
-import React, { FunctionComponent, ReactElement } from 'react';
+import React, { FunctionComponent, ReactElement, useMemo } from 'react';
 import {
   Header,
   Logo,
@@ -12,7 +12,7 @@ import { useLocation } from 'react-router-dom';
 import logo from 'client/img/seas-logo.svg';
 import { HeaderFlex } from 'client/components/general';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faSignOutAlt, faSignInAlt } from '@fortawesome/free-solid-svg-icons';
 import { useGroupGuard } from '../../hooks/useGroupGuard';
 
 /**
@@ -49,6 +49,17 @@ const AppHeader:FunctionComponent = () => {
    */
   const { pathname: currentPath } = useLocation();
 
+  const serverURL = useMemo(() => {
+    const server = new URL(process.env.SERVER_URL);
+    if (server.pathname.endsWith('/')) {
+      server.pathname += isLoggedIn ? 'logout' : 'login';
+    } else {
+      server.pathname += isLoggedIn ? '/logout' : '/login';
+    }
+    return server.toString();
+  },
+  [isLoggedIn]);
+
   return (
     <>
       <Header justify="space-between">
@@ -57,15 +68,16 @@ const AppHeader:FunctionComponent = () => {
           <PageTitle>Course Planning</PageTitle>
         </HeaderFlex>
         <HeaderFlex>
-          { isLoggedIn && (
-            <ExternalLink title="Log Out" href={`${process.env.SERVER_URL}/logout`}>
-              <>
-                Log Out
-                {' '}
-                <FontAwesomeIcon icon={faSignOutAlt} />
-              </>
-            </ExternalLink>
-          )}
+          <ExternalLink
+            title={isLoggedIn ? 'Log Out' : 'Log In'}
+            href={serverURL}
+          >
+            {isLoggedIn ? 'Log Out' : 'Log In'}
+            {' '}
+            <FontAwesomeIcon
+              icon={isLoggedIn ? faSignOutAlt : faSignInAlt}
+            />
+          </ExternalLink>
         </HeaderFlex>
       </Header>
       <nav>

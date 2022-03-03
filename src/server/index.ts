@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { Request } from 'express';
 import { BadRequestExceptionPipe } from './utils/BadRequestExceptionPipe';
 import { AppModule } from './app.module';
 import { LogService } from './log/log.service';
@@ -13,6 +14,7 @@ const {
   SERVER_URL,
   NODE_ENV,
   CLIENT_URL,
+  PUBLIC_CLIENT_URL,
 } = process.env;
 
 /**
@@ -21,6 +23,7 @@ const {
 
 async function bootstrap(): Promise<void> {
   const clientOrigin = new URL(CLIENT_URL).origin;
+  const publicClientOrigin = new URL(PUBLIC_CLIENT_URL).origin;
   const serverPathname = new URL(SERVER_URL).pathname;
 
   const app = await NestFactory.create(AppModule, {
@@ -28,9 +31,22 @@ async function bootstrap(): Promise<void> {
   });
 
   app.useLogger(app.get(LogService));
-  app.enableCors({
-    origin: clientOrigin,
-    credentials: true,
+  app.enableCors((req: Request, callback) => {
+    const requestOrigin = req.header('Origin');
+    const allowedOrigins = [
+      clientOrigin,
+      publicClientOrigin,
+    ];
+    if (allowedOrigins.includes(requestOrigin)) {
+      callback(null, {
+        origin: true,
+        credentials: true,
+      });
+    } else {
+      callback(null, {
+        origin: false,
+      });
+    }
   });
 
   if (NODE_ENV === 'development') {

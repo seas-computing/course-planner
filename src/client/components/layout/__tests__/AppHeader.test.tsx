@@ -3,7 +3,7 @@ import {
   render, BoundFunction, QueryByText,
 } from 'test-utils';
 import { stub, SinonStub } from 'sinon';
-import assert from 'assert';
+import assert, { strictEqual, notStrictEqual } from 'assert';
 import * as dummy from 'testData';
 import AppHeader from '../AppHeader';
 import { User } from '../../../../common/classes';
@@ -15,8 +15,26 @@ describe('AppHeader', function () {
     contextStub.callThrough();
   });
   context('When user is logged in', function () {
-  // TODO: Setting up the test for the full permission view. Needs to be
-  // duplicated/modified for other views when implemented
+    it('Should display a log out button', function () {
+      const { getByText } = render(
+        <AppHeader />,
+        {
+          currentUser: dummy.adminUser,
+        }
+      );
+      const logout = getByText('Log Out') as HTMLLinkElement;
+      strictEqual(logout.href, `${process.env.SERVER_URL}/logout`);
+    });
+    it('Should not display a log in button', function () {
+      const { queryByText } = render(
+        <AppHeader />,
+        {
+          currentUser: dummy.adminUser,
+        }
+      );
+      const login = queryByText('Log In') as HTMLLinkElement;
+      strictEqual(login, null);
+    });
     context('When user is an admin', function () {
       let queryByText: BoundFunction<QueryByText>;
       beforeEach(function () {
@@ -115,6 +133,15 @@ describe('AppHeader', function () {
           currentUser: new User({}),
         }
       ));
+    });
+    it('Should display a log in button', function () {
+      const login = queryByText('Log In') as HTMLLinkElement;
+      notStrictEqual(login, null);
+      strictEqual(login.href, `${process.env.SERVER_URL}/login`);
+    });
+    it('Should not display a log out button', function () {
+      const logout = queryByText('Log Out') as HTMLLinkElement;
+      strictEqual(logout, null);
     });
     it('should display the "Schedule" link', function () {
       const link = queryByText('Schedule');

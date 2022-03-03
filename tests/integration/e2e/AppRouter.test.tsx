@@ -10,6 +10,7 @@ import { SessionModule } from 'nestjs-session';
 import { MemoryRouter } from 'react-router-dom';
 import App from 'client/components/App';
 import request from 'client/api/request';
+import { UnauthorizedException } from '@nestjs/common';
 import mockAdapter from '../../mocks/api/adapter';
 import { ConfigModule } from '../../../src/server/config/config.module';
 import { ConfigService } from '../../../src/server/config/config.service';
@@ -265,94 +266,178 @@ describe('Application Routing and Authorization', function () {
   });
   context('When there is no user in context', function () {
     beforeEach(function () {
-      authStub.resolves(dummy.nullUser);
+      authStub.rejects(new UnauthorizedException());
     });
-    context('/', function () {
-      it('renders the UnauthorizedPage component', function () {
-        const { findAllByText } = render(
-          <MemoryRouter initialEntries={['/']}>
-            <App />
-          </MemoryRouter>
-        );
-        return findAllByText(/401/);
-        // @TODO Restore when public page implemented
-        // return findAllByText(/Catalog Prefix|Catalog Number|Title/);
+    context('On the private site', function () {
+      beforeEach(function () {
+        const privateLocation = new URL(process.env.CLIENT_URL);
+        stub(window, 'location').get(() => privateLocation);
+      });
+      context('/', function () {
+        it('renders the UnauthorizedPage component', function () {
+          const { findAllByText } = render(
+            <MemoryRouter initialEntries={['/']}>
+              <App />
+            </MemoryRouter>
+          );
+          return findAllByText(/401/);
+        });
+      });
+      context('/course-admin', function () {
+        it('renders the UnauthorizedPage component', function () {
+          const { findByText } = render(
+            <MemoryRouter initialEntries={['/course-admin']}>
+              <App />
+            </MemoryRouter>
+          );
+          return findByText(/401/);
+        });
+      });
+      context('/faculty-admin', function () {
+        it('renders the UnauthorizedPage component', function () {
+          const { findByText } = render(
+            <MemoryRouter initialEntries={['/faculty-admin']}>
+              <App />
+            </MemoryRouter>
+          );
+          return findByText(/401/);
+        });
+      });
+      context('/faculty', function () {
+        it('renders the UnauthorizedPage component', function () {
+          const { findByText } = render(
+            <MemoryRouter initialEntries={['/faculty']}>
+              <App />
+            </MemoryRouter>
+          );
+          return findByText(/401/);
+        });
+      });
+      context('/courses', function () {
+        it('renders the UnauthorizedPage component', function () {
+          const { findByText } = render(
+            <MemoryRouter initialEntries={['/courses']}>
+              <App />
+            </MemoryRouter>
+          );
+          return findByText(/401/);
+        });
+      });
+      context('/four-year-plan', function () {
+        it('renders the UnauthorizedPage component', function () {
+          const { findAllByText } = render(
+            <MemoryRouter initialEntries={['/four-year-plan']}>
+              <App />
+            </MemoryRouter>
+          );
+          return findAllByText(/401/);
+        });
+      });
+      context('/schedule', function () {
+        it('renders the UnauthorizedPage component', function () {
+          const { findByText } = render(
+            <MemoryRouter initialEntries={['/schedule']}>
+              <App />
+            </MemoryRouter>
+          );
+          return findByText(/401/);
+        });
+      });
+      context('Undefined routes', function () {
+        it('renders the NoMatch component', function () {
+          const { findByText } = render(
+            <MemoryRouter initialEntries={['/foobar']}>
+              <App />
+            </MemoryRouter>
+          );
+          return findByText(/404/);
+        });
       });
     });
-    context('/course-admin', function () {
-      it('renders the UnauthorizedPage component', function () {
-        const { findByText } = render(
-          <MemoryRouter initialEntries={['/course-admin']}>
-            <App />
-          </MemoryRouter>
-        );
-        return findByText(/401/);
+    context('On the public site', function () {
+      beforeEach(function () {
+        const publicLocation = new URL(process.env.PUBLIC_CLIENT_URL);
+        stub(window, 'location').get(() => publicLocation);
       });
-    });
-    context('/faculty-admin', function () {
-      it('renders the UnauthorizedPage component', function () {
-        const { findByText } = render(
-          <MemoryRouter initialEntries={['/faculty-admin']}>
-            <App />
-          </MemoryRouter>
-        );
-        return findByText(/401/);
+      context('/', function () {
+        it('redirects to the four-year-plan component', function () {
+          const { findAllByText } = render(
+            <MemoryRouter initialEntries={['/']}>
+              <App />
+            </MemoryRouter>
+          );
+          return findAllByText(/Catalog Prefix|Catalog Number|Title/);
+        });
       });
-    });
-    context('/faculty', function () {
-      it('renders the UnauthorizedPage component', function () {
-        const { findByText } = render(
-          <MemoryRouter initialEntries={['/faculty']}>
-            <App />
-          </MemoryRouter>
-        );
-        return findByText(/401/);
+      context('/course-admin', function () {
+        it('renders the UnauthorizedPage component', function () {
+          const { findByText } = render(
+            <MemoryRouter initialEntries={['/course-admin']}>
+              <App />
+            </MemoryRouter>
+          );
+          return findByText(/401/);
+        });
       });
-    });
-    context('/courses', function () {
-      it('renders the UnauthorizedPage component', function () {
-        const { findByText } = render(
-          <MemoryRouter initialEntries={['/courses']}>
-            <App />
-          </MemoryRouter>
-        );
-        return findByText(/401/);
+      context('/faculty-admin', function () {
+        it('renders the UnauthorizedPage component', function () {
+          const { findByText } = render(
+            <MemoryRouter initialEntries={['/faculty-admin']}>
+              <App />
+            </MemoryRouter>
+          );
+          return findByText(/401/);
+        });
       });
-    });
-    context('/four-year-plan', function () {
-      it('renders the UnauthorizedPage component', function () {
-        const { findAllByText } = render(
-          <MemoryRouter initialEntries={['/four-year-plan']}>
-            <App />
-          </MemoryRouter>
-        );
-        return findAllByText(/401/);
-        // @TODO Restore when public page implemented
-        // return findAllByText(/Catalog Prefix|Catalog Number|Title/);
+      context('/faculty', function () {
+        it('renders the UnauthorizedPage component', function () {
+          const { findByText } = render(
+            <MemoryRouter initialEntries={['/faculty']}>
+              <App />
+            </MemoryRouter>
+          );
+          return findByText(/401/);
+        });
       });
-    });
-    context('/schedule', function () {
-      it('renders the UnauthorizedPage component', function () {
-        const { findByText } = render(
-          <MemoryRouter initialEntries={['/schedule']}>
-            <App />
-          </MemoryRouter>
-        );
-        return findByText(/401/);
-        // @TODO Restore when public page implemented
-        // return findByText('Select Semester');
+      context('/courses', function () {
+        it('renders the UnauthorizedPage component', function () {
+          const { findByText } = render(
+            <MemoryRouter initialEntries={['/courses']}>
+              <App />
+            </MemoryRouter>
+          );
+          return findByText(/401/);
+        });
       });
-    });
-    context('Undefined routes', function () {
-      it('renders the UnauthorizedPage component', function () {
-        const { findByText } = render(
-          <MemoryRouter initialEntries={['/foobar']}>
-            <App />
-          </MemoryRouter>
-        );
-        return findByText(/401/);
-        // @TODO Restore when public page implemented
-        // return findByText(/404/);
+      context('/four-year-plan', function () {
+        it('renders the four-year-plan component', function () {
+          const { findAllByText } = render(
+            <MemoryRouter initialEntries={['/four-year-plan']}>
+              <App />
+            </MemoryRouter>
+          );
+          return findAllByText(/Catalog Prefix|Catalog Number|Title/);
+        });
+      });
+      context('/schedule', function () {
+        it('renders the Schedule component', function () {
+          const { findByText } = render(
+            <MemoryRouter initialEntries={['/schedule']}>
+              <App />
+            </MemoryRouter>
+          );
+          return findByText('Select Semester');
+        });
+      });
+      context('Undefined routes', function () {
+        it('renders the NoMatch component', function () {
+          const { findByText } = render(
+            <MemoryRouter initialEntries={['/foobar']}>
+              <App />
+            </MemoryRouter>
+          );
+          return findByText(/404/);
+        });
       });
     });
   });
