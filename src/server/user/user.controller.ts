@@ -35,7 +35,7 @@ export class UserController {
   public getCurrentUser(
     @Req() req: Request
   ): UserResponse | Record<string, unknown> {
-    if ('user' in req.session) {
+    if (req?.session?.user?.eppn) {
       return req.session.user as UserResponse;
     }
     throw new UnauthorizedException();

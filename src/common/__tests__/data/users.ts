@@ -13,7 +13,7 @@ export const adminUser = new User({
   lastName: 'User',
   eppn: 'ABCDEFGHIJKLMN@harvard.edu',
   email: 'adminUser@seas.harvard.edu',
-  groups: [GROUP.ADMIN, GROUP.NON_CLASS],
+  groups: [GROUP.ADMIN],
 });
 
 export const readOnlyUser = new User({
@@ -34,3 +34,8 @@ export const nonClassEventManager = new User({
   email: 'nonClasseventManager@seas.harvard.edu',
   groups: [GROUP.NON_CLASS],
 });
+
+/**
+ * A "blank" user to simulate anonymous sessions
+ */
+export const nullUser = new User();

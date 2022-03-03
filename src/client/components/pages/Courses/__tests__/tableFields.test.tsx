@@ -115,75 +115,153 @@ describe('tableFields', function () {
     describe('formatInstructors', function () {
       let TestComponent: FunctionComponent<unknown>;
       context('When course has data', function () {
-        beforeEach(function () {
-          const FallInstructors = formatInstructors(TERM.FALL);
-          TestComponent = () => (
-            <div>
-              <FallInstructors
-                course={ac209aCourseInstance}
-                openInstructorModal={openModalSpy}
-                buttonRef={null}
-              />
-            </div>
-          );
+        context('When user is able to edit', function () {
+          beforeEach(function () {
+            const FallInstructors = formatInstructors(TERM.FALL);
+            TestComponent = () => (
+              <div>
+                <FallInstructors
+                  course={ac209aCourseInstance}
+                  openInstructorModal={openModalSpy}
+                  buttonRef={null}
+                  isEditable
+                />
+              </div>
+            );
+          });
+          it('Should return a component that renders instructors as a list', function () {
+            const { getAllByRole } = render(<TestComponent />);
+            const entries = getAllByRole('listitem')
+              .map(({ textContent }): string => textContent);
+            const instructorList = ac209aCourseInstance.fall.instructors
+              .map(({ displayName }): string => displayName);
+            deepStrictEqual(entries, instructorList);
+          });
+          it('Should render an edit button', function () {
+            const { queryByLabelText } = render(<TestComponent />);
+            const editButtonRegex = new RegExp(
+              `edit instructors.*?${
+                ac209aCourseInstance.catalogNumber
+              }.*?${
+                TERM.FALL
+              }.*?${
+                ac209aCourseInstance.fall.calendarYear
+              }`,
+              'i'
+            );
+            const editButton = queryByLabelText(editButtonRegex);
+            notStrictEqual(
+              editButton,
+              null
+            );
+          });
         });
-        it('Should return a component that renders instructors as a list', function () {
-          const { getAllByRole } = render(<TestComponent />);
-          const entries = getAllByRole('listitem')
-            .map(({ textContent }): string => textContent);
-          const instructorList = ac209aCourseInstance.fall.instructors
-            .map(({ displayName }): string => displayName);
-          deepStrictEqual(entries, instructorList);
-        });
-        it('Should render an edit button', function () {
-          const { queryByLabelText } = render(<TestComponent />);
-          const editButtonRegex = new RegExp(
-            `edit instructors.*?${
-              ac209aCourseInstance.catalogNumber
-            }.*?${
-              TERM.FALL
-            }.*?${
-              ac209aCourseInstance.fall.calendarYear
-            }`,
-            'i'
-          );
-          const editButton = queryByLabelText(editButtonRegex);
-          notStrictEqual(
-            editButton,
-            null
-          );
+        context('When user is NOT able to edit', function () {
+          beforeEach(function () {
+            const FallInstructors = formatInstructors(TERM.FALL);
+            TestComponent = () => (
+              <div>
+                <FallInstructors
+                  course={ac209aCourseInstance}
+                  openInstructorModal={openModalSpy}
+                  buttonRef={null}
+                />
+              </div>
+            );
+          });
+          it('Should return a component that renders instructors as a list', function () {
+            const { getAllByRole } = render(<TestComponent />);
+            const entries = getAllByRole('listitem')
+              .map(({ textContent }): string => textContent);
+            const instructorList = ac209aCourseInstance.fall.instructors
+              .map(({ displayName }): string => displayName);
+            deepStrictEqual(entries, instructorList);
+          });
+          it('Should NOT render an edit button', function () {
+            const { queryByLabelText } = render(<TestComponent />);
+            const editButtonRegex = new RegExp(
+              `edit instructors.*?${
+                ac209aCourseInstance.catalogNumber
+              }.*?${
+                TERM.FALL
+              }.*?${
+                ac209aCourseInstance.fall.calendarYear
+              }`,
+              'i'
+            );
+            const editButton = queryByLabelText(editButtonRegex);
+            strictEqual(
+              editButton,
+              null
+            );
+          });
         });
       });
       context('When semester does not have any instructors', function () {
-        beforeEach(function () {
-          const SpringInstructors = formatInstructors(TERM.SPRING);
-          TestComponent = () => (
-            <div>
-              <SpringInstructors
-                course={ac209aCourseInstance}
-                openInstructorModal={openModalSpy}
-                buttonRef={null}
-              />
-            </div>
-          );
+        context('When user is able to edit', function () {
+          beforeEach(function () {
+            const SpringInstructors = formatInstructors(TERM.SPRING);
+            TestComponent = () => (
+              <div>
+                <SpringInstructors
+                  course={ac209aCourseInstance}
+                  openInstructorModal={openModalSpy}
+                  buttonRef={null}
+                  isEditable
+                />
+              </div>
+            );
+          });
+          it('Should render an edit button', function () {
+            const { queryByLabelText } = render(<TestComponent />);
+            const editButtonRegex = new RegExp(
+              `edit instructors.*?${
+                ac209aCourseInstance.catalogNumber
+              }.*?${
+                TERM.SPRING
+              }.*?${
+                ac209aCourseInstance.spring.calendarYear
+              }`,
+              'i'
+            );
+            const editButton = queryByLabelText(editButtonRegex);
+            notStrictEqual(
+              editButton,
+              null
+            );
+          });
         });
-        it('Should render an edit button', function () {
-          const { queryByLabelText } = render(<TestComponent />);
-          const editButtonRegex = new RegExp(
-            `edit instructors.*?${
-              ac209aCourseInstance.catalogNumber
-            }.*?${
-              TERM.SPRING
-            }.*?${
-              ac209aCourseInstance.spring.calendarYear
-            }`,
-            'i'
-          );
-          const editButton = queryByLabelText(editButtonRegex);
-          notStrictEqual(
-            editButton,
-            null
-          );
+        context('When user is NOT able to edit', function () {
+          beforeEach(function () {
+            const SpringInstructors = formatInstructors(TERM.SPRING);
+            TestComponent = () => (
+              <div>
+                <SpringInstructors
+                  course={ac209aCourseInstance}
+                  openInstructorModal={openModalSpy}
+                  buttonRef={null}
+                />
+              </div>
+            );
+          });
+          it('Should render an edit button', function () {
+            const { queryByLabelText } = render(<TestComponent />);
+            const editButtonRegex = new RegExp(
+              `edit instructors.*?${
+                ac209aCourseInstance.catalogNumber
+              }.*?${
+                TERM.SPRING
+              }.*?${
+                ac209aCourseInstance.spring.calendarYear
+              }`,
+              'i'
+            );
+            const editButton = queryByLabelText(editButtonRegex);
+            strictEqual(
+              editButton,
+              null
+            );
+          });
         });
       });
     });
