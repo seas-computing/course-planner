@@ -200,6 +200,12 @@ const endpointTests: Endpoint[] = [
     expectAnonymousAccess: false,
     expectAllowedGroup: null,
   },
+  {
+    path: `/api/course-instances/${dummy.uuid}`,
+    method: 'put',
+    expectAnonymousAccess: false,
+    expectAllowedGroup: GROUP.ADMIN,
+  },
 ];
 
 /**
