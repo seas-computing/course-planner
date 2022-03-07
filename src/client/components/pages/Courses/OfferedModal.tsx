@@ -194,7 +194,7 @@ const OfferedModal: FunctionComponent<OfferedModalProps> = ({
                     }))
                 }
                 onChange={updateFormFields}
-                value={form.offered}
+                value={form?.offered}
                 isRequired
               />
             </Form>
