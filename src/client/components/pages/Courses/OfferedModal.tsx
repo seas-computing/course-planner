@@ -84,9 +84,7 @@ const OfferedModal: FunctionComponent<OfferedModalProps> = ({
 
   type FormField = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
-  const [form, setFormFields] = useState({
-    offered: '',
-  });
+  const [form, setFormFields] = useState<{offered: OFFERED}>();
 
   const updateFormFields = (
     event: ChangeEvent<HTMLSelectElement & {value: OFFERED}>
@@ -132,7 +130,7 @@ const OfferedModal: FunctionComponent<OfferedModalProps> = ({
       results = await updateCourseInstance(
         currentCourseInstance[currentTermKey].id,
         {
-          offered: form.offered as OFFERED,
+          offered: form.offered,
           preEnrollment: currentCourseInstance[currentTermKey].preEnrollment,
           studyCardEnrollment: currentCourseInstance[currentTermKey]
             .studyCardEnrollment,
@@ -189,7 +187,7 @@ const OfferedModal: FunctionComponent<OfferedModalProps> = ({
                   Object.values(OFFERED)
                     .filter((value) => value !== OFFERED.RETIRED)
                     .map((offeredValue): {
-                      value: string; label: string
+                      value: OFFERED; label: string
                     } => ({
                       value: offeredValue,
                       label: offeredEnumToString(offeredValue),
