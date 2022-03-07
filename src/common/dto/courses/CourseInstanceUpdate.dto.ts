@@ -18,7 +18,6 @@ export default abstract class CourseInstanceUpdateDTO {
     enum: OFFERED,
   })
   @IsEnum(OFFERED)
-  @IsNotEmpty()
   public offered: OFFERED;
 
   @ApiProperty({
