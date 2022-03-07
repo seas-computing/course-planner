@@ -88,8 +88,10 @@ const OfferedModal: FunctionComponent<OfferedModalProps> = ({
     offered: '',
   });
 
-  const updateFormFields = (event: ChangeEvent): void => {
-    const target = event.target as FormField;
+  const updateFormFields = (
+    event: ChangeEvent<HTMLSelectElement & {value: OFFERED}>
+  ): void => {
+    const { target } = event;
     setFormFields({
       ...form,
       [target.name]: target.value,
