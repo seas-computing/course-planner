@@ -1248,7 +1248,7 @@ describe('End-to-end Course Instance updating', function () {
         return renderResult.findByRole('dialog');
       });
       context('Editing an offered value', function () {
-        context('to a value other than "Retired"', function () {
+        context('to a valid value other than "Retired"', function () {
           const newOfferedValue = OFFERED.N;
           beforeEach(async function () {
             const offeredSelector = await renderResult.findByLabelText('Edit Offered Value Dropdown', { exact: false });
@@ -1289,6 +1289,37 @@ describe('End-to-end Course Instance updating', function () {
                 fireEvent.click(cancelButton);
                 strictEqual(windowConfirmStub.callCount, 0);
               });
+            });
+          });
+        });
+        context('to an invalid value', function () {
+          const invalidOfferedValue = 'invalidValue';
+          beforeEach(async function () {
+            const offeredSelector = await renderResult.findByLabelText('Edit Offered Value Dropdown', { exact: false });
+            // Adds the invalid offered value as an option in the offered dropdown
+            // so that we can select the invalid value.
+            const invalidValueOption = document.createElement('option');
+            const optionContent = document.createTextNode(invalidOfferedValue);
+            invalidValueOption.appendChild(optionContent);
+            offeredSelector.appendChild(invalidValueOption);
+            fireEvent.change(offeredSelector, {
+              target: {
+                value: invalidOfferedValue,
+              },
+            });
+          });
+          context('when the modal save button is clicked', function () {
+            it('should show an error message', async function () {
+              const saveButton = renderResult.getByText('Save');
+              fireEvent.click(saveButton);
+              await waitForElementToBeRemoved(() => renderResult.queryByText('Saving'));
+              return renderResult.findByText('offered must be', { exact: false });
+            });
+            it('should keep the modal open', async function () {
+              const saveButton = renderResult.getByText('Save');
+              fireEvent.click(saveButton);
+              await waitForElementToBeRemoved(() => renderResult.queryByText('Saving'));
+              return renderResult.getByRole('dialog');
             });
           });
         });

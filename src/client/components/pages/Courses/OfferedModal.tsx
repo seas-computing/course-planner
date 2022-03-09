@@ -53,6 +53,25 @@ interface OfferedModalProps {
   onSave: (updatedInstance: CourseInstanceUpdateDTO) => void;
 }
 
+export interface BadRequestMessageInfo {
+  children: unknown[];
+  constraints: Record<string, string>;
+  property: string;
+}
+
+export interface ErrorInfo {
+  statusCode: string;
+  error: string;
+}
+
+export interface BadRequestInfo extends ErrorInfo {
+  message: BadRequestMessageInfo[];
+}
+
+export interface ServerErrorInfo extends ErrorInfo {
+  message: Record<string, string>;
+}
+
 const OfferedModal: FunctionComponent<OfferedModalProps> = ({
   isVisible,
   currentSemester,
@@ -140,11 +159,20 @@ const OfferedModal: FunctionComponent<OfferedModalProps> = ({
       );
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        const serverError = error.response.data as Error;
-        setErrorMessage(serverError.message);
+        if ('error' in error.response.data
+          && (error.response.data as ErrorInfo).error === 'Bad Request') {
+          const serverError = error.response.data as BadRequestInfo;
+          setErrorMessage(serverError.message.map((message) => {
+            const values = Object.values(message.constraints);
+            return values.join('; ');
+          }).join('; '));
+        } else {
+          const axiosError = error.response.data as Error;
+          setErrorMessage(axiosError.message);
+        }
       } else if (results === undefined) {
         const { message } = error as Error;
-        setErrorMessage(`Failed to save meeting data. Please try again later.
+        setErrorMessage(`Failed to save course data. Please try again later.
         ${message}`);
       }
     } finally {
