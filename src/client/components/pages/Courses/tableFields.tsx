@@ -21,7 +21,6 @@ import {
   TERM,
   COURSE_TABLE_COLUMN,
   COURSE_TABLE_COLUMN_GROUP,
-  OFFERED,
   IS_SEAS,
   isSEASEnumToString,
 } from 'common/constants';
@@ -69,9 +68,6 @@ export const retrieveValue = (
   }
   if (typeof rawValue === 'boolean') {
     rawValue = rawValue ? 'Yes' : 'No';
-  }
-  if (rawValue in OFFERED) {
-    rawValue = offeredEnumToString(rawValue as OFFERED);
   }
   if (rawValue in IS_SEAS) {
     rawValue = isSEASEnumToString(rawValue as IS_SEAS);
@@ -127,6 +123,44 @@ export const formatInstructors = (
           <FontAwesomeIcon icon={faEdit} />
         </BorderlessButton>
       )}
+    </>
+  );
+});
+
+/**
+ * Helper function that returns a functional component that renders a course
+ * instance's offered value and an edit button
+ */
+const formatOffered = (
+  term: TERM
+):FunctionComponent<FieldContentProps> => React.memo((
+  {
+    course,
+    openOfferedModal,
+    buttonRef,
+  }: FieldContentProps
+): ReactElement => {
+  const semKey = term.toLowerCase() as TermKey;
+  const {
+    id: parentId,
+    catalogNumber,
+    [semKey]: instance,
+  } = course;
+  const { calendarYear, offered } = instance;
+  return (
+    <>
+      <span>{offeredEnumToString(offered)}</span>
+      <BorderlessButton
+        alt={`Edit offered value for ${catalogNumber}, ${term} ${calendarYear}`}
+        id={`${parentId}-${term}-edit-instructors-button`}
+        onClick={() => {
+          openOfferedModal(course, term);
+        }}
+        variant={VARIANT.INFO}
+        forwardRef={buttonRef}
+      >
+        <FontAwesomeIcon icon={faEdit} />
+      </BorderlessButton>
     </>
   );
 });
@@ -281,6 +315,10 @@ export interface FieldContentProps {
    * Controls the opening of the instructor modal with the requested course and term
    */
   openInstructorModal?: (course: CourseInstanceResponseDTO, term: TERM) => void;
+  /**
+   * Controls the opening of the offered modal with the requested course and term
+   */
+  openOfferedModal?: (course: CourseInstanceResponseDTO, term: TERM) => void;
   /**
    * The current ref value of the focused button
    */
@@ -470,7 +508,7 @@ export const tableFields: CourseInstanceListColumn[] = [
     key: 'offered-fall',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.FALL,
     viewColumn: COURSE_TABLE_COLUMN.OFFERED,
-    FieldContent: retrieveValue('offered', TERM.FALL),
+    FieldContent: formatOffered(TERM.FALL),
     getFilter: generateDropdown('fall', 'offered'),
   },
   {
@@ -514,7 +552,7 @@ export const tableFields: CourseInstanceListColumn[] = [
     key: 'offered-spring',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.SPRING,
     viewColumn: COURSE_TABLE_COLUMN.OFFERED,
-    FieldContent: retrieveValue('offered', TERM.SPRING),
+    FieldContent: formatOffered(TERM.SPRING),
     getFilter: generateDropdown('spring', 'offered'),
   },
   {

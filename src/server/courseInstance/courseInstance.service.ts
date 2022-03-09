@@ -9,6 +9,7 @@ import { TERM } from 'common/constants';
 import { SemesterView } from 'server/semester/SemesterView.entity';
 import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import { FacultyListingView } from 'server/faculty/FacultyListingView.entity';
+import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto';
 import { MultiYearPlanInstanceView } from './MultiYearPlanInstanceView.entity';
 import { ScheduleViewResponseDTO } from '../../common/dto/schedule/schedule.dto';
 import { ScheduleBlockView } from './ScheduleBlockView.entity';
@@ -17,6 +18,7 @@ import { Faculty } from '../faculty/faculty.entity';
 import { CourseInstance } from './courseinstance.entity';
 import { InstructorRequestDTO } from '../../common/dto/courses/InstructorRequest.dto';
 import { InstructorResponseDTO } from '../../common/dto/courses/InstructorResponse.dto';
+import { CourseInstanceListingView } from './CourseInstanceListingView.entity';
 
 /**
  * @class CourseInstanceService
@@ -46,6 +48,9 @@ export class CourseInstanceService {
 
   @InjectRepository(ScheduleBlockView)
   private readonly courseScheduleRepository: Repository<ScheduleBlockView>;
+
+  @InjectRepository(CourseInstanceListingView)
+  private readonly instanceRepository: Repository<CourseInstanceListingView>;
 
   /**
    * Resolves a list of courses, which in turn contain sub-lists of instances
@@ -230,5 +235,26 @@ export class CourseInstanceService {
         displayName: `${faculty.lastName}, ${faculty.firstName}`,
         order,
       }));
+  }
+
+  public async editCourseInstance(
+    instanceId: string,
+    update: CourseInstanceUpdateDTO
+  ): Promise<CourseInstanceUpdateDTO> {
+    const courseInstance = await this.courseInstanceRepository
+      .findOneOrFail(instanceId);
+    const updatedInstance = await this.courseInstanceRepository.save(
+      {
+        ...courseInstance,
+        ...update,
+      }
+    );
+    // get the updated fields in case any changes were made on save
+    const {
+      offered, preEnrollment, studyCardEnrollment, actualEnrollment,
+    } = updatedInstance;
+    return {
+      offered, preEnrollment, studyCardEnrollment, actualEnrollment,
+    };
   }
 }

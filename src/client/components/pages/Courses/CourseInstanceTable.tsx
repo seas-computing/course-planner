@@ -56,6 +56,10 @@ interface CourseInstanceTableProps {
    */
   openInstructorModal: (course: CourseInstanceResponseDTO, term: TERM) => void;
   /**
+   * Controls the opening of the offered modal with the requested course and term
+   */
+  openOfferedModal: (course: CourseInstanceResponseDTO, term: TERM) => void;
+  /**
    * The ref value of the edit faculty absence button
    */
   setButtonRef: (nodeId: string) => (node: HTMLButtonElement) => void;
@@ -79,6 +83,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
   filters,
   openMeetingModal,
   openInstructorModal,
+  openOfferedModal,
   setButtonRef,
 }): ReactElement => {
   const courseColumns = tableData.filter(
@@ -275,6 +280,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
         tableData={tableData}
         openMeetingModal={openMeetingModal}
         openInstructorModal={openInstructorModal}
+        openOfferedModal={openOfferedModal}
         setButtonRef={setButtonRef}
       />
     </Table>

@@ -19,12 +19,18 @@ import App from 'client/components/App';
 import request from 'client/api/request';
 import { Repository, Not, In } from 'typeorm';
 import { strictEqual, deepStrictEqual, notStrictEqual } from 'assert';
+import { offeredEnumToString } from 'common/constants/offered';
 import mockAdapter from '../../mocks/api/adapter';
 import { ConfigModule } from '../../../src/server/config/config.module';
 import { ConfigService } from '../../../src/server/config/config.service';
 import { AuthModule } from '../../../src/server/auth/auth.module';
 import { TestingStrategy } from '../../mocks/authentication/testing.strategy';
-import { AUTH_MODE, DAY, TERM } from '../../../src/common/constants';
+import {
+  AUTH_MODE,
+  DAY,
+  OFFERED,
+  TERM,
+} from '../../../src/common/constants';
 import { PopulationModule } from '../../mocks/database/population/population.module';
 import { CourseModule } from '../../../src/server/course/course.module';
 import { BadRequestExceptionPipe } from '../../../src/server/utils/BadRequestExceptionPipe';
@@ -1201,6 +1207,119 @@ describe('End-to-end Course Instance updating', function () {
                   deepStrictEqual(namesInList, pendingNames);
                 });
               });
+            });
+          });
+        });
+      });
+    });
+    describe('Updating Offered Values', function () {
+      let editFallOfferedButton: HTMLElement;
+      beforeEach(async function () {
+        const [prefix, number] = courseNumber.split(' ');
+        await courseRepository.findOneOrFail(
+          {
+            prefix,
+            number,
+          },
+          {
+            relations: [
+              'instances',
+              'instances.semester',
+            ],
+          }
+        );
+        renderResult = render(
+          <MemoryRouter initialEntries={['/courses']}>
+            <App />
+          </MemoryRouter>
+        );
+        await renderResult.findByText(courseNumber);
+        const courseRows = await renderResult.findAllByRole('row');
+        const courseRowToUpdate = courseRows.find((row) => {
+          const rowHeader = within(row).queryByRole('rowheader');
+          return rowHeader?.textContent === courseNumber;
+        });
+        ([editFallOfferedButton] = await within(courseRowToUpdate)
+          .findAllByLabelText(
+            `Edit offered value for ${courseNumber}, ${currentTerm} ${currentAcademicYear - 1}`,
+            { exact: false }
+          ));
+        fireEvent.click(editFallOfferedButton);
+        return renderResult.findByRole('dialog');
+      });
+      context('Editing an offered value', function () {
+        context('to a valid value other than "Retired"', function () {
+          const newOfferedValue = OFFERED.N;
+          beforeEach(async function () {
+            const offeredSelector = await renderResult.findByLabelText('Edit Offered Value Dropdown', { exact: false });
+            fireEvent.change(offeredSelector, {
+              target: {
+                value: newOfferedValue,
+              },
+            });
+          });
+          context('when the modal save button is clicked', function () {
+            it('should close the modal', async function () {
+              const saveButton = renderResult.getByText('Save');
+              fireEvent.click(saveButton);
+              await waitForElementToBeRemoved(() => renderResult.queryByRole('dialog'));
+              const modal = renderResult.queryByRole('dialog');
+              strictEqual(modal, null);
+            });
+            it('should show a success message', async function () {
+              const saveButton = renderResult.getByText('Save');
+              fireEvent.click(saveButton);
+              await waitForElementToBeRemoved(() => renderResult.queryByText('Saving'));
+              return renderResult.findByText('Course updated', { exact: false });
+            });
+            it('should update the offered value', async function () {
+              const saveButton = renderResult.getByText('Save');
+              fireEvent.click(saveButton);
+              await waitForElementToBeRemoved(() => renderResult.queryByText('Saving'));
+              return within(editFallOfferedButton.parentElement)
+                .findByText(offeredEnumToString(newOfferedValue));
+            });
+          });
+          context('when the modal save button is not clicked', function () {
+            context('when the user attempts to exit the modal', function () {
+              it('should not show an unsaved changes warning', async function () {
+                const windowConfirmStub = stub(window, 'confirm');
+                windowConfirmStub.returns(true);
+                const cancelButton = await renderResult.findByText('Cancel');
+                fireEvent.click(cancelButton);
+                strictEqual(windowConfirmStub.callCount, 0);
+              });
+            });
+          });
+        });
+        context('to an invalid value', function () {
+          const invalidOfferedValue = 'invalidValue';
+          beforeEach(async function () {
+            const offeredSelector = await renderResult.findByLabelText('Edit Offered Value Dropdown', { exact: false });
+            // Adds the invalid offered value as an option in the offered dropdown
+            // so that we can select the invalid value.
+            const invalidValueOption = document.createElement('option');
+            const optionContent = document.createTextNode(invalidOfferedValue);
+            invalidValueOption.appendChild(optionContent);
+            offeredSelector.appendChild(invalidValueOption);
+            fireEvent.change(offeredSelector, {
+              target: {
+                value: invalidOfferedValue,
+              },
+            });
+          });
+          context('when the modal save button is clicked', function () {
+            it('should show an error message', async function () {
+              const saveButton = renderResult.getByText('Save');
+              fireEvent.click(saveButton);
+              await waitForElementToBeRemoved(() => renderResult.queryByText('Saving'));
+              return renderResult.findByText('offered must be', { exact: false });
+            });
+            it('should keep the modal open', async function () {
+              const saveButton = renderResult.getByText('Save');
+              fireEvent.click(saveButton);
+              await waitForElementToBeRemoved(() => renderResult.queryByText('Saving'));
+              return renderResult.getByRole('dialog');
             });
           });
         });

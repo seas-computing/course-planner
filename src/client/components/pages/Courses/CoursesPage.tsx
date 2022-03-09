@@ -43,6 +43,7 @@ import { FilterState } from './filters.d';
 import MeetingModal from './MeetingModal';
 import InstructorModal from './InstructorModal';
 import { filterCoursesByInstructors } from '../utils/filterByInstructorValues';
+import OfferedModal from './OfferedModal';
 
 /**
  * The initial, empty state for the filters
@@ -135,6 +136,19 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   const [
     instructorModalData,
     setInstructorModalData,
+  ] = useState<ModalData>({
+    term: null,
+    course: null,
+    visible: false,
+  });
+
+  /**
+   * Keeps track of the information needed to display the offered modal for a
+   * specific course and term
+   */
+  const [
+    offeredModalData,
+    setOfferedModalData,
   ] = useState<ModalData>({
     term: null,
     course: null,
@@ -239,6 +253,27 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
 
   const closeInstructorModal = useCallback(() => {
     setInstructorModalData({ visible: false });
+    setTimeout(() => {
+      if (modalButtonId && modalButtonId in refTable.current) {
+        refTable.current[modalButtonId].focus();
+      }
+    });
+  }, [modalButtonId]);
+
+  /**
+   * Takes the requested course and term information to display the requested
+   * offered modal
+   */
+  const openOfferedModal = useCallback((
+    course: CourseInstanceResponseDTO,
+    term: TERM
+  ) => {
+    setOfferedModalData({ course, term, visible: true });
+    setModalButtonId(`offered-${term.toLowerCase()}-${course.id}`);
+  }, [setOfferedModalData, setModalButtonId]);
+
+  const closeOfferedModal = useCallback(() => {
+    setOfferedModalData({ visible: false });
     setTimeout(() => {
       if (modalButtonId && modalButtonId in refTable.current) {
         refTable.current[modalButtonId].focus();
@@ -480,6 +515,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
               filters={filters}
               openMeetingModal={openMeetingModal}
               openInstructorModal={openInstructorModal}
+              openOfferedModal={openOfferedModal}
               setButtonRef={setButtonRef}
             />
           )
@@ -532,6 +568,27 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
             },
           }, message);
           closeInstructorModal();
+        }}
+      />
+      <OfferedModal
+        isVisible={offeredModalData.visible}
+        currentSemester={{
+          term: offeredModalData.term,
+          calendarYear: selectedAcademicYear.toString(),
+        }}
+        currentCourseInstance={offeredModalData.course}
+        onClose={closeOfferedModal}
+        onSave={(instanceUpdate, message?: string) => {
+          const { course, term } = offeredModalData;
+          const semKey = term.toLowerCase() as TermKey;
+          updateLocalCourse({
+            ...course,
+            [semKey]: {
+              ...course[semKey],
+              ...instanceUpdate,
+            },
+          }, message);
+          closeOfferedModal();
         }}
       />
     </div>

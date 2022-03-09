@@ -18,6 +18,7 @@ describe('CourseInstanceTable', function () {
   let updateSpy: SinonSpy;
   let openMeetingModalSpy: SinonSpy;
   let openInstructorModalSpy: SinonSpy;
+  let openOfferedModalSpy: SinonSpy;
   const academicYear = 2020;
   const courseList = [
     cs50CourseInstance,
@@ -41,6 +42,7 @@ describe('CourseInstanceTable', function () {
     updateSpy = spy();
     openMeetingModalSpy = spy();
     openInstructorModalSpy = spy();
+    openOfferedModalSpy = spy();
   });
   describe('Header rows', function () {
     context('With all fields visible', function () {
@@ -77,6 +79,7 @@ describe('CourseInstanceTable', function () {
             filters={testFilters}
             openMeetingModal={openMeetingModalSpy}
             openInstructorModal={openInstructorModalSpy}
+            openOfferedModal={openOfferedModalSpy}
             setButtonRef={() => () => {}}
           />
         )
@@ -156,6 +159,7 @@ describe('CourseInstanceTable', function () {
             filters={testFilters}
             openMeetingModal={openMeetingModalSpy}
             openInstructorModal={openInstructorModalSpy}
+            openOfferedModal={openOfferedModalSpy}
             setButtonRef={() => () => {}}
           />
         )
@@ -198,6 +202,7 @@ describe('CourseInstanceTable', function () {
             filters={testFilters}
             openMeetingModal={openMeetingModalSpy}
             openInstructorModal={openInstructorModalSpy}
+            openOfferedModal={openOfferedModalSpy}
             setButtonRef={() => () => {}}
           />
         )
@@ -255,6 +260,7 @@ describe('CourseInstanceTable', function () {
           filters={testFilters}
           openMeetingModal={openMeetingModalSpy}
           openInstructorModal={openInstructorModalSpy}
+          openOfferedModal={openOfferedModalSpy}
           setButtonRef={() => () => {}}
         />
       )
