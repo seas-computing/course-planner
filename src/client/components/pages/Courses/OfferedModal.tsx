@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { MetadataContext } from 'client/context';
 import { OFFERED, TERM } from 'common/constants';
 import { offeredEnumToString } from 'common/constants/offered';
 import { TermKey } from 'common/constants/term';
@@ -20,6 +21,7 @@ import React, {
   ChangeEvent,
   FunctionComponent,
   ReactElement,
+  useContext,
   useEffect,
   useRef,
   useState,
@@ -182,6 +184,10 @@ const OfferedModal: FunctionComponent<OfferedModalProps> = ({
       onSave(results);
     }
   };
+  /**
+   * The current value for the metadata context
+   */
+  const metadata = useContext(MetadataContext);
 
   return (
     <Modal
@@ -207,24 +213,49 @@ const OfferedModal: FunctionComponent<OfferedModalProps> = ({
               id="editOfferedForm"
               label="Edit Offered Form"
             >
-              <Dropdown
-                id="offered"
-                name="offered"
-                label="Edit Offered Value Dropdown"
-                options={
-                  Object.values(OFFERED)
-                    .filter((value) => value !== OFFERED.RETIRED)
-                    .map((offeredValue): {
-                      value: OFFERED; label: string
-                    } => ({
-                      value: offeredValue,
-                      label: offeredEnumToString(offeredValue),
-                    }))
-                }
-                onChange={updateFormFields}
-                value={form?.offered}
-                isRequired
-              />
+              {(parseInt(currentSemester.calendarYear) >= metadata
+                .currentAcademicYear || (currentSemester.term === TERM.FALL
+                    && parseInt(currentSemester.calendarYear) + 1 === metadata
+                      .currentAcademicYear))
+                ? (
+                  <Dropdown
+                    id="offered"
+                    name="offered"
+                    label="Edit Offered Value Dropdown"
+                    options={
+                      Object.values(OFFERED)
+                        .map((offeredValue): {
+                          value: OFFERED; label: string
+                        } => ({
+                          value: offeredValue,
+                          label: offeredEnumToString(offeredValue),
+                        }))
+                    }
+                    onChange={updateFormFields}
+                    value={form?.offered}
+                    isRequired
+                  />
+                )
+                : (
+                  <Dropdown
+                    id="offered"
+                    name="offered"
+                    label="Edit Offered Value Dropdown"
+                    options={
+                      Object.values(OFFERED)
+                        .filter((value) => value !== OFFERED.RETIRED)
+                        .map((offeredValue): {
+                          value: OFFERED; label: string
+                        } => ({
+                          value: offeredValue,
+                          label: offeredEnumToString(offeredValue),
+                        }))
+                    }
+                    onChange={updateFormFields}
+                    value={form?.offered}
+                    isRequired
+                  />
+                )}
             </Form>
           )}
       </ModalBody>
