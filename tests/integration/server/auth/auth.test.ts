@@ -31,6 +31,7 @@ import { NonClassEventModule } from 'server/nonClassEvent/nonclassevent.module';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import { UserController } from '../../../../src/server/user/user.controller';
+import { ReportModule } from '../../../../src/server/report/report.module';
 
 /**
  * A set of test users, one for each of our permission levels, redefined here
@@ -206,6 +207,12 @@ const endpointTests: Endpoint[] = [
     expectAnonymousAccess: false,
     expectAllowedGroup: GROUP.ADMIN,
   },
+  {
+    path: '/report/courses',
+    method: 'get',
+    expectAnonymousAccess: false,
+    expectAllowedGroup: GROUP.READ_ONLY,
+  },
 ];
 
 /**
@@ -275,6 +282,7 @@ describe('Authorization', function () {
         MeetingModule,
         MetadataModule,
         NonClassEventModule,
+        ReportModule,
       ],
       controllers: [
         UserController,
