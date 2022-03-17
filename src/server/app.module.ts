@@ -27,6 +27,7 @@ import { LogService } from './log/log.service';
 import { LocationModule } from './location/location.module';
 import { MeetingModule } from './meeting/meeting.module';
 import { NonClassEventModule } from './nonClassEvent/nonclassevent.module';
+import { ReportModule } from './report/report.module';
 
 /**
  * Base application module that configures the database connections and other
@@ -76,6 +77,7 @@ import { NonClassEventModule } from './nonClassEvent/nonclassevent.module';
     LocationModule,
     MeetingModule,
     NonClassEventModule,
+    ReportModule,
   ],
   controllers: [
     UserController,
