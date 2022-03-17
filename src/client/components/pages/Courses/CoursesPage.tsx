@@ -30,7 +30,7 @@ import TERM, { TermKey } from 'common/constants/term';
 import { ViewResponse } from 'common/dto/view/ViewResponse.dto';
 import { VerticalSpace } from 'client/components/layout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faWrench } from '@fortawesome/free-solid-svg-icons';
+import { faWrench, faDownload } from '@fortawesome/free-solid-svg-icons';
 import { MenuFlex } from 'client/components/general';
 import { DropdownProps } from 'mark-one/lib/Forms/Dropdown';
 import CourseInstanceTable from './CourseInstanceTable';
@@ -464,6 +464,19 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
           />
         </ViewModal>
         <MenuFlex>
+          <Button
+            variant={VARIANT.INFO}
+            alt="Download a spreadsheet with course data"
+            onClick={() => {
+              window.location.assign(`${process.env.SERVER_URL}/report/courses`);
+            }}
+          >
+            <FontAwesomeIcon
+              icon={faDownload}
+            />
+            {' '}
+            Download Course Report
+          </Button>
           <Button
             variant={VARIANT.INFO}
             forwardRef={customizeViewButtonRef}
