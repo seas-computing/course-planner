@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { MetadataContext } from 'client/context';
 import { OFFERED, TERM } from 'common/constants';
 import { offeredEnumToString } from 'common/constants/offered';
 import { TermKey } from 'common/constants/term';
@@ -21,7 +20,6 @@ import React, {
   ChangeEvent,
   FunctionComponent,
   ReactElement,
-  useContext,
   useEffect,
   useRef,
   useState,
@@ -52,7 +50,10 @@ interface OfferedModalProps {
   /**
    * Handler to be invoked when the modal is saved
    */
-  onSave: (updatedInstance: CourseInstanceUpdateDTO) => void;
+  onSave: (
+    updatedInstance: CourseInstanceUpdateDTO,
+    originalInstanceValue: OFFERED,
+    wasFallUpdated: boolean) => void;
 }
 
 export interface BadRequestMessageInfo {
@@ -107,6 +108,17 @@ const OfferedModal: FunctionComponent<OfferedModalProps> = ({
 
   const [form, setFormFields] = useState<{offered: OFFERED}>();
 
+  /**
+   * Keeps track of the original offered value for the course instance being
+   * edited. This is important for local rendering (so that we do not have to
+   * do a full refresh of the Course Instance table data) in cases where we are
+   * updating the fall instance from or to OFFERED.RETIRED, as this will
+   * affect the value of the spring instance.
+   */
+  const [
+    originalOfferedValue,
+    setOriginalOfferedValue] = useState<OFFERED>();
+
   const updateFormFields = (
     event: ChangeEvent<HTMLSelectElement & {value: OFFERED}>
   ): void => {
@@ -130,9 +142,11 @@ const OfferedModal: FunctionComponent<OfferedModalProps> = ({
   useEffect(() => {
     if (currentSemester && currentCourseInstance) {
       const currentTermKey = currentSemester.term.toLowerCase() as TermKey;
+      const originalOffered = currentCourseInstance[currentTermKey].offered;
       setFormFields({
-        offered: currentCourseInstance[currentTermKey].offered,
+        offered: originalOffered,
       });
+      setOriginalOfferedValue(originalOffered);
     }
   }, [currentSemester, currentCourseInstance]);
 
@@ -187,13 +201,10 @@ const OfferedModal: FunctionComponent<OfferedModalProps> = ({
       setSaving(false);
     }
     if (results) {
-      onSave(results);
+      const wasFallUpdated = currentSemester.term === TERM.FALL;
+      onSave(results, originalOfferedValue, wasFallUpdated);
     }
   };
-  /**
-   * The current value for the metadata context
-   */
-  const metadata = useContext(MetadataContext);
 
   return (
     <Modal

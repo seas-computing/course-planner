@@ -422,6 +422,48 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   }, [currentCourses, dispatchMessage]);
 
   /**
+   * Method for updating a fall and spring course instances in the local client
+   * list of courses. Intended to accept the results of an update returned from
+   * the server, without needing a full refresh of the data.
+   */
+  const updateOfferedLocalCourses = useCallback((
+    course: CourseInstanceResponseDTO,
+    originalOfferedValue: OFFERED,
+    wasFallUpdated: boolean,
+    message?: string
+  ): void => {
+    const updatedCourses = [...currentCourses];
+    const originalCourseIndex = updatedCourses.findIndex(({ id }) => (
+      id === course.id));
+    if (originalCourseIndex >= 0) {
+      const updatedCourse: CourseInstanceResponseDTO = course;
+      // If the fall instance was the one that was updated and the value of
+      // offered was changed to OFFERED.RETIRED, update the local spring
+      // offered value to OFFERED.RETIRED as well.
+      if (wasFallUpdated
+        && originalOfferedValue !== OFFERED.RETIRED
+        && course.fall.offered === OFFERED.RETIRED) {
+        updatedCourse.spring.offered = OFFERED.RETIRED;
+      }
+      // If the fall offered field was changed from OFFERED.RETIRED, make the
+      // spring offered value blank. There is also a check to make sure that
+      // the user did not save an originally retired course as OFFERED.RETIRED,
+      // because we only want to update the spring course to OFFERED.BLANK
+      // if we are updating from OFFERED.RETIRED to any other OFFERED value.
+      if (wasFallUpdated
+        && originalOfferedValue === OFFERED.RETIRED
+        && course.fall.offered !== OFFERED.RETIRED) {
+        updatedCourse.spring.offered = OFFERED.BLANK;
+      }
+      updatedCourses.splice(originalCourseIndex, 1, updatedCourse);
+      setCourses(updatedCourses);
+      dispatchMessage({
+        message: new AppMessage(['Course updated.', message].join(' '), MESSAGE_TYPE.SUCCESS),
+        type: MESSAGE_ACTION.PUSH,
+      });
+    }
+  }, [currentCourses, dispatchMessage]);
+  /**
    * Show/hide columns from the course instance table
    *
    * @param viewColumn The column that triggered the change handler
@@ -578,16 +620,24 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
         }}
         currentCourseInstance={offeredModalData.course}
         onClose={closeOfferedModal}
-        onSave={(instanceUpdate, message?: string) => {
+        onSave={(
+          instanceUpdate,
+          originalOfferedValue,
+          wasFallUpdated,
+          message?: string
+        ) => {
           const { course, term } = offeredModalData;
           const semKey = term.toLowerCase() as TermKey;
-          updateLocalCourse({
+          updateOfferedLocalCourses({
             ...course,
             [semKey]: {
               ...course[semKey],
               ...instanceUpdate,
             },
-          }, message);
+          },
+          originalOfferedValue,
+          wasFallUpdated,
+          message);
           closeOfferedModal();
         }}
       />
