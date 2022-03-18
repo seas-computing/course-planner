@@ -164,10 +164,16 @@ const OfferedModal: FunctionComponent<OfferedModalProps> = ({
         if ('error' in error.response.data
           && (error.response.data as ErrorInfo).error === 'Bad Request') {
           const serverError = error.response.data as BadRequestInfo;
-          setErrorMessage(serverError.message.map((message) => {
-            const values = Object.values(message.constraints);
-            return values.join('; ');
-          }).join('; '));
+          // If only a single message is returned, convert it to an array so
+          // that it can be mapped over.
+          if (!Array.isArray(serverError.message)) {
+            setErrorMessage(serverError.message);
+          } else {
+            setErrorMessage(serverError.message.map((message) => {
+              const values = Object.values(message.constraints);
+              return values.join('; ');
+            }).join('; '));
+          }
         } else {
           const axiosError = error.response.data as Error;
           setErrorMessage(axiosError.message);
