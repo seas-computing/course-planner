@@ -39,6 +39,7 @@ export class ReportController {
     res.set({
       'Content-Type': 'application/octet-stream',
       'Content-Disposition': `attachment; filename="courses_${startYear}-${endYear}.xlsx"`,
+      'Access-Control-Expose-Headers': 'Content-Disposition',
     });
     return this.reportService
       .streamCoursesReport(res, startYear, endYear);

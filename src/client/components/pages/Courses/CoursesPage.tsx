@@ -44,6 +44,7 @@ import MeetingModal from './MeetingModal';
 import InstructorModal from './InstructorModal';
 import { filterCoursesByInstructors } from '../utils/filterByInstructorValues';
 import OfferedModal from './OfferedModal';
+import downloadAttachment from '../utils/downloadAttachment';
 
 /**
  * The initial, empty state for the filters
@@ -445,6 +446,28 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     )
   ), [currentViewColumns]);
 
+  /**
+   * Handle downloading our course report, and track the download state so we
+   * can change the button display
+   */
+  const [reportDownloading, setReportDownloading] = useState(false);
+  const downloadCoursesReport = useCallback(() => {
+    setReportDownloading(true);
+    fetch(
+      `${process.env.SERVER_URL}/report/courses`,
+      { credentials: 'include' }
+    ).then(downloadAttachment)
+      .catch((err: Error) => {
+        dispatchMessage({
+          message: new AppMessage(err.message, MESSAGE_TYPE.ERROR),
+          type: MESSAGE_ACTION.PUSH,
+        });
+      })
+      .finally(() => {
+        setReportDownloading(false);
+      });
+  }, [dispatchMessage, setReportDownloading]);
+
   return (
     <div className="course-instance-table">
       <VerticalSpace>
@@ -465,17 +488,16 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
         </ViewModal>
         <MenuFlex>
           <Button
-            variant={VARIANT.INFO}
+            variant={reportDownloading ? VARIANT.DEFAULT : VARIANT.INFO}
             alt="Download a spreadsheet with course data"
-            onClick={() => {
-              window.location.assign(`${process.env.SERVER_URL}/report/courses`);
-            }}
+            onClick={downloadCoursesReport}
+            disabled={reportDownloading}
           >
             <FontAwesomeIcon
               icon={faDownload}
             />
             {' '}
-            Download Course Report
+            {reportDownloading ? 'Download in Progress' : 'Download Course Report'}
           </Button>
           <Button
             variant={VARIANT.INFO}
