@@ -7,6 +7,7 @@ import { SemesterModule } from 'server/semester/semester.module';
 import { SemesterService } from 'server/semester/semester.service';
 import { Course } from 'server/course/course.entity';
 import { ConfigService } from 'server/config/config.service';
+import { SemesterView } from 'server/semester/SemesterView.entity';
 import { CourseInstanceService } from './courseInstance.service';
 import { CourseInstanceController } from './courseInstance.controller';
 import { ScheduleBlockView } from './ScheduleBlockView.entity';
@@ -29,6 +30,7 @@ import { CourseInstanceListingView } from './CourseInstanceListingView.entity';
       ScheduleBlockView,
       ScheduleEntryView,
       CourseInstanceListingView,
+      SemesterView,
     ]),
     SemesterModule,
   ],
