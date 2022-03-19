@@ -20,6 +20,7 @@ import request from 'client/api/request';
 import { Repository, Not, In } from 'typeorm';
 import { strictEqual, deepStrictEqual, notStrictEqual } from 'assert';
 import { offeredEnumToString } from 'common/constants/offered';
+import { SemesterModule } from 'server/semester/semester.module';
 import mockAdapter from '../../mocks/api/adapter';
 import { ConfigModule } from '../../../src/server/config/config.module';
 import { ConfigService } from '../../../src/server/config/config.service';
@@ -103,6 +104,7 @@ describe('End-to-end Course Instance updating', function () {
         MetadataModule,
         LocationModule,
         MeetingModule,
+        SemesterModule,
       ],
       controllers: [
         UserController,
@@ -1213,6 +1215,7 @@ describe('End-to-end Course Instance updating', function () {
       });
     });
     describe('Updating Offered Values', function () {
+      let editSpringOfferedButton: HTMLElement;
       let editFallOfferedButton: HTMLElement;
       beforeEach(async function () {
         const [prefix, number] = courseNumber.split(' ');
@@ -1292,35 +1295,325 @@ describe('End-to-end Course Instance updating', function () {
             });
           });
         });
-        context('to an invalid value', function () {
-          const invalidOfferedValue = 'invalidValue';
-          beforeEach(async function () {
-            const offeredSelector = await renderResult.findByLabelText('Edit Offered Value Dropdown', { exact: false });
-            // Adds the invalid offered value as an option in the offered dropdown
-            // so that we can select the invalid value.
-            const invalidValueOption = document.createElement('option');
-            const optionContent = document.createTextNode(invalidOfferedValue);
-            invalidValueOption.appendChild(optionContent);
-            offeredSelector.appendChild(invalidValueOption);
-            fireEvent.change(offeredSelector, {
-              target: {
-                value: invalidOfferedValue,
-              },
+        context('to "Retired"', function () {
+          context('for the current course instance', function () {
+            beforeEach(async function () {
+              const offeredSelector = await renderResult.findByLabelText('Edit Offered Value Dropdown', { exact: false });
+              fireEvent.change(offeredSelector, {
+                target: {
+                  value: OFFERED.RETIRED,
+                },
+              });
+              const saveButton = renderResult.getByText('Save');
+              fireEvent.click(saveButton);
+              await waitForElementToBeRemoved(() => renderResult.queryByRole('dialog'));
+              // Click the Show Retired button to reveal newly retired course
+              const retiredCheckbox = renderResult.getByLabelText('Show Retired', { exact: false }) as HTMLInputElement;
+              fireEvent.click(retiredCheckbox);
+            });
+            context('when the modal save button is clicked', function () {
+              it('should close the modal', function () {
+                const modal = renderResult.queryByRole('dialog');
+                strictEqual(modal, null);
+              });
+              it('should show a success message', async function () {
+                return renderResult.findByText('Course updated', { exact: false });
+              });
+              it('should update the offered value of the saved instance', async function () {
+                const courseRows = await renderResult.findAllByRole('row');
+                const courseRowToUpdate = courseRows.find((row) => {
+                  const rowHeader = within(row).queryByRole('rowheader');
+                  return rowHeader?.textContent === courseNumber;
+                });
+                ([editFallOfferedButton] = await within(courseRowToUpdate)
+                  .findAllByLabelText(
+                    `Edit offered value for ${courseNumber}, ${currentTerm} ${currentAcademicYear - 1}`,
+                    { exact: false }
+                  ));
+                return within(editFallOfferedButton.parentElement)
+                  .findByText(offeredEnumToString(OFFERED.RETIRED));
+              });
+              it('should update the offered value of future course instances to be OFFERED.RETIRED', async function () {
+                // Check the spring semester of the same year
+                const courseRows = await renderResult.findAllByRole('row');
+                const courseRowToUpdate = courseRows.find((row) => {
+                  const rowHeader = within(row).queryByRole('rowheader');
+                  return rowHeader?.textContent === courseNumber;
+                });
+                ([editSpringOfferedButton] = await within(courseRowToUpdate)
+                  .findAllByLabelText(
+                    `Edit offered value for ${courseNumber}, ${TERM.SPRING} ${currentAcademicYear}`,
+                    { exact: false }
+                  ));
+                notStrictEqual(
+                  await within(editSpringOfferedButton.parentElement)
+                    .findByText(offeredEnumToString(OFFERED.RETIRED)),
+                  null,
+                  'Spring instance of the same academic year did not update to "Retired'
+                );
+                // Checks the fall and spring semester offered values of the next academic year
+                const academicYearSelector = await renderResult.findByLabelText('Academic Year', { exact: false }) as HTMLSelectElement;
+                fireEvent.change(academicYearSelector, {
+                  target: {
+                    value: currentAcademicYear + 1,
+                  },
+                });
+                await renderResult.findByText(courseNumber);
+                const futureCourseRows = await renderResult.findAllByRole('row');
+                const futureCourseRowToUpdate = futureCourseRows.find((row) => {
+                  const rowHeader = within(row).queryByRole('rowheader');
+                  return rowHeader?.textContent === courseNumber;
+                });
+                ([editFallOfferedButton] = await within(futureCourseRowToUpdate)
+                  .findAllByLabelText(
+                    `Edit offered value for ${courseNumber}, ${TERM.FALL} ${currentAcademicYear}`,
+                    { exact: false }
+                  ));
+                ([editSpringOfferedButton] = await within(
+                  futureCourseRowToUpdate
+                )
+                  .findAllByLabelText(
+                    `Edit offered value for ${courseNumber}, ${TERM.SPRING} ${currentAcademicYear + 1}`,
+                    { exact: false }
+                  ));
+                notStrictEqual(
+                  await within(editFallOfferedButton.parentElement)
+                    .findByText(offeredEnumToString(OFFERED.RETIRED)),
+                  null,
+                  'Fall instance of future academic year did not update to "Retired"'
+                );
+                notStrictEqual(
+                  await within(editSpringOfferedButton.parentElement)
+                    .findByText(offeredEnumToString(OFFERED.RETIRED)),
+                  null,
+                  'Spring instance of future academic year did not update to "Retired"'
+                );
+              });
             });
           });
-          context('when the modal save button is clicked', function () {
-            it('should show an error message', async function () {
+          context('for a future course instance', function () {
+            const futureAcademicYear = currentAcademicYear + 2;
+            beforeEach(async function () {
+              // Close the modal editing an instance of the current academic year
+              const cancel = renderResult.getByText('Cancel');
+              fireEvent.click(cancel);
+              // Navigate to the next academic year
+              const academicYearSelector = await renderResult.findByLabelText('Academic Year', { exact: false }) as HTMLSelectElement;
+              fireEvent.change(academicYearSelector, {
+                target: {
+                  value: futureAcademicYear,
+                },
+              });
+              await renderResult.findByText(courseNumber);
+              const courseRows = await renderResult.findAllByRole('row');
+              const courseRowToUpdate = courseRows.find((row) => {
+                const rowHeader = within(row).queryByRole('rowheader');
+                return rowHeader?.textContent === courseNumber;
+              });
+              ([editFallOfferedButton] = await within(courseRowToUpdate)
+                .findAllByLabelText(
+                  `Edit offered value for ${courseNumber}, ${currentTerm} ${futureAcademicYear - 1}`,
+                  { exact: false }
+                ));
+              fireEvent.click(editFallOfferedButton);
+              await renderResult.findByRole('dialog');
+              const offeredSelector = await renderResult.findByLabelText('Edit Offered Value Dropdown', { exact: false });
+              fireEvent.change(offeredSelector, {
+                target: {
+                  value: OFFERED.RETIRED,
+                },
+              });
               const saveButton = renderResult.getByText('Save');
               fireEvent.click(saveButton);
-              await waitForElementToBeRemoved(() => renderResult.queryByText('Saving'));
-              return renderResult.findByText('offered must be', { exact: false });
+              await waitForElementToBeRemoved(() => renderResult.queryByRole('dialog'));
+              // Show the retired courses
+              const retiredCheckbox = renderResult.getByLabelText('Show Retired', { exact: false }) as HTMLInputElement;
+              fireEvent.click(retiredCheckbox);
             });
-            it('should keep the modal open', async function () {
-              const saveButton = renderResult.getByText('Save');
-              fireEvent.click(saveButton);
-              await waitForElementToBeRemoved(() => renderResult.queryByText('Saving'));
-              return renderResult.getByRole('dialog');
+            context('when the modal save button is clicked', function () {
+              it('should close the modal', function () {
+                const modal = renderResult.queryByRole('dialog');
+                strictEqual(modal, null);
+              });
+              it('should show a success message', async function () {
+                return renderResult.findByText('Course updated', { exact: false });
+              });
+              it('should update the offered value of the saved instance', async function () {
+                const courseRows = await renderResult.findAllByRole('row');
+                const courseRowToUpdate = courseRows.find((row) => {
+                  const rowHeader = within(row).queryByRole('rowheader');
+                  return rowHeader?.textContent === courseNumber;
+                });
+                ([editFallOfferedButton] = await within(courseRowToUpdate)
+                  .findAllByLabelText(
+                    `Edit offered value for ${courseNumber}, ${currentTerm} ${futureAcademicYear - 1}`,
+                    { exact: false }
+                  ));
+                return within(editFallOfferedButton.parentElement)
+                  .findByText(offeredEnumToString(OFFERED.RETIRED));
+              });
+              it('should update the offered value of future course instances to be OFFERED.RETIRED', async function () {
+                // Check the retired value of the Spring semester of the same year
+                const courseRows = await renderResult.findAllByRole('row');
+                const courseRowToUpdate = courseRows.find((row) => {
+                  const rowHeader = within(row).queryByRole('rowheader');
+                  return rowHeader?.textContent === courseNumber;
+                });
+                ([editSpringOfferedButton] = await within(courseRowToUpdate)
+                  .findAllByLabelText(
+                    `Edit offered value for ${courseNumber}, ${TERM.SPRING} ${futureAcademicYear}`,
+                    { exact: false }
+                  ));
+                notStrictEqual(
+                  await within(editSpringOfferedButton.parentElement)
+                    .findByText(offeredEnumToString(OFFERED.RETIRED)),
+                  null,
+                  'Spring instance did not update to "Retired"'
+                );
+                // Navigate to the next academic year to check offered values
+                const academicYearSelector = await renderResult.findByLabelText('Academic Year', { exact: false }) as HTMLSelectElement;
+                fireEvent.change(academicYearSelector, {
+                  target: {
+                    value: futureAcademicYear + 1,
+                  },
+                });
+                await renderResult.findByText(courseNumber);
+                const futureCourseRows = await renderResult.findAllByRole('row');
+                const futureCourseRowToUpdate = futureCourseRows.find((row) => {
+                  const rowHeader = within(row).queryByRole('rowheader');
+                  return rowHeader?.textContent === courseNumber;
+                });
+                ([editFallOfferedButton] = await within(futureCourseRowToUpdate)
+                  .findAllByLabelText(
+                    `Edit offered value for ${courseNumber}, ${TERM.FALL} ${futureAcademicYear}`,
+                    { exact: false }
+                  ));
+                ([editSpringOfferedButton] = await within(
+                  futureCourseRowToUpdate
+                )
+                  .findAllByLabelText(
+                    `Edit offered value for ${courseNumber}, ${TERM.SPRING} ${futureAcademicYear + 1}`,
+                    { exact: false }
+                  ));
+                notStrictEqual(
+                  await within(editFallOfferedButton.parentElement)
+                    .findByText(offeredEnumToString(OFFERED.RETIRED)),
+                  null,
+                  'Fall instance of future academic year did not update to "Retired"'
+                );
+                notStrictEqual(
+                  await within(editSpringOfferedButton.parentElement)
+                    .findByText(offeredEnumToString(OFFERED.RETIRED)),
+                  null,
+                  'Spring instance of future academic year did not update to "Retired"'
+                );
+              });
             });
+          });
+        });
+        context('from "Retired" to a different offered value', function () {
+          const updatedRetiredValue = OFFERED.Y;
+          beforeEach(async function () {
+            // Change the Fall offered value to OFFERED.RETIRED
+            const offeredSelector = await renderResult.findByLabelText('Edit Offered Value Dropdown', { exact: false });
+            fireEvent.change(offeredSelector, {
+              target: {
+                value: OFFERED.RETIRED,
+              },
+            });
+            const saveButton = renderResult.getByText('Save');
+            fireEvent.click(saveButton);
+            // Wait for the modal to close
+            await waitForElementToBeRemoved(() => renderResult.queryByRole('dialog'));
+            // Click the Show Retired button to reveal newly retired course
+            const retiredCheckbox = renderResult.getByLabelText('Show Retired', { exact: false }) as HTMLInputElement;
+            fireEvent.click(retiredCheckbox);
+            const courseRows = await renderResult.findAllByRole('row');
+            const courseRowToUpdate = courseRows.find((row) => {
+              const rowHeader = within(row).queryByRole('rowheader');
+              return rowHeader?.textContent === courseNumber;
+            });
+            ([editFallOfferedButton] = await within(courseRowToUpdate)
+              .findAllByLabelText(
+                `Edit offered value for ${courseNumber}, ${currentTerm} ${currentAcademicYear - 1}`,
+                { exact: false }
+              ));
+            // Reopen the modal
+            fireEvent.click(editFallOfferedButton);
+            await renderResult.findByRole('dialog');
+            const reopenedModalOfferedSelector = await renderResult.findByLabelText('Edit Offered Value Dropdown', { exact: false });
+            // Change the Fall offered value to OFFERED.Y
+            fireEvent.change(reopenedModalOfferedSelector, {
+              target: {
+                value: updatedRetiredValue,
+              },
+            });
+            // Save the modal
+            fireEvent.click(renderResult.getByText('Save'));
+            // Wait for the modal to close
+            await waitForElementToBeRemoved(() => renderResult.queryByRole('dialog'));
+          });
+          it('updates the offered value of the saved instance to the requested update value', async function () {
+            const courseRows = await renderResult.findAllByRole('row');
+            const courseRowToUpdate = courseRows.find((row) => {
+              const rowHeader = within(row).queryByRole('rowheader');
+              return rowHeader?.textContent === courseNumber;
+            });
+            ([editFallOfferedButton] = await within(courseRowToUpdate)
+              .findAllByLabelText(
+                `Edit offered value for ${courseNumber}, ${currentTerm} ${currentAcademicYear - 1}`,
+                { exact: false }
+              ));
+            notStrictEqual(
+              await within(editFallOfferedButton.parentElement)
+                .findByText(offeredEnumToString(updatedRetiredValue)),
+              null
+            );
+          });
+          it('updates the offered values of future course instances to be OFFERED.BLANK', async function () {
+            const futureAcademicYear = currentAcademicYear + 1;
+            // Display Academic Year Selector
+            const academicYearSelector = await renderResult.findByLabelText('Academic Year', { exact: false }) as HTMLSelectElement;
+            fireEvent.change(academicYearSelector, {
+              target: {
+                value: futureAcademicYear,
+              },
+            });
+            const courseRows = await renderResult.findAllByRole('row');
+            const courseRowToUpdate = courseRows.find((row) => {
+              const rowHeader = within(row).queryByRole('rowheader');
+              return rowHeader?.textContent === courseNumber;
+            });
+            ([editFallOfferedButton] = await within(courseRowToUpdate)
+              .findAllByLabelText(
+                `Edit offered value for ${courseNumber}, ${currentTerm} ${futureAcademicYear - 1}`,
+                { exact: false }
+              ));
+            ([editSpringOfferedButton] = await within(courseRowToUpdate)
+              .findAllByLabelText(
+                `Edit offered value for ${courseNumber}, ${TERM.SPRING} ${futureAcademicYear}`,
+                { exact: false }
+              ));
+            strictEqual(
+              within(editFallOfferedButton.parentElement)
+                .queryByText(offeredEnumToString(OFFERED.RETIRED))
+            && within(editFallOfferedButton.parentElement)
+              .queryByText(offeredEnumToString(OFFERED.Y))
+            && within(editFallOfferedButton.parentElement)
+              .queryByText(offeredEnumToString(OFFERED.N)),
+              null,
+              'Future fall instance was not set to OFFERED.BLANK'
+            );
+            strictEqual(
+              within(editSpringOfferedButton.parentElement)
+                .queryByText(offeredEnumToString(OFFERED.RETIRED))
+            && within(editSpringOfferedButton.parentElement)
+              .queryByText(offeredEnumToString(OFFERED.Y))
+            && within(editSpringOfferedButton.parentElement)
+              .queryByText(offeredEnumToString(OFFERED.N)),
+              null,
+              'Future spring instance was not set to OFFERED.BLANK'
+            );
           });
         });
       });
