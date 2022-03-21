@@ -2,13 +2,18 @@ import { CourseInstanceResponseMeeting } from '../../common/dto/courses/CourseIn
 import { PGTime } from '../../common/utils/PGTime';
 import { dayEnumToString } from '../../common/constants/day';
 
+type formattableMeeting = Pick<
+CourseInstanceResponseMeeting,
+'startTime' | 'endTime' | 'day'
+> & {room?: Record<'name' | 'campus', string>};
+
 /**
  * Parse the meeting details into the appropriate format to show in the Excel
- * report, i.e. "Day hh:mm - hh:mm (room)"
+ * report, i.e. "Day hh:mm aa - hh:mm aa (room)"
  */
 
 export const formatMeetingForReport = (
-  meeting: CourseInstanceResponseMeeting
+  meeting: formattableMeeting
 ): string => {
   const {
     startTime,
