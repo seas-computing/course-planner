@@ -4,6 +4,7 @@ import Excel from 'exceljs';
 import { isSEASEnumToString, offeredEnumToString } from 'common/constants';
 import { CourseInstanceService } from '../courseInstance/courseInstance.service';
 import CourseInstanceResponseDTO from '../../common/dto/courses/CourseInstanceResponse';
+import { formatMeetingForReport, MULTILINE_SEPARATOR } from './utils';
 
 @Injectable()
 export class ReportService {
@@ -80,26 +81,20 @@ export class ReportService {
           [`fall${year}Offered`]: offeredEnumToString(courseInYear.fall.offered),
           [`fall${year}Instructors`]: courseInYear.fall.instructors
             .map(({ displayName }) => displayName)
-            .join(',\n'),
+            .join(MULTILINE_SEPARATOR),
           [`fall${year}Meetings`]: courseInYear.fall.meetings
-            .map(({
-              day, startTime, endTime, room,
-            }) => (
-              `${day}, ${startTime}-${endTime} (${room.name})`
-            )).join(',\n'),
+            .map(formatMeetingForReport)
+            .join(MULTILINE_SEPARATOR),
           [`fall${year}Pre`]: courseInYear.fall.preEnrollment,
           [`fall${year}StudyCard`]: courseInYear.fall.studyCardEnrollment,
           [`fall${year}Actual`]: courseInYear.fall.actualEnrollment,
           [`spring${year}Offered`]: offeredEnumToString(courseInYear.spring.offered),
           [`spring${year}Instructors`]: courseInYear.spring.instructors
             .map(({ displayName }) => displayName)
-            .join(',\n'),
+            .join(MULTILINE_SEPARATOR),
           [`spring${year}Meetings`]: courseInYear.spring.meetings
-            .map(({
-              day, startTime, endTime, room,
-            }) => (
-              `${day}, ${startTime}-${endTime} (${room.name})`
-            )).join(',\n'),
+            .map(formatMeetingForReport)
+            .join(MULTILINE_SEPARATOR),
           [`spring${year}Pre`]: courseInYear.spring.preEnrollment,
           [`spring${year}StudyCard`]: courseInYear.spring.studyCardEnrollment,
           [`spring${year}Actual`]: courseInYear.spring.actualEnrollment,
