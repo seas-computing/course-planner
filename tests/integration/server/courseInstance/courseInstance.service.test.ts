@@ -22,6 +22,9 @@ import {
 } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import { Repository } from 'typeorm';
 import { testFourYearPlanAcademicYears } from 'testData';
+import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto';
+import { stub } from 'sinon';
+import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
@@ -31,6 +34,7 @@ describe('Course Instance Service', function () {
   let courseRepository: Repository<Course>;
   let instanceRepository: Repository<CourseInstance>;
   let meetingRepository: Repository<Meeting>;
+  let configService: ConfigService;
 
   beforeEach(async function () {
     testModule = await Test.createTestingModule({
@@ -61,13 +65,19 @@ describe('Course Instance Service', function () {
       .overrideProvider(ConfigService)
       .useValue(new ConfigService(this.database.connectionEnv))
       .compile();
+
     ciService = testModule.get(CourseInstanceService);
-    await testModule.createNestApplication().init();
+    await testModule.createNestApplication()
+      .useGlobalPipes(new BadRequestExceptionPipe())
+      .init();
+
     courseRepository = testModule.get(getRepositoryToken(Course));
     instanceRepository = testModule
       .get(getRepositoryToken(CourseInstance));
     meetingRepository = testModule
       .get(getRepositoryToken(Meeting));
+    configService = testModule
+      .get<ConfigService>(ConfigService);
   });
   afterEach(async function () {
     await testModule.close();
@@ -310,6 +320,164 @@ describe('Course Instance Service', function () {
         JSON.stringify(result),
         JSON.stringify(sorted)
       );
+    });
+  });
+  describe('editCourseInstance', function () {
+    let instance: CourseInstance;
+    let updateInfo: CourseInstanceUpdateDTO;
+    let newOfferedValue: OFFERED;
+    let result: CourseInstanceUpdateDTO;
+    let response;
+    const currentAcademicYear = '2020';
+    beforeEach(function () {
+      stub(configService, 'academicYear').get(() => currentAcademicYear);
+    });
+    describe('editing an offered value to a non-retired value', function () {
+      context('when we are editing a past academic year instance', function () {
+        beforeEach(async function () {
+          newOfferedValue = OFFERED.N;
+          instance = await instanceRepository.findOneOrFail({
+            where: {
+              semester: {
+                academicYear: parseInt(currentAcademicYear, 10) - 2,
+              },
+            },
+            relations: ['course', 'semester'],
+          });
+          updateInfo = {
+            preEnrollment: instance.preEnrollment,
+            studyCardEnrollment: instance.studyCardEnrollment,
+            actualEnrollment: instance.actualEnrollment,
+            offered: newOfferedValue,
+          };
+          result = await ciService.editCourseInstance(instance.id, updateInfo);
+        });
+        it('should return the updated instance', function () {
+          deepStrictEqual(result, updateInfo);
+        });
+      });
+      context('when we are editing a current academic year instance', function () {
+        beforeEach(async function () {
+          newOfferedValue = OFFERED.Y;
+          instance = await instanceRepository.findOneOrFail({
+            where: {
+              semester: {
+                academicYear: currentAcademicYear,
+              },
+            },
+            relations: ['course', 'semester'],
+          });
+          updateInfo = {
+            preEnrollment: instance.preEnrollment,
+            studyCardEnrollment: instance.studyCardEnrollment,
+            actualEnrollment: instance.actualEnrollment,
+            offered: newOfferedValue,
+          };
+          result = await ciService.editCourseInstance(instance.id, updateInfo);
+        });
+        it('should return the updated instance', function () {
+          deepStrictEqual(result, updateInfo);
+        });
+      });
+      context('when we are editing a future academic year instance', function () {
+        beforeEach(async function () {
+          newOfferedValue = OFFERED.N;
+          instance = await instanceRepository.findOneOrFail({
+            where: {
+              semester: {
+                academicYear: parseInt(currentAcademicYear, 10) + 1,
+              },
+            },
+            relations: ['course', 'semester'],
+          });
+          updateInfo = {
+            preEnrollment: instance.preEnrollment,
+            studyCardEnrollment: instance.studyCardEnrollment,
+            actualEnrollment: instance.actualEnrollment,
+            offered: newOfferedValue,
+          };
+          result = await ciService.editCourseInstance(instance.id, updateInfo);
+        });
+        it('should return the updated instance', function () {
+          deepStrictEqual(result, updateInfo);
+        });
+      });
+    });
+    describe('editing an offered value to OFFERED.RETIRED', function () {
+      context('when we are editing a past academic year instance', function () {
+        beforeEach(async function () {
+          newOfferedValue = OFFERED.RETIRED;
+          instance = await instanceRepository.findOneOrFail({
+            where: {
+              semester: {
+                academicYear: parseInt(currentAcademicYear, 10) - 2,
+              },
+            },
+            relations: ['course', 'semester'],
+          });
+          updateInfo = {
+            preEnrollment: instance.preEnrollment,
+            studyCardEnrollment: instance.studyCardEnrollment,
+            actualEnrollment: instance.actualEnrollment,
+            offered: newOfferedValue,
+          };
+          try {
+            result = await ciService
+              .editCourseInstance(instance.id, updateInfo);
+          } catch (error) {
+            response = error;
+          }
+        });
+        it('should throw a Bad Request Exception', function () {
+          strictEqual(response.status, 400);
+        });
+      });
+      context('when we are editing a current academic year instance', function () {
+        beforeEach(async function () {
+          newOfferedValue = OFFERED.RETIRED;
+          instance = await instanceRepository.findOneOrFail({
+            where: {
+              semester: {
+                academicYear: currentAcademicYear,
+              },
+            },
+            relations: ['course', 'semester'],
+          });
+          updateInfo = {
+            preEnrollment: instance.preEnrollment,
+            studyCardEnrollment: instance.studyCardEnrollment,
+            actualEnrollment: instance.actualEnrollment,
+            offered: newOfferedValue,
+          };
+          result = await ciService.editCourseInstance(instance.id, updateInfo);
+        });
+        it('should return the updated instance', function () {
+          deepStrictEqual(result, updateInfo);
+        });
+      });
+      context('when we are editing a future academic year instance', function () {
+        beforeEach(async function () {
+          newOfferedValue = OFFERED.RETIRED;
+          instance = await instanceRepository.findOneOrFail({
+            where: {
+              semester: {
+                academicYear: parseInt(currentAcademicYear, 10) + 1,
+              },
+            },
+            relations: ['course', 'semester'],
+          });
+          updateInfo = {
+            preEnrollment: instance.preEnrollment,
+            studyCardEnrollment: instance.studyCardEnrollment,
+            actualEnrollment: instance.actualEnrollment,
+            offered: newOfferedValue,
+          };
+          result = await ciService.editCourseInstance(instance.id, updateInfo);
+        });
+        it('should return the updated instance', function () {
+          deepStrictEqual(result, updateInfo);
+        });
+      });
     });
   });
 });
