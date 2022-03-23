@@ -1310,6 +1310,7 @@ describe('End-to-end Course Instance updating', function () {
               // Click the Show Retired button to reveal newly retired course
               const retiredCheckbox = renderResult.getByLabelText('Show Retired', { exact: false }) as HTMLInputElement;
               fireEvent.click(retiredCheckbox);
+              await renderResult.findByText(courseNumber);
             });
             context('when the modal save button is clicked', function () {
               it('should close the modal', function () {
@@ -1429,6 +1430,7 @@ describe('End-to-end Course Instance updating', function () {
               // Show the retired courses
               const retiredCheckbox = renderResult.getByLabelText('Show Retired', { exact: false }) as HTMLInputElement;
               fireEvent.click(retiredCheckbox);
+              await renderResult.findByText(courseNumber);
             });
             context('when the modal save button is clicked', function () {
               it('should close the modal', function () {
@@ -1477,7 +1479,7 @@ describe('End-to-end Course Instance updating', function () {
                     value: futureAcademicYear + 1,
                   },
                 });
-                await renderResult.findByText(courseNumber);
+                await waitForElementToBeRemoved(() => renderResult.getByText('Fetching Course Data'));
                 const futureCourseRows = await renderResult.findAllByRole('row');
                 const futureCourseRowToUpdate = futureCourseRows.find((row) => {
                   const rowHeader = within(row).queryByRole('rowheader');
@@ -1528,6 +1530,7 @@ describe('End-to-end Course Instance updating', function () {
             // Click the Show Retired button to reveal newly retired course
             const retiredCheckbox = renderResult.getByLabelText('Show Retired', { exact: false }) as HTMLInputElement;
             fireEvent.click(retiredCheckbox);
+            await renderResult.findByText(courseNumber);
             const courseRows = await renderResult.findAllByRole('row');
             const courseRowToUpdate = courseRows.find((row) => {
               const rowHeader = within(row).queryByRole('rowheader');
