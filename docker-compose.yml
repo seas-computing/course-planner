@@ -36,6 +36,9 @@ services:
       - SERVER_URL
       - SERVER_PORT
       - SESSION_SECRET
+      - HTTPS_ON
+      - HTTPS_PRIVATE_KEY
+      - HTTPS_PUBLIC_CERT
     user: "1000:1000"
     ports:
       - "127.0.0.1:${SERVER_PORT}:${SERVER_PORT}"
