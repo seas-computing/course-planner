@@ -1076,10 +1076,6 @@ describe('CourseInstance API', function () {
       describe('Trying to update the offered value to OFFERED.YES', function () {
         beforeEach(async function () {
           newOfferedValue = OFFERED.Y;
-          console.log('Here is the content of the request: ', {
-            ...testRequest,
-            offered: newOfferedValue,
-          });
           response = await request(api)
             .put(`/api/course-instances/${testCourseInstance.id}`)
             .send({
