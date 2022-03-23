@@ -1579,6 +1579,7 @@ describe('End-to-end Course Instance updating', function () {
                 value: futureAcademicYear,
               },
             });
+            await waitForElementToBeRemoved(() => renderResult.getByText('Fetching Course Data'));
             const courseRows = await renderResult.findAllByRole('row');
             const courseRowToUpdate = courseRows.find((row) => {
               const rowHeader = within(row).queryByRole('rowheader');
