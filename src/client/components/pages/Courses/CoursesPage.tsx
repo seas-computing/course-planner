@@ -429,8 +429,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   const updateOfferedLocalCourses = useCallback((
     course: CourseInstanceResponseDTO,
     originalOfferedValue: OFFERED,
-    wasFallUpdated: boolean,
-    message?: string
+    wasFallUpdated: boolean
   ): void => {
     const updatedCourses = [...currentCourses];
     const originalCourseIndex = updatedCourses.findIndex(({ id }) => (
@@ -458,7 +457,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
       updatedCourses.splice(originalCourseIndex, 1, updatedCourse);
       setCourses(updatedCourses);
       dispatchMessage({
-        message: new AppMessage(['Course updated.', message].join(' '), MESSAGE_TYPE.SUCCESS),
+        message: new AppMessage('Course updated.', MESSAGE_TYPE.SUCCESS),
         type: MESSAGE_ACTION.PUSH,
       });
     }
@@ -623,8 +622,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
         onSave={(
           instanceUpdate,
           originalOfferedValue,
-          wasFallUpdated,
-          message?: string
+          wasFallUpdated
         ) => {
           const { course, term } = offeredModalData;
           const semKey = term.toLowerCase() as TermKey;
@@ -636,8 +634,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
             },
           },
           originalOfferedValue,
-          wasFallUpdated,
-          message);
+          wasFallUpdated);
           closeOfferedModal();
         }}
       />
