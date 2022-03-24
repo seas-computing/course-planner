@@ -100,7 +100,7 @@ describe('Report Controller', function () {
   afterEach(async function () {
     await testModule.close();
   });
-  describe('/courses', function () {
+  describe('/report/courses', function () {
     let testReport: Excel.Workbook;
     context('Without providing a date range', function () {
       beforeEach(async function () {
