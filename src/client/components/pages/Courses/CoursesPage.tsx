@@ -435,7 +435,11 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     const originalCourseIndex = updatedCourses.findIndex(({ id }) => (
       id === course.id));
     if (originalCourseIndex >= 0) {
-      const updatedCourse: CourseInstanceResponseDTO = course;
+      const updatedCourse: CourseInstanceResponseDTO = {
+        ...course,
+        spring: { ...course.spring },
+        fall: { ...course.fall },
+      };
       // If the fall instance was the one that was updated and the value of
       // offered was changed to OFFERED.RETIRED, update the local spring
       // offered value to OFFERED.RETIRED as well.
