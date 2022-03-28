@@ -50,7 +50,10 @@ interface OfferedModalProps {
   /**
    * Handler to be invoked when the modal is saved
    */
-  onSave: (updatedInstance: CourseInstanceUpdateDTO) => void;
+  onSave: (
+    updatedInstance: CourseInstanceUpdateDTO,
+    originalInstanceValue: OFFERED,
+    wasFallUpdated: boolean) => void;
 }
 
 export interface BadRequestMessageInfo {
@@ -105,6 +108,17 @@ const OfferedModal: FunctionComponent<OfferedModalProps> = ({
 
   const [form, setFormFields] = useState<{offered: OFFERED}>();
 
+  /**
+   * Keeps track of the original offered value for the course instance being
+   * edited. This is important for local rendering (so that we do not have to
+   * do a full refresh of the Course Instance table data) in cases where we are
+   * updating the fall instance from or to OFFERED.RETIRED, as this will
+   * affect the value of the spring instance.
+   */
+  const [
+    originalOfferedValue,
+    setOriginalOfferedValue] = useState<OFFERED>();
+
   const updateFormFields = (
     event: ChangeEvent<HTMLSelectElement & {value: OFFERED}>
   ): void => {
@@ -128,9 +142,11 @@ const OfferedModal: FunctionComponent<OfferedModalProps> = ({
   useEffect(() => {
     if (currentSemester && currentCourseInstance) {
       const currentTermKey = currentSemester.term.toLowerCase() as TermKey;
+      const originalOffered = currentCourseInstance[currentTermKey].offered;
       setFormFields({
-        offered: currentCourseInstance[currentTermKey].offered,
+        offered: originalOffered,
       });
+      setOriginalOfferedValue(originalOffered);
     }
   }, [currentSemester, currentCourseInstance]);
 
@@ -162,10 +178,16 @@ const OfferedModal: FunctionComponent<OfferedModalProps> = ({
         if ('error' in error.response.data
           && (error.response.data as ErrorInfo).error === 'Bad Request') {
           const serverError = error.response.data as BadRequestInfo;
-          setErrorMessage(serverError.message.map((message) => {
-            const values = Object.values(message.constraints);
-            return values.join('; ');
-          }).join('; '));
+          // If only a single message is returned, convert it to an array so
+          // that it can be mapped over.
+          if (!Array.isArray(serverError.message)) {
+            setErrorMessage(serverError.message);
+          } else {
+            setErrorMessage(serverError.message.map((message) => {
+              const values = Object.values(message.constraints);
+              return values.join('; ');
+            }).join('; '));
+          }
         } else {
           const axiosError = error.response.data as Error;
           setErrorMessage(axiosError.message);
@@ -179,7 +201,8 @@ const OfferedModal: FunctionComponent<OfferedModalProps> = ({
       setSaving(false);
     }
     if (results) {
-      onSave(results);
+      const wasFallUpdated = currentSemester.term === TERM.FALL;
+      onSave(results, originalOfferedValue, wasFallUpdated);
     }
   };
 
@@ -213,7 +236,6 @@ const OfferedModal: FunctionComponent<OfferedModalProps> = ({
                 label="Edit Offered Value Dropdown"
                 options={
                   Object.values(OFFERED)
-                    .filter((value) => value !== OFFERED.RETIRED)
                     .map((offeredValue): {
                       value: OFFERED; label: string
                     } => ({

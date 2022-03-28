@@ -1055,6 +1055,11 @@ describe('CourseInstance API', function () {
     beforeEach(async function () {
       testCourseInstance = await ciRepository.findOne(
         {
+          where: {
+            semester: {
+              academicYear: 2022,
+            },
+          },
           relations: [
             'course',
             'course.instances',
@@ -1069,8 +1074,8 @@ describe('CourseInstance API', function () {
         authStub.resolves(dummy.adminUser);
       });
       describe('Trying to update the offered value to OFFERED.YES', function () {
-        newOfferedValue = OFFERED.Y;
         beforeEach(async function () {
+          newOfferedValue = OFFERED.Y;
           response = await request(api)
             .put(`/api/course-instances/${testCourseInstance.id}`)
             .send({
@@ -1094,8 +1099,8 @@ describe('CourseInstance API', function () {
         });
       });
       describe('Trying to update the offered value to OFFERED.NO', function () {
-        newOfferedValue = OFFERED.N;
         beforeEach(async function () {
+          newOfferedValue = OFFERED.N;
           response = await request(api)
             .put(`/api/course-instances/${testCourseInstance.id}`)
             .send({
@@ -1119,8 +1124,33 @@ describe('CourseInstance API', function () {
         });
       });
       describe('Trying to update the offered value to OFFERED.BLANK', function () {
-        newOfferedValue = OFFERED.BLANK;
         beforeEach(async function () {
+          newOfferedValue = OFFERED.BLANK;
+          response = await request(api)
+            .put(`/api/course-instances/${testCourseInstance.id}`)
+            .send({
+              ...testRequest,
+              offered: newOfferedValue,
+            });
+        });
+        it('should return OK', function () {
+          strictEqual(response.statusCode, HttpStatus.OK);
+        });
+        it('should return the updated offered value', function () {
+          strictEqual(response.body.offered, newOfferedValue);
+        });
+        it('should save the offered value in the database', async function () {
+          const savedInstance = await ciRepository.find({
+            where: {
+              id: testCourseInstance.id,
+            },
+          });
+          strictEqual(savedInstance[0].offered, newOfferedValue);
+        });
+      });
+      describe('Trying to update the offered value to OFFERED.RETIRED', function () {
+        beforeEach(async function () {
+          newOfferedValue = OFFERED.RETIRED;
           response = await request(api)
             .put(`/api/course-instances/${testCourseInstance.id}`)
             .send({
@@ -1149,8 +1179,8 @@ describe('CourseInstance API', function () {
         authStub.resolves(dummy.readOnlyUser);
       });
       describe('Trying to update the offered value to OFFERED.YES', function () {
-        newOfferedValue = OFFERED.Y;
         beforeEach(async function () {
+          newOfferedValue = OFFERED.Y;
           response = await request(api)
             .put(`/api/course-instances/${testCourseInstance.id}`)
             .send({
@@ -1163,8 +1193,8 @@ describe('CourseInstance API', function () {
         });
       });
       describe('Trying to update the offered value to OFFERED.NO', function () {
-        newOfferedValue = OFFERED.N;
         beforeEach(async function () {
+          newOfferedValue = OFFERED.N;
           response = await request(api)
             .put(`/api/course-instances/${testCourseInstance.id}`)
             .send({
@@ -1177,8 +1207,22 @@ describe('CourseInstance API', function () {
         });
       });
       describe('Trying to update the offered value to OFFERED.BLANK', function () {
-        newOfferedValue = OFFERED.BLANK;
         beforeEach(async function () {
+          newOfferedValue = OFFERED.BLANK;
+          response = await request(api)
+            .put(`/api/course-instances/${testCourseInstance.id}`)
+            .send({
+              ...testRequest,
+              offered: newOfferedValue,
+            });
+        });
+        it('should return a Forbidden Error', function () {
+          strictEqual(response.statusCode, HttpStatus.FORBIDDEN);
+        });
+      });
+      describe('Trying to update the offered value to OFFERED.RETIRED', function () {
+        beforeEach(async function () {
+          newOfferedValue = OFFERED.RETIRED;
           response = await request(api)
             .put(`/api/course-instances/${testCourseInstance.id}`)
             .send({
@@ -1196,8 +1240,8 @@ describe('CourseInstance API', function () {
         authStub.resolves(dummy.regularUser);
       });
       describe('Updating the offered value to OFFERED.YES', function () {
-        newOfferedValue = OFFERED.Y;
         beforeEach(async function () {
+          newOfferedValue = OFFERED.Y;
           response = await request(api)
             .put(`/api/course-instances/${testCourseInstance.id}`)
             .send({
@@ -1210,8 +1254,8 @@ describe('CourseInstance API', function () {
         });
       });
       describe('Updating the offered value to OFFERED.NO', function () {
-        newOfferedValue = OFFERED.N;
         beforeEach(async function () {
+          newOfferedValue = OFFERED.N;
           response = await request(api)
             .put(`/api/course-instances/${testCourseInstance.id}`)
             .send({
@@ -1224,8 +1268,22 @@ describe('CourseInstance API', function () {
         });
       });
       describe('Updating the offered value to OFFERED.BLANK', function () {
-        newOfferedValue = OFFERED.BLANK;
         beforeEach(async function () {
+          newOfferedValue = OFFERED.BLANK;
+          response = await request(api)
+            .put(`/api/course-instances/${testCourseInstance.id}`)
+            .send({
+              ...testRequest,
+              offered: newOfferedValue,
+            });
+        });
+        it('should return a Forbidden Error', function () {
+          strictEqual(response.statusCode, HttpStatus.FORBIDDEN);
+        });
+      });
+      describe('Updating the offered value to OFFERED.RETIRED', function () {
+        beforeEach(async function () {
+          newOfferedValue = OFFERED.RETIRED;
           response = await request(api)
             .put(`/api/course-instances/${testCourseInstance.id}`)
             .send({

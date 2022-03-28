@@ -16,6 +16,7 @@ import {
 } from 'testData';
 import { BadRequestException } from '@nestjs/common';
 import { Area } from 'server/area/area.entity';
+import { SemesterView } from 'server/semester/SemesterView.entity';
 import { CourseInstanceService } from '../courseInstance.service';
 import { CourseInstanceController } from '../courseInstance.controller';
 import { MultiYearPlanView } from '../MultiYearPlanView.entity';
@@ -101,6 +102,10 @@ describe('Course Instance Controller', function () {
         },
         {
           provide: getRepositoryToken(CourseInstanceListingView),
+          useValue: mockRepository,
+        },
+        {
+          provide: getRepositoryToken(SemesterView),
           useValue: mockRepository,
         },
         ConfigService,

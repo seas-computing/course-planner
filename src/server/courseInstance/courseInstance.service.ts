@@ -1,15 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CourseListingView } from 'server/course/CourseListingView.entity';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { MultiYearPlanView } from 'server/courseInstance/MultiYearPlanView.entity';
 import { Course } from 'server/course/course.entity';
-import { TERM } from 'common/constants';
+import { OFFERED, TERM } from 'common/constants';
 import { SemesterView } from 'server/semester/SemesterView.entity';
 import { MultiYearPlanResponseDTO } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
 import { FacultyListingView } from 'server/faculty/FacultyListingView.entity';
 import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto';
+import { ConfigService } from 'server/config/config.service';
+import { getFutureTerms } from 'common/utils/termHelperFunctions';
 import { MultiYearPlanInstanceView } from './MultiYearPlanInstanceView.entity';
 import { ScheduleViewResponseDTO } from '../../common/dto/schedule/schedule.dto';
 import { ScheduleBlockView } from './ScheduleBlockView.entity';
@@ -51,6 +53,12 @@ export class CourseInstanceService {
 
   @InjectRepository(CourseInstanceListingView)
   private readonly instanceRepository: Repository<CourseInstanceListingView>;
+
+  @Inject(ConfigService)
+  private readonly configService: ConfigService;
+
+  @InjectRepository(SemesterView)
+  private readonly semesterRepository: Repository<SemesterView>;
 
   /**
    * Resolves a list of courses, which in turn contain sub-lists of instances
@@ -242,7 +250,64 @@ export class CourseInstanceService {
     update: CourseInstanceUpdateDTO
   ): Promise<CourseInstanceUpdateDTO> {
     const courseInstance = await this.courseInstanceRepository
-      .findOneOrFail(instanceId);
+      .findOneOrFail(instanceId, { relations: ['course', 'semester'] });
+    // The academicYear property of Semester entity is actually the calendar year
+    const editedAcademicYear = parseInt(
+      courseInstance.semester.academicYear, 10
+    ) + (courseInstance.semester.term === TERM.FALL ? 1 : 0);
+    const futureTerms = getFutureTerms(courseInstance.semester.term);
+    let subqueryWhereClause = 's."academicYear" > :editedAcademicYear::int';
+    // Prevent SQL error on empty IN clause
+    // (If there are no future terms after this term in the same academic year,
+    // then no purpose in having this second portion of the where clause.)
+    if (futureTerms.length > 0) {
+      subqueryWhereClause += ' or (s."academicYear" = :editedAcademicYear and s.term IN (:...futureTerms))';
+    }
+    const courseId = courseInstance.course.id;
+    const whereClause = '("courseId" = :courseId) AND "semesterId" IN (' + this.semesterRepository.createQueryBuilder('s')
+      .select('s.id').where(subqueryWhereClause).getQuery() + ')';
+    // If the user marks a course instance as retired, throw an error if it is
+    // a course instance of a past academic year. If not, mark the semester
+    // being updated and future semesters with the offered value of "Retired"
+    if (update.offered === OFFERED.RETIRED) {
+      if (editedAcademicYear < this.configService.academicYear) {
+        throw new BadRequestException(
+          'Cannot retire courses of past academic years.'
+        );
+      }
+      await this.courseInstanceRepository
+        .createQueryBuilder()
+        .update(CourseInstance)
+        .set({ offered: OFFERED.RETIRED })
+        .where(whereClause,
+          { courseId, editedAcademicYear, futureTerms })
+        .execute();
+    }
+    // If the course instance being updated was originally "retired" in the
+    // database, allow that instance to be updated to the new offered value and
+    // update the future course instances to OFFERED.BLANK only if we are updating
+    // a current or future academic year instance.
+    // The second part of the condition prevents an instance that was originally
+    // retired from also retiring later instances if the user opens the modal of
+    // the retired course, does not alter the offered value, and clicks save again.
+    if (courseInstance.offered === OFFERED.RETIRED
+      && update.offered !== OFFERED.RETIRED) {
+      // if it is a past instance from a previous academic year, throw error
+      if (editedAcademicYear < this.configService.academicYear) {
+        throw new BadRequestException(
+          'Cannot unretire courses of past academic years.'
+        );
+      } else {
+        // Update the future existing semesters with OFFERED.BLANK
+        await this.courseInstanceRepository
+          .createQueryBuilder()
+          .update(CourseInstance)
+          .set({ offered: OFFERED.BLANK })
+          .where(whereClause,
+            { courseId, editedAcademicYear, futureTerms })
+          .execute();
+      }
+    }
     const updatedInstance = await this.courseInstanceRepository.save(
       {
         ...courseInstance,
