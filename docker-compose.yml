@@ -11,6 +11,8 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - "postgres_data:/var/lib/postgresql/data"
+      - "./init-postgres-ssl.sh:/docker-entrypoint-initdb.d/init-ssl.sh"
+    command: ["postgres", "-c", "ssl=on"]
   node:
     build:
       context: .
