@@ -13,6 +13,10 @@ module.exports = {
   username: DB_USERNAME,
   password: DB_PASSWORD,
   database: DB_DATABASE,
+  ssl: {
+    // We don't care if the certificate isn't signed by an official CA
+    rejectUnauthorized: false,
+  },
   entities: ['src/server/**/*.entity.ts'],
   migrations: ['src/server/migrations/*.ts'],
   cli: {
