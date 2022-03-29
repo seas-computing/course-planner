@@ -27,7 +27,7 @@ const {
 async function bootstrap(): Promise<void> {
   const clientOrigin = new URL(CLIENT_URL).origin;
   const publicClientOrigin = new URL(PUBLIC_CLIENT_URL).origin;
-  const serverPathname = new URL(SERVER_URL).pathname;
+  const serverPathname = new URL(SERVER_URL).pathname.replace(/\/$/, '');
 
   const key = HTTPS_PRIVATE_KEY.replace(/\s+(?!RSA|PRIVATE|KEY)/g, '\n');
   const cert = HTTPS_PUBLIC_CERT.replace(/\s+(?!CERTIFICATE)/g, '\n');
