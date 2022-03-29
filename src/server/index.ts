@@ -39,7 +39,6 @@ async function bootstrap(): Promise<void> {
     : null;
 
   const app = await NestFactory.create(AppModule, {
-    logger: false,
     httpsOptions,
   });
 
