@@ -29,10 +29,12 @@ async function bootstrap(): Promise<void> {
   const publicClientOrigin = new URL(PUBLIC_CLIENT_URL).origin;
   const serverPathname = new URL(SERVER_URL).pathname;
 
+  const key = HTTPS_PRIVATE_KEY.replace(/\s+(?!RSA|PRIVATE|KEY)/g, '\n');
+  const cert = HTTPS_PUBLIC_CERT.replace(/\s+(?!CERTIFICATE)/g, '\n');
   const httpsOptions = HTTPS_ON === 'true'
     ? {
-      key: HTTPS_PRIVATE_KEY,
-      cert: HTTPS_PUBLIC_CERT,
+      key,
+      cert,
     }
     : null;
 
