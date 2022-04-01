@@ -1,7 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TERM } from 'common/constants';
+import { CourseInstanceService } from 'server/courseInstance/courseInstance.service';
+import { NonClassEventService } from 'server/nonClassEvent/nonClassEvent.service';
 import { Semester } from './semester.entity';
 
 /**
@@ -13,6 +15,12 @@ import { Semester } from './semester.entity';
 export class SemesterService {
   @InjectRepository(Semester)
   private readonly semesterRepository: Repository<Semester>;
+
+  @Inject(CourseInstanceService)
+  private readonly courseInstanceService: CourseInstanceService;
+
+  @Inject(NonClassEventService)
+  private readonly nonClassEventService: NonClassEventService;
 
   /**
    * Resolves to an array containing all of the years that currently exist in the
