@@ -50,6 +50,20 @@ import { FacultyScheduleView } from 'server/faculty/FacultyScheduleView.entity';
 import { Absence } from 'server/absence/absence.entity';
 import { Semester } from 'server/semester/semester.entity';
 import { BadRequestInfo } from 'client/components/pages/Courses/CourseModal';
+import { Course } from 'server/course/course.entity';
+import { CourseInstance } from 'server/courseInstance/courseinstance.entity';
+import { CourseInstanceListingView } from 'server/courseInstance/CourseInstanceListingView.entity';
+import { CourseListingView } from 'server/course/CourseListingView.entity';
+import { FacultyCourseInstance } from 'server/courseInstance/facultycourseinstance.entity';
+import { MultiYearPlanView } from 'server/courseInstance/MultiYearPlanView.entity';
+import { ScheduleBlockView } from 'server/courseInstance/ScheduleBlockView.entity';
+import { ScheduleEntryView } from 'server/courseInstance/ScheduleEntryView.entity';
+import { SemesterView } from 'server/semester/SemesterView.entity';
+import { NonClassParent } from 'server/nonClassEvent/nonclassparent.entity';
+import { NonClassParentView } from 'server/nonClassEvent/NonClassParentView.entity';
+import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
+import { MultiYearPlanInstanceView } from 'server/courseInstance/MultiYearPlanInstanceView.entity';
+import { NonClassEventView } from 'server/nonClassEvent/NonClassEvent.view.entity';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import { InstructorResponseDTO } from '../../../../src/common/dto/courses/InstructorResponse.dto';
 
@@ -64,6 +78,7 @@ describe('Faculty API', function () {
   let mockFacultyScheduleSemesterViewRepository: Record<string, SinonStub> = {};
   let mockFacultyScheduleViewRepository: Record<string, SinonStub> = {};
   let mockFacultyService: Record<string, SinonStub> = {};
+  const mockRepository: Record<string, SinonStub> = {};
 
   beforeEach(async function () {
     mockFacultyRepository = {
@@ -144,6 +159,48 @@ describe('Faculty API', function () {
       .overrideProvider(getRepositoryToken(FacultyScheduleView))
       .useValue(mockFacultyScheduleViewRepository)
 
+      .overrideProvider(getRepositoryToken(Course))
+      .useValue(mockRepository)
+
+      .overrideProvider(getRepositoryToken(CourseInstance))
+      .useValue(mockRepository)
+
+      .overrideProvider(getRepositoryToken(CourseInstanceListingView))
+      .useValue(mockRepository)
+
+      .overrideProvider(getRepositoryToken(CourseListingView))
+      .useValue(mockRepository)
+
+      .overrideProvider(getRepositoryToken(FacultyCourseInstance))
+      .useValue(mockRepository)
+
+      .overrideProvider(getRepositoryToken(MultiYearPlanView))
+      .useValue(mockRepository)
+
+      .overrideProvider(getRepositoryToken(MultiYearPlanInstanceView))
+      .useValue(mockRepository)
+
+      .overrideProvider(getRepositoryToken(ScheduleBlockView))
+      .useValue(mockRepository)
+
+      .overrideProvider(getRepositoryToken(ScheduleEntryView))
+      .useValue(mockRepository)
+
+      .overrideProvider(getRepositoryToken(SemesterView))
+      .useValue(mockRepository)
+
+      .overrideProvider(getRepositoryToken(NonClassParent))
+      .useValue(mockRepository)
+
+      .overrideProvider(getRepositoryToken(NonClassParentView))
+      .useValue(mockRepository)
+
+      .overrideProvider(getRepositoryToken(NonClassEvent))
+      .useValue(mockRepository)
+
+      .overrideProvider(getRepositoryToken(NonClassEventView))
+      .useValue(mockRepository)
+
       .compile();
 
     const nestApp = await module.createNestApplication()
@@ -163,6 +220,7 @@ describe('Faculty API', function () {
       mockFacultyScheduleCourseViewRepository,
       mockFacultyScheduleSemesterViewRepository,
       mockFacultyScheduleViewRepository,
+      mockRepository,
     ]
       .forEach((mock) => {
         Object.values(mock)
