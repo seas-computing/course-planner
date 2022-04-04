@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { string } from 'testData';
 
 /**
  * DTO class representative of the shape of data returned from [[NonClasseventController.create]]
@@ -47,13 +46,13 @@ export class NonClassParentResponse {
 
   @ApiProperty({
     example: '2021-09-30T19:40:57.837Z',
-    type: string,
+    type: 'string',
   })
   public createdAt: Date;
 
   @ApiProperty({
     example: '2021-09-30T19:40:57.837Z',
-    type: string,
+    type: 'string',
   })
   public updatedAt: Date;
 }

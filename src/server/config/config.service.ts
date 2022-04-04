@@ -157,6 +157,10 @@ class ConfigService {
       password: DB_PASSWORD,
       host: DB_HOSTNAME,
       port: parseInt(DB_PORT),
+      ssl: {
+        // We don't care if the certificate isn't signed by an official CA,
+        rejectUnauthorized: false,
+      },
       entities: [
         Absence,
         Area,

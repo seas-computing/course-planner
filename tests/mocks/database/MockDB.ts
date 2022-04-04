@@ -1,4 +1,5 @@
 import child, { spawn, ChildProcess } from 'child_process';
+import path from 'path';
 import { promisify } from 'util';
 
 /**
@@ -129,6 +130,9 @@ export default class MockDB {
       if (this.state === CONTAINER_STATE.RUNNING) {
         reject(new Error(`Container "${this.name}" is already running.`));
       }
+      // get absolute path of ssl init script, so our test container can also
+      // run with ssl enabled
+      const sslScriptPath = path.join(process.cwd(), 'init-postgres-ssl.sh');
       this.container = spawn(
         'docker',
         [
@@ -138,6 +142,8 @@ export default class MockDB {
           this.name,
           '--publish',
           `127.0.0.1:${this.port}:5432`,
+          '--volume',
+          `${sslScriptPath}:/docker-entrypoint-initdb.d/init-ssl.sh`,
           '--env',
           `POSTGRES_DB=${this.databaseName}`,
           '--env',
@@ -145,6 +151,8 @@ export default class MockDB {
           '--env',
           `POSTGRES_PASSWORD=${this.password}`,
           'postgres:10.7',
+          '-c',
+          'ssl=on',
         ],
         {
           detached: true,

@@ -15,6 +15,9 @@ const {
   NODE_ENV,
   CLIENT_URL,
   PUBLIC_CLIENT_URL,
+  HTTPS_ON,
+  HTTPS_PRIVATE_KEY,
+  HTTPS_PUBLIC_CERT,
 } = process.env;
 
 /**
@@ -24,10 +27,19 @@ const {
 async function bootstrap(): Promise<void> {
   const clientOrigin = new URL(CLIENT_URL).origin;
   const publicClientOrigin = new URL(PUBLIC_CLIENT_URL).origin;
-  const serverPathname = new URL(SERVER_URL).pathname;
+  const serverPathname = new URL(SERVER_URL).pathname.replace(/\/$/, '');
+
+  const key = HTTPS_PRIVATE_KEY.replace(/\s+(?!RSA|PRIVATE|KEY)/g, '\n');
+  const cert = HTTPS_PUBLIC_CERT.replace(/\s+(?!CERTIFICATE)/g, '\n');
+  const httpsOptions = HTTPS_ON === 'true'
+    ? {
+      key,
+      cert,
+    }
+    : null;
 
   const app = await NestFactory.create(AppModule, {
-    logger: false,
+    httpsOptions,
   });
 
   app.useLogger(app.get(LogService));
