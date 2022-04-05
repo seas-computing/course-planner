@@ -85,7 +85,7 @@ export abstract class UpdateCourseDTO {
   })
   @IsBoolean()
   @IsOptional()
-  public private: boolean;
+  public private?: boolean;
 
   @ApiProperty({
     type: 'string',
