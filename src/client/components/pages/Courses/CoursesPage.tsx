@@ -248,6 +248,19 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   }, [setNotesModalData]);
 
   /**
+   * Handles closing the notes modal and setting the focus back to the button
+   * that opened the modal.
+   */
+  const closeNotesModal = useCallback(() => {
+    setNotesModalData({ visible: false });
+    setTimeout(() => {
+      if (modalButtonId && modalButtonId in refTable.current) {
+        refTable.current[modalButtonId].focus();
+      }
+    });
+  }, [modalButtonId]);
+
+  /**
    * Handles closing the meeting modal and setting the focus back to the button
    * that opened the modal.
    */
@@ -654,6 +667,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
         <NotesModal
           course={notesModalData.course}
           isVisible={notesModalData.visible}
+          onClose={closeNotesModal}
         />
       ) : null }
       <InstructorModal

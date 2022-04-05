@@ -8,7 +8,12 @@ import {
   POSITION,
   VARIANT,
 } from 'mark-one';
-import React, { FunctionComponent, ReactElement } from 'react';
+import React, {
+  ChangeEvent,
+  FunctionComponent,
+  ReactElement,
+  useState,
+} from 'react';
 import CourseInstanceResponseDTO from '../../../../common/dto/courses/CourseInstanceResponse';
 
 interface NotesModalProps {
@@ -18,16 +23,22 @@ interface NotesModalProps {
   isVisible: boolean;
 
   course: CourseInstanceResponseDTO;
+
+  /**
+   * Handler to be invoked when the modal closes
+   */
+  onClose: () => void;
 }
 
 const NotesModal: FunctionComponent<NotesModalProps> = function ({
   isVisible,
   course,
+  onClose,
 }): ReactElement {
   return (
     <Modal
       ariaLabelledBy="notes"
-      closeHandler={() => {}}
+      closeHandler={onClose}
       isVisible={isVisible}
     >
       <ModalHeader
@@ -52,6 +63,11 @@ const NotesModal: FunctionComponent<NotesModalProps> = function ({
           }
         />
       </ModalBody>
+      <ModalFooter>
+        <Button onClick={onClose} variant={VARIANT.DEFAULT}>
+          Cancel
+        </Button>
+      </ModalFooter>
     </Modal>
   );
 };
