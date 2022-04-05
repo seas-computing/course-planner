@@ -1,3 +1,4 @@
+import { CourseAPI } from 'client/api';
 import {
   Button,
   Modal,
@@ -35,6 +36,11 @@ const NotesModal: FunctionComponent<NotesModalProps> = function ({
   course,
   onClose,
 }): ReactElement {
+  const [
+    courseNotes,
+    setCourseNotes,
+  ] = useState(course.notes || '');
+
   return (
     <Modal
       ariaLabelledBy="notes"
@@ -64,6 +70,23 @@ const NotesModal: FunctionComponent<NotesModalProps> = function ({
         />
       </ModalBody>
       <ModalFooter>
+        <Button
+          onClick={async () => {
+            await CourseAPI.editCourse({
+              id: course.id,
+              area: course.area,
+              isSEAS: course.isSEAS,
+              isUndergraduate: course.isUndergraduate,
+              termPattern: course.termPattern,
+              title: course.title,
+              notes: courseNotes,
+            });
+            onClose();
+          }}
+          variant={VARIANT.POSITIVE}
+        >
+          Save
+        </Button>
         <Button onClick={onClose} variant={VARIANT.DEFAULT}>
           Cancel
         </Button>

@@ -1,3 +1,4 @@
+import { strict, strictEqual } from 'assert';
 import { CourseAPI } from 'client/api';
 import CoursesPage from 'client/components/pages/Courses/CoursesPage';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
@@ -14,6 +15,7 @@ import { cs50CourseInstance } from 'testData';
 
 describe('Notes modal', function () {
   let getStub: SinonStub;
+  let postStub: SinonStub;
   const testData: CourseInstanceResponseDTO[] = [
     {
       ...cs50CourseInstance,
@@ -29,8 +31,12 @@ describe('Notes modal', function () {
   ];
   let page: RenderResult;
 
+  let multiLineTextArea: HTMLTextAreaElement;
+  let noteSubmitButton: HTMLButtonElement;
+
   beforeEach(async function () {
     getStub = stub(CourseAPI, 'getCourseInstancesForYear');
+    postStub = stub(CourseAPI, 'editCourse');
     getStub.resolves(testData);
 
     page = render(<CoursesPage />);
@@ -41,8 +47,19 @@ describe('Notes modal', function () {
       () => page.findByLabelText('notes', { exact: false })
     );
     fireEvent.click(button);
+    multiLineTextArea = page.getByLabelText(/Notes For /) as HTMLTextAreaElement;
+    noteSubmitButton = page.getByText(/Save/) as HTMLButtonElement;
   });
   it('opens when the notes button is clicked beside a course', function () {
     return page.getByRole('dialog');
+  });
+  it('updates notes for the specified course on the server', function () {
+    fireEvent.change(multiLineTextArea, {
+      target: { value: 'aaa' },
+    });
+    fireEvent.click(noteSubmitButton);
+    const { notes, id } = postStub.args[0][0];
+    strictEqual(notes, 'aaa');
+    strictEqual(id, testData[0].id);
   });
 });
