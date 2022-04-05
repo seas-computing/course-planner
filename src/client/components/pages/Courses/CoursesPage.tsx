@@ -244,7 +244,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
    */
   const openNotesModal = useCallback((course: CourseInstanceResponseDTO) => {
     setNotesModalData({ course, visible: true });
-    // setModalButtonId(`edit-course-notes-${course.catalogNumber}`);
+    setModalButtonId(`edit-course-notes-${course.id}`);
   }, [setNotesModalData]);
 
   /**
