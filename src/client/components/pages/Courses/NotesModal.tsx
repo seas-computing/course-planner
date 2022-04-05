@@ -1,5 +1,12 @@
 import {
-  Modal, ModalBody, ModalHeader,
+  Button,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  MultiLineTextInput,
+  POSITION,
+  VARIANT,
 } from 'mark-one';
 import React, { FunctionComponent, ReactElement } from 'react';
 import CourseInstanceResponseDTO from '../../../../common/dto/courses/CourseInstanceResponse';
@@ -30,7 +37,20 @@ const NotesModal: FunctionComponent<NotesModalProps> = function ({
         {`Notes For ${course.catalogNumber}`}
       </ModalHeader>
       <ModalBody>
-        { course.notes }
+        <MultiLineTextInput
+          id={`notes-${course.id}`}
+          value={courseNotes}
+          label={`Notes For ${course.catalogNumber}`}
+          name="notes"
+          placeholder="Some course notes"
+          isLabelVisible={false}
+          labelPosition={POSITION.TOP}
+          onChange={
+            ({ target: { value } }: ChangeEvent<HTMLTextAreaElement>) => {
+              setCourseNotes(value);
+            }
+          }
+        />
       </ModalBody>
     </Modal>
   );
