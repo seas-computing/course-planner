@@ -29,12 +29,20 @@ interface NotesModalProps {
    * Handler to be invoked when the modal closes
    */
   onClose: () => void;
+
+  /**
+   * Handler to be invoked when the modal has finished saving it's data. This is
+   * particularly useful for persisting the saved data in local state so that a
+   * page refresh isn't necessary.
+   */
+  onSave: (course: CourseInstanceResponseDTO) => void;
 }
 
 const NotesModal: FunctionComponent<NotesModalProps> = function ({
   isVisible,
   course,
   onClose,
+  onSave,
 }): ReactElement {
   const [
     courseNotes,
@@ -81,7 +89,10 @@ const NotesModal: FunctionComponent<NotesModalProps> = function ({
               title: course.title,
               notes: courseNotes,
             });
-            onClose();
+            onSave({
+              ...course,
+              notes: courseNotes,
+            });
           }}
           variant={VARIANT.POSITIVE}
         >

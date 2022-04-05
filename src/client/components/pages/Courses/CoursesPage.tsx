@@ -668,6 +668,12 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
           course={notesModalData.course}
           isVisible={notesModalData.visible}
           onClose={closeNotesModal}
+          onSave={(course) => {
+            updateLocalCourse({
+              ...course,
+            }, 'Course notes saved.');
+            closeNotesModal();
+          }}
         />
       ) : null }
       <InstructorModal

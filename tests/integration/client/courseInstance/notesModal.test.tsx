@@ -31,6 +31,7 @@ describe('Notes modal', function () {
   ];
   let page: RenderResult;
 
+  let editNotesButton: HTMLButtonElement;
   let multiLineTextArea: HTMLTextAreaElement;
   let noteSubmitButton: HTMLButtonElement;
 
@@ -40,13 +41,11 @@ describe('Notes modal', function () {
     getStub.resolves(testData);
 
     page = render(<CoursesPage />);
-    await waitForElementToBeRemoved(
-      () => page.getByText('fetching', { exact: false })
+    editNotesButton = await waitForElement(
+      () => page.findByLabelText('notes', { exact: false }) as Promise<HTMLButtonElement>
     );
-    const button = await waitForElement(
-      () => page.findByLabelText('notes', { exact: false })
-    );
-    fireEvent.click(button);
+    fireEvent.click(editNotesButton);
+
     multiLineTextArea = page.getByLabelText(/Notes For /) as HTMLTextAreaElement;
     noteSubmitButton = page.getByText(/Save/) as HTMLButtonElement;
   });
@@ -61,5 +60,17 @@ describe('Notes modal', function () {
     const { notes, id } = postStub.args[0][0];
     strictEqual(notes, 'aaa');
     strictEqual(id, testData[0].id);
+  });
+
+  it('updates notes for the specified course in local state', async function () {
+    postStub.resolves();
+    fireEvent.change(multiLineTextArea, {
+      target: { value: 'aaa' },
+    });
+    fireEvent.click(noteSubmitButton);
+    await waitForElementToBeRemoved(() => page.getByRole('dialog'));
+    fireEvent.click(editNotesButton);
+    const newMultiLineTextArea = page.getByLabelText(/Notes For /) as HTMLTextAreaElement;
+    strictEqual(newMultiLineTextArea.value, 'aaa');
   });
 });
