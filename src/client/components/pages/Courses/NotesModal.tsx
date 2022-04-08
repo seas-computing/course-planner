@@ -26,6 +26,9 @@ interface NotesModalProps {
    */
   isVisible: boolean;
 
+  /**
+   * The course the modal is editing notes for
+   */
   course: CourseInstanceResponseDTO;
 
   /**
