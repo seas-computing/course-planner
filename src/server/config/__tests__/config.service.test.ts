@@ -5,27 +5,9 @@ import { AUTH_MODE } from 'common/constants';
 import FakeTimers from '@sinonjs/fake-timers';
 import { RedisStore } from 'connect-redis';
 import { SessionOptions } from 'express-session';
+import { MONTH } from 'common/constants/month';
 import { ConfigService } from '../config.service';
 import { LOG_LEVEL } from '../../../common/constants';
-
-/**
- * The months of the year starting at 0.
- * The Date object expects months of the year to start at 0.
- */
-enum MONTH {
-  JAN = 0,
-  FEB,
-  MAR,
-  APR,
-  MAY,
-  JUN,
-  JUL,
-  AUG,
-  SEP,
-  OCT,
-  NOV,
-  DEC,
-}
 
 describe('Configuration Service', function () {
   it('reports if the app is in production', function () {
