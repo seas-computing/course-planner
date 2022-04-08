@@ -17,17 +17,7 @@ describe('Notes modal', function () {
   let getStub: SinonStub;
   let postStub: SinonStub;
   const testData: CourseInstanceResponseDTO[] = [
-    {
-      ...cs50CourseInstance,
-      fall: {
-        ...cs50CourseInstance.fall,
-        calendarYear: '2019',
-      },
-      spring: {
-        ...cs50CourseInstance.spring,
-        calendarYear: '2020',
-      },
-    },
+    cs50CourseInstance,
   ];
   let page: RenderResult;
 
