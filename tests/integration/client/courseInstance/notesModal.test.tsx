@@ -1,4 +1,4 @@
-import { strict, strictEqual } from 'assert';
+import { strictEqual } from 'assert';
 import { CourseAPI } from 'client/api';
 import CoursesPage from 'client/components/pages/Courses/CoursesPage';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
