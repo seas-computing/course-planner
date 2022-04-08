@@ -63,4 +63,11 @@ describe('Notes modal', function () {
     const newMultiLineTextArea = page.getByLabelText(/Notes For /) as HTMLTextAreaElement;
     strictEqual(newMultiLineTextArea.value, 'aaa');
   });
+  it('focuses the modal header on open', function () {
+    strictEqual(
+      (document.activeElement as HTMLElement).textContent
+        .includes(`Notes For ${testData[0].catalogNumber}`),
+      true
+    );
+  });
 });

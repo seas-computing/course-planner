@@ -13,6 +13,9 @@ import React, {
   ChangeEvent,
   FunctionComponent,
   ReactElement,
+  Ref,
+  useEffect,
+  useRef,
   useState,
 } from 'react';
 import CourseInstanceResponseDTO from '../../../../common/dto/courses/CourseInstanceResponse';
@@ -44,10 +47,27 @@ const NotesModal: FunctionComponent<NotesModalProps> = function ({
   onClose,
   onSave,
 }): ReactElement {
+  /**
+   * Current state value of course notes
+   */
   const [
     courseNotes,
     setCourseNotes,
   ] = useState(course.notes || '');
+
+  /**
+   * The current value of the Meeting Modal ref
+   */
+  const modalHeaderRef: Ref<HTMLHeadingElement> = useRef(null);
+
+  /**
+   * Sets the ref focus.
+   * Since modal may not have been rendered in DOM, wait for it to be
+   * rendered by letting next task of event queue run first.
+   */
+  useEffect(() => {
+    setTimeout((): void => modalHeaderRef.current?.focus());
+  }, [modalHeaderRef]);
 
   return (
     <Modal
@@ -56,7 +76,7 @@ const NotesModal: FunctionComponent<NotesModalProps> = function ({
       isVisible={isVisible}
     >
       <ModalHeader
-        forwardRef={null}
+        forwardRef={modalHeaderRef}
         tabIndex={0}
       >
         {`Notes For ${course.catalogNumber}`}
