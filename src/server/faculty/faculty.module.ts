@@ -17,7 +17,6 @@ import { NonClassParent } from 'server/nonClassEvent/nonclassparent.entity';
 import { NonClassParentView } from 'server/nonClassEvent/NonClassParentView.entity';
 import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
 import { NonClassEventService } from 'server/nonClassEvent/nonClassEvent.service';
-import { SemesterModule } from 'server/semester/semester.module';
 import { FacultyController } from './faculty.controller';
 import { Faculty } from './faculty.entity';
 import { Area } from '../area/area.entity';

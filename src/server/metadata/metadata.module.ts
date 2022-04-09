@@ -17,10 +17,6 @@ import { ScheduleBlockView } from 'server/courseInstance/ScheduleBlockView.entit
 import { ScheduleEntryView } from 'server/courseInstance/ScheduleEntryView.entity';
 import { SemesterView } from 'server/semester/SemesterView.entity';
 import { Faculty } from 'server/faculty/faculty.entity';
-import { NonClassEventService } from 'server/nonClassEvent/nonClassEvent.service';
-import { NonClassParent } from 'server/nonClassEvent/nonclassparent.entity';
-import { NonClassParentView } from 'server/nonClassEvent/NonClassParentView.entity';
-import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
 import { MetadataController } from './metadata.controller';
 
 @Module({
@@ -38,9 +34,6 @@ import { MetadataController } from './metadata.controller';
       ScheduleBlockView,
       ScheduleEntryView,
       SemesterView,
-      NonClassParent,
-      NonClassParentView,
-      NonClassEvent,
     ]),
   ],
   controllers: [MetadataController],
@@ -50,7 +43,6 @@ import { MetadataController } from './metadata.controller';
     SemesterService,
     CourseService,
     CourseInstanceService,
-    NonClassEventService,
   ],
 })
 export class MetadataModule { }

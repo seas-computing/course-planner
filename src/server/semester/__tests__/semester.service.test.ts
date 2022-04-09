@@ -33,7 +33,9 @@ import { CourseInstanceListingView } from 'server/courseInstance/CourseInstanceL
 import { NonClassParent } from 'server/nonClassEvent/nonclassparent.entity';
 import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
 import { NonClassParentView } from 'server/nonClassEvent/NonClassParentView.entity';
-import { NonClassEventService } from 'server/nonClassEvent/nonClassEvent.service';
+import { FacultyScheduleView } from 'server/faculty/FacultyScheduleView.entity';
+import FakeTimers from '@sinonjs/fake-timers';
+import { MONTH } from 'common/constants/month';
 import { SemesterView } from '../SemesterView.entity';
 import { SemesterService } from '../semester.service';
 import { TestingStrategy } from '../../../../tests/mocks/authentication/testing.strategy';
@@ -43,7 +45,6 @@ describe('Semester Service', function () {
   let mockSemesterRepository: Record<string, SinonStub>;
   const mockRepository: Record<string, SinonStub> = {};
   let ciService: CourseInstanceService;
-  let nonClassEventService: NonClassEventService;
   let mockSemesterQueryBuilder: SinonStubbedInstance<
   SelectQueryBuilder<Semester>
   >;
@@ -113,21 +114,8 @@ describe('Semester Service', function () {
           provide: getRepositoryToken(SemesterView),
           useValue: mockRepository,
         },
-        {
-          provide: getRepositoryToken(NonClassParent),
-          useValue: mockRepository,
-        },
-        {
-          provide: getRepositoryToken(NonClassEvent),
-          useValue: mockRepository,
-        },
-        {
-          provide: getRepositoryToken(NonClassParentView),
-          useValue: mockRepository,
-        },
         SemesterService,
         CourseInstanceService,
-        NonClassEventService,
       ],
     })
       .overrideGuard(Authentication)
