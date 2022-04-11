@@ -8,8 +8,6 @@ import { SemesterService } from 'server/semester/semester.service';
 import { Course } from 'server/course/course.entity';
 import { ConfigService } from 'server/config/config.service';
 import { SemesterView } from 'server/semester/SemesterView.entity';
-import { NonClassEventModule } from 'server/nonClassEvent/nonclassevent.module';
-import { FacultyScheduleView } from 'server/faculty/FacultyScheduleView.entity';
 import { CourseInstanceService } from './courseInstance.service';
 import { CourseInstanceController } from './courseInstance.controller';
 import { ScheduleBlockView } from './ScheduleBlockView.entity';
@@ -33,10 +31,8 @@ import { CourseInstanceListingView } from './CourseInstanceListingView.entity';
       ScheduleEntryView,
       CourseInstanceListingView,
       SemesterView,
-      FacultyScheduleView,
     ]),
     SemesterModule,
-    NonClassEventModule,
   ],
   providers: [
     SemesterService,

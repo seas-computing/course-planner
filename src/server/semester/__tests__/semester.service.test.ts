@@ -20,31 +20,14 @@ import { ConfigModule } from 'server/config/config.module';
 import { Authentication } from 'server/auth/authentication.guard';
 import { AuthModule } from 'server/auth/auth.module';
 import { AUTH_MODE } from 'common/constants';
-import { CourseInstanceService } from 'server/courseInstance/courseInstance.service';
-import { Course } from 'server/course/course.entity';
-import { CourseListingView } from 'server/course/CourseListingView.entity';
-import { MultiYearPlanView } from 'server/courseInstance/MultiYearPlanView.entity';
-import { CourseInstance } from 'server/courseInstance/courseinstance.entity';
-import { Faculty } from 'server/faculty/faculty.entity';
-import { FacultyCourseInstance } from 'server/courseInstance/facultycourseinstance.entity';
-import { ScheduleBlockView } from 'server/courseInstance/ScheduleBlockView.entity';
-import { ScheduleEntryView } from 'server/courseInstance/ScheduleEntryView.entity';
-import { CourseInstanceListingView } from 'server/courseInstance/CourseInstanceListingView.entity';
-import { NonClassParent } from 'server/nonClassEvent/nonclassparent.entity';
-import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
-import { NonClassParentView } from 'server/nonClassEvent/NonClassParentView.entity';
-import { FacultyScheduleView } from 'server/faculty/FacultyScheduleView.entity';
 import FakeTimers from '@sinonjs/fake-timers';
 import { MONTH } from 'common/constants/month';
-import { SemesterView } from '../SemesterView.entity';
 import { SemesterService } from '../semester.service';
 import { TestingStrategy } from '../../../../tests/mocks/authentication/testing.strategy';
 
 describe('Semester Service', function () {
   let semesterService: SemesterService;
   let mockSemesterRepository: Record<string, SinonStub>;
-  const mockRepository: Record<string, SinonStub> = {};
-  let ciService: CourseInstanceService;
   let mockSemesterQueryBuilder: SinonStubbedInstance<
   SelectQueryBuilder<Semester>
   >;
@@ -74,48 +57,7 @@ describe('Semester Service', function () {
           provide: getRepositoryToken(Semester),
           useValue: mockSemesterRepository,
         },
-        {
-          provide: getRepositoryToken(CourseListingView),
-          useValue: mockRepository,
-        },
-        {
-          provide: getRepositoryToken(Course),
-          useValue: mockRepository,
-        },
-        {
-          provide: getRepositoryToken(MultiYearPlanView),
-          useValue: mockRepository,
-        },
-        {
-          provide: getRepositoryToken(CourseInstance),
-          useValue: mockRepository,
-        },
-        {
-          provide: getRepositoryToken(Faculty),
-          useValue: mockRepository,
-        },
-        {
-          provide: getRepositoryToken(FacultyCourseInstance),
-          useValue: mockRepository,
-        },
-        {
-          provide: getRepositoryToken(ScheduleBlockView),
-          useValue: mockRepository,
-        },
-        {
-          provide: getRepositoryToken(ScheduleEntryView),
-          useValue: mockRepository,
-        },
-        {
-          provide: getRepositoryToken(CourseInstanceListingView),
-          useValue: mockRepository,
-        },
-        {
-          provide: getRepositoryToken(SemesterView),
-          useValue: mockRepository,
-        },
         SemesterService,
-        CourseInstanceService,
       ],
     })
       .overrideGuard(Authentication)
@@ -123,10 +65,6 @@ describe('Semester Service', function () {
       .compile();
 
     semesterService = testModule.get<SemesterService>(SemesterService);
-    ciService = testModule
-      .get<CourseInstanceService>(CourseInstanceService);
-    nonClassEventService = testModule
-      .get<NonClassEventService>(NonClassEventService);
   });
   describe('getYearList', function () {
     context('When there are records in the database', function () {

@@ -17,10 +17,6 @@ import {
 import { BadRequestException } from '@nestjs/common';
 import { Area } from 'server/area/area.entity';
 import { SemesterView } from 'server/semester/SemesterView.entity';
-import { NonClassParentView } from 'server/nonClassEvent/NonClassParentView.entity';
-import { NonClassParent } from 'server/nonClassEvent/nonclassparent.entity';
-import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
-import { FacultyScheduleView } from 'server/faculty/FacultyScheduleView.entity';
 import { CourseInstanceService } from '../courseInstance.service';
 import { CourseInstanceController } from '../courseInstance.controller';
 import { MultiYearPlanView } from '../MultiYearPlanView.entity';
@@ -110,22 +106,6 @@ describe('Course Instance Controller', function () {
         },
         {
           provide: getRepositoryToken(SemesterView),
-          useValue: mockRepository,
-        },
-        {
-          provide: getRepositoryToken(NonClassParentView),
-          useValue: mockRepository,
-        },
-        {
-          provide: getRepositoryToken(NonClassParent),
-          useValue: mockRepository,
-        },
-        {
-          provide: getRepositoryToken(NonClassEvent),
-          useValue: mockRepository,
-        },
-        {
-          provide: getRepositoryToken(FacultyScheduleView),
           useValue: mockRepository,
         },
         ConfigService,
