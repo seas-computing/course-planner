@@ -1,4 +1,4 @@
-name: Publish Docker Image
+name: Publish Docker Image and Front-End Bundle
 on:
   workflow_run:
     workflows:
@@ -79,6 +79,69 @@ jobs:
           push: true
           context: ${{ github.repositoryUrl }}#${{ env.VERSION_TAG }}
           tags: ${{ DOCKER_TAG_LIST }}
+  publish-client:
+    runs-on: ubuntu-latest
+    needs: pre-publish
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
         with:
-          push: true
-          tags: ghcr.io/${{ github.repository }}:stable
+          node_version: 14
+      - name: Install Dependencies
+        run: npm ci
+      - name: Import metadata
+        run: |
+          echo VERSION_TAG=${{ needs.pre-publish.outputs.VERSION_TAG }} >> $GITHUB_ENV
+          echo PACKAGE_NAME=${{ needs.pre-publish.outputs.PACKAGE_NAME }} >> $GITHUB_ENV
+      - name: build QA bundle
+        env:
+          PUBLIC_CLIENT_URL: ${{ secrets.QA_PUBLIC_CLIENT_URL }}
+          SERVER_URL: ${{ secrets.QA_SERVER_URL }}
+          APP_NAME: ${{ secrets.QA_APP_NAME }}
+        run: |
+          npm run build:client
+          export QA_BUNDLE_NAME="${{ env.PACKAGE_NAME }}_${{ env.VERSION_TAG }}_QA.tar.gz"
+          tar -czvf $QA_BUNDLE_NAME build/*
+          echo QA_BUNDLE_NAME="$QA_BUNDLE_NAME" >> $GITHUB_ENV
+      - name: build PROD bundle
+        env:
+          PUBLIC_CLIENT_URL: ${{ secrets.PROD_PUBLIC_CLIENT_URL }}
+          SERVER_URL: ${{ secrets.PROD_SERVER_URL }}
+          APP_NAME: ${{ secrets.PROD_APP_NAME }}
+        run: |
+          npm run build:client
+          export PROD_BUNDLE_NAME="${{ env.PACKAGE_NAME }}_${{ env.VERSION_TAG }}_PROD.tar.gz"
+          tar -czvf $PROD_BUNDLE_NAME build/*
+          echo PROD_BUNDLE_NAME="$PROD_BUNDLE_NAME" >> $GITHUB_ENV
+      # Runs a script to create a new release on github, matching the tag set
+      # above, and publish the built application as an asset on that release
+      - name: Publish Bundle
+        uses: actions/github-script@v4
+        with:
+          script: |
+            const fs = require('fs');
+            const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
+            const owner = process.env.GITHUB_REPOSITORY_OWNER;
+            const repo = process.env.PACKAGE_NAME;
+            const tag_name = process.env.VERSION_TAG;
+            const newRelease = await github.repos.createRelease({
+              owner,
+              repo,
+              tag_name
+            });
+            const { data: { id: release_id, html_url } } = newRelease;
+            core.info(`Published ${tag_name}: ${html_url}`)
+            await Promise.all([
+              process.env.QA_BUNDLE_NAME,
+              process.env.PROD_BUNDLE_NAME,
+            ].map(async (name) => {
+              const data = fs.readFileSync(name);
+              const { data: { browser_download_url } } =  await github.repos.uploadReleaseAsset({
+                owner,
+                repo,
+                release_id,
+                name,
+                data,
+              });
+              core.info(`Published ${name}: ${browser_download_url}`);
+            });
