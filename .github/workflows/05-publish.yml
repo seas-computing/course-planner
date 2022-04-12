@@ -24,7 +24,7 @@ jobs:
       - name: Set package name
         id: PACKAGE_NAME
         run: |
-          export PACKAGE_NAME=`echo ${{ env.GITHUB_REPOSITORY }} | gawk -F/ '{print $2}'`
+          export PACKAGE_NAME=`echo ${{ github.repository }} | gawk -F/ '{print $2}'`
           echo "::set-output name=result::$PACKAGE_NAME"
       - name: Find latest version
         id: VERSION_TAG
