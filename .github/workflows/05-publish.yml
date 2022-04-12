@@ -120,7 +120,6 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
             const owner = process.env.GITHUB_REPOSITORY_OWNER;
             const repo = process.env.PACKAGE_NAME;
             const tag_name = process.env.VERSION_TAG;
@@ -144,4 +143,4 @@ jobs:
                 data,
               });
               core.info(`Published ${name}: ${browser_download_url}`);
-            });
+            }));
