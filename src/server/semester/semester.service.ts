@@ -200,5 +200,6 @@ export class SemesterService {
         await this.semesterRepository.save(springSemester);
       }
     }
+    return null;
   }
 }
