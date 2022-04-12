@@ -242,10 +242,13 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   /**
    * Takes the specified course and displays a modal to edit course notes
    */
-  const openNotesModal = useCallback((course: CourseInstanceResponseDTO) => {
-    setNotesModalData({ course, visible: true });
-    setModalButtonId(`edit-course-notes-${course.id}`);
-  }, [setNotesModalData]);
+  const openNotesModal = useCallback(
+    (course: CourseInstanceResponseDTO, buttonId: string) => {
+      setNotesModalData({ course, visible: true });
+      setModalButtonId(buttonId);
+    },
+    [setNotesModalData, setModalButtonId]
+  );
 
   /**
    * Handles closing the notes modal and setting the focus back to the button

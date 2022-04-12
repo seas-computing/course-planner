@@ -62,7 +62,11 @@ interface CourseInstanceTableProps {
   /*
    * Controls the opening of the notes modal with the requested course
    */
-  openNotesModal: (course: CourseInstanceResponseDTO) => void;
+  openNotesModal: (
+    course: CourseInstanceResponseDTO,
+    buttonId?: string
+  ) => void;
+
   /**
    * The ref value of the edit faculty absence button
    */

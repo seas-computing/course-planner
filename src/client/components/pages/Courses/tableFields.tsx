@@ -319,7 +319,10 @@ export interface FieldContentProps {
   /**
    * Controls the opening of the notes modal for the requested course
    */
-  openNotesModal?: (course: CourseInstanceResponseDTO) => void;
+  openNotesModal?: (
+    course: CourseInstanceResponseDTO,
+    buttonId?: string
+  ) => void;
 
   /**
    * Controls the opening of the offered modal with the requested course and term
@@ -613,8 +616,8 @@ export const tableFields: CourseInstanceListColumn[] = [
         <BorderlessButton
           id={`edit-course-notes-${course.id}`}
           variant={VARIANT.INFO}
-          onClick={() => {
-            openNotesModal(course);
+          onClick={({ currentTarget }) => {
+            openNotesModal(course, currentTarget.id);
           }}
           aria-label={titleText}
         >
