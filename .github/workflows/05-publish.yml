@@ -73,11 +73,11 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Publish QA image
+      - name: Publish image
         uses: docker/build-push-action@v2
         with:
           push: true
-          context: ${{ github.repositoryUrl }}#${{ env.VERSION_TAG }}
+          context: ${{ github.server_url }}/${{ github.repository }}.git#${{ env.VERSION_TAG }}
           tags: ${{ DOCKER_TAG_LIST }}
   publish-client:
     runs-on: ubuntu-latest
