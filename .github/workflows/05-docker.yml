@@ -9,25 +9,40 @@ on:
     types:
       - completed
 jobs:
-  publish:
+  # Determines current version, and whether it should be a QA or Production release
+  pre-publish:
     runs-on: ubuntu-latest
     if: github.event.workflow_run.conclusion == 'success'
+    outputs:
+      PACKAGE_NAME: ${{steps.PACKAGE_NAME.outputs.result}}
+      VERSION_TAG: ${{steps.VERSION_TAG.outputs.result}}
+      DOCKER_TAG: ${{steps.DOCKER_TAG.outputs.result}}
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
+      - name: Set package name
+        id: PACKAGE_NAME
+        run: |
+          export PACKAGE_NAME=`echo ${{ env.GITHUB_REPOSITORY }} | gawk -F/ '{print $2}'`
+          echo "::set-output name=result::$PACKAGE_NAME"
       - name: Find latest version
+        id: VERSION_TAG
         run: |
           git checkout main
           export MAIN_VERSION=$(jq -Mr .version package.json)
           git checkout develop
           export DEVELOP_VERSION=$(jq -Mr .version package.json)
-          echo "VERSION_TAG=v$(npx semver $DEVELOP_VERSION $MAIN_VERSION | tail -n1)" >> $GITHUB_ENV
-      - name: docker-version
+          export VERSION_TAG=v$(npx semver $DEVELOP_VERSION $MAIN_VERSION | tail -n1)
+          echo VERSION_TAG="$VERSION_TAG" >> $GITHUB_ENV
+          echo "::set-output name=result::$VERSION_TAG"
+      - name: Set Docker version tag
+        id: DOCKER_TAG
         run: |
           git checkout ${{ env.VERSION_TAG }}
-          git branch --points-at HEAD
-          echo "DOCKER_TAG=$(if [[ -n `git branch --points-at HEAD | grep main` ]]; then echo stable; else echo qa; fi)" >> $GITHUB_ENV
+          export IS_MAIN=$(git branch --points-at HEAD | grep main)
+          export DOCKER_TAG=$(if [[ -n "$IS_MAIN" ]]; then echo stable; else echo qa; fi)
+          echo "::set-output name=result::$DOCKER_TAG"
       - name: qemu
         uses: docker/setup-qemu-action@v1
       - name: buildx
