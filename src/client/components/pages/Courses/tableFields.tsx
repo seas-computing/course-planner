@@ -608,6 +608,7 @@ export const tableFields: CourseInstanceListColumn[] = [
     FieldContent: ({
       course,
       openNotesModal,
+      buttonRef,
     }: FieldContentProps): ReactElement => {
       const { notes } = course;
       const hasNotes = notes && notes.trim().length > 0;
@@ -620,6 +621,7 @@ export const tableFields: CourseInstanceListColumn[] = [
             openNotesModal(course, currentTarget.id);
           }}
           aria-label={titleText}
+          forwardRef={buttonRef}
         >
           <FontAwesomeIcon
             title={titleText}

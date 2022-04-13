@@ -257,7 +257,9 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   const closeNotesModal = useCallback(() => {
     setNotesModalData({ visible: false });
     setTimeout(() => {
-      document.getElementById(modalButtonId)?.focus();
+      if (modalButtonId && modalButtonId in refTable.current) {
+        refTable.current[modalButtonId].focus();
+      }
     });
   }, [modalButtonId]);
 
