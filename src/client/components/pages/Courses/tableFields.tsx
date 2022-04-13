@@ -615,7 +615,7 @@ export const tableFields: CourseInstanceListColumn[] = [
       const titleText = hasNotes ? 'View/Edit Notes' : 'Add Notes';
       return (
         <BorderlessButton
-          id={`edit-course-notes-${course.id}`}
+          id={`notes-${course.id}`}
           variant={VARIANT.INFO}
           onClick={({ currentTarget }) => {
             openNotesModal(course, currentTarget.id);
