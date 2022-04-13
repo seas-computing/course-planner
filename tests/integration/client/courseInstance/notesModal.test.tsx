@@ -38,7 +38,9 @@ describe('Notes modal', function () {
     const modal = page.getByRole('dialog');
 
     multiLineTextArea = within(modal)
-      .getByLabelText('Course Notes') as HTMLTextAreaElement;
+      .getByLabelText('Course Notes', {
+        selector: 'textarea',
+      }) as HTMLTextAreaElement;
     noteSubmitButton = within(modal).getByText(/Save/) as HTMLButtonElement;
   });
   it('opens when the notes button is clicked beside a course', function () {
@@ -62,7 +64,10 @@ describe('Notes modal', function () {
     fireEvent.click(noteSubmitButton);
     await waitForElementToBeRemoved(() => page.getByRole('dialog'));
     fireEvent.click(editNotesButton);
-    const newMultiLineTextArea = page.getByLabelText(/Notes For /) as HTMLTextAreaElement;
+    const newMultiLineTextArea = page.getByLabelText(
+      'Course Notes',
+      { selector: 'textarea' }
+    ) as HTMLTextAreaElement;
     strictEqual(newMultiLineTextArea.value, 'aaa');
   });
   it('focuses the modal header on open', function () {
