@@ -16,9 +16,7 @@ import { cs50CourseInstance } from 'testData';
 describe('Notes modal', function () {
   let getStub: SinonStub;
   let postStub: SinonStub;
-  const testData: CourseInstanceResponseDTO[] = [
-    cs50CourseInstance,
-  ];
+  const testData = cs50CourseInstance;
   let page: RenderResult;
 
   let editNotesButton: HTMLButtonElement;
@@ -28,7 +26,7 @@ describe('Notes modal', function () {
   beforeEach(async function () {
     getStub = stub(CourseAPI, 'getCourseInstancesForYear');
     postStub = stub(CourseAPI, 'editCourse');
-    getStub.resolves(testData);
+    getStub.resolves([testData]);
 
     page = render(<CoursesPage />);
     editNotesButton = await waitForElement(
@@ -49,7 +47,7 @@ describe('Notes modal', function () {
     fireEvent.click(noteSubmitButton);
     const { notes, id } = postStub.args[0][0];
     strictEqual(notes, 'aaa');
-    strictEqual(id, testData[0].id);
+    strictEqual(id, testData.id);
   });
 
   it('updates notes for the specified course in local state', async function () {
@@ -66,7 +64,7 @@ describe('Notes modal', function () {
   it('focuses the modal header on open', function () {
     strictEqual(
       (document.activeElement as HTMLElement).textContent
-        .includes(`Notes For ${testData[0].catalogNumber}`),
+        .includes(`Notes For ${testData.catalogNumber}`),
       true
     );
   });
