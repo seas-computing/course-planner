@@ -88,7 +88,7 @@ const NotesModal: FunctionComponent<NotesModalProps> = function ({
         <MultiLineTextInput
           id={`notes-${course.id}`}
           value={courseNotes}
-          label={`Notes For ${course.catalogNumber}`}
+          label="Course Notes"
           name="notes"
           placeholder="Some course notes"
           isLabelVisible={false}

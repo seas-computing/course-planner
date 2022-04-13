@@ -10,6 +10,7 @@ import {
   waitForElement,
   fireEvent,
   waitForElementToBeRemoved,
+  within,
 } from 'test-utils';
 import { cs50CourseInstance } from 'testData';
 
@@ -34,8 +35,11 @@ describe('Notes modal', function () {
     );
     fireEvent.click(editNotesButton);
 
-    multiLineTextArea = page.getByLabelText(/Notes For /) as HTMLTextAreaElement;
-    noteSubmitButton = page.getByText(/Save/) as HTMLButtonElement;
+    const modal = page.getByRole('dialog');
+
+    multiLineTextArea = within(modal)
+      .getByLabelText('Course Notes') as HTMLTextAreaElement;
+    noteSubmitButton = within(modal).getByText(/Save/) as HTMLButtonElement;
   });
   it('opens when the notes button is clicked beside a course', function () {
     return page.getByRole('dialog');
