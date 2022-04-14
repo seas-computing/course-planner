@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ABSENCE_TYPE, OFFERED, TERM } from 'common/constants';
@@ -65,140 +65,139 @@ export class SemesterService {
 
   /**
    * Creates a new academic year of course instances, non class events, and
-   * faculty absences using the values of the most recent existing
-   * spring semester.
+   * faculty absences using the values of the previous semester.
    * Retired course instances retain their "retired" status. Meetings and
-   * enrollment values are not retained in the new academic year.
+   * enrollment values are not retained in the newly created academic year.
    */
-  public async addAcademicYear(): Promise<void> {
-    // Get today's date
-    const today = new Date();
-    // The new academic year should be created by June 1st. This checks that in
-    // the month of June that the new academic year has been created.
-    if (today.getMonth() === 5) {
-      const currentYear = today.getFullYear();
-      const newAcademicYear = (currentYear + 1).toString();
-      // Note that academicYear in the semester table is actually calendar year
-      const existingYears = await this.getYearList();
-      // If the new academic year does not yet exist, create the new semesters.
-      // E.g. If today is June 2, 2022 and the 2023 academic year does not yet
-      // exist, create the 2023 academic year.
-      if (!existingYears.includes((currentYear + 1).toString())) {
-        // Get the most recent existing fall semester along with its relations
-        const existingFallSemester = await this.semesterRepository
-          .findOneOrFail({
-            where: {
-              // NOTE: academic year in database is actually calendar year
-              term: TERM.FALL,
-              academicYear: currentYear - 1,
-            },
-            // See: https://github.com/typeorm/typeorm/issues/1270#issuecomment-348429760
-            relations: ['absences', 'courseInstances', 'courseInstances.course', 'nonClassEvents'],
-          });
-
-        // Get the most recent existing spring semester along with its relations
-        const existingSpringSemester = await this.semesterRepository
-          .findOneOrFail({
-            where: {
-              // NOTE: academic year in database is actually calendar year
-              term: TERM.SPRING,
-              academicYear: currentYear,
-            },
-            // See: https://github.com/typeorm/typeorm/issues/1270#issuecomment-348429760
-            relations: ['absences', 'courseInstances', 'courseInstances.course', 'nonClassEvents'],
-          });
-
-        const fallInstances = existingFallSemester.courseInstances;
-        const springInstances = existingSpringSemester.courseInstances;
-
-        // Creates a mapping between the course id and spring instance so that
-        // we can access the spring "offered" value while processing fall data.
-        // The spring "offered" data is necessary in order to  determine the
-        // appropriate "offered" value for the newly created fall semester.
-        const courseIdToSpringInstance: Record<string, CourseInstance> = {};
-        springInstances.forEach((instance) => {
-          courseIdToSpringInstance[instance.course.id] = instance;
+  public async addAcademicYear(newAcademicYear: number): Promise<void> {
+    // Note that academicYear in the semester table is actually calendar year.
+    const existingYears = await this.getYearList();
+    // If the academic year previous to the newAcademicYear does not exist,
+    // throw an exception.
+    if (!existingYears.includes((newAcademicYear - 1).toString())) {
+      throw new BadRequestException(
+        'Cannot create requested academic year until preceding academic year is created.'
+      );
+    }
+    // Only create the new academic year if it does not yet exist.
+    if (!existingYears.includes((newAcademicYear).toString())) {
+      // Try getting the year previous to the new academic year requested.
+      // For example, if we are trying to create the 2026 academic year, use
+      // the semesters Spring 2025 and Fall 2024 to construct the new year.
+      const existingFallSemester = await this.semesterRepository
+        .findOneOrFail({
+          where: {
+            // NOTE: academic year in database is actually calendar year
+            term: TERM.FALL,
+            academicYear: newAcademicYear - 2,
+          },
+          // See: https://github.com/typeorm/typeorm/issues/1270#issuecomment-348429760
+          relations: ['absences', 'courseInstances', 'courseInstances.course', 'nonClassEvents'],
         });
 
-        const newFallInstances = fallInstances
-          .map((fallInstance) => {
-            const springInstance: CourseInstance = courseIdToSpringInstance[
-              fallInstance.course.id
-            ];
-            return {
-              ...new CourseInstance(),
-              offered: springInstance.offered === OFFERED.RETIRED
-                ? OFFERED.RETIRED : OFFERED.BLANK,
-              preEnrollment: null,
-              studyCardEnrollment: null,
-              actualEnrollment: null,
-              course: fallInstance.course,
-              facultyCourseInstances: [],
-              meetings: [],
-            };
-          });
+      // Get the most recent existing spring semester along with its relations
+      const existingSpringSemester = await this.semesterRepository
+        .findOneOrFail({
+          where: {
+            // NOTE: academic year in database is actually the calendar year
+            term: TERM.SPRING,
+            academicYear: newAcademicYear - 1,
+          },
+          // See: https://github.com/typeorm/typeorm/issues/1270#issuecomment-348429760
+          relations: ['absences', 'courseInstances', 'courseInstances.course', 'nonClassEvents'],
+        });
 
-        // Create new fall semester
-        const fallSemester = new Semester();
-        fallSemester.academicYear = newAcademicYear;
-        fallSemester.term = TERM.FALL;
-        fallSemester.courseInstances = newFallInstances;
+      const fallInstances = existingFallSemester.courseInstances;
+      const springInstances = existingSpringSemester.courseInstances;
 
-        fallSemester.nonClassEvents = existingFallSemester.nonClassEvents
-          .map((nce) => ({
-            ...new NonClassEvent(),
-            nonClassParent: nce.nonClassParent,
-            private: nce.private,
-            meetings: [],
-          }));
+      // Creates a mapping between the course id and spring instance so that
+      // we can access the spring "offered" value while processing fall data.
+      // The spring "offered" data is necessary in order to  determine the
+      // appropriate "offered" value for the newly created fall semester.
+      const courseIdToSpringInstance: Record<string, CourseInstance> = {};
+      springInstances.forEach((instance) => {
+        courseIdToSpringInstance[instance.course.id] = instance;
+      });
 
-        fallSemester.absences = existingFallSemester.absences
-          .map((absence) => ({
-            ...new Absence(),
-            faculty: absence.faculty,
-            type: ABSENCE_TYPE.PRESENT,
-          }));
-
-        // Note that this also saves the nested entities because of
-        // the cascade set on semester
-        await this.semesterRepository.save(fallSemester);
-
-        const newSpringInstances = springInstances
-          .map((springInstance) => ({
+      const newFallInstances = fallInstances
+        .map((fallInstance) => {
+          const springInstance: CourseInstance = courseIdToSpringInstance[
+            fallInstance.course.id
+          ];
+          return {
             ...new CourseInstance(),
             offered: springInstance.offered === OFFERED.RETIRED
               ? OFFERED.RETIRED : OFFERED.BLANK,
             preEnrollment: null,
             studyCardEnrollment: null,
             actualEnrollment: null,
-            course: springInstance.course,
+            course: fallInstance.course,
             facultyCourseInstances: [],
             meetings: [],
-          }));
+          };
+        });
 
-        // Create new spring semester
-        const springSemester = new Semester();
-        springSemester.academicYear = newAcademicYear;
-        springSemester.term = TERM.SPRING;
-        springSemester.courseInstances = newSpringInstances;
+      // Create new fall semester
+      const fallSemester = new Semester();
+      // NOTE: academic year in Semester entity is actually the calendar year
+      fallSemester.academicYear = (newAcademicYear - 1).toString();
+      fallSemester.term = TERM.FALL;
+      fallSemester.courseInstances = newFallInstances;
 
-        springSemester.nonClassEvents = existingSpringSemester.nonClassEvents
-          .map((nce) => ({
-            ...new NonClassEvent(),
-            nonClassParent: nce.nonClassParent,
-            private: nce.private,
-            meetings: [],
-          }));
+      fallSemester.nonClassEvents = existingFallSemester.nonClassEvents
+        .map((nce) => ({
+          ...new NonClassEvent(),
+          nonClassParent: nce.nonClassParent,
+          private: nce.private,
+          meetings: [],
+        }));
 
-        springSemester.absences = existingSpringSemester.absences
-          .map((absence) => ({
-            ...new Absence(),
-            faculty: absence.faculty,
-            type: ABSENCE_TYPE.PRESENT,
-          }));
+      fallSemester.absences = existingFallSemester.absences
+        .map((absence) => ({
+          ...new Absence(),
+          faculty: absence.faculty,
+          type: ABSENCE_TYPE.PRESENT,
+        }));
 
-        await this.semesterRepository.save(springSemester);
-      }
+      // Note that this also saves the nested entities because of
+      // the cascade set on semester
+      await this.semesterRepository.save(fallSemester);
+
+      const newSpringInstances = springInstances
+        .map((springInstance) => ({
+          ...new CourseInstance(),
+          offered: springInstance.offered === OFFERED.RETIRED
+            ? OFFERED.RETIRED : OFFERED.BLANK,
+          preEnrollment: null,
+          studyCardEnrollment: null,
+          actualEnrollment: null,
+          course: springInstance.course,
+          facultyCourseInstances: [],
+          meetings: [],
+        }));
+
+      // Create new spring semester
+      const springSemester = new Semester();
+      springSemester.academicYear = newAcademicYear.toString();
+      springSemester.term = TERM.SPRING;
+      springSemester.courseInstances = newSpringInstances;
+
+      springSemester.nonClassEvents = existingSpringSemester.nonClassEvents
+        .map((nce) => ({
+          ...new NonClassEvent(),
+          nonClassParent: nce.nonClassParent,
+          private: nce.private,
+          meetings: [],
+        }));
+
+      springSemester.absences = existingSpringSemester.absences
+        .map((absence) => ({
+          ...new Absence(),
+          faculty: absence.faculty,
+          type: ABSENCE_TYPE.PRESENT,
+        }));
+
+      await this.semesterRepository.save(springSemester);
     }
     return null;
   }
