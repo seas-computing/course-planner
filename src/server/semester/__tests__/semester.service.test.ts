@@ -25,6 +25,7 @@ import { MONTH } from 'common/constants/month';
 import * as dummy from 'testData';
 import { SemesterService } from '../semester.service';
 import { TestingStrategy } from '../../../../tests/mocks/authentication/testing.strategy';
+import { BadRequestException } from '@nestjs/common';
 
 describe('Semester Service', function () {
   let semesterService: SemesterService;
@@ -132,103 +133,41 @@ describe('Semester Service', function () {
     });
   });
   describe('addAcademicYear', function () {
-    let clock: FakeTimers.InstalledClock;
     let getStub: SinonStub;
-    const testAcademicYear = parseInt(fakeYearList.slice(-1)[0], 10);
-    const newAcademicYear = (parseInt(fakeYearList.slice(-1)[0], 10) + 1)
-      .toString();
-    context('before June 1st', function () {
+    context('when academic year preceding the requested academic year exists', function () {
+      const newAcademicYear = parseInt(fakeYearList.slice(-1)[0], 10) + 1;
       beforeEach(function () {
-        clock = FakeTimers.install();
-        clock.setSystemTime(new Date(testAcademicYear, MONTH.FEB, 20, 0, 0, 0));
+        getStub = stub(semesterService, 'getYearList').resolves(fakeYearList);
+        mockSemesterRepository.findOneOrFail.onCall(0).resolves(dummy.fall);
+        mockSemesterRepository.save.onCall(0).resolves(dummy.fall);
+        mockSemesterRepository.findOneOrFail.onCall(1).resolves(dummy.spring);
+        mockSemesterRepository.save.onCall(1).resolves(dummy.spring);
       });
-      after(function () {
-        clock.uninstall();
+      afterEach(function () {
+        getStub.restore();
       });
-      it('does not create new instances', async function () {
-        await semesterService.addAcademicYear();
-        strictEqual(mockSemesterRepository.findOneOrFail.callCount, 0);
-        strictEqual(mockSemesterRepository.save.callCount, 0);
+      it('calls findOneOrFail and save once for each the fall and spring semesters', async function () {
+        await semesterService.addAcademicYear(newAcademicYear);
+        strictEqual(mockSemesterRepository.findOneOrFail.callCount, 2, 'Called "findOneOrFail" an unexpected number of times.');
+        strictEqual(mockSemesterRepository.save.callCount, 2, 'Called "save" an unexpected number of times.');
       });
     });
-    context('on June 1st', function () {
+    context('when academic year preceding the requested academic year does not exist', function () {
+      const newAcademicYear = 2030;
       beforeEach(function () {
-        clock = FakeTimers.install();
-        clock.setSystemTime(new Date(testAcademicYear, MONTH.JUN, 1, 0, 0, 0));
+        getStub = stub(semesterService, 'getYearList').resolves(fakeYearList);
       });
-      after(function () {
-        clock.uninstall();
+      afterEach(function () {
+        getStub.restore();
       });
-      context('when the instances for the next year already exist', function () {
-        beforeEach(function () {
-          getStub = stub(semesterService, 'getYearList')
-            .resolves(fakeYearList.concat(newAcademicYear));
-        });
-        afterEach(function () {
-          getStub.restore();
-        });
-        it('does not create new instances', async function () {
-          await semesterService.addAcademicYear();
-          strictEqual(mockSemesterRepository.findOneOrFail.callCount, 0);
-          strictEqual(mockSemesterRepository.save.callCount, 0);
-        });
-      });
-      context('when the instances for the next year do not yet exist', function () {
-        beforeEach(function () {
-          getStub = stub(semesterService, 'getYearList').resolves(fakeYearList);
-          mockSemesterRepository.findOneOrFail.onCall(0).resolves(dummy.fall);
-          mockSemesterRepository.save.onCall(0).resolves(dummy.fall);
-          mockSemesterRepository.findOneOrFail.onCall(1).resolves(dummy.spring);
-          mockSemesterRepository.save.onCall(1).resolves(dummy.spring);
-        });
-        afterEach(function () {
-          getStub.restore();
-        });
-        it('calls findOneOrFail and save', async function () {
-          await semesterService.addAcademicYear();
-          strictEqual(mockSemesterRepository.findOneOrFail.callCount, 2, 'Called "findOneOrFail" an unexpected number of times.');
-          strictEqual(mockSemesterRepository.save.callCount, 2, 'Called "save" an unexpected number of times.');
-        });
-      });
-    });
-    context('in June after June 1st', function () {
-      beforeEach(function () {
-        clock = FakeTimers.install();
-        clock.setSystemTime(new Date(testAcademicYear, MONTH.JUN, 8, 0, 0, 0));
-      });
-      after(function () {
-        clock.uninstall();
-      });
-      context('when the instances for the next year already exist', function () {
-        beforeEach(function () {
-          getStub = stub(semesterService, 'getYearList')
-            .resolves(fakeYearList.concat(newAcademicYear));
-        });
-        afterEach(function () {
-          getStub.restore();
-        });
-        it('does not create new instances', async function () {
-          await semesterService.addAcademicYear();
-          strictEqual(mockSemesterRepository.findOneOrFail.callCount, 0);
-          strictEqual(mockSemesterRepository.save.callCount, 0);
-        });
-      });
-      context('when the instances for the next year do not yet exist', function () {
-        beforeEach(function () {
-          getStub = stub(semesterService, 'getYearList').resolves(fakeYearList);
-          mockSemesterRepository.findOneOrFail.onCall(0).resolves(dummy.fall);
-          mockSemesterRepository.save.onCall(0).resolves(dummy.fall);
-          mockSemesterRepository.findOneOrFail.onCall(1).resolves(dummy.spring);
-          mockSemesterRepository.save.onCall(1).resolves(dummy.spring);
-        });
-        afterEach(function () {
-          getStub.restore();
-        });
-        it('calls findOneOrFail and save', async function () {
-          await semesterService.addAcademicYear();
-          strictEqual(mockSemesterRepository.findOneOrFail.callCount, 2, 'Called "findOneOrFail" an unexpected number of times.');
-          strictEqual(mockSemesterRepository.save.callCount, 2, 'Called "save" an unexpected number of times.');
-        });
+      it('throws a bad request exception', async function () {
+        try {
+          await semesterService.addAcademicYear(newAcademicYear);
+        } catch (e) {
+          strictEqual(e instanceof BadRequestException, true);
+          const error = e as BadRequestException;
+          strictEqual(error.message, 'Cannot create requested academic year until preceding academic year is created.');
+        }
       });
     });
   });
