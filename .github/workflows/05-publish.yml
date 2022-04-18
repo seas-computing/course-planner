@@ -1,0 +1,148 @@
+name: Publish Docker Image and Front-End Bundle
+on:
+  workflow_run:
+    workflows:
+      - Increment Version
+    branches:
+      - main
+      - develop
+    types:
+      - completed
+jobs:
+  # Determines current version, and whether it should be a QA or Production release
+  pre-publish:
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
+    outputs:
+      PACKAGE_NAME: ${{steps.PACKAGE_NAME.outputs.result}}
+      VERSION_TAG: ${{steps.VERSION_TAG.outputs.result}}
+      DOCKER_TAG: ${{steps.DOCKER_TAG.outputs.result}}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Set package name
+        id: PACKAGE_NAME
+        run: |
+          export PACKAGE_NAME=`echo ${{ github.repository }} | gawk -F/ '{print $2}'`
+          echo "::set-output name=result::$PACKAGE_NAME"
+      - name: Find latest version
+        id: VERSION_TAG
+        run: |
+          git checkout main
+          export MAIN_VERSION=$(jq -Mr .version package.json)
+          git checkout develop
+          export DEVELOP_VERSION=$(jq -Mr .version package.json)
+          export VERSION_TAG=v$(npx semver $DEVELOP_VERSION $MAIN_VERSION | tail -n1)
+          echo VERSION_TAG="$VERSION_TAG" >> $GITHUB_ENV
+          echo "::set-output name=result::$VERSION_TAG"
+      - name: Set Docker version tag
+        id: DOCKER_TAG
+        run: |
+          git checkout ${{ env.VERSION_TAG }}
+          export IS_MAIN=$(git branch --points-at HEAD | grep main)
+          export DOCKER_TAG=$(if [[ -n "$IS_MAIN" ]]; then echo stable; else echo qa; fi)
+          echo "::set-output name=result::$DOCKER_TAG"
+  # Publish the docker image for the app server
+  # We use three primary tags:
+  #   [version]: Each semver change is tagged
+  #   qa: always points at the most recent semver tag
+  #   stable: always points at the most recent minor tag
+  publish-docker:
+    runs-on: ubuntu-latest
+    needs: pre-publish
+    steps:
+      - name: Import metadata
+        run: |
+          echo VERSION_TAG=${{ needs.pre-publish.outputs.VERSION_TAG }} >> $GITHUB_ENV
+          echo DOCKER_TAG=${{ needs.pre-publish.outputs.DOCKER_TAG }} >> $GITHUB_ENV
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Generate Tag List
+        run: |
+          DOCKER_TAG_LIST=ghcr.io/${{ github.repository }}:${{ env.VERSION_TAG }}
+          DOCKER_TAG_LIST+=,ghcr.io/${{ github.repository }}:qa
+          if [[ $DOCKER_TAG == stable ]]; then
+            DOCKER_TAG_LIST+=,ghcr.io/${{ github.repository }}:stable
+          fi;
+          echo DOCKER_TAG_LIST="$DOCKER_TAG_LIST" >> $GITHUB_ENV
+      - name: login
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish image
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          context: ${{ github.server_url }}/${{ github.repository }}.git#${{ env.VERSION_TAG }}
+          tags: ${{ env.DOCKER_TAG_LIST }}
+  publish-client:
+    runs-on: ubuntu-latest
+    needs: pre-publish
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14
+      - name: Install Dependencies
+        run: npm ci
+      - name: Import metadata
+        run: |
+          echo VERSION_TAG=${{ needs.pre-publish.outputs.VERSION_TAG }} >> $GITHUB_ENV
+          echo PACKAGE_NAME=${{ needs.pre-publish.outputs.PACKAGE_NAME }} >> $GITHUB_ENV
+      - name: build QA bundle
+        env:
+          PUBLIC_CLIENT_URL: ${{ secrets.QA_PUBLIC_CLIENT_URL }}
+          SERVER_URL: ${{ secrets.QA_SERVER_URL }}
+          APP_NAME: ${{ secrets.QA_APP_NAME }}
+        run: |
+          rm -rf build
+          npm run build:client
+          export QA_BUNDLE_NAME="${{ env.PACKAGE_NAME }}_${{ env.VERSION_TAG }}_QA.tar.gz"
+          tar -czvf $QA_BUNDLE_NAME -C build client
+          echo QA_BUNDLE_NAME="$QA_BUNDLE_NAME" >> $GITHUB_ENV
+      - name: build PROD bundle
+        env:
+          PUBLIC_CLIENT_URL: ${{ secrets.PROD_PUBLIC_CLIENT_URL }}
+          SERVER_URL: ${{ secrets.PROD_SERVER_URL }}
+          APP_NAME: ${{ secrets.PROD_APP_NAME }}
+        run: |
+          rm -rf build
+          npm run build:client
+          export PROD_BUNDLE_NAME="${{ env.PACKAGE_NAME }}_${{ env.VERSION_TAG }}_PROD.tar.gz"
+          tar -czvf $PROD_BUNDLE_NAME -C build client
+          echo PROD_BUNDLE_NAME="$PROD_BUNDLE_NAME" >> $GITHUB_ENV
+      # Runs a script to create a new release on github, matching the tag set
+      # above, and publish the built application as an asset on that release
+      - name: Publish Bundle
+        uses: actions/github-script@v4
+        with:
+          script: |
+            const fs = require('fs');
+            const owner = process.env.GITHUB_REPOSITORY_OWNER;
+            const repo = process.env.PACKAGE_NAME;
+            const tag_name = process.env.VERSION_TAG;
+            const newRelease = await github.repos.createRelease({
+              owner,
+              repo,
+              tag_name
+            });
+            const { data: { id: release_id, html_url } } = newRelease;
+            core.info(`Published ${tag_name}: ${html_url}`)
+            await Promise.all([
+              process.env.QA_BUNDLE_NAME,
+              process.env.PROD_BUNDLE_NAME,
+            ].map(async (name) => {
+              const data = fs.readFileSync(name);
+              const { data: { browser_download_url } } =  await github.repos.uploadReleaseAsset({
+                owner,
+                repo,
+                release_id,
+                name,
+                data,
+              });
+              core.info(`Published ${name}: ${browser_download_url}`);
+            }));
