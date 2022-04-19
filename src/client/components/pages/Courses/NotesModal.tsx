@@ -69,8 +69,10 @@ const NotesModal: FunctionComponent<NotesModalProps> = function ({
    * rendered by letting next task of event queue run first.
    */
   useEffect(() => {
-    setTimeout((): void => modalHeaderRef.current?.focus());
-  }, [modalHeaderRef]);
+    if (isVisible) {
+      setTimeout((): void => modalHeaderRef.current?.focus());
+    }
+  }, [modalHeaderRef, isVisible]);
 
   /**
    * Set initial value of local courseNotes state field. 
