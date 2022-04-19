@@ -1,7 +1,6 @@
 import { strictEqual } from 'assert';
 import { CourseAPI } from 'client/api';
 import CoursesPage from 'client/components/pages/Courses/CoursesPage';
-import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import React from 'react';
 import { SinonStub, stub } from 'sinon';
 import {
@@ -20,9 +19,11 @@ describe('Notes modal', function () {
   const testData = cs50CourseInstance;
   let page: RenderResult;
 
+  let modal: HTMLDivElement;
   let editNotesButton: HTMLButtonElement;
   let multiLineTextArea: HTMLTextAreaElement;
   let noteSubmitButton: HTMLButtonElement;
+  let noteCancelButton: HTMLButtonElement;
 
   beforeEach(async function () {
     getStub = stub(CourseAPI, 'getCourseInstancesForYear');
@@ -35,12 +36,13 @@ describe('Notes modal', function () {
     );
     fireEvent.click(editNotesButton);
 
-    const modal = page.getByRole('dialog');
+    modal = page.getByRole('dialog') as HTMLDivElement;
 
     multiLineTextArea = within(modal)
       .getByLabelText('Course Notes', {
         selector: 'textarea',
       }) as HTMLTextAreaElement;
+    noteCancelButton = within(modal).getByText(/Cancel/) as HTMLButtonElement;
     noteSubmitButton = within(modal).getByText(/Save/) as HTMLButtonElement;
   });
   it('opens when the notes button is clicked beside a course', function () {
@@ -71,10 +73,20 @@ describe('Notes modal', function () {
     strictEqual(newMultiLineTextArea.value, 'aaa');
   });
   it('focuses the modal header on open', function () {
-    strictEqual(
-      (document.activeElement as HTMLElement).textContent
-        .includes(`Notes For ${testData.catalogNumber}`),
-      true
-    );
+    setTimeout(() => {
+      strictEqual(
+        (document.activeElement as HTMLElement).textContent,
+        `Notes For ${testData.catalogNumber}`
+      );
+    });
+  });
+  it('re-focuses the add/edit button on close', function () {
+    fireEvent.click(noteCancelButton);
+    setTimeout(() => {
+      strictEqual(
+        (document.activeElement as HTMLElement).textContent,
+        'Add Notes'
+      );
+    });
   });
 });
