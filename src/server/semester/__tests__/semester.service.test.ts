@@ -20,12 +20,10 @@ import { ConfigModule } from 'server/config/config.module';
 import { Authentication } from 'server/auth/authentication.guard';
 import { AuthModule } from 'server/auth/auth.module';
 import { AUTH_MODE } from 'common/constants';
-import FakeTimers from '@sinonjs/fake-timers';
-import { MONTH } from 'common/constants/month';
 import * as dummy from 'testData';
+import { BadRequestException } from '@nestjs/common';
 import { SemesterService } from '../semester.service';
 import { TestingStrategy } from '../../../../tests/mocks/authentication/testing.strategy';
-import { BadRequestException } from '@nestjs/common';
 
 describe('Semester Service', function () {
   let semesterService: SemesterService;
@@ -134,7 +132,7 @@ describe('Semester Service', function () {
   });
   describe('addAcademicYear', function () {
     let getStub: SinonStub;
-    context('when academic year preceding the requested academic year exists', function () {
+    context('when the academic year preceding the requested academic year exists', function () {
       const newAcademicYear = parseInt(fakeYearList.slice(-1)[0], 10) + 1;
       beforeEach(function () {
         getStub = stub(semesterService, 'getYearList').resolves(fakeYearList);
@@ -152,7 +150,7 @@ describe('Semester Service', function () {
         strictEqual(mockSemesterRepository.save.callCount, 2, 'Called "save" an unexpected number of times.');
       });
     });
-    context('when academic year preceding the requested academic year does not exist', function () {
+    context('when the academic year preceding the requested academic year does not exist', function () {
       const newAcademicYear = 2030;
       beforeEach(function () {
         getStub = stub(semesterService, 'getYearList').resolves(fakeYearList);
