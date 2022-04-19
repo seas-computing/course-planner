@@ -666,19 +666,17 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
           closeMeetingModal();
         }}
       />
-      {notesModalData.visible ? (
-        <NotesModal
-          course={notesModalData.course}
-          isVisible={notesModalData.visible}
-          onClose={closeNotesModal}
-          onSave={(course) => {
-            updateLocalCourse({
-              ...course,
-            }, 'Course notes saved.');
-            closeNotesModal();
-          }}
-        />
-      ) : null }
+      <NotesModal
+        course={notesModalData.course}
+        isVisible={notesModalData.visible}
+        onClose={closeNotesModal}
+        onSave={(course) => {
+          updateLocalCourse({
+            ...course,
+          }, 'Course notes saved.');
+          closeNotesModal();
+        }}
+      />
       <InstructorModal
         isVisible={instructorModalData.visible}
         currentSemester={{

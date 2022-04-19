@@ -56,7 +56,7 @@ const NotesModal: FunctionComponent<NotesModalProps> = function ({
   const [
     courseNotes,
     setCourseNotes,
-  ] = useState(course.notes || '');
+  ] = useState('');
 
   /**
    * The current value of the Meeting Modal ref
@@ -72,6 +72,13 @@ const NotesModal: FunctionComponent<NotesModalProps> = function ({
     setTimeout((): void => modalHeaderRef.current?.focus());
   }, [modalHeaderRef]);
 
+  /**
+   * Set initial value of local courseNotes state field. 
+   */
+  useEffect(() => {
+    setCourseNotes(course?.notes);
+  }, [course, setCourseNotes]);
+
   return (
     <Modal
       ariaLabelledBy="notes"
@@ -82,11 +89,11 @@ const NotesModal: FunctionComponent<NotesModalProps> = function ({
         forwardRef={modalHeaderRef}
         tabIndex={0}
       >
-        {`Notes For ${course.catalogNumber}`}
+        {`Notes For ${course?.catalogNumber}`}
       </ModalHeader>
       <ModalBody>
         <MultiLineTextInput
-          id={`notes-${course.id}`}
+          id={`notes-${course?.id}`}
           value={courseNotes}
           label="Course Notes"
           name="notes"
