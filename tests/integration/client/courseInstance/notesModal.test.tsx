@@ -61,6 +61,9 @@ describe('Notes modal', function () {
     });
     fireEvent.click(noteSubmitButton);
     await waitForElementToBeRemoved(() => page.getByRole('dialog'));
+    // Get new reference to add/edit button since the original may have
+    // replaced since the last render
+    editNotesButton = await page.findByLabelText('notes', { exact: false }) as HTMLButtonElement;
     fireEvent.click(editNotesButton);
     const newMultiLineTextArea = within(modal).getByLabelText(
       'Course Notes',
