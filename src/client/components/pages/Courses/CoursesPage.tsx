@@ -222,6 +222,30 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   }, [setFilters]);
 
   /**
+   * Handle opening the download modal
+   */
+  const openDownloadModal = useCallback(() => {
+    setReportModalVisible(true);
+    setModalButtonId('download-course-report');
+  }, [setReportModalVisible, setModalButtonId]);
+
+  /**
+   * Handle closign the download modal
+   */
+  const closeDownloadModal = useCallback(() => {
+    setReportModalVisible(false);
+    setTimeout(() => {
+      if (modalButtonId && modalButtonId in refTable.current) {
+        refTable.current[modalButtonId].focus();
+      }
+    });
+  }, [
+    setReportModalVisible,
+    refTable,
+    modalButtonId,
+  ]);
+
+  /**
    * Takes the requested course and term information to display the requested
    * meeting modal
    */
@@ -518,7 +542,8 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
           <Button
             variant={VARIANT.INFO}
             alt="Download a spreadsheet with course data"
-            onClick={() => { setReportModalVisible(true); }}
+            onClick={openDownloadModal}
+            forwardRef={setButtonRef('download-course-report')}
           >
             <FontAwesomeIcon
               icon={faDownload}
@@ -661,7 +686,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
       />
       <ReportDownloadModal
         isVisible={reportModalVisible}
-        closeModal={() => { setReportModalVisible(false); }}
+        closeModal={closeDownloadModal}
       />
     </div>
   );
