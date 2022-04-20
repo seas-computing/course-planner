@@ -45,9 +45,6 @@ describe('Notes modal', function () {
     noteCancelButton = within(modal).getByText(/Cancel/) as HTMLButtonElement;
     noteSubmitButton = within(modal).getByText(/Save/) as HTMLButtonElement;
   });
-  it('opens when the notes button is clicked beside a course', function () {
-    return page.getByRole('dialog');
-  });
   it('updates notes for the specified course on the server', function () {
     fireEvent.change(multiLineTextArea, {
       target: { value: 'aaa' },
