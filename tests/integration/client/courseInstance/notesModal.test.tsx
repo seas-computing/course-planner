@@ -34,7 +34,7 @@ describe('Notes modal', function () {
     editNotesButton = await page.findByLabelText('notes', { exact: false }) as HTMLButtonElement;
     fireEvent.click(editNotesButton);
 
-    modal = page.getByRole('dialog') as HTMLDivElement;
+    modal = page.getByText(`Notes For ${testData.catalogNumber}`).parentElement.parentElement as HTMLDivElement;
 
     multiLineTextArea = within(modal)
       .getByLabelText('Course Notes', {
@@ -60,7 +60,9 @@ describe('Notes modal', function () {
       target: { value: 'aaa' },
     });
     fireEvent.click(noteSubmitButton);
-    await waitForElementToBeRemoved(() => page.getByRole('dialog'));
+    await waitForElementToBeRemoved(
+      () => page.getByText(`Notes For ${testData.catalogNumber}`)
+    );
     // Get new reference to add/edit button since the original may have
     // replaced since the last render
     editNotesButton = await page.findByLabelText('notes', { exact: false }) as HTMLButtonElement;
