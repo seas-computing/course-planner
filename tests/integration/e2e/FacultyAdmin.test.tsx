@@ -123,23 +123,31 @@ describe('End-to-end Faculty Admin updating', function () {
         fireEvent.change(facultyCategorySelect,
           { target: { value: facultyMember.category } });
       });
-      context('when the modal submit button is clicked', function () {
-        it('should not show the unsaved changes warning', async function () {
-          const submitButton = renderResult.getByText('Submit');
-          fireEvent.click(submitButton);
-          await waitForElementToBeRemoved(() => renderResult.queryByText('Submit'));
-          const modal = renderResult.queryByRole('dialog');
-          strictEqual(modal, null);
+      context('when the required fields are provided', function () {
+        context('when the modal submit button is clicked', function () {
+          it('should not show the unsaved changes warning', async function () {
+            const submitButton = renderResult.getByText('Submit');
+            fireEvent.click(submitButton);
+            await waitForElementToBeRemoved(() => renderResult.queryByText('Submit'));
+            const modal = renderResult.queryByRole('dialog');
+            strictEqual(modal, null);
+          });
+          it('should show a success message', async function () {
+            const submitButton = renderResult.getByText('Submit');
+            fireEvent.click(submitButton);
+            await waitForElementToBeRemoved(() => renderResult.queryByText('Submit'));
+            return renderResult.findByText('Faculty was updated', { exact: false });
+          });
         });
-      });
-      context('when the modal submit button is not clicked', function () {
-        it('should show the unsaved changes warning', async function () {
-          const windowConfirmStub = stub(window, 'confirm');
-          windowConfirmStub.returns(true);
-          // Attempt to close the modal without saving
-          const cancelButton = await renderResult.findByText('Cancel');
-          fireEvent.click(cancelButton);
-          strictEqual(windowConfirmStub.callCount, 1);
+        context('when the modal submit button is not clicked', function () {
+          it('should show the unsaved changes warning', async function () {
+            const windowConfirmStub = stub(window, 'confirm');
+            windowConfirmStub.returns(true);
+            // Attempt to close the modal without saving
+            const cancelButton = await renderResult.findByText('Cancel');
+            fireEvent.click(cancelButton);
+            strictEqual(windowConfirmStub.callCount, 1);
+          });
         });
       });
     });
@@ -151,8 +159,8 @@ describe('End-to-end Faculty Admin updating', function () {
         fireEvent.click(editButton);
         return renderResult.findByRole('dialog');
       });
-      context('when the modal submit button is clicked', function () {
-        context('when the user attempts to exit the modal', function () {
+      context('when the required fields are provided', function () {
+        context('when the modal submit button is clicked', function () {
           it('should not show an unsaved changes warning', async function () {
             // Set new category for faculty entry
             const categorySelector = await renderResult.findByLabelText('Category', { exact: false });
@@ -165,21 +173,27 @@ describe('End-to-end Faculty Admin updating', function () {
             const modal = renderResult.queryByRole('dialog');
             strictEqual(modal, null);
           });
+          it('should show a success message', async function () {
+            const submitButton = renderResult.getByText('Submit');
+            fireEvent.click(submitButton);
+            await waitForElementToBeRemoved(() => renderResult.queryByText('Submit'));
+            return renderResult.findByText('Faculty was updated', { exact: false });
+          });
         });
-      });
-      context('when the modal submit button is not clicked', function () {
-        context('when the user attempts to exit the modal', function () {
-          it('should show an unsaved changes warning', async function () {
-            // Set new category for faculty entry
-            const categorySelector = await renderResult.findByLabelText('Category', { exact: false });
-            fireEvent.change(categorySelector,
-              { target: { value: FACULTY_TYPE.LADDER } });
-            const windowConfirmStub = stub(window, 'confirm');
-            windowConfirmStub.returns(true);
-            // Attempt to close the modal without saving
-            const cancelButton = await renderResult.findByText('Cancel');
-            fireEvent.click(cancelButton);
-            strictEqual(windowConfirmStub.callCount, 1);
+        context('when the modal submit button is not clicked', function () {
+          context('when the user attempts to exit the modal', function () {
+            it('should show an unsaved changes warning', async function () {
+              // Set new category for faculty entry
+              const categorySelector = await renderResult.findByLabelText('Category', { exact: false });
+              fireEvent.change(categorySelector,
+                { target: { value: FACULTY_TYPE.LADDER } });
+              const windowConfirmStub = stub(window, 'confirm');
+              windowConfirmStub.returns(true);
+              // Attempt to close the modal without saving
+              const cancelButton = await renderResult.findByText('Cancel');
+              fireEvent.click(cancelButton);
+              strictEqual(windowConfirmStub.callCount, 1);
+            });
           });
         });
       });

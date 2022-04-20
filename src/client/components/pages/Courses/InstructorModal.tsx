@@ -17,6 +17,7 @@ import {
   ListItem,
   Combobox,
   ModalMessage,
+  LoadSpinner,
 } from 'mark-one';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt, faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
@@ -28,6 +29,7 @@ import { TermKey } from '../../../../common/constants/term';
 import { InstructorResponseDTO } from '../../../../common/dto/courses/InstructorResponse.dto';
 import { getAllInstructors } from '../../../api/faculty';
 import { ManageFacultyResponseDTO } from '../../../../common/dto/faculty/ManageFacultyResponse.dto';
+import { updateInstructorList } from '../../../api';
 
 /**
 * Implement flexbox inside our ListItem to handle row spacing for handling
@@ -67,7 +69,9 @@ interface InstructorModalProps {
    * A hook that will be called with the result of saving the instructor list
    * to the server
    */
-  onSave: (arg0: InstructorResponseDTO[]) => void;
+  onSave: (
+    newInstructorList: InstructorResponseDTO[],
+  ) => void;
 }
 
 /**
@@ -87,16 +91,19 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
   currentCourse,
   currentSemester,
   closeModal,
+  onSave,
 }): ReactElement => {
-  const { term, calendarYear } = currentSemester;
-  const semKey = term.toLowerCase() as TermKey;
-  const {
-    catalogNumber,
-    [semKey]: {
-      instructors: instanceInstructors,
-    },
-  } = currentCourse;
+  const [
+    currentCourseInstance,
+    setCurrentCourseInstance,
+  ] = useState<CourseInstanceResponseDTO['fall'|'spring']>(null);
 
+  useEffect(() => {
+    if (currentSemester && currentCourse) {
+      const currentTermKey = currentSemester.term.toLowerCase() as TermKey;
+      setCurrentCourseInstance(currentCourse[currentTermKey]);
+    }
+  }, [currentSemester, currentCourse]);
   /**
    * Keeps track of whether the user has altered fields in the form to determine
    * whether to show a confirmation dialog on modal close
@@ -188,8 +195,8 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
    * opens, then fetch the complete list of instructors from the server
    */
   useEffect(() => {
-    if (isVisible) {
-      setLocalInstructors(instanceInstructors);
+    if (isVisible && currentCourseInstance) {
+      setLocalInstructors(currentCourseInstance.instructors);
       setMeetingModalFocus();
       getAllInstructors()
         .then((facultyList) => {
@@ -207,7 +214,7 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
     }
   }, [
     isVisible,
-    instanceInstructors,
+    currentCourseInstance,
     setLocalInstructors,
     setFullInstructorList,
   ]);
@@ -233,7 +240,41 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
     setIsChanged(true);
   };
 
-  const instanceIdentifier = `${catalogNumber}, ${term} ${calendarYear}`;
+  /**
+   * Track whether data is being pushed to the server
+   */
+  const [saving, setSaving] = useState(false);
+
+  /**
+   * Submits the updated instructor list to the server and passes the response
+   * through to the update handler
+   */
+  const saveInstructorList = async () => {
+    try {
+      setSaving(true);
+      const results = await updateInstructorList(
+        currentCourseInstance.id,
+        localInstructors
+      );
+      onSave(results);
+      setIsChanged(false);
+    } catch (error) {
+      const { message } = error as Error;
+      setErrorMessage(message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const instanceIdentifier = currentCourse && currentSemester
+    ? `${
+      currentCourse.catalogNumber
+    }, ${
+      currentSemester.term
+    } ${
+      currentSemester.calendarYear
+    }`
+    : '';
   return (
     <Modal
       ariaLabelledBy="edit-instructors-header"
@@ -249,106 +290,116 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
         </span>
       </ModalHeader>
       <InstructorModalBody>
-        <List>
-          <>
-            {localInstructors.map(
-              ({ id, displayName }, index, { length }) => (
-                <InstructorListItem key={id}>
-                  <BorderlessButton
-                    alt={`Remove ${displayName} from ${instanceIdentifier}`}
-                    variant={VARIANT.DANGER}
-                    onClick={() => {
-                      moveInstructor(index, null);
+        {saving
+          ? (
+            <LoadSpinner>Saving Instructors</LoadSpinner>
+          )
+          : (
+            <List>
+              <>
+                {localInstructors.map(
+                  ({ id, displayName }, index, { length }) => (
+                    <InstructorListItem key={id}>
+                      <BorderlessButton
+                        alt={`Remove ${displayName} from ${instanceIdentifier}`}
+                        variant={VARIANT.DANGER}
+                        onClick={() => {
+                          moveInstructor(index, null);
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faTrashAlt} />
+                      </BorderlessButton>
+                      <span className="instructor-name" id={`instructor-${index + 1}`}>
+                        {displayName}
+                      </span>
+                      {index > 0 ? (
+                        <BorderlessButton
+                          alt={`Move ${displayName} up to position ${index} in ${instanceIdentifier}`}
+                          variant={VARIANT.PRIMARY}
+                          onClick={() => {
+                            moveInstructor(index, index - 1);
+                          }}
+                        >
+                          <FontAwesomeIcon icon={faArrowUp} />
+                        </BorderlessButton>
+                      ) : (
+                        <BorderlessButton
+                          disabled
+                          alt={`${displayName} cannot be moved up`}
+                          variant={VARIANT.DEFAULT}
+                          onClick={() => {}}
+                        >
+                          <FontAwesomeIcon icon={faArrowUp} />
+                        </BorderlessButton>
+                      )}
+                      {index < length - 1 ? (
+                        <BorderlessButton
+                          alt={`Move ${displayName} down to position ${index + 2} in ${instanceIdentifier}`}
+                          variant={VARIANT.PRIMARY}
+                          onClick={() => {
+                            moveInstructor(index, index + 1);
+                          }}
+                        >
+                          <FontAwesomeIcon icon={faArrowDown} />
+                        </BorderlessButton>
+                      ) : (
+                        <BorderlessButton
+                          disabled
+                          alt={`${displayName} cannot be moved down`}
+                          variant={VARIANT.DEFAULT}
+                          onClick={() => {}}
+                        >
+                          <FontAwesomeIcon icon={faArrowDown} />
+                        </BorderlessButton>
+                      )}
+                    </InstructorListItem>
+                  )
+                )}
+                <ListItem as="div">
+                  <Combobox
+                    options={fullInstructorList
+                      .filter(
+                        ({ value }) => (
+                          localInstructors
+                            .findIndex(
+                              ({ id }) => value === id
+                            ) === -1)
+                      )}
+                    label={`Add new Instructor to ${instanceIdentifier}`}
+                    currentValue={null}
+                    isLabelVisible={false}
+                    placeholder={
+                      fullInstructorList.length > 0
+                        ? 'Add new instructor'
+                        : 'Loading instructor data...'
+                    }
+                    filterFunction={
+                      (option, inputValue) => {
+                        const inputWords = inputValue.split(' ');
+                        const inputRegExp = new RegExp(inputWords.join('|'), 'i');
+                        return inputRegExp.test(option.label);
+                      }
+                    }
+                    onOptionSelected={({
+                      selectedItem: {
+                        label: displayName,
+                        value: id,
+                      },
+                    }) => {
+                      setLocalInstructors(
+                        (list) => ([...list, { id, displayName }])
+                      );
+                      setIsChanged(true);
                     }}
-                  >
-                    <FontAwesomeIcon icon={faTrashAlt} />
-                  </BorderlessButton>
-                  <span className="instructor-name" id={`instructor-${index + 1}`}>
-                    {displayName}
-                  </span>
-                  {index > 0 ? (
-                    <BorderlessButton
-                      alt={`Move ${displayName} up to position ${index} in ${instanceIdentifier}`}
-                      variant={VARIANT.PRIMARY}
-                      onClick={() => {
-                        moveInstructor(index, index - 1);
-                      }}
-                    >
-                      <FontAwesomeIcon icon={faArrowUp} />
-                    </BorderlessButton>
-                  ) : (
-                    <BorderlessButton
-                      disabled
-                      alt={`${displayName} cannot be moved up`}
-                      variant={VARIANT.DEFAULT}
-                      onClick={() => {}}
-                    >
-                      <FontAwesomeIcon icon={faArrowUp} />
-                    </BorderlessButton>
-                  )}
-                  {index < length - 1 ? (
-                    <BorderlessButton
-                      alt={`Move ${displayName} down to position ${index + 2} in ${instanceIdentifier}`}
-                      variant={VARIANT.PRIMARY}
-                      onClick={() => {
-                        moveInstructor(index, index + 1);
-                      }}
-                    >
-                      <FontAwesomeIcon icon={faArrowDown} />
-                    </BorderlessButton>
-                  ) : (
-                    <BorderlessButton
-                      disabled
-                      alt={`${displayName} cannot be moved down`}
-                      variant={VARIANT.DEFAULT}
-                      onClick={() => {}}
-                    >
-                      <FontAwesomeIcon icon={faArrowDown} />
-                    </BorderlessButton>
-                  )}
-                </InstructorListItem>
-              )
-            )}
-            <ListItem as="div">
-              <Combobox
-                options={fullInstructorList
-                  .filter(
-                    ({ value }) => (
-                      localInstructors
-                        .findIndex(
-                          ({ id }) => value === id
-                        ) === -1)
-                  )}
-                label={`Add new Instructor to ${instanceIdentifier}`}
-                currentValue={null}
-                isLabelVisible={false}
-                placeholder="Add new instructor"
-                filterFunction={
-                  (option, inputValue) => {
-                    const inputWords = inputValue.split(' ');
-                    const inputRegExp = new RegExp(inputWords.join('|'), 'i');
-                    return inputRegExp.test(option.label);
-                  }
-                }
-                onOptionSelected={({
-                  selectedItem: {
-                    label: displayName,
-                    value: id,
-                  },
-                }) => {
-                  setLocalInstructors(
-                    (list) => ([...list, { id, displayName }])
-                  );
-                  setIsChanged(true);
-                }}
-              />
-            </ListItem>
-          </>
-        </List>
+                  />
+                </ListItem>
+              </>
+            </List>
+          )}
       </InstructorModalBody>
       <ModalFooter>
         <Button
-          onClick={() => {}}
+          onClick={saveInstructorList}
           variant={VARIANT.PRIMARY}
           disabled={false}
         >

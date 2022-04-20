@@ -15,6 +15,8 @@ import {
   testCourseScheduleData,
 } from 'testData';
 import { BadRequestException } from '@nestjs/common';
+import { Area } from 'server/area/area.entity';
+import { SemesterView } from 'server/semester/SemesterView.entity';
 import { CourseInstanceService } from '../courseInstance.service';
 import { CourseInstanceController } from '../courseInstance.controller';
 import { MultiYearPlanView } from '../MultiYearPlanView.entity';
@@ -29,6 +31,7 @@ import { FacultyCourseInstance } from '../facultycourseinstance.entity';
 import { AuthModule } from '../../auth/auth.module';
 import { TestingStrategy } from '../../../../tests/mocks/authentication/testing.strategy';
 import { ConfigModule } from '../../config/config.module';
+import { CourseInstanceListingView } from '../CourseInstanceListingView.entity';
 
 describe('Course Instance Controller', function () {
   let ciController: CourseInstanceController;
@@ -91,6 +94,18 @@ describe('Course Instance Controller', function () {
         },
         {
           provide: getRepositoryToken(FacultyCourseInstance),
+          useValue: mockRepository,
+        },
+        {
+          provide: getRepositoryToken(Area),
+          useValue: mockRepository,
+        },
+        {
+          provide: getRepositoryToken(CourseInstanceListingView),
+          useValue: mockRepository,
+        },
+        {
+          provide: getRepositoryToken(SemesterView),
           useValue: mockRepository,
         },
         ConfigService,

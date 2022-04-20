@@ -4,9 +4,12 @@ import React, {
 import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
 import { getCourseScheduleForSemester } from 'client/api/courses';
 import { TERM } from 'common/constants';
-import { LoadSpinner } from 'mark-one';
+import { Dropdown, POSITION, LoadSpinner } from 'mark-one';
 import { AppMessage, MESSAGE_TYPE, MESSAGE_ACTION } from 'client/classes';
-import { MessageContext } from 'client/context';
+import { MessageContext, MetadataContext } from 'client/context';
+import { VerticalSpace } from 'client/components/layout';
+import { termEnumToTitleCase } from 'common/utils/termHelperFunctions';
+import { toTitleCase } from 'common/utils/util';
 import ScheduleView from './ScheduleView';
 
 /**
@@ -14,13 +17,16 @@ import ScheduleView from './ScheduleView';
  * static values.
  *
  * TODO: Consider deriving start and end times from schedule data
- * TODO: Move the calendarYear and term to dropdown in the UI
  */
 
 const FIRST_HOUR = 8;
 const LAST_HOUR = 20;
-const calendarYear = 2019;
-const term = TERM.FALL;
+
+/** Describes the currently selected semester */
+interface SemesterSelection {
+  term: TERM;
+  calendarYear: number;
+}
 
 /**
  * This is the top-level page component for the Schedule. It's responsible for
@@ -40,50 +46,139 @@ const SchedulePage: FunctionComponent = () => {
   const dispatchMessage = useContext(MessageContext);
 
   /**
+   * Provides the current Academic Year from the server
+   * Later, we may add the current Term to metadata
+   */
+  const { currentAcademicYear, semesters } = useContext(MetadataContext);
+
+  /**
+   * Keeps track of the currently selectedterm
+   */
+  const [selectedSemester, setSelectedSemester] = useState<SemesterSelection>();
+
+  /**
    * Whether an API request is in progress
    */
   const [isFetching, setFetching] = useState<boolean>(false);
+
+  /**
+   * Map the metadata semesters into Dropdown-compatible options
+   */
+  const semesterOptions = semesters
+    .map((semester) => ({
+      value: semester,
+      label: toTitleCase(semester),
+    }));
+
+  /**
+   * Update handler for the dropdown, which passes the selected term/year combo
+   * into the state value
+   */
+  const updateTerm = ({
+    target: {
+      value,
+    },
+  }: React.ChangeEvent<HTMLSelectElement>) => {
+    if (value) {
+      const [term, year] = value.split(' ');
+      setSelectedSemester({
+        term: (term.toUpperCase() === TERM.SPRING) ? TERM.SPRING : TERM.FALL,
+        calendarYear: parseInt(year, 10),
+      });
+    }
+  };
+
+  /**
+   * When the page loads, set the selectedSemester to the present Semester
+   */
+  useEffect(():void => {
+    if (!selectedSemester) {
+      const today = new Date();
+      // Check if current month is later than or equal to July
+      if (today.getMonth() >= 6) {
+        setSelectedSemester({
+          term: TERM.FALL,
+          calendarYear: currentAcademicYear - 1,
+        });
+      } else {
+        setSelectedSemester({
+          term: TERM.SPRING,
+          calendarYear: currentAcademicYear,
+        });
+      }
+    }
+  }, [currentAcademicYear, selectedSemester, setSelectedSemester]);
 
   /**
    * Fetch the schedule data from the server, store it in state to pass into
    * the ScheduleView
    */
   useEffect(():void => {
-    setFetching(true);
-    getCourseScheduleForSemester(calendarYear, term)
-      .then((data):void => {
-        setSchedule(data);
-      })
-      .catch(():void => {
-        dispatchMessage({
-          message: new AppMessage(
-            'Unable to get schedule data from server. If the problem persists, contact SEAS Computing',
-            MESSAGE_TYPE.ERROR
-          ),
-          type: MESSAGE_ACTION.PUSH,
+    if (selectedSemester) {
+      setFetching(true);
+      const { term, calendarYear } = selectedSemester;
+      getCourseScheduleForSemester(calendarYear, term)
+        .then((data):void => {
+          if (data.length === 0) {
+            dispatchMessage({
+              message: new AppMessage(
+                `There is no schedule data for ${termEnumToTitleCase(term)} ${calendarYear}.`,
+                MESSAGE_TYPE.ERROR
+              ),
+              type: MESSAGE_ACTION.PUSH,
+            });
+          }
+          setSchedule(data);
+        })
+        .catch(():void => {
+          dispatchMessage({
+            message: new AppMessage(
+              'Unable to get schedule data from server. If the problem persists, contact SEAS Computing',
+              MESSAGE_TYPE.ERROR
+            ),
+            type: MESSAGE_ACTION.PUSH,
+          });
+        }).finally(() => {
+          setFetching(false);
         });
-      }).finally(() => {
-        setFetching(false);
-      });
-  }, [setSchedule, dispatchMessage, setFetching]);
+    }
+  }, [
+    selectedSemester,
+    setSchedule,
+    dispatchMessage,
+    setFetching,
+  ]);
 
-  if (isFetching) {
-    return (
-      <LoadSpinner>
-        Fetching Course Schedule
-      </LoadSpinner>
-    );
-  }
-  if (schedule.length > 0) {
-    return (
-      <ScheduleView
-        schedule={schedule}
-        firstHour={FIRST_HOUR}
-        lastHour={LAST_HOUR}
-      />
-    );
-  }
-  return null;
+  return (
+    <>
+      <VerticalSpace>
+        {selectedSemester && (
+          <Dropdown
+            id="schedule-semester-selector"
+            name="schedule-semester-selector"
+            label="Select Semester"
+            labelPosition={POSITION.LEFT}
+            value={`${selectedSemester.term} ${selectedSemester.calendarYear}`}
+            options={semesterOptions}
+            onChange={updateTerm}
+          />
+        )}
+      </VerticalSpace>
+      {isFetching
+        ? (
+          <LoadSpinner>
+            Fetching Course Schedule
+          </LoadSpinner>
+        )
+        : (
+          <ScheduleView
+            schedule={schedule}
+            firstHour={FIRST_HOUR}
+            lastHour={LAST_HOUR}
+          />
+        )}
+    </>
+  );
 };
 
 export default SchedulePage;

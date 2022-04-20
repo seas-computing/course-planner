@@ -64,7 +64,7 @@ describe('Meeting Modal', function () {
           }}
           onClose={onCloseStub}
           onSave={onSaveStub}
-          notes={<div>Test Notes</div>}
+          getNotes={() => (<div>Test Notes</div>)}
         />
       );
       ({
@@ -80,7 +80,7 @@ describe('Meeting Modal', function () {
     describe('On Open Behavior', function () {
       it('populates the heading with the correct course instance information', function () {
         return waitForElement(
-          () => getByText(`Meetings for ${cs50CourseInstance.catalogNumber} - ${meetingTerm} ${cs50CourseInstance[semKey].calendarYear}`)
+          () => getByText(`Meetings for ${cs50CourseInstance.catalogNumber}, ${meetingTerm} ${cs50CourseInstance[semKey].calendarYear}`)
         );
       });
       describe('Meeting Times', function () {
@@ -993,9 +993,6 @@ describe('Meeting Modal', function () {
             strictEqual(onSaveStub.callCount, 1);
             deepStrictEqual(onSaveStub.args[0][0], testMeetingResponses);
           });
-          it('Should call the onClose handler', function () {
-            strictEqual(onCloseStub.callCount, 1);
-          });
         });
         context('When the save operation fails', function () {
           context('With a server Error', function () {
@@ -1072,7 +1069,7 @@ describe('Meeting Modal', function () {
             }}
             onClose={() => { setOpen(false); }}
             onSave={onSaveStub}
-            notes={<div>Test Notes</div>}
+            getNotes={() => (<div>Test Notes</div>)}
           />
         </div>
       );

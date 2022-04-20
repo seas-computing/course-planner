@@ -40,6 +40,9 @@ Reducer<MessageReducerState, MessageReducerAction> = (
   action
 ): MessageReducerState => {
   const { currentMessage, queue } = state;
+  if (!action) {
+    return state;
+  }
   switch (action.type) {
     case (MESSAGE_ACTION.PUSH): {
       if (!currentMessage) {
@@ -55,8 +58,7 @@ Reducer<MessageReducerState, MessageReducerAction> = (
       };
     }
     case (MESSAGE_ACTION.CLEAR): {
-      const nextQueue = [...queue];
-      const nextMessage = nextQueue.shift();
+      const [nextMessage, ...nextQueue] = queue;
       return {
         queue: nextQueue,
         currentMessage: nextMessage,

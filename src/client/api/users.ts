@@ -7,12 +7,19 @@ import request from './request';
  */
 
 export const getCurrentUser = async (): Promise<User> => {
+  const publicHostname = new URL(process.env.PUBLIC_CLIENT_URL).hostname;
+  if (window.location.hostname === publicHostname) {
+    return new User({});
+  }
   try {
     const response = await request.get('/api/users/current');
     return new User(response.data);
   } catch (err) {
     if ((err as AxiosError).response?.status === 401) {
-      window.location.replace(`${process.env.SERVER_URL}/login`);
+      const loginURL = new URL(process.env.SERVER_URL);
+      const path = loginURL.pathname;
+      loginURL.pathname += path.endsWith('/') ? 'login' : '/login';
+      window.location.replace(loginURL.toString());
     } else {
       throw err;
     }

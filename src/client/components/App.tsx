@@ -1,9 +1,10 @@
 import React, {
   useState,
   useEffect,
-  useReducer,
   ReactElement,
   FunctionComponent,
+  Dispatch,
+  useRef,
 } from 'react';
 import {
   MESSAGE_TYPE,
@@ -12,12 +13,12 @@ import {
 } from 'client/classes';
 import {
   MessageContext,
-  messageReducer,
   UserContext,
   MetadataContext,
   MetadataContextValue,
+  MessageReducerAction,
 } from 'client/context';
-import { MarkOneWrapper, PageBody } from 'mark-one';
+import { MarkOneWrapper, PageBody, LoadSpinner } from 'mark-one';
 import { getCurrentUser } from 'client/api';
 import { getMetadata } from 'client/api/metadata';
 import { User } from 'common/classes';
@@ -41,18 +42,11 @@ const App: FunctionComponent = (): ReactElement => {
   const [currentUser, setUser] = useState<User | null>(null);
 
   /**
-   * Set up the local reducer for maintaining the current app-wide message
-   * queue. The dispatchMessage function will be passed down through the
-   * Message Context Provider
-   * */
-
-  const [{ currentMessage, queue }, dispatchMessage] = useReducer(
-    messageReducer,
-    {
-      queue: [],
-      currentMessage: undefined,
-    }
-  );
+   * Creates a mutable Ref to pass the dispatchMessage function up from the
+   * Message Component. This needs to be in a ref so that we can update it
+   * after the App component mounts/renders
+   */
+  const dispatchMessageRef = useRef<Dispatch<MessageReducerAction>>();
 
   /**
    * Set up the current metadata containing the current academic year, currently
@@ -66,8 +60,14 @@ const App: FunctionComponent = (): ReactElement => {
     semesters: [],
     catalogPrefixes: [],
   });
+
   const metadataContext = new MetadataContextValue(currentMetadata,
     setMetadata);
+
+  /**
+   * Tracks whether we're still fetching the user and metadata
+   */
+  const [isDataFetching, setDataFetching] = useState(true);
 
   /**
    * Get the currently authenticated user from the server on launch.
@@ -75,13 +75,16 @@ const App: FunctionComponent = (): ReactElement => {
    */
 
   useEffect((): void => {
-    getCurrentUser()
-      .then((user: User): void => {
-        if (user) {
+    if (dispatchMessageRef.current) {
+      const { current: dispatchMessage } = dispatchMessageRef;
+      setDataFetching(true);
+      getCurrentUser()
+        .then((user: User): void => {
           setUser(user);
           getMetadata()
             .then((metadata: MetadataResponse): void => {
               setMetadata(metadata);
+              setDataFetching(false);
             })
             .catch((): void => {
               dispatchMessage({
@@ -91,37 +94,44 @@ const App: FunctionComponent = (): ReactElement => {
                 ),
                 type: MESSAGE_ACTION.PUSH,
               });
+              setDataFetching(false);
             });
-        }
-      })
-      .catch((): void => {
-        dispatchMessage({
-          message: new AppMessage(
-            'Unable to get user data from server. If the problem persists, contact SEAS Computing',
-            MESSAGE_TYPE.ERROR
-          ),
-          type: MESSAGE_ACTION.PUSH,
+        })
+        .catch((): void => {
+          dispatchMessage({
+            message: new AppMessage(
+              'Unable to get user data from server. If the problem persists, contact SEAS Computing',
+              MESSAGE_TYPE.ERROR
+            ),
+            type: MESSAGE_ACTION.PUSH,
+          });
+          setDataFetching(false);
         });
-      });
-  }, []);
+    }
+  }, [dispatchMessageRef, setDataFetching]);
 
   return (
     <div className="app-content">
       <MarkOneWrapper>
         <UserContext.Provider value={currentUser}>
-          <MessageContext.Provider value={dispatchMessage}>
+          <MessageContext.Provider value={dispatchMessageRef.current}>
             <MetadataContext.Provider value={metadataContext}>
               <PageBody>
-                <AppHeader currentUser={currentUser} />
-                {currentMessage
-                    && (
-                      <Message
-                        messageCount={queue.length}
-                        messageText={currentMessage.text}
-                        messageType={currentMessage.variant}
-                      />
-                    )}
-                <AppRouter />
+                {isDataFetching
+                  ? (
+                    <LoadSpinner>
+                      Fetching User Data
+                    </LoadSpinner>
+                  )
+                  : (
+                    <>
+                      <AppHeader />
+                      <AppRouter />
+                    </>
+                  )}
+                <Message
+                  dispatchMessageRef={dispatchMessageRef}
+                />
               </PageBody>
             </MetadataContext.Provider>
           </MessageContext.Provider>

@@ -21,7 +21,12 @@ import {
   TypeOrmModuleOptions,
   getRepositoryToken,
 } from '@nestjs/typeorm';
-import { AUTH_MODE, TERM, DAY } from 'common/constants';
+import {
+  AUTH_MODE,
+  TERM,
+  DAY,
+  OFFERED,
+} from 'common/constants';
 import { ConfigService } from 'server/config/config.service';
 import { ConfigModule } from 'server/config/config.module';
 import { AuthModule } from 'server/auth/auth.module';
@@ -31,6 +36,7 @@ import { SemesterModule } from 'server/semester/semester.module';
 import * as dummy from 'testData';
 import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
+import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import { PGTime } from '../../../../src/common/utils/PGTime';
@@ -44,6 +50,7 @@ describe('CourseInstance API', function () {
   let testModule: TestingModule;
   let meetingRepository: Repository<Meeting>;
   let fciRepository: Repository<FacultyCourseInstance>;
+  let ciRepository: Repository<CourseInstance>;
   let api: HttpServer;
   let authStub: SinonStub;
 
@@ -86,6 +93,7 @@ describe('CourseInstance API', function () {
       .compile();
     meetingRepository = testModule.get(getRepositoryToken(Meeting));
     fciRepository = testModule.get(getRepositoryToken(FacultyCourseInstance));
+    ciRepository = testModule.get(getRepositoryToken(CourseInstance));
     const nestApp = await testModule
       .createNestApplication()
       .useGlobalPipes(new BadRequestExceptionPipe())
@@ -1029,6 +1037,262 @@ describe('CourseInstance API', function () {
             dbAssignments.map(({ id }) => id),
             originalInstanceAssignments.sort()
           );
+        });
+      });
+    });
+  });
+
+  describe('PUT /:id', function () {
+    let newOfferedValue: OFFERED;
+    let response: Response;
+    let testCourseInstance: CourseInstance;
+    const testRequest: CourseInstanceUpdateDTO = {
+      offered: OFFERED.N,
+      preEnrollment: 0,
+      studyCardEnrollment: 0,
+      actualEnrollment: 0,
+    };
+    beforeEach(async function () {
+      testCourseInstance = await ciRepository.findOne(
+        {
+          where: {
+            semester: {
+              academicYear: 2022,
+            },
+          },
+          relations: [
+            'course',
+            'course.instances',
+            'semester',
+            'semester.courseInstances',
+          ],
+        }
+      );
+    });
+    context('As an admin user', function () {
+      beforeEach(function () {
+        authStub.resolves(dummy.adminUser);
+      });
+      describe('Trying to update the offered value to OFFERED.YES', function () {
+        beforeEach(async function () {
+          newOfferedValue = OFFERED.Y;
+          response = await request(api)
+            .put(`/api/course-instances/${testCourseInstance.id}`)
+            .send({
+              ...testRequest,
+              offered: newOfferedValue,
+            });
+        });
+        it('should return OK', function () {
+          strictEqual(response.statusCode, HttpStatus.OK);
+        });
+        it('should return the updated offered value', function () {
+          strictEqual(response.body.offered, newOfferedValue);
+        });
+        it('should save the offered value in the database', async function () {
+          const savedInstance = await ciRepository.find({
+            where: {
+              id: testCourseInstance.id,
+            },
+          });
+          strictEqual(savedInstance[0].offered, newOfferedValue);
+        });
+      });
+      describe('Trying to update the offered value to OFFERED.NO', function () {
+        beforeEach(async function () {
+          newOfferedValue = OFFERED.N;
+          response = await request(api)
+            .put(`/api/course-instances/${testCourseInstance.id}`)
+            .send({
+              ...testRequest,
+              offered: newOfferedValue,
+            });
+        });
+        it('should return OK', function () {
+          strictEqual(response.statusCode, HttpStatus.OK);
+        });
+        it('should return the updated offered value', function () {
+          strictEqual(response.body.offered, newOfferedValue);
+        });
+        it('should save the offered value in the database', async function () {
+          const savedInstance = await ciRepository.find({
+            where: {
+              id: testCourseInstance.id,
+            },
+          });
+          strictEqual(savedInstance[0].offered, newOfferedValue);
+        });
+      });
+      describe('Trying to update the offered value to OFFERED.BLANK', function () {
+        beforeEach(async function () {
+          newOfferedValue = OFFERED.BLANK;
+          response = await request(api)
+            .put(`/api/course-instances/${testCourseInstance.id}`)
+            .send({
+              ...testRequest,
+              offered: newOfferedValue,
+            });
+        });
+        it('should return OK', function () {
+          strictEqual(response.statusCode, HttpStatus.OK);
+        });
+        it('should return the updated offered value', function () {
+          strictEqual(response.body.offered, newOfferedValue);
+        });
+        it('should save the offered value in the database', async function () {
+          const savedInstance = await ciRepository.find({
+            where: {
+              id: testCourseInstance.id,
+            },
+          });
+          strictEqual(savedInstance[0].offered, newOfferedValue);
+        });
+      });
+      describe('Trying to update the offered value to OFFERED.RETIRED', function () {
+        beforeEach(async function () {
+          newOfferedValue = OFFERED.RETIRED;
+          response = await request(api)
+            .put(`/api/course-instances/${testCourseInstance.id}`)
+            .send({
+              ...testRequest,
+              offered: newOfferedValue,
+            });
+        });
+        it('should return OK', function () {
+          strictEqual(response.statusCode, HttpStatus.OK);
+        });
+        it('should return the updated offered value', function () {
+          strictEqual(response.body.offered, newOfferedValue);
+        });
+        it('should save the offered value in the database', async function () {
+          const savedInstance = await ciRepository.find({
+            where: {
+              id: testCourseInstance.id,
+            },
+          });
+          strictEqual(savedInstance[0].offered, newOfferedValue);
+        });
+      });
+    });
+    context('As a read-only user', function () {
+      beforeEach(function () {
+        authStub.resolves(dummy.readOnlyUser);
+      });
+      describe('Trying to update the offered value to OFFERED.YES', function () {
+        beforeEach(async function () {
+          newOfferedValue = OFFERED.Y;
+          response = await request(api)
+            .put(`/api/course-instances/${testCourseInstance.id}`)
+            .send({
+              ...testRequest,
+              offered: newOfferedValue,
+            });
+        });
+        it('should return a Forbidden Error', function () {
+          strictEqual(response.statusCode, HttpStatus.FORBIDDEN);
+        });
+      });
+      describe('Trying to update the offered value to OFFERED.NO', function () {
+        beforeEach(async function () {
+          newOfferedValue = OFFERED.N;
+          response = await request(api)
+            .put(`/api/course-instances/${testCourseInstance.id}`)
+            .send({
+              ...testRequest,
+              offered: newOfferedValue,
+            });
+        });
+        it('should return a Forbidden Error', function () {
+          strictEqual(response.statusCode, HttpStatus.FORBIDDEN);
+        });
+      });
+      describe('Trying to update the offered value to OFFERED.BLANK', function () {
+        beforeEach(async function () {
+          newOfferedValue = OFFERED.BLANK;
+          response = await request(api)
+            .put(`/api/course-instances/${testCourseInstance.id}`)
+            .send({
+              ...testRequest,
+              offered: newOfferedValue,
+            });
+        });
+        it('should return a Forbidden Error', function () {
+          strictEqual(response.statusCode, HttpStatus.FORBIDDEN);
+        });
+      });
+      describe('Trying to update the offered value to OFFERED.RETIRED', function () {
+        beforeEach(async function () {
+          newOfferedValue = OFFERED.RETIRED;
+          response = await request(api)
+            .put(`/api/course-instances/${testCourseInstance.id}`)
+            .send({
+              ...testRequest,
+              offered: newOfferedValue,
+            });
+        });
+        it('should return a Forbidden Error', function () {
+          strictEqual(response.statusCode, HttpStatus.FORBIDDEN);
+        });
+      });
+    });
+    context('As a regular user', function () {
+      beforeEach(function () {
+        authStub.resolves(dummy.regularUser);
+      });
+      describe('Updating the offered value to OFFERED.YES', function () {
+        beforeEach(async function () {
+          newOfferedValue = OFFERED.Y;
+          response = await request(api)
+            .put(`/api/course-instances/${testCourseInstance.id}`)
+            .send({
+              ...testRequest,
+              offered: newOfferedValue,
+            });
+        });
+        it('should return a Forbidden Error', function () {
+          strictEqual(response.statusCode, HttpStatus.FORBIDDEN);
+        });
+      });
+      describe('Updating the offered value to OFFERED.NO', function () {
+        beforeEach(async function () {
+          newOfferedValue = OFFERED.N;
+          response = await request(api)
+            .put(`/api/course-instances/${testCourseInstance.id}`)
+            .send({
+              ...testRequest,
+              offered: newOfferedValue,
+            });
+        });
+        it('should return a Forbidden Error', function () {
+          strictEqual(response.statusCode, HttpStatus.FORBIDDEN);
+        });
+      });
+      describe('Updating the offered value to OFFERED.BLANK', function () {
+        beforeEach(async function () {
+          newOfferedValue = OFFERED.BLANK;
+          response = await request(api)
+            .put(`/api/course-instances/${testCourseInstance.id}`)
+            .send({
+              ...testRequest,
+              offered: newOfferedValue,
+            });
+        });
+        it('should return a Forbidden Error', function () {
+          strictEqual(response.statusCode, HttpStatus.FORBIDDEN);
+        });
+      });
+      describe('Updating the offered value to OFFERED.RETIRED', function () {
+        beforeEach(async function () {
+          newOfferedValue = OFFERED.RETIRED;
+          response = await request(api)
+            .put(`/api/course-instances/${testCourseInstance.id}`)
+            .send({
+              ...testRequest,
+              offered: newOfferedValue,
+            });
+        });
+        it('should return a Forbidden Error', function () {
+          strictEqual(response.statusCode, HttpStatus.FORBIDDEN);
         });
       });
     });

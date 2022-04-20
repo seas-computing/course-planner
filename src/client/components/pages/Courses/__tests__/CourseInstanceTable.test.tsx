@@ -5,22 +5,44 @@ import {
   BoundFunction,
   AllByRole,
   getRoles,
+  within,
 } from 'test-utils';
 import { spy, SinonSpy } from 'sinon';
 import { cs50CourseInstance, es095CourseInstance } from 'testData';
 import { COURSE_TABLE_COLUMN } from 'common/constants';
 import CourseInstanceTable from '../CourseInstanceTable';
 import { tableFields } from '../tableFields';
+import { FilterState } from '../filters.d';
 
 describe('CourseInstanceTable', function () {
   let updateSpy: SinonSpy;
+  let openMeetingModalSpy: SinonSpy;
+  let openInstructorModalSpy: SinonSpy;
+  let openOfferedModalSpy: SinonSpy;
   const academicYear = 2020;
   const courseList = [
     cs50CourseInstance,
     es095CourseInstance,
   ];
+  const testFilters: FilterState = {
+    area: 'All',
+    catalogNumber: '',
+    title: '',
+    isSEAS: 'All',
+    spring: {
+      offered: 'All',
+      instructors: '',
+    },
+    fall: {
+      offered: 'All',
+      instructors: '',
+    },
+  };
   beforeEach(function () {
     updateSpy = spy();
+    openMeetingModalSpy = spy();
+    openInstructorModalSpy = spy();
+    openOfferedModalSpy = spy();
   });
   describe('Header rows', function () {
     context('With all fields visible', function () {
@@ -39,17 +61,26 @@ describe('CourseInstanceTable', function () {
         COURSE_TABLE_COLUMN.DETAILS,
       ];
       let getAllByRole: BoundFunction<AllByRole>;
+      const areaFilterLabel = 'The table will be filtered as selected in this area dropdown filter';
+      const isSEASFilterLabel = 'The table will be filtered as selected in this isSEAS dropdown filter';
+      const fallOfferedFilterLabel = 'The table will be filtered as selected in this fall offered dropdown filter';
+      const springOfferedFilterLabel = 'The table will be filtered as selected in this spring offered dropdown filter';
       beforeEach(function () {
         ({ getAllByRole } = render(
           <CourseInstanceTable
             academicYear={academicYear}
             courseList={courseList}
-            courseUpdateHandler={updateSpy}
+            genericFilterUpdate={updateSpy}
             tableData={tableFields.filter(
               ({ viewColumn }): boolean => (
                 testView.includes(viewColumn)
               )
             )}
+            filters={testFilters}
+            openMeetingModal={openMeetingModalSpy}
+            openInstructorModal={openInstructorModalSpy}
+            openOfferedModal={openOfferedModalSpy}
+            setButtonRef={() => () => {}}
           />
         )
         );
@@ -79,13 +110,32 @@ describe('CourseInstanceTable', function () {
       it('renders the individual enrollment values into the third row', function () {
         const [, , thirdRow] = getAllByRole('row');
         const { columnheader } = getRoles(thirdRow);
-        const enrollmentValues = columnheader.map((elem) => (
-          elem.textContent
+        const preHeaders = columnheader.filter((elem) => (
+          elem.textContent === 'Pre'
         ));
-        deepStrictEqual(
-          enrollmentValues,
-          ['Pre', 'Study', 'Actual', 'Pre', 'Study', 'Actual']
-        );
+        const studyHeaders = columnheader.filter((elem) => (
+          elem.textContent === 'Study'
+        ));
+        const actualHeaders = columnheader.filter((elem) => (
+          elem.textContent === 'Actual'
+        ));
+        strictEqual(preHeaders.length, 2, 'Incorrect number of "Pre" columns');
+        strictEqual(studyHeaders.length, 2, 'Incorrect number of "Study" columns');
+        strictEqual(actualHeaders.length, 2, 'Incorrect number of "Actual" columns');
+      });
+      it('renders the filters in the third row', function () {
+        const [, , thirdRow] = getAllByRole('row');
+        const utils = within(thirdRow);
+        const areaFilter = utils.getAllByLabelText(areaFilterLabel);
+        const isSEASFilter = utils.getAllByLabelText(isSEASFilterLabel);
+        const fallOfferedFilter = utils
+          .getAllByLabelText(fallOfferedFilterLabel);
+        const springOfferedFilter = utils
+          .getAllByLabelText(springOfferedFilterLabel);
+        strictEqual(areaFilter.length, 1, 'Error with area filter rendering');
+        strictEqual(isSEASFilter.length, 1, 'Error with isSEAS filter rendering');
+        strictEqual(fallOfferedFilter.length, 1, 'Error with fall offered filter rendering');
+        strictEqual(springOfferedFilter.length, 1, 'Error with spring offered filter rendering');
       });
     });
     context('With no semester fields visible', function () {
@@ -100,23 +150,28 @@ describe('CourseInstanceTable', function () {
           <CourseInstanceTable
             academicYear={academicYear}
             courseList={courseList}
-            courseUpdateHandler={updateSpy}
+            genericFilterUpdate={updateSpy}
             tableData={tableFields.filter(
               ({ viewColumn }): boolean => (
                 testView.includes(viewColumn)
               )
             )}
+            filters={testFilters}
+            openMeetingModal={openMeetingModalSpy}
+            openInstructorModal={openInstructorModalSpy}
+            openOfferedModal={openOfferedModalSpy}
+            setButtonRef={() => () => {}}
           />
         )
         );
       });
-      it('Only renders one row of headers', function () {
+      it('renders two rows of headers', function () {
         const allRows = getAllByRole('row');
         const headerRows = allRows.filter((row) => {
           const roles = getRoles(row);
           return 'columnheader' in roles && roles.columnheader.length > 0;
         });
-        strictEqual(headerRows.length, 1);
+        strictEqual(headerRows.length, 2);
       });
       it('Only includes the specified titles', function () {
         const [firstRow] = getAllByRole('row');
@@ -137,24 +192,29 @@ describe('CourseInstanceTable', function () {
         ({ getAllByRole } = render(
           <CourseInstanceTable
             academicYear={academicYear}
-            courseUpdateHandler={updateSpy}
+            genericFilterUpdate={updateSpy}
             courseList={courseList}
             tableData={tableFields.filter(
               ({ viewColumn }): boolean => (
                 testView.includes(viewColumn)
               )
             )}
+            filters={testFilters}
+            openMeetingModal={openMeetingModalSpy}
+            openInstructorModal={openInstructorModalSpy}
+            openOfferedModal={openOfferedModalSpy}
+            setButtonRef={() => () => {}}
           />
         )
         );
       });
-      it('Only renders two rows of headers', function () {
+      it('Renders three rows of headers', function () {
         const allRows = getAllByRole('row');
         const headerRows = allRows.filter((row) => {
           const roles = getRoles(row);
           return 'columnheader' in roles && roles.columnheader.length > 0;
         });
-        strictEqual(headerRows.length, 2);
+        strictEqual(headerRows.length, 3);
       });
       it('Renders the semesters into the top header row', function () {
         const [topRow] = getAllByRole('row');
@@ -191,12 +251,17 @@ describe('CourseInstanceTable', function () {
         <CourseInstanceTable
           academicYear={academicYear}
           courseList={courseList}
-          courseUpdateHandler={updateSpy}
+          genericFilterUpdate={updateSpy}
           tableData={tableFields.filter(
             ({ viewColumn }): boolean => (
               testView.includes(viewColumn)
             )
           )}
+          filters={testFilters}
+          openMeetingModal={openMeetingModalSpy}
+          openInstructorModal={openInstructorModalSpy}
+          openOfferedModal={openOfferedModalSpy}
+          setButtonRef={() => () => {}}
         />
       )
       );

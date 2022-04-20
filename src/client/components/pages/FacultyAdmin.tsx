@@ -299,6 +299,11 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
           onSuccess={async (): Promise<void> => {
             // wait for the faculty to load before allowing the dialog to close
             await loadFaculty();
+            // display a success message after successful update and loading of faculty
+            dispatchMessage({
+              message: new AppMessage('Faculty was updated.', MESSAGE_TYPE.SUCCESS),
+              type: MESSAGE_ACTION.PUSH,
+            });
           }}
         />
       </div>

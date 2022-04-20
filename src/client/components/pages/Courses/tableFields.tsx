@@ -1,9 +1,8 @@
 import React, {
   ReactElement,
-  ReactNode,
   ReactText,
-  useState,
-  useRef,
+  Ref,
+  FunctionComponent,
 } from 'react';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import {
@@ -12,6 +11,8 @@ import {
   TableCellListItem,
   VARIANT,
   fromTheme,
+  Dropdown,
+  TextInput,
 } from 'mark-one';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStickyNote as withNotes, faFolderOpen, faEdit } from '@fortawesome/free-solid-svg-icons';
@@ -20,7 +21,6 @@ import {
   TERM,
   COURSE_TABLE_COLUMN,
   COURSE_TABLE_COLUMN_GROUP,
-  OFFERED,
   IS_SEAS,
   isSEASEnumToString,
 } from 'common/constants';
@@ -29,10 +29,9 @@ import { dayEnumToString } from 'common/constants/day';
 import { offeredEnumToString } from 'common/constants/offered';
 import { TermKey } from 'common/constants/term';
 import styled from 'styled-components';
-import MeetingModal from './MeetingModal';
 import { PGTime } from '../../../../common/utils/PGTime';
-import InstructorModal from './InstructorModal';
 import { instructorDisplayNameToFirstLast } from '../utils/instructorDisplayNameToFirstLast';
+import { FilterOptions, FilterState } from './filters.d';
 
 /**
  * A component that applies styling for text that indicates the faculty has
@@ -44,8 +43,8 @@ const StyledFacultyNote = styled.span`
 
 /**
  * Simple helper function that takes a property name and optionally a semester
- * and returns a function that accepts a Course object, then returns the value
- * associated with the property/semester.property.
+ * and returns a function component that renders the text value associated with
+ * the property/semester.property.
  *
  * This is mainly a way to simplify the looping logic required in the
  * CourseInstanceList
@@ -55,10 +54,9 @@ export const retrieveValue = (
   prop: keyof CourseInstanceResponseDTO
   | keyof CourseInstanceResponseDTO[TermKey],
   sem?: TERM
-): (arg0: CourseInstanceResponseDTO
-  ) => ReactNode => (
-  course: CourseInstanceResponseDTO
-): ReactText => {
+): FunctionComponent<FieldContentProps> => (
+  { course }: FieldContentProps
+) => {
   let rawValue: ReactText;
   if (sem) {
     const semKey = sem.toLowerCase() as TermKey;
@@ -69,30 +67,29 @@ export const retrieveValue = (
     rawValue = course[prop] as ReactText;
   }
   if (typeof rawValue === 'boolean') {
-    return rawValue ? 'Yes' : 'No';
-  }
-  if (rawValue in OFFERED) {
-    return offeredEnumToString(rawValue as OFFERED);
+    rawValue = rawValue ? 'Yes' : 'No';
   }
   if (rawValue in IS_SEAS) {
-    return isSEASEnumToString(rawValue as IS_SEAS);
+    rawValue = isSEASEnumToString(rawValue as IS_SEAS);
   }
-  return rawValue;
+  return <>{rawValue}</>;
 };
 
 /**
- * Helper function that returns a function that will format a course's
+ * Helper function that returns a functional component that renders a course's
  * instructors into a list
  */
 
 export const formatInstructors = (
   term: TERM
-) => (
-  course: CourseInstanceResponseDTO,
+):FunctionComponent<FieldContentProps> => React.memo((
   {
-    updateHandler,
-  }: ValueGetterOptions
-): ReactNode => {
+    course,
+    openInstructorModal,
+    buttonRef,
+    isEditable,
+  }: FieldContentProps
+): ReactElement => {
   const semKey = term.toLowerCase() as TermKey;
   const {
     id: parentId,
@@ -100,19 +97,6 @@ export const formatInstructors = (
     [semKey]: instance,
   } = course;
   const { calendarYear, instructors } = instance;
-  /**
-   * Control the visibility of the Isntructor modal
-   */
-  const [modalVisible, setModalVisible] = useState(false);
-  /**
-   * Save a ref to the edit button so we can return focus after closing the
-   * modal
-   */
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const currentSemester = {
-    term,
-    calendarYear,
-  };
   return (
     <>
       <TableCellList>
@@ -126,36 +110,60 @@ export const formatInstructors = (
             )
           )}
       </TableCellList>
+      {isEditable && (
+        <BorderlessButton
+          alt={`Edit instructors for ${catalogNumber}, ${term} ${calendarYear}`}
+          id={`${parentId}-${term}-edit-instructors-button`}
+          onClick={() => {
+            openInstructorModal(course, term);
+          }}
+          variant={VARIANT.INFO}
+          forwardRef={buttonRef}
+        >
+          <FontAwesomeIcon icon={faEdit} />
+        </BorderlessButton>
+      )}
+    </>
+  );
+});
+
+/**
+ * Helper function that returns a functional component that renders a course
+ * instance's offered value and an edit button
+ */
+const formatOffered = (
+  term: TERM
+):FunctionComponent<FieldContentProps> => React.memo((
+  {
+    course,
+    openOfferedModal,
+    buttonRef,
+  }: FieldContentProps
+): ReactElement => {
+  const semKey = term.toLowerCase() as TermKey;
+  const {
+    id: parentId,
+    catalogNumber,
+    [semKey]: instance,
+  } = course;
+  const { calendarYear, offered } = instance;
+  return (
+    <>
+      <span>{offeredEnumToString(offered)}</span>
       <BorderlessButton
-        alt={`Edit instructors for ${catalogNumber}, ${term} ${calendarYear}`}
+        alt={`Edit offered value for ${catalogNumber}, ${term} ${calendarYear}`}
         id={`${parentId}-${term}-edit-instructors-button`}
-        onClick={() => { setModalVisible(true); }}
+        onClick={() => {
+          openOfferedModal(course, term);
+        }}
         variant={VARIANT.INFO}
         forwardRef={buttonRef}
       >
         <FontAwesomeIcon icon={faEdit} />
       </BorderlessButton>
-      <InstructorModal
-        isVisible={modalVisible}
-        currentSemester={currentSemester}
-        currentCourse={course}
-        closeModal={() => {
-          setModalVisible(false);
-          setTimeout(() => { buttonRef.current?.focus(); });
-        }}
-        onSave={(newInstructorList, message?: string) => {
-          updateHandler({
-            ...course,
-            [semKey]: {
-              ...course[semKey],
-              instructors: newInstructorList,
-            },
-          }, message);
-        }}
-      />
     </>
   );
-};
+});
 
 /**
  * Utility component to style the data about a meeting
@@ -186,6 +194,9 @@ export const formatFacultyNotes = (
   term: TERM,
   course: CourseInstanceResponseDTO
 ): ReactElement => {
+  if (!term || !course) {
+    return null;
+  }
   const semKey = term.toLowerCase() as TermKey;
   const {
     [semKey]: instance,
@@ -218,17 +229,20 @@ export const formatFacultyNotes = (
 };
 
 /**
- * Helper function to format day, time, and room into a single list
+ * Helper function that returns a functional component that renders the day,
+ * time, and room in a single list
  */
 
 export const formatMeetings = (
   term: TERM
-) => (
-  course: CourseInstanceResponseDTO,
+): FunctionComponent<FieldContentProps> => React.memo((
   {
-    updateHandler,
-  }: ValueGetterOptions
-): ReactNode => {
+    course,
+    openMeetingModal,
+    buttonRef,
+    isEditable,
+  }: FieldContentProps
+): ReactElement => {
   const semKey = term.toLowerCase() as TermKey;
   const {
     [semKey]: instance,
@@ -236,12 +250,6 @@ export const formatMeetings = (
     catalogNumber,
   } = course;
   const { calendarYear, meetings } = instance;
-  const [modalVisible, setModalVisible] = useState(false);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const currentSemester = {
-    term,
-    calendarYear,
-  };
   return (
     <>
       <TableCellList>
@@ -273,47 +281,52 @@ export const formatMeetings = (
           </TableCellListItem>
         ))}
       </TableCellList>
-      <BorderlessButton
-        id={`${parentId}-${term}-edit-meetings-button`}
-        alt={`Edit meetings for ${catalogNumber} in ${semKey} ${calendarYear}`}
-        onClick={() => { setModalVisible(true); }}
-        variant={VARIANT.INFO}
-        forwardRef={buttonRef}
-      >
-        <FontAwesomeIcon icon={faEdit} />
-      </BorderlessButton>
-      <MeetingModal
-        isVisible={modalVisible}
-        currentSemester={currentSemester}
-        currentCourse={course}
-        notes={formatFacultyNotes(term, course)}
-        onClose={() => {
-          setModalVisible(false);
-          setTimeout(() => { buttonRef.current?.focus(); });
-        }}
-        onSave={(newMeetingList, message?: string) => {
-          updateHandler({
-            ...course,
-            [semKey]: {
-              ...course[semKey],
-              meetings: newMeetingList,
-            },
-          }, message);
-        }}
-      />
+      {isEditable && (
+        <BorderlessButton
+          id={`${parentId}-${term}-edit-meetings-button`}
+          alt={`Edit meetings for ${catalogNumber} in ${semKey} ${calendarYear}`}
+          onClick={() => {
+            openMeetingModal(course, term);
+          }}
+          variant={VARIANT.INFO}
+          forwardRef={buttonRef}
+        >
+          <FontAwesomeIcon icon={faEdit} />
+        </BorderlessButton>
+      )}
     </>
   );
-};
+});
 
 /**
- * Descibes the additional options passed into the getValue function
+ * Describes the additional options passed into the FieldContent functional
+ * component
  */
-export interface ValueGetterOptions {
+export interface FieldContentProps {
   /**
-   * A handler for updating the client state of the course wihtout needing to
-   * refresh data from the server
+   * The course whose data will be rendered by FieldContent
    */
-  updateHandler?: (course: CourseInstanceResponseDTO, message?: string) => void;
+  course: CourseInstanceResponseDTO;
+  /**
+   * Controls the opening of the meeting modal with the requested course and term
+   */
+  openMeetingModal?: (course: CourseInstanceResponseDTO, term: TERM) => void;
+  /**
+   * Controls the opening of the instructor modal with the requested course and term
+   */
+  openInstructorModal?: (course: CourseInstanceResponseDTO, term: TERM) => void;
+  /**
+   * Controls the opening of the offered modal with the requested course and term
+   */
+  openOfferedModal?: (course: CourseInstanceResponseDTO, term: TERM) => void;
+  /**
+   * The current ref value of the focused button
+   */
+  buttonRef?: Ref<HTMLButtonElement>;
+  /**
+   * Whether the user should be able to edit the cell data
+   */
+  isEditable?: boolean;
 }
 
 /**
@@ -338,12 +351,104 @@ export interface CourseInstanceListColumn {
    */
   columnGroup: COURSE_TABLE_COLUMN_GROUP;
   /**
-   * A function that will retrieve the appropriate data to appear in the cell
+   * A functional component that will render the appropriate data to appear in
+   * the cell
    */
-  getValue: (
-    arg0: CourseInstanceResponseDTO,
-    arg1?: ValueGetterOptions
-  ) => ReactNode;
+  FieldContent: FunctionComponent<FieldContentProps>;
+  getFilter?: (
+    filters: FilterState,
+    genericFilterUpdate: (field: string, value: string) => void,
+    filterOptions?: Record<string, {value: string, label: string}[]>
+  ) => ReactElement;
+}
+
+type GetterFunction = (filters: FilterState,
+  genericFilterUpdate: (field: string, value: string) => void,
+  filterOptions?: Record<string, {value: string, label: string}[]>
+) => ReactElement;
+
+/**
+ * A function that creates a Dropdown element, which will be used as a filter
+ * field, for the field that is provided.
+ */
+function generateDropdown<
+  Field extends keyof FilterState,
+  Subfield extends keyof FilterState[Field]
+>(field: Field, subField?: Field extends 'spring' | 'fall' ? Subfield : never): (GetterFunction) {
+  return (filters, genericFilterUpdate, filterOptions) => {
+    let filterValue;
+    let updateField;
+    let filterOptionsField;
+    if (subField) {
+      updateField = `${field}.${subField.toString()}`;
+      ({ [field]: { [subField]: filterValue } } = filters);
+      filterOptionsField = subField;
+    } else {
+      updateField = field;
+      ({ [field]: filterValue } = filters);
+      filterOptionsField = field;
+    }
+    return (
+      <Dropdown
+        options={[{ value: 'All', label: 'All' }]
+          .concat(filterOptions[filterOptionsField as FilterOptions])}
+        value={filterValue as string}
+        name={field}
+        id={subField ? `${field}${subField.toString()}` : `${field}`}
+        label={subField
+          ? `The table will be filtered as selected in this ${field} ${subField.toString()} dropdown filter`
+          : `The table will be filtered as selected in this ${field} dropdown filter`}
+        isLabelVisible={false}
+        hideError
+        onChange={(evt) => {
+          genericFilterUpdate(
+            updateField,
+            (evt.target as HTMLSelectElement)?.value
+          );
+        }}
+      />
+    );
+  };
+}
+
+/**
+ * A function that creates a Text Input element, which will be used as a filter
+ * field, for the field that is provided.
+ */
+function generateTextField<
+  Field extends keyof FilterState,
+  Subfield extends keyof FilterState[Field]
+>(field: Field, subField?: Field extends 'spring' | 'fall' ? Subfield : never): (GetterFunction) {
+  return (filters, genericFilterUpdate) => {
+    let filterValue;
+    let updateField;
+    if (subField) {
+      updateField = `${field}.${subField.toString()}`;
+      ({ [field]: { [subField]: filterValue } } = filters);
+    } else {
+      updateField = field;
+      ({ [field]: filterValue } = filters);
+    }
+    return (
+      <TextInput
+        id={subField ? `${field}${subField.toString()}` : `${field}`}
+        name={field}
+        value={filterValue as string}
+        placeholder={`Filter by ${field}`}
+        label={subField
+          ? `The table will be filtered as characters are typed in this ${field} ${subField.toString()} filter field`
+          : `The table will be filtered as characters are typed in this ${field} filter field`}
+        isLabelVisible={false}
+        hideError
+        onChange={(evt) => {
+          genericFilterUpdate(
+            updateField,
+            (evt.target as HTMLInputElement)?.value
+          );
+        }}
+      />
+    );
+  };
 }
 
 /**
@@ -357,133 +462,142 @@ export const tableFields: CourseInstanceListColumn[] = [
     key: 'area',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.COURSE,
     viewColumn: COURSE_TABLE_COLUMN.AREA,
-    getValue: retrieveValue('area'),
+    FieldContent: retrieveValue('area'),
+    getFilter: generateDropdown('area'),
   },
   {
     name: 'Course',
     key: 'catalog-number',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.COURSE,
     viewColumn: COURSE_TABLE_COLUMN.CATALOG_NUMBER,
-    getValue: retrieveValue('catalogNumber'),
+    FieldContent: retrieveValue('catalogNumber'),
+    getFilter: generateTextField('catalogNumber'),
   },
   {
     name: 'Title',
     key: 'title',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.COURSE,
     viewColumn: COURSE_TABLE_COLUMN.TITLE,
-    getValue: retrieveValue('title'),
+    FieldContent: retrieveValue('title'),
+    getFilter: generateTextField('title'),
   },
   {
     name: 'Same As',
     key: 'same-as',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.COURSE,
     viewColumn: COURSE_TABLE_COLUMN.SAME_AS,
-    getValue: retrieveValue('sameAs'),
+    FieldContent: retrieveValue('sameAs'),
   },
   {
     name: 'Is SEAS?',
     key: 'is-seas',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.COURSE,
     viewColumn: COURSE_TABLE_COLUMN.IS_SEAS,
-    getValue: retrieveValue('isSEAS'),
+    FieldContent: retrieveValue('isSEAS'),
+    getFilter: generateDropdown('isSEAS'),
   },
   {
     name: 'Is Undergraduate?',
     key: 'is-undergraduate',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.COURSE,
     viewColumn: COURSE_TABLE_COLUMN.IS_UNDERGRADUATE,
-    getValue: retrieveValue('isUndergraduate'),
+    FieldContent: retrieveValue('isUndergraduate'),
   },
   {
     name: 'Offered',
     key: 'offered-fall',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.FALL,
     viewColumn: COURSE_TABLE_COLUMN.OFFERED,
-    getValue: retrieveValue('offered', TERM.FALL),
+    FieldContent: formatOffered(TERM.FALL),
+    getFilter: generateDropdown('fall', 'offered'),
   },
   {
     name: 'Instructors',
     key: 'instructors-fall',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.FALL,
     viewColumn: COURSE_TABLE_COLUMN.INSTRUCTORS,
-    getValue: formatInstructors(TERM.FALL),
+    FieldContent: formatInstructors(TERM.FALL),
+    getFilter: generateTextField('fall', 'instructors'),
   },
   {
     name: 'Meetings',
     key: 'meetings-fall',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.FALL,
     viewColumn: COURSE_TABLE_COLUMN.MEETINGS,
-    getValue: formatMeetings(TERM.FALL),
+    FieldContent: formatMeetings(TERM.FALL),
   },
   {
     name: 'Pre',
     key: 'pre-enrollment-fall',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.FALL,
     viewColumn: COURSE_TABLE_COLUMN.ENROLLMENT,
-    getValue: retrieveValue('preEnrollment', TERM.FALL),
+    FieldContent: retrieveValue('preEnrollment', TERM.FALL),
   },
   {
     name: 'Study',
     key: 'study-card-enrollment-fall',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.FALL,
     viewColumn: COURSE_TABLE_COLUMN.ENROLLMENT,
-    getValue: retrieveValue('studyCardEnrollment', TERM.FALL),
+    FieldContent: retrieveValue('studyCardEnrollment', TERM.FALL),
   },
   {
     name: 'Actual',
     key: 'actual-enrollment-fall',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.FALL,
     viewColumn: COURSE_TABLE_COLUMN.ENROLLMENT,
-    getValue: retrieveValue('actualEnrollment', TERM.FALL),
+    FieldContent: retrieveValue('actualEnrollment', TERM.FALL),
   },
   {
     name: 'Offered',
     key: 'offered-spring',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.SPRING,
     viewColumn: COURSE_TABLE_COLUMN.OFFERED,
-    getValue: retrieveValue('offered', TERM.SPRING),
+    FieldContent: formatOffered(TERM.SPRING),
+    getFilter: generateDropdown('spring', 'offered'),
   },
   {
     name: 'Instructors',
     key: 'instructors-spring',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.SPRING,
     viewColumn: COURSE_TABLE_COLUMN.INSTRUCTORS,
-    getValue: formatInstructors(TERM.SPRING),
+    FieldContent: formatInstructors(TERM.SPRING),
+    getFilter: generateTextField('spring', 'instructors'),
   },
   {
     name: 'Meetings',
     key: 'meetings-spring',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.SPRING,
     viewColumn: COURSE_TABLE_COLUMN.MEETINGS,
-    getValue: formatMeetings(TERM.SPRING),
+    FieldContent: formatMeetings(TERM.SPRING),
   },
   {
     name: 'Pre',
     key: 'pre-enrollment-spring',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.SPRING,
     viewColumn: COURSE_TABLE_COLUMN.ENROLLMENT,
-    getValue: retrieveValue('preEnrollment', TERM.SPRING),
+    FieldContent: retrieveValue('preEnrollment', TERM.SPRING),
   },
   {
     name: 'Study',
     key: 'study-card-enrollment-spring',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.SPRING,
     viewColumn: COURSE_TABLE_COLUMN.ENROLLMENT,
-    getValue: retrieveValue('studyCardEnrollment', TERM.SPRING),
+    FieldContent: retrieveValue('studyCardEnrollment', TERM.SPRING),
   },
   {
     name: 'Actual',
     key: 'actual-enrollment-spring',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.SPRING,
     viewColumn: COURSE_TABLE_COLUMN.ENROLLMENT,
-    getValue: retrieveValue('actualEnrollment', TERM.SPRING),
+    FieldContent: retrieveValue('actualEnrollment', TERM.SPRING),
   },
   {
     name: 'Notes',
     key: 'notes',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.META,
     viewColumn: COURSE_TABLE_COLUMN.NOTES,
-    getValue: ({ notes }: CourseInstanceResponseDTO): ReactElement => {
+    FieldContent: ({ course }: FieldContentProps): ReactElement => {
+      const { notes } = course;
       const hasNotes = notes && notes.trim().length > 0;
       const titleText = hasNotes ? 'View/Edit Notes' : 'Add Notes';
       return (
@@ -505,7 +619,7 @@ export const tableFields: CourseInstanceListColumn[] = [
     key: 'details',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.META,
     viewColumn: COURSE_TABLE_COLUMN.DETAILS,
-    getValue: (): ReactElement => (
+    FieldContent: (): ReactElement => (
       <BorderlessButton
         variant={VARIANT.INFO}
         onClick={(): void => { }}

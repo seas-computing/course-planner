@@ -11,6 +11,7 @@ const {
   CLIENT_PORT,
   SERVER_URL,
   SERVER_PORT,
+  PUBLIC_CLIENT_URL
 } = process.env;
 
 /**
@@ -45,6 +46,7 @@ module.exports = {
     port: CLIENT_PORT,
     publicPath,
     serveIndex: false,
+    disableHostCheck: true,
   },
   output: {
     path: resolve(__dirname, 'build/static'),
@@ -100,6 +102,7 @@ module.exports = {
     new HtmlWebpackRootPlugin(),
     new webpack.DefinePlugin({
       'process.env.SERVER_URL': JSON.stringify(SERVER_URL),
+      'process.env.PUBLIC_CLIENT_URL': JSON.stringify(PUBLIC_CLIENT_URL),
     }),
   ],
 };

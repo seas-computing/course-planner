@@ -11,6 +11,8 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - "postgres_data:/var/lib/postgresql/data"
+      - "./init-postgres-ssl.sh:/docker-entrypoint-initdb.d/init-ssl.sh"
+    command: ["postgres", "-c", "ssl=on"]
   node:
     build:
       context: .
@@ -21,6 +23,7 @@ services:
       - APP_NAME
       - CAS_URL
       - CLIENT_URL
+      - PUBLIC_CLIENT_URL
       - DB_HOSTNAME
       - DB_PORT
       - DB_DATABASE
@@ -35,6 +38,9 @@ services:
       - SERVER_URL
       - SERVER_PORT
       - SESSION_SECRET
+      - HTTPS_ON
+      - HTTPS_PRIVATE_KEY
+      - HTTPS_PUBLIC_CERT
     user: "1000:1000"
     ports:
       - "127.0.0.1:${SERVER_PORT}:${SERVER_PORT}"
@@ -58,6 +64,7 @@ services:
       - CLIENT_PORT
       - SERVER_URL
       - SERVER_PORT
+      - PUBLIC_CLIENT_URL
     user: "1000:1000"
     ports:
       - "127.0.0.1:${CLIENT_PORT}:${CLIENT_PORT}"

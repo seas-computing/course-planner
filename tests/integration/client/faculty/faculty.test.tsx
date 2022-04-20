@@ -9,7 +9,8 @@ import {
   FindByText,
   QueryByText,
   GetByText,
-} from '@testing-library/react';
+  renderWithMessaging,
+} from 'test-utils';
 import {
   stub,
   SinonStub,
@@ -19,7 +20,6 @@ import {
   appliedMathFacultyScheduleResponse,
   facultyAbsenceResponse,
 } from 'testData';
-import { render } from 'test-utils';
 import { ABSENCE_TYPE } from 'common/constants';
 import FacultySchedule from 'client/components/pages/Faculty/FacultyPage';
 
@@ -50,7 +50,7 @@ describe('Faculty Schedule Modal Behavior', function () {
         findByText,
         queryByText,
         getByLabelText,
-      } = render(
+      } = renderWithMessaging(
         <FacultySchedule />
       )
       );
@@ -93,6 +93,14 @@ describe('Faculty Schedule Modal Behavior', function () {
             document.activeElement as HTMLElement,
             editAppliedMathFallAbsenceButton
           );
+        });
+      });
+      context('when the absence modal is submitted', function () {
+        it('should show a success message', async function () {
+          const submitButton = await findByText('Submit', { exact: false });
+          fireEvent.click(submitButton);
+          await wait(() => !queryByText('Sabbatical/Leave for', { exact: false }));
+          return findByText('Faculty absence was updated', { exact: false });
         });
       });
     });

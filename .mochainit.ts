@@ -3,7 +3,10 @@ import MockDB from './tests/mocks/database/MockDB';
 
 before(function (done) {
   process.env.NODE_ENV = 'testing';
-  process.env.SERVER_URL = '';
+  process.env.SERVER_URL = 'https://computing-apps.seas.harvard.edu/course-planner';
+  process.env.CLIENT_URL = 'https://planning.seas.harvard.edu/courses';
+  process.env.PUBLIC_CLIENT_URL = 'https://info.seas.harvard.edu/courses';
+
   if (process.env.MOCHA_NEEDS_DATABASE === '1') {
     const randomPort = Math.floor(Math.random() * 1000) + 30000;
     const timestamp = Date.now().valueOf();
