@@ -78,7 +78,7 @@ const NotesModal: FunctionComponent<NotesModalProps> = function ({
    * Set initial value of local courseNotes state field.
    */
   useEffect(() => {
-    setCourseNotes(course?.notes);
+    setCourseNotes(course?.notes || '');
   }, [course, setCourseNotes]);
 
   return (
