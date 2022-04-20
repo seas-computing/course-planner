@@ -46,6 +46,7 @@ describe('Notes modal', function () {
     noteSubmitButton = within(modal).getByText(/Save/) as HTMLButtonElement;
   });
   it('updates notes for the specified course on the server', function () {
+    postStub.resolves();
     fireEvent.change(multiLineTextArea, {
       target: { value: 'aaa' },
     });
