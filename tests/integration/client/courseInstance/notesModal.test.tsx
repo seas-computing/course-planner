@@ -31,9 +31,7 @@ describe('Notes modal', function () {
     getStub.resolves([testData]);
 
     page = render(<CoursesPage />);
-    editNotesButton = await waitForElement(
-      () => page.findByLabelText('notes', { exact: false }) as Promise<HTMLButtonElement>
-    );
+    editNotesButton = await page.findByLabelText('notes', { exact: false }) as HTMLButtonElement;
     fireEvent.click(editNotesButton);
 
     modal = page.getByRole('dialog') as HTMLDivElement;
