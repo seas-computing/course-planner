@@ -73,21 +73,23 @@ describe('Notes modal', function () {
     ) as HTMLTextAreaElement;
     strictEqual(newMultiLineTextArea.value, 'aaa');
   });
-  it('focuses the modal header on open', function () {
+  it('focuses the modal header on open', function (done) {
     setTimeout(() => {
       strictEqual(
         (document.activeElement as HTMLElement).textContent,
         `Notes For ${testData.catalogNumber}`
       );
+      done();
     });
   });
-  it('re-focuses the add/edit button on close', function () {
+  it('re-focuses the add/edit button on close', function (done) {
     fireEvent.click(noteCancelButton);
     setTimeout(() => {
       strictEqual(
         (document.activeElement as HTMLElement).textContent,
         'Add Notes'
       );
+      done();
     });
   });
 });
