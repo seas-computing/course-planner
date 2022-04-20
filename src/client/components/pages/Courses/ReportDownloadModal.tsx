@@ -6,6 +6,7 @@ import React, {
   useEffect,
   ChangeEvent,
   useCallback,
+  useRef,
 } from 'react';
 import {
   Modal,
@@ -86,6 +87,11 @@ const ReportDownloadModal: FunctionComponent<ReportDownloadModalProps> = ({
     downloadError,
     setDownloadError,
   ] = useState<string>();
+
+  /**
+   * Set a ref to focus the modal header
+   */
+  const modalHeaderRef = useRef<HTMLHeadingElement>(null);
 
   /**
    * Parse the list of semesters into a list of academic year dropdown options
@@ -178,19 +184,34 @@ const ReportDownloadModal: FunctionComponent<ReportDownloadModalProps> = ({
   ]);
 
   /**
-   * Set/reset start and end year to the currentAcademicYear and last available
-   * year, respectively, and clear any existing errors when the modal opens
+   * When the modal opens:
+   * 1. set/reset start and end year to the currentAcademicYear and last available
+   * year, respectively
+   * 2. clear existing errors when the modal opens
+   * 3. focus the header of the modal
    */
   useEffect(() => {
-    if (isVisible && currentAcademicYear) {
-      const endYear = [...yearList].pop().value;
-      setCurrentReportRange({
-        startYear: currentAcademicYear.toString(),
-        endYear,
+    if (isVisible) {
+      setTimeout(() => {
+        if (modalHeaderRef.current) {
+          modalHeaderRef.current.focus();
+        }
       });
       setDownloadError('');
+      if (currentAcademicYear) {
+        const endYear = [...yearList].pop().value;
+        setCurrentReportRange({
+          startYear: currentAcademicYear.toString(),
+          endYear,
+        });
+      }
     }
-  }, [isVisible, yearList, currentAcademicYear]);
+  }, [
+    modalHeaderRef,
+    isVisible,
+    yearList,
+    currentAcademicYear,
+  ]);
 
   return (
     <Modal
@@ -198,7 +219,10 @@ const ReportDownloadModal: FunctionComponent<ReportDownloadModalProps> = ({
       ariaLabelledBy="report-download-header"
       closeHandler={closeModal}
     >
-      <ModalHeader>
+      <ModalHeader
+        forwardRef={modalHeaderRef}
+        tabIndex={0}
+      >
         <span id="report-download-header">
           Download Course Report
         </span>
