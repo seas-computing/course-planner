@@ -62,7 +62,7 @@ describe('Notes modal', function () {
     fireEvent.click(noteSubmitButton);
     await waitForElementToBeRemoved(() => page.getByRole('dialog'));
     fireEvent.click(editNotesButton);
-    const newMultiLineTextArea = page.getByLabelText(
+    const newMultiLineTextArea = within(modal).getByLabelText(
       'Course Notes',
       { selector: 'textarea' }
     ) as HTMLTextAreaElement;
