@@ -23,10 +23,13 @@ export default async (
   const downloader = document.createElement('a');
   downloader.href = fileURL;
   downloader.download = filename;
+  downloader.title = `Download ${filename}`;
   document.body.appendChild(downloader);
-  downloader.click();
-
-  // Clean up temporary elements
-  document.body.removeChild(downloader);
-  URL.revokeObjectURL(fileURL);
+  // Adds an imperceptable delay to make this testable
+  setTimeout(() => {
+    downloader.click();
+    // Clean up temporary elements
+    document.body.removeChild(downloader);
+    URL.revokeObjectURL(fileURL);
+  });
 };
