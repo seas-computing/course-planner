@@ -22,6 +22,7 @@ import { ConfigModule } from 'server/config/config.module';
 import { ConfigService } from 'server/config/config.service';
 import { NonClassParent } from 'server/nonClassEvent/nonclassparent.entity';
 import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
+import { Absence } from 'server/absence/absence.entity';
 import { PopulationModule } from '../population.module';
 import * as testData from '../data';
 
@@ -37,6 +38,7 @@ describe('Population Service', function () {
   let meetingRepository: Repository<Meeting>;
   let courseRepository: Repository<Course>;
   let courseInstanceRepository: Repository<CourseInstance>;
+  let absenceRepository: Repository<Absence>;
 
   beforeEach(async function () {
     testModule = await Test.createTestingModule({
@@ -315,6 +317,20 @@ describe('Population Service', function () {
 
       deepStrictEqual(actualEvents, expectedEvents);
     });
+    it('Should populate the absence table', async function () {
+      absenceRepository = testModule.get(getRepositoryToken(Absence));
+      const dbAbsences = await absenceRepository.find();
+      // There is an absence per faculty per semester.
+      strictEqual(
+        dbAbsences.length,
+        testData.absences.length * testData.semesters.length
+      );
+      testData.absences.forEach(({ type: absence }) => {
+        const absenceIndex = dbAbsences
+          .findIndex(({ type }) => type === absence);
+        notStrictEqual(absenceIndex, -1);
+      });
+    });
   });
   describe('Automatic depopulation', function () {
     let typeormConnection: Connection;
@@ -393,6 +409,11 @@ describe('Population Service', function () {
       const eventRepository = getRepository(NonClassEvent);
       const dbParents = await eventRepository.find();
       strictEqual(dbParents.length, 0);
+    });
+    it('Should truncate the absence table', async function () {
+      absenceRepository = getRepository(Absence);
+      const dbAbsences = await absenceRepository.find();
+      strictEqual(dbAbsences.length, 0);
     });
   });
 });
