@@ -81,10 +81,63 @@ const NotesModal: FunctionComponent<NotesModalProps> = function ({
     setCourseNotes(course?.notes || '');
   }, [course, setCourseNotes]);
 
+  /**
+   * Keeps track of whether the user has altered fields in the form to determine
+   * whether to show a confirmation dialog on modal close
+   */
+  const [
+    isChanged,
+    setIsChanged,
+  ] = useState(false);
+
+  const confirmMessage = "You have unsaved changes. Click 'OK' to disregard changes, or 'Cancel' to continue editing.";
+
+  /**
+   * Used to add the before unload listener in the case that a form field is changed
+   */
+  useEffect(() => {
+    /**
+     * Checks to see if there are any unsaved changes in the modal when the user
+     * refreshes the page. If there are unsaved changes, the browser displays a
+     * warning message to confirm the page reload. If the user selects cancel, the
+     * user can continue making changes in the modal.
+     */
+    const onBeforeUnload = (event: Event) => {
+      if (!isChanged) return;
+      event.preventDefault();
+      // Need to disable this rule for browser compatibility reasons
+      // eslint-disable-next-line no-param-reassign
+      event.returnValue = false;
+      return confirmMessage;
+    };
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', onBeforeUnload);
+    };
+  }, [isChanged]);
+
+  /**
+   * Called when the modal is closed. If there are any unsaved changes,
+   * a warning message appears, and the user must confirm discarding the unsaved
+   * changes in order to close the modal. If the user selects cancel, the user
+   * can continue making changes in the modal.
+   */
+  const confirmAndClose = () => {
+    if (isChanged) {
+      // eslint-disable-next-line no-alert
+      if (window.confirm(confirmMessage)) {
+        setIsChanged(false);
+        onClose();
+      }
+    } else {
+      onClose();
+    }
+  };
+
   return (
     <Modal
       ariaLabelledBy="notes"
-      closeHandler={onClose}
+      closeHandler={confirmAndClose}
       isVisible={isVisible}
     >
       <ModalHeader
@@ -104,6 +157,7 @@ const NotesModal: FunctionComponent<NotesModalProps> = function ({
           labelPosition={POSITION.TOP}
           onChange={
             ({ target: { value } }: ChangeEvent<HTMLTextAreaElement>) => {
+              setIsChanged(true);
               setCourseNotes(value);
             }
           }
@@ -130,7 +184,7 @@ const NotesModal: FunctionComponent<NotesModalProps> = function ({
         >
           Save
         </Button>
-        <Button onClick={onClose} variant={VARIANT.DEFAULT}>
+        <Button onClick={confirmAndClose} variant={VARIANT.DEFAULT}>
           Cancel
         </Button>
       </ModalFooter>

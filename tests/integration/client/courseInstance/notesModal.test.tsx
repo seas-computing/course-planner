@@ -11,7 +11,7 @@ import {
   waitForElementToBeRemoved,
   within,
 } from 'test-utils';
-import { cs50CourseInstance } from 'testData';
+import { cs50CourseInstance, string } from 'testData';
 
 describe('Notes modal', function () {
   let getStub: SinonStub;
@@ -90,5 +90,15 @@ describe('Notes modal', function () {
       );
       done();
     });
+  });
+  it('prompts the user to save any un-saved changes before closing', function () {
+    const windowConfirmStub = stub(window, 'confirm');
+    fireEvent.change(multiLineTextArea, {
+      target: { value: string },
+    });
+    fireEvent.click(noteCancelButton);
+
+    windowConfirmStub.returns(true);
+    strictEqual(windowConfirmStub.callCount, 1);
   });
 });
