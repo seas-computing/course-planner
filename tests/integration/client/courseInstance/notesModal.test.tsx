@@ -29,6 +29,7 @@ describe('Notes modal', function () {
     getStub = stub(CourseAPI, 'getCourseInstancesForYear');
     postStub = stub(CourseAPI, 'editCourse');
     getStub.resolves([testData]);
+    postStub.resolves();
 
     page = render(<CoursesPage />);
     editNotesButton = await page.findByLabelText('notes', { exact: false }) as HTMLButtonElement;
@@ -44,7 +45,6 @@ describe('Notes modal', function () {
     noteSubmitButton = within(modal).getByText(/Save/) as HTMLButtonElement;
   });
   it('updates notes for the specified course on the server', function () {
-    postStub.resolves();
     fireEvent.change(multiLineTextArea, {
       target: { value: 'aaa' },
     });
@@ -55,7 +55,6 @@ describe('Notes modal', function () {
   });
 
   it('updates notes for the specified course in local state', async function () {
-    postStub.resolves();
     fireEvent.change(multiLineTextArea, {
       target: { value: 'aaa' },
     });
