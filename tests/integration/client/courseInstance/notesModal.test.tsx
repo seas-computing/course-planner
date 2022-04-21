@@ -101,4 +101,13 @@ describe('Notes modal', function () {
     windowConfirmStub.returns(true);
     strictEqual(windowConfirmStub.callCount, 1);
   });
+  it('shows a loading spinner when saving', async function () {
+    fireEvent.change(multiLineTextArea, {
+      target: { value: string },
+    });
+    fireEvent.click(noteSubmitButton);
+    return waitForElement(
+      () => within(modal).findByText('Saving Notes')
+    );
+  });
 });

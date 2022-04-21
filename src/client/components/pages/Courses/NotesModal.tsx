@@ -8,6 +8,7 @@ import {
   MultiLineTextInput,
   POSITION,
   VARIANT,
+  LoadSpinner,
 } from 'mark-one';
 import React, {
   ChangeEvent,
@@ -134,6 +135,11 @@ const NotesModal: FunctionComponent<NotesModalProps> = function ({
     }
   };
 
+  const [
+    saving,
+    setSaving,
+  ] = useState(false);
+
   return (
     <Modal
       ariaLabelledBy="notes"
@@ -147,34 +153,46 @@ const NotesModal: FunctionComponent<NotesModalProps> = function ({
         {`Notes For ${course?.catalogNumber}`}
       </ModalHeader>
       <ModalBody>
-        <MultiLineTextInput
-          id={`notes-${course?.id}`}
-          value={courseNotes}
-          label="Course Notes"
-          name="notes"
-          placeholder="Some course notes"
-          isLabelVisible={false}
-          labelPosition={POSITION.TOP}
-          onChange={
-            ({ target: { value } }: ChangeEvent<HTMLTextAreaElement>) => {
-              setIsChanged(true);
-              setCourseNotes(value);
-            }
-          }
-        />
+        {
+          saving
+            ? (
+              <LoadSpinner>Saving Notes</LoadSpinner>
+            ) : (
+              <MultiLineTextInput
+                id={`notes-${course?.id}`}
+                value={courseNotes}
+                label="Course Notes"
+                name="notes"
+                placeholder="Some course notes"
+                isLabelVisible={false}
+                labelPosition={POSITION.TOP}
+                onChange={
+                  ({ target: { value } }: ChangeEvent<HTMLTextAreaElement>) => {
+                    setIsChanged(true);
+                    setCourseNotes(value);
+                  }
+                }
+              />
+            )
+        }
       </ModalBody>
       <ModalFooter>
         <Button
           onClick={async () => {
-            await CourseAPI.editCourse({
-              id: course.id,
-              area: course.area,
-              isSEAS: course.isSEAS,
-              isUndergraduate: course.isUndergraduate,
-              termPattern: course.termPattern,
-              title: course.title,
-              notes: courseNotes,
-            });
+            try {
+              setSaving(true);
+              await CourseAPI.editCourse({
+                id: course.id,
+                area: course.area,
+                isSEAS: course.isSEAS,
+                isUndergraduate: course.isUndergraduate,
+                termPattern: course.termPattern,
+                title: course.title,
+                notes: courseNotes,
+              });
+            } finally {
+              setSaving(false);
+            }
             onSave({
               ...course,
               notes: courseNotes,
