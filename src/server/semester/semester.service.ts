@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ABSENCE_TYPE, OFFERED, TERM } from 'common/constants';
@@ -13,7 +13,7 @@ import { Semester } from './semester.entity';
  * database for Semester data.
  */
 @Injectable()
-export class SemesterService {
+export class SemesterService implements OnApplicationBootstrap {
   @InjectRepository(Semester)
   private readonly semesterRepository: Repository<Semester>;
 
@@ -200,5 +200,12 @@ export class SemesterService {
       await this.semesterRepository.save(springSemester);
     }
     return null;
+  }
+
+  public async onApplicationBootstrap(): Promise<void> {
+    const today = new Date();
+    if (today.getMonth() === 5) {
+      await this.addAcademicYear(today.getFullYear() + 1);
+    }
   }
 }
