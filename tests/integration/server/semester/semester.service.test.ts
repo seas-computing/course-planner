@@ -3,14 +3,21 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule, getRepositoryToken, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { SemesterModule } from 'server/semester/semester.module';
 import { CourseInstance } from 'server/courseInstance/courseinstance.entity';
-import { ABSENCE_TYPE, AUTH_MODE, OFFERED, TERM } from 'common/constants';
+import {
+  ABSENCE_TYPE,
+  AUTH_MODE,
+  OFFERED,
+  TERM,
+} from 'common/constants';
 import { ConfigService } from 'server/config/config.service';
 import { ConfigModule } from 'server/config/config.module';
 import { AuthModule } from 'server/auth/auth.module';
-import { Repository } from 'typeorm';
+import { EntityNotFoundError, Repository } from 'typeorm';
 import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 import { SemesterService } from 'server/semester/semester.service';
 import { Semester } from 'server/semester/semester.entity';
+import FakeTimers from '@sinonjs/fake-timers';
+import { MONTH } from 'common/constants/month';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import { semesters } from '../../../mocks/database/population/data/semesters';
@@ -363,6 +370,61 @@ describe('Semester Service', function () {
         } catch (err) {
           strictEqual(err.response.error, 'Bad Request');
           strictEqual(err.response.message, 'Cannot create requested academic year until preceding academic year is created.');
+        }
+      });
+    });
+  });
+  describe('Invocation of addAcademicYear', function () {
+    let clock: FakeTimers.InstalledClock;
+    const lastSpringSemester = semesters.slice(-1)[0];
+    const testAcademicYear = lastSpringSemester.academicYear + 1;
+    context('before June', function () {
+      beforeEach(function () {
+        clock = FakeTimers.install();
+        clock.setSystemTime(
+          new Date(testAcademicYear - 1, MONTH.FEB, 1, 0, 0, 0)
+        );
+      });
+      afterEach(function () {
+        clock.uninstall();
+      });
+      it('should not have created the new academic year', async function () {
+        semesterRepository = testModule.get(getRepositoryToken(Semester));
+        try {
+          await semesterRepository.findOneOrFail({
+            where: {
+              term: TERM.SPRING,
+              academicYear: testAcademicYear,
+            },
+          });
+        } catch (e) {
+          strictEqual(e instanceof EntityNotFoundError, true);
+        }
+      });
+    });
+    context('in June', function () {
+      beforeEach(async function () {
+        clock = FakeTimers.install();
+        clock.setSystemTime(
+          new Date(testAcademicYear - 1, MONTH.JUN, 6, 0, 0, 0)
+        );
+        // calling init triggers the onApplicationBootstrap hook
+        await testModule.createNestApplication().init();
+      });
+      afterEach(function () {
+        clock.uninstall();
+      });
+      it('should have created the new academic year', async function () {
+        semesterRepository = testModule.get(getRepositoryToken(Semester));
+        try {
+          await semesterRepository.findOneOrFail({
+            where: {
+              term: TERM.SPRING,
+              academicYear: testAcademicYear,
+            },
+          });
+        } catch (e) {
+          strictEqual(e instanceof EntityNotFoundError, false);
         }
       });
     });
