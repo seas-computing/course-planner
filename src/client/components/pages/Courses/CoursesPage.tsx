@@ -33,6 +33,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWrench, faDownload } from '@fortawesome/free-solid-svg-icons';
 import { MenuFlex } from 'client/components/general';
 import { DropdownProps } from 'mark-one/lib/Forms/Dropdown';
+import { useGroupGuard } from 'client/hooks/useGroupGuard';
 import CourseInstanceTable from './CourseInstanceTable';
 import ViewModal from './ViewModal';
 import SemesterTable from './SemesterTable';
@@ -549,6 +550,12 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
       });
   }, [dispatchMessage, setReportDownloading]);
 
+  /**
+  * Check the current user's permission level and only display the edit buttons
+  * if they are an admin
+  */
+  const { isAdmin } = useGroupGuard();
+
   return (
     <div className="course-instance-table">
       <VerticalSpace>
@@ -634,6 +641,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
               openOfferedModal={openOfferedModal}
               openNotesModal={openNotesModal}
               setButtonRef={setButtonRef}
+              isAdmin={isAdmin}
             />
           )
       }

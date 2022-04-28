@@ -40,6 +40,11 @@ interface CourseInstanceTableBodyProps {
    * The ref value of the edit faculty absence button
    */
   setButtonRef: (nodeId: string) => (node: HTMLButtonElement) => void;
+  /**
+   * Indicates wether a user is an admin or not. This is used to enable or
+   * disable editing of various fields in the table (and associated modals)
+   */
+  isAdmin: boolean;
 }
 
 /**
@@ -56,13 +61,8 @@ FunctionComponent<CourseInstanceTableBodyProps> = ({
   openOfferedModal,
   openNotesModal,
   setButtonRef,
+  isAdmin,
 }): ReactElement => {
-  /**
-  * Check the current user's permission level and only display the edit buttons
-  * if they are an admin
-  */
-  const { isAdmin } = useGroupGuard();
-
   return (
     <TableBody>
       {courseList.map((course, index) => (

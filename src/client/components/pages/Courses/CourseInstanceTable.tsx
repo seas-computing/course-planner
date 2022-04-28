@@ -71,6 +71,11 @@ interface CourseInstanceTableProps {
    * The ref value of the edit faculty absence button
    */
   setButtonRef: (nodeId: string) => (node: HTMLButtonElement) => void;
+  /**
+   * Indicates wether a user is an admin or not. This is used to enable or
+   * disable editing of various fields in the table (and associated modals)
+   */
+  isAdmin: boolean;
 }
 
 /**
@@ -94,6 +99,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
   openOfferedModal,
   setButtonRef,
   openNotesModal,
+  isAdmin,
 }): ReactElement => {
   const courseColumns = tableData.filter(
     ({ columnGroup }): boolean => (
@@ -292,6 +298,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
         openOfferedModal={openOfferedModal}
         setButtonRef={setButtonRef}
         openNotesModal={openNotesModal}
+        isAdmin={isAdmin}
       />
     </Table>
   );
