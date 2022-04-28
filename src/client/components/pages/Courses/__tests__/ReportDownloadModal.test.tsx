@@ -181,7 +181,7 @@ describe('Report Download Modal', function () {
       beforeEach(function () {
         fetchStub.rejects(dummy.error);
       });
-      it('Should show an error message and keep the modal open', async function () {
+      it('Should display an error message', async function () {
         const page = render(
           <TestPage />,
           {
@@ -206,7 +206,7 @@ describe('Report Download Modal', function () {
             text: () => Promise.resolve('Server Error'),
           });
         });
-        it('Should download the appropriate years and close the modal', async function () {
+        it('Should display an error message', async function () {
           const page = render(
             <TestPage />,
             {
