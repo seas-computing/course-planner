@@ -402,7 +402,7 @@ describe('Semester Service', function () {
         }
       });
     });
-    context.only('in June', function () {
+    context('in June', function () {
       beforeEach(async function () {
         clock = FakeTimers.install();
         clock.setSystemTime(
