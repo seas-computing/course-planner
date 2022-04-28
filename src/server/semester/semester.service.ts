@@ -159,10 +159,6 @@ export class SemesterService implements OnApplicationBootstrap {
           faculty: absence.faculty,
         }));
 
-      // Note that this also saves the nested entities because of
-      // the cascade set on semester
-      await this.semesterRepository.save(fallSemester);
-
       const newSpringInstances = springInstances
         .map((springInstance) => ({
           ...new CourseInstance(),
@@ -196,7 +192,9 @@ export class SemesterService implements OnApplicationBootstrap {
           faculty: absence.faculty,
         }));
 
-      await this.semesterRepository.save(springSemester);
+      // Note that this also saves the nested entities because of
+      // the cascade set on semester
+      await this.semesterRepository.save([fallSemester, springSemester]);
     }
     return null;
   }
