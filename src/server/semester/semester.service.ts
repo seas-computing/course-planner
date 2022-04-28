@@ -1,10 +1,11 @@
 import { BadRequestException, Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ABSENCE_TYPE, OFFERED, TERM } from 'common/constants';
+import { OFFERED, TERM } from 'common/constants';
 import { CourseInstance } from 'server/courseInstance/courseinstance.entity';
 import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
 import { Absence } from 'server/absence/absence.entity';
+import { MONTH } from 'common/constants/month';
 import { Semester } from './semester.entity';
 
 /**
@@ -202,7 +203,7 @@ export class SemesterService implements OnApplicationBootstrap {
 
   public async onApplicationBootstrap(): Promise<void> {
     const today = new Date();
-    if (today.getMonth() === 5) {
+    if (today.getMonth() === MONTH.JUN) {
       await this.addAcademicYear(today.getFullYear() + 1);
     }
   }
