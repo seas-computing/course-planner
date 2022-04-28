@@ -402,11 +402,11 @@ describe('Semester Service', function () {
         }
       });
     });
-    context('in June', function () {
+    context.only('in June', function () {
       beforeEach(async function () {
         clock = FakeTimers.install();
         clock.setSystemTime(
-          new Date(testAcademicYear - 1, MONTH.JUN, 6, 0, 0, 0)
+          new Date(testAcademicYear - 3, MONTH.JUN, 6, 0, 0, 0)
         );
         // calling init triggers the onApplicationBootstrap hook
         await testModule.createNestApplication().init();
