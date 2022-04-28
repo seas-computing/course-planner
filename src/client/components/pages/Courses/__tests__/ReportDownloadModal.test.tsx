@@ -97,7 +97,7 @@ describe('Report Download Modal', function () {
       });
       it('Should move the endYear to match the startYear', function () {
         strictEqual(startYear.value, (currentAcademicYear + 2).toString());
-        strictEqual(endYear.value, (currentAcademicYear + 2).toString());
+        strictEqual(endYear.value, startYear.value);
       });
     });
     context('Setting the startYear to a date before the endYear', function () {
@@ -136,8 +136,8 @@ describe('Report Download Modal', function () {
         });
       });
       it('Should move the startYear to match the endYear', function () {
-        strictEqual(startYear.value, (currentAcademicYear - 2).toString());
         strictEqual(endYear.value, (currentAcademicYear - 2).toString());
+        strictEqual(startYear.value, endYear.value);
       });
     });
     context('Setting the endYear to a date after the startYear', function () {
