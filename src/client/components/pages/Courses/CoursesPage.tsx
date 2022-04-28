@@ -261,7 +261,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
         refTable.current[modalButtonId].focus();
       }
     });
-  }, [modalButtonId]);
+  }, [modalButtonId, setNotesModalData]);
 
   /**
    * Handles closing the meeting modal and setting the focus back to the button
