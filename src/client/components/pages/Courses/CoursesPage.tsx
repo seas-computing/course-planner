@@ -239,11 +239,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
         refTable.current[modalButtonId].focus();
       }
     });
-  }, [
-    setReportModalVisible,
-    refTable,
-    modalButtonId,
-  ]);
+  }, [modalButtonId]);
 
   /**
    * Takes the requested course and term information to display the requested
