@@ -129,9 +129,6 @@ export class SemesterService implements OnApplicationBootstrap {
             ...new CourseInstance(),
             offered: springInstance.offered === OFFERED.RETIRED
               ? OFFERED.RETIRED : OFFERED.BLANK,
-            preEnrollment: null,
-            studyCardEnrollment: null,
-            actualEnrollment: null,
             course: fallInstance.course,
             facultyCourseInstances: [],
             meetings: [],
@@ -164,9 +161,6 @@ export class SemesterService implements OnApplicationBootstrap {
           ...new CourseInstance(),
           offered: springInstance.offered === OFFERED.RETIRED
             ? OFFERED.RETIRED : OFFERED.BLANK,
-          preEnrollment: null,
-          studyCardEnrollment: null,
-          actualEnrollment: null,
           course: springInstance.course,
           facultyCourseInstances: [],
           meetings: [],
