@@ -144,10 +144,13 @@ describe('Semester Service', function () {
       afterEach(function () {
         getStub.restore();
       });
-      it('calls findOneOrFail and save once for each the fall and spring semesters', async function () {
+      it('calls findOneOrFail once for each the fall and spring semesters', async function () {
         await semesterService.addAcademicYear(newAcademicYear);
         strictEqual(mockSemesterRepository.findOneOrFail.callCount, 2, 'Called "findOneOrFail" an unexpected number of times.');
-        strictEqual(mockSemesterRepository.save.callCount, 2, 'Called "save" an unexpected number of times.');
+      });
+      it('calls save once', async function () {
+        await semesterService.addAcademicYear(newAcademicYear);
+        strictEqual(mockSemesterRepository.save.callCount, 1, 'Called "save" an unexpected number of times.');
       });
     });
     context('when the academic year preceding the requested academic year does not exist', function () {
