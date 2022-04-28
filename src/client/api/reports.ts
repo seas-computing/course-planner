@@ -1,8 +1,22 @@
 /**
+ * Represents the start and end years that will be covered by the downloaded
+ * report
+ */
+export interface ReportRange {
+  startYear: string;
+  endYear: string;
+}
+
+/**
+* Typed so that only one of startYear/endYear can be provided
+*/
+export type ReportRangeUpdate = Pick<ReportRange, 'startYear'> | Pick<ReportRange, 'endYear'>;
+
+/**
  * Provide asynchronous downloading of a fetch response, based on
  * https://itnext.io/how-to-download-files-with-javascript-d5a69b749896
  */
-export default async (
+const downloadAttachment = async (
   response: Response
 ): Promise<void> => {
   // Check to make sure this is downloadable
@@ -32,4 +46,26 @@ export default async (
     document.body.removeChild(downloader);
     URL.revokeObjectURL(fileURL);
   });
+};
+
+/**
+ * Downloads the report data based on the range of years provided
+ */
+export const getCourseReport = async (range: ReportRange): Promise<void> => {
+  const server = new URL(process.env.SERVER_URL);
+  if (!server.pathname.endsWith('/')) {
+    server.pathname += '/';
+  }
+  server.pathname += 'report/courses';
+  if (range) {
+    server.search = new URLSearchParams(
+      Object.entries(range)
+    ).toString();
+  }
+  const reportURL = server.toString();
+  const response = await fetch(
+    reportURL,
+    { credentials: 'include' }
+  );
+  return downloadAttachment(response);
 };

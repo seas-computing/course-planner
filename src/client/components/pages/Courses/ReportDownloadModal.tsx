@@ -23,7 +23,11 @@ import {
 import { DropdownProps } from 'mark-one/lib/Forms/Dropdown';
 import { MetadataContext } from 'client/context';
 import { TERM } from 'common/constants';
-import downloadAttachment from '../utils/downloadAttachment';
+import {
+  getCourseReport,
+  ReportRange,
+  ReportRangeUpdate,
+} from 'client/api';
 
 /**
  * Props for controlling the opening and closing of the modal
@@ -34,20 +38,6 @@ interface ReportDownloadModalProps {
   /** Handler to call to close the modal */
   closeModal: () => void;
 }
-
-/**
- * Represents the start and end years that will be covered by the downloaded
- * report
- */
-interface ReportRange {
-  startYear: string;
-  endYear: string;
-}
-
-/**
-* Typed so that only one of startYear/endYear can be provided
-*/
-type ReportRangeUpdate = Pick<ReportRange, 'startYear'> | Pick<ReportRange, 'endYear'>;
 
 /**
  * Allows the user to download a report covering a specific range of academic
@@ -111,24 +101,6 @@ const ReportDownloadModal: FunctionComponent<ReportDownloadModalProps> = ({
   ), [semesters]);
 
   /**
-   * Construct a download URL for the report, setting the current report range
-   * values as query parameters
-   */
-  const reportURL = useMemo(() => {
-    const server = new URL(process.env.SERVER_URL);
-    if (!server.pathname.endsWith('/')) {
-      server.pathname += '/';
-    }
-    server.pathname += 'report/courses';
-    if (currentReportRange) {
-      server.search = new URLSearchParams(
-        Object.entries(currentReportRange)
-      ).toString();
-    }
-    return server.toString();
-  }, [currentReportRange]);
-
-  /**
    * Call back for updating the currrently selected start/end year. To avoid
    * invalid combinations, we'll shift the other choice when the user selects a
    * year outside the valid range.
@@ -163,24 +135,25 @@ const ReportDownloadModal: FunctionComponent<ReportDownloadModalProps> = ({
    * and close the modal. If the download fails, keep the modal open and
    * display an error.
    */
-  const downloadCoursesReport = useCallback(() => {
+  const downloadCoursesReport = useCallback(async () => {
     setReportDownloading(true);
     setDownloadError('');
-    fetch(
-      reportURL,
-      { credentials: 'include' }
-    ).then(downloadAttachment)
-      .then(closeModal)
-      .catch((err: Error) => {
+    try {
+      await getCourseReport(currentReportRange);
+      closeModal();
+    } catch (err) {
+      if (err instanceof Error) {
         setDownloadError(err.message);
-      })
-      .finally(() => {
-        setReportDownloading(false);
-      });
+      } else {
+        setDownloadError('Report download failed');
+      }
+    } finally {
+      setReportDownloading(false);
+    }
   }, [
+    currentReportRange,
     setReportDownloading,
     closeModal,
-    reportURL,
   ]);
 
   /**
