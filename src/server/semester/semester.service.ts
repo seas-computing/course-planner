@@ -156,7 +156,6 @@ export class SemesterService implements OnApplicationBootstrap {
         .map((absence) => ({
           ...new Absence(),
           faculty: absence.faculty,
-          type: ABSENCE_TYPE.PRESENT,
         }));
 
       // Note that this also saves the nested entities because of
@@ -194,7 +193,6 @@ export class SemesterService implements OnApplicationBootstrap {
         .map((absence) => ({
           ...new Absence(),
           faculty: absence.faculty,
-          type: ABSENCE_TYPE.PRESENT,
         }));
 
       await this.semesterRepository.save(springSemester);
