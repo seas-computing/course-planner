@@ -6,6 +6,7 @@ import {
   Res,
   BadRequestException,
   Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { GROUP } from 'common/constants';
 import { Response } from 'express';
@@ -19,7 +20,6 @@ import {
 import { RequireGroup } from '../auth/group.guard';
 import { Authentication } from '../auth/authentication.guard';
 import { ReportService } from './report.service';
-import { ConfigService } from '../config/config.service';
 import { SemesterService } from '../semester/semester.service';
 
 /**
@@ -32,9 +32,6 @@ import { SemesterService } from '../semester/semester.service';
 export class ReportController {
   @Inject(ReportService)
   private readonly reportService: ReportService;
-
-  @Inject(ConfigService)
-  private readonly configService: ConfigService;
 
   @Inject(SemesterService)
   private readonly semesterService: SemesterService;
@@ -58,16 +55,10 @@ export class ReportController {
   @Get('/courses')
   public async getCoursesReport(
     @Res() res: Response,
-      @Query('startYear') start?: string,
-      @Query('endYear') end?: string
+      @Query('startYear', ParseIntPipe) startYear: number,
+      @Query('endYear', ParseIntPipe) endYear: number
   ): Promise<void> {
     const allYears = await this.semesterService.getYearList();
-    const startYear: number = start
-      ? parseInt(start, 10)
-      : this.configService.academicYear;
-    const endYear: number = end
-      ? parseInt(end, 10)
-      : parseInt([...allYears].pop(), 10);
     if (!allYears.includes(startYear.toString())) {
       throw new BadRequestException('Invalid start year');
     }
