@@ -10,7 +10,7 @@ import {
 } from 'sinon';
 import request from 'supertest';
 import {
-  HttpServer,
+  HttpServer, HttpStatus,
 } from '@nestjs/common';
 import {
   strictEqual, notStrictEqual, deepStrictEqual,
@@ -102,9 +102,14 @@ describe('Report Controller', function () {
   });
   describe('/report/courses', function () {
     let testReport: Excel.Workbook;
-    context('Without providing a date range', function () {
+    context('Providing a start and end year', function () {
+      let startYear: number;
+      let endYear: number;
       beforeEach(async function () {
-        const courseReport = await request(api).get('/report/courses');
+        startYear = currentAcademicYear - 1;
+        endYear = currentAcademicYear + 1;
+        const courseReport = await request(api)
+          .get(`/report/courses?startYear=${startYear}&endYear=${endYear}`);
         const courseData = courseReport.body;
         testReport = new Excel.Workbook();
         return testReport.xlsx.load(courseData);
@@ -119,7 +124,7 @@ describe('Report Controller', function () {
         // Add one for the header
         strictEqual(rowCount, courseCount + 1);
       });
-      it('Should default to span the current Academic Year to the end of the database', async function () {
+      it('Should only include the years in the range', async function () {
         const columnHeaders: string[] = [];
         testReport
           .getWorksheet('Courses')
@@ -127,9 +132,11 @@ describe('Report Controller', function () {
           .eachCell((cell) => { columnHeaders.push(cell.text); });
 
         const allYears = await semesterService.getYearList();
-        const currentIndex = allYears
-          .findIndex((year) => year === currentAcademicYear.toString());
-        const yearRange = allYears.slice(currentIndex);
+        const startIndex = allYears
+          .findIndex((year) => year === startYear.toString());
+        const endIndex = allYears
+          .findIndex((year) => year === endYear.toString());
+        const yearRange = allYears.slice(startIndex, endIndex + 1);
         const headerPairs = yearRange.reduce<string[]>(
           (pairs: string[], currentYear: string): string[] => {
             const fallYear = (parseInt(currentYear, 10) - 1);
@@ -142,6 +149,46 @@ describe('Report Controller', function () {
           const firstSemesterHeader = columnHeaders
             .findIndex((col) => col.includes(header));
           notStrictEqual(firstSemesterHeader, -1, `Header with ${header} does not appear`);
+        });
+      });
+    });
+    context('With invalid data', function () {
+      context('With an invalid startYear', function () {
+        context('With a non-numeric value', function () {
+          it('It should return a Bad Request error', async function () {
+            const courseReport = await request(api).get('/report/courses?startYear=abcd');
+            strictEqual(courseReport.status, HttpStatus.BAD_REQUEST);
+          });
+        });
+        context('With an out of range value', function () {
+          it('It should return a Bad Request error', async function () {
+            const courseReport = await request(api).get('/report/courses?startYear=1');
+            strictEqual(courseReport.status, HttpStatus.BAD_REQUEST);
+          });
+        });
+      });
+      context('With an invalid endYear', function () {
+        context('With a non-numeric value', function () {
+          it('It should return a Bad Request error', async function () {
+            const courseReport = await request(api).get('/report/courses?endYear=abcd');
+            strictEqual(courseReport.status, HttpStatus.BAD_REQUEST);
+          });
+        });
+        context('With an out of range value', function () {
+          it('It should return a Bad Request error', async function () {
+            const courseReport = await request(api).get('/report/courses?endYear=2');
+            strictEqual(courseReport.status, HttpStatus.BAD_REQUEST);
+          });
+        });
+      });
+      context('With an endYear before the startYear', function () {
+        it('It should return a Bad Request error', async function () {
+          const startYear = currentAcademicYear + 1;
+          const endYear = currentAcademicYear - 1;
+          const courseReport = await request(api)
+            .get(`/report/courses?startYear=${startYear}&endYear=${endYear}`);
+          strictEqual(courseReport.status, HttpStatus.BAD_REQUEST);
+          strictEqual(courseReport.body.message, 'End year cannot be earlier than start year');
         });
       });
     });

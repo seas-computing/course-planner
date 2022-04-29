@@ -5,6 +5,8 @@ import {
   Get,
   Res,
   BadRequestException,
+  Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { GROUP } from 'common/constants';
 import { Response } from 'express';
@@ -18,7 +20,6 @@ import {
 import { RequireGroup } from '../auth/group.guard';
 import { Authentication } from '../auth/authentication.guard';
 import { ReportService } from './report.service';
-import { ConfigService } from '../config/config.service';
 import { SemesterService } from '../semester/semester.service';
 
 /**
@@ -31,9 +32,6 @@ import { SemesterService } from '../semester/semester.service';
 export class ReportController {
   @Inject(ReportService)
   private readonly reportService: ReportService;
-
-  @Inject(ConfigService)
-  private readonly configService: ConfigService;
 
   @Inject(SemesterService)
   private readonly semesterService: SemesterService;
@@ -56,16 +54,19 @@ export class ReportController {
   })
   @Get('/courses')
   public async getCoursesReport(
-    @Res() res: Response
+    @Res() res: Response,
+      @Query('startYear', ParseIntPipe) startYear: number,
+      @Query('endYear', ParseIntPipe) endYear: number
   ): Promise<void> {
     const allYears = await this.semesterService.getYearList();
-    const { academicYear: startYear } = this.configService;
-    const endYear = parseInt([...allYears].pop(), 10);
-    // This basically can't happen now, but would be possible if we add the
-    // query paramters in the future
-    if (!allYears.includes(startYear.toString())
-        || !allYears.includes(endYear.toString())) {
-      throw new BadRequestException();
+    if (!allYears.includes(startYear.toString())) {
+      throw new BadRequestException('Invalid start year');
+    }
+    if (!allYears.includes(endYear.toString())) {
+      throw new BadRequestException('Invalid end year');
+    }
+    if (endYear < startYear) {
+      throw new BadRequestException('End year cannot be earlier than start year');
     }
     res.set({
       'Content-Type': 'application/octet-stream',
