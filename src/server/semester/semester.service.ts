@@ -174,41 +174,23 @@ export class SemesterService implements OnApplicationBootstrap {
           faculty: absence.faculty,
         }));
 
-      this.logService.info('Creating the spring course instances.');
-
-      const newSpringInstances = springInstances
-        .map((springInstance) => ({
-          ...new CourseInstance(),
-          offered: springInstance.offered === OFFERED.RETIRED
-            ? OFFERED.RETIRED : OFFERED.BLANK,
-          course: springInstance.course,
-          facultyCourseInstances: [],
-          meetings: [],
-        }));
+      this.logService.info('Creating the spring course instances, non class events, and absences.');
 
       // Create new spring semester
-      const springSemester = new Semester();
-      springSemester.academicYear = newAcademicYear.toString();
-      springSemester.term = TERM.SPRING;
-      springSemester.courseInstances = newSpringInstances;
-
-      this.logService.info('Creating the spring non class events.');
-
-      springSemester.nonClassEvents = existingSpringSemester.nonClassEvents
-        .map((nce) => ({
-          ...new NonClassEvent(),
-          nonClassParent: nce.nonClassParent,
-          private: nce.private,
-          meetings: [],
-        }));
-
-      this.logService.info('Creating the spring absences.');
-
-      springSemester.absences = existingSpringSemester.absences
-        .map((absence) => ({
-          ...new Absence(),
-          faculty: absence.faculty,
-        }));
+      const springSemester = {
+        ...fallSemester,
+        courseInstances: fallSemester.courseInstances.map(
+          (instance) => ({ ...instance })
+        ),
+        nonClassEvents: fallSemester.nonClassEvents.map(
+          (event) => ({ ...event })
+        ),
+        absences: fallSemester.courseInstances.map(
+          (absence) => ({ ...absence })
+        ),
+        academicYear: newAcademicYear.toString(),
+        term: TERM.SPRING,
+      };
 
       // Note that this also saves the nested entities because of
       // the cascade set on semester
