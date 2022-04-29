@@ -224,7 +224,7 @@ export class SemesterService implements OnApplicationBootstrap {
       try {
         void this.addAcademicYear(yearToAdd);
       } catch (e) {
-        this.logService.error(`Failed to add academic year ${yearToAdd}: ${String(e)}`);
+        this.logService.error(e);
       }
     }
   }
