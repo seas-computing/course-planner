@@ -16,6 +16,7 @@ import { Semester } from 'server/semester/semester.entity';
 import { SemesterService } from 'server/semester/semester.service';
 import { NotFoundException } from '@nestjs/common';
 import { Absence } from 'server/absence/absence.entity';
+import { LogService } from 'server/log/log.service';
 import { FacultyController } from '../faculty.controller';
 import { Faculty } from '../faculty.entity';
 import { Area } from '../../area/area.entity';
@@ -26,6 +27,7 @@ describe('Faculty controller', function () {
   let mockFacultyService : Record<string, SinonStub>;
   let mockFacultyScheduleService : Record<string, SinonStub>;
   let mockSemesterService : Record<string, SinonStub>;
+  let mockLogService: Record<string, SinonStub>;
   let mockFacultyRepository : Record<string, SinonStub>;
   let mockAreaRepository : Record<string, SinonStub>;
   let mockSemesterRepository : Record<string, SinonStub>;
@@ -40,6 +42,8 @@ describe('Faculty controller', function () {
     mockFacultyScheduleService = {};
 
     mockSemesterService = {};
+
+    mockLogService = {};
 
     mockFacultyRepository = {
       find: stub(),
@@ -81,6 +85,10 @@ describe('Faculty controller', function () {
         {
           provide: SemesterService,
           useValue: mockSemesterService,
+        },
+        {
+          provide: LogService,
+          useValue: mockLogService,
         },
         {
           provide: getRepositoryToken(Faculty),

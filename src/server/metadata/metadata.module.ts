@@ -7,6 +7,7 @@ import { Semester } from 'server/semester/semester.entity';
 import { Area } from 'server/area/area.entity';
 import { CourseService } from 'server/course/course.service';
 import { Course } from 'server/course/course.entity';
+import { LogService } from 'server/log/log.service';
 import { MetadataController } from './metadata.controller';
 
 @Module({
@@ -23,6 +24,7 @@ import { MetadataController } from './metadata.controller';
     AreaService,
     SemesterService,
     CourseService,
+    LogService,
   ],
 })
 export class MetadataModule { }

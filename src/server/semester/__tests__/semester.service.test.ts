@@ -22,6 +22,7 @@ import { AuthModule } from 'server/auth/auth.module';
 import { AUTH_MODE } from 'common/constants';
 import * as dummy from 'testData';
 import { BadRequestException } from '@nestjs/common';
+import { LogService } from 'server/log/log.service';
 import { SemesterService } from '../semester.service';
 import { TestingStrategy } from '../../../../tests/mocks/authentication/testing.strategy';
 
@@ -59,6 +60,7 @@ describe('Semester Service', function () {
           useValue: mockSemesterRepository,
         },
         SemesterService,
+        LogService,
       ],
     })
       .overrideGuard(Authentication)

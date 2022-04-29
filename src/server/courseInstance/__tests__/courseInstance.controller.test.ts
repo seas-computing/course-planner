@@ -17,6 +17,7 @@ import {
 import { BadRequestException } from '@nestjs/common';
 import { Area } from 'server/area/area.entity';
 import { SemesterView } from 'server/semester/SemesterView.entity';
+import { LogService } from 'server/log/log.service';
 import { CourseInstanceService } from '../courseInstance.service';
 import { CourseInstanceController } from '../courseInstance.controller';
 import { MultiYearPlanView } from '../MultiYearPlanView.entity';
@@ -38,6 +39,7 @@ describe('Course Instance Controller', function () {
   let ciService: CourseInstanceService;
   let semesterService: SemesterService;
   let configService: ConfigService;
+  let logService: LogService;
   const mockRepository: Record<string, SinonStub> = {};
   const fakeYearList = [
     '2018',
@@ -111,6 +113,7 @@ describe('Course Instance Controller', function () {
         ConfigService,
         CourseInstanceService,
         SemesterService,
+        LogService,
       ],
     })
       .overrideGuard(Authentication)
@@ -125,6 +128,8 @@ describe('Course Instance Controller', function () {
       .get<CourseInstanceService>(CourseInstanceService);
     configService = testModule
       .get<ConfigService>(ConfigService);
+    logService = testModule
+      .get<LogService>(LogService);
     ciController = testModule
       .get<CourseInstanceController>(CourseInstanceController);
   });

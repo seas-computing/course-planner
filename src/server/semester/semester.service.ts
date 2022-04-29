@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  OnApplicationBootstrap,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { OFFERED, TERM } from 'common/constants';
@@ -6,6 +11,7 @@ import { CourseInstance } from 'server/courseInstance/courseinstance.entity';
 import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
 import { Absence } from 'server/absence/absence.entity';
 import { MONTH } from 'common/constants/month';
+import { LogService } from 'server/log/log.service';
 import { Semester } from './semester.entity';
 
 /**
@@ -17,6 +23,9 @@ import { Semester } from './semester.entity';
 export class SemesterService implements OnApplicationBootstrap {
   @InjectRepository(Semester)
   private readonly semesterRepository: Repository<Semester>;
+
+  @Inject(LogService)
+  private readonly logService: LogService;
 
   /**
    * Resolves to an array containing all of the years that currently exist in the
@@ -82,6 +91,9 @@ export class SemesterService implements OnApplicationBootstrap {
     }
     // Only create the new academic year if it does not yet exist.
     if (!existingYears.includes((newAcademicYear).toString())) {
+      // let existingFallSemester: Semester;
+      // let existingSpringSemester: Semester;
+      this.logService.info(`Creating academic year ${newAcademicYear}`);
       // Try getting the year previous to the new academic year requested.
       // For example, if we are trying to create the 2026 academic year, use
       // the semesters Spring 2025 and Fall 2024 to construct the new year.
@@ -120,6 +132,8 @@ export class SemesterService implements OnApplicationBootstrap {
         courseIdToSpringInstance[instance.course.id] = instance;
       });
 
+      this.logService.info('Creating the fall course instances.');
+
       const newFallInstances = fallInstances
         .map((fallInstance) => {
           const springInstance: CourseInstance = courseIdToSpringInstance[
@@ -142,6 +156,8 @@ export class SemesterService implements OnApplicationBootstrap {
       fallSemester.term = TERM.FALL;
       fallSemester.courseInstances = newFallInstances;
 
+      this.logService.info('Creating the fall non class events.');
+
       fallSemester.nonClassEvents = existingFallSemester.nonClassEvents
         .map((nce) => ({
           ...new NonClassEvent(),
@@ -150,11 +166,15 @@ export class SemesterService implements OnApplicationBootstrap {
           meetings: [],
         }));
 
+      this.logService.info('Creating the fall absences.');
+
       fallSemester.absences = existingFallSemester.absences
         .map((absence) => ({
           ...new Absence(),
           faculty: absence.faculty,
         }));
+
+      this.logService.info('Creating the spring course instances.');
 
       const newSpringInstances = springInstances
         .map((springInstance) => ({
@@ -172,6 +192,8 @@ export class SemesterService implements OnApplicationBootstrap {
       springSemester.term = TERM.SPRING;
       springSemester.courseInstances = newSpringInstances;
 
+      this.logService.info('Creating the spring non class events.');
+
       springSemester.nonClassEvents = existingSpringSemester.nonClassEvents
         .map((nce) => ({
           ...new NonClassEvent(),
@@ -179,6 +201,8 @@ export class SemesterService implements OnApplicationBootstrap {
           private: nce.private,
           meetings: [],
         }));
+
+      this.logService.info('Creating the spring absences.');
 
       springSemester.absences = existingSpringSemester.absences
         .map((absence) => ({
@@ -188,8 +212,12 @@ export class SemesterService implements OnApplicationBootstrap {
 
       // Note that this also saves the nested entities because of
       // the cascade set on semester
+      this.logService.info('Saving the new fall and spring semesters.');
       await this.semesterRepository.save([fallSemester, springSemester]);
+
+      this.logService.info(`Successfully created academic year ${newAcademicYear}.`);
     }
+    this.logService.info(`Academic year ${newAcademicYear} already exists.`);
     return null;
   }
 
