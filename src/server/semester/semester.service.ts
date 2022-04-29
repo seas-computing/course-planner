@@ -5,7 +5,7 @@ import {
   OnApplicationBootstrap,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { EntityNotFoundError, Repository } from 'typeorm';
 import { OFFERED, TERM } from 'common/constants';
 import { CourseInstance } from 'server/courseInstance/courseinstance.entity';
 import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
@@ -91,34 +91,48 @@ export class SemesterService implements OnApplicationBootstrap {
     }
     // Only create the new academic year if it does not yet exist.
     if (!existingYears.includes((newAcademicYear).toString())) {
-      // let existingFallSemester: Semester;
-      // let existingSpringSemester: Semester;
+      let existingFallSemester: Semester;
+      let existingSpringSemester: Semester;
       this.logService.info(`Creating academic year ${newAcademicYear}`);
       // Try getting the year previous to the new academic year requested.
       // For example, if we are trying to create the 2026 academic year, use
       // the semesters Spring 2025 and Fall 2024 to construct the new year.
-      const existingFallSemester = await this.semesterRepository
-        .findOneOrFail({
-          where: {
-            // NOTE: academic year in database is actually calendar year
-            term: TERM.FALL,
-            academicYear: newAcademicYear - 2,
-          },
-          // See: https://github.com/typeorm/typeorm/issues/1270#issuecomment-348429760
-          relations: ['absences', 'courseInstances', 'courseInstances.course', 'nonClassEvents'],
-        });
+      try {
+        existingFallSemester = await this.semesterRepository
+          .findOneOrFail({
+            where: {
+              // NOTE: academic year in database is actually calendar year
+              term: TERM.FALL,
+              academicYear: newAcademicYear - 2,
+            },
+            // See: https://github.com/typeorm/typeorm/issues/1270#issuecomment-348429760
+            relations: ['absences', 'courseInstances', 'courseInstances.course', 'nonClassEvents'],
+          });
+      } catch (e) {
+        if (e instanceof EntityNotFoundError) {
+          throw new BadRequestException(`Cannot find an existing fall ${newAcademicYear - 2} term.`);
+        }
+        throw e;
+      }
 
       // Get the most recent existing spring semester along with its relations
-      const existingSpringSemester = await this.semesterRepository
-        .findOneOrFail({
-          where: {
-            // NOTE: academic year in database is actually the calendar year
-            term: TERM.SPRING,
-            academicYear: newAcademicYear - 1,
-          },
-          // See: https://github.com/typeorm/typeorm/issues/1270#issuecomment-348429760
-          relations: ['absences', 'courseInstances', 'courseInstances.course', 'nonClassEvents'],
-        });
+      try {
+        existingSpringSemester = await this.semesterRepository
+          .findOneOrFail({
+            where: {
+              // NOTE: academic year in database is actually the calendar year
+              term: TERM.SPRING,
+              academicYear: newAcademicYear - 1,
+            },
+            // See: https://github.com/typeorm/typeorm/issues/1270#issuecomment-348429760
+            relations: ['absences', 'courseInstances', 'courseInstances.course', 'nonClassEvents'],
+          });
+      } catch (e) {
+        if (e instanceof EntityNotFoundError) {
+          throw new BadRequestException(`Cannot find an existing spring ${newAcademicYear - 1} term.`);
+        }
+        throw e;
+      }
 
       const fallInstances = existingFallSemester.courseInstances;
       const springInstances = existingSpringSemester.courseInstances;
