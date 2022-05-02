@@ -32,7 +32,9 @@ describe('Notes modal', function () {
     postStub.resolves();
 
     page = render(<CoursesPage />);
-    editNotesButton = await page.findByLabelText('notes', { exact: false }) as HTMLButtonElement;
+    editNotesButton = await page.findByLabelText(
+      /(Add|Edit) notes for.*/
+    ) as HTMLButtonElement;
     fireEvent.click(editNotesButton);
 
     modal = page.getByText(`Notes For ${testData.catalogNumber}`).parentElement.parentElement as HTMLDivElement;
@@ -64,7 +66,9 @@ describe('Notes modal', function () {
     );
     // Get new reference to add/edit button since the original may have
     // replaced since the last render
-    editNotesButton = await page.findByLabelText('notes', { exact: false }) as HTMLButtonElement;
+    editNotesButton = await page.findByLabelText(
+      /(Add|Edit) notes for.*/
+    ) as HTMLButtonElement;
     fireEvent.click(editNotesButton);
     const newMultiLineTextArea = within(modal).getByLabelText(
       'Course Notes',
@@ -86,7 +90,7 @@ describe('Notes modal', function () {
     setTimeout(() => {
       strictEqual(
         (document.activeElement as HTMLElement).textContent,
-        'Add Notes'
+        editNotesButton.textContent
       );
       done();
     });
