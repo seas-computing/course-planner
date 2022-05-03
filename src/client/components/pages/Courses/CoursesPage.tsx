@@ -91,6 +91,7 @@ type CourseInstanceModalData = ModalData & {
 const enum KEY {
   VIEW_COLUMNS = 'COURSE_PAGE_VIEW_COLUMNS',
   CUSTOMIZE_VIEW_BUTTON = 'customize-view-button',
+  REPORT_DOWNLOAD_BUTTON = 'download-report-button',
 }
 
 /**
@@ -257,7 +258,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
    */
   const openDownloadModal = useCallback(() => {
     setReportModalVisible(true);
-    setModalButtonId('download-course-report');
+    setModalButtonId(KEY.REPORT_DOWNLOAD_BUTTON);
   }, [setReportModalVisible, setModalButtonId]);
 
   /**
@@ -585,7 +586,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
             variant={VARIANT.INFO}
             alt="Download a spreadsheet with course data"
             onClick={openDownloadModal}
-            forwardRef={setButtonRef('download-course-report')}
+            forwardRef={setButtonRef(KEY.REPORT_DOWNLOAD_BUTTON)}
           >
             <FontAwesomeIcon
               icon={faDownload}
