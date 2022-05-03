@@ -263,7 +263,7 @@ describe('Configuration Service', function () {
     const REDIS_PASSWORD = 'password';
     const REDIS_PREFIX = safeString;
 
-    let redisURL: URL;
+    let redisClientOptions: URL;
     context('In Production', function () {
       context('With a Password', function () {
         beforeEach(function () {
@@ -274,23 +274,23 @@ describe('Configuration Service', function () {
             REDIS_PREFIX,
             NODE_ENV: 'production',
           });
-          redisURL = new URL(config.redisURL);
+          redisClientOptions = new URL(config.redisClientOptions.url);
         });
 
         it('provides the redis hostname', function () {
-          strictEqual(redisURL.hostname, REDIS_HOST);
+          strictEqual(redisClientOptions.hostname, REDIS_HOST);
         });
 
         it('provides the redis port', function () {
-          strictEqual(redisURL.port.toString(), REDIS_PORT);
+          strictEqual(redisClientOptions.port.toString(), REDIS_PORT);
         });
 
         it('provides the redis password', function () {
-          strictEqual(redisURL.password, REDIS_PASSWORD);
+          strictEqual(redisClientOptions.password, REDIS_PASSWORD);
         });
 
         it('Sets the protocol to "rediss:"', function () {
-          strictEqual(redisURL.protocol, 'rediss:');
+          strictEqual(redisClientOptions.protocol, 'rediss:');
         });
       });
       context('Without a Password', function () {
@@ -301,80 +301,23 @@ describe('Configuration Service', function () {
             REDIS_PREFIX,
             NODE_ENV: 'production',
           });
-          redisURL = new URL(config.redisURL);
+          redisClientOptions = new URL(config.redisClientOptions.url);
         });
 
         it('provides the redis hostname', function () {
-          strictEqual(redisURL.hostname, REDIS_HOST);
+          strictEqual(redisClientOptions.hostname, REDIS_HOST);
         });
 
         it('provides the redis port', function () {
-          strictEqual(redisURL.port.toString(), REDIS_PORT);
+          strictEqual(redisClientOptions.port.toString(), REDIS_PORT);
         });
 
         it('does not provide a redis password', function () {
-          strictEqual(redisURL.password, '');
+          strictEqual(redisClientOptions.password, '');
         });
 
         it('Sets the protocol to "rediss:"', function () {
-          strictEqual(redisURL.protocol, 'rediss:');
-        });
-      });
-    });
-    context('In Development', function () {
-      context('With a Password', function () {
-        beforeEach(function () {
-          const config = new ConfigService({
-            REDIS_HOST,
-            REDIS_PORT,
-            REDIS_PASSWORD,
-            REDIS_PREFIX,
-            NODE_ENV: 'development',
-          });
-          redisURL = new URL(config.redisURL);
-        });
-
-        it('provides the redis hostname', function () {
-          strictEqual(redisURL.hostname, REDIS_HOST);
-        });
-
-        it('provides the redis port', function () {
-          strictEqual(redisURL.port.toString(), REDIS_PORT);
-        });
-
-        it('provides the redis password', function () {
-          strictEqual(redisURL.password, REDIS_PASSWORD);
-        });
-
-        it('Sets the protocol to "redis:"', function () {
-          strictEqual(redisURL.protocol, 'redis:');
-        });
-      });
-      context('Without a Password', function () {
-        beforeEach(function () {
-          const config = new ConfigService({
-            REDIS_HOST,
-            REDIS_PORT,
-            REDIS_PREFIX,
-            NODE_ENV: 'development',
-          });
-          redisURL = new URL(config.redisURL);
-        });
-
-        it('provides the redis hostname', function () {
-          strictEqual(redisURL.hostname, REDIS_HOST);
-        });
-
-        it('provides the redis port', function () {
-          strictEqual(redisURL.port.toString(), REDIS_PORT);
-        });
-
-        it('does not provide a redis password', function () {
-          strictEqual(redisURL.password, '');
-        });
-
-        it('Sets the protocol to "redis:"', function () {
-          strictEqual(redisURL.protocol, 'redis:');
+          strictEqual(redisClientOptions.protocol, 'rediss:');
         });
       });
     });
