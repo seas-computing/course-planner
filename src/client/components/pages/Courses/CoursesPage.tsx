@@ -27,7 +27,6 @@ import get from 'lodash.get';
 import merge from 'lodash.merge';
 import set from 'lodash.set';
 import TERM, { TermKey } from 'common/constants/term';
-import { ViewResponse } from 'common/dto/view/ViewResponse.dto';
 import { VerticalSpace } from 'client/components/layout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWrench, faDownload } from '@fortawesome/free-solid-svg-icons';
@@ -74,18 +73,14 @@ const emptyFilters: FilterState = {
  * user loads the page. Other views can be created, modified and deleted - but
  * this default view can never be deleted or updated.
  */
-const defaultView: ViewResponse = {
-  id: 'default',
-  name: 'Default',
-  columns: [
-    ...MANDATORY_COLUMNS,
-    COURSE_TABLE_COLUMN.MEETINGS,
-    COURSE_TABLE_COLUMN.IS_SEAS,
-    COURSE_TABLE_COLUMN.OFFERED,
-    COURSE_TABLE_COLUMN.INSTRUCTORS,
-    COURSE_TABLE_COLUMN.NOTES,
-  ],
-};
+const defaultView = [
+  ...MANDATORY_COLUMNS,
+  COURSE_TABLE_COLUMN.MEETINGS,
+  COURSE_TABLE_COLUMN.IS_SEAS,
+  COURSE_TABLE_COLUMN.OFFERED,
+  COURSE_TABLE_COLUMN.INSTRUCTORS,
+  COURSE_TABLE_COLUMN.NOTES,
+];
 
 interface ModalData {
   course?: CourseInstanceResponseDTO;
@@ -95,6 +90,10 @@ interface ModalData {
 type CourseInstanceModalData = ModalData & {
   term?: TERM;
 };
+
+const enum KEY {
+  VIEW_COLUMNS = 'COURSE_PAGE_VIEW_COLUMNS',
+}
 
 /**
  * Component representing the list of CourseInstances in a given Academic year
@@ -116,7 +115,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   const [
     currentViewColumns,
     setCurrentViewColumns,
-  ] = useState(defaultView.columns);
+  ] = useState<COURSE_TABLE_COLUMN[]>([]);
 
   const [
     reportModalVisible,
@@ -447,6 +446,15 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
 
   useEffect((): void => {
     setFetching(true);
+    if (currentViewColumns.length === 0) {
+      const savedColumns = sessionStorage.getItem(KEY.VIEW_COLUMNS);
+      if (savedColumns) {
+        setCurrentViewColumns(JSON.parse(savedColumns));
+      } else {
+        sessionStorage.setItem(KEY.VIEW_COLUMNS, JSON.stringify(defaultView));
+        setCurrentViewColumns(defaultView);
+      }
+    }
     CourseAPI.getCourseInstancesForYear(selectedAcademicYear)
       .then((courses: CourseInstanceResponseDTO[]): void => {
         setCourses(courses);
@@ -460,7 +468,11 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
       .finally((): void => {
         setFetching(false);
       });
-  }, [selectedAcademicYear, dispatchMessage]);
+  }, [
+    selectedAcademicYear,
+    dispatchMessage,
+    currentViewColumns,
+  ]);
 
   /**
   * Method for updating a course in the local client list of courses. Intended
