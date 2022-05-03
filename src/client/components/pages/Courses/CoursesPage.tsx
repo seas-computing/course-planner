@@ -4,7 +4,6 @@ import React, {
   useState,
   useEffect,
   useContext,
-  Ref,
   useRef,
   useCallback,
   useMemo,
@@ -35,8 +34,6 @@ import { DropdownProps } from 'mark-one/lib/Forms/Dropdown';
 import { useGroupGuard } from 'client/hooks/useGroupGuard';
 import CourseInstanceTable from './CourseInstanceTable';
 import ViewModal from './ViewModal';
-import SemesterTable from './SemesterTable';
-import { modalFields } from './modalFields';
 import { formatFacultyNotes, tableFields } from './tableFields';
 import { listFilter } from '../Filter';
 import { FilterState } from './filters.d';
@@ -93,6 +90,7 @@ type CourseInstanceModalData = ModalData & {
 
 const enum KEY {
   VIEW_COLUMNS = 'COURSE_PAGE_VIEW_COLUMNS',
+  CUSTOMIZE_VIEW_BUTTON = 'customize-view-button',
 }
 
 /**
@@ -195,11 +193,6 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   );
 
   /**
-   * Ref to the Customize View button
-   */
-  const customizeViewButtonRef: Ref<HTMLButtonElement> = useRef(null);
-
-  /**
    * The current value of each of the course instance table filters. These
    * filter values are only used to control what's shown in the actual filter
    * inputs
@@ -232,6 +225,32 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
       return newFilters;
     });
   }, [setFilters]);
+
+  /**
+   * Open the ViewModal and save its unique id
+   */
+  const openViewModal = useCallback((): void => {
+    setViewModalVisible(true);
+    setModalButtonId(KEY.CUSTOMIZE_VIEW_BUTTON);
+  }, [setViewModalVisible, setModalButtonId]);
+
+  /**
+   * Close the ViewModal and persist the list of columns both to our
+   * sessionStorage and to our local state
+   */
+  const closeViewModal = useCallback((columns: COURSE_TABLE_COLUMN[]): void => {
+    setViewModalVisible(false);
+    setCurrentViewColumns(columns);
+    window.sessionStorage.setItem(
+      KEY.VIEW_COLUMNS,
+      JSON.stringify(columns)
+    );
+    setTimeout(() => {
+      if (modalButtonId && modalButtonId in refTable.current) {
+        refTable.current[modalButtonId].focus();
+      }
+    });
+  }, [modalButtonId]);
 
   /**
    * Handle opening the download modal
@@ -541,19 +560,6 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
       });
     }
   }, [currentCourses, dispatchMessage]);
-  /**
-   * Show/hide columns from the course instance table
-   *
-   * @param viewColumn The column that triggered the change handler
-   */
-  const toggleColumn = useCallback((viewColumn: COURSE_TABLE_COLUMN): void => {
-    setCurrentViewColumns((columns: COURSE_TABLE_COLUMN[]) => {
-      if (columns.includes(viewColumn)) {
-        return columns.filter((col) => col !== viewColumn);
-      }
-      return columns.concat([viewColumn]);
-    });
-  }, [setCurrentViewColumns]);
 
   /**
    * Memoize the table data so that it does not need to render unnecessarily
@@ -574,21 +580,6 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   return (
     <div className="course-instance-table">
       <VerticalSpace>
-        <ViewModal
-          isVisible={viewModalVisible}
-          onClose={() => {
-            setViewModalVisible(false);
-            setTimeout(() => {
-              customizeViewButtonRef.current.focus();
-            });
-          }}
-        >
-          <SemesterTable
-            columns={modalFields}
-            checked={currentViewColumns}
-            onChange={toggleColumn}
-          />
-        </ViewModal>
         <MenuFlex>
           <Button
             variant={VARIANT.INFO}
@@ -604,10 +595,8 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
           </Button>
           <Button
             variant={VARIANT.INFO}
-            forwardRef={customizeViewButtonRef}
-            onClick={() => {
-              setViewModalVisible(true);
-            }}
+            forwardRef={setButtonRef(KEY.CUSTOMIZE_VIEW_BUTTON)}
+            onClick={openViewModal}
           >
             <FontAwesomeIcon
               icon={faWrench}
@@ -752,6 +741,11 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
       <ReportDownloadModal
         isVisible={reportModalVisible}
         closeModal={closeDownloadModal}
+      />
+      <ViewModal
+        isVisible={viewModalVisible}
+        currentViewColumns={currentViewColumns}
+        onClose={closeViewModal}
       />
     </div>
   );
