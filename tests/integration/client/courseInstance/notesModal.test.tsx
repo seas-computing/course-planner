@@ -11,7 +11,12 @@ import {
   waitForElementToBeRemoved,
   within,
 } from 'test-utils';
-import { adminUser, cs50CourseInstance, string } from 'testData';
+import {
+  adminUser,
+  cs50CourseInstance,
+  string,
+  readOnlyUser,
+} from 'testData';
 
 describe('Notes modal', function () {
   let getStub: SinonStub;
@@ -39,7 +44,9 @@ describe('Notes modal', function () {
       ) as HTMLButtonElement;
       fireEvent.click(editNotesButton);
 
-      modal = page.getByText(`Notes For ${testData.catalogNumber}`).parentElement.parentElement as HTMLDivElement;
+      modal = page.getByText(`Notes For ${testData.catalogNumber}`)
+        .parentElement
+        .parentElement as HTMLDivElement;
 
       multiLineTextArea = within(modal)
         .getByLabelText('Course Notes', {
@@ -68,6 +75,45 @@ describe('Notes modal', function () {
       });
     });
   });
+  context('user is not an admin', function () {
+    beforeEach(async function () {
+      page = render(<CoursesPage />, {
+        currentUser: readOnlyUser,
+      });
+      await waitForElementToBeRemoved(
+        () => page.getByText('Fetching Course Data')
+      );
+      editNotesButton = await page.findByLabelText(
+        /(Add|Edit) notes for.*/
+      ) as HTMLButtonElement;
+      fireEvent.click(editNotesButton);
+      modal = page
+        .getByText(`Notes For ${testData.catalogNumber}`)
+        .parentElement
+        .parentElement as HTMLDivElement;
+    });
+    it('cannot change the textarea', function () {
+      const textArea = within(modal)
+        .getByLabelText('Course Notes', {
+          selector: 'textarea',
+        }) as HTMLTextAreaElement;
+      const oldValue = textArea.value;
+      fireEvent.change(textArea, {
+        target: { value: new Date().toString() },
+      });
+      const newValue = textArea.value;
+
+      // oldValue should equal newValue because the permissions should prevent
+      // the value from being changed
+      strictEqual(newValue, oldValue);
+    });
+    it('cannot see a save button', function () {
+      const submitButton = within(modal)
+        .queryByText('Save', { exact: false });
+      strictEqual(submitButton, null);
+    });
+  });
+
   context('user is an admin', function () {
     beforeEach(async function () {
       page = render(<CoursesPage />, {
@@ -78,7 +124,9 @@ describe('Notes modal', function () {
       ) as HTMLButtonElement;
       fireEvent.click(editNotesButton);
 
-      modal = page.getByText(`Notes For ${testData.catalogNumber}`).parentElement.parentElement as HTMLDivElement;
+      modal = page.getByText(`Notes For ${testData.catalogNumber}`)
+        .parentElement
+        .parentElement as HTMLDivElement;
 
       multiLineTextArea = within(modal)
         .getByLabelText('Course Notes', {

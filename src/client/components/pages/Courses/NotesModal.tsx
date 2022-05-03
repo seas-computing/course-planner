@@ -43,6 +43,11 @@ interface NotesModalProps {
    * page refresh isn't necessary.
    */
   onSave: (course: CourseInstanceResponseDTO) => void;
+
+  /**
+   * Enables or disables editing of the fields and data within the modal
+   */
+  isEditable: boolean;
 }
 
 const NotesModal: FunctionComponent<NotesModalProps> = function ({
@@ -50,6 +55,7 @@ const NotesModal: FunctionComponent<NotesModalProps> = function ({
   course,
   onClose,
   onSave,
+  isEditable,
 }): ReactElement {
   /**
    * Current state value of course notes
@@ -166,10 +172,16 @@ const NotesModal: FunctionComponent<NotesModalProps> = function ({
                 placeholder="Some course notes"
                 isLabelVisible={false}
                 labelPosition={POSITION.TOP}
+                isDisabled={!isEditable}
                 onChange={
-                  ({ target: { value } }: ChangeEvent<HTMLTextAreaElement>) => {
-                    setIsChanged(true);
-                    setCourseNotes(value);
+                  ({
+                    target: { value, attributes },
+                  }: ChangeEvent<HTMLTextAreaElement>) => {
+                    const disabled = !!attributes.getNamedItem('disabled');
+                    if (!disabled) {
+                      setIsChanged(true);
+                      setCourseNotes(value);
+                    }
                   }
                 }
               />
@@ -177,31 +189,35 @@ const NotesModal: FunctionComponent<NotesModalProps> = function ({
         }
       </ModalBody>
       <ModalFooter>
-        <Button
-          onClick={async () => {
-            try {
-              setSaving(true);
-              await CourseAPI.editCourse({
-                id: course.id,
-                area: course.area,
-                isSEAS: course.isSEAS,
-                isUndergraduate: course.isUndergraduate,
-                termPattern: course.termPattern,
-                title: course.title,
-                notes: courseNotes,
-              });
-            } finally {
-              setSaving(false);
-            }
-            onSave({
-              ...course,
-              notes: courseNotes,
-            });
-          }}
-          variant={VARIANT.POSITIVE}
-        >
-          Save
-        </Button>
+        {
+          isEditable ? (
+            <Button
+              onClick={async () => {
+                try {
+                  setSaving(true);
+                  await CourseAPI.editCourse({
+                    id: course.id,
+                    area: course.area,
+                    isSEAS: course.isSEAS,
+                    isUndergraduate: course.isUndergraduate,
+                    termPattern: course.termPattern,
+                    title: course.title,
+                    notes: courseNotes,
+                  });
+                } finally {
+                  setSaving(false);
+                }
+                onSave({
+                  ...course,
+                  notes: courseNotes,
+                });
+              }}
+              variant={VARIANT.POSITIVE}
+            >
+              Save
+            </Button>
+          ) : null
+        }
         <Button onClick={confirmAndClose} variant={VARIANT.DEFAULT}>
           Cancel
         </Button>

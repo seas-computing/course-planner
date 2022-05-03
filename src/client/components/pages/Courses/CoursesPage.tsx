@@ -684,6 +684,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
           }, 'Course notes saved.');
           closeNotesModal();
         }}
+        isEditable={isAdmin}
       />
       <InstructorModal
         isVisible={instructorModalData.visible}
