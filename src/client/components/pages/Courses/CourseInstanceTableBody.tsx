@@ -6,7 +6,6 @@ import {
 } from 'mark-one';
 import React, { FunctionComponent, ReactElement } from 'react';
 import { CourseInstanceListColumn } from './tableFields';
-import { useGroupGuard } from '../../../hooks/useGroupGuard';
 
 type OpenModalCallback = (
   course: CourseInstanceResponseDTO, term?: TERM) => void;
@@ -62,71 +61,69 @@ FunctionComponent<CourseInstanceTableBodyProps> = ({
   openNotesModal,
   setButtonRef,
   isAdmin,
-}): ReactElement => {
-  return (
-    <TableBody>
-      {courseList.map((course, index) => (
-        <TableRow key={course.id} isStriped={index % 2 !== 0}>
-          {tableData.map(
-            (field: CourseInstanceListColumn): ReactElement => {
-              const { FieldContent } = field;
-              if (field.viewColumn === COURSE_TABLE_COLUMN.CATALOG_NUMBER) {
-                return (
-                  <TableRowHeadingCell
-                    scope="row"
-                    key={field.key}
-                    verticalAlignment={VALIGN.TOP}
-                  >
-                    <CellLayout>
-                      <FieldContent course={course} />
-                    </CellLayout>
-                  </TableRowHeadingCell>
-                );
-              }
+}): ReactElement => (
+  <TableBody>
+    {courseList.map((course, index) => (
+      <TableRow key={course.id} isStriped={index % 2 !== 0}>
+        {tableData.map(
+          (field: CourseInstanceListColumn): ReactElement => {
+            const { FieldContent } = field;
+            if (field.viewColumn === COURSE_TABLE_COLUMN.CATALOG_NUMBER) {
               return (
-                <TableCell
-                  verticalAlignment={VALIGN.TOP}
+                <TableRowHeadingCell
+                  scope="row"
                   key={field.key}
-                  backgroundColor={
-                    field.viewColumn === COURSE_TABLE_COLUMN.AREA
-                    && getAreaColor(course.area)
-                  }
+                  verticalAlignment={VALIGN.TOP}
                 >
                   <CellLayout>
-                    <FieldContent
-                      course={course}
-                      openMeetingModal={
-                        field.viewColumn === COURSE_TABLE_COLUMN.MEETINGS
-                          ? openMeetingModal
-                          : null
-                      }
-                      openInstructorModal={
-                        field.viewColumn === COURSE_TABLE_COLUMN.INSTRUCTORS
-                          ? openInstructorModal
-                          : null
-                      }
-                      openOfferedModal={
-                        field.viewColumn === COURSE_TABLE_COLUMN.OFFERED
-                          ? openOfferedModal
-                          : null
-                      }
-                      openNotesModal={
-                        field.viewColumn === COURSE_TABLE_COLUMN.NOTES
-                          ? openNotesModal
-                          : null
-                      }
-                      buttonRef={setButtonRef(`${field.key}-${course.id}`)}
-                      isEditable={isAdmin}
-                    />
+                    <FieldContent course={course} />
                   </CellLayout>
-                </TableCell>
+                </TableRowHeadingCell>
               );
             }
-          )}
-        </TableRow>
-      ))}
-    </TableBody>
-  );
-};
+            return (
+              <TableCell
+                verticalAlignment={VALIGN.TOP}
+                key={field.key}
+                backgroundColor={
+                  field.viewColumn === COURSE_TABLE_COLUMN.AREA
+                    && getAreaColor(course.area)
+                }
+              >
+                <CellLayout>
+                  <FieldContent
+                    course={course}
+                    openMeetingModal={
+                      field.viewColumn === COURSE_TABLE_COLUMN.MEETINGS
+                        ? openMeetingModal
+                        : null
+                    }
+                    openInstructorModal={
+                      field.viewColumn === COURSE_TABLE_COLUMN.INSTRUCTORS
+                        ? openInstructorModal
+                        : null
+                    }
+                    openOfferedModal={
+                      field.viewColumn === COURSE_TABLE_COLUMN.OFFERED
+                        ? openOfferedModal
+                        : null
+                    }
+                    openNotesModal={
+                      field.viewColumn === COURSE_TABLE_COLUMN.NOTES
+                        ? openNotesModal
+                        : null
+                    }
+                    buttonRef={setButtonRef(`${field.key}-${course.id}`)}
+                    isEditable={isAdmin}
+                  />
+                </CellLayout>
+              </TableCell>
+            );
+          }
+        )}
+      </TableRow>
+    ))}
+  </TableBody>
+);
 
 export default CourseInstanceTableBody;
