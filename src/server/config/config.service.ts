@@ -198,7 +198,7 @@ class ConfigService {
   }
 
   /**
-   * Return the redis connection string
+   * Return the redis client options
    * NOTE: This is needed to properly connect to redis over TLS
    */
 
