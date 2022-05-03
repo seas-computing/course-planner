@@ -45,8 +45,8 @@ import MeetingModal from './MeetingModal';
 import InstructorModal from './InstructorModal';
 import { filterCoursesByInstructors } from '../utils/filterByInstructorValues';
 import OfferedModal from './OfferedModal';
-import downloadAttachment from '../utils/downloadAttachment';
 import NotesModal from './NotesModal';
+import ReportDownloadModal from './ReportDownloadModal';
 
 /**
  * The initial, empty state for the filters
@@ -117,6 +117,11 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     currentViewColumns,
     setCurrentViewColumns,
   ] = useState(defaultView.columns);
+
+  const [
+    reportModalVisible,
+    setReportModalVisible,
+  ] = useState(false);
 
   const dispatchMessage = useContext(MessageContext);
 
@@ -228,6 +233,26 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
       return newFilters;
     });
   }, [setFilters]);
+
+  /**
+   * Handle opening the download modal
+   */
+  const openDownloadModal = useCallback(() => {
+    setReportModalVisible(true);
+    setModalButtonId('download-course-report');
+  }, [setReportModalVisible, setModalButtonId]);
+
+  /**
+   * Handle closign the download modal
+   */
+  const closeDownloadModal = useCallback(() => {
+    setReportModalVisible(false);
+    setTimeout(() => {
+      if (modalButtonId && modalButtonId in refTable.current) {
+        refTable.current[modalButtonId].focus();
+      }
+    });
+  }, [modalButtonId]);
 
   /**
    * Takes the requested course and term information to display the requested
@@ -529,28 +554,6 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   ), [currentViewColumns]);
 
   /**
-   * Handle downloading our course report, and track the download state so we
-   * can change the button display
-   */
-  const [reportDownloading, setReportDownloading] = useState(false);
-  const downloadCoursesReport = useCallback(() => {
-    setReportDownloading(true);
-    fetch(
-      `${process.env.SERVER_URL}/report/courses`,
-      { credentials: 'include' }
-    ).then(downloadAttachment)
-      .catch((err: Error) => {
-        dispatchMessage({
-          message: new AppMessage(err.message, MESSAGE_TYPE.ERROR),
-          type: MESSAGE_ACTION.PUSH,
-        });
-      })
-      .finally(() => {
-        setReportDownloading(false);
-      });
-  }, [dispatchMessage, setReportDownloading]);
-
-  /**
   * Check the current user's permission level and only display the edit buttons
   * if they are an admin
   */
@@ -576,16 +579,16 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
         </ViewModal>
         <MenuFlex>
           <Button
-            variant={reportDownloading ? VARIANT.DEFAULT : VARIANT.INFO}
+            variant={VARIANT.INFO}
             alt="Download a spreadsheet with course data"
-            onClick={downloadCoursesReport}
-            disabled={reportDownloading}
+            onClick={openDownloadModal}
+            forwardRef={setButtonRef('download-course-report')}
           >
             <FontAwesomeIcon
               icon={faDownload}
             />
             {' '}
-            {reportDownloading ? 'Download in Progress' : 'Download Course Report'}
+            Download Course Report
           </Button>
           <Button
             variant={VARIANT.INFO}
@@ -733,6 +736,10 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
           wasFallUpdated);
           closeOfferedModal();
         }}
+      />
+      <ReportDownloadModal
+        isVisible={reportModalVisible}
+        closeModal={closeDownloadModal}
       />
     </div>
   );
