@@ -11,7 +11,7 @@ import {
   waitForElementToBeRemoved,
   within,
 } from 'test-utils';
-import { cs50CourseInstance, string } from 'testData';
+import { adminUser, cs50CourseInstance, string } from 'testData';
 
 describe('Notes modal', function () {
   let getStub: SinonStub;
@@ -25,93 +25,115 @@ describe('Notes modal', function () {
   let noteSubmitButton: HTMLButtonElement;
   let noteCancelButton: HTMLButtonElement;
 
-  beforeEach(async function () {
+  beforeEach(function () {
     getStub = stub(CourseAPI, 'getCourseInstancesForYear');
     postStub = stub(CourseAPI, 'editCourse');
     getStub.resolves([testData]);
     postStub.resolves();
-
-    page = render(<CoursesPage />);
-    editNotesButton = await page.findByLabelText(
-      /(Add|Edit) notes for.*/
-    ) as HTMLButtonElement;
-    fireEvent.click(editNotesButton);
-
-    modal = page.getByText(`Notes For ${testData.catalogNumber}`).parentElement.parentElement as HTMLDivElement;
-
-    multiLineTextArea = within(modal)
-      .getByLabelText('Course Notes', {
-        selector: 'textarea',
-      }) as HTMLTextAreaElement;
-    noteCancelButton = within(modal).getByText(/Cancel/) as HTMLButtonElement;
-    noteSubmitButton = within(modal).getByText(/Save/) as HTMLButtonElement;
   });
-  it('updates notes for the specified course on the server', function () {
-    fireEvent.change(multiLineTextArea, {
-      target: { value: 'aaa' },
+  describe('open/close behaviour', function () {
+    beforeEach(async function () {
+      page = render(<CoursesPage />);
+      editNotesButton = await page.findByLabelText(
+        /(Add|Edit) notes for.*/
+      ) as HTMLButtonElement;
+      fireEvent.click(editNotesButton);
+
+      modal = page.getByText(`Notes For ${testData.catalogNumber}`).parentElement.parentElement as HTMLDivElement;
+
+      multiLineTextArea = within(modal)
+        .getByLabelText('Course Notes', {
+          selector: 'textarea',
+        }) as HTMLTextAreaElement;
+      noteCancelButton = within(modal).getByText(/Cancel/) as HTMLButtonElement;
+      noteSubmitButton = within(modal).getByText(/Save/) as HTMLButtonElement;
     });
-    fireEvent.click(noteSubmitButton);
-    const { notes, id } = postStub.args[0][0];
-    strictEqual(notes, 'aaa');
-    strictEqual(id, testData.id);
-  });
-
-  it('updates notes for the specified course in local state', async function () {
-    fireEvent.change(multiLineTextArea, {
-      target: { value: 'aaa' },
+    it('focuses the modal header on open', function (done) {
+      setTimeout(() => {
+        strictEqual(
+          (document.activeElement as HTMLElement).textContent,
+          `Notes For ${testData.catalogNumber}`
+        );
+        done();
+      });
     });
-    fireEvent.click(noteSubmitButton);
-    await waitForElementToBeRemoved(
-      () => page.getByText(`Notes For ${testData.catalogNumber}`)
-    );
-    // Get new reference to add/edit button since the original may have
-    // replaced since the last render
-    editNotesButton = await page.findByLabelText(
-      /(Add|Edit) notes for.*/
-    ) as HTMLButtonElement;
-    fireEvent.click(editNotesButton);
-    const newMultiLineTextArea = within(modal).getByLabelText(
-      'Course Notes',
-      { selector: 'textarea' }
-    ) as HTMLTextAreaElement;
-    strictEqual(newMultiLineTextArea.value, 'aaa');
+    it('re-focuses the add/edit button on close', function (done) {
+      fireEvent.click(noteCancelButton);
+      setTimeout(() => {
+        strictEqual(
+          (document.activeElement as HTMLElement).textContent,
+          editNotesButton.textContent
+        );
+        done();
+      });
+    });
   });
-  it('focuses the modal header on open', function (done) {
-    setTimeout(() => {
-      strictEqual(
-        (document.activeElement as HTMLElement).textContent,
-        `Notes For ${testData.catalogNumber}`
+  context('user is an admin', function () {
+    beforeEach(async function () {
+      page = render(<CoursesPage />, {
+        currentUser: adminUser,
+      });
+      editNotesButton = await page.findByLabelText(
+        /(Add|Edit) notes for.*/
+      ) as HTMLButtonElement;
+      fireEvent.click(editNotesButton);
+
+      modal = page.getByText(`Notes For ${testData.catalogNumber}`).parentElement.parentElement as HTMLDivElement;
+
+      multiLineTextArea = within(modal)
+        .getByLabelText('Course Notes', {
+          selector: 'textarea',
+        }) as HTMLTextAreaElement;
+      noteCancelButton = within(modal).getByText(/Cancel/) as HTMLButtonElement;
+      noteSubmitButton = within(modal).getByText(/Save/) as HTMLButtonElement;
+    });
+    it('updates notes for the specified course on the server', function () {
+      fireEvent.change(multiLineTextArea, {
+        target: { value: 'aaa' },
+      });
+      fireEvent.click(noteSubmitButton);
+      const { notes, id } = postStub.args[0][0];
+      strictEqual(notes, 'aaa');
+      strictEqual(id, testData.id);
+    });
+    it('updates notes for the specified course in local state', async function () {
+      fireEvent.change(multiLineTextArea, {
+        target: { value: 'aaa' },
+      });
+      fireEvent.click(noteSubmitButton);
+      await waitForElementToBeRemoved(
+        () => page.getByText(`Notes For ${testData.catalogNumber}`)
       );
-      done();
+      // Get new reference to add/edit button since the original may have
+      // replaced since the last render
+      editNotesButton = await page.findByLabelText(
+        /(Add|Edit) notes for.*/
+      ) as HTMLButtonElement;
+      fireEvent.click(editNotesButton);
+      const newMultiLineTextArea = within(modal).getByLabelText(
+        'Course Notes',
+        { selector: 'textarea' }
+      ) as HTMLTextAreaElement;
+      strictEqual(newMultiLineTextArea.value, 'aaa');
     });
-  });
-  it('re-focuses the add/edit button on close', function (done) {
-    fireEvent.click(noteCancelButton);
-    setTimeout(() => {
-      strictEqual(
-        (document.activeElement as HTMLElement).textContent,
-        editNotesButton.textContent
-      );
-      done();
-    });
-  });
-  it('prompts the user to save any un-saved changes before closing', function () {
-    const windowConfirmStub = stub(window, 'confirm');
-    fireEvent.change(multiLineTextArea, {
-      target: { value: string },
-    });
-    fireEvent.click(noteCancelButton);
+    it('prompts the user to save any un-saved changes before closing', function () {
+      const windowConfirmStub = stub(window, 'confirm');
+      fireEvent.change(multiLineTextArea, {
+        target: { value: string },
+      });
+      fireEvent.click(noteCancelButton);
 
-    windowConfirmStub.returns(true);
-    strictEqual(windowConfirmStub.callCount, 1);
-  });
-  it('shows a loading spinner when saving', async function () {
-    fireEvent.change(multiLineTextArea, {
-      target: { value: string },
+      windowConfirmStub.returns(true);
+      strictEqual(windowConfirmStub.callCount, 1);
     });
-    fireEvent.click(noteSubmitButton);
-    return waitForElement(
-      () => within(modal).findByText('Saving Notes')
-    );
+    it('shows a loading spinner when saving', async function () {
+      fireEvent.change(multiLineTextArea, {
+        target: { value: string },
+      });
+      fireEvent.click(noteSubmitButton);
+      return waitForElement(
+        () => within(modal).findByText('Saving Notes')
+      );
+    });
   });
 });
