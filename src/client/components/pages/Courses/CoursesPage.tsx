@@ -66,9 +66,8 @@ const emptyFilters: FilterState = {
 /**
  * Default View
  *
- * This is the hard-coded default view that is showin in the dropdown when a
- * user loads the page. Other views can be created, modified and deleted - but
- * this default view can never be deleted or updated.
+ * This is the hard-coded default view that is shown when a user loads the page
+ * if there is no view saved in session Storage.
  */
 const defaultView = [
   ...MANDATORY_COLUMNS,
@@ -106,16 +105,25 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     setCourses,
   ] = useState([] as CourseInstanceResponseDTO[]);
 
+  /**
+   * Control whether the ViewModal is visible
+   */
   const [
     viewModalVisible,
     setViewModalVisible,
   ] = useState(false);
 
+  /**
+   * Control the columns that should be shown in the table
+   */
   const [
     currentViewColumns,
     setCurrentViewColumns,
   ] = useState<COURSE_TABLE_COLUMN[]>([]);
 
+  /**
+   * Control whether the "Download Report" modal is visible
+   */
   const [
     reportModalVisible,
     setReportModalVisible,
@@ -185,6 +193,11 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
    */
   const refTable = useRef<Record<string, HTMLButtonElement>>({});
 
+  /**
+   * When passed as the forwardRef prop to a component, it will generate a ref
+   * pointing to the underlying element and add it to our refTable, so that we
+   * can later retrieve the ref and focus the appropriate element
+   */
   const setButtonRef = useCallback(
     (nodeId: string) => (node: HTMLButtonElement): void => {
       if (nodeId && node) {
@@ -262,7 +275,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   }, [setReportModalVisible, setModalButtonId]);
 
   /**
-   * Handle closign the download modal
+   * Handle closing the download modal
    */
   const closeDownloadModal = useCallback(() => {
     setReportModalVisible(false);
@@ -439,8 +452,15 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     };
   }, [filters]);
 
+  /**
+   * Grab the metadata necessary to display the current year's data
+   */
   const { currentAcademicYear, semesters } = useContext(MetadataContext);
 
+  /**
+   * Compute the range of academic years that will be displayed in the dropdown
+   * at the top of the page
+   */
   const academicYearOptions = useMemo(
     () => semesters.reduce<DropdownProps['options']>(
       (years, semester) => {
@@ -459,11 +479,18 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     ), [semesters]
   );
 
+  /**
+   * Track the academic year for which data will be shown in the table
+   */
   const [
     selectedAcademicYear,
     setSelectedAcademicYear,
   ] = useState(currentAcademicYear);
 
+  /**
+   * Set up the initial data displayed in the table, including the actual
+   * course data and any custom columns saved in sessionStorage
+   */
   useEffect((): void => {
     setFetching(true);
     if (currentViewColumns.length === 0) {
