@@ -40,7 +40,7 @@ describe('Notes modal', function () {
     beforeEach(async function () {
       page = render(<CoursesPage />);
       editNotesButton = await page.findByLabelText(
-        /(Add|Edit) notes for.*/
+        /(Add|View\/Edit) notes for.*/
       ) as HTMLButtonElement;
       fireEvent.click(editNotesButton);
 
@@ -84,7 +84,7 @@ describe('Notes modal', function () {
         () => page.getByText('Fetching Course Data')
       );
       editNotesButton = await page.findByLabelText(
-        /(Add|Edit) notes for.*/
+        /(Add|View\/Edit) notes for.*/
       ) as HTMLButtonElement;
       fireEvent.click(editNotesButton);
       modal = page
@@ -120,7 +120,7 @@ describe('Notes modal', function () {
         currentUser: adminUser,
       });
       editNotesButton = await page.findByLabelText(
-        /(Add|Edit) notes for.*/
+        /(Add|View\/Edit) notes for.*/
       ) as HTMLButtonElement;
       fireEvent.click(editNotesButton);
 
@@ -155,7 +155,7 @@ describe('Notes modal', function () {
       // Get new reference to add/edit button since the original may have
       // replaced since the last render
       editNotesButton = await page.findByLabelText(
-        /(Add|Edit) notes for.*/
+        /(Add|View\/Edit) notes for.*/
       ) as HTMLButtonElement;
       fireEvent.click(editNotesButton);
       const newMultiLineTextArea = within(modal).getByLabelText(

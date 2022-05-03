@@ -414,11 +414,9 @@ describe('tableFields', function () {
           const notesField = tableFields.find(({ viewColumn }): boolean => (
             viewColumn === COURSE_TABLE_COLUMN.NOTES));
           const Notes = notesField.FieldContent;
-          const { queryByLabelText } = render(
+          return render(
             <Notes course={ac209aCourseInstance} />
-          );
-          const icon = queryByLabelText('View/Edit Notes');
-          strictEqual(icon !== null, true);
+          ).findByLabelText(/View\/Edit notes/i);
         });
       });
       context('Course without notes', function () {
@@ -426,11 +424,9 @@ describe('tableFields', function () {
           const notesField = tableFields.find(({ viewColumn }): boolean => (
             viewColumn === COURSE_TABLE_COLUMN.NOTES));
           const Notes = notesField.FieldContent;
-          const { queryByLabelText } = render(
+          return render(
             <Notes course={cs50CourseInstance} />
-          );
-          const icon = queryByLabelText('Add Notes');
-          strictEqual(icon !== null, true);
+          ).findByLabelText(/Add notes/i);
         });
       });
     });

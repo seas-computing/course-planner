@@ -612,7 +612,7 @@ export const tableFields: CourseInstanceListColumn[] = [
     }: FieldContentProps): ReactElement => {
       const { notes } = course;
       const hasNotes = notes && notes.trim().length > 0;
-      const titleText = `${!hasNotes ? 'Add' : 'Edit'} notes for ${course.catalogNumber}`;
+      const titleText = `${!hasNotes ? 'Add' : 'View/Edit'} notes for ${course.catalogNumber}`;
       return (
         <BorderlessButton
           id={`notes-${course.id}`}
