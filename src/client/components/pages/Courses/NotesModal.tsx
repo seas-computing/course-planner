@@ -174,11 +174,8 @@ const NotesModal: FunctionComponent<NotesModalProps> = function ({
                 labelPosition={POSITION.TOP}
                 isDisabled={!isEditable}
                 onChange={
-                  ({
-                    target: { value, attributes },
-                  }: ChangeEvent<HTMLTextAreaElement>) => {
-                    const disabled = !!attributes.getNamedItem('disabled');
-                    if (!disabled) {
+                  ({ target: { value } }: ChangeEvent<HTMLTextAreaElement>) => {
+                    if (isEditable) {
                       setIsChanged(true);
                       setCourseNotes(value);
                     }
