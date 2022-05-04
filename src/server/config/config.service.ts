@@ -29,6 +29,7 @@ import { NestSessionOptions } from 'nestjs-session';
 import { RedisStore } from 'connect-redis';
 import { NonClassEventView } from 'server/nonClassEvent/NonClassEvent.view.entity';
 import { NonClassParentView } from 'server/nonClassEvent/NonClassParentView.entity';
+import { ClientOpts } from 'redis';
 import LOG_LEVEL from '../../common/constants/logLevels';
 import { ScheduleBlockView } from '../courseInstance/ScheduleBlockView.entity';
 import { ScheduleEntryView } from '../courseInstance/ScheduleEntryView.entity';
@@ -197,25 +198,26 @@ class ConfigService {
   }
 
   /**
-   * Return the redis connection string
+   * Return the redis client options
    * NOTE: This is needed to properly connect to redis over TLS
    */
 
-  public get redisURL(): string {
+  public get redisClientOptions(): ClientOpts {
     const {
       REDIS_HOST,
       REDIS_PORT,
       REDIS_PASSWORD,
-      NODE_ENV,
     } = this.env;
-    const redis = new URL(`redis://${REDIS_HOST}:${REDIS_PORT}`);
-    if (NODE_ENV === 'production') {
-      redis.protocol = 'rediss:';
-    }
+    const redis = new URL(`rediss://${REDIS_HOST}:${REDIS_PORT}`);
     if (REDIS_PASSWORD) {
       redis.password = REDIS_PASSWORD;
     }
-    return redis.toString();
+    return {
+      url: redis.toString(),
+      tls: {
+        rejectUnauthorized: false,
+      },
+    };
   }
 
   /**

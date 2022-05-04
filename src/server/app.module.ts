@@ -57,7 +57,7 @@ import { ReportModule } from './report/report.module';
       useFactory: (
         config: ConfigService
       ): NestSessionOptions => {
-        const client = redis.createClient(config.redisURL);
+        const client = redis.createClient(config.redisClientOptions);
         const RedisStore = ConnectRedis(session);
         const store = new RedisStore({
           client,
