@@ -43,6 +43,7 @@ import { filterCoursesByInstructors } from '../utils/filterByInstructorValues';
 import OfferedModal from './OfferedModal';
 import NotesModal from './NotesModal';
 import ReportDownloadModal from './ReportDownloadModal';
+import { useStoredState } from '../../../hooks/useStoredState';
 
 /**
  * The initial, empty state for the filters
@@ -119,7 +120,11 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   const [
     currentViewColumns,
     setCurrentViewColumns,
-  ] = useState<COURSE_TABLE_COLUMN[]>([]);
+  ] = useStoredState<COURSE_TABLE_COLUMN[]>(
+    KEY.VIEW_COLUMNS,
+    defaultView,
+    'sessionStorage'
+  );
 
   /**
    * Control whether the "Download Report" modal is visible
@@ -255,16 +260,12 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   const closeViewModal = useCallback((columns: COURSE_TABLE_COLUMN[]): void => {
     setViewModalVisible(false);
     setCurrentViewColumns(columns);
-    window.sessionStorage.setItem(
-      KEY.VIEW_COLUMNS,
-      JSON.stringify(columns)
-    );
     setTimeout(() => {
       if (modalButtonId && modalButtonId in refTable.current) {
         refTable.current[modalButtonId].focus();
       }
     });
-  }, [modalButtonId]);
+  }, [modalButtonId, setCurrentViewColumns]);
 
   /**
    * Handle opening the download modal
@@ -493,15 +494,6 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
    */
   useEffect((): void => {
     setFetching(true);
-    if (currentViewColumns.length === 0) {
-      const savedColumns = sessionStorage.getItem(KEY.VIEW_COLUMNS);
-      if (savedColumns) {
-        setCurrentViewColumns(JSON.parse(savedColumns));
-      } else {
-        sessionStorage.setItem(KEY.VIEW_COLUMNS, JSON.stringify(defaultView));
-        setCurrentViewColumns(defaultView);
-      }
-    }
     CourseAPI.getCourseInstancesForYear(selectedAcademicYear)
       .then((courses: CourseInstanceResponseDTO[]): void => {
         setCourses(courses);
@@ -518,7 +510,6 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   }, [
     selectedAcademicYear,
     dispatchMessage,
-    currentViewColumns,
   ]);
 
   /**
@@ -593,9 +584,11 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
    * Memoize the table data so that it does not need to render unnecessarily
    * while typing in the text filter fields of the Course Instance table.
    */
-  const tableData = useMemo(() => tableFields.filter(
-    ({ viewColumn }): boolean => (
-      currentViewColumns.includes(viewColumn)
+  const tableData = useMemo(() => (
+    tableFields.filter(
+      ({ viewColumn }): boolean => (
+        currentViewColumns.includes(viewColumn)
+      )
     )
   ), [currentViewColumns]);
 
