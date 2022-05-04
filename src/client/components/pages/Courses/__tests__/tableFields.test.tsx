@@ -416,7 +416,7 @@ describe('tableFields', function () {
           const Notes = notesField.FieldContent;
           return render(
             <Notes course={ac209aCourseInstance} />
-          ).findByLabelText(/View\/Edit notes/i);
+          ).findByLabelText(/Open notes/i);
         });
       });
       context('Course without notes', function () {
@@ -426,7 +426,7 @@ describe('tableFields', function () {
           const Notes = notesField.FieldContent;
           return render(
             <Notes course={cs50CourseInstance} />
-          ).findByLabelText(/Add notes/i);
+          ).findByLabelText(/Open notes/i);
         });
       });
     });
