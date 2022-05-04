@@ -315,6 +315,15 @@ export interface FieldContentProps {
    * Controls the opening of the instructor modal with the requested course and term
    */
   openInstructorModal?: (course: CourseInstanceResponseDTO, term: TERM) => void;
+
+  /**
+   * Controls the opening of the notes modal for the requested course
+   */
+  openNotesModal?: (
+    course: CourseInstanceResponseDTO,
+    buttonId?: string
+  ) => void;
+
   /**
    * Controls the opening of the offered modal with the requested course and term
    */
@@ -596,15 +605,23 @@ export const tableFields: CourseInstanceListColumn[] = [
     key: 'notes',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.META,
     viewColumn: COURSE_TABLE_COLUMN.NOTES,
-    FieldContent: ({ course }: FieldContentProps): ReactElement => {
+    FieldContent: ({
+      course,
+      openNotesModal,
+      buttonRef,
+    }: FieldContentProps): ReactElement => {
       const { notes } = course;
       const hasNotes = notes && notes.trim().length > 0;
-      const titleText = hasNotes ? 'View/Edit Notes' : 'Add Notes';
+      const titleText = `Open notes for ${course.catalogNumber}`;
       return (
         <BorderlessButton
+          id={`notes-${course.id}`}
           variant={VARIANT.INFO}
-          onClick={(): void => { }}
+          onClick={({ currentTarget }) => {
+            openNotesModal(course, currentTarget.id);
+          }}
           aria-label={titleText}
+          forwardRef={buttonRef}
         >
           <FontAwesomeIcon
             title={titleText}

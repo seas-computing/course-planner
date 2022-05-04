@@ -59,10 +59,23 @@ interface CourseInstanceTableProps {
    * Controls the opening of the offered modal with the requested course and term
    */
   openOfferedModal: (course: CourseInstanceResponseDTO, term: TERM) => void;
+  /*
+   * Controls the opening of the notes modal with the requested course
+   */
+  openNotesModal: (
+    course: CourseInstanceResponseDTO,
+    buttonId?: string
+  ) => void;
+
   /**
    * The ref value of the edit faculty absence button
    */
   setButtonRef: (nodeId: string) => (node: HTMLButtonElement) => void;
+  /**
+   * Indicates wether a user is an admin or not. This is used to enable or
+   * disable editing of various fields in the table (and associated modals)
+   */
+  isAdmin: boolean;
 }
 
 /**
@@ -85,6 +98,8 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
   openInstructorModal,
   openOfferedModal,
   setButtonRef,
+  openNotesModal,
+  isAdmin,
 }): ReactElement => {
   const courseColumns = tableData.filter(
     ({ columnGroup }): boolean => (
@@ -282,6 +297,8 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
         openInstructorModal={openInstructorModal}
         openOfferedModal={openOfferedModal}
         setButtonRef={setButtonRef}
+        openNotesModal={openNotesModal}
+        isAdmin={isAdmin}
       />
     </Table>
   );

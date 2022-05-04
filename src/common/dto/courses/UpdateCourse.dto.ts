@@ -85,7 +85,7 @@ export abstract class UpdateCourseDTO {
   })
   @IsBoolean()
   @IsOptional()
-  public private: boolean;
+  public private?: boolean;
 
   @ApiProperty({
     type: 'string',
@@ -93,4 +93,13 @@ export abstract class UpdateCourseDTO {
   })
   @IsEnum(TERM_PATTERN)
   public termPattern: TERM_PATTERN;
+
+  @ApiProperty({
+    type: 'string',
+    example: 'Always delivered over zoom',
+  })
+  @IsString()
+  @IsOptional()
+  @Transform(trimString)
+  public notes?: string;
 }

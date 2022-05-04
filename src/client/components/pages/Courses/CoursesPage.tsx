@@ -33,6 +33,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWrench, faDownload } from '@fortawesome/free-solid-svg-icons';
 import { MenuFlex } from 'client/components/general';
 import { DropdownProps } from 'mark-one/lib/Forms/Dropdown';
+import { useGroupGuard } from 'client/hooks/useGroupGuard';
 import CourseInstanceTable from './CourseInstanceTable';
 import ViewModal from './ViewModal';
 import SemesterTable from './SemesterTable';
@@ -44,6 +45,7 @@ import MeetingModal from './MeetingModal';
 import InstructorModal from './InstructorModal';
 import { filterCoursesByInstructors } from '../utils/filterByInstructorValues';
 import OfferedModal from './OfferedModal';
+import NotesModal from './NotesModal';
 import ReportDownloadModal from './ReportDownloadModal';
 
 /**
@@ -86,10 +88,13 @@ const defaultView: ViewResponse = {
 };
 
 interface ModalData {
-  term?: TERM;
   course?: CourseInstanceResponseDTO;
   visible: boolean;
 }
+
+type CourseInstanceModalData = ModalData & {
+  term?: TERM;
+};
 
 /**
  * Component representing the list of CourseInstances in a given Academic year
@@ -129,8 +134,16 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   const [
     meetingModalData,
     setMeetingModalData,
-  ] = useState<ModalData>({
+  ] = useState<CourseInstanceModalData>({
     term: null,
+    course: null,
+    visible: false,
+  });
+
+  const [
+    notesModalData,
+    setNotesModalData,
+  ] = useState<ModalData>({
     course: null,
     visible: false,
   });
@@ -142,7 +155,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   const [
     instructorModalData,
     setInstructorModalData,
-  ] = useState<ModalData>({
+  ] = useState<CourseInstanceModalData>({
     term: null,
     course: null,
     visible: false,
@@ -155,7 +168,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   const [
     offeredModalData,
     setOfferedModalData,
-  ] = useState<ModalData>({
+  ] = useState<CourseInstanceModalData>({
     term: null,
     course: null,
     visible: false,
@@ -251,6 +264,30 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
       setModalButtonId(`meetings-${term.toLowerCase()}-${course.id}`);
     }, [setMeetingModalData, setModalButtonId]
   );
+
+  /**
+   * Takes the specified course and displays a modal to edit course notes
+   */
+  const openNotesModal = useCallback(
+    (course: CourseInstanceResponseDTO, buttonId: string) => {
+      setNotesModalData({ course, visible: true });
+      setModalButtonId(buttonId);
+    },
+    [setNotesModalData, setModalButtonId]
+  );
+
+  /**
+   * Handles closing the notes modal and setting the focus back to the button
+   * that opened the modal.
+   */
+  const closeNotesModal = useCallback(() => {
+    setNotesModalData({ visible: false });
+    setTimeout(() => {
+      if (modalButtonId && modalButtonId in refTable.current) {
+        refTable.current[modalButtonId].focus();
+      }
+    });
+  }, [modalButtonId, setNotesModalData]);
 
   /**
    * Handles closing the meeting modal and setting the focus back to the button
@@ -516,6 +553,12 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     )
   ), [currentViewColumns]);
 
+  /**
+  * Check the current user's permission level and only display the edit buttons
+  * if they are an admin
+  */
+  const { isAdmin } = useGroupGuard();
+
   return (
     <div className="course-instance-table">
       <VerticalSpace>
@@ -599,7 +642,9 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
               openMeetingModal={openMeetingModal}
               openInstructorModal={openInstructorModal}
               openOfferedModal={openOfferedModal}
+              openNotesModal={openNotesModal}
               setButtonRef={setButtonRef}
+              isAdmin={isAdmin}
             />
           )
       }
@@ -631,6 +676,18 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
           }, message);
           closeMeetingModal();
         }}
+      />
+      <NotesModal
+        course={notesModalData.course}
+        isVisible={notesModalData.visible}
+        onClose={closeNotesModal}
+        onSave={(course) => {
+          updateLocalCourse({
+            ...course,
+          }, 'Course notes saved.');
+          closeNotesModal();
+        }}
+        isEditable={isAdmin}
       />
       <InstructorModal
         isVisible={instructorModalData.visible}
