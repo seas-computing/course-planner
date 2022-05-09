@@ -47,6 +47,7 @@ describe('Customize view modal', function () {
       .findByLabelText('Is SEAS?');
     fireEvent.click(optionalColumnCheckbox);
 
+    fireEvent.click(within(modal).getByText('Done'));
     const isSeasColumn = within(table).queryByText('Is SEAS?');
     strictEqual(isSeasColumn, null);
   });
@@ -55,6 +56,7 @@ describe('Customize view modal', function () {
       .findByLabelText('Same As');
     fireEvent.click(optionalColumnCheckbox);
 
+    fireEvent.click(within(modal).getByText('Done'));
     return within(table).findByText('Same As');
   });
   it('re-focuses the "Customize view" button on close', async function () {
