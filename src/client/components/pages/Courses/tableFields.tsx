@@ -326,19 +326,19 @@ export const formatEnrollment = (
   const { [semKey]: instance } = course;
   const enrollmentData: EnrollmentField[] = [
     {
-      name: 'Pre-enrollment',
+      name: 'Pre-Registration',
       key: 'pre',
       count: instance.preEnrollment,
       icon: faShoppingCart,
     },
     {
-      name: 'Study card enrollment',
+      name: 'Enrollment Deadline',
       key: 'study',
       count: instance.studyCardEnrollment,
       icon: faCalendar,
     },
     {
-      name: 'Actual enrollment',
+      name: 'Final Enrollment',
       key: 'actual',
       count: instance.actualEnrollment,
       icon: faUsers,
