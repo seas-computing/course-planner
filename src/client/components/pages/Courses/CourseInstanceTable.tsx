@@ -117,10 +117,6 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
     ({ columnGroup }): boolean => (
       columnGroup === COURSE_TABLE_COLUMN_GROUP.META)
   );
-  const firstEnrollmentField = fallColumns
-    .findIndex(({ viewColumn }): boolean => (
-      viewColumn === COURSE_TABLE_COLUMN.ENROLLMENT
-    ));
 
   /**
    * The current value for the metadata context
@@ -189,36 +185,16 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
             {[fallColumns, springColumns].map(
               (dataList: CourseInstanceListColumn[]): ReactElement[] => dataList
                 .map((
-                  field: CourseInstanceListColumn,
-                  index: number
-                ): ReactElement => {
-                  if (index === firstEnrollmentField) {
-                    return (
-                      <TableHeadingCell
-                        key={field.key}
-                        scope="auto"
-                        colSpan={dataList
-                          .filter(({ viewColumn }): boolean => (
-                            viewColumn === COURSE_TABLE_COLUMN.ENROLLMENT))
-                          .length}
-                      >
-                        Enrollment
-                      </TableHeadingCell>
-                    );
-                  }
-                  if (field.viewColumn === COURSE_TABLE_COLUMN.ENROLLMENT) {
-                    return null;
-                  }
-                  return (
-                    <TableHeadingCell
-                      key={field.key}
-                      scope="col"
-                      rowSpan={field.getFilter ? '1' : '2'}
-                    >
-                      {field.name}
-                    </TableHeadingCell>
-                  );
-                })
+                  field: CourseInstanceListColumn
+                ): ReactElement => (
+                  <TableHeadingCell
+                    key={field.key}
+                    scope="col"
+                    rowSpan={field.getFilter ? '1' : '2'}
+                  >
+                    {field.name}
+                  </TableHeadingCell>
+                ))
             )}
           </>
           <>
@@ -264,16 +240,6 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
                     };
                   }),
               };
-              if (field.viewColumn === COURSE_TABLE_COLUMN.ENROLLMENT) {
-                return (
-                  <TableHeadingCell
-                    scope="col"
-                    key={field.key}
-                  >
-                    {field.name}
-                  </TableHeadingCell>
-                );
-              }
               return field.getFilter ? (
                 <TableHeadingCell
                   scope="col"
