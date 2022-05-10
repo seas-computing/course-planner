@@ -306,6 +306,11 @@ export const formatMeetings = (
   );
 });
 
+/**
+ * Representative of an enrollment field (e.g "Pre-registration") along with
+ * the associated icon, value and list key. This type is to enforce consistency
+ * between list items
+ */
 type EnrollmentField = {
   icon: IconDefinition,
   name: string,
