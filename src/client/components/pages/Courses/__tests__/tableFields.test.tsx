@@ -12,7 +12,6 @@ import {
 } from 'common/constants';
 import { render } from 'test-utils';
 import { dayEnumToString } from 'common/constants/day';
-import * as dummy from 'testData';
 import {
   retrieveValue,
   tableFields,

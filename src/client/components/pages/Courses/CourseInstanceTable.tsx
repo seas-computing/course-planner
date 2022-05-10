@@ -12,7 +12,6 @@ import {
   TableHeadingSpacer,
 } from 'mark-one';
 import {
-  COURSE_TABLE_COLUMN,
   COURSE_TABLE_COLUMN_GROUP,
   isSEASEnumToString,
   IS_SEAS,
