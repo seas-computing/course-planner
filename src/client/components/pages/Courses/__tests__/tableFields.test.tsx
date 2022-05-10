@@ -12,7 +12,6 @@ import {
 } from 'common/constants';
 import { render } from 'test-utils';
 import { dayEnumToString } from 'common/constants/day';
-import * as dummy from 'testData';
 import {
   retrieveValue,
   tableFields,
@@ -35,27 +34,6 @@ describe('tableFields', function () {
           <CatalogNumber course={cs50CourseInstance} />
         );
         return getByText(cs50CourseInstance.catalogNumber);
-      });
-      it('Should return a component to render a fall level field', function () {
-        const FallEnrollment = retrieveValue('actualEnrollment', TERM.FALL);
-        const { getByText } = render(
-          <FallEnrollment course={cs50CourseInstance} />
-        );
-        return getByText(`${cs50CourseInstance.fall.actualEnrollment}`);
-      });
-      it('Should return a component to render a spring level field', function () {
-        const SpringEnrollment = retrieveValue('actualEnrollment', TERM.SPRING);
-        const { getByText } = render(
-          <SpringEnrollment course={{
-            ...cs50CourseInstance,
-            spring: {
-              ...cs50CourseInstance.spring,
-              actualEnrollment: dummy.int,
-            },
-          }}
-          />
-        );
-        return getByText(`${dummy.int}`);
       });
       it('should return a component that renders true booleans as "Yes"', function () {
         const BooleanValue = retrieveValue('isUndergraduate');
