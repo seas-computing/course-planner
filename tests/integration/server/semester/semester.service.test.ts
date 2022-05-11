@@ -364,12 +364,13 @@ describe('Semester Service', function () {
     context('when the academic year preceding the requested academic year does not yet exist', function () {
       const lastSpringSemester = semesters.slice(-1)[0];
       const testAcademicYear = lastSpringSemester.academicYear + 100;
-      it('throws a Bad Request Exception', async function () {
+      it('throws an error', async function () {
         try {
           await semesterService.addAcademicYear(testAcademicYear);
         } catch (err) {
-          strictEqual(err.response.error, 'Bad Request');
-          strictEqual(err.response.message, 'Cannot create requested academic year until preceding academic year is created.');
+          const error = err as Error;
+          strictEqual(err instanceof Error, true);
+          strictEqual(error.toString().includes('Cannot create requested academic year until preceding academic year is created.'), true);
         }
       });
     });
@@ -379,11 +380,13 @@ describe('Semester Service', function () {
     const lastSpringSemester = semesters.slice(-1)[0];
     const testAcademicYear = lastSpringSemester.academicYear + 1;
     context('before June', function () {
-      beforeEach(function () {
+      beforeEach(async function () {
         clock = FakeTimers.install();
         clock.setSystemTime(
-          new Date(testAcademicYear - 1, MONTH.FEB, 1, 0, 0, 0)
+          new Date(lastSpringSemester.academicYear - 3, MONTH.FEB, 1, 0, 0, 0)
         );
+        // calling init triggers the onApplicationBootstrap hook
+        await testModule.createNestApplication().init();
       });
       afterEach(function () {
         clock.uninstall();
@@ -406,7 +409,7 @@ describe('Semester Service', function () {
       beforeEach(async function () {
         clock = FakeTimers.install();
         clock.setSystemTime(
-          new Date(testAcademicYear - 3, MONTH.JUN, 6, 0, 0, 0)
+          new Date(lastSpringSemester.academicYear - 3, MONTH.JUN, 6, 0, 0, 0)
         );
         // calling init triggers the onApplicationBootstrap hook
         await testModule.createNestApplication().init();

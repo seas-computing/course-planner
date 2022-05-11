@@ -21,7 +21,6 @@ import { Authentication } from 'server/auth/authentication.guard';
 import { AuthModule } from 'server/auth/auth.module';
 import { AUTH_MODE } from 'common/constants';
 import * as dummy from 'testData';
-import { BadRequestException } from '@nestjs/common';
 import { LogService } from 'server/log/log.service';
 import { SemesterService } from '../semester.service';
 import { TestingStrategy } from '../../../../tests/mocks/authentication/testing.strategy';
@@ -163,13 +162,13 @@ describe('Semester Service', function () {
       afterEach(function () {
         getStub.restore();
       });
-      it('throws a bad request exception', async function () {
+      it('throws an error', async function () {
         try {
           await semesterService.addAcademicYear(newAcademicYear);
         } catch (e) {
-          strictEqual(e instanceof BadRequestException, true);
-          const error = e as BadRequestException;
-          strictEqual(error.message, 'Cannot create requested academic year until preceding academic year is created.');
+          const error = e as Error;
+          strictEqual(e instanceof Error, true);
+          strictEqual(error.toString().includes('Error: Cannot create requested academic year until preceding academic year is created.'), true);
         }
       });
     });

@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Inject,
   Injectable,
   OnApplicationBootstrap,
@@ -85,7 +84,7 @@ export class SemesterService implements OnApplicationBootstrap {
     // If the academic year previous to the newAcademicYear does not exist,
     // throw an exception.
     if (!existingYears.includes((newAcademicYear - 1).toString())) {
-      throw new BadRequestException(
+      throw new Error(
         'Cannot create requested academic year until preceding academic year is created.'
       );
     }
@@ -110,7 +109,7 @@ export class SemesterService implements OnApplicationBootstrap {
           });
       } catch (e) {
         if (e instanceof EntityNotFoundError) {
-          throw new BadRequestException(`Cannot find an existing fall ${newAcademicYear - 2} term.`);
+          throw new Error(`Cannot find an existing fall ${newAcademicYear - 2} term.`);
         }
         throw e;
       }
@@ -129,7 +128,7 @@ export class SemesterService implements OnApplicationBootstrap {
           });
       } catch (e) {
         if (e instanceof EntityNotFoundError) {
-          throw new BadRequestException(`Cannot find an existing spring ${newAcademicYear - 1} term.`);
+          throw new Error(`Cannot find an existing spring ${newAcademicYear - 1} term.`);
         }
         throw e;
       }
