@@ -190,12 +190,12 @@ export class SemesterService implements OnApplicationBootstrap {
     return null;
   }
 
-  public onApplicationBootstrap(): void {
+  public onApplicationBootstrap(): Promise<void> {
     const today = new Date();
     if (today.getMonth() === MONTH.JUN) {
       const yearToAdd = today.getFullYear() + 4;
       try {
-        void this.addAcademicYear(yearToAdd);
+        return this.addAcademicYear(yearToAdd);
       } catch (e) {
         this.logService.error(e);
       }
