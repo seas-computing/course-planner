@@ -90,29 +90,9 @@ export class SemesterService implements OnApplicationBootstrap {
     }
     // Only create the new academic year if it does not yet exist.
     if (!existingYears.includes((newAcademicYear).toString())) {
-      let existingFallSemester: Semester;
       let existingSpringSemester: Semester;
+
       this.logService.info(`Creating academic year ${newAcademicYear}`);
-      // Try getting the year previous to the new academic year requested.
-      // For example, if we are trying to create the 2026 academic year, use
-      // the semesters Spring 2025 and Fall 2024 to construct the new year.
-      try {
-        existingFallSemester = await this.semesterRepository
-          .findOneOrFail({
-            where: {
-              // NOTE: academic year in database is actually calendar year
-              term: TERM.FALL,
-              academicYear: newAcademicYear - 2,
-            },
-            // See: https://github.com/typeorm/typeorm/issues/1270#issuecomment-348429760
-            relations: ['absences', 'courseInstances', 'courseInstances.course', 'nonClassEvents'],
-          });
-      } catch (e) {
-        if (e instanceof EntityNotFoundError) {
-          throw new Error(`Cannot find an existing fall ${newAcademicYear - 2} term.`);
-        }
-        throw e;
-      }
 
       // Get the most recent existing spring semester along with its relations
       try {
@@ -133,7 +113,6 @@ export class SemesterService implements OnApplicationBootstrap {
         throw e;
       }
 
-      const fallInstances = existingFallSemester.courseInstances;
       const springInstances = existingSpringSemester.courseInstances;
 
       // Creates a mapping between the course id and spring instance so that
@@ -147,20 +126,15 @@ export class SemesterService implements OnApplicationBootstrap {
 
       this.logService.info('Creating the fall course instances.');
 
-      const newFallInstances = fallInstances
-        .map((fallInstance) => {
-          const springInstance: CourseInstance = courseIdToSpringInstance[
-            fallInstance.course.id
-          ];
-          return {
-            ...new CourseInstance(),
-            offered: springInstance.offered === OFFERED.RETIRED
-              ? OFFERED.RETIRED : OFFERED.BLANK,
-            course: fallInstance.course,
-            facultyCourseInstances: [],
-            meetings: [],
-          };
-        });
+      const newFallInstances = springInstances
+        .map((springInstance) => ({
+          ...new CourseInstance(),
+          offered: springInstance.offered === OFFERED.RETIRED
+            ? OFFERED.RETIRED : OFFERED.BLANK,
+          course: springInstance.course,
+          facultyCourseInstances: [],
+          meetings: [],
+        }));
 
       // Create new fall semester
       const fallSemester = new Semester();
@@ -171,7 +145,7 @@ export class SemesterService implements OnApplicationBootstrap {
 
       this.logService.info('Creating the fall non class events.');
 
-      fallSemester.nonClassEvents = existingFallSemester.nonClassEvents
+      fallSemester.nonClassEvents = existingSpringSemester.nonClassEvents
         .map((nce) => ({
           ...new NonClassEvent(),
           nonClassParent: nce.nonClassParent,
@@ -181,7 +155,7 @@ export class SemesterService implements OnApplicationBootstrap {
 
       this.logService.info('Creating the fall absences.');
 
-      fallSemester.absences = existingFallSemester.absences
+      fallSemester.absences = existingSpringSemester.absences
         .map((absence) => ({
           ...new Absence(),
           faculty: absence.faculty,

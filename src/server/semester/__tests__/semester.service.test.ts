@@ -145,9 +145,9 @@ describe('Semester Service', function () {
       afterEach(function () {
         getStub.restore();
       });
-      it('calls findOneOrFail once for each the fall and spring semesters', async function () {
+      it('calls findOneOrFail once', async function () {
         await semesterService.addAcademicYear(newAcademicYear);
-        strictEqual(mockSemesterRepository.findOneOrFail.callCount, 2, 'Called "findOneOrFail" an unexpected number of times.');
+        strictEqual(mockSemesterRepository.findOneOrFail.callCount, 1, 'Called "findOneOrFail" an unexpected number of times.');
       });
       it('calls save once', async function () {
         await semesterService.addAcademicYear(newAcademicYear);
