@@ -115,16 +115,7 @@ export class SemesterService implements OnApplicationBootstrap {
 
       const springInstances = existingSpringSemester.courseInstances;
 
-      // Creates a mapping between the course id and spring instance so that
-      // we can access the spring "offered" value while processing fall data.
-      // The spring "offered" data is necessary in order to  determine the
-      // appropriate "offered" value for the newly created fall semester.
-      const courseIdToSpringInstance: Record<string, CourseInstance> = {};
-      springInstances.forEach((instance) => {
-        courseIdToSpringInstance[instance.course.id] = instance;
-      });
-
-      this.logService.info('Creating the fall course instances.');
+      this.logService.verbose('Creating the fall course instances.');
 
       const newFallInstances = springInstances
         .map((springInstance) => ({
@@ -143,7 +134,10 @@ export class SemesterService implements OnApplicationBootstrap {
       fallSemester.term = TERM.FALL;
       fallSemester.courseInstances = newFallInstances;
 
-      this.logService.info('Creating the fall non class events.');
+      this.logService.verbose(`Created ${fallSemester.courseInstances.length} fall course instances.`);
+      this.logService.debug(fallSemester.courseInstances);
+
+      this.logService.verbose('Creating the fall non-class events.');
 
       fallSemester.nonClassEvents = existingSpringSemester.nonClassEvents
         .map((nce) => ({
@@ -153,7 +147,10 @@ export class SemesterService implements OnApplicationBootstrap {
           meetings: [],
         }));
 
-      this.logService.info('Creating the fall absences.');
+      this.logService.verbose(`Created ${fallSemester.nonClassEvents.length} fall non-class events.`);
+      this.logService.debug(fallSemester.nonClassEvents);
+
+      this.logService.verbose('Creating the fall absences.');
 
       fallSemester.absences = existingSpringSemester.absences
         .map((absence) => ({
@@ -161,7 +158,12 @@ export class SemesterService implements OnApplicationBootstrap {
           faculty: absence.faculty,
         }));
 
-      this.logService.info('Creating the spring course instances, non class events, and absences.');
+      this.logService.verbose(`Created ${fallSemester.absences.length} fall absences.`);
+      this.logService.debug(fallSemester.absences);
+
+      this.logService.verbose('Creating the spring course instances.');
+      this.logService.verbose('Creating the spring non-class events.');
+      this.logService.verbose('Creating the spring absences.');
 
       // Create new spring semester
       const springSemester = {
@@ -179,9 +181,15 @@ export class SemesterService implements OnApplicationBootstrap {
         term: TERM.SPRING,
       };
 
+      this.logService.verbose(`Created ${springSemester.courseInstances.length} spring course instances.`);
+      this.logService.debug(springSemester.courseInstances);
+      this.logService.verbose(`Created ${springSemester.nonClassEvents.length} spring non-class events.`);
+      this.logService.debug(springSemester.nonClassEvents);
+      this.logService.verbose(`Created ${springSemester.absences.length} spring absences.`);
+      this.logService.debug(springSemester.absences);
+
       // Note that this also saves the nested entities because of
       // the cascade set on semester
-      this.logService.info('Saving the new fall and spring semesters.');
       await this.semesterRepository.save([fallSemester, springSemester]);
 
       this.logService.info(`Successfully created academic year ${newAcademicYear}.`);
