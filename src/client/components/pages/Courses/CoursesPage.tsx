@@ -151,6 +151,9 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     visible: false,
   });
 
+  /**
+   * Keeps track of the information related to the edit notes modal
+   */
   const [
     notesModalData,
     setNotesModalData,
