@@ -71,7 +71,6 @@ export function useStoredState<STATE>(
     if (existingValue !== null) {
       initialValue = JSON.parse(existingValue) as STATE;
     } else if (fallbackValue) {
-      initialValue = fallbackValue;
       storage.setItem(key, JSON.stringify(fallbackValue));
     }
   }
