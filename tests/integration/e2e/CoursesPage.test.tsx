@@ -26,7 +26,7 @@ import {
 } from 'assert';
 import { offeredEnumToString } from 'common/constants/offered';
 import { SemesterModule } from 'server/semester/semester.module';
-import { MANDATORY_COLUMNS } from 'common/constants';
+import { COURSE_TABLE_COLUMN, MANDATORY_COLUMNS } from 'common/constants';
 import { tableFields } from 'client/components/pages/Courses/tableFields';
 import mockAdapter from '../../mocks/api/adapter';
 import { ConfigModule } from '../../../src/server/config/config.module';
@@ -1809,26 +1809,21 @@ describe('End-to-end Course Instance updating', function () {
             ],
           }
         );
+        stub(global.window, 'sessionStorage').get(() => ({
+          setItem: stub(),
+          getItem: () => JSON.stringify([
+            COURSE_TABLE_COLUMN.CATALOG_NUMBER,
+            COURSE_TABLE_COLUMN.ENROLLMENT,
+          ]),
+          removeItem: stub(),
+          length: 1,
+        }));
         renderResult = render(
           <MemoryRouter initialEntries={['/courses']}>
             <App />
           </MemoryRouter>
         );
         await renderResult.findByText(courseNumber);
-        const openCustomizeViewButton = await renderResult
-          .findByText('Customize View', { selector: 'button' });
-
-        fireEvent.click(openCustomizeViewButton);
-        const customViewModal = renderResult
-          .queryByText('Customize View', { selector: 'span' }) // Span
-          .parentElement // h2
-          .parentElement // modal header
-          .parentElement; // modal component
-
-        const enrollmentCheckbox = within(customViewModal).getByLabelText('Enrollment');
-        const doneButton = within(customViewModal).getByText('Done');
-        fireEvent.click(enrollmentCheckbox);
-        fireEvent.click(doneButton);
 
         const courseRows = await renderResult.findAllByRole('row');
         const courseRowToUpdate = courseRows.find((row) => {
