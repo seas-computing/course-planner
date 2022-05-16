@@ -1795,6 +1795,7 @@ describe('End-to-end Course Instance updating', function () {
     });
     describe('Updating Enrollment Values', function () {
       let editFallEnrollmentButton: HTMLElement;
+      let modal: HTMLDivElement;
       beforeEach(async function () {
         const [prefix, number] = courseNumber.split(' ');
         await courseRepository.findOneOrFail(
@@ -1836,9 +1837,11 @@ describe('End-to-end Course Instance updating', function () {
             { exact: false }
           ));
         fireEvent.click(editFallEnrollmentButton);
+        (modal = await renderResult.findByRole('dialog') as HTMLDivElement);
       });
-      it('opens the enrollment edit dialog', function () {
-        // Start testing things here
+      it('allows enrollment data to be updated', function () {
+        // Enter stuff in the text boxes
+        // Click the save button
       });
     });
   });
