@@ -23,22 +23,27 @@ export const useHasStorage = (
   try {
     storage = window[type];
     const test = '__storage_test__';
+    // test writing and removing a value to ensure that the storage exists and
+    // is actually usable
     storage.setItem(test, test);
     storage.removeItem(test);
     return true;
   } catch (e) {
+    // The above set/remove test could fail if the storage is full, in which
+    // case we can still return true
     return e instanceof DOMException
       && (
+        // Non-Firefox code/name indicating full storage
         e.code === 22
-        || e.code === 1014
         || e.name === 'QuotaExceededError'
-        || (
-          e.name === 'NS_ERROR_DOM_QUOTA_REACHED'
-          && (
-            storage && storage.length !== 0
-          )
-        )
-      );
+        // Firefox code/name indicating full storage
+        || e.code === 1014
+        || e.name === 'NS_ERROR_DOM_QUOTA_REACHED'
+      )
+      // Some browsers "disable" storage by setting the quota to 0 (ie. in
+      // private mode), which would be indicated by the full storage errors
+      // above while nothing is actually saved in storage.
+      && (storage && storage.length !== 0);
   }
 }, [type]));
 
