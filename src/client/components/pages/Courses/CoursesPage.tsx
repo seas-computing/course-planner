@@ -89,7 +89,7 @@ type CourseInstanceModalData = ModalData & {
 };
 
 const enum KEY {
-  VIEW_COLUMNS = 'COURSE_PAGE_VIEW_COLUMNS',
+  VIEW_COLUMNS = 'course-page-view-columns',
   CUSTOMIZE_VIEW_BUTTON = 'customize-view-button',
   REPORT_DOWNLOAD_BUTTON = 'download-report-button',
 }
