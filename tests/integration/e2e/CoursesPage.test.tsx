@@ -1793,5 +1793,58 @@ describe('End-to-end Course Instance updating', function () {
         });
       });
     });
+    describe('Updating Enrollment Values', function () {
+      let editFallEnrollmentButton: HTMLElement;
+      beforeEach(async function () {
+        const [prefix, number] = courseNumber.split(' ');
+        await courseRepository.findOneOrFail(
+          {
+            prefix,
+            number,
+          },
+          {
+            relations: [
+              'instances',
+              'instances.semester',
+            ],
+          }
+        );
+        renderResult = render(
+          <MemoryRouter initialEntries={['/courses']}>
+            <App />
+          </MemoryRouter>
+        );
+        await renderResult.findByText(courseNumber);
+        const openCustomizeViewButton = await renderResult
+          .findByText('Customize View', { selector: 'button' });
+
+        fireEvent.click(openCustomizeViewButton);
+        const customViewModal = renderResult
+          .queryByText('Customize View', { selector: 'span' }) // Span
+          .parentElement // h2
+          .parentElement // modal header
+          .parentElement; // modal component
+
+        const enrollmentCheckbox = within(customViewModal).getByLabelText('Enrollment');
+        const doneButton = within(customViewModal).getByText('Done');
+        fireEvent.click(enrollmentCheckbox);
+        fireEvent.click(doneButton);
+
+        const courseRows = await renderResult.findAllByRole('row');
+        const courseRowToUpdate = courseRows.find((row) => {
+          const rowHeader = within(row).queryByRole('rowheader');
+          return rowHeader?.textContent === courseNumber;
+        });
+        ([editFallEnrollmentButton] = await within(courseRowToUpdate)
+          .findAllByLabelText(
+            `Edit enrollment for ${courseNumber} in ${currentTerm} ${currentAcademicYear - 1}`,
+            { exact: false }
+          ));
+        fireEvent.click(editFallEnrollmentButton);
+      });
+      it('opens the enrollment edit dialog', function () {
+        // Start testing things here
+      });
+    });
   });
 });

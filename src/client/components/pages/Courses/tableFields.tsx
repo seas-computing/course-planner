@@ -325,10 +325,22 @@ type EnrollmentField = {
 export const formatEnrollment = (
   term: TERM
 ): FunctionComponent<FieldContentProps> => React.memo((
-  { course }: FieldContentProps
+  {
+    course,
+    openEnrollmentModal,
+    buttonRef,
+    isEditable,
+  }: FieldContentProps
 ): ReactElement => {
   const semKey = term.toLowerCase() as TermKey;
-  const { [semKey]: instance } = course;
+  const {
+    id: parentId,
+    catalogNumber,
+    [semKey]: instance,
+  } = course;
+  const {
+    calendarYear,
+  } = instance;
   const enrollmentData: EnrollmentField[] = [
     {
       name: 'Pre-Registration',
@@ -350,26 +362,41 @@ export const formatEnrollment = (
     },
   ];
   return (
-    <TableCellList>
-      {
-        enrollmentData
-          .filter(({ count }) => count !== null)
-          .map((item) => (
-            <TableCellListItem
-              key={item.key}
-              title={item.name}
-              aria-label={item.name}
-            >
-              <FontAwesomeIcon
-                icon={item.icon}
-                fixedWidth
-              />
-              {' '}
-              { item.count }
-            </TableCellListItem>
-          ))
-      }
-    </TableCellList>
+    <>
+      <TableCellList>
+        {
+          enrollmentData
+            .filter(({ count }) => count !== null)
+            .map((item) => (
+              <TableCellListItem
+                key={item.key}
+                title={item.name}
+                aria-label={item.name}
+              >
+                <FontAwesomeIcon
+                  icon={item.icon}
+                  fixedWidth
+                />
+                {' '}
+                { item.count }
+              </TableCellListItem>
+            ))
+        }
+      </TableCellList>
+      {isEditable && (
+        <BorderlessButton
+          id={`${parentId}-${term}-edit-enrollment-button`}
+          alt={`Edit enrollment for ${catalogNumber} in ${semKey} ${calendarYear}`}
+          onClick={() => {
+            openEnrollmentModal(course, semKey as TERM);
+          }}
+          variant={VARIANT.INFO}
+          forwardRef={buttonRef}
+        >
+          <FontAwesomeIcon icon={faEdit} />
+        </BorderlessButton>
+      )}
+    </>
   );
 });
 
@@ -397,6 +424,14 @@ export interface FieldContentProps {
   openNotesModal?: (
     course: CourseInstanceResponseDTO,
     buttonId?: string
+  ) => void;
+
+  /**
+   * Controls the opening of the enrollment modal for the requested course instance
+   */
+  openEnrollmentModal?: (
+    course: CourseInstanceResponseDTO,
+    term: TERM,
   ) => void;
 
   /**
