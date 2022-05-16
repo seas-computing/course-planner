@@ -4,7 +4,6 @@ import React, {
   useState,
   useEffect,
   useContext,
-  Ref,
   useRef,
   useCallback,
   useMemo,
@@ -27,7 +26,6 @@ import get from 'lodash.get';
 import merge from 'lodash.merge';
 import set from 'lodash.set';
 import TERM, { TermKey } from 'common/constants/term';
-import { ViewResponse } from 'common/dto/view/ViewResponse.dto';
 import { VerticalSpace } from 'client/components/layout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWrench, faDownload } from '@fortawesome/free-solid-svg-icons';
@@ -36,8 +34,6 @@ import { DropdownProps } from 'mark-one/lib/Forms/Dropdown';
 import { useGroupGuard } from 'client/hooks/useGroupGuard';
 import CourseInstanceTable from './CourseInstanceTable';
 import ViewModal from './ViewModal';
-import SemesterTable from './SemesterTable';
-import { modalFields } from './modalFields';
 import { formatFacultyNotes, tableFields } from './tableFields';
 import { listFilter } from '../Filter';
 import { FilterState } from './filters.d';
@@ -47,6 +43,7 @@ import { filterCoursesByInstructors } from '../utils/filterByInstructorValues';
 import OfferedModal from './OfferedModal';
 import NotesModal from './NotesModal';
 import ReportDownloadModal from './ReportDownloadModal';
+import { useStoredState } from '../../../hooks/useStoredState';
 
 /**
  * The initial, empty state for the filters
@@ -70,22 +67,17 @@ const emptyFilters: FilterState = {
 /**
  * Default View
  *
- * This is the hard-coded default view that is showin in the dropdown when a
- * user loads the page. Other views can be created, modified and deleted - but
- * this default view can never be deleted or updated.
+ * This is the hard-coded default view that is shown when a user loads the page
+ * if there is no view saved in session Storage.
  */
-const defaultView: ViewResponse = {
-  id: 'default',
-  name: 'Default',
-  columns: [
-    ...MANDATORY_COLUMNS,
-    COURSE_TABLE_COLUMN.MEETINGS,
-    COURSE_TABLE_COLUMN.IS_SEAS,
-    COURSE_TABLE_COLUMN.OFFERED,
-    COURSE_TABLE_COLUMN.INSTRUCTORS,
-    COURSE_TABLE_COLUMN.NOTES,
-  ],
-};
+const defaultView = [
+  ...MANDATORY_COLUMNS,
+  COURSE_TABLE_COLUMN.MEETINGS,
+  COURSE_TABLE_COLUMN.IS_SEAS,
+  COURSE_TABLE_COLUMN.OFFERED,
+  COURSE_TABLE_COLUMN.INSTRUCTORS,
+  COURSE_TABLE_COLUMN.NOTES,
+];
 
 interface ModalData {
   course?: CourseInstanceResponseDTO;
@@ -95,6 +87,12 @@ interface ModalData {
 type CourseInstanceModalData = ModalData & {
   term?: TERM;
 };
+
+const enum KEY {
+  VIEW_COLUMNS = 'course-page-view-columns',
+  CUSTOMIZE_VIEW_BUTTON = 'customize-view-button',
+  REPORT_DOWNLOAD_BUTTON = 'download-report-button',
+}
 
 /**
  * Component representing the list of CourseInstances in a given Academic year
@@ -108,16 +106,29 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     setCourses,
   ] = useState([] as CourseInstanceResponseDTO[]);
 
+  /**
+   * Control whether the ViewModal is visible
+   */
   const [
     viewModalVisible,
     setViewModalVisible,
   ] = useState(false);
 
+  /**
+   * Control the columns that should be shown in the table
+   */
   const [
     currentViewColumns,
     setCurrentViewColumns,
-  ] = useState(defaultView.columns);
+  ] = useStoredState<COURSE_TABLE_COLUMN[]>(
+    KEY.VIEW_COLUMNS,
+    defaultView,
+    'sessionStorage'
+  );
 
+  /**
+   * Control whether the "Download Report" modal is visible
+   */
   const [
     reportModalVisible,
     setReportModalVisible,
@@ -187,6 +198,11 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
    */
   const refTable = useRef<Record<string, HTMLButtonElement>>({});
 
+  /**
+   * When passed as the forwardRef prop to a component, it will generate a ref
+   * pointing to the underlying element and add it to our refTable, so that we
+   * can later retrieve the ref and focus the appropriate element
+   */
   const setButtonRef = useCallback(
     (nodeId: string) => (node: HTMLButtonElement): void => {
       if (nodeId && node) {
@@ -194,11 +210,6 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
       }
     }, [refTable]
   );
-
-  /**
-   * Ref to the Customize View button
-   */
-  const customizeViewButtonRef: Ref<HTMLButtonElement> = useRef(null);
 
   /**
    * The current value of each of the course instance table filters. These
@@ -235,15 +246,37 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   }, [setFilters]);
 
   /**
+   * Open the ViewModal and save its unique id
+   */
+  const openViewModal = useCallback((): void => {
+    setViewModalVisible(true);
+    setModalButtonId(KEY.CUSTOMIZE_VIEW_BUTTON);
+  }, [setViewModalVisible, setModalButtonId]);
+
+  /**
+   * Close the ViewModal and persist the list of columns both to our
+   * sessionStorage and to our local state
+   */
+  const closeViewModal = useCallback((columns: COURSE_TABLE_COLUMN[]): void => {
+    setViewModalVisible(false);
+    setCurrentViewColumns(columns);
+    setTimeout(() => {
+      if (modalButtonId && modalButtonId in refTable.current) {
+        refTable.current[modalButtonId].focus();
+      }
+    });
+  }, [modalButtonId, setCurrentViewColumns]);
+
+  /**
    * Handle opening the download modal
    */
   const openDownloadModal = useCallback(() => {
     setReportModalVisible(true);
-    setModalButtonId('download-course-report');
+    setModalButtonId(KEY.REPORT_DOWNLOAD_BUTTON);
   }, [setReportModalVisible, setModalButtonId]);
 
   /**
-   * Handle closign the download modal
+   * Handle closing the download modal
    */
   const closeDownloadModal = useCallback(() => {
     setReportModalVisible(false);
@@ -420,8 +453,15 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     };
   }, [filters]);
 
+  /**
+   * Grab the metadata necessary to display the current year's data
+   */
   const { currentAcademicYear, semesters } = useContext(MetadataContext);
 
+  /**
+   * Compute the range of academic years that will be displayed in the dropdown
+   * at the top of the page
+   */
   const academicYearOptions = useMemo(
     () => semesters.reduce<DropdownProps['options']>(
       (years, semester) => {
@@ -440,11 +480,18 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     ), [semesters]
   );
 
+  /**
+   * Track the academic year for which data will be shown in the table
+   */
   const [
     selectedAcademicYear,
     setSelectedAcademicYear,
   ] = useState(currentAcademicYear);
 
+  /**
+   * Set up the initial data displayed in the table, including the actual
+   * course data and any custom columns saved in sessionStorage
+   */
   useEffect((): void => {
     setFetching(true);
     CourseAPI.getCourseInstancesForYear(selectedAcademicYear)
@@ -460,7 +507,10 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
       .finally((): void => {
         setFetching(false);
       });
-  }, [selectedAcademicYear, dispatchMessage]);
+  }, [
+    selectedAcademicYear,
+    dispatchMessage,
+  ]);
 
   /**
   * Method for updating a course in the local client list of courses. Intended
@@ -529,27 +579,16 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
       });
     }
   }, [currentCourses, dispatchMessage]);
-  /**
-   * Show/hide columns from the course instance table
-   *
-   * @param viewColumn The column that triggered the change handler
-   */
-  const toggleColumn = useCallback((viewColumn: COURSE_TABLE_COLUMN): void => {
-    setCurrentViewColumns((columns: COURSE_TABLE_COLUMN[]) => {
-      if (columns.includes(viewColumn)) {
-        return columns.filter((col) => col !== viewColumn);
-      }
-      return columns.concat([viewColumn]);
-    });
-  }, [setCurrentViewColumns]);
 
   /**
    * Memoize the table data so that it does not need to render unnecessarily
    * while typing in the text filter fields of the Course Instance table.
    */
-  const tableData = useMemo(() => tableFields.filter(
-    ({ viewColumn }): boolean => (
-      currentViewColumns.includes(viewColumn)
+  const tableData = useMemo(() => (
+    tableFields.filter(
+      ({ viewColumn }): boolean => (
+        currentViewColumns.includes(viewColumn)
+      )
     )
   ), [currentViewColumns]);
 
@@ -562,27 +601,12 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
   return (
     <div className="course-instance-table">
       <VerticalSpace>
-        <ViewModal
-          isVisible={viewModalVisible}
-          onClose={() => {
-            setViewModalVisible(false);
-            setTimeout(() => {
-              customizeViewButtonRef.current.focus();
-            });
-          }}
-        >
-          <SemesterTable
-            columns={modalFields}
-            checked={currentViewColumns}
-            onChange={toggleColumn}
-          />
-        </ViewModal>
         <MenuFlex>
           <Button
             variant={VARIANT.INFO}
             alt="Download a spreadsheet with course data"
             onClick={openDownloadModal}
-            forwardRef={setButtonRef('download-course-report')}
+            forwardRef={setButtonRef(KEY.REPORT_DOWNLOAD_BUTTON)}
           >
             <FontAwesomeIcon
               icon={faDownload}
@@ -592,10 +616,8 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
           </Button>
           <Button
             variant={VARIANT.INFO}
-            forwardRef={customizeViewButtonRef}
-            onClick={() => {
-              setViewModalVisible(true);
-            }}
+            forwardRef={setButtonRef(KEY.CUSTOMIZE_VIEW_BUTTON)}
+            onClick={openViewModal}
           >
             <FontAwesomeIcon
               icon={faWrench}
@@ -740,6 +762,11 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
       <ReportDownloadModal
         isVisible={reportModalVisible}
         closeModal={closeDownloadModal}
+      />
+      <ViewModal
+        isVisible={viewModalVisible}
+        currentViewColumns={currentViewColumns}
+        onClose={closeViewModal}
       />
     </div>
   );

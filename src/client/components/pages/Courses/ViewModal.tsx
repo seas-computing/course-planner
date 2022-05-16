@@ -3,6 +3,8 @@ import React, {
   ReactElement,
   useEffect,
   useRef,
+  useState,
+  useCallback,
 } from 'react';
 import {
   Modal,
@@ -12,6 +14,9 @@ import {
   Button,
   VARIANT,
 } from 'mark-one';
+import { COURSE_TABLE_COLUMN } from 'common/constants';
+import SemesterTable from './SemesterTable';
+import { modalFields } from './modalFields';
 
 interface ViewModalProps {
   /**
@@ -22,7 +27,12 @@ interface ViewModalProps {
   /**
    * Handler to be invoked when the modal closes
    */
-  onClose: () => void;
+  onClose: (columns: COURSE_TABLE_COLUMN[]) => void;
+
+  /**
+   * The columns selected by the user when the modal opens
+   */
+  currentViewColumns: COURSE_TABLE_COLUMN[];
 }
 
 /**
@@ -32,26 +42,50 @@ interface ViewModalProps {
 const ViewModal: FunctionComponent<ViewModalProps> = ({
   isVisible,
   onClose,
-  children,
+  currentViewColumns,
 }): ReactElement => {
   /**
    * Ref to attach to the internal modal header
    */
   const modalHeaderRef = useRef<HTMLHeadingElement>(null);
 
+  /**
+   * Track the internal set of columns that have been checked by the user
+   */
+  const [
+    checkedColumns,
+    setCheckedColumns,
+  ] = useState<COURSE_TABLE_COLUMN[]>([]);
+
+  /**
+   * Show/hide columns from the course instance table
+   *
+   * @param viewColumn The column that triggered the change handler
+   */
+  const toggleColumn = useCallback((viewColumn: COURSE_TABLE_COLUMN): void => {
+    setCheckedColumns((columns: COURSE_TABLE_COLUMN[]) => {
+      if (columns.includes(viewColumn)) {
+        return columns.filter((col) => col !== viewColumn);
+      }
+      return columns.concat([viewColumn]);
+    });
+  }, [setCheckedColumns]);
+
+  /**
+   * Focus the header on initial load
+   */
   useEffect((): void => {
     if (isVisible) {
       modalHeaderRef.current.focus();
+      setCheckedColumns(currentViewColumns);
     }
-  }, [isVisible]);
+  }, [isVisible, currentViewColumns]);
 
   return (
     <Modal
       ariaLabelledBy="view-modal-header"
       isVisible={isVisible}
-      closeHandler={() => {
-        onClose();
-      }}
+      closeHandler={() => { onClose(checkedColumns); }}
     >
       <ModalHeader
         forwardRef={modalHeaderRef}
@@ -62,13 +96,15 @@ const ViewModal: FunctionComponent<ViewModalProps> = ({
         </span>
       </ModalHeader>
       <ModalBody>
-        { children }
+        <SemesterTable
+          columns={modalFields}
+          checked={checkedColumns}
+          onChange={toggleColumn}
+        />
       </ModalBody>
       <ModalFooter>
         <Button
-          onClick={() => {
-            onClose();
-          }}
+          onClick={() => { onClose(checkedColumns); }}
           variant={VARIANT.BASE}
         >
           Done

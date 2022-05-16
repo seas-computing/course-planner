@@ -18,9 +18,16 @@ import { MemoryRouter } from 'react-router-dom';
 import App from 'client/components/App';
 import request from 'client/api/request';
 import { Repository, Not, In } from 'typeorm';
-import { strictEqual, deepStrictEqual, notStrictEqual } from 'assert';
+import {
+  strictEqual,
+  deepStrictEqual,
+  notStrictEqual,
+  notDeepStrictEqual,
+} from 'assert';
 import { offeredEnumToString } from 'common/constants/offered';
 import { SemesterModule } from 'server/semester/semester.module';
+import { MANDATORY_COLUMNS } from 'common/constants';
+import { tableFields } from 'client/components/pages/Courses/tableFields';
 import mockAdapter from '../../mocks/api/adapter';
 import { ConfigModule } from '../../../src/server/config/config.module';
 import { ConfigService } from '../../../src/server/config/config.service';
@@ -1619,6 +1626,170 @@ describe('End-to-end Course Instance updating', function () {
               'Future spring instance was not set to OFFERED.BLANK'
             );
           });
+        });
+      });
+    });
+    describe('Setting custom view columns', function () {
+      context('With sessionStorage available', function () {
+        let fakeSessionStorage: Storage;
+        let fakeStorageMap: Map<string, string>;
+        // Substitute a JS map for our storage backend
+        beforeEach(function () {
+          fakeStorageMap = new Map();
+          fakeSessionStorage = {
+            setItem: (key, value) => { fakeStorageMap.set(key, value); },
+            getItem: (key) => (
+              fakeStorageMap.has(key)
+                ? fakeStorageMap.get(key)
+                : null
+            ),
+            removeItem: (key) => { fakeStorageMap.delete(key); },
+            length: fakeStorageMap.size,
+            clear: () => { fakeStorageMap.clear(); },
+            key: (index) => {
+              const values = fakeStorageMap.values();
+              return values[index] as string;
+            },
+          };
+          stub(global.window, 'sessionStorage').get(() => fakeSessionStorage);
+        });
+        it('Should preserve custom columns after navigating/returning', async function () {
+          renderResult = render(
+            <MemoryRouter initialEntries={['/courses']}>
+              <App />
+            </MemoryRouter>
+          );
+
+          // Get a list of our initial headings
+          await waitForElementToBeRemoved(() => renderResult.getByText('Fetching User Data'));
+          await waitForElementToBeRemoved(() => renderResult.getByText('Fetching Course Data'));
+          const initialRows = await renderResult.findAllByRole('row');
+          const initialHeadings = within(initialRows[1]).getAllByRole('columnheader')
+            .map(({ textContent }) => textContent);
+
+          // Update the view to only show the minimal number of columns
+          const customViewButton = await renderResult.findByText(/Customize View/);
+          fireEvent.click(customViewButton);
+          const modal = await renderResult.findByRole('dialog');
+          const columnBoxes = within(modal).getAllByRole('checkbox');
+          columnBoxes.forEach((box: HTMLInputElement) => {
+            if (box.checked && !box.disabled) {
+              fireEvent.click(box);
+            }
+          });
+          fireEvent.click(within(modal).getByText('Done'));
+
+          // Get the list of updated Headings
+          const tableRows = renderResult.getAllByRole('row');
+          const customHeadings = within(tableRows[0]).getAllByRole('columnheader')
+            .map(({ textContent }) => textContent);
+          const mandatoryHeadings = tableFields
+            .filter(({ viewColumn }) => MANDATORY_COLUMNS.includes(viewColumn))
+            .map(({ name }) => name);
+
+          // Compare to ensure that they changed to our mandatory columns
+          notDeepStrictEqual(
+            customHeadings,
+            initialHeadings,
+            'Columns headings did not update when modal closed'
+          );
+          deepStrictEqual(
+            customHeadings,
+            mandatoryHeadings,
+            'Columns shown do not match the mandatory columns'
+          );
+
+          // Navigate to our 4 year plan page
+          fireEvent.click(renderResult.getByText('4 Year Plan'));
+          await renderResult.findAllByText(/(F|S)'\d\d Instructors/);
+
+          // Go back to courses; Columns should be the same
+          fireEvent.click(renderResult.getByText('Courses'));
+          await waitForElementToBeRemoved(() => renderResult.getByText('Fetching Course Data'));
+          const returnTableRows = await renderResult.findAllByRole('row');
+          const returnHeadings = within(returnTableRows[0])
+            .getAllByRole('columnheader')
+            .map(({ textContent }) => textContent);
+          notDeepStrictEqual(
+            returnHeadings,
+            initialHeadings,
+            'After returning, columns heading reverted to initial set'
+          );
+          deepStrictEqual(
+            returnHeadings,
+            customHeadings,
+            'After returning, columns do not match what was selected'
+          );
+        });
+      });
+      context('Without sessionStorage available', function () {
+        it('Reverts to the initial columns on page load', async function () {
+          renderResult = render(
+            <MemoryRouter initialEntries={['/courses']}>
+              <App />
+            </MemoryRouter>
+          );
+
+          // Get a list of our initial headings
+          await waitForElementToBeRemoved(() => renderResult.getByText('Fetching User Data'));
+          await waitForElementToBeRemoved(() => renderResult.getByText('Fetching Course Data'));
+          const initialRows = await renderResult.findAllByRole('row');
+          const initialHeadings = within(initialRows[1]).getAllByRole('columnheader')
+            .map(({ textContent }) => textContent);
+
+          // Update the view to only show the minimal number of columns
+          const customViewButton = await renderResult.findByText(/Customize View/);
+          fireEvent.click(customViewButton);
+          const modal = await renderResult.findByRole('dialog');
+          const columnBoxes = within(modal).getAllByRole('checkbox');
+          columnBoxes.forEach((box: HTMLInputElement) => {
+            if (box.checked && !box.disabled) {
+              fireEvent.click(box);
+            }
+          });
+          fireEvent.click(within(modal).getByText('Done'));
+
+          // Get the list of updated Headings
+          const tableRows = renderResult.getAllByRole('row');
+          const customHeadings = within(tableRows[0]).getAllByRole('columnheader')
+            .map(({ textContent }) => textContent);
+          const mandatoryHeadings = tableFields
+            .filter(({ viewColumn }) => MANDATORY_COLUMNS.includes(viewColumn))
+            .map(({ name }) => name);
+
+          // Compare to ensure that they changed to our mandatory columns
+          notDeepStrictEqual(
+            customHeadings,
+            initialHeadings,
+            'Columns headings did not update when modal closed'
+          );
+          deepStrictEqual(
+            customHeadings,
+            mandatoryHeadings,
+            'Columns shown do not match the mandatory columns'
+          );
+
+          // Navigate to our 4 year plan page
+          fireEvent.click(renderResult.getByText('4 Year Plan'));
+          await renderResult.findAllByText(/(F|S)'\d\d Instructors/);
+
+          // Go back to courses; Columns should have reverted
+          fireEvent.click(renderResult.getByText('Courses'));
+          await waitForElementToBeRemoved(() => renderResult.getByText('Fetching Course Data'));
+          const returnTableRows = await renderResult.findAllByRole('row');
+          const returnHeadings = within(returnTableRows[1])
+            .getAllByRole('columnheader')
+            .map(({ textContent }) => textContent);
+          deepStrictEqual(
+            returnHeadings,
+            initialHeadings,
+            'After returning, columns heading did not revert to initial set'
+          );
+          notDeepStrictEqual(
+            returnHeadings,
+            customHeadings,
+            'After returning, columns are still set to the custom set'
+          );
         });
       });
     });
