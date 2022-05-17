@@ -44,6 +44,7 @@ import OfferedModal from './OfferedModal';
 import NotesModal from './NotesModal';
 import ReportDownloadModal from './ReportDownloadModal';
 import { useStoredState } from '../../../hooks/useStoredState';
+import EnrollmentModal from './EnrollmentModal';
 
 /**
  * The initial, empty state for the filters
@@ -133,6 +134,20 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     reportModalVisible,
     setReportModalVisible,
   ] = useState(false);
+
+  /**
+   * Keeps track of the information needed to display the enrollment modal for a
+   * specific course and semester
+   */
+  const [
+    enrollmentModalData,
+    setEnrollmentModalData,
+  ] = useState<CourseInstanceModalData>({
+    term: null,
+    course: null,
+    visible: false,
+  });
+
 
   const dispatchMessage = useContext(MessageContext);
 
@@ -770,6 +785,20 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
         isVisible={viewModalVisible}
         currentViewColumns={currentViewColumns}
         onClose={closeViewModal}
+      />
+      <EnrollmentModal
+        isVisible={enrollmentModalData.visible}
+        course={enrollmentModalData.course}
+        currentSemester={{
+          term: enrollmentModalData.term,
+          calendarYear: selectedAcademicYear.toString(),
+        }}
+        onClose={() => {
+          setEnrollmentModalData((state) => ({
+            ...state,
+            visible: false,
+          }));
+        }}
       />
     </div>
   );
