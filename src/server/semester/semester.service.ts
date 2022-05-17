@@ -23,6 +23,15 @@ export class SemesterService implements OnApplicationBootstrap {
   @InjectRepository(Semester)
   private readonly semesterRepository: Repository<Semester>;
 
+  @InjectRepository(CourseInstance)
+  private readonly ciRepository: Repository<CourseInstance>;
+
+  @InjectRepository(Absence)
+  private readonly absenceRepository: Repository<Absence>;
+
+  @InjectRepository(NonClassEvent)
+  private readonly nceRepository: Repository<NonClassEvent>;
+
   @Inject(LogService)
   private readonly logService: LogService;
 
@@ -91,6 +100,9 @@ export class SemesterService implements OnApplicationBootstrap {
     // Only create the new academic year if it does not yet exist.
     if (!existingYears.includes((newAcademicYear).toString())) {
       let existingSpringSemester: Semester;
+      let existingSpringCourseInstances: CourseInstance[];
+      let existingSpringAbsences: Absence[];
+      let existingSpringNonClassEvents: NonClassEvent[];
 
       this.logService.info(`Creating academic year ${newAcademicYear}`);
 
@@ -103,8 +115,6 @@ export class SemesterService implements OnApplicationBootstrap {
               term: TERM.SPRING,
               academicYear: newAcademicYear - 1,
             },
-            // See: https://github.com/typeorm/typeorm/issues/1270#issuecomment-348429760
-            relations: ['absences', 'courseInstances', 'courseInstances.course', 'nonClassEvents'],
           });
       } catch (e) {
         if (e instanceof EntityNotFoundError) {
@@ -113,11 +123,56 @@ export class SemesterService implements OnApplicationBootstrap {
         throw e;
       }
 
-      const springInstances = existingSpringSemester.courseInstances;
+      // Get existing spring course instances
+      try {
+        existingSpringCourseInstances = await this.ciRepository
+          .find({
+            where: {
+              semester: existingSpringSemester,
+            },
+            relations: ['course'],
+            loadRelationIds: true,
+          });
+      } catch (e) {
+        if (e instanceof EntityNotFoundError) {
+          throw new Error(`Cannot find course instances associated with Spring ${newAcademicYear - 1}.`);
+        }
+        throw e;
+      }
+
+      // Get existing spring non class events
+      try {
+        existingSpringNonClassEvents = await this.nceRepository
+          .find({
+            where: {
+              semester: existingSpringSemester,
+            },
+          });
+      } catch (e) {
+        if (e instanceof EntityNotFoundError) {
+          throw new Error(`Cannot find non class events associated with Spring ${newAcademicYear - 1}.`);
+        }
+        throw e;
+      }
+
+      // Get existing spring absences
+      try {
+        existingSpringAbsences = await this.absenceRepository
+          .find({
+            where: {
+              semester: existingSpringSemester,
+            },
+          });
+      } catch (e) {
+        if (e instanceof EntityNotFoundError) {
+          throw new Error(`Cannot find absences associated with Spring ${newAcademicYear - 1}.`);
+        }
+        throw e;
+      }
 
       this.logService.verbose('Creating the fall course instances.');
 
-      const newFallInstances = springInstances
+      const newFallInstances = existingSpringCourseInstances
         .map((springInstance) => ({
           ...new CourseInstance(),
           offered: springInstance.offered === OFFERED.RETIRED
@@ -139,7 +194,7 @@ export class SemesterService implements OnApplicationBootstrap {
 
       this.logService.verbose('Creating the fall non-class events.');
 
-      fallSemester.nonClassEvents = existingSpringSemester.nonClassEvents
+      fallSemester.nonClassEvents = existingSpringNonClassEvents
         .map((nce) => ({
           ...new NonClassEvent(),
           nonClassParent: nce.nonClassParent,
@@ -152,7 +207,7 @@ export class SemesterService implements OnApplicationBootstrap {
 
       this.logService.verbose('Creating the fall absences.');
 
-      fallSemester.absences = existingSpringSemester.absences
+      fallSemester.absences = existingSpringAbsences
         .map((absence) => ({
           ...new Absence(),
           faculty: absence.faculty,
