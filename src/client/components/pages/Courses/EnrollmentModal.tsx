@@ -55,13 +55,6 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
    */
   const modalHeaderRef = useRef<HTMLHeadingElement>(null);
 
-  const {
-    catalogNumber,
-  } = course;
-
-  const term = currentSemester.term[0].toUpperCase()
-    + currentSemester.term.slice(1).toLowerCase();
-
   return (
     <Modal
       ariaLabelledBy="enrollment-modal-header"
@@ -73,7 +66,7 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
         tabIndex={0}
       >
         <span id="enrollment-modal-header">
-          {`Enrollment For ${catalogNumber} for ${term} ${currentSemester.calendarYear}`}
+          {`Enrollment for ${course?.catalogNumber}, ${currentSemester?.term} ${currentSemester.calendarYear}`}
         </span>
       </ModalHeader>
       <ModalBody>
