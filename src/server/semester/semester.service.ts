@@ -248,8 +248,9 @@ export class SemesterService implements OnApplicationBootstrap {
       await this.semesterRepository.save([fallSemester, springSemester]);
 
       this.logService.info(`Successfully created academic year ${newAcademicYear}.`);
+    } else {
+      this.logService.info(`Academic year ${newAcademicYear} already exists.`);
     }
-    this.logService.info(`Academic year ${newAcademicYear} already exists.`);
     return null;
   }
 
