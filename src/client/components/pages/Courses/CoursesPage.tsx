@@ -148,7 +148,6 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     visible: false,
   });
 
-
   const dispatchMessage = useContext(MessageContext);
 
   const [fetching, setFetching] = useState(false);
@@ -339,6 +338,34 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
       }
     });
   }, [modalButtonId, setNotesModalData]);
+
+  /**
+   * Takes the specified course and displays a modal to edit course enrollment
+   */
+  const openEnrollmentModal = useCallback(
+    (course: CourseInstanceResponseDTO, term: TERM) => {
+      setEnrollmentModalData({
+        course,
+        visible: true,
+        term: term.toUpperCase() as TERM,
+      });
+      setModalButtonId(`${course.id}-${term.toLowerCase()}-edit-enrollment-button`);
+    },
+    [setEnrollmentModalData, setModalButtonId]
+  );
+
+  /**
+   * Handles closing the enrollment modal and setting the focus back to the button
+   * that opened the modal.
+  */
+  const closeEnrollmentModal = useCallback(() => {
+    setEnrollmentModalData({ visible: false });
+    setTimeout(() => {
+      if (modalButtonId && modalButtonId in refTable.current) {
+        refTable.current[modalButtonId].focus();
+      }
+    });
+  }, [modalButtonId, setEnrollmentModalData]);
 
   /**
    * Handles closing the meeting modal and setting the focus back to the button
@@ -683,6 +710,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
               openInstructorModal={openInstructorModal}
               openOfferedModal={openOfferedModal}
               openNotesModal={openNotesModal}
+              openEnrollmentModal={openEnrollmentModal}
               setButtonRef={setButtonRef}
               isAdmin={isAdmin}
             />
@@ -793,12 +821,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
           term: enrollmentModalData.term,
           calendarYear: selectedAcademicYear.toString(),
         }}
-        onClose={() => {
-          setEnrollmentModalData((state) => ({
-            ...state,
-            visible: false,
-          }));
-        }}
+        onClose={closeEnrollmentModal}
       />
     </div>
   );
