@@ -22,12 +22,18 @@ import { AuthModule } from 'server/auth/auth.module';
 import { AUTH_MODE } from 'common/constants';
 import * as dummy from 'testData';
 import { LogService } from 'server/log/log.service';
-import { SemesterService } from '../semester.service';
+import { CourseInstance } from 'server/courseInstance/courseinstance.entity';
+import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
+import { Absence } from 'server/absence/absence.entity';
 import { TestingStrategy } from '../../../../tests/mocks/authentication/testing.strategy';
+import { SemesterService } from '../semester.service';
 
 describe('Semester Service', function () {
   let semesterService: SemesterService;
   let mockSemesterRepository: Record<string, SinonStub>;
+  let mockCourseInstanceRepository: Record<string, SinonStub>;
+  let mockNonClassEventRepository: Record<string, SinonStub>;
+  let mockAbsenceRepository: Record<string, SinonStub>;
   let mockSemesterQueryBuilder: SinonStubbedInstance<
   SelectQueryBuilder<Semester>
   >;
@@ -43,6 +49,15 @@ describe('Semester Service', function () {
       findOneOrFail: stub(),
       save: stub(),
     };
+    mockCourseInstanceRepository = {
+      find: stub(),
+    };
+    mockNonClassEventRepository = {
+      find: stub(),
+    };
+    mockAbsenceRepository = {
+      find: stub(),
+    };
     mockSemesterRepository.createQueryBuilder = stub()
       .returns(mockSemesterQueryBuilder);
     const testModule = await Test.createTestingModule({
@@ -57,6 +72,18 @@ describe('Semester Service', function () {
         {
           provide: getRepositoryToken(Semester),
           useValue: mockSemesterRepository,
+        },
+        {
+          provide: getRepositoryToken(CourseInstance),
+          useValue: mockCourseInstanceRepository,
+        },
+        {
+          provide: getRepositoryToken(NonClassEvent),
+          useValue: mockNonClassEventRepository,
+        },
+        {
+          provide: getRepositoryToken(Absence),
+          useValue: mockAbsenceRepository,
         },
         SemesterService,
         LogService,
@@ -137,10 +164,12 @@ describe('Semester Service', function () {
       const newAcademicYear = parseInt(fakeYearList.slice(-1)[0], 10) + 1;
       beforeEach(function () {
         getStub = stub(semesterService, 'getYearList').resolves(fakeYearList);
-        mockSemesterRepository.findOneOrFail.onCall(0).resolves(dummy.fall);
-        mockSemesterRepository.save.onCall(0).resolves(dummy.fall);
-        mockSemesterRepository.findOneOrFail.onCall(1).resolves(dummy.spring);
-        mockSemesterRepository.save.onCall(1).resolves(dummy.spring);
+        mockSemesterRepository.findOneOrFail.resolves(dummy.spring);
+        mockSemesterRepository.save.resolves(dummy.spring);
+        mockCourseInstanceRepository.find
+          .resolves([dummy.ac209aCourseInstance, dummy.cs50CourseInstance]);
+        mockNonClassEventRepository.find.resolves([]);
+        mockAbsenceRepository.find.resolves([]);
       });
       afterEach(function () {
         getStub.restore();
