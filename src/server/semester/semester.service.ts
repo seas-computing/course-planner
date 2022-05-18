@@ -147,6 +147,8 @@ export class SemesterService implements OnApplicationBootstrap {
             where: {
               semester: existingSpringSemester,
             },
+            relations: ['nonClassParent'],
+            loadRelationIds: true,
           });
       } catch (e) {
         if (e instanceof EntityNotFoundError) {
@@ -162,6 +164,8 @@ export class SemesterService implements OnApplicationBootstrap {
             where: {
               semester: existingSpringSemester,
             },
+            relations: ['faculty'],
+            loadRelationIds: true,
           });
       } catch (e) {
         if (e instanceof EntityNotFoundError) {
