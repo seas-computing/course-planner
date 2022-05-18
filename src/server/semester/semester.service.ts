@@ -233,7 +233,7 @@ export class SemesterService implements OnApplicationBootstrap {
         nonClassEvents: fallSemester.nonClassEvents.map(
           (event) => ({ ...event })
         ),
-        absences: fallSemester.courseInstances.map(
+        absences: fallSemester.absences.map(
           (absence) => ({ ...absence })
         ),
         academicYear: newAcademicYear.toString(),
