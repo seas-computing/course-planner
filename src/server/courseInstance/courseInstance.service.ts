@@ -12,7 +12,6 @@ import { FacultyListingView } from 'server/faculty/FacultyListingView.entity';
 import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto';
 import { ConfigService } from 'server/config/config.service';
 import { getFutureTerms } from 'common/utils/termHelperFunctions';
-import { LogService } from 'server/log/log.service';
 import { MultiYearPlanInstanceView } from './MultiYearPlanInstanceView.entity';
 import { ScheduleViewResponseDTO } from '../../common/dto/schedule/schedule.dto';
 import { ScheduleBlockView } from './ScheduleBlockView.entity';
@@ -60,9 +59,6 @@ export class CourseInstanceService {
 
   @InjectRepository(SemesterView)
   private readonly semesterRepository: Repository<SemesterView>;
-
-  @Inject(LogService)
-  private readonly logService: LogService;
 
   /**
    * Resolves a list of courses, which in turn contain sub-lists of instances

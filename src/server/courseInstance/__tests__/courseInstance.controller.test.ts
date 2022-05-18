@@ -17,9 +17,9 @@ import {
 import { BadRequestException } from '@nestjs/common';
 import { Area } from 'server/area/area.entity';
 import { SemesterView } from 'server/semester/SemesterView.entity';
-import { LogService } from 'server/log/log.service';
 import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
 import { Absence } from 'server/absence/absence.entity';
+import { LogModule } from 'server/log/log.module';
 import { CourseInstanceService } from '../courseInstance.service';
 import { CourseInstanceController } from '../courseInstance.controller';
 import { MultiYearPlanView } from '../MultiYearPlanView.entity';
@@ -53,6 +53,7 @@ describe('Course Instance Controller', function () {
       controllers: [CourseInstanceController],
       imports: [
         ConfigModule,
+        LogModule,
         AuthModule.register({
           strategies: [TestingStrategy],
           defaultStrategy: AUTH_MODE.TEST,
@@ -122,7 +123,6 @@ describe('Course Instance Controller', function () {
         ConfigService,
         CourseInstanceService,
         SemesterService,
-        LogService,
       ],
     })
       .overrideGuard(Authentication)
