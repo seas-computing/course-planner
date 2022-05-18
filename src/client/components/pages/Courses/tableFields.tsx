@@ -4,7 +4,7 @@ import React, {
   Ref,
   FunctionComponent,
 } from 'react';
-import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
+import CourseInstanceResponseDTO, { Instance } from 'common/dto/courses/CourseInstanceResponse';
 import {
   BorderlessButton,
   TableCellList,
@@ -315,7 +315,7 @@ type EnrollmentField = {
   icon: IconDefinition,
   name: string,
   count?: number,
-  key: string,
+  key: keyof Instance & ('preEnrollment' | 'studyCardEnrollment' | 'actualEnrollment'),
 };
 
 /**
@@ -344,19 +344,19 @@ export const formatEnrollment = (
   const enrollmentData: EnrollmentField[] = [
     {
       name: 'Pre-Registration',
-      key: 'pre',
+      key: 'preEnrollment',
       count: instance.preEnrollment,
       icon: faShoppingCart,
     },
     {
       name: 'Enrollment Deadline',
-      key: 'study',
+      key: 'studyCardEnrollment',
       count: instance.studyCardEnrollment,
       icon: faCalendar,
     },
     {
       name: 'Final Enrollment',
-      key: 'actual',
+      key: 'actualEnrollment',
       count: instance.actualEnrollment,
       icon: faUsers,
     },

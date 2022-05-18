@@ -20,7 +20,7 @@ export interface CourseInstanceResponseMeeting {
  * @module Server.DTOS.Courses
  */
 
-abstract class Instance {
+export abstract class Instance {
   @ApiProperty({
     type: 'string',
     example: 'ec141394-4011-485d-bba5-173b9fdef04d',
