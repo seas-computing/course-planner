@@ -311,7 +311,7 @@ export const formatMeetings = (
  * the associated icon, value and list key. This type is to enforce consistency
  * between list items
  */
-type EnrollmentField = {
+export type EnrollmentField = {
   icon: IconDefinition,
   name: string,
   count?: number,

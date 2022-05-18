@@ -1,7 +1,10 @@
 import React, {
+  ChangeEvent,
   FunctionComponent,
   ReactElement,
+  useEffect,
   useRef,
+  useState,
 } from 'react';
 import {
   Modal,
@@ -10,9 +13,12 @@ import {
   ModalBody,
   Button,
   VARIANT,
+  TextInput,
 } from 'mark-one';
-import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
+import CourseInstanceResponseDTO, { Instance } from 'common/dto/courses/CourseInstanceResponse';
 import { TERM } from 'common/constants';
+import { TermKey } from 'common/constants/term';
+import { EnrollmentField } from './tableFields';
 
 interface EnrollmentModalProps {
   /**
@@ -55,6 +61,50 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
    */
   const modalHeaderRef = useRef<HTMLHeadingElement>(null);
 
+  /**
+   * Map containing key-value pairs of various enrollment fields and their
+   * count. This is used to store the value used for field updates.
+   */
+  const [
+    enrollmentData,
+    setEnrollmentData,
+  ] = useState<Pick<Instance, 'preEnrollment'|'actualEnrollment'|'studyCardEnrollment'>>();
+
+  /**
+   * Effect hook to create state fields for each form field
+   */
+  useEffect(() => {
+    if (course && isVisible) {
+      const semKey = currentSemester.term.toLowerCase() as TermKey;
+      const {
+        [semKey]: instance,
+      } = course;
+      setEnrollmentData({
+        preEnrollment: instance.preEnrollment,
+        actualEnrollment: instance.actualEnrollment,
+        studyCardEnrollment: instance.studyCardEnrollment,
+      });
+    }
+  }, [setEnrollmentData, currentSemester.term, course, isVisible]);
+
+  const enrollmentFields: EnrollmentField[] = [
+    {
+      name: 'Pre-Registration',
+      key: 'preEnrollment',
+      icon: null,
+    },
+    {
+      name: 'Enrollment Deadline',
+      key: 'studyCardEnrollment',
+      icon: null,
+    },
+    {
+      name: 'Final Enrollment',
+      key: 'actualEnrollment',
+      icon: null,
+    },
+  ];
+
   return (
     <Modal
       ariaLabelledBy="enrollment-modal-header"
@@ -70,9 +120,25 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
         </span>
       </ModalHeader>
       <ModalBody>
-        <p>
-          Modal Content Here
-        </p>
+        {
+          enrollmentFields.map(({ key, name }) => (
+            <TextInput
+              key={key}
+              id={key}
+              name={key}
+              label={name}
+              value={enrollmentData?.[key]?.toString() || ''}
+              onChange={
+                ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
+                  setEnrollmentData((state) => ({
+                    ...state,
+                    [key]: parseInt(value, 10) ?? null,
+                  }));
+                }
+              }
+            />
+          ))
+        }
       </ModalBody>
       <ModalFooter>
         <Button
