@@ -2,7 +2,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from '@nestjs/common';
 import { Semester } from 'server/semester/semester.entity';
 import { Absence } from 'server/absence/absence.entity';
-import { LogService } from 'server/log/log.service';
 import { SemesterModule } from 'server/semester/semester.module';
 import { FacultyController } from './faculty.controller';
 import { Faculty } from './faculty.entity';
@@ -34,7 +33,6 @@ import { FacultyListingView } from './FacultyListingView.entity';
     FacultyListingView,
     FacultyService,
     FacultyScheduleService,
-    LogService,
   ],
 })
 export class FacultyModule { }
