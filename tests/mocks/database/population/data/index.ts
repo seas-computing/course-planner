@@ -4,8 +4,10 @@ import {
   FACULTY_TYPE,
   TERM,
   IS_SEAS,
+  ABSENCE_TYPE,
 } from 'common/constants';
 
+export * from './absences';
 export * from './areas';
 export * from './buildings';
 export * from './campuses';
@@ -14,6 +16,11 @@ export * from './faculty';
 export * from './rooms';
 export * from './semesters';
 export * from './nonClassMeetings';
+
+export interface AbsenceData {
+  type: ABSENCE_TYPE;
+  faculty: string;
+}
 
 export interface AreaData {
   name: string;
@@ -84,7 +91,8 @@ export interface NonClassMeetingData {
 }
 
 export type TestData = (
-  AreaData
+  AbsenceData
+  | AreaData
   | BuildingData
   | CampusData
   | CourseData

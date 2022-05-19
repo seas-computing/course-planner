@@ -12,6 +12,7 @@ import { Meeting } from 'server/meeting/meeting.entity';
 import { FacultyCourseInstance } from 'server/courseInstance/facultycourseinstance.entity';
 import { NonClassParent } from 'server/nonClassEvent/nonclassparent.entity';
 import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
+import { Absence } from 'server/absence/absence.entity';
 import { PopulationService } from './population.service';
 import { SemesterPopulationService } from './semester.population';
 import { AreaPopulationService } from './area.population';
@@ -19,6 +20,7 @@ import { CoursePopulationService } from './course.population';
 import { FacultyPopulationService } from './faculty.population';
 import { RoomPopulationService } from './room.population';
 import { NonClassEventPopulationService } from './nonclassevents.population';
+import { AbsencePopulationService } from './absence.population';
 
 /**
  * Injects the repositories and services necessary for populating the database
@@ -26,6 +28,7 @@ import { NonClassEventPopulationService } from './nonclassevents.population';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
+      Absence,
       Area,
       Building,
       Campus,
@@ -41,6 +44,7 @@ import { NonClassEventPopulationService } from './nonclassevents.population';
     ]),
   ],
   providers: [
+    AbsencePopulationService,
     AreaPopulationService,
     CoursePopulationService,
     FacultyPopulationService,

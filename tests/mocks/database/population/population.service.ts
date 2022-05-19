@@ -16,8 +16,10 @@ import {
   faculty,
   courses,
   nonClassMeetings,
+  absences,
 } from './data';
 import { NonClassEventPopulationService } from './nonclassevents.population';
+import { AbsencePopulationService } from './absence.population';
 
 /**
  * Imlements the nestjs lifecycle hooks to automatically populate and
@@ -49,6 +51,9 @@ export class PopulationService implements
   @Inject(NonClassEventPopulationService)
   protected nonClassEventPopulationService: NonClassEventPopulationService;
 
+  @Inject(AbsencePopulationService)
+  protected absenceService: AbsencePopulationService;
+
   /**
    * Calls the necessary populate functions to fill the table with data,
    * resolving when all have finished.
@@ -60,6 +65,7 @@ export class PopulationService implements
     await this.facultyService.populate({ faculty });
     await this.courseService.populate({ courses });
     await this.nonClassEventPopulationService.populate({ nonClassMeetings });
+    await this.absenceService.populate({ absences });
   }
 
   /**

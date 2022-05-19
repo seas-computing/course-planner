@@ -92,7 +92,6 @@ export class CoursePopulationService
             || (sem.term === TERM.FALL
               && courseData.termPattern === TERM_PATTERN.FALL)
           ) {
-            instance.offered = OFFERED.Y;
             instance.facultyCourseInstances = courseData
               .instances
               .facultyHUIDs
@@ -119,6 +118,8 @@ export class CoursePopulationService
                 );
                 return meeting;
               });
+            instance.offered = instance.meetings.length > 0
+              ? OFFERED.Y : OFFERED.RETIRED;
           }
           return instance;
         });
