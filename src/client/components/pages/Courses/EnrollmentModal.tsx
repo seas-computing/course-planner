@@ -18,6 +18,7 @@ import {
 import CourseInstanceResponseDTO, { Instance } from 'common/dto/courses/CourseInstanceResponse';
 import { TERM } from 'common/constants';
 import { TermKey } from 'common/constants/term';
+import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto';
 import { EnrollmentField } from './tableFields';
 
 interface EnrollmentModalProps {
@@ -30,6 +31,11 @@ interface EnrollmentModalProps {
    * Handler to be invoked when the modal closes
    */
   onClose: () => void;
+
+  /**
+   * Handler used to recieve the updated data from the modal
+   */
+  onSave: (course: CourseInstanceUpdateDTO) => void;
 
   /**
    * The course instance for a given semester enrollment data is being udpated
@@ -53,6 +59,7 @@ interface EnrollmentModalProps {
 const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
   isVisible,
   onClose,
+  onSave,
   course,
   currentSemester,
 }): ReactElement => {
@@ -70,22 +77,32 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
     setEnrollmentData,
   ] = useState<Pick<Instance, 'preEnrollment'|'actualEnrollment'|'studyCardEnrollment'>>();
 
+  const [
+    instance,
+    setInstance,
+  ] = useState<Instance>(null);
+
   /**
    * Effect hook to create state fields for each form field
    */
   useEffect(() => {
     if (course && isVisible) {
       const semKey = currentSemester.term.toLowerCase() as TermKey;
-      const {
-        [semKey]: instance,
-      } = course;
+      setInstance(course[semKey]);
       setEnrollmentData({
-        preEnrollment: instance.preEnrollment,
-        actualEnrollment: instance.actualEnrollment,
-        studyCardEnrollment: instance.studyCardEnrollment,
+        preEnrollment: instance?.preEnrollment,
+        actualEnrollment: instance?.actualEnrollment,
+        studyCardEnrollment: instance?.studyCardEnrollment,
       });
     }
-  }, [setEnrollmentData, currentSemester.term, course, isVisible]);
+  }, [
+    setEnrollmentData,
+    setInstance,
+    currentSemester.term,
+    course,
+    isVisible,
+    instance,
+  ]);
 
   const enrollmentFields: EnrollmentField[] = [
     {
@@ -143,7 +160,10 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
       <ModalFooter>
         <Button
           onClick={() => {
-            console.log('You clicked me!');
+            onSave({
+              offered: instance.offered,
+              ...enrollmentData,
+            });
           }}
           variant={VARIANT.PRIMARY}
         >

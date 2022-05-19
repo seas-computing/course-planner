@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import {
   stub, SinonStub,
 } from 'sinon';
@@ -1839,9 +1839,23 @@ describe('End-to-end Course Instance updating', function () {
         fireEvent.click(editFallEnrollmentButton);
         (modal = await renderResult.findByRole('dialog') as HTMLDivElement);
       });
-      it('allows enrollment data to be updated', function () {
-        // Enter stuff in the text boxes
-        // Click the save button
+      describe('input fields', function () {
+        it('can be numeric', async function () {
+          const textBoxes = await within(modal).findAllByRole('textbox');
+          textBoxes.forEach((textbox, index) => {
+            // An arbitary "numerical"(as a string) value to fill in - the
+            // actual value isn't terribly important for this test
+            fireEvent.change(textbox, {
+              target: {
+                value: ((index + 1) * 10).toString(),
+              },
+            } as Partial<ChangeEvent<HTMLInputElement>>);
+          });
+          const saveButton = await within(modal).findByText('Save');
+          fireEvent.click(saveButton);
+
+          return renderResult.findByText(/Course updated/);
+        });
       });
     });
   });

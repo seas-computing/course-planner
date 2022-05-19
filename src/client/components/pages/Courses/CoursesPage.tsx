@@ -821,6 +821,13 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
           term: enrollmentModalData.term,
           calendarYear: selectedAcademicYear.toString(),
         }}
+        onSave={(instance) => {
+          updateLocalCourse({
+            ...enrollmentModalData.course,
+            [enrollmentModalData.term.toLowerCase() as TermKey]: instance,
+          }, 'Enrollment data saved.');
+          closeEnrollmentModal();
+        }}
         onClose={closeEnrollmentModal}
       />
     </div>
