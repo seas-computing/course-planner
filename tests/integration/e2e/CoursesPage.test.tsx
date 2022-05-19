@@ -61,6 +61,7 @@ describe('End-to-end Course Instance updating', function () {
   let testModule: TestingModule;
   let authStub: SinonStub;
   let courseRepository: Repository<Course>;
+  let courseInstanceRepository: Repository<CourseInstance>;
   let meetingRepository: Repository<Meeting>;
   let facultyRepository: Repository<Faculty>;
   let fciRepository: Repository<FacultyCourseInstance>;
@@ -131,6 +132,9 @@ describe('End-to-end Course Instance updating', function () {
     );
     meetingRepository = testModule.get(
       getRepositoryToken(Meeting)
+    );
+    courseInstanceRepository = testModule.get(
+      getRepositoryToken(CourseInstance)
     );
     const nestApp = await testModule
       .createNestApplication()
@@ -1796,9 +1800,10 @@ describe('End-to-end Course Instance updating', function () {
     describe('Updating Enrollment Values', function () {
       let editFallEnrollmentButton: HTMLElement;
       let modal: HTMLDivElement;
+      let instanceToUpdate: CourseInstance;
       beforeEach(async function () {
         const [prefix, number] = courseNumber.split(' ');
-        await courseRepository.findOneOrFail(
+        const course = await courseRepository.findOneOrFail(
           {
             prefix,
             number,
@@ -1837,23 +1842,42 @@ describe('End-to-end Course Instance updating', function () {
             { exact: false }
           ));
         fireEvent.click(editFallEnrollmentButton);
+        instanceToUpdate = course.instances.find(({ semester }) => (
+          semester.term === currentTerm
+        && semester.academicYear === (currentAcademicYear - 1).toString()
+        ));
         (modal = await renderResult.findByRole('dialog') as HTMLDivElement);
       });
       describe('input fields', function () {
         it('can be numeric', async function () {
           const textBoxes = await within(modal).findAllByRole('textbox');
+          const enrollmentValues = [];
           textBoxes.forEach((textbox, index) => {
             // An arbitary "numerical"(as a string) value to fill in - the
             // actual value isn't terribly important for this test
+            const value = ((index + 1) * 10).toString();
+            enrollmentValues.push(value);
             fireEvent.change(textbox, {
               target: {
-                value: ((index + 1) * 10).toString(),
+                value,
               },
             } as Partial<ChangeEvent<HTMLInputElement>>);
           });
           const saveButton = await within(modal).findByText('Save');
           fireEvent.click(saveButton);
-
+          const {
+            preEnrollment,
+            studyCardEnrollment,
+            actualEnrollment,
+          } = await courseInstanceRepository.findOne(instanceToUpdate.id);
+          deepStrictEqual(
+            [
+              preEnrollment?.toString() || null,
+              studyCardEnrollment?.toString() || null,
+              actualEnrollment?.toString() || null,
+            ],
+            enrollmentValues
+          );
           return renderResult.findByText(/Course updated/);
         });
       });

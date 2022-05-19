@@ -18,6 +18,7 @@ import {
 import CourseInstanceResponseDTO, { Instance } from 'common/dto/courses/CourseInstanceResponse';
 import { TERM } from 'common/constants';
 import { TermKey } from 'common/constants/term';
+import { updateCourseInstance } from 'client/api';
 import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto';
 import { EnrollmentField } from './tableFields';
 
@@ -122,6 +123,21 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
     },
   ];
 
+  /**
+   * Submits the updated enrollment data to the server and passes the response
+   * through to the update handler
+   */
+  const saveEnrollmentData = async () => {
+    const results = await updateCourseInstance(
+      instance.id,
+      {
+        offered: instance.offered,
+        ...enrollmentData,
+      }
+    );
+    onSave(results);
+  };
+
   return (
     <Modal
       ariaLabelledBy="enrollment-modal-header"
@@ -159,12 +175,7 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
       </ModalBody>
       <ModalFooter>
         <Button
-          onClick={() => {
-            onSave({
-              offered: instance.offered,
-              ...enrollmentData,
-            });
-          }}
+          onClick={saveEnrollmentData}
           variant={VARIANT.PRIMARY}
         >
           Save
