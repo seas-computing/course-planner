@@ -14,6 +14,7 @@ import {
   Button,
   VARIANT,
   TextInput,
+  ModalMessage,
   LoadSpinner,
 } from 'mark-one';
 import CourseInstanceResponseDTO, { Instance } from 'common/dto/courses/CourseInstanceResponse';
@@ -88,6 +89,11 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
   ] = useState(false);
 
   const [
+    validationErrors,
+    setValidationErrors,
+  ] = useState<string[]>([]);
+
+  const [
     instance,
     setInstance,
   ] = useState<Instance>(null);
@@ -132,21 +138,39 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
     },
   ];
 
+  const getDisplayName = (fieldName: string) => enrollmentFields
+    .find(({ key }) => key.toString() === fieldName).name;
+
   /**
    * Submits the updated enrollment data to the server and passes the response
    * through to the update handler
    */
   const saveEnrollmentData = async () => {
-    setSaving(true);
-    const results = await updateCourseInstance(
-      instance.id,
-      {
-        offered: instance.offered,
-        ...enrollmentData,
-      }
-    );
-    onSave(results);
-    setSaving(false);
+    const errorMessages = Object.entries(enrollmentData)
+      .map(([fieldName, fieldValue]) => {
+        const errors: string[] = [];
+        const displayName = getDisplayName(fieldName);
+        if (fieldValue < 0) {
+          errors.push(`${displayName} cannot be negative`);
+        }
+        return errors;
+      })
+      .reduce((acc, val) => acc.concat(val), []);
+    if (errorMessages.length > 0) {
+      setSaving(false);
+      setValidationErrors(errorMessages);
+    } else {
+      setSaving(true);
+      const results = await updateCourseInstance(
+        instance.id,
+        {
+          offered: instance.offered,
+          ...enrollmentData,
+        }
+      );
+      onSave(results);
+      setSaving(false);
+    }
   };
 
   return (
@@ -184,6 +208,14 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
               />
             ))
           )
+        }
+        {
+          validationErrors.length > 0
+            ? (
+              <ModalMessage variant={VARIANT.NEGATIVE}>
+                {validationErrors.join(', ')}
+              </ModalMessage>
+            ) : null
         }
       </ModalBody>
       <ModalFooter>

@@ -1905,6 +1905,24 @@ describe('End-to-end Course Instance updating', function () {
           );
           return renderResult.findByText(/Course updated/);
         });
+        it('must not contain negative values', async function () {
+          const enrollmentValues = [];
+          textBoxes.forEach((textbox, index) => {
+            const value = (-(index + 1) * 10).toString();
+            enrollmentValues.push(value);
+            fireEvent.change(textbox, {
+              target: {
+                value,
+              },
+            } as Partial<ChangeEvent<HTMLInputElement>>);
+          });
+          const saveButton = await within(modal).findByText('Save');
+          fireEvent.click(saveButton);
+          strictEqual(
+            within(modal).queryByText('saving', { exact: false }),
+            null
+          );
+        });
       });
     });
   });
