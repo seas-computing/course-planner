@@ -1865,6 +1865,9 @@ describe('End-to-end Course Instance updating', function () {
           });
           const saveButton = await within(modal).findByText('Save');
           fireEvent.click(saveButton);
+          await waitForElementToBeRemoved(
+            () => renderResult.getByText('Enrollment for', { exact: false })
+          );
           const {
             preEnrollment,
             studyCardEnrollment,
