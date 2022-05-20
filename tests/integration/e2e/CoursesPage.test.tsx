@@ -1800,6 +1800,7 @@ describe('End-to-end Course Instance updating', function () {
     describe('Updating Enrollment Values', function () {
       let editFallEnrollmentButton: HTMLElement;
       let modal: HTMLDivElement;
+      let textBoxes: HTMLInputElement[];
       let instanceToUpdate: CourseInstance;
       beforeEach(async function () {
         const [prefix, number] = courseNumber.split(' ');
@@ -1847,10 +1848,13 @@ describe('End-to-end Course Instance updating', function () {
         && semester.academicYear === (currentAcademicYear - 1).toString()
         ));
         (modal = await renderResult.findByRole('dialog') as HTMLDivElement);
+        (
+          textBoxes = await within(modal)
+            .findAllByRole('textbox') as HTMLInputElement[]
+        );
       });
       describe('input fields', function () {
         it('can be numeric', async function () {
-          const textBoxes = await within(modal).findAllByRole('textbox');
           const enrollmentValues = [];
           textBoxes.forEach((textbox, index) => {
             // An arbitary "numerical"(as a string) value to fill in - the
