@@ -1918,10 +1918,8 @@ describe('End-to-end Course Instance updating', function () {
           });
           const saveButton = await within(modal).findByText('Save');
           fireEvent.click(saveButton);
-          strictEqual(
-            within(modal).queryByText('saving', { exact: false }),
-            null
-          );
+          return within(modal)
+            .findByText('cannot be negative', { exact: false });
         });
       });
     });
