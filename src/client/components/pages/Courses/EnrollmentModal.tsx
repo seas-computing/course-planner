@@ -14,6 +14,7 @@ import {
   Button,
   VARIANT,
   TextInput,
+  LoadSpinner,
 } from 'mark-one';
 import CourseInstanceResponseDTO, { Instance } from 'common/dto/courses/CourseInstanceResponse';
 import { TERM } from 'common/constants';
@@ -78,6 +79,14 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
     setEnrollmentData,
   ] = useState<Pick<Instance, 'preEnrollment'|'actualEnrollment'|'studyCardEnrollment'>>();
 
+  /**
+   * Shows and hides the loading spinner while saving enrollment data
+   */
+  const [
+    saving,
+    setSaving,
+  ] = useState(false);
+
   const [
     instance,
     setInstance,
@@ -128,6 +137,7 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
    * through to the update handler
    */
   const saveEnrollmentData = async () => {
+    setSaving(true);
     const results = await updateCourseInstance(
       instance.id,
       {
@@ -136,6 +146,7 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
       }
     );
     onSave(results);
+    setSaving(false);
   };
 
   return (
@@ -154,23 +165,25 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
       </ModalHeader>
       <ModalBody>
         {
-          enrollmentFields.map(({ key, name }) => (
-            <TextInput
-              key={key}
-              id={key}
-              name={key}
-              label={name}
-              value={enrollmentData?.[key]?.toString() || ''}
-              onChange={
-                ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
-                  setEnrollmentData((state) => ({
-                    ...state,
-                    [key]: parseInt(value, 10) ?? null,
-                  }));
+          saving ? (<LoadSpinner>Saving Enrollment Data</LoadSpinner>) : (
+            enrollmentFields.map(({ key, name }) => (
+              <TextInput
+                key={key}
+                id={key}
+                name={key}
+                label={name}
+                value={enrollmentData?.[key]?.toString() || ''}
+                onChange={
+                  ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
+                    setEnrollmentData((state) => ({
+                      ...state,
+                      [key]: parseInt(value, 10) ?? null,
+                    }));
+                  }
                 }
-              }
-            />
-          ))
+              />
+            ))
+          )
         }
       </ModalBody>
       <ModalFooter>
