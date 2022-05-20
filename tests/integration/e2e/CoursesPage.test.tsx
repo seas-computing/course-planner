@@ -1885,6 +1885,14 @@ describe('End-to-end Course Instance updating', function () {
             ],
             enrollmentValues
           );
+          deepStrictEqual(
+            [
+              renderResult.queryByLabelText('Pre-Registration'),
+              renderResult.queryByLabelText('Enrollment Deadline'),
+              renderResult.queryByLabelText('Final Enrollment'),
+            ].map((element) => element?.textContent.trim() ?? null),
+            enrollmentValues
+          );
           return renderResult.findByText(/Course updated/);
         });
       });
