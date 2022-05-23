@@ -101,11 +101,18 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
     setSaving,
   ] = useState(false);
 
+  /**
+   * Array of validation errors to be shown to the user at the bottom of the
+   * modal
+   */
   const [
     validationErrors,
     setValidationErrors,
   ] = useState<string[]>([]);
 
+  /**
+   * The current course instance that enrollment data is being edited for
+   */
   const [
     instance,
     setInstance,
