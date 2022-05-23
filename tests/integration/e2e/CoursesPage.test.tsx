@@ -28,6 +28,7 @@ import { offeredEnumToString } from 'common/constants/offered';
 import { SemesterModule } from 'server/semester/semester.module';
 import { COURSE_TABLE_COLUMN, MANDATORY_COLUMNS } from 'common/constants';
 import { tableFields } from 'client/components/pages/Courses/tableFields';
+import { string } from 'testData';
 import mockAdapter from '../../mocks/api/adapter';
 import { ConfigModule } from '../../../src/server/config/config.module';
 import { ConfigService } from '../../../src/server/config/config.service';
@@ -56,7 +57,6 @@ import { CourseInstance } from '../../../src/server/courseInstance/courseinstanc
 import { Faculty } from '../../../src/server/faculty/faculty.entity';
 import { FacultyCourseInstance } from '../../../src/server/courseInstance/facultycourseinstance.entity';
 import { LogModule } from '../../../src/server/log/log.module';
-import { string } from 'testData';
 
 describe('End-to-end Course Instance updating', function () {
   let testModule: TestingModule;
