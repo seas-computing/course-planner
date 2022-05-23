@@ -1869,13 +1869,11 @@ describe('End-to-end Course Instance updating', function () {
           textBoxes.forEach((textbox, index) => {
             // An arbitary "numerical"(as a string) value to fill in - the
             // actual value isn't terribly important for this test
-            const value = ((index + 1) * 10).toString();
-            enrollmentValues.push(value);
+            const value = ((index + 1) * 10);
+            enrollmentValues.push(value.toString());
             fireEvent.change(textbox, {
-              target: {
-                value,
-              },
-            } as Partial<ChangeEvent<HTMLInputElement>>);
+              target: { value },
+            });
           });
           const saveButton = await within(modal).findByText('Save');
           fireEvent.click(saveButton);
@@ -1893,7 +1891,7 @@ describe('End-to-end Course Instance updating', function () {
               studyCardEnrollment,
               actualEnrollment,
             ],
-            enrollmentValues
+            enrollmentValues.map((number) => parseInt(number, 10) ?? null)
           );
           deepStrictEqual(
             [
