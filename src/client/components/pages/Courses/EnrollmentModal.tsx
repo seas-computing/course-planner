@@ -151,6 +151,12 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
     },
   ];
 
+  /**
+   * Look up a given field name in [[enrollmentFields]] and retrieve the
+   * humnan friendly name for display in an error message. This enables a more
+   * friendly message like "Final Enrollment may not contain alphabetical characters"
+   * instead of "actualEnrollment may not contain alphabetical characters"
+   */
   const getDisplayName = (fieldName: string) => enrollmentFields
     .find(({ key }) => key.toString() === fieldName).name;
 
