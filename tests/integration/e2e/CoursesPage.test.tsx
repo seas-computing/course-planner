@@ -1854,15 +1854,18 @@ describe('End-to-end Course Instance updating', function () {
             .findAllByRole('textbox') as HTMLInputElement[]
         );
       });
-      it('shows a spinner while saving', async function () {
-        textBoxes.forEach((textbox) => {
-          fireEvent.change(textbox, {
-            target: { value: '30' },
-          } as Partial<ChangeEvent<HTMLInputElement>>);
+      describe('saving', function () {
+        it('shows a spinner', async function () {
+          textBoxes.forEach((textbox) => {
+            fireEvent.change(textbox, {
+              target: { value: '30' },
+            } as Partial<ChangeEvent<HTMLInputElement>>);
+          });
+          const saveButton = await within(modal).findByText('Save');
+          fireEvent.click(saveButton);
+          return within(modal).findByText('saving', { exact: false });
         });
-        const saveButton = await within(modal).findByText('Save');
-        fireEvent.click(saveButton);
-        return within(modal).findByText('saving', { exact: false });
+        });
       });
       describe('input fields', function () {
         it('can be numeric', async function () {
