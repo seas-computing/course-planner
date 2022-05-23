@@ -208,6 +208,7 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
       setSaving(false);
       setValidationErrors(errorMessages);
     } else {
+      setValidationErrors([]);
       setSaving(true);
       const results = await updateCourseInstance(
         instance.id,

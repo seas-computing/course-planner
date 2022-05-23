@@ -6,6 +6,7 @@ import {
 import {
   render,
   RenderResult,
+  waitForElement,
   waitForElementToBeRemoved,
   fireEvent,
   within,
@@ -1905,6 +1906,40 @@ describe('End-to-end Course Instance updating', function () {
           const saveButton = await within(modal).findByText('Save');
           fireEvent.click(saveButton);
           strictEqual(within(modal).queryByText('Save'), null);
+        });
+        it('clears any validation errors', async function () {
+          const saveButton = within(modal).getByText('Save');
+
+          // Generate some errors for the validation to yell about
+          textBoxes.forEach((textbox) => {
+            fireEvent.change(textbox, {
+              target: { value: string },
+            } as Partial<ChangeEvent<HTMLInputElement>>);
+          });
+
+          // Fire the save button so that the validation yells
+          fireEvent.click(saveButton);
+
+          // Fix the validation errors by supplying valid data
+          textBoxes.forEach((textbox) => {
+            fireEvent.change(textbox, {
+              target: { value: '10' },
+            } as Partial<ChangeEvent<HTMLInputElement>>);
+          });
+
+          // Fire the save button again to retry saving
+          fireEvent.click(saveButton);
+
+          await waitForElement(
+            () => within(modal).findByText('saving', { exact: false })
+          );
+          strictEqual(
+            within(modal)
+              .queryByText('cannot contain alphabetical characters', {
+                exact: false,
+              }),
+            null
+          );
         });
       });
       describe('input fields', function () {
