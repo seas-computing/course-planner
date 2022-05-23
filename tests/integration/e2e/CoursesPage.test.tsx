@@ -1906,6 +1906,43 @@ describe('End-to-end Course Instance updating', function () {
           );
           return renderResult.findByText(/Course updated/);
         });
+        it('can be null', async function () {
+          textBoxes.forEach((textbox) => {
+            fireEvent.change(textbox, {
+              target: { value: '' },
+            });
+          });
+          const saveButton = await within(modal).findByText('Save');
+          fireEvent.click(saveButton);
+          await waitForElementToBeRemoved(
+            () => renderResult.getByText('Enrollment for', { exact: false })
+          );
+
+          const {
+            preEnrollment,
+            studyCardEnrollment,
+            actualEnrollment,
+          } = await courseInstanceRepository.findOne(instanceToUpdate.id);
+          deepStrictEqual(
+            [
+              preEnrollment,
+              studyCardEnrollment,
+              actualEnrollment,
+            ],
+            new Array(textBoxes.length).fill(null),
+            'Database was not updated'
+          );
+          deepStrictEqual(
+            [
+              renderResult.queryByLabelText('Pre-Registration'),
+              renderResult.queryByLabelText('Enrollment Deadline'),
+              renderResult.queryByLabelText('Final Enrollment'),
+            ],
+            new Array(textBoxes.length).fill(null),
+            'Local state was not updated'
+          );
+          return renderResult.findByText(/Course updated/);
+        });
         it('must not contain negative values', async function () {
           const enrollmentValues = [];
           textBoxes.forEach((textbox, index) => {

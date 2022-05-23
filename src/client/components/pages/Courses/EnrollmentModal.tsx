@@ -181,6 +181,9 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
    */
   const saveEnrollmentData = async () => {
     const errorMessages = Object.entries(enrollmentData)
+      // Don't try to validate empty fields
+      .filter(([, value]) => (value || null) !== null)
+      // Run validation for everything that's not equal to empty string
       .map(([fieldName, fieldValue]) => {
         const errors: string[] = [];
         const displayName = getDisplayName(fieldName);
