@@ -1891,7 +1891,8 @@ describe('End-to-end Course Instance updating', function () {
               studyCardEnrollment,
               actualEnrollment,
             ],
-            enrollmentValues.map((number) => parseInt(number, 10) ?? null)
+            enrollmentValues.map((number) => parseInt(number, 10) ?? null),
+            'Database was not updated'
           );
           deepStrictEqual(
             [
@@ -1899,7 +1900,8 @@ describe('End-to-end Course Instance updating', function () {
               renderResult.queryByLabelText('Enrollment Deadline'),
               renderResult.queryByLabelText('Final Enrollment'),
             ].map((element) => element?.textContent.trim() ?? null),
-            enrollmentValues
+            enrollmentValues,
+            'Local state was not updated'
           );
           return renderResult.findByText(/Course updated/);
         });
