@@ -72,13 +72,26 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
   const modalHeaderRef = useRef<HTMLHeadingElement>(null);
 
   /**
+   * Represents enrollment data in local component state prior to being
+   * sent back to the server for persistence (and updating local application
+   * state).
+   * String values are used since this is the type of data returned by a
+   * [[TextInput]] and also because the data should be allowed to be entered,
+   * but then validated (and finally sanitized) before being saved
+   * @example ```
+   * { studyCardEnrollment: "12" preEnrollment: null, actualEnrollment: null }
+   * ```
+   */
+  type EnrollmentData = Partial<Record<keyof Instance & ('preEnrollment'|'actualEnrollment'|'studyCardEnrollment'), string>>;
+
+  /**
    * Map containing key-value pairs of various enrollment fields and their
    * count. This is used to store the value used for field updates.
    */
   const [
     enrollmentData,
     setEnrollmentData,
-  ] = useState<Pick<Instance, 'preEnrollment'|'actualEnrollment'|'studyCardEnrollment'>>();
+  ] = useState<EnrollmentData>();
 
   /**
    * Shows and hides the loading spinner while saving enrollment data
