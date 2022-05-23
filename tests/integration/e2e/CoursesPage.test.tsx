@@ -56,6 +56,7 @@ import { CourseInstance } from '../../../src/server/courseInstance/courseinstanc
 import { Faculty } from '../../../src/server/faculty/faculty.entity';
 import { FacultyCourseInstance } from '../../../src/server/courseInstance/facultycourseinstance.entity';
 import { LogModule } from '../../../src/server/log/log.module';
+import { string } from 'testData';
 
 describe('End-to-end Course Instance updating', function () {
   let testModule: TestingModule;
@@ -1920,6 +1921,17 @@ describe('End-to-end Course Instance updating', function () {
           fireEvent.click(saveButton);
           return within(modal)
             .findByText('cannot be negative', { exact: false });
+        });
+        it('must not contain alphabetical characters', async function () {
+          textBoxes.forEach((textbox) => {
+            fireEvent.change(textbox, {
+              target: { value: string },
+            } as Partial<ChangeEvent<HTMLInputElement>>);
+          });
+          const saveButton = await within(modal).findByText('Save');
+          fireEvent.click(saveButton);
+          return within(modal)
+            .findByText('cannot contain alphabetical', { exact: false });
         });
       });
     });
