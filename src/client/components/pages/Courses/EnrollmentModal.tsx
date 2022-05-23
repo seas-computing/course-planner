@@ -119,9 +119,9 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
       const semKey = currentSemester.term.toLowerCase() as TermKey;
       setInstance(course[semKey]);
       setEnrollmentData({
-        preEnrollment: instance?.preEnrollment,
-        actualEnrollment: instance?.actualEnrollment,
-        studyCardEnrollment: instance?.studyCardEnrollment,
+        preEnrollment: instance?.preEnrollment?.toString() ?? null,
+        actualEnrollment: instance?.actualEnrollment?.toString() ?? null,
+        studyCardEnrollment: instance?.studyCardEnrollment?.toString() ?? null,
       });
     }
   }, [
