@@ -259,12 +259,17 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
         }
       </ModalBody>
       <ModalFooter>
-        <Button
-          onClick={saveEnrollmentData}
-          variant={VARIANT.PRIMARY}
-        >
-          Save
-        </Button>
+        {
+          saving ? null
+            : (
+              <Button
+                onClick={saveEnrollmentData}
+                variant={VARIANT.PRIMARY}
+              >
+                Save
+              </Button>
+            )
+        }
       </ModalFooter>
     </Modal>
   );

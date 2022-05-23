@@ -1865,6 +1865,15 @@ describe('End-to-end Course Instance updating', function () {
           fireEvent.click(saveButton);
           return within(modal).findByText('saving', { exact: false });
         });
+        it('hides the save button', async function () {
+          textBoxes.forEach((textbox) => {
+            fireEvent.change(textbox, {
+              target: { value: '30' },
+            } as Partial<ChangeEvent<HTMLInputElement>>);
+          });
+          const saveButton = await within(modal).findByText('Save');
+          fireEvent.click(saveButton);
+          strictEqual(within(modal).queryByText('Save'), null);
         });
       });
       describe('input fields', function () {
