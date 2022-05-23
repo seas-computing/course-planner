@@ -1889,9 +1889,9 @@ describe('End-to-end Course Instance updating', function () {
           } = await courseInstanceRepository.findOne(instanceToUpdate.id);
           deepStrictEqual(
             [
-              preEnrollment?.toString() || null,
-              studyCardEnrollment?.toString() || null,
-              actualEnrollment?.toString() || null,
+              preEnrollment,
+              studyCardEnrollment,
+              actualEnrollment,
             ],
             enrollmentValues
           );
