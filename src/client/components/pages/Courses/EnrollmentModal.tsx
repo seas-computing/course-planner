@@ -183,12 +183,20 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
     const errorMessages = Object.entries(enrollmentData)
       // Don't try to validate empty fields
       .filter(([, value]) => (value || null) !== null)
-      // Run validation for everything that's not equal to empty string
+
+      // Run validation for all non-empty fields
       .map(([fieldName, fieldValue]) => {
         const errors: string[] = [];
         const displayName = getDisplayName(fieldName);
+        // Match any alphabetical chars
         if (new RegExp(/[A-Z]/i).test(fieldValue.toString())) {
           errors.push(`${displayName} cannot contain alphabetical characters`);
+
+        // Match any special or alphabetical chars
+        } else if (new RegExp(/[^0-9]|[A-Z]/gi).test(fieldValue.toString())) {
+          errors.push(`${displayName} cannot contain special characters`);
+
+        // Check that the number > 0
         } else if (parseInt(fieldValue, 10) < 0) {
           errors.push(`${displayName} cannot be negative`);
         }

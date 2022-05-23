@@ -2013,6 +2013,17 @@ describe('End-to-end Course Instance updating', function () {
           return within(modal)
             .findByText('cannot contain alphabetical', { exact: false });
         });
+        it('must not contain special characters', async function () {
+          textBoxes.forEach((textbox) => {
+            fireEvent.change(textbox, {
+              target: { value: '%!@#$' },
+            } as Partial<ChangeEvent<HTMLInputElement>>);
+          });
+          const saveButton = await within(modal).findByText('Save');
+          fireEvent.click(saveButton);
+          return within(modal)
+            .findByText('cannot contain special', { exact: false });
+        });
       });
     });
   });
