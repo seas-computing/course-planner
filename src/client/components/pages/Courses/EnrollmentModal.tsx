@@ -184,12 +184,15 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
       .map(([fieldName, fieldValue]) => {
         const errors: string[] = [];
         const displayName = getDisplayName(fieldName);
-        if (fieldValue < 0) {
+        if (new RegExp(/[A-Z]/i).test(fieldValue.toString())) {
+          errors.push(`${displayName} cannot contain alphabetical characters`);
+        } else if (parseInt(fieldValue, 10) < 0) {
           errors.push(`${displayName} cannot be negative`);
         }
         return errors;
       })
       .reduce((acc, val) => acc.concat(val), []);
+
     if (errorMessages.length > 0) {
       setSaving(false);
       setValidationErrors(errorMessages);
