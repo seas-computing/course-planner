@@ -161,6 +161,21 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
     .find(({ key }) => key.toString() === fieldName).name;
 
   /**
+   * Sanitizes the [[enrollmentData]] state fields ready for sending to the API.
+   * This includes removing null values, converting stringified numbers to
+   * integers (i.e: "10" becomes 10)
+   */
+  const sanitizeEnrollmentData = (
+    data: EnrollmentData
+  ) => Object.entries(data)
+    .filter(([, value]) => value !== null)
+    .map(([key, value]) => [key, parseInt(value, 10)])
+    .reduce((acc, [key, value]) => {
+      acc[key] = value;
+      return acc;
+    }, {});
+
+  /**
    * Submits the updated enrollment data to the server and passes the response
    * through to the update handler
    */
@@ -184,7 +199,7 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
         instance.id,
         {
           offered: instance.offered,
-          ...enrollmentData,
+          ...sanitizeEnrollmentData(enrollmentData),
         }
       );
       onSave(results);
@@ -220,7 +235,7 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
                   ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
                     setEnrollmentData((state) => ({
                       ...state,
-                      [key]: parseInt(value, 10) ?? null,
+                      [key]: value,
                     }));
                   }
                 }
