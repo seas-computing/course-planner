@@ -196,6 +196,37 @@ describe('End-to-end Course Instance updating', function () {
         );
       strictEqual(editSpringInstructorButton, null);
     });
+    it('Does not render enrollment edit buttons', async function () {
+      stub(global.window, 'sessionStorage').get(() => ({
+        setItem: stub(),
+        getItem: () => JSON.stringify([
+          COURSE_TABLE_COLUMN.CATALOG_NUMBER,
+          COURSE_TABLE_COLUMN.ENROLLMENT,
+        ]),
+        removeItem: stub(),
+        length: 1,
+      }));
+      renderResult = render(
+        <MemoryRouter initialEntries={['/courses']}>
+          <App />
+        </MemoryRouter>
+      );
+      await renderResult.findByText(courseNumber);
+
+      const editFallInstructorButton = renderResult
+        .queryByLabelText(
+          `Edit enrollment for ${courseNumber} in fall`,
+          { exact: false }
+        );
+      strictEqual(editFallInstructorButton, null);
+
+      const editSpringInstructorButton = renderResult
+        .queryByLabelText(
+          `Edit enrollment for ${courseNumber} in spring`,
+          { exact: false }
+        );
+      strictEqual(editSpringInstructorButton, null);
+    });
   });
   context('As an admin user', function () {
     beforeEach(function () {
