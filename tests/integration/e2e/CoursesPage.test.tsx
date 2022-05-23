@@ -1835,6 +1835,7 @@ describe('End-to-end Course Instance updating', function () {
       let modal: HTMLDivElement;
       let textBoxes: HTMLInputElement[];
       let instanceToUpdate: CourseInstance;
+      let windowConfirmStub: SinonStub;
       beforeEach(async function () {
         const [prefix, number] = courseNumber.split(' ');
         const course = await courseRepository.findOneOrFail(
@@ -1858,6 +1859,8 @@ describe('End-to-end Course Instance updating', function () {
           removeItem: stub(),
           length: 1,
         }));
+        windowConfirmStub = stub(window, 'confirm');
+        windowConfirmStub.returns(true);
         renderResult = render(
           <MemoryRouter initialEntries={['/courses']}>
             <App />
@@ -1941,6 +1944,17 @@ describe('End-to-end Course Instance updating', function () {
             null
           );
         });
+      });
+      it('shows an unsaved changes dialog if the modal is closed without saving changes made', function () {
+        // Type some text in the text boxes
+        textBoxes.forEach((textbox) => {
+          fireEvent.change(textbox, {
+            target: { value: '10' },
+          } as Partial<ChangeEvent<HTMLInputElement>>);
+        });
+        const modalBackground = renderResult.getByRole('dialog').parentElement;
+        fireEvent.click(modalBackground);
+        strictEqual(windowConfirmStub.callCount, 1);
       });
       describe('input fields', function () {
         it('can be numeric', async function () {

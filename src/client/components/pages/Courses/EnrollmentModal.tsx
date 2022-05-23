@@ -112,6 +112,14 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
   ] = useState<Instance>(null);
 
   /**
+   * Controls wehther or not the unsaved changes message should pop up on save
+   */
+  const [
+    changed,
+    setChanged,
+  ] = useState(false);
+
+  /**
    * Effect hook to create state fields for each form field
    */
   useEffect(() => {
@@ -222,11 +230,29 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
     }
   };
 
+  /**
+   * Called when the modal is closed. If there are any unsaved changes,
+   * a warning message appears, and the user must confirm discarding the unsaved
+   * changes in order to close the modal. If the user selects cancel, the user
+   * can continue making changes in the modal.
+   */
+  const onModalClose = () => {
+    if (changed) {
+      // eslint-disable-next-line no-alert
+      if (window.confirm('You have unsaved changes. Click \'OK\' to disregard changes, or \'Cancel\' to continue editing.')) {
+        setChanged(false);
+        onClose();
+      }
+    } else {
+      onClose();
+    }
+  };
+
   return (
     <Modal
       ariaLabelledBy="enrollment-modal-header"
       isVisible={isVisible}
-      closeHandler={onClose}
+      closeHandler={onModalClose}
     >
       <ModalHeader
         forwardRef={modalHeaderRef}
@@ -248,6 +274,7 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
                 value={enrollmentData?.[key]?.toString() || ''}
                 onChange={
                   ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
+                    setChanged(true);
                     setEnrollmentData((state) => ({
                       ...state,
                       [key]: value,
