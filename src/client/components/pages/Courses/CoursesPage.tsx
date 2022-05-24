@@ -347,7 +347,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
       setEnrollmentModalData({
         course,
         visible: true,
-        term: term.toUpperCase() as TERM,
+        term,
       });
       setModalButtonId(`${course.id}-${term.toLowerCase()}-edit-enrollment-button`);
     },
