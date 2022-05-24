@@ -207,8 +207,8 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
         if (new RegExp(/[A-Z]/i).test(fieldValue.toString())) {
           errors.push(`${displayName} cannot contain alphabetical characters`);
 
-        // Match any special or alphabetical chars
-        } else if (new RegExp(/[^0-9]|[A-Z]/gi).test(fieldValue.toString())) {
+        // Match any non-alphanumeric characters(also allowing the - character)
+        } else if (new RegExp(/[^\dA-Z-]/gi).test(fieldValue.toString())) {
           errors.push(`${displayName} cannot contain special characters`);
 
         // Check that the number > 0
