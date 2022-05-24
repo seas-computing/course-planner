@@ -71,7 +71,7 @@ interface CourseInstanceTableProps {
    */
   openEnrollmentModal: (
     course: CourseInstanceResponseDTO,
-    buttonId?: string
+    term?: TERM
   ) => void;
 
   /**
