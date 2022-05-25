@@ -2049,7 +2049,7 @@ describe('End-to-end Course Instance updating', function () {
           const saveButton = await within(modal).findByText('Save');
           fireEvent.click(saveButton);
           return within(modal)
-            .findByText('cannot be negative', { exact: false });
+            .findAllByText('cannot be negative', { exact: false });
         });
         it('must not contain alphabetical characters', async function () {
           textBoxes.forEach((textbox) => {
@@ -2060,7 +2060,7 @@ describe('End-to-end Course Instance updating', function () {
           const saveButton = await within(modal).findByText('Save');
           fireEvent.click(saveButton);
           return within(modal)
-            .findByText('cannot contain alphabetical', { exact: false });
+            .findAllByText('cannot contain alphabetical', { exact: false });
         });
         it('must not contain special characters', async function () {
           textBoxes.forEach((textbox) => {
@@ -2071,7 +2071,7 @@ describe('End-to-end Course Instance updating', function () {
           const saveButton = await within(modal).findByText('Save');
           fireEvent.click(saveButton);
           return within(modal)
-            .findByText('cannot contain special', { exact: false });
+            .findAllByText('cannot contain special', { exact: false });
         });
       });
     });

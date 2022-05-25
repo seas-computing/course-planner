@@ -22,6 +22,7 @@ import { TERM } from 'common/constants';
 import { TermKey } from 'common/constants/term';
 import { updateCourseInstance } from 'client/api';
 import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto';
+import { ValidationError } from '@nestjs/common';
 import { EnrollmentField } from './tableFields';
 
 interface EnrollmentModalProps {
@@ -85,6 +86,12 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
   type EnrollmentData = Partial<Record<keyof Instance & ('preEnrollment'|'actualEnrollment'|'studyCardEnrollment'), string>>;
 
   /**
+   * Used to represent the shape of field validation errors under the fieldname
+   * they belong to
+   */
+  type ValidationErrors = Record<keyof EnrollmentData, string[]>;
+
+  /**
    * Map containing key-value pairs of various enrollment fields and their
    * count. This is used to store the value used for field updates.
    */
@@ -108,7 +115,11 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
   const [
     validationErrors,
     setValidationErrors,
-  ] = useState<string[]>([]);
+  ] = useState<ValidationErrors>({
+    actualEnrollment: [],
+    preEnrollment: [],
+    studyCardEnrollment: [],
+  });
 
   /**
    * The current course instance that enrollment data is being edited for
@@ -201,29 +212,56 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
 
       // Run validation for all non-empty fields
       .map(([fieldName, fieldValue]) => {
-        const errors: string[] = [];
+        const errors: ValidationErrors = Object.keys(validationErrors)
+          .reduce((acc, val) => {
+            acc[val] = [];
+            return acc;
+          }, {} as ValidationErrors);
         const displayName = getDisplayName(fieldName);
-        // Match any alphabetical chars
-        if (new RegExp(/[A-Z]/i).test(fieldValue.toString())) {
-          errors.push(`${displayName} cannot contain alphabetical characters`);
-
-        // Match any non-alphanumeric characters(also allowing the - character)
-        } else if (new RegExp(/[^\dA-Z-]/gi).test(fieldValue.toString())) {
-          errors.push(`${displayName} cannot contain special characters`);
-
-        // Check that the number > 0
-        } else if (parseInt(fieldValue, 10) < 0) {
-          errors.push(`${displayName} cannot be negative`);
+        const field = fieldName as keyof ValidationErrors;
+        if (
+          // Check if numeric
+          new RegExp(/\d/gi).test(fieldValue.toString())
+          // Check that the number > 0
+          && parseInt(fieldValue, 10) < 0
+        ) {
+          errors[field].push(`${displayName} cannot be negative`);
+        } else {
+          // Match any alphabetical chars
+          if (new RegExp(/[A-Z]/i).test(fieldValue.toString())) {
+            errors[field].push(`${displayName} cannot contain alphabetical characters`);
+          }
+          // Match any non-alphanumeric characters(also allowing the - character)
+          if (new RegExp(/[^\dA-Z-]/gi).test(fieldValue.toString())) {
+            errors[field].push(`${displayName} cannot contain special characters`);
+          }
         }
         return errors;
       })
+      .reduce((acc, obj) => {
+        Object.keys(obj).forEach((key: keyof ValidationErrors) => {
+          if (!acc[key] || !Array.isArray(acc[key])) {
+            acc[key] = [];
+          }
+          acc[key] = acc[key].concat(obj[key]);
+        });
+        return acc;
+      }, {} as ValidationErrors);
+
+    const allErrors = Object.values(errorMessages)
       .reduce((acc, val) => acc.concat(val), []);
 
-    if (errorMessages.length > 0) {
+    if (allErrors.length > 0) {
       setSaving(false);
       setValidationErrors(errorMessages);
     } else {
-      setValidationErrors([]);
+      setValidationErrors(
+        Object.keys(validationErrors)
+          .reduce((acc, val) => {
+            acc[val] = [];
+            return acc;
+          }, {} as ValidationErrors)
+      );
       setSaving(true);
       const results = await updateCourseInstance(
         instance.id,
@@ -279,6 +317,11 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
                 name={key}
                 label={name}
                 value={enrollmentData?.[key]?.toString() || ''}
+                errorMessage={
+                  validationErrors[key].length > 0
+                    ? validationErrors[key].join(', ')
+                    : null
+                }
                 onChange={
                   ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
                     setChanged(true);
@@ -291,14 +334,6 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
               />
             ))
           )
-        }
-        {
-          validationErrors.length > 0
-            ? (
-              <ModalMessage variant={VARIANT.NEGATIVE}>
-                {validationErrors.join(', ')}
-              </ModalMessage>
-            ) : null
         }
       </ModalBody>
       <ModalFooter>
