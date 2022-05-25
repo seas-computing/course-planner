@@ -14,7 +14,6 @@ import {
   Button,
   VARIANT,
   TextInput,
-  ModalMessage,
   LoadSpinner,
 } from 'mark-one';
 import CourseInstanceResponseDTO, { Instance } from 'common/dto/courses/CourseInstanceResponse';
@@ -22,7 +21,6 @@ import { TERM } from 'common/constants';
 import { TermKey } from 'common/constants/term';
 import { updateCourseInstance } from 'client/api';
 import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto';
-import { ValidationError } from '@nestjs/common';
 import { EnrollmentField } from './tableFields';
 
 interface EnrollmentModalProps {
