@@ -196,30 +196,18 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
    */
   const validateData = useCallback(
     (fieldName: keyof ValidationErrors, value: string) => {
-      const errors = [];
-      // Run validation for all non-empty fields
       const displayName = getDisplayName(fieldName);
       if (
-        // Check if numeric
-        new RegExp(/\d/gi).test(value.toString())
-        // Check that the number > 0
-        && parseInt(value, 10) < 0
+        // Number must be numeric
+        new RegExp(/[^\d]/gi).test(value.toString())
+        // Number must be greater than 0
+        || parseInt(value, 10) < 0
       ) {
-        errors.push(`${displayName} cannot be negative`);
-      } else {
-        // Match any alphabetical chars
-        if (new RegExp(/[A-Z]/i).test(value)) {
-          errors.push(`${displayName} cannot contain alphabetical characters`);
-        }
-        // Match any non-alphanumeric characters(also allowing the - character)
-        if (new RegExp(/[^\dA-Z-]/gi).test(value)) {
-          errors.push(`${displayName} cannot contain special characters`);
-        }
+        setValidationErrors((state) => ({
+          ...state,
+          [fieldName]: [`${displayName} must be a positive whole number`],
+        }));
       }
-      setValidationErrors((state) => ({
-        ...state,
-        [fieldName]: errors,
-      }));
     }, [
       setValidationErrors,
       getDisplayName,

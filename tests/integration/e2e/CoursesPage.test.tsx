@@ -2034,7 +2034,7 @@ describe('End-to-end Course Instance updating', function () {
             } as Partial<ChangeEvent<HTMLInputElement>>);
           });
           return within(modal)
-            .findAllByText('cannot be negative', { exact: false });
+            .findAllByText('must be a positive whole number', { exact: false });
         });
         it('must not contain alphabetical characters', async function () {
           textBoxes.forEach((textbox) => {
@@ -2043,7 +2043,7 @@ describe('End-to-end Course Instance updating', function () {
             } as Partial<ChangeEvent<HTMLInputElement>>);
           });
           return within(modal)
-            .findAllByText('cannot contain alphabetical', { exact: false });
+            .findAllByText('must be a positive whole number', { exact: false });
         });
         it('must not contain special characters', async function () {
           textBoxes.forEach((textbox) => {
@@ -2052,7 +2052,7 @@ describe('End-to-end Course Instance updating', function () {
             } as Partial<ChangeEvent<HTMLInputElement>>);
           });
           return within(modal)
-            .findAllByText('cannot contain special', { exact: false });
+            .findAllByText('must be a positive whole number', { exact: false });
         });
       });
     });
