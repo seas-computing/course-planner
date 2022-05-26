@@ -1910,27 +1910,6 @@ describe('End-to-end Course Instance updating', function () {
           fireEvent.click(saveButton);
           strictEqual(within(modal).queryByText('Save'), null);
         });
-        it('clears any validation errors', async function () {
-          // Generate some errors for the validation to yell about
-          textBoxes.forEach((textbox) => {
-            fireEvent.change(textbox, {
-              target: { value: string },
-            } as Partial<ChangeEvent<HTMLInputElement>>);
-          });
-
-          // Fix the validation errors by supplying valid data
-          textBoxes.forEach((textbox) => {
-            fireEvent.change(textbox, {
-              target: { value: '10' },
-            } as Partial<ChangeEvent<HTMLInputElement>>);
-          });
-
-          await waitForElement(
-            () => within(modal).findByText('saving', { exact: false })
-          );
-
-          strictEqual(within(modal).queryAllByRole('alert').length, 0);
-        });
       });
       it('shows an unsaved changes dialog if the modal is closed without saving changes made', function () {
         // Type some text in the text boxes
