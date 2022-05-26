@@ -263,6 +263,11 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
     } else {
       onClose();
     }
+    setFieldState({
+      actualEnrollment: true,
+      preEnrollment: true,
+      studyCardEnrollment: true,
+    });
   };
 
   return (

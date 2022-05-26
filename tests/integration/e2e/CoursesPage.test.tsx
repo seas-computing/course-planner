@@ -1922,6 +1922,28 @@ describe('End-to-end Course Instance updating', function () {
         fireEvent.click(modalBackground);
         strictEqual(windowConfirmStub.callCount, 1);
       });
+      it('clears any validation errors on close', async function () {
+        // Generate some errors for the validation to yell about
+        textBoxes.forEach((textbox) => {
+          fireEvent.change(textbox, {
+            target: { value: string },
+          } as Partial<ChangeEvent<HTMLInputElement>>);
+        });
+
+        // Close the modal by clicking the modal background
+        fireEvent.click(modal.parentElement);
+
+        // Tell the window.confirm hook to allow the modal to close
+        windowConfirmStub.returns(true);
+
+        // Re-open the modal
+        fireEvent.click(editFallEnrollmentButton);
+
+        // Re-find the new modal
+        modal = await renderResult.findByRole('dialog') as HTMLDivElement;
+
+        strictEqual(within(modal).queryAllByRole('alert').length, 0);
+      });
       describe('input fields', function () {
         it('can be numeric', async function () {
           const enrollmentValues = [];
