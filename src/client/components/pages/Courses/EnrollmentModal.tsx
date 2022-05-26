@@ -2,6 +2,7 @@ import React, {
   ChangeEvent,
   FunctionComponent,
   ReactElement,
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -53,6 +54,27 @@ interface EnrollmentModalProps {
     calendarYear: string
   };
 }
+
+/**
+ * Array of enrollment fields used to generate the form in the modal
+ */
+const enrollmentFields: EnrollmentField[] = [
+  {
+    name: 'Pre-Registration',
+    key: 'preEnrollment',
+    icon: null,
+  },
+  {
+    name: 'Enrollment Deadline',
+    key: 'studyCardEnrollment',
+    icon: null,
+  },
+  {
+    name: 'Final Enrollment',
+    key: 'actualEnrollment',
+    icon: null,
+  },
+];
 
 /**
 * Displays 3 input fields to allow users to edit the enrollment data for a given
@@ -157,32 +179,52 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
     instance,
   ]);
 
-  const enrollmentFields: EnrollmentField[] = [
-    {
-      name: 'Pre-Registration',
-      key: 'preEnrollment',
-      icon: null,
-    },
-    {
-      name: 'Enrollment Deadline',
-      key: 'studyCardEnrollment',
-      icon: null,
-    },
-    {
-      name: 'Final Enrollment',
-      key: 'actualEnrollment',
-      icon: null,
-    },
-  ];
-
   /**
    * Look up a given field name in [[enrollmentFields]] and retrieve the
    * humnan friendly name for display in an error message. This enables a more
    * friendly message like "Final Enrollment may not contain alphabetical characters"
    * instead of "actualEnrollment may not contain alphabetical characters"
    */
-  const getDisplayName = (fieldName: string) => enrollmentFields
-    .find(({ key }) => key.toString() === fieldName).name;
+  const getDisplayName = useCallback(
+    (fieldName: string) => enrollmentFields
+      .find(({ key }) => key.toString() === fieldName).name,
+    []
+  );
+
+  /**
+   * Validates form data to check that only positive integers are being entered
+   */
+  const validateData = useCallback(
+    (fieldName: keyof ValidationErrors, value: string) => {
+      const errors = [];
+      // Run validation for all non-empty fields
+      const displayName = getDisplayName(fieldName);
+      if (
+        // Check if numeric
+        new RegExp(/\d/gi).test(value.toString())
+        // Check that the number > 0
+        && parseInt(value, 10) < 0
+      ) {
+        errors.push(`${displayName} cannot be negative`);
+      } else {
+        // Match any alphabetical chars
+        if (new RegExp(/[A-Z]/i).test(value)) {
+          errors.push(`${displayName} cannot contain alphabetical characters`);
+        }
+        // Match any non-alphanumeric characters(also allowing the - character)
+        if (new RegExp(/[^\dA-Z-]/gi).test(value)) {
+          errors.push(`${displayName} cannot contain special characters`);
+        }
+      }
+      setValidationErrors((state) => ({
+        ...state,
+        [fieldName]: errors,
+      }));
+    }, [
+      setValidationErrors,
+      getDisplayName,
+    ]
+  );
 
   /**
    * Sanitizes the [[enrollmentData]] state fields ready for sending to the API.
@@ -204,62 +246,11 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
    * through to the update handler
    */
   const saveEnrollmentData = async () => {
-    const errorMessages = Object.entries(enrollmentData)
-      // Don't try to validate empty fields
-      .filter(([, value]) => (value || null) !== null)
-
-      // Run validation for all non-empty fields
-      .map(([fieldName, fieldValue]) => {
-        const errors: ValidationErrors = Object.keys(validationErrors)
-          .reduce((acc, val) => {
-            acc[val] = [];
-            return acc;
-          }, {} as ValidationErrors);
-        const displayName = getDisplayName(fieldName);
-        const field = fieldName as keyof ValidationErrors;
-        if (
-          // Check if numeric
-          new RegExp(/\d/gi).test(fieldValue.toString())
-          // Check that the number > 0
-          && parseInt(fieldValue, 10) < 0
-        ) {
-          errors[field].push(`${displayName} cannot be negative`);
-        } else {
-          // Match any alphabetical chars
-          if (new RegExp(/[A-Z]/i).test(fieldValue.toString())) {
-            errors[field].push(`${displayName} cannot contain alphabetical characters`);
-          }
-          // Match any non-alphanumeric characters(also allowing the - character)
-          if (new RegExp(/[^\dA-Z-]/gi).test(fieldValue.toString())) {
-            errors[field].push(`${displayName} cannot contain special characters`);
-          }
-        }
-        return errors;
-      })
-      .reduce((acc, obj) => {
-        Object.keys(obj).forEach((key: keyof ValidationErrors) => {
-          if (!acc[key] || !Array.isArray(acc[key])) {
-            acc[key] = [];
-          }
-          acc[key] = acc[key].concat(obj[key]);
-        });
-        return acc;
-      }, {} as ValidationErrors);
-
-    const allErrors = Object.values(errorMessages)
+    const allErrors = Object.values(validationErrors)
       .reduce((acc, val) => acc.concat(val), []);
-
     if (allErrors.length > 0) {
       setSaving(false);
-      setValidationErrors(errorMessages);
     } else {
-      setValidationErrors(
-        Object.keys(validationErrors)
-          .reduce((acc, val) => {
-            acc[val] = [];
-            return acc;
-          }, {} as ValidationErrors)
-      );
       setSaving(true);
       const results = await updateCourseInstance(
         instance.id,
@@ -322,6 +313,7 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
                 }
                 onChange={
                   ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
+                    validateData(key, value);
                     setChanged(true);
                     setEnrollmentData((state) => ({
                       ...state,

@@ -1911,8 +1911,6 @@ describe('End-to-end Course Instance updating', function () {
           strictEqual(within(modal).queryByText('Save'), null);
         });
         it('clears any validation errors', async function () {
-          const saveButton = within(modal).getByText('Save');
-
           // Generate some errors for the validation to yell about
           textBoxes.forEach((textbox) => {
             fireEvent.change(textbox, {
@@ -1920,18 +1918,12 @@ describe('End-to-end Course Instance updating', function () {
             } as Partial<ChangeEvent<HTMLInputElement>>);
           });
 
-          // Fire the save button so that the validation yells
-          fireEvent.click(saveButton);
-
           // Fix the validation errors by supplying valid data
           textBoxes.forEach((textbox) => {
             fireEvent.change(textbox, {
               target: { value: '10' },
             } as Partial<ChangeEvent<HTMLInputElement>>);
           });
-
-          // Fire the save button again to retry saving
-          fireEvent.click(saveButton);
 
           await waitForElement(
             () => within(modal).findByText('saving', { exact: false })
@@ -2041,8 +2033,6 @@ describe('End-to-end Course Instance updating', function () {
               },
             } as Partial<ChangeEvent<HTMLInputElement>>);
           });
-          const saveButton = await within(modal).findByText('Save');
-          fireEvent.click(saveButton);
           return within(modal)
             .findAllByText('cannot be negative', { exact: false });
         });
@@ -2052,8 +2042,6 @@ describe('End-to-end Course Instance updating', function () {
               target: { value: string },
             } as Partial<ChangeEvent<HTMLInputElement>>);
           });
-          const saveButton = await within(modal).findByText('Save');
-          fireEvent.click(saveButton);
           return within(modal)
             .findAllByText('cannot contain alphabetical', { exact: false });
         });
@@ -2063,8 +2051,6 @@ describe('End-to-end Course Instance updating', function () {
               target: { value: '%!@#$' },
             } as Partial<ChangeEvent<HTMLInputElement>>);
           });
-          const saveButton = await within(modal).findByText('Save');
-          fireEvent.click(saveButton);
           return within(modal)
             .findAllByText('cannot contain special', { exact: false });
         });
