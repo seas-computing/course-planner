@@ -4,6 +4,7 @@ import React, {
   ReactElement,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -106,10 +107,10 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
   type EnrollmentData = Partial<Record<keyof Instance & ('preEnrollment'|'actualEnrollment'|'studyCardEnrollment'), string>>;
 
   /**
-   * Used to represent the shape of field validation errors under the fieldname
-   * they belong to
+   * A map of fields and wether or not they are valid
+   * e.g: `{ actualEnrollment: false }`
    */
-  type ValidationErrors = Record<keyof EnrollmentData, string[]>;
+  type FieldState = Record<keyof EnrollmentData, boolean>;
 
   /**
    * Map containing key-value pairs of various enrollment fields and their
@@ -133,12 +134,12 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
    * modal
    */
   const [
-    validationErrors,
-    setValidationErrors,
-  ] = useState<ValidationErrors>({
-    actualEnrollment: [],
-    preEnrollment: [],
-    studyCardEnrollment: [],
+    fieldState,
+    setFieldState,
+  ] = useState<FieldState>({
+    actualEnrollment: true,
+    preEnrollment: true,
+    studyCardEnrollment: true,
   });
 
   /**
@@ -180,39 +181,37 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
   ]);
 
   /**
-   * Look up a given field name in [[enrollmentFields]] and retrieve the
-   * humnan friendly name for display in an error message. This enables a more
-   * friendly message like "Final Enrollment may not contain alphabetical characters"
-   * instead of "actualEnrollment may not contain alphabetical characters"
-   */
-  const getDisplayName = useCallback(
-    (fieldName: string) => enrollmentFields
-      .find(({ key }) => key.toString() === fieldName).name,
-    []
-  );
-
-  /**
    * Validates form data to check that only positive integers are being entered
    */
   const validateData = useCallback(
-    (fieldName: keyof ValidationErrors, value: string) => {
-      const displayName = getDisplayName(fieldName);
+    (fieldName: keyof FieldState, value: string) => {
       if (
         // Number must be numeric
         new RegExp(/[^\d]/gi).test(value.toString())
         // Number must be greater than 0
         || parseInt(value, 10) < 0
       ) {
-        setValidationErrors((state) => ({
+        setFieldState((state) => ({
           ...state,
-          [fieldName]: [`${displayName} must be a positive whole number`],
+          [fieldName]: false,
+        }));
+      } else {
+        setFieldState((state) => ({
+          ...state,
+          [fieldName]: true,
         }));
       }
     }, [
-      setValidationErrors,
-      getDisplayName,
+      setFieldState,
     ]
   );
+
+  /**
+   * Indicates whether or not the entire form should be considered valid.
+   */
+  const formValid = useMemo(() => Object.values(fieldState)
+    .every((value) => value === true),
+  [fieldState]);
 
   /**
    * Sanitizes the [[enrollmentData]] state fields ready for sending to the API.
@@ -234,11 +233,7 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
    * through to the update handler
    */
   const saveEnrollmentData = async () => {
-    const allErrors = Object.values(validationErrors)
-      .reduce((acc, val) => acc.concat(val), []);
-    if (allErrors.length > 0) {
-      setSaving(false);
-    } else {
+    if (formValid) {
       setSaving(true);
       const results = await updateCourseInstance(
         instance.id,
@@ -248,8 +243,8 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
         }
       );
       onSave(results);
-      setSaving(false);
     }
+    setSaving(false);
   };
 
   /**
@@ -295,9 +290,7 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
                 label={name}
                 value={enrollmentData?.[key]?.toString() || ''}
                 errorMessage={
-                  validationErrors[key].length > 0
-                    ? validationErrors[key].join(', ')
-                    : null
+                  fieldState[key] ? null : `${name} must be a positive whole number`
                 }
                 onChange={
                   ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
@@ -321,6 +314,7 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
               <Button
                 onClick={saveEnrollmentData}
                 variant={VARIANT.PRIMARY}
+                disabled={!formValid}
               >
                 Save
               </Button>
