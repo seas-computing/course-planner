@@ -1911,6 +1911,16 @@ describe('End-to-end Course Instance updating', function () {
           strictEqual(within(modal).queryByText('Save'), null);
         });
       });
+      it('hides the cancel button', async function () {
+        textBoxes.forEach((textbox) => {
+          fireEvent.change(textbox, {
+            target: { value: '30' },
+          } as Partial<ChangeEvent<HTMLInputElement>>);
+        });
+        const saveButton = await within(modal).findByText('Save');
+        fireEvent.click(saveButton);
+        strictEqual(within(modal).queryByText('Cancel'), null);
+      });
       it('shows an unsaved changes dialog if the modal is closed without saving changes made', function () {
         // Type some text in the text boxes
         textBoxes.forEach((textbox) => {

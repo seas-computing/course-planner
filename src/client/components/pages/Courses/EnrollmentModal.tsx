@@ -317,6 +317,17 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
           saving ? null
             : (
               <Button
+                onClick={onModalClose}
+                variant={VARIANT.BASE}
+              >
+                Cancel
+              </Button>
+            )
+        }
+        {
+          saving ? null
+            : (
+              <Button
                 onClick={saveEnrollmentData}
                 variant={VARIANT.PRIMARY}
                 disabled={!formValid}
