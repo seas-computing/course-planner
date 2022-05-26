@@ -1936,13 +1936,8 @@ describe('End-to-end Course Instance updating', function () {
           await waitForElement(
             () => within(modal).findByText('saving', { exact: false })
           );
-          strictEqual(
-            within(modal)
-              .queryByText('cannot contain alphabetical characters', {
-                exact: false,
-              }),
-            null
-          );
+
+          strictEqual(within(modal).queryAllByRole('alert').length, 0);
         });
       });
       it('shows an unsaved changes dialog if the modal is closed without saving changes made', function () {
