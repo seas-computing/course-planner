@@ -188,7 +188,7 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
       if (
         // Number must be numeric
         new RegExp(/[^\d]/gi).test(value.toString())
-        // Number must be greater than 0
+        // Number must not be less than 0
         || parseInt(value, 10) < 0
       ) {
         setFieldState((state) => ({
