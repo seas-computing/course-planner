@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { AUTH_MODE } from 'common/constants';
 import { Absence } from 'server/absence/absence.entity';
@@ -230,7 +232,7 @@ class ConfigService {
     } = this.env;
     const {
       hostname: domain,
-      pathname: path,
+      pathname,
     } = this.serverURL;
     return {
       session: {
@@ -243,7 +245,7 @@ class ConfigService {
           // 12 hours
           maxAge: 1000 * 60 * 60 * 12,
           domain,
-          path,
+          path: pathname,
           sameSite: 'strict',
           secure: false,
         },
@@ -313,6 +315,25 @@ class ConfigService {
       console.warn(`"${logLevel}" is not a valid LOG_LEVEL. Defaulting to "error"`);
     }
     return LOG_LEVEL.ERROR;
+  }
+
+  /**
+   * Attempt to read the current build version from the .dockerversion file, or
+   * else return an empty string.
+   */
+  public get buildVersion(): string {
+    // The file should be created when the image is built
+    const versionFile = path.resolve('.dockerversion');
+    if (fs.existsSync(versionFile)) {
+      try {
+        return fs
+          .readFileSync(versionFile, { encoding: 'utf-8' })
+          .replace(/\s/g, '');
+      } catch (error) {
+        return '';
+      }
+    }
+    return '';
   }
 }
 
