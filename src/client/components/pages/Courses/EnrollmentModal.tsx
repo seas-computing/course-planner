@@ -134,8 +134,8 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
    * modal
    */
   const [
-    fieldState,
-    setFieldState,
+    isFieldValid,
+    setIsFieldValid,
   ] = useState<FieldState>({
     actualEnrollment: true,
     preEnrollment: true,
@@ -191,27 +191,27 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
         // Number must not be less than 0
         || parseInt(value, 10) < 0
       ) {
-        setFieldState((state) => ({
+        setIsFieldValid((state) => ({
           ...state,
           [fieldName]: false,
         }));
       } else {
-        setFieldState((state) => ({
+        setIsFieldValid((state) => ({
           ...state,
           [fieldName]: true,
         }));
       }
     }, [
-      setFieldState,
+      setIsFieldValid,
     ]
   );
 
   /**
    * Indicates whether or not the entire form should be considered valid.
    */
-  const formValid = useMemo(() => Object.values(fieldState)
+  const formValid = useMemo(() => Object.values(isFieldValid)
     .every((value) => value === true),
-  [fieldState]);
+  [isFieldValid]);
 
   /**
    * Sanitizes the [[enrollmentData]] state fields ready for sending to the API.
@@ -263,7 +263,7 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
     } else {
       onClose();
     }
-    setFieldState({
+    setIsFieldValid({
       actualEnrollment: true,
       preEnrollment: true,
       studyCardEnrollment: true,
@@ -295,7 +295,7 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
                 label={name}
                 value={enrollmentData?.[key]?.toString() || ''}
                 errorMessage={
-                  fieldState[key] ? null : `${name} must be a positive whole number`
+                  isFieldValid[key] ? null : `${name} must be a positive whole number`
                 }
                 onChange={
                   ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
