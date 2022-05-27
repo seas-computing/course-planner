@@ -22,10 +22,12 @@ RUN npm run build:server && rm -rf node_modules && npm ci --no-optional --produc
 FROM node:14-alpine
 ARG APP_DIR=/node
 ARG OPEN_PORT=3000
+ARG BUILD_VERSION=""
 EXPOSE ${OPEN_PORT}
 WORKDIR ${APP_DIR}
 COPY --from=builder --chown=node:node $APP_DIR/tsconfig.production.json ./tsconfig.json
 COPY --from=builder --chown=node:node $APP_DIR/node_modules ./node_modules
 COPY --from=builder --chown=node:node $APP_DIR/build ./
+RUN echo $BUILD_VERSION > $APP_DIR/.dockerversion
 USER node 
 CMD ["node", "--require", "tsconfig-paths/register", "./server/index.js"]
