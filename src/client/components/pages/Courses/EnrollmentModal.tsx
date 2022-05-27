@@ -17,6 +17,7 @@ import {
   VARIANT,
   TextInput,
   LoadSpinner,
+  Form,
 } from 'mark-one';
 import CourseInstanceResponseDTO, { Instance } from 'common/dto/courses/CourseInstanceResponse';
 import { TERM } from 'common/constants';
@@ -287,28 +288,30 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
       <ModalBody>
         {
           saving ? (<LoadSpinner>Saving Enrollment Data</LoadSpinner>) : (
-            enrollmentFields.map(({ key, name }) => (
-              <TextInput
-                key={key}
-                id={key}
-                name={key}
-                label={name}
-                value={enrollmentData?.[key]?.toString() || ''}
-                errorMessage={
-                  isFieldValid[key] ? null : `${name} must be a positive whole number`
-                }
-                onChange={
-                  ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
-                    validateData(key, value);
-                    setChanged(true);
-                    setEnrollmentData((state) => ({
-                      ...state,
-                      [key]: value,
-                    }));
+            <Form label="Enrollment Data" id="enrollment-data">
+              {enrollmentFields.map(({ key, name }) => (
+                <TextInput
+                  key={key}
+                  id={key}
+                  name={key}
+                  label={name}
+                  value={enrollmentData?.[key]?.toString() || ''}
+                  errorMessage={
+                    isFieldValid[key] ? null : `${name} must be a positive whole number`
                   }
-                }
-              />
-            ))
+                  onChange={
+                    ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
+                      validateData(key, value);
+                      setChanged(true);
+                      setEnrollmentData((state) => ({
+                        ...state,
+                        [key]: value,
+                      }));
+                    }
+                  }
+                />
+              ))}
+            </Form>
           )
         }
       </ModalBody>
