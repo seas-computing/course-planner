@@ -44,8 +44,14 @@ import { RoomBookingInfoView } from '../location/RoomBookingInfoView.entity';
 class ConfigService {
   private readonly env: { [key: string]: string };
 
+  /**
+   * Track the current version of the app running in the container.
+   */
+  public readonly buildVersion: string;
+
   public constructor(config: { [key: string]: string } = {}) {
     this.env = config;
+    this.buildVersion = this.readContainerVersion();
   }
 
   /**
@@ -321,8 +327,7 @@ class ConfigService {
    * Attempt to read the current build version from the .dockerversion file, or
    * else return an empty string.
    */
-  public get buildVersion(): string {
-    // The file should be created when the image is built
+  private readContainerVersion() {
     const versionFile = path.resolve('.dockerversion');
     if (fs.existsSync(versionFile)) {
       try {
