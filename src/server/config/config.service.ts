@@ -333,7 +333,7 @@ class ConfigService {
       try {
         return fs
           .readFileSync(versionFile, { encoding: 'utf-8' })
-          .replace(/\s/g, '');
+          .trim();
       } catch (error) {
         return '';
       }
