@@ -457,19 +457,18 @@ describe('Configuration Service', function () {
     });
   });
   describe('buildVersion', function () {
-    let config: ConfigService;
     let existsStub: SinonStub;
     let readFileStub: SinonStub;
     beforeEach(function () {
       existsStub = stub(fs, 'existsSync');
       readFileStub = stub(fs, 'readFileSync');
-      config = new ConfigService({});
     });
     context('When no .dockerversion file exists', function () {
       beforeEach(function () {
         existsStub.returns(false);
       });
       it('Returns an empty string', function () {
+        const config = new ConfigService({});
         strictEqual(config.buildVersion, '');
       });
     });
@@ -482,6 +481,7 @@ describe('Configuration Service', function () {
           readFileStub.throws(error);
         });
         it('Returns an empty string', function () {
+          const config = new ConfigService({});
           strictEqual(config.buildVersion, '');
         });
       });
@@ -489,10 +489,12 @@ describe('Configuration Service', function () {
         const fakeVersion = 'v1.0.0';
         it('Should return the contents of the file', function () {
           readFileStub.returns(fakeVersion);
+          const config = new ConfigService({});
           strictEqual(config.buildVersion, fakeVersion);
         });
         it('Should strip out extra white space', function () {
           readFileStub.returns(fakeVersion + '      \n\n');
+          const config = new ConfigService({});
           strictEqual(config.buildVersion, fakeVersion);
         });
       });
