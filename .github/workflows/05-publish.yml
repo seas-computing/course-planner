@@ -77,6 +77,8 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
+          build-args:
+            BUILD_VERSION=${{env.VERSION_TAG}}
           context: ${{ github.server_url }}/${{ github.repository }}.git#${{ env.VERSION_TAG }}
           tags: ${{ env.DOCKER_TAG_LIST }}
   publish-client:
