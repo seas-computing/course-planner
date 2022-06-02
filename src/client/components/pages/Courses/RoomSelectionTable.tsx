@@ -14,6 +14,7 @@ import {
 } from 'mark-one';
 import RoomResponse from 'common/dto/room/RoomResponse.dto';
 import { CourseInstanceResponseMeeting } from '../../../../common/dto/courses/CourseInstanceResponse';
+import { listFilter } from '../Filter';
 
 interface RoomSelectionTableProps {
   /** The list of rooms to show in the list */
@@ -95,6 +96,24 @@ const RoomSelectionTable = (
     availabilityFilter,
     setAvailabilityFilter,
   ] = useState<AVAILABILITY>(AVAILABILITY.ALL);
+
+  /**
+   * Return filtered rooms based on the campus, room, and availability filters
+   */
+  const filteredRooms = (): RoomResponse[] => {
+    let filteredRoomList = [...roomList];
+    if (campusFilter !== 'All') {
+      filteredRoomList = listFilter(
+        filteredRoomList,
+        { field: 'campus', value: campusFilter, exact: false }
+      );
+    }
+    filteredRoomList = listFilter(
+      filteredRoomList,
+      { field: 'name', value: roomFilter, exact: false }
+    );
+    return filteredRoomList;
+  };
   return (
     <>
       <Table>
@@ -172,7 +191,7 @@ const RoomSelectionTable = (
           </TableRow>
         </TableHead>
         <TableBody>
-          {roomList.filter(({ meetingTitles }) => {
+          {filteredRooms().filter(({ meetingTitles }) => {
             switch (availabilityFilter) {
               case AVAILABILITY.ALL:
                 return true;
