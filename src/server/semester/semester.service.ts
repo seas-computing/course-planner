@@ -12,6 +12,7 @@ import { Absence } from 'server/absence/absence.entity';
 import { MONTH } from 'common/constants/month';
 import { LogService } from 'server/log/log.service';
 import { Semester } from './semester.entity';
+import { ConfigService } from '../config/config.service';
 
 /**
  * @class SemesterService
@@ -34,6 +35,9 @@ export class SemesterService implements OnApplicationBootstrap {
 
   @Inject(LogService)
   private readonly logService: LogService;
+
+  @Inject(ConfigService)
+  private readonly config: ConfigService;
 
   /**
    * Resolves to an array containing all of the years that currently exist in the
@@ -260,13 +264,15 @@ export class SemesterService implements OnApplicationBootstrap {
 
   public onApplicationBootstrap(): Promise<void> {
     const today = new Date();
-    if (today.getMonth() === MONTH.JUN) {
+    if (this.config.isProduction && today.getMonth() === MONTH.JUN) {
       const yearToAdd = today.getFullYear() + 4;
       try {
         return this.addAcademicYear(yearToAdd);
       } catch (e) {
         this.logService.error(e);
       }
+    } else {
+      return Promise.resolve();
     }
   }
 }

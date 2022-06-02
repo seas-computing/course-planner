@@ -18,6 +18,7 @@ import { SemesterService } from 'server/semester/semester.service';
 import { Semester } from 'server/semester/semester.entity';
 import FakeTimers from '@sinonjs/fake-timers';
 import { MONTH } from 'common/constants/month';
+import { stub } from 'sinon';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import { semesters } from '../../../mocks/database/population/data/semesters';
@@ -26,8 +27,10 @@ describe('Semester Service', function () {
   let testModule: TestingModule;
   let semesterService: SemesterService;
   let semesterRepository: Repository<Semester>;
+  let fakeConfig: ConfigService;
 
   beforeEach(async function () {
+    fakeConfig = new ConfigService(this.database.connectionEnv);
     testModule = await Test.createTestingModule({
       imports: [
         ConfigModule,
@@ -53,7 +56,7 @@ describe('Semester Service', function () {
       ],
     })
       .overrideProvider(ConfigService)
-      .useValue(new ConfigService(this.database.connectionEnv))
+      .useValue(fakeConfig)
       .compile();
 
     semesterService = testModule.get(SemesterService);
@@ -406,29 +409,54 @@ describe('Semester Service', function () {
       });
     });
     context('in June', function () {
-      beforeEach(async function () {
+      beforeEach(function () {
         clock = FakeTimers.install();
         clock.setSystemTime(
           new Date(lastSpringSemester.academicYear - 3, MONTH.JUN, 6, 0, 0, 0)
         );
-        // calling init triggers the onApplicationBootstrap hook
-        await testModule.createNestApplication().init();
       });
       afterEach(function () {
         clock.uninstall();
       });
-      it('should have created the new academic year', async function () {
-        semesterRepository = testModule.get(getRepositoryToken(Semester));
-        try {
-          await semesterRepository.findOneOrFail({
-            where: {
-              term: TERM.SPRING,
-              academicYear: testAcademicYear,
-            },
-          });
-        } catch (e) {
-          strictEqual(e instanceof EntityNotFoundError, false);
-        }
+      context('In production', function () {
+        beforeEach(async function () {
+          stub(fakeConfig, 'isProduction').get(() => true);
+          // calling init triggers the onApplicationBootstrap hook
+          await testModule.createNestApplication().init();
+        });
+        it('should have created the new academic year', async function () {
+          semesterRepository = testModule.get(getRepositoryToken(Semester));
+          try {
+            await semesterRepository.findOneOrFail({
+              where: {
+                term: TERM.SPRING,
+                academicYear: testAcademicYear,
+              },
+            });
+          } catch (e) {
+            strictEqual(e instanceof EntityNotFoundError, false);
+          }
+        });
+      });
+      context('NOT in production', function () {
+        beforeEach(async function () {
+          stub(fakeConfig, 'isProduction').get(() => false);
+          // calling init triggers the onApplicationBootstrap hook
+          await testModule.createNestApplication().init();
+        });
+        it('should NOT have created the new academic year', async function () {
+          semesterRepository = testModule.get(getRepositoryToken(Semester));
+          try {
+            await semesterRepository.findOneOrFail({
+              where: {
+                term: TERM.SPRING,
+                academicYear: testAcademicYear,
+              },
+            });
+          } catch (e) {
+            strictEqual(e instanceof EntityNotFoundError, true);
+          }
+        });
       });
     });
   });

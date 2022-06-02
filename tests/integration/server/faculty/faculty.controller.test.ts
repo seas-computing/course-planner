@@ -124,7 +124,7 @@ describe('Faculty API', function () {
       ],
     })
       .overrideProvider(ConfigService)
-      .useValue(new ConfigService({ NODE_ENV: 'production' }))
+      .useValue(new ConfigService())
 
       .overrideProvider(getRepositoryToken(Faculty))
       .useValue(mockFacultyRepository)

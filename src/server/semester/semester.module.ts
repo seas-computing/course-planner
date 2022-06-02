@@ -6,6 +6,7 @@ import { LogModule } from 'server/log/log.module';
 import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
 import { Semester } from 'server/semester/semester.entity';
 import { SemesterService } from './semester.service';
+import { ConfigModule } from '../config/config.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { SemesterService } from './semester.service';
       Absence,
     ]),
     LogModule,
+    ConfigModule,
   ],
   providers: [
     SemesterService,
