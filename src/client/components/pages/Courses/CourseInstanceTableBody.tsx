@@ -36,6 +36,10 @@ interface CourseInstanceTableBodyProps {
    */
   openNotesModal: OpenModalCallback
   /**
+   * Controls the opening of the enrollment modal
+   */
+  openEnrollmentModal: OpenModalCallback
+  /**
    * The ref value of the edit faculty absence button
    */
   setButtonRef: (nodeId: string) => (node: HTMLButtonElement) => void;
@@ -59,6 +63,7 @@ FunctionComponent<CourseInstanceTableBodyProps> = ({
   openInstructorModal,
   openOfferedModal,
   openNotesModal,
+  openEnrollmentModal,
   setButtonRef,
   isAdmin,
 }): ReactElement => (
@@ -111,6 +116,11 @@ FunctionComponent<CourseInstanceTableBodyProps> = ({
                     openNotesModal={
                       field.viewColumn === COURSE_TABLE_COLUMN.NOTES
                         ? openNotesModal
+                        : null
+                    }
+                    openEnrollmentModal={
+                      field.viewColumn === COURSE_TABLE_COLUMN.ENROLLMENT
+                        ? openEnrollmentModal
                         : null
                     }
                     buttonRef={setButtonRef(`${field.key}-${course.id}`)}

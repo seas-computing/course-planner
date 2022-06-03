@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import {
   stub, SinonStub,
 } from 'sinon';
@@ -26,8 +26,9 @@ import {
 } from 'assert';
 import { offeredEnumToString } from 'common/constants/offered';
 import { SemesterModule } from 'server/semester/semester.module';
-import { MANDATORY_COLUMNS } from 'common/constants';
+import { COURSE_TABLE_COLUMN, MANDATORY_COLUMNS } from 'common/constants';
 import { tableFields } from 'client/components/pages/Courses/tableFields';
+import { string } from 'testData';
 import mockAdapter from '../../mocks/api/adapter';
 import { ConfigModule } from '../../../src/server/config/config.module';
 import { ConfigService } from '../../../src/server/config/config.service';
@@ -61,6 +62,7 @@ describe('End-to-end Course Instance updating', function () {
   let testModule: TestingModule;
   let authStub: SinonStub;
   let courseRepository: Repository<Course>;
+  let courseInstanceRepository: Repository<CourseInstance>;
   let meetingRepository: Repository<Meeting>;
   let facultyRepository: Repository<Faculty>;
   let fciRepository: Repository<FacultyCourseInstance>;
@@ -132,6 +134,9 @@ describe('End-to-end Course Instance updating', function () {
     meetingRepository = testModule.get(
       getRepositoryToken(Meeting)
     );
+    courseInstanceRepository = testModule.get(
+      getRepositoryToken(CourseInstance)
+    );
     const nestApp = await testModule
       .createNestApplication()
       .useGlobalPipes(new BadRequestExceptionPipe())
@@ -187,6 +192,37 @@ describe('End-to-end Course Instance updating', function () {
       const editSpringInstructorButton = renderResult
         .queryByLabelText(
           `Edit instructors for ${courseNumber} in spring`,
+          { exact: false }
+        );
+      strictEqual(editSpringInstructorButton, null);
+    });
+    it('Does not render enrollment edit buttons', async function () {
+      stub(global.window, 'sessionStorage').get(() => ({
+        setItem: stub(),
+        getItem: () => JSON.stringify([
+          COURSE_TABLE_COLUMN.CATALOG_NUMBER,
+          COURSE_TABLE_COLUMN.ENROLLMENT,
+        ]),
+        removeItem: stub(),
+        length: 1,
+      }));
+      renderResult = render(
+        <MemoryRouter initialEntries={['/courses']}>
+          <App />
+        </MemoryRouter>
+      );
+      await renderResult.findByText(courseNumber);
+
+      const editFallInstructorButton = renderResult
+        .queryByLabelText(
+          `Edit enrollment for ${courseNumber} in fall`,
+          { exact: false }
+        );
+      strictEqual(editFallInstructorButton, null);
+
+      const editSpringInstructorButton = renderResult
+        .queryByLabelText(
+          `Edit enrollment for ${courseNumber} in spring`,
           { exact: false }
         );
       strictEqual(editSpringInstructorButton, null);
@@ -1790,6 +1826,243 @@ describe('End-to-end Course Instance updating', function () {
             customHeadings,
             'After returning, columns are still set to the custom set'
           );
+        });
+      });
+    });
+    describe('Updating Enrollment Values', function () {
+      let editFallEnrollmentButton: HTMLElement;
+      let modal: HTMLDivElement;
+      let textBoxes: HTMLInputElement[];
+      let instanceToUpdate: CourseInstance;
+      let windowConfirmStub: SinonStub;
+      beforeEach(async function () {
+        const [prefix, number] = courseNumber.split(' ');
+        const course = await courseRepository.findOneOrFail(
+          {
+            prefix,
+            number,
+          },
+          {
+            relations: [
+              'instances',
+              'instances.semester',
+            ],
+          }
+        );
+        stub(global.window, 'sessionStorage').get(() => ({
+          setItem: stub(),
+          getItem: () => JSON.stringify([
+            COURSE_TABLE_COLUMN.CATALOG_NUMBER,
+            COURSE_TABLE_COLUMN.ENROLLMENT,
+          ]),
+          removeItem: stub(),
+          length: 1,
+        }));
+        windowConfirmStub = stub(window, 'confirm');
+        windowConfirmStub.returns(true);
+        renderResult = render(
+          <MemoryRouter initialEntries={['/courses']}>
+            <App />
+          </MemoryRouter>
+        );
+        await renderResult.findByText(courseNumber);
+
+        const courseRows = await renderResult.findAllByRole('row');
+        const courseRowToUpdate = courseRows.find((row) => {
+          const rowHeader = within(row).queryByRole('rowheader');
+          return rowHeader?.textContent === courseNumber;
+        });
+        ([editFallEnrollmentButton] = await within(courseRowToUpdate)
+          .findAllByLabelText(
+            `Edit enrollment for ${courseNumber} in ${currentTerm} ${currentAcademicYear - 1}`,
+            { exact: false }
+          ));
+        fireEvent.click(editFallEnrollmentButton);
+        instanceToUpdate = course.instances.find(({ semester }) => (
+          semester.term === currentTerm
+        && semester.academicYear === (currentAcademicYear - 1).toString()
+        ));
+        (modal = await renderResult.findByRole('dialog') as HTMLDivElement);
+        (
+          textBoxes = await within(modal)
+            .findAllByRole('textbox') as HTMLInputElement[]
+        );
+      });
+      describe('saving', function () {
+        it('shows a spinner', async function () {
+          textBoxes.forEach((textbox) => {
+            fireEvent.change(textbox, {
+              target: { value: '30' },
+            } as Partial<ChangeEvent<HTMLInputElement>>);
+          });
+          const saveButton = await within(modal).findByText('Save');
+          fireEvent.click(saveButton);
+          return within(modal).findByText('saving', { exact: false });
+        });
+        it('hides the save button', async function () {
+          textBoxes.forEach((textbox) => {
+            fireEvent.change(textbox, {
+              target: { value: '30' },
+            } as Partial<ChangeEvent<HTMLInputElement>>);
+          });
+          const saveButton = await within(modal).findByText('Save');
+          fireEvent.click(saveButton);
+          strictEqual(within(modal).queryByText('Save'), null);
+        });
+      });
+      it('hides the cancel button', async function () {
+        textBoxes.forEach((textbox) => {
+          fireEvent.change(textbox, {
+            target: { value: '30' },
+          } as Partial<ChangeEvent<HTMLInputElement>>);
+        });
+        const saveButton = await within(modal).findByText('Save');
+        fireEvent.click(saveButton);
+        strictEqual(within(modal).queryByText('Cancel'), null);
+      });
+      it('shows an unsaved changes dialog if the modal is closed without saving changes made', function () {
+        // Type some text in the text boxes
+        textBoxes.forEach((textbox) => {
+          fireEvent.change(textbox, {
+            target: { value: '10' },
+          } as Partial<ChangeEvent<HTMLInputElement>>);
+        });
+        const modalBackground = renderResult.getByRole('dialog').parentElement;
+        fireEvent.click(modalBackground);
+        strictEqual(windowConfirmStub.callCount, 1);
+      });
+      it('clears any validation errors on close', async function () {
+        // Generate some errors for the validation to yell about
+        textBoxes.forEach((textbox) => {
+          fireEvent.change(textbox, {
+            target: { value: string },
+          } as Partial<ChangeEvent<HTMLInputElement>>);
+        });
+
+        // Close the modal by clicking the modal background
+        fireEvent.click(modal.parentElement);
+
+        // Tell the window.confirm hook to allow the modal to close
+        windowConfirmStub.returns(true);
+
+        // Re-open the modal
+        fireEvent.click(editFallEnrollmentButton);
+
+        // Re-find the new modal
+        modal = await renderResult.findByRole('dialog') as HTMLDivElement;
+
+        strictEqual(within(modal).queryAllByRole('alert').length, 0);
+      });
+      describe('input fields', function () {
+        it('can be numeric', async function () {
+          const enrollmentValues = [];
+          textBoxes.forEach((textbox, index) => {
+            // An arbitary "numerical"(as a string) value to fill in - the
+            // actual value isn't terribly important for this test
+            const value = ((index + 1) * 10);
+            enrollmentValues.push(value.toString());
+            fireEvent.change(textbox, {
+              target: { value },
+            });
+          });
+          const saveButton = await within(modal).findByText('Save');
+          fireEvent.click(saveButton);
+          await waitForElementToBeRemoved(
+            () => renderResult.getByText('Enrollment for', { exact: false })
+          );
+          const {
+            preEnrollment,
+            studyCardEnrollment,
+            actualEnrollment,
+          } = await courseInstanceRepository.findOne(instanceToUpdate.id);
+          deepStrictEqual(
+            [
+              preEnrollment,
+              studyCardEnrollment,
+              actualEnrollment,
+            ],
+            enrollmentValues.map((number) => parseInt(number, 10) ?? null),
+            'Database was not updated'
+          );
+          deepStrictEqual(
+            [
+              renderResult.queryByLabelText('Pre-Registration'),
+              renderResult.queryByLabelText('Enrollment Deadline'),
+              renderResult.queryByLabelText('Final Enrollment'),
+            ].map((element) => element?.textContent.trim() ?? null),
+            enrollmentValues,
+            'Local state was not updated'
+          );
+          return renderResult.findByText(/Course updated/);
+        });
+        it('can be null', async function () {
+          textBoxes.forEach((textbox) => {
+            fireEvent.change(textbox, {
+              target: { value: '' },
+            });
+          });
+          const saveButton = await within(modal).findByText('Save');
+          fireEvent.click(saveButton);
+          await waitForElementToBeRemoved(
+            () => renderResult.getByText('Enrollment for', { exact: false })
+          );
+
+          const {
+            preEnrollment,
+            studyCardEnrollment,
+            actualEnrollment,
+          } = await courseInstanceRepository.findOne(instanceToUpdate.id);
+          deepStrictEqual(
+            [
+              preEnrollment,
+              studyCardEnrollment,
+              actualEnrollment,
+            ],
+            new Array(textBoxes.length).fill(null),
+            'Database was not updated'
+          );
+          deepStrictEqual(
+            [
+              renderResult.queryByLabelText('Pre-Registration'),
+              renderResult.queryByLabelText('Enrollment Deadline'),
+              renderResult.queryByLabelText('Final Enrollment'),
+            ],
+            new Array(textBoxes.length).fill(null),
+            'Local state was not updated'
+          );
+          return renderResult.findByText(/Course updated/);
+        });
+        it('must not contain negative values', async function () {
+          const enrollmentValues = [];
+          textBoxes.forEach((textbox, index) => {
+            const value = (-(index + 1) * 10).toString();
+            enrollmentValues.push(value);
+            fireEvent.change(textbox, {
+              target: {
+                value,
+              },
+            } as Partial<ChangeEvent<HTMLInputElement>>);
+          });
+          return within(modal)
+            .findAllByText('must be a positive whole number', { exact: false });
+        });
+        it('must not contain alphabetical characters', async function () {
+          textBoxes.forEach((textbox) => {
+            fireEvent.change(textbox, {
+              target: { value: string },
+            } as Partial<ChangeEvent<HTMLInputElement>>);
+          });
+          return within(modal)
+            .findAllByText('must be a positive whole number', { exact: false });
+        });
+        it('must not contain special characters', async function () {
+          textBoxes.forEach((textbox) => {
+            fireEvent.change(textbox, {
+              target: { value: '%!@#$' },
+            } as Partial<ChangeEvent<HTMLInputElement>>);
+          });
+          return within(modal)
+            .findAllByText('must be a positive whole number', { exact: false });
         });
       });
     });

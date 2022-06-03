@@ -66,6 +66,14 @@ interface CourseInstanceTableProps {
     buttonId?: string
   ) => void;
 
+  /*
+   * Controls the opening of the enrollment modal with the requested course
+   */
+  openEnrollmentModal: (
+    course: CourseInstanceResponseDTO,
+    term?: TERM
+  ) => void;
+
   /**
    * The ref value of the edit faculty absence button
    */
@@ -98,6 +106,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
   openOfferedModal,
   setButtonRef,
   openNotesModal,
+  openEnrollmentModal,
   isAdmin,
 }): ReactElement => {
   const courseColumns = tableData.filter(
@@ -263,6 +272,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
         openOfferedModal={openOfferedModal}
         setButtonRef={setButtonRef}
         openNotesModal={openNotesModal}
+        openEnrollmentModal={openEnrollmentModal}
         isAdmin={isAdmin}
       />
     </Table>

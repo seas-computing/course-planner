@@ -3,6 +3,7 @@ import {
   IsEnum,
   IsNumber,
   IsOptional,
+  Min,
 } from 'class-validator';
 import { OFFERED } from 'common/constants';
 
@@ -24,7 +25,11 @@ export default abstract class CourseInstanceUpdateDTO {
     example: 15,
   })
   @IsOptional()
-  @IsNumber()
+  @Min(0)
+  @IsNumber({
+    allowNaN: false,
+    maxDecimalPlaces: 0,
+  }, { message: '$property must be a whole number.' })
   public preEnrollment?: number;
 
   @ApiProperty({
@@ -32,7 +37,11 @@ export default abstract class CourseInstanceUpdateDTO {
     example: 12,
   })
   @IsOptional()
-  @IsNumber()
+  @Min(0)
+  @IsNumber({
+    allowNaN: false,
+    maxDecimalPlaces: 0,
+  }, { message: '$property must be a whole number.' })
   public studyCardEnrollment?: number;
 
   @ApiProperty({
@@ -40,6 +49,10 @@ export default abstract class CourseInstanceUpdateDTO {
     example: 8,
   })
   @IsOptional()
-  @IsNumber()
+  @Min(0)
+  @IsNumber({
+    allowNaN: false,
+    maxDecimalPlaces: 0,
+  }, { message: '$property must be a whole number.' })
   public actualEnrollment?: number;
 }

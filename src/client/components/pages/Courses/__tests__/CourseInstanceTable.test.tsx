@@ -19,6 +19,7 @@ describe('CourseInstanceTable', function () {
   let openMeetingModalSpy: SinonSpy;
   let openInstructorModalSpy: SinonSpy;
   let openOfferedModalSpy: SinonSpy;
+  let openEnrollmentModalSpy: SinonSpy;
   const academicYear = 2020;
   const courseList = [
     cs50CourseInstance,
@@ -43,6 +44,7 @@ describe('CourseInstanceTable', function () {
     openMeetingModalSpy = spy();
     openInstructorModalSpy = spy();
     openOfferedModalSpy = spy();
+    openEnrollmentModalSpy = spy();
   });
   describe('Header rows', function () {
     context('With all fields visible', function () {
@@ -80,6 +82,7 @@ describe('CourseInstanceTable', function () {
             openMeetingModal={openMeetingModalSpy}
             openInstructorModal={openInstructorModalSpy}
             openOfferedModal={openOfferedModalSpy}
+            openEnrollmentModal={openEnrollmentModalSpy}
             setButtonRef={() => () => {}}
             openNotesModal={() => {}}
             isAdmin
@@ -146,6 +149,7 @@ describe('CourseInstanceTable', function () {
             openMeetingModal={openMeetingModalSpy}
             openInstructorModal={openInstructorModalSpy}
             openOfferedModal={openOfferedModalSpy}
+            openEnrollmentModal={openEnrollmentModalSpy}
             setButtonRef={() => () => {}}
             openNotesModal={() => {}}
             isAdmin
@@ -191,6 +195,7 @@ describe('CourseInstanceTable', function () {
             openMeetingModal={openMeetingModalSpy}
             openInstructorModal={openInstructorModalSpy}
             openOfferedModal={openOfferedModalSpy}
+            openEnrollmentModal={openEnrollmentModalSpy}
             setButtonRef={() => () => {}}
             openNotesModal={() => {}}
             isAdmin
@@ -251,6 +256,7 @@ describe('CourseInstanceTable', function () {
           openMeetingModal={openMeetingModalSpy}
           openInstructorModal={openInstructorModalSpy}
           openOfferedModal={openOfferedModalSpy}
+          openEnrollmentModal={openEnrollmentModalSpy}
           setButtonRef={() => () => {}}
           openNotesModal={() => {}}
           isAdmin

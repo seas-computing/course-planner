@@ -44,6 +44,7 @@ import OfferedModal from './OfferedModal';
 import NotesModal from './NotesModal';
 import ReportDownloadModal from './ReportDownloadModal';
 import { useStoredState } from '../../../hooks/useStoredState';
+import EnrollmentModal from './EnrollmentModal';
 
 /**
  * The initial, empty state for the filters
@@ -134,6 +135,19 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     setReportModalVisible,
   ] = useState(false);
 
+  /**
+   * Keeps track of the information needed to display the enrollment modal for a
+   * specific course and semester
+   */
+  const [
+    enrollmentModalData,
+    setEnrollmentModalData,
+  ] = useState<CourseInstanceModalData>({
+    term: null,
+    course: null,
+    visible: false,
+  });
+
   const dispatchMessage = useContext(MessageContext);
 
   const [fetching, setFetching] = useState(false);
@@ -151,6 +165,9 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
     visible: false,
   });
 
+  /**
+   * Keeps track of the information related to the edit notes modal
+   */
   const [
     notesModalData,
     setNotesModalData,
@@ -321,6 +338,34 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
       }
     });
   }, [modalButtonId, setNotesModalData]);
+
+  /**
+   * Takes the specified course and displays a modal to edit course enrollment
+   */
+  const openEnrollmentModal = useCallback(
+    (course: CourseInstanceResponseDTO, term: TERM) => {
+      setEnrollmentModalData({
+        course,
+        visible: true,
+        term,
+      });
+      setModalButtonId(`${course.id}-${term.toLowerCase()}-edit-enrollment-button`);
+    },
+    [setEnrollmentModalData, setModalButtonId]
+  );
+
+  /**
+   * Handles closing the enrollment modal and setting the focus back to the button
+   * that opened the modal.
+  */
+  const closeEnrollmentModal = useCallback(() => {
+    setEnrollmentModalData({ visible: false });
+    setTimeout(() => {
+      if (modalButtonId && modalButtonId in refTable.current) {
+        refTable.current[modalButtonId].focus();
+      }
+    });
+  }, [modalButtonId, setEnrollmentModalData]);
 
   /**
    * Handles closing the meeting modal and setting the focus back to the button
@@ -665,6 +710,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
               openInstructorModal={openInstructorModal}
               openOfferedModal={openOfferedModal}
               openNotesModal={openNotesModal}
+              openEnrollmentModal={openEnrollmentModal}
               setButtonRef={setButtonRef}
               isAdmin={isAdmin}
             />
@@ -767,6 +813,29 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
         isVisible={viewModalVisible}
         currentViewColumns={currentViewColumns}
         onClose={closeViewModal}
+      />
+      <EnrollmentModal
+        isVisible={enrollmentModalData.visible}
+        course={enrollmentModalData.course}
+        currentSemester={{
+          term: enrollmentModalData.term,
+          calendarYear: selectedAcademicYear.toString(),
+        }}
+        onSave={(data) => {
+          const semKey = enrollmentModalData.term.toLowerCase() as TermKey;
+          const {
+            [semKey]: instance,
+          } = enrollmentModalData.course;
+          updateLocalCourse({
+            ...enrollmentModalData.course,
+            [semKey]: {
+              ...instance,
+              ...data,
+            },
+          }, 'Enrollment data saved.');
+          closeEnrollmentModal();
+        }}
+        onClose={closeEnrollmentModal}
       />
     </div>
   );
