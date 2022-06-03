@@ -25,7 +25,9 @@ import { TERM } from 'common/constants';
 import { TermKey } from 'common/constants/term';
 import { updateCourseInstance } from 'client/api';
 import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto';
+import { AxiosError } from 'axios';
 import { EnrollmentField } from './tableFields';
+import { BadRequestInfo } from './CourseModal';
 
 interface EnrollmentModalProps {
   /**
@@ -192,6 +194,18 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
   ]);
 
   /**
+   * Look up a given field name in [[enrollmentFields]] and retrieve the
+   * humnan friendly name for display in an error message. This enables a more
+   * friendly message like "Final Enrollment may not contain alphabetical characters"
+   * instead of "actualEnrollment may not contain alphabetical characters"
+   */
+  const getDisplayName = useCallback(
+    (fieldName: string) => enrollmentFields
+      .find(({ key }) => key.toString() === fieldName).name,
+    []
+  );
+
+  /**
    * Validates form data to check that only positive integers are being entered
    */
   const validateData = useCallback(
@@ -246,16 +260,35 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
   const saveEnrollmentData = async () => {
     if (formValid) {
       setSaving(true);
-      const results = await updateCourseInstance(
-        instance.id,
-        {
-          offered: instance.offered,
-          ...sanitizeEnrollmentData(enrollmentData),
+      try {
+        const results = await updateCourseInstance(
+          instance.id,
+          {
+            offered: instance.offered,
+            ...sanitizeEnrollmentData(enrollmentData),
+          }
+        );
+        onSave(results);
+      } catch (error) {
+        if ((error as AxiosError).response) {
+          const {
+            response,
+          } = error as AxiosError;
+          const errors = [
+            ...(response.data as BadRequestInfo).message,
+          ].map(
+            ({ constraints, property }) => Object.entries(constraints)
+              .map(
+                ([, message]) => message
+                  .replace(property, getDisplayName(property))
+              )
+          ).reduce((acc, val) => acc.concat(val), []);
+          setModalErrors(errors);
         }
-      );
-      onSave(results);
+      } finally {
+        setSaving(false);
+      }
     }
-    setSaving(false);
   };
 
   /**
