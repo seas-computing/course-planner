@@ -50,6 +50,8 @@ import { FacultyScheduleView } from 'server/faculty/FacultyScheduleView.entity';
 import { Absence } from 'server/absence/absence.entity';
 import { Semester } from 'server/semester/semester.entity';
 import { BadRequestInfo } from 'client/components/pages/Courses/CourseModal';
+import { CourseInstance } from 'server/courseInstance/courseinstance.entity';
+import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import { InstructorResponseDTO } from '../../../../src/common/dto/courses/InstructorResponse.dto';
 
@@ -64,6 +66,8 @@ describe('Faculty API', function () {
   let mockFacultyScheduleSemesterViewRepository: Record<string, SinonStub> = {};
   let mockFacultyScheduleViewRepository: Record<string, SinonStub> = {};
   let mockFacultyService: Record<string, SinonStub> = {};
+  let mockCourseInstanceRepository: Record<string, SinonStub> = {};
+  let mockNonClassEventRepository: Record<string, SinonStub> = {};
 
   beforeEach(async function () {
     mockFacultyRepository = {
@@ -91,6 +95,8 @@ describe('Faculty API', function () {
     mockFacultyScheduleCourseViewRepository = {};
     mockFacultyScheduleSemesterViewRepository = {};
     mockFacultyScheduleViewRepository = {};
+    mockCourseInstanceRepository = {};
+    mockNonClassEventRepository = {};
 
     authStub = stub(TestingStrategy.prototype, 'login');
     mockFacultyRepository = {
@@ -118,7 +124,7 @@ describe('Faculty API', function () {
       ],
     })
       .overrideProvider(ConfigService)
-      .useValue(new ConfigService({ NODE_ENV: 'production' }))
+      .useValue(new ConfigService())
 
       .overrideProvider(getRepositoryToken(Faculty))
       .useValue(mockFacultyRepository)
@@ -134,6 +140,12 @@ describe('Faculty API', function () {
 
       .overrideProvider(getRepositoryToken(Absence))
       .useValue(mockAbsenceRepository)
+
+      .overrideProvider(getRepositoryToken(CourseInstance))
+      .useValue(mockCourseInstanceRepository)
+
+      .overrideProvider(getRepositoryToken(NonClassEvent))
+      .useValue(mockNonClassEventRepository)
 
       .overrideProvider(getRepositoryToken(FacultyScheduleCourseView))
       .useValue(mockFacultyScheduleCourseViewRepository)

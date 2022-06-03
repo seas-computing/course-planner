@@ -39,6 +39,7 @@ export class CourseInstance extends BaseEntity {
     type: 'integer',
     nullable: true,
     comment: 'Students enrolled in this course before shopping week',
+    default: null,
   })
   public preEnrollment?: number | null = null;
 
@@ -49,6 +50,7 @@ export class CourseInstance extends BaseEntity {
     type: 'integer',
     nullable: true,
     comment: 'Students enrolled in this course during shopping week',
+    default: null,
   })
   public studyCardEnrollment?: number | null = null;
 
@@ -59,6 +61,7 @@ export class CourseInstance extends BaseEntity {
     type: 'integer',
     nullable: true,
     comment: 'Students enrolled in this course after shopping week is over',
+    default: null,
   })
   public actualEnrollment?: number | null = null;
 

@@ -1,9 +1,13 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Inject } from '@nestjs/common';
 import { ApiOperation, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ConfigService } from '../config/config.service';
 
 @ApiTags('Health Check')
 @Controller('health-check')
 export class HealthCheckController {
+  @Inject(ConfigService)
+  private readonly config: ConfigService;
+
   /**
    * Provide an open endpoint to show that the server is still online
    */
@@ -18,6 +22,9 @@ export class HealthCheckController {
   })
   public getHealthCheck(
   ): Record<string, string> {
-    return { status: 'OK' };
+    return {
+      status: 'OK',
+      version: this.config.buildVersion,
+    };
   }
 }
