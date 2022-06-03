@@ -26,9 +26,9 @@ import { TermKey } from 'common/constants/term';
 import { updateCourseInstance } from 'client/api';
 import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto';
 import { AxiosError } from 'axios';
+import { HttpStatus } from '@nestjs/common';
 import { EnrollmentField } from './tableFields';
 import { BadRequestInfo } from './CourseModal';
-import { HttpStatus } from '@nestjs/common';
 
 interface EnrollmentModalProps {
   /**

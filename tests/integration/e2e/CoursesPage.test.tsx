@@ -6,7 +6,6 @@ import {
 import {
   render,
   RenderResult,
-  waitForElement,
   waitForElementToBeRemoved,
   fireEvent,
   within,
