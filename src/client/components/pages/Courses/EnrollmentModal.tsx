@@ -131,8 +131,7 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
   ] = useState(false);
 
   /**
-   * Array of validation errors to be shown to the user at the bottom of the
-   * modal
+   * State field to indicate the validity of each field
    */
   const [
     isFieldValid,
