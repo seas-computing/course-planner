@@ -28,6 +28,7 @@ import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto
 import { AxiosError } from 'axios';
 import { EnrollmentField } from './tableFields';
 import { BadRequestInfo } from './CourseModal';
+import { HttpStatus } from '@nestjs/common';
 
 interface EnrollmentModalProps {
   /**
@@ -274,16 +275,22 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
           const {
             response,
           } = error as AxiosError;
-          const errors = [
-            ...(response.data as BadRequestInfo).message,
-          ].map(
-            ({ constraints, property }) => Object.entries(constraints)
-              .map(
-                ([, message]) => message
-                  .replace(property, getDisplayName(property))
-              )
-          ).reduce((acc, val) => acc.concat(val), []);
-          setModalErrors(errors);
+          if (response.status === HttpStatus.BAD_REQUEST) {
+            const errors = [
+              ...(response.data as BadRequestInfo).message,
+            ].map(
+              ({ constraints, property }) => Object.entries(constraints)
+                .map(
+                  ([, message]) => message
+                    .replace(property, getDisplayName(property))
+                )
+            ).reduce((acc, val) => acc.concat(val), []);
+            setModalErrors(errors);
+          } else {
+            setModalErrors([
+              'Unable to save enrollment data. If the problem persists, please contact SEAS Computing',
+            ]);
+          }
         }
       } finally {
         setSaving(false);

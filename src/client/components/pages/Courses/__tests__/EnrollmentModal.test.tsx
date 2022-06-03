@@ -12,6 +12,7 @@ import { cs50CourseInstance } from 'testData';
 import request from 'client/api/request';
 import { TERM } from 'common/constants';
 import { HttpStatus } from '@nestjs/common';
+import { AxiosResponse } from 'axios';
 import EnrollmentModal from '../EnrollmentModal';
 
 describe('Enrollment Modal', function () {
@@ -43,6 +44,7 @@ describe('Enrollment Modal', function () {
       // Set the fake API up to reject
       putStub.rejects({
         response: {
+          status: HttpStatus.BAD_REQUEST,
           data: {
             statusCode: HttpStatus.BAD_REQUEST,
             error: 'Bad Request',
@@ -53,11 +55,26 @@ describe('Enrollment Modal', function () {
               },
             ],
           },
-        },
+        } as Partial<AxiosResponse>,
       });
       fireEvent.click(modal.getByText('Save'));
 
       return modal.findByText(/must not be less than 0/);
+    });
+    it('reports misc internal server errors', function () {
+      // Set the fake API up to reject
+      putStub.rejects({
+        response: {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          data: {
+            statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: 'Internal server error',
+          },
+        } as Partial<AxiosResponse>,
+      });
+      fireEvent.click(modal.getByText('Save'));
+
+      return modal.findByText(/please contact SEAS Computing/);
     });
   });
 });
