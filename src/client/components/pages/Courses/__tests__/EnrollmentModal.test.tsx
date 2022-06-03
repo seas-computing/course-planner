@@ -1,7 +1,6 @@
 import {
   fireEvent,
   RenderResult,
-  waitForElementToBeRemoved,
 } from '@testing-library/react';
 import React from 'react';
 import {
@@ -40,7 +39,7 @@ describe('Enrollment Modal', function () {
         />
       );
     });
-    it('reports server-side validation errors', async function () {
+    it('reports server-side validation errors', function () {
       // Set the fake API up to reject
       putStub.rejects({
         response: {
@@ -57,10 +56,6 @@ describe('Enrollment Modal', function () {
         },
       });
       fireEvent.click(modal.getByText('Save'));
-
-      await waitForElementToBeRemoved(
-        () => modal.findByText('saving')
-      );
 
       return modal.findByText('must not be less than 0');
     });
