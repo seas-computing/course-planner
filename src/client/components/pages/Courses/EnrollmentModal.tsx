@@ -18,6 +18,7 @@ import {
   TextInput,
   LoadSpinner,
   Form,
+  ValidationErrorMessage,
 } from 'mark-one';
 import CourseInstanceResponseDTO, { Instance } from 'common/dto/courses/CourseInstanceResponse';
 import { TERM } from 'common/constants';
@@ -141,6 +142,16 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
     preEnrollment: true,
     studyCardEnrollment: true,
   });
+
+  /**
+   * Array of error messages returned by the server indicating any potential
+   * server-side errors (be that validation errors, or general internal server
+   * errors)
+   */
+  const [
+    modalErrors,
+    setModalErrors,
+  ] = useState<string[]>([]);
 
   /**
    * The current course instance that enrollment data is being edited for
@@ -310,6 +321,15 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
                   }
                 />
               ))}
+              {
+                modalErrors.length > 0 ? (
+                  <ValidationErrorMessage
+                    id="editEnrollmentErrorMessage"
+                  >
+                    {modalErrors.join(', ')}
+                  </ValidationErrorMessage>
+                ) : null
+              }
             </Form>
           )
         }
