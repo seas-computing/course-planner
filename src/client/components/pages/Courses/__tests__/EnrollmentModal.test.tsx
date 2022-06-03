@@ -57,7 +57,7 @@ describe('Enrollment Modal', function () {
       });
       fireEvent.click(modal.getByText('Save'));
 
-      return modal.findByText('must not be less than 0');
+      return modal.findByText(/must not be less than 0/);
     });
   });
 });
