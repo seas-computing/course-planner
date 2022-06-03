@@ -35,9 +35,12 @@ describe('Room Selection Table', function () {
         );
       });
       context('When value is ALL', function () {
-        it('Should be the default', function () {
-          const { queryByRole } = renderResult;
-          const filter = queryByRole('combobox') as HTMLSelectElement;
+        it('Should be the default', async function () {
+          const { getAllByRole } = renderResult;
+          await wait(() => getAllByRole('row').length > 1);
+          const rows = getAllByRole('row');
+          const utils = within(rows[1]);
+          const filter = utils.queryByLabelText('Change to filter the list by whether rooms are available') as HTMLSelectElement;
           strictEqual(filter.value, AVAILABILITY.ALL);
         });
         it('Should show all the rows', function () {
@@ -54,9 +57,12 @@ describe('Room Selection Table', function () {
         });
       });
       context('When value is AVAILABLE', function () {
-        it('Should show all the available rows', function () {
-          const { queryByRole, queryAllByRole } = renderResult;
-          const filter = queryByRole('combobox');
+        it('Should show all the available rows', async function () {
+          const { queryAllByRole } = renderResult;
+          await wait(() => queryAllByRole('row').length > 1);
+          const rows = queryAllByRole('row');
+          const utils = within(rows[1]);
+          const filter = utils.queryByLabelText('Change to filter the list by whether rooms are available') as HTMLSelectElement;
           fireEvent.change(
             filter,
             {
@@ -77,9 +83,12 @@ describe('Room Selection Table', function () {
         });
       });
       context('When value is UNAVAILABLE', function () {
-        it('Should show all the unavailable rows', function () {
-          const { queryByRole, queryAllByRole } = renderResult;
-          const filter = queryByRole('combobox');
+        it('Should show all the unavailable rows', async function () {
+          const { queryAllByRole } = renderResult;
+          await wait(() => queryAllByRole('row').length > 1);
+          const rows = queryAllByRole('row');
+          const utils = within(rows[1]);
+          const filter = utils.queryByLabelText('Change to filter the list by whether rooms are available') as HTMLSelectElement;
           fireEvent.change(
             filter,
             {
@@ -100,9 +109,12 @@ describe('Room Selection Table', function () {
         });
       });
       context('When value is anything else', function () {
-        it('Should default to showing everything', function () {
-          const { queryByRole, queryAllByRole } = renderResult;
-          const filter = queryByRole('combobox');
+        it('Should default to showing everything', async function () {
+          const { queryAllByRole } = renderResult;
+          await wait(() => queryAllByRole('row').length > 1);
+          const rows = queryAllByRole('row');
+          const utils = within(rows[1]);
+          const filter = utils.queryByLabelText('Change to filter the list by whether rooms are available') as HTMLSelectElement;
           fireEvent.change(
             filter,
             {
