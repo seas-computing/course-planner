@@ -148,9 +148,11 @@ const NotesModal: FunctionComponent<NotesModalProps> = function ({
       // eslint-disable-next-line no-alert
       if (window.confirm(confirmMessage)) {
         setIsChanged(false);
+        setModalErrors([]);
         onClose();
       }
     } else {
+      setModalErrors([]);
       onClose();
     }
   };

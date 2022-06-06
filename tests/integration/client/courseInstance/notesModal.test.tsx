@@ -23,6 +23,7 @@ import {
 describe('Notes modal', function () {
   let getStub: SinonStub;
   let postStub: SinonStub;
+  let windowConfirmStub: SinonStub;
   const testData = cs50CourseInstance;
   let page: RenderResult;
 
@@ -35,6 +36,8 @@ describe('Notes modal', function () {
   beforeEach(function () {
     getStub = stub(CourseAPI, 'getCourseInstancesForYear');
     postStub = stub(CourseAPI, 'editCourse');
+    windowConfirmStub = stub(window, 'confirm');
+    windowConfirmStub.returns(true);
     getStub.resolves([testData]);
     postStub.resolves();
   });
@@ -160,6 +163,11 @@ describe('Notes modal', function () {
         /Open notes for/
       ) as HTMLButtonElement;
       fireEvent.click(editNotesButton);
+
+      modal = page.getByText(`Notes For ${testData.catalogNumber}`)
+        .parentElement
+        .parentElement as HTMLDivElement;
+
       const newMultiLineTextArea = within(modal).getByLabelText(
         'Course Notes',
         { selector: 'textarea' }
@@ -167,7 +175,6 @@ describe('Notes modal', function () {
       strictEqual(newMultiLineTextArea.value, 'aaa');
     });
     it('prompts the user to save any un-saved changes before closing', function () {
-      const windowConfirmStub = stub(window, 'confirm');
       fireEvent.change(multiLineTextArea, {
         target: { value: string },
       });
@@ -223,6 +230,44 @@ describe('Notes modal', function () {
       fireEvent.click(noteSubmitButton);
       return waitForElement(
         () => within(modal).findByText(/please contact SEAS Computing/)
+      );
+    });
+    it('clears existing errors between modal instances', async function () {
+      postStub.rejects({
+        response: {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          data: {
+            statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+            error: 'Internal server error',
+          },
+        } as Partial<AxiosResponse>,
+      });
+      fireEvent.change(multiLineTextArea, { target: { value: string } });
+
+      // Click submit to show the errors from above
+      fireEvent.click(noteSubmitButton);
+
+      // Wait for the spinner to go away
+      await waitForElementToBeRemoved(() => within(modal).getByText(/saving/i));
+
+      // Get rid of the modal so we can re-open it
+      fireEvent.click(noteCancelButton);
+
+      // Get new reference to add/edit button since the original may have
+      // replaced since the last render
+      editNotesButton = await page.findByLabelText(
+        /Open notes for/
+      ) as HTMLButtonElement;
+      fireEvent.click(editNotesButton);
+
+      modal = page.getByText(`Notes For ${testData.catalogNumber}`)
+        .parentElement
+        .parentElement as HTMLDivElement;
+
+      strictEqual(
+        within(modal).queryByText(/contact SEAS Computing/)
+        ?.textContent || null,
+        null
       );
     });
   });
