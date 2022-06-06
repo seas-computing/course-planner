@@ -1,4 +1,9 @@
-import React, { ReactElement, useState, ChangeEvent } from 'react';
+import React, {
+  ReactElement,
+  useState,
+  ChangeEvent,
+  useMemo,
+} from 'react';
 import {
   Table,
   TableRow,
@@ -100,7 +105,7 @@ const RoomSelectionTable = (
   /**
    * Return filtered rooms based on the campus, room, and availability filters
    */
-  const filteredRooms = (): RoomResponse[] => {
+  const filteredRooms = useMemo((): RoomResponse[] => {
     let filteredRoomList = [...roomList];
     if (campusFilter !== 'All') {
       filteredRoomList = listFilter(
@@ -113,7 +118,7 @@ const RoomSelectionTable = (
       { field: 'name', value: roomFilter, exact: false }
     );
     return filteredRoomList;
-  };
+  }, [roomList, campusFilter, roomFilter]);
   return (
     <>
       <Table>
@@ -191,7 +196,7 @@ const RoomSelectionTable = (
           </TableRow>
         </TableHead>
         <TableBody>
-          {filteredRooms().filter(({ meetingTitles }) => {
+          {filteredRooms.filter(({ meetingTitles }) => {
             switch (availabilityFilter) {
               case AVAILABILITY.ALL:
                 return true;
