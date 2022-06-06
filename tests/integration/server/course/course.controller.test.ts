@@ -252,23 +252,6 @@ describe('Course API', function () {
           deepStrictEqual(response.status, HttpStatus.BAD_REQUEST);
           strictEqual(errorFields.includes('isSEAS'), true);
         });
-        it('reports a validation error when term pattern is missing', async function () {
-          authStub.resolves(adminUser);
-
-          const response = await request(api)
-            .post('/api/courses')
-            .send({ title: computerScienceCourse.title });
-
-          const body = response.body as BadRequestInfo;
-
-          // Collects all of the field names that contain errors
-          const errorFields = [];
-          body.message.map((errorInfo) => errorFields.push(errorInfo.property));
-
-          deepStrictEqual(response.ok, false);
-          deepStrictEqual(response.status, HttpStatus.BAD_REQUEST);
-          strictEqual(errorFields.includes('termPattern'), true);
-        });
       });
       describe('User is not a member of the admin group', function () {
         it('is inaccessible to unauthorized users', async function () {
@@ -387,23 +370,6 @@ describe('Course API', function () {
           deepStrictEqual(response.ok, false);
           deepStrictEqual(response.status, HttpStatus.BAD_REQUEST);
           strictEqual(errorFields.includes('isSEAS'), true);
-        });
-        it('reports a validation error when term pattern is missing', async function () {
-          authStub.resolves(adminUser);
-
-          const response = await request(api)
-            .put(`/api/courses/${computerScienceCourse.id}`)
-            .send({ title: computerScienceCourse.title });
-
-          const body = response.body as BadRequestInfo;
-
-          // Collects all of the field names that contain errors
-          const errorFields = [];
-          body.message.map((errorInfo) => errorFields.push(errorInfo.property));
-
-          deepStrictEqual(response.ok, false);
-          deepStrictEqual(response.status, HttpStatus.BAD_REQUEST);
-          strictEqual(errorFields.includes('termPattern'), true);
         });
       });
       describe('User is not a member of the admin group', function () {
