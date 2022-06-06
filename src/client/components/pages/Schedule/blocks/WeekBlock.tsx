@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, ReactEventHandler } from 'react';
 import styled from 'styled-components';
 import DayBlock from './DayBlock';
 import { PGTime } from '../../../../../common/utils/PGTime';
@@ -37,6 +37,11 @@ interface WeekBlockProps {
    * appear in the WeekView
    */
   numColumns: number;
+
+  /**
+   * A click handler that can be used to clear the currently popped-over course
+   */
+  onClick?: ReactEventHandler;
 }
 
 /**
@@ -127,6 +132,7 @@ const WeekBlock: FunctionComponent<WeekBlockProps> = ({
   children,
   minuteResolution,
   rowHeight,
+  onClick,
 }) => {
   // Because our grid-rows do not correspond 1:1 with minutes in the day, we
   // divide by our minute resolution value to determine where our hour and
@@ -138,6 +144,7 @@ const WeekBlock: FunctionComponent<WeekBlockProps> = ({
       numRows={numRows}
       rowHeight={rowHeight}
       numColumns={numColumns}
+      onClick={onClick}
     >
       {Array.from(
         // Generate a row every 15 minutes
@@ -174,6 +181,10 @@ const WeekBlock: FunctionComponent<WeekBlockProps> = ({
       {children}
     </WeekBlockWrapper>
   );
+};
+
+WeekBlock.defaultProps = {
+  onClick: () => {},
 };
 
 export default WeekBlock;

@@ -1,9 +1,12 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useState } from 'react';
 import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
 import DAY, { dayEnumToString } from 'common/constants/day';
+import { Popover } from 'mark-one';
 import {
-  WeekBlock, DayBlock, CourseListing, SessionBlock,
+  WeekBlock, DayBlock, CourseListing, SessionBlock, CourseListingButton,
 } from './blocks';
+import { PGTime } from '../../../../common/utils/PGTime';
+import { HiddenText } from '../../general';
 
 interface ScheduleViewProps {
   /**
@@ -61,6 +64,12 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
   // css-grid rows
   const numRows = ((lastHour - firstHour) * 60)
       / minuteResolution;
+
+  /**
+   * Track the prefix and catalog number of the course whose details should be shown.
+   */
+  const [currentPopover, setCurrentPopover] = useState('');
+
   return (
     <WeekBlock
       firstHour={firstHour}
@@ -68,6 +77,9 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
       numColumns={days.length}
       rowHeight={rowHeight}
       minuteResolution={minuteResolution}
+      onClick={() => {
+        setCurrentPopover(null);
+      }}
     >
       {days.map((day, col) => (
         <DayBlock
@@ -83,6 +95,8 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
             coursePrefix,
             startHour,
             startMinute,
+            endHour,
+            endMinute,
             duration,
             weekday,
             courses,
@@ -95,7 +109,9 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
                 / minuteResolution
                 // Add one to account for the header row
               ) + 1;
-              const resolvedDuration = Math.round(duration / minuteResolution);
+              const resolvedDuration = Math.round(
+                duration / minuteResolution
+              );
               return [...blocks, (
                 <SessionBlock
                   key={sessionId}
@@ -103,11 +119,49 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
                   startRow={resolvedStartRow}
                   duration={resolvedDuration}
                 >
-                  {courses.map(({ id: courseId, courseNumber }) => (
-                    <CourseListing key={courseId}>
-                      {courseNumber}
-                    </CourseListing>
-                  ))}
+                  {courses.map(({
+                    id: courseId,
+                    courseNumber,
+                    room,
+                  }) => {
+                    const catalogNumber = `${coursePrefix} ${courseNumber}`;
+                    const displayStartTime = PGTime.toDisplay(
+                      `${startHour}:${startMinute.toString().padStart(2, '0')}`
+                    );
+                    const displayEndTime = PGTime.toDisplay(
+                      `${endHour}:${endMinute.toString().padStart(2, '0')}`
+                    );
+                    return (
+                      <CourseListing key={courseId}>
+                        <CourseListingButton
+                          aria-disabled
+                          aria-labelledby={`${courseId}-description`}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            setCurrentPopover((current) => (
+                              current === courseId ? null : courseId
+                            ));
+                          }}
+                        >
+                          {courseNumber}
+                        </CourseListingButton>
+                        <Popover
+                          aria-hidden
+                          xOffset="0.5rem"
+                          yOffset="1rem"
+                          title={catalogNumber}
+                          isVisible={currentPopover === courseId}
+                        >
+                          <p>{day}</p>
+                          <p>{`${displayStartTime} - ${displayEndTime}`}</p>
+                          <p>{room}</p>
+                        </Popover>
+                        <HiddenText id={`${courseId}-description`}>
+                          {`${catalogNumber} on ${day}, ${displayStartTime} to ${displayEndTime} in ${room}`}
+                        </HiddenText>
+                      </CourseListing>
+                    );
+                  })}
                 </SessionBlock>
               )];
             }

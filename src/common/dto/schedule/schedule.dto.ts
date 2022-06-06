@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DAY } from 'common/constants';
 
-abstract class ScheduleEntry {
+export abstract class ScheduleEntry {
   @ApiProperty({
     example: 'c7b1fa3f-c5b0-478d-a29c-7f85a4d80109',
   })
