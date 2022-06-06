@@ -209,5 +209,21 @@ describe('Notes modal', function () {
         () => within(modal).findByText(/must be a valid enum value/)
       );
     });
+    it('reports misc server-side errors', function () {
+      postStub.rejects({
+        response: {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          data: {
+            statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+            error: 'Internal server error',
+          },
+        } as Partial<AxiosResponse>,
+      });
+      fireEvent.change(multiLineTextArea, { target: { value: string } });
+      fireEvent.click(noteSubmitButton);
+      return waitForElement(
+        () => within(modal).findByText(/please contact SEAS Computing/)
+      );
+    });
   });
 });

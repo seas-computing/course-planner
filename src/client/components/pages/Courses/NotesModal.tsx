@@ -229,17 +229,22 @@ const NotesModal: FunctionComponent<NotesModalProps> = function ({
                 } catch (error) {
                   if ((error as AxiosError).response) {
                     const { response } = error as AxiosError;
-                    const errors = [
-                      ...(response.data as BadRequestInfo).message,
-                    ].map(
-                      ({ constraints }) => Object.entries(constraints)
-                        .map(([, message]) => message)
-                        /* We're not making any effort here to try and resolve
-                        * the field name to a human readable name because the
-                        * field name could be any field from the course object
-                        * rather than a known set of pre-determined fields */
-                    ).reduce((acc, val) => acc.concat(val), []);
-                    setModalErrors(errors);
+                    if (response.status === HttpStatus.BAD_REQUEST) {
+                      const errors = [
+                        ...(response.data as BadRequestInfo).message,
+                      ].map(
+                        ({ constraints }) => Object.entries(constraints)
+                          .map(([, message]) => message)
+                          /* We're not making any effort here to try and resolve
+                          * the field name to a human readable name because the
+                          * field name could be any field from the course object
+                          * rather than a known set of pre-determined fields */
+                      ).reduce((acc, val) => acc.concat(val), []);
+                      setModalErrors(errors);
+                    } else {
+                      setModalErrors([
+                        'Unable to save enrollment data. If the problem persists, please contact SEAS Computing',
+                      ]);
                     }
                   }
                 } finally {
