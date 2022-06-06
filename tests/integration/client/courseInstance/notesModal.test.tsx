@@ -1,4 +1,6 @@
+import { HttpStatus } from '@nestjs/common';
 import { strictEqual } from 'assert';
+import { AxiosResponse } from 'axios';
 import { CourseAPI } from 'client/api';
 import CoursesPage from 'client/components/pages/Courses/CoursesPage';
 import React from 'react';
@@ -181,6 +183,30 @@ describe('Notes modal', function () {
       fireEvent.click(noteSubmitButton);
       return waitForElement(
         () => within(modal).findByText('Saving Notes')
+      );
+    });
+    it('reports server-side validation errors', function () {
+      postStub.rejects({
+        response: {
+          status: HttpStatus.BAD_REQUEST,
+          data: {
+            statusCode: HttpStatus.BAD_REQUEST,
+            error: 'Bad Request',
+            message: [
+              {
+                property: 'termPattern',
+                constraints: {
+                  isEnum: 'termPattern must be a valid enum value',
+                },
+              },
+            ],
+          },
+        } as Partial<AxiosResponse>,
+      });
+      fireEvent.change(multiLineTextArea, { target: { value: string } });
+      fireEvent.click(noteSubmitButton);
+      return waitForElement(
+        () => within(modal).findByText(/must be a valid enum value/)
       );
     });
   });
