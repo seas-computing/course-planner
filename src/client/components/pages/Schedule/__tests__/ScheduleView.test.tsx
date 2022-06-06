@@ -155,11 +155,12 @@ describe('ScheduleView', function () {
       });
     });
     describe('Accessibility', function () {
-      it('Should not include any button roles on the page', function () {
-        // All buttons/popovers have aria-hidden set, so that screen readers
-        // will not show them
+      it('Should not include any active buttons on the page', function () {
         const buttonRoles = page.queryAllByRole('button');
-        strictEqual(buttonRoles.length, 0);
+        const activeButtons = buttonRoles.filter(
+          (button) => !button.getAttribute('aria-disabled')
+        );
+        strictEqual(activeButtons.length, 0);
       });
       it('Should still display the Popover text for each entry', function () {
         testCourseScheduleData.forEach(({

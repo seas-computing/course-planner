@@ -134,7 +134,8 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
                     return (
                       <CourseListing key={courseId}>
                         <CourseListingButton
-                          aria-hidden
+                          aria-disabled
+                          aria-labelledby={`${courseId}-description`}
                           onClick={(event) => {
                             event.stopPropagation();
                             setCurrentPopover((current) => (
@@ -155,7 +156,7 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
                           <p>{`${displayStartTime} - ${displayEndTime}`}</p>
                           <p>{room}</p>
                         </Popover>
-                        <HiddenText>
+                        <HiddenText id={`${courseId}-description`}>
                           {`${catalogNumber} on ${day}, ${displayStartTime} to ${displayEndTime} in ${room}`}
                         </HiddenText>
                       </CourseListing>
