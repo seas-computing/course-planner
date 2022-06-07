@@ -92,6 +92,7 @@ export abstract class UpdateCourseDTO {
     enum: TERM_PATTERN,
   })
   @IsEnum(TERM_PATTERN)
+  @IsOptional()
   public termPattern: TERM_PATTERN;
 
   @ApiProperty({
