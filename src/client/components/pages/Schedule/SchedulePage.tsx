@@ -11,6 +11,7 @@ import { VerticalSpace } from 'client/components/layout';
 import { termEnumToTitleCase } from 'common/utils/termHelperFunctions';
 import { toTitleCase } from 'common/utils/util';
 import ScheduleView from './ScheduleView';
+import { useStoredState } from '../../../hooks/useStoredState';
 
 /**
  * Parameters for how the schedule view should be displayed. Currently using
@@ -54,7 +55,10 @@ const SchedulePage: FunctionComponent = () => {
   /**
    * Keeps track of the currently selectedterm
    */
-  const [selectedSemester, setSelectedSemester] = useState<SemesterSelection>();
+  const [
+    selectedSemester,
+    setSelectedSemester,
+  ] = useStoredState<SemesterSelection>('SCHEDULE_SEMESTER_SELECTION');
 
   /**
    * Whether an API request is in progress

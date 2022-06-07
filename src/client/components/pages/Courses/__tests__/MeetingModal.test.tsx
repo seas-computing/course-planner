@@ -20,7 +20,12 @@ import { TERM } from 'common/constants';
 import DAY, { dayEnumToString } from 'common/constants/day';
 import { TermKey } from 'common/constants/term';
 import React, { useState } from 'react';
-import { SinonStub, stub } from 'sinon';
+import {
+  SinonSpy,
+  SinonStub,
+  spy,
+  stub,
+} from 'sinon';
 import { render } from 'test-utils';
 import { cs50CourseInstance, freeRoom, bookedRoom } from 'testData';
 import * as dummy from 'testData';
@@ -30,6 +35,7 @@ import { Button, VARIANT } from 'mark-one';
 import axios from 'axios';
 import MeetingModal from '../MeetingModal';
 import { PGTime } from '../../../../../common/utils/PGTime';
+import * as filters from '../../Filter';
 
 describe('Meeting Modal', function () {
   let renderResult: RenderResult;
@@ -49,11 +55,13 @@ describe('Meeting Modal', function () {
   const meetingTerm = TERM.FALL;
   const semKey = meetingTerm.toLowerCase() as TermKey;
   const testCourseInstance = cs50CourseInstance;
+  let filterSpy: SinonSpy;
   describe('rendering', function () {
     beforeEach(function () {
       onCloseStub = stub();
       onSaveStub = stub();
       roomAPIStub = stub(roomAPI, 'getRoomAvailability');
+      filterSpy = spy(filters, 'listFilter');
       renderResult = render(
         <MeetingModal
           isVisible
@@ -953,6 +961,24 @@ describe('Meeting Modal', function () {
                 strictEqual(queryByText(meetingText, { exact: false }), null);
               });
             });
+          });
+        });
+      });
+      describe('Room Selection Table', function () {
+        context('when the campus dropdown filter is changed', function () {
+          it('calls the listFilter function once for each filter', async function () {
+            const campusFilter = await findByLabelText('Change to filter the list of meetings by campus', { exact: false });
+            filterSpy.resetHistory();
+            fireEvent.change(campusFilter, { target: { value: 'Allston' } });
+            strictEqual(filterSpy.callCount, 2);
+          });
+        });
+        context('when the room text input filter is changed', function () {
+          it('calls the listFilter function once', async function () {
+            const roomFilter = await findByLabelText('Change to filter the list of meetings by room', { exact: false });
+            filterSpy.resetHistory();
+            fireEvent.change(roomFilter, { target: { value: 'AnyValue' } });
+            strictEqual(filterSpy.callCount, 1);
           });
         });
       });
