@@ -1,6 +1,5 @@
-import { HttpStatus } from '@nestjs/common';
 import { AxiosError } from 'axios';
-import { CourseAPI } from 'client/api';
+import { CourseAPI, HTTP_STATUS } from 'client/api';
 import {
   Button,
   Modal,
@@ -231,7 +230,7 @@ const NotesModal: FunctionComponent<NotesModalProps> = function ({
                 } catch (error) {
                   if ((error as AxiosError).response) {
                     const { response } = error as AxiosError;
-                    if (response.status === HttpStatus.BAD_REQUEST) {
+                    if (response.status === HTTP_STATUS.BAD_REQUEST) {
                       const errors = [
                         ...(response.data as BadRequestInfo).message,
                       ].map(
