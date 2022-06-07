@@ -1,4 +1,5 @@
-import { CourseAPI } from 'client/api';
+import { AxiosError } from 'axios';
+import { CourseAPI, HTTP_STATUS } from 'client/api';
 import {
   Button,
   Modal,
@@ -9,6 +10,7 @@ import {
   POSITION,
   VARIANT,
   LoadSpinner,
+  ValidationErrorMessage,
 } from 'mark-one';
 import React, {
   ChangeEvent,
@@ -20,6 +22,7 @@ import React, {
   useState,
 } from 'react';
 import CourseInstanceResponseDTO from '../../../../common/dto/courses/CourseInstanceResponse';
+import { BadRequestInfo } from './CourseModal';
 
 interface NotesModalProps {
   /**
@@ -64,6 +67,16 @@ const NotesModal: FunctionComponent<NotesModalProps> = function ({
     courseNotes,
     setCourseNotes,
   ] = useState('');
+
+  /**
+   * Array of error messages returned by the server indicating any potential
+   * server-side errors (be that validation errors, or general internal server
+   * errors)
+   */
+  const [
+    modalErrors,
+    setModalErrors,
+  ] = useState<string[]>([]);
 
   /**
    * The current value of the Meeting Modal ref
@@ -134,9 +147,11 @@ const NotesModal: FunctionComponent<NotesModalProps> = function ({
       // eslint-disable-next-line no-alert
       if (window.confirm(confirmMessage)) {
         setIsChanged(false);
+        setModalErrors([]);
         onClose();
       }
     } else {
+      setModalErrors([]);
       onClose();
     }
   };
@@ -184,6 +199,13 @@ const NotesModal: FunctionComponent<NotesModalProps> = function ({
               />
             )
         }
+        {
+          modalErrors.length > 0 ? (
+            <ValidationErrorMessage>
+              {modalErrors.join(', ')}
+            </ValidationErrorMessage>
+          ) : null
+        }
       </ModalBody>
       <ModalFooter>
         {
@@ -201,13 +223,34 @@ const NotesModal: FunctionComponent<NotesModalProps> = function ({
                     title: course.title,
                     notes: courseNotes,
                   });
+                  onSave({
+                    ...course,
+                    notes: courseNotes,
+                  });
+                } catch (error) {
+                  if ((error as AxiosError).response) {
+                    const { response } = error as AxiosError;
+                    if (response.status === HTTP_STATUS.BAD_REQUEST) {
+                      const errors = [
+                        ...(response.data as BadRequestInfo).message,
+                      ].map(
+                        ({ constraints }) => Object.entries(constraints)
+                          .map(([, message]) => message)
+                          /* We're not making any effort here to try and resolve
+                          * the field name to a human readable name because the
+                          * field name could be any field from the course object
+                          * rather than a known set of pre-determined fields */
+                      ).reduce((acc, val) => acc.concat(val), []);
+                      setModalErrors(errors);
+                    } else {
+                      setModalErrors([
+                        'Unable to save enrollment data. If the problem persists, please contact SEAS Computing',
+                      ]);
+                    }
+                  }
                 } finally {
                   setSaving(false);
                 }
-                onSave({
-                  ...course,
-                  notes: courseNotes,
-                });
               }}
               variant={VARIANT.POSITIVE}
             >
