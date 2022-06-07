@@ -1,31 +1,15 @@
+import fs from 'fs';
+import { SinonStub, stub } from 'sinon';
 import { strictEqual, throws, notStrictEqual } from 'assert';
-import { int, safeString } from 'testData';
+import { int, safeString, error } from 'testData';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { AUTH_MODE } from 'common/constants';
 import FakeTimers from '@sinonjs/fake-timers';
 import { RedisStore } from 'connect-redis';
 import { SessionOptions } from 'express-session';
+import { MONTH } from 'common/constants/month';
 import { ConfigService } from '../config.service';
 import { LOG_LEVEL } from '../../../common/constants';
-
-/**
- * The months of the year starting at 0.
- * The Date object expects months of the year to start at 0.
- */
-enum MONTH {
-  JAN = 0,
-  FEB,
-  MAR,
-  APR,
-  MAY,
-  JUN,
-  JUL,
-  AUG,
-  SEP,
-  OCT,
-  NOV,
-  DEC,
-}
 
 describe('Configuration Service', function () {
   it('reports if the app is in production', function () {
@@ -263,7 +247,7 @@ describe('Configuration Service', function () {
     const REDIS_PASSWORD = 'password';
     const REDIS_PREFIX = safeString;
 
-    let redisURL: URL;
+    let redisClientOptions: URL;
     context('In Production', function () {
       context('With a Password', function () {
         beforeEach(function () {
@@ -274,23 +258,23 @@ describe('Configuration Service', function () {
             REDIS_PREFIX,
             NODE_ENV: 'production',
           });
-          redisURL = new URL(config.redisURL);
+          redisClientOptions = new URL(config.redisClientOptions.url);
         });
 
         it('provides the redis hostname', function () {
-          strictEqual(redisURL.hostname, REDIS_HOST);
+          strictEqual(redisClientOptions.hostname, REDIS_HOST);
         });
 
         it('provides the redis port', function () {
-          strictEqual(redisURL.port.toString(), REDIS_PORT);
+          strictEqual(redisClientOptions.port.toString(), REDIS_PORT);
         });
 
         it('provides the redis password', function () {
-          strictEqual(redisURL.password, REDIS_PASSWORD);
+          strictEqual(redisClientOptions.password, REDIS_PASSWORD);
         });
 
         it('Sets the protocol to "rediss:"', function () {
-          strictEqual(redisURL.protocol, 'rediss:');
+          strictEqual(redisClientOptions.protocol, 'rediss:');
         });
       });
       context('Without a Password', function () {
@@ -301,80 +285,23 @@ describe('Configuration Service', function () {
             REDIS_PREFIX,
             NODE_ENV: 'production',
           });
-          redisURL = new URL(config.redisURL);
+          redisClientOptions = new URL(config.redisClientOptions.url);
         });
 
         it('provides the redis hostname', function () {
-          strictEqual(redisURL.hostname, REDIS_HOST);
+          strictEqual(redisClientOptions.hostname, REDIS_HOST);
         });
 
         it('provides the redis port', function () {
-          strictEqual(redisURL.port.toString(), REDIS_PORT);
+          strictEqual(redisClientOptions.port.toString(), REDIS_PORT);
         });
 
         it('does not provide a redis password', function () {
-          strictEqual(redisURL.password, '');
+          strictEqual(redisClientOptions.password, '');
         });
 
         it('Sets the protocol to "rediss:"', function () {
-          strictEqual(redisURL.protocol, 'rediss:');
-        });
-      });
-    });
-    context('In Development', function () {
-      context('With a Password', function () {
-        beforeEach(function () {
-          const config = new ConfigService({
-            REDIS_HOST,
-            REDIS_PORT,
-            REDIS_PASSWORD,
-            REDIS_PREFIX,
-            NODE_ENV: 'development',
-          });
-          redisURL = new URL(config.redisURL);
-        });
-
-        it('provides the redis hostname', function () {
-          strictEqual(redisURL.hostname, REDIS_HOST);
-        });
-
-        it('provides the redis port', function () {
-          strictEqual(redisURL.port.toString(), REDIS_PORT);
-        });
-
-        it('provides the redis password', function () {
-          strictEqual(redisURL.password, REDIS_PASSWORD);
-        });
-
-        it('Sets the protocol to "redis:"', function () {
-          strictEqual(redisURL.protocol, 'redis:');
-        });
-      });
-      context('Without a Password', function () {
-        beforeEach(function () {
-          const config = new ConfigService({
-            REDIS_HOST,
-            REDIS_PORT,
-            REDIS_PREFIX,
-            NODE_ENV: 'development',
-          });
-          redisURL = new URL(config.redisURL);
-        });
-
-        it('provides the redis hostname', function () {
-          strictEqual(redisURL.hostname, REDIS_HOST);
-        });
-
-        it('provides the redis port', function () {
-          strictEqual(redisURL.port.toString(), REDIS_PORT);
-        });
-
-        it('does not provide a redis password', function () {
-          strictEqual(redisURL.password, '');
-        });
-
-        it('Sets the protocol to "redis:"', function () {
-          strictEqual(redisURL.protocol, 'redis:');
+          strictEqual(redisClientOptions.protocol, 'rediss:');
         });
       });
     });
@@ -525,6 +452,50 @@ describe('Configuration Service', function () {
         it('Returns LOG_LEVEL.ERROR', function () {
           const config = new ConfigService({ });
           strictEqual(config.logLevel, LOG_LEVEL.ERROR);
+        });
+      });
+    });
+  });
+  describe('buildVersion', function () {
+    let existsStub: SinonStub;
+    let readFileStub: SinonStub;
+    beforeEach(function () {
+      existsStub = stub(fs, 'existsSync');
+      readFileStub = stub(fs, 'readFileSync');
+    });
+    context('When no .dockerversion file exists', function () {
+      beforeEach(function () {
+        existsStub.returns(false);
+      });
+      it('Returns an empty string', function () {
+        const config = new ConfigService({});
+        strictEqual(config.buildVersion, '');
+      });
+    });
+    context('When a .dockerversion file exists', function () {
+      beforeEach(function () {
+        existsStub.returns(true);
+      });
+      context('When the .dockerversion file is NOT readable', function () {
+        beforeEach(function () {
+          readFileStub.throws(error);
+        });
+        it('Returns an empty string', function () {
+          const config = new ConfigService({});
+          strictEqual(config.buildVersion, '');
+        });
+      });
+      context('When the .dockerversion file is readable', function () {
+        const fakeVersion = 'v1.0.0';
+        it('Should return the contents of the file', function () {
+          readFileStub.returns(fakeVersion);
+          const config = new ConfigService({});
+          strictEqual(config.buildVersion, fakeVersion);
+        });
+        it('Should strip out extra white space', function () {
+          readFileStub.returns(fakeVersion + '      \n\n');
+          const config = new ConfigService({});
+          strictEqual(config.buildVersion, fakeVersion);
         });
       });
     });

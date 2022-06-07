@@ -4,7 +4,7 @@ import React, {
   Ref,
   FunctionComponent,
 } from 'react';
-import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
+import CourseInstanceResponseDTO, { Instance } from 'common/dto/courses/CourseInstanceResponse';
 import {
   BorderlessButton,
   TableCellList,
@@ -15,7 +15,15 @@ import {
   TextInput,
 } from 'mark-one';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStickyNote as withNotes, faFolderOpen, faEdit } from '@fortawesome/free-solid-svg-icons';
+import {
+  faStickyNote as withNotes,
+  faFolderOpen,
+  faEdit,
+  IconDefinition,
+  faShoppingCart,
+  faCalendar,
+  faUsers,
+} from '@fortawesome/free-solid-svg-icons';
 import { faStickyNote as withoutNotes } from '@fortawesome/free-regular-svg-icons';
 import {
   TERM,
@@ -299,6 +307,100 @@ export const formatMeetings = (
 });
 
 /**
+ * Representative of an enrollment field (e.g "Pre-registration") along with
+ * the associated icon, value and list key. This type is to enforce consistency
+ * between list items
+ */
+export type EnrollmentField = {
+  icon: IconDefinition,
+  name: string,
+  count?: number,
+  key: keyof Instance & ('preEnrollment' | 'studyCardEnrollment' | 'actualEnrollment'),
+};
+
+/**
+ * Helper function that returns a functional component to render enrollment
+ * data in an unordered list for display in a single column
+ */
+export const formatEnrollment = (
+  term: TERM
+): FunctionComponent<FieldContentProps> => React.memo((
+  {
+    course,
+    openEnrollmentModal,
+    buttonRef,
+    isEditable,
+  }: FieldContentProps
+): ReactElement => {
+  const semKey = term.toLowerCase() as TermKey;
+  const {
+    id: parentId,
+    catalogNumber,
+    [semKey]: instance,
+  } = course;
+  const {
+    calendarYear,
+  } = instance;
+  const enrollmentData: EnrollmentField[] = [
+    {
+      name: 'Pre-Registration',
+      key: 'preEnrollment',
+      count: instance.preEnrollment,
+      icon: faShoppingCart,
+    },
+    {
+      name: 'Enrollment Deadline',
+      key: 'studyCardEnrollment',
+      count: instance.studyCardEnrollment,
+      icon: faCalendar,
+    },
+    {
+      name: 'Final Enrollment',
+      key: 'actualEnrollment',
+      count: instance.actualEnrollment,
+      icon: faUsers,
+    },
+  ];
+  return (
+    <>
+      <TableCellList>
+        {
+          enrollmentData
+            .filter(({ count }) => count !== null)
+            .map((item) => (
+              <TableCellListItem
+                key={item.key}
+                title={item.name}
+                aria-label={item.name}
+              >
+                <FontAwesomeIcon
+                  icon={item.icon}
+                  fixedWidth
+                />
+                {' '}
+                { item.count }
+              </TableCellListItem>
+            ))
+        }
+      </TableCellList>
+      {isEditable && (
+        <BorderlessButton
+          id={`${parentId}-${term}-edit-enrollment-button`}
+          alt={`Edit enrollment for ${catalogNumber} in ${semKey} ${calendarYear}`}
+          onClick={() => {
+            openEnrollmentModal(course, semKey as TERM);
+          }}
+          variant={VARIANT.INFO}
+          forwardRef={buttonRef}
+        >
+          <FontAwesomeIcon icon={faEdit} />
+        </BorderlessButton>
+      )}
+    </>
+  );
+});
+
+/**
  * Describes the additional options passed into the FieldContent functional
  * component
  */
@@ -315,6 +417,23 @@ export interface FieldContentProps {
    * Controls the opening of the instructor modal with the requested course and term
    */
   openInstructorModal?: (course: CourseInstanceResponseDTO, term: TERM) => void;
+
+  /**
+   * Controls the opening of the notes modal for the requested course
+   */
+  openNotesModal?: (
+    course: CourseInstanceResponseDTO,
+    buttonId?: string
+  ) => void;
+
+  /**
+   * Controls the opening of the enrollment modal for the requested course instance
+   */
+  openEnrollmentModal?: (
+    course: CourseInstanceResponseDTO,
+    term: TERM,
+  ) => void;
+
   /**
    * Controls the opening of the offered modal with the requested course and term
    */
@@ -527,25 +646,11 @@ export const tableFields: CourseInstanceListColumn[] = [
     FieldContent: formatMeetings(TERM.FALL),
   },
   {
-    name: 'Pre',
-    key: 'pre-enrollment-fall',
+    name: 'Enrollment',
+    key: 'enrollment-fall',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.FALL,
     viewColumn: COURSE_TABLE_COLUMN.ENROLLMENT,
-    FieldContent: retrieveValue('preEnrollment', TERM.FALL),
-  },
-  {
-    name: 'Study',
-    key: 'study-card-enrollment-fall',
-    columnGroup: COURSE_TABLE_COLUMN_GROUP.FALL,
-    viewColumn: COURSE_TABLE_COLUMN.ENROLLMENT,
-    FieldContent: retrieveValue('studyCardEnrollment', TERM.FALL),
-  },
-  {
-    name: 'Actual',
-    key: 'actual-enrollment-fall',
-    columnGroup: COURSE_TABLE_COLUMN_GROUP.FALL,
-    viewColumn: COURSE_TABLE_COLUMN.ENROLLMENT,
-    FieldContent: retrieveValue('actualEnrollment', TERM.FALL),
+    FieldContent: formatEnrollment(TERM.FALL),
   },
   {
     name: 'Offered',
@@ -571,40 +676,34 @@ export const tableFields: CourseInstanceListColumn[] = [
     FieldContent: formatMeetings(TERM.SPRING),
   },
   {
-    name: 'Pre',
-    key: 'pre-enrollment-spring',
+    name: 'Enrollment',
+    key: 'enrollment-spring',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.SPRING,
     viewColumn: COURSE_TABLE_COLUMN.ENROLLMENT,
-    FieldContent: retrieveValue('preEnrollment', TERM.SPRING),
-  },
-  {
-    name: 'Study',
-    key: 'study-card-enrollment-spring',
-    columnGroup: COURSE_TABLE_COLUMN_GROUP.SPRING,
-    viewColumn: COURSE_TABLE_COLUMN.ENROLLMENT,
-    FieldContent: retrieveValue('studyCardEnrollment', TERM.SPRING),
-  },
-  {
-    name: 'Actual',
-    key: 'actual-enrollment-spring',
-    columnGroup: COURSE_TABLE_COLUMN_GROUP.SPRING,
-    viewColumn: COURSE_TABLE_COLUMN.ENROLLMENT,
-    FieldContent: retrieveValue('actualEnrollment', TERM.SPRING),
+    FieldContent: formatEnrollment(TERM.SPRING),
   },
   {
     name: 'Notes',
     key: 'notes',
     columnGroup: COURSE_TABLE_COLUMN_GROUP.META,
     viewColumn: COURSE_TABLE_COLUMN.NOTES,
-    FieldContent: ({ course }: FieldContentProps): ReactElement => {
+    FieldContent: ({
+      course,
+      openNotesModal,
+      buttonRef,
+    }: FieldContentProps): ReactElement => {
       const { notes } = course;
       const hasNotes = notes && notes.trim().length > 0;
-      const titleText = hasNotes ? 'View/Edit Notes' : 'Add Notes';
+      const titleText = `Open notes for ${course.catalogNumber}`;
       return (
         <BorderlessButton
+          id={`notes-${course.id}`}
           variant={VARIANT.INFO}
-          onClick={(): void => { }}
+          onClick={({ currentTarget }) => {
+            openNotesModal(course, currentTarget.id);
+          }}
           aria-label={titleText}
+          forwardRef={buttonRef}
         >
           <FontAwesomeIcon
             title={titleText}

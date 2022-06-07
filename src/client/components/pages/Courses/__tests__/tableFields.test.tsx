@@ -12,7 +12,6 @@ import {
 } from 'common/constants';
 import { render } from 'test-utils';
 import { dayEnumToString } from 'common/constants/day';
-import * as dummy from 'testData';
 import {
   retrieveValue,
   tableFields,
@@ -35,27 +34,6 @@ describe('tableFields', function () {
           <CatalogNumber course={cs50CourseInstance} />
         );
         return getByText(cs50CourseInstance.catalogNumber);
-      });
-      it('Should return a component to render a fall level field', function () {
-        const FallEnrollment = retrieveValue('actualEnrollment', TERM.FALL);
-        const { getByText } = render(
-          <FallEnrollment course={cs50CourseInstance} />
-        );
-        return getByText(`${cs50CourseInstance.fall.actualEnrollment}`);
-      });
-      it('Should return a component to render a spring level field', function () {
-        const SpringEnrollment = retrieveValue('actualEnrollment', TERM.SPRING);
-        const { getByText } = render(
-          <SpringEnrollment course={{
-            ...cs50CourseInstance,
-            spring: {
-              ...cs50CourseInstance.spring,
-              actualEnrollment: dummy.int,
-            },
-          }}
-          />
-        );
-        return getByText(`${dummy.int}`);
       });
       it('should return a component that renders true booleans as "Yes"', function () {
         const BooleanValue = retrieveValue('isUndergraduate');
@@ -414,11 +392,9 @@ describe('tableFields', function () {
           const notesField = tableFields.find(({ viewColumn }): boolean => (
             viewColumn === COURSE_TABLE_COLUMN.NOTES));
           const Notes = notesField.FieldContent;
-          const { queryByLabelText } = render(
+          return render(
             <Notes course={ac209aCourseInstance} />
-          );
-          const icon = queryByLabelText('View/Edit Notes');
-          strictEqual(icon !== null, true);
+          ).findByLabelText(/Open notes/i);
         });
       });
       context('Course without notes', function () {
@@ -426,11 +402,9 @@ describe('tableFields', function () {
           const notesField = tableFields.find(({ viewColumn }): boolean => (
             viewColumn === COURSE_TABLE_COLUMN.NOTES));
           const Notes = notesField.FieldContent;
-          const { queryByLabelText } = render(
+          return render(
             <Notes course={cs50CourseInstance} />
-          );
-          const icon = queryByLabelText('Add Notes');
-          strictEqual(icon !== null, true);
+          ).findByLabelText(/Open notes/i);
         });
       });
     });

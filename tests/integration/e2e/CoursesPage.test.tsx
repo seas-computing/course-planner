@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import {
   stub, SinonStub,
 } from 'sinon';
@@ -18,9 +18,17 @@ import { MemoryRouter } from 'react-router-dom';
 import App from 'client/components/App';
 import request from 'client/api/request';
 import { Repository, Not, In } from 'typeorm';
-import { strictEqual, deepStrictEqual, notStrictEqual } from 'assert';
+import {
+  strictEqual,
+  deepStrictEqual,
+  notStrictEqual,
+  notDeepStrictEqual,
+} from 'assert';
 import { offeredEnumToString } from 'common/constants/offered';
 import { SemesterModule } from 'server/semester/semester.module';
+import { COURSE_TABLE_COLUMN, MANDATORY_COLUMNS } from 'common/constants';
+import { tableFields } from 'client/components/pages/Courses/tableFields';
+import { string } from 'testData';
 import mockAdapter from '../../mocks/api/adapter';
 import { ConfigModule } from '../../../src/server/config/config.module';
 import { ConfigService } from '../../../src/server/config/config.service';
@@ -54,6 +62,7 @@ describe('End-to-end Course Instance updating', function () {
   let testModule: TestingModule;
   let authStub: SinonStub;
   let courseRepository: Repository<Course>;
+  let courseInstanceRepository: Repository<CourseInstance>;
   let meetingRepository: Repository<Meeting>;
   let facultyRepository: Repository<Faculty>;
   let fciRepository: Repository<FacultyCourseInstance>;
@@ -125,6 +134,9 @@ describe('End-to-end Course Instance updating', function () {
     meetingRepository = testModule.get(
       getRepositoryToken(Meeting)
     );
+    courseInstanceRepository = testModule.get(
+      getRepositoryToken(CourseInstance)
+    );
     const nestApp = await testModule
       .createNestApplication()
       .useGlobalPipes(new BadRequestExceptionPipe())
@@ -180,6 +192,37 @@ describe('End-to-end Course Instance updating', function () {
       const editSpringInstructorButton = renderResult
         .queryByLabelText(
           `Edit instructors for ${courseNumber} in spring`,
+          { exact: false }
+        );
+      strictEqual(editSpringInstructorButton, null);
+    });
+    it('Does not render enrollment edit buttons', async function () {
+      stub(global.window, 'sessionStorage').get(() => ({
+        setItem: stub(),
+        getItem: () => JSON.stringify([
+          COURSE_TABLE_COLUMN.CATALOG_NUMBER,
+          COURSE_TABLE_COLUMN.ENROLLMENT,
+        ]),
+        removeItem: stub(),
+        length: 1,
+      }));
+      renderResult = render(
+        <MemoryRouter initialEntries={['/courses']}>
+          <App />
+        </MemoryRouter>
+      );
+      await renderResult.findByText(courseNumber);
+
+      const editFallInstructorButton = renderResult
+        .queryByLabelText(
+          `Edit enrollment for ${courseNumber} in fall`,
+          { exact: false }
+        );
+      strictEqual(editFallInstructorButton, null);
+
+      const editSpringInstructorButton = renderResult
+        .queryByLabelText(
+          `Edit enrollment for ${courseNumber} in spring`,
           { exact: false }
         );
       strictEqual(editSpringInstructorButton, null);
@@ -1619,6 +1662,407 @@ describe('End-to-end Course Instance updating', function () {
               'Future spring instance was not set to OFFERED.BLANK'
             );
           });
+        });
+      });
+    });
+    describe('Setting custom view columns', function () {
+      context('With sessionStorage available', function () {
+        let fakeSessionStorage: Storage;
+        let fakeStorageMap: Map<string, string>;
+        // Substitute a JS map for our storage backend
+        beforeEach(function () {
+          fakeStorageMap = new Map();
+          fakeSessionStorage = {
+            setItem: (key, value) => { fakeStorageMap.set(key, value); },
+            getItem: (key) => (
+              fakeStorageMap.has(key)
+                ? fakeStorageMap.get(key)
+                : null
+            ),
+            removeItem: (key) => { fakeStorageMap.delete(key); },
+            length: fakeStorageMap.size,
+            clear: () => { fakeStorageMap.clear(); },
+            key: (index) => {
+              const values = fakeStorageMap.values();
+              return values[index] as string;
+            },
+          };
+          stub(global.window, 'sessionStorage').get(() => fakeSessionStorage);
+        });
+        it('Should preserve custom columns after navigating/returning', async function () {
+          renderResult = render(
+            <MemoryRouter initialEntries={['/courses']}>
+              <App />
+            </MemoryRouter>
+          );
+
+          // Get a list of our initial headings
+          await waitForElementToBeRemoved(() => renderResult.getByText('Fetching User Data'));
+          await waitForElementToBeRemoved(() => renderResult.getByText('Fetching Course Data'));
+          const initialRows = await renderResult.findAllByRole('row');
+          const initialHeadings = within(initialRows[1]).getAllByRole('columnheader')
+            .map(({ textContent }) => textContent);
+
+          // Update the view to only show the minimal number of columns
+          const customViewButton = await renderResult.findByText(/Customize View/);
+          fireEvent.click(customViewButton);
+          const modal = await renderResult.findByRole('dialog');
+          const columnBoxes = within(modal).getAllByRole('checkbox');
+          columnBoxes.forEach((box: HTMLInputElement) => {
+            if (box.checked && !box.disabled) {
+              fireEvent.click(box);
+            }
+          });
+          fireEvent.click(within(modal).getByText('Done'));
+
+          // Get the list of updated Headings
+          const tableRows = renderResult.getAllByRole('row');
+          const customHeadings = within(tableRows[0]).getAllByRole('columnheader')
+            .map(({ textContent }) => textContent);
+          const mandatoryHeadings = tableFields
+            .filter(({ viewColumn }) => MANDATORY_COLUMNS.includes(viewColumn))
+            .map(({ name }) => name);
+
+          // Compare to ensure that they changed to our mandatory columns
+          notDeepStrictEqual(
+            customHeadings,
+            initialHeadings,
+            'Columns headings did not update when modal closed'
+          );
+          deepStrictEqual(
+            customHeadings,
+            mandatoryHeadings,
+            'Columns shown do not match the mandatory columns'
+          );
+
+          // Navigate to our 4 year plan page
+          fireEvent.click(renderResult.getByText('4 Year Plan'));
+          await renderResult.findAllByText(/(F|S)'\d\d Instructors/);
+
+          // Go back to courses; Columns should be the same
+          fireEvent.click(renderResult.getByText('Courses'));
+          await waitForElementToBeRemoved(() => renderResult.getByText('Fetching Course Data'));
+          const returnTableRows = await renderResult.findAllByRole('row');
+          const returnHeadings = within(returnTableRows[0])
+            .getAllByRole('columnheader')
+            .map(({ textContent }) => textContent);
+          notDeepStrictEqual(
+            returnHeadings,
+            initialHeadings,
+            'After returning, columns heading reverted to initial set'
+          );
+          deepStrictEqual(
+            returnHeadings,
+            customHeadings,
+            'After returning, columns do not match what was selected'
+          );
+        });
+      });
+      context('Without sessionStorage available', function () {
+        it('Reverts to the initial columns on page load', async function () {
+          renderResult = render(
+            <MemoryRouter initialEntries={['/courses']}>
+              <App />
+            </MemoryRouter>
+          );
+
+          // Get a list of our initial headings
+          await waitForElementToBeRemoved(() => renderResult.getByText('Fetching User Data'));
+          await waitForElementToBeRemoved(() => renderResult.getByText('Fetching Course Data'));
+          const initialRows = await renderResult.findAllByRole('row');
+          const initialHeadings = within(initialRows[1]).getAllByRole('columnheader')
+            .map(({ textContent }) => textContent);
+
+          // Update the view to only show the minimal number of columns
+          const customViewButton = await renderResult.findByText(/Customize View/);
+          fireEvent.click(customViewButton);
+          const modal = await renderResult.findByRole('dialog');
+          const columnBoxes = within(modal).getAllByRole('checkbox');
+          columnBoxes.forEach((box: HTMLInputElement) => {
+            if (box.checked && !box.disabled) {
+              fireEvent.click(box);
+            }
+          });
+          fireEvent.click(within(modal).getByText('Done'));
+
+          // Get the list of updated Headings
+          const tableRows = renderResult.getAllByRole('row');
+          const customHeadings = within(tableRows[0]).getAllByRole('columnheader')
+            .map(({ textContent }) => textContent);
+          const mandatoryHeadings = tableFields
+            .filter(({ viewColumn }) => MANDATORY_COLUMNS.includes(viewColumn))
+            .map(({ name }) => name);
+
+          // Compare to ensure that they changed to our mandatory columns
+          notDeepStrictEqual(
+            customHeadings,
+            initialHeadings,
+            'Columns headings did not update when modal closed'
+          );
+          deepStrictEqual(
+            customHeadings,
+            mandatoryHeadings,
+            'Columns shown do not match the mandatory columns'
+          );
+
+          // Navigate to our 4 year plan page
+          fireEvent.click(renderResult.getByText('4 Year Plan'));
+          await renderResult.findAllByText(/(F|S)'\d\d Instructors/);
+
+          // Go back to courses; Columns should have reverted
+          fireEvent.click(renderResult.getByText('Courses'));
+          await waitForElementToBeRemoved(() => renderResult.getByText('Fetching Course Data'));
+          const returnTableRows = await renderResult.findAllByRole('row');
+          const returnHeadings = within(returnTableRows[1])
+            .getAllByRole('columnheader')
+            .map(({ textContent }) => textContent);
+          deepStrictEqual(
+            returnHeadings,
+            initialHeadings,
+            'After returning, columns heading did not revert to initial set'
+          );
+          notDeepStrictEqual(
+            returnHeadings,
+            customHeadings,
+            'After returning, columns are still set to the custom set'
+          );
+        });
+      });
+    });
+    describe('Updating Enrollment Values', function () {
+      let editFallEnrollmentButton: HTMLElement;
+      let modal: HTMLDivElement;
+      let textBoxes: HTMLInputElement[];
+      let instanceToUpdate: CourseInstance;
+      let windowConfirmStub: SinonStub;
+      beforeEach(async function () {
+        const [prefix, number] = courseNumber.split(' ');
+        const course = await courseRepository.findOneOrFail(
+          {
+            prefix,
+            number,
+          },
+          {
+            relations: [
+              'instances',
+              'instances.semester',
+            ],
+          }
+        );
+        stub(global.window, 'sessionStorage').get(() => ({
+          setItem: stub(),
+          getItem: () => JSON.stringify([
+            COURSE_TABLE_COLUMN.CATALOG_NUMBER,
+            COURSE_TABLE_COLUMN.ENROLLMENT,
+          ]),
+          removeItem: stub(),
+          length: 1,
+        }));
+        windowConfirmStub = stub(window, 'confirm');
+        windowConfirmStub.returns(true);
+        renderResult = render(
+          <MemoryRouter initialEntries={['/courses']}>
+            <App />
+          </MemoryRouter>
+        );
+        await renderResult.findByText(courseNumber);
+
+        const courseRows = await renderResult.findAllByRole('row');
+        const courseRowToUpdate = courseRows.find((row) => {
+          const rowHeader = within(row).queryByRole('rowheader');
+          return rowHeader?.textContent === courseNumber;
+        });
+        ([editFallEnrollmentButton] = await within(courseRowToUpdate)
+          .findAllByLabelText(
+            `Edit enrollment for ${courseNumber} in ${currentTerm} ${currentAcademicYear - 1}`,
+            { exact: false }
+          ));
+        fireEvent.click(editFallEnrollmentButton);
+        instanceToUpdate = course.instances.find(({ semester }) => (
+          semester.term === currentTerm
+        && semester.academicYear === (currentAcademicYear - 1).toString()
+        ));
+        (modal = await renderResult.findByRole('dialog') as HTMLDivElement);
+        (
+          textBoxes = await within(modal)
+            .findAllByRole('textbox') as HTMLInputElement[]
+        );
+      });
+      describe('saving', function () {
+        it('shows a spinner', async function () {
+          textBoxes.forEach((textbox) => {
+            fireEvent.change(textbox, {
+              target: { value: '30' },
+            } as Partial<ChangeEvent<HTMLInputElement>>);
+          });
+          const saveButton = await within(modal).findByText('Save');
+          fireEvent.click(saveButton);
+          return within(modal).findByText('saving', { exact: false });
+        });
+        it('hides the save button', async function () {
+          textBoxes.forEach((textbox) => {
+            fireEvent.change(textbox, {
+              target: { value: '30' },
+            } as Partial<ChangeEvent<HTMLInputElement>>);
+          });
+          const saveButton = await within(modal).findByText('Save');
+          fireEvent.click(saveButton);
+          strictEqual(within(modal).queryByText('Save'), null);
+        });
+      });
+      it('hides the cancel button', async function () {
+        textBoxes.forEach((textbox) => {
+          fireEvent.change(textbox, {
+            target: { value: '30' },
+          } as Partial<ChangeEvent<HTMLInputElement>>);
+        });
+        const saveButton = await within(modal).findByText('Save');
+        fireEvent.click(saveButton);
+        strictEqual(within(modal).queryByText('Cancel'), null);
+      });
+      it('shows an unsaved changes dialog if the modal is closed without saving changes made', function () {
+        // Type some text in the text boxes
+        textBoxes.forEach((textbox) => {
+          fireEvent.change(textbox, {
+            target: { value: '10' },
+          } as Partial<ChangeEvent<HTMLInputElement>>);
+        });
+        const modalBackground = renderResult.getByRole('dialog').parentElement;
+        fireEvent.click(modalBackground);
+        strictEqual(windowConfirmStub.callCount, 1);
+      });
+      it('clears any validation errors on close', async function () {
+        // Generate some errors for the validation to yell about
+        textBoxes.forEach((textbox) => {
+          fireEvent.change(textbox, {
+            target: { value: string },
+          } as Partial<ChangeEvent<HTMLInputElement>>);
+        });
+
+        // Close the modal by clicking the modal background
+        fireEvent.click(modal.parentElement);
+
+        // Tell the window.confirm hook to allow the modal to close
+        windowConfirmStub.returns(true);
+
+        // Re-open the modal
+        fireEvent.click(editFallEnrollmentButton);
+
+        // Re-find the new modal
+        modal = await renderResult.findByRole('dialog') as HTMLDivElement;
+
+        strictEqual(within(modal).queryAllByRole('alert').length, 0);
+      });
+      describe('input fields', function () {
+        it('can be numeric', async function () {
+          const enrollmentValues = [];
+          textBoxes.forEach((textbox, index) => {
+            // An arbitary "numerical"(as a string) value to fill in - the
+            // actual value isn't terribly important for this test
+            const value = ((index + 1) * 10);
+            enrollmentValues.push(value.toString());
+            fireEvent.change(textbox, {
+              target: { value },
+            });
+          });
+          const saveButton = await within(modal).findByText('Save');
+          fireEvent.click(saveButton);
+          await waitForElementToBeRemoved(
+            () => renderResult.getByText('Enrollment for', { exact: false })
+          );
+          const {
+            preEnrollment,
+            studyCardEnrollment,
+            actualEnrollment,
+          } = await courseInstanceRepository.findOne(instanceToUpdate.id);
+          deepStrictEqual(
+            [
+              preEnrollment,
+              studyCardEnrollment,
+              actualEnrollment,
+            ],
+            enrollmentValues.map((number) => parseInt(number, 10) ?? null),
+            'Database was not updated'
+          );
+          deepStrictEqual(
+            [
+              renderResult.queryByLabelText('Pre-Registration'),
+              renderResult.queryByLabelText('Enrollment Deadline'),
+              renderResult.queryByLabelText('Final Enrollment'),
+            ].map((element) => element?.textContent.trim() ?? null),
+            enrollmentValues,
+            'Local state was not updated'
+          );
+          return renderResult.findByText(/Course updated/);
+        });
+        it('can be null', async function () {
+          textBoxes.forEach((textbox) => {
+            fireEvent.change(textbox, {
+              target: { value: '' },
+            });
+          });
+          const saveButton = await within(modal).findByText('Save');
+          fireEvent.click(saveButton);
+          await waitForElementToBeRemoved(
+            () => renderResult.getByText('Enrollment for', { exact: false })
+          );
+
+          const {
+            preEnrollment,
+            studyCardEnrollment,
+            actualEnrollment,
+          } = await courseInstanceRepository.findOne(instanceToUpdate.id);
+          deepStrictEqual(
+            [
+              preEnrollment,
+              studyCardEnrollment,
+              actualEnrollment,
+            ],
+            new Array(textBoxes.length).fill(null),
+            'Database was not updated'
+          );
+          deepStrictEqual(
+            [
+              renderResult.queryByLabelText('Pre-Registration'),
+              renderResult.queryByLabelText('Enrollment Deadline'),
+              renderResult.queryByLabelText('Final Enrollment'),
+            ],
+            new Array(textBoxes.length).fill(null),
+            'Local state was not updated'
+          );
+          return renderResult.findByText(/Course updated/);
+        });
+        it('must not contain negative values', async function () {
+          const enrollmentValues = [];
+          textBoxes.forEach((textbox, index) => {
+            const value = (-(index + 1) * 10).toString();
+            enrollmentValues.push(value);
+            fireEvent.change(textbox, {
+              target: {
+                value,
+              },
+            } as Partial<ChangeEvent<HTMLInputElement>>);
+          });
+          return within(modal)
+            .findAllByText('must be a positive whole number', { exact: false });
+        });
+        it('must not contain alphabetical characters', async function () {
+          textBoxes.forEach((textbox) => {
+            fireEvent.change(textbox, {
+              target: { value: string },
+            } as Partial<ChangeEvent<HTMLInputElement>>);
+          });
+          return within(modal)
+            .findAllByText('must be a positive whole number', { exact: false });
+        });
+        it('must not contain special characters', async function () {
+          textBoxes.forEach((textbox) => {
+            fireEvent.change(textbox, {
+              target: { value: '%!@#$' },
+            } as Partial<ChangeEvent<HTMLInputElement>>);
+          });
+          return within(modal)
+            .findAllByText('must be a positive whole number', { exact: false });
         });
       });
     });

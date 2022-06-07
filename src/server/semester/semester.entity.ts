@@ -40,7 +40,8 @@ export class Semester extends BaseEntity {
    */
   @OneToMany(
     (): ObjectType<CourseInstance> => CourseInstance,
-    ({ semester }): Semester => semester
+    ({ semester }): Semester => semester,
+    { cascade: ['insert'] }
   )
   public courseInstances: CourseInstance[];
 
@@ -52,7 +53,8 @@ export class Semester extends BaseEntity {
    */
   @OneToMany(
     (): ObjectType<NonClassEvent> => NonClassEvent,
-    ({ semester }): Semester => semester
+    ({ semester }): Semester => semester,
+    { cascade: ['insert'] }
   )
   public nonClassEvents: NonClassEvent[];
 
@@ -61,7 +63,8 @@ export class Semester extends BaseEntity {
    */
   @OneToMany(
     (): ObjectType<Absence> => Absence,
-    ({ semester }): Semester => semester
+    ({ semester }): Semester => semester,
+    { cascade: ['insert'] }
   )
   public absences: Absence[];
 }

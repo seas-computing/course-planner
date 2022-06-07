@@ -12,7 +12,6 @@ import {
   TableHeadingSpacer,
 } from 'mark-one';
 import {
-  COURSE_TABLE_COLUMN,
   COURSE_TABLE_COLUMN_GROUP,
   isSEASEnumToString,
   IS_SEAS,
@@ -59,10 +58,31 @@ interface CourseInstanceTableProps {
    * Controls the opening of the offered modal with the requested course and term
    */
   openOfferedModal: (course: CourseInstanceResponseDTO, term: TERM) => void;
+  /*
+   * Controls the opening of the notes modal with the requested course
+   */
+  openNotesModal: (
+    course: CourseInstanceResponseDTO,
+    buttonId?: string
+  ) => void;
+
+  /*
+   * Controls the opening of the enrollment modal with the requested course
+   */
+  openEnrollmentModal: (
+    course: CourseInstanceResponseDTO,
+    term?: TERM
+  ) => void;
+
   /**
    * The ref value of the edit faculty absence button
    */
   setButtonRef: (nodeId: string) => (node: HTMLButtonElement) => void;
+  /**
+   * Indicates wether a user is an admin or not. This is used to enable or
+   * disable editing of various fields in the table (and associated modals)
+   */
+  isAdmin: boolean;
 }
 
 /**
@@ -85,6 +105,9 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
   openInstructorModal,
   openOfferedModal,
   setButtonRef,
+  openNotesModal,
+  openEnrollmentModal,
+  isAdmin,
 }): ReactElement => {
   const courseColumns = tableData.filter(
     ({ columnGroup }): boolean => (
@@ -102,10 +125,6 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
     ({ columnGroup }): boolean => (
       columnGroup === COURSE_TABLE_COLUMN_GROUP.META)
   );
-  const firstEnrollmentField = fallColumns
-    .findIndex(({ viewColumn }): boolean => (
-      viewColumn === COURSE_TABLE_COLUMN.ENROLLMENT
-    ));
 
   /**
    * The current value for the metadata context
@@ -174,36 +193,16 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
             {[fallColumns, springColumns].map(
               (dataList: CourseInstanceListColumn[]): ReactElement[] => dataList
                 .map((
-                  field: CourseInstanceListColumn,
-                  index: number
-                ): ReactElement => {
-                  if (index === firstEnrollmentField) {
-                    return (
-                      <TableHeadingCell
-                        key={field.key}
-                        scope="auto"
-                        colSpan={dataList
-                          .filter(({ viewColumn }): boolean => (
-                            viewColumn === COURSE_TABLE_COLUMN.ENROLLMENT))
-                          .length}
-                      >
-                        Enrollment
-                      </TableHeadingCell>
-                    );
-                  }
-                  if (field.viewColumn === COURSE_TABLE_COLUMN.ENROLLMENT) {
-                    return null;
-                  }
-                  return (
-                    <TableHeadingCell
-                      key={field.key}
-                      scope="col"
-                      rowSpan={field.getFilter ? '1' : '2'}
-                    >
-                      {field.name}
-                    </TableHeadingCell>
-                  );
-                })
+                  field: CourseInstanceListColumn
+                ): ReactElement => (
+                  <TableHeadingCell
+                    key={field.key}
+                    scope="col"
+                    rowSpan={field.getFilter ? '1' : '2'}
+                  >
+                    {field.name}
+                  </TableHeadingCell>
+                ))
             )}
           </>
           <>
@@ -249,16 +248,6 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
                     };
                   }),
               };
-              if (field.viewColumn === COURSE_TABLE_COLUMN.ENROLLMENT) {
-                return (
-                  <TableHeadingCell
-                    scope="col"
-                    key={field.key}
-                  >
-                    {field.name}
-                  </TableHeadingCell>
-                );
-              }
               return field.getFilter ? (
                 <TableHeadingCell
                   scope="col"
@@ -282,6 +271,9 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
         openInstructorModal={openInstructorModal}
         openOfferedModal={openOfferedModal}
         setButtonRef={setButtonRef}
+        openNotesModal={openNotesModal}
+        openEnrollmentModal={openEnrollmentModal}
+        isAdmin={isAdmin}
       />
     </Table>
   );

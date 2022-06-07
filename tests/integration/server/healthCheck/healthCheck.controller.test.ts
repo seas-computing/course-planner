@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HttpServer, INestApplication, HttpStatus } from '@nestjs/common';
 import { HealthCheckController } from 'server/healthCheck/healthCheck.controller';
 import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
+import { ConfigModule } from '../../../../src/server/config/config.module';
 
 describe('Health Check API', function () {
   let nestApp: INestApplication;
@@ -11,6 +12,9 @@ describe('Health Check API', function () {
 
   beforeEach(async function () {
     const moduleRef: TestingModule = await Test.createTestingModule({
+      imports: [
+        ConfigModule,
+      ],
       controllers: [
         HealthCheckController,
       ],

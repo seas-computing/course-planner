@@ -1,4 +1,9 @@
-import React, { ReactElement, useState, ChangeEvent } from 'react';
+import React, {
+  ReactElement,
+  useState,
+  ChangeEvent,
+  useMemo,
+} from 'react';
 import {
   Table,
   TableRow,
@@ -10,9 +15,11 @@ import {
   Button,
   Dropdown,
   TableRowHeadingCell,
+  TextInput,
 } from 'mark-one';
 import RoomResponse from 'common/dto/room/RoomResponse.dto';
 import { CourseInstanceResponseMeeting } from '../../../../common/dto/courses/CourseInstanceResponse';
+import { listFilter } from '../Filter';
 
 interface RoomSelectionTableProps {
   /** The list of rooms to show in the list */
@@ -33,6 +40,16 @@ export enum AVAILABILITY {
   ALL='All',
   AVAILABLE='Available',
   UNAVAILABLE='Unavailable',
+}
+
+/**
+ * The allowed values for the Campus filter in the room table
+ */
+
+export enum CAMPUS {
+  ALL='All',
+  ALLSTON='Allston',
+  CAMBRIDGE='Cambridge',
 }
 
 /**
@@ -61,19 +78,56 @@ const displayAvailability = (
 const RoomSelectionTable = (
   { roomList, addButtonHandler, currentRoomId }: RoomSelectionTableProps
 ): ReactElement<RoomSelectionTableProps> => {
+  /**
+   * The current campus filter value
+   */
+  const [
+    campusFilter,
+    setCampusFilter,
+  ] = useState<CAMPUS>(CAMPUS.ALL);
+
+  /**
+   * The current room filter value
+   */
+  const [
+    roomFilter,
+    setRoomFilter,
+  ] = useState<string>('');
+
+  /**
+   * The current availability filter value
+   */
   const [
     availabilityFilter,
     setAvailabilityFilter,
   ] = useState<AVAILABILITY>(AVAILABILITY.ALL);
+
+  /**
+   * Return filtered rooms based on the campus, room, and availability filters
+   */
+  const filteredRooms = useMemo((): RoomResponse[] => {
+    let filteredRoomList = [...roomList];
+    if (campusFilter !== 'All') {
+      filteredRoomList = listFilter(
+        filteredRoomList,
+        { field: 'campus', value: campusFilter, exact: false }
+      );
+    }
+    filteredRoomList = listFilter(
+      filteredRoomList,
+      { field: 'name', value: roomFilter, exact: false }
+    );
+    return filteredRoomList;
+  }, [roomList, campusFilter, roomFilter]);
   return (
     <>
       <Table>
         <TableHead>
           <TableRow>
-            <TableHeadingCell rowSpan={2}>
+            <TableHeadingCell rowSpan={1}>
               Campus
             </TableHeadingCell>
-            <TableHeadingCell rowSpan={2}>
+            <TableHeadingCell rowSpan={1}>
               Room
             </TableHeadingCell>
             <TableHeadingCell rowSpan={2}>
@@ -87,6 +141,39 @@ const RoomSelectionTable = (
             </TableHeadingCell>
           </TableRow>
           <TableRow noHighlight>
+            <TableHeadingCell>
+              <Dropdown
+                hideError
+                id="campus-filter"
+                label="Change to filter the list of meetings by campus"
+                isLabelVisible={false}
+                onChange={
+                  (evt: ChangeEvent<HTMLSelectElement>): void => {
+                    setCampusFilter(evt.target.value as CAMPUS);
+                  }
+                }
+                name="campus-filter"
+                value={campusFilter}
+                options={
+                  Object.values(CAMPUS)
+                    .map((value) => ({ value, label: value }))
+                }
+              />
+            </TableHeadingCell>
+            <TableHeadingCell>
+              <TextInput
+                hideError
+                id="room-filter"
+                name="room-filter"
+                placeholder="Filter by Room"
+                label="Change to filter the list of meetings by room"
+                isLabelVisible={false}
+                onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
+                  setRoomFilter(event.currentTarget.value);
+                }}
+                value={roomFilter}
+              />
+            </TableHeadingCell>
             <TableHeadingCell>
               <Dropdown
                 hideError
@@ -109,7 +196,7 @@ const RoomSelectionTable = (
           </TableRow>
         </TableHead>
         <TableBody>
-          {roomList.filter(({ meetingTitles }) => {
+          {filteredRooms.filter(({ meetingTitles }) => {
             switch (availabilityFilter) {
               case AVAILABILITY.ALL:
                 return true;

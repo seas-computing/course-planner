@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { AUTH_MODE } from 'common/constants';
 import { Absence } from 'server/absence/absence.entity';
@@ -29,6 +31,7 @@ import { NestSessionOptions } from 'nestjs-session';
 import { RedisStore } from 'connect-redis';
 import { NonClassEventView } from 'server/nonClassEvent/NonClassEvent.view.entity';
 import { NonClassParentView } from 'server/nonClassEvent/NonClassParentView.entity';
+import { ClientOpts } from 'redis';
 import LOG_LEVEL from '../../common/constants/logLevels';
 import { ScheduleBlockView } from '../courseInstance/ScheduleBlockView.entity';
 import { ScheduleEntryView } from '../courseInstance/ScheduleEntryView.entity';
@@ -41,8 +44,14 @@ import { RoomBookingInfoView } from '../location/RoomBookingInfoView.entity';
 class ConfigService {
   private readonly env: { [key: string]: string };
 
+  /**
+   * Track the current version of the app running in the container.
+   */
+  public readonly buildVersion: string;
+
   public constructor(config: { [key: string]: string } = {}) {
     this.env = config;
+    this.buildVersion = this.readContainerVersion();
   }
 
   /**
@@ -197,25 +206,26 @@ class ConfigService {
   }
 
   /**
-   * Return the redis connection string
+   * Return the redis client options
    * NOTE: This is needed to properly connect to redis over TLS
    */
 
-  public get redisURL(): string {
+  public get redisClientOptions(): ClientOpts {
     const {
       REDIS_HOST,
       REDIS_PORT,
       REDIS_PASSWORD,
-      NODE_ENV,
     } = this.env;
-    const redis = new URL(`redis://${REDIS_HOST}:${REDIS_PORT}`);
-    if (NODE_ENV === 'production') {
-      redis.protocol = 'rediss:';
-    }
+    const redis = new URL(`rediss://${REDIS_HOST}:${REDIS_PORT}`);
     if (REDIS_PASSWORD) {
       redis.password = REDIS_PASSWORD;
     }
-    return redis.toString();
+    return {
+      url: redis.toString(),
+      tls: {
+        rejectUnauthorized: false,
+      },
+    };
   }
 
   /**
@@ -228,7 +238,7 @@ class ConfigService {
     } = this.env;
     const {
       hostname: domain,
-      pathname: path,
+      pathname,
     } = this.serverURL;
     return {
       session: {
@@ -241,7 +251,7 @@ class ConfigService {
           // 12 hours
           maxAge: 1000 * 60 * 60 * 12,
           domain,
-          path,
+          path: pathname,
           sameSite: 'strict',
           secure: false,
         },
@@ -307,8 +317,28 @@ class ConfigService {
       && Object.values(LOG_LEVEL).includes(logLevel as LOG_LEVEL)) {
       return logLevel;
     }
-    console.warn(`"${logLevel}" is not a valid LOG_LEVEL. Defaulting to "error"`);
+    if (this.isProduction) {
+      console.warn(`"${logLevel}" is not a valid LOG_LEVEL. Defaulting to "error"`);
+    }
     return LOG_LEVEL.ERROR;
+  }
+
+  /**
+   * Attempt to read the current build version from the .dockerversion file, or
+   * else return an empty string.
+   */
+  private readContainerVersion() {
+    const versionFile = path.resolve('.dockerversion');
+    if (fs.existsSync(versionFile)) {
+      try {
+        return fs
+          .readFileSync(versionFile, { encoding: 'utf-8' })
+          .trim();
+      } catch (error) {
+        return '';
+      }
+    }
+    return '';
   }
 }
 

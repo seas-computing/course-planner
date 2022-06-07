@@ -72,10 +72,13 @@ services:
       - ".:/node:rw"
     command: ["npm", "run", "start:client"]
   redis:
-    image: bitnami/redis:5.0.4
+    image: bitnami/redis:6.2
     environment:
       - REDIS_PASSWORD
     ports:
       - "127.0.0.1:${REDIS_PORT}:${REDIS_PORT}"
+    volumes:
+      - "./init-redis-ssl.sh:/opt/bitnami/scripts/redis/init-redis-ssl.sh"
+    command: /opt/bitnami/scripts/redis/init-redis-ssl.sh
 volumes:
   postgres_data:

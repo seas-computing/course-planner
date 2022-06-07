@@ -19,6 +19,7 @@ describe('CourseInstanceTable', function () {
   let openMeetingModalSpy: SinonSpy;
   let openInstructorModalSpy: SinonSpy;
   let openOfferedModalSpy: SinonSpy;
+  let openEnrollmentModalSpy: SinonSpy;
   const academicYear = 2020;
   const courseList = [
     cs50CourseInstance,
@@ -43,6 +44,7 @@ describe('CourseInstanceTable', function () {
     openMeetingModalSpy = spy();
     openInstructorModalSpy = spy();
     openOfferedModalSpy = spy();
+    openEnrollmentModalSpy = spy();
   });
   describe('Header rows', function () {
     context('With all fields visible', function () {
@@ -80,7 +82,10 @@ describe('CourseInstanceTable', function () {
             openMeetingModal={openMeetingModalSpy}
             openInstructorModal={openInstructorModalSpy}
             openOfferedModal={openOfferedModalSpy}
+            openEnrollmentModal={openEnrollmentModalSpy}
             setButtonRef={() => () => {}}
+            openNotesModal={() => {}}
+            isAdmin
           />
         )
         );
@@ -106,22 +111,6 @@ describe('CourseInstanceTable', function () {
           elem.textContent === 'Enrollment'
         ));
         notStrictEqual(enrollment, null);
-      });
-      it('renders the individual enrollment values into the third row', function () {
-        const [, , thirdRow] = getAllByRole('row');
-        const { columnheader } = getRoles(thirdRow);
-        const preHeaders = columnheader.filter((elem) => (
-          elem.textContent === 'Pre'
-        ));
-        const studyHeaders = columnheader.filter((elem) => (
-          elem.textContent === 'Study'
-        ));
-        const actualHeaders = columnheader.filter((elem) => (
-          elem.textContent === 'Actual'
-        ));
-        strictEqual(preHeaders.length, 2, 'Incorrect number of "Pre" columns');
-        strictEqual(studyHeaders.length, 2, 'Incorrect number of "Study" columns');
-        strictEqual(actualHeaders.length, 2, 'Incorrect number of "Actual" columns');
       });
       it('renders the filters in the third row', function () {
         const [, , thirdRow] = getAllByRole('row');
@@ -160,7 +149,10 @@ describe('CourseInstanceTable', function () {
             openMeetingModal={openMeetingModalSpy}
             openInstructorModal={openInstructorModalSpy}
             openOfferedModal={openOfferedModalSpy}
+            openEnrollmentModal={openEnrollmentModalSpy}
             setButtonRef={() => () => {}}
+            openNotesModal={() => {}}
+            isAdmin
           />
         )
         );
@@ -203,7 +195,10 @@ describe('CourseInstanceTable', function () {
             openMeetingModal={openMeetingModalSpy}
             openInstructorModal={openInstructorModalSpy}
             openOfferedModal={openOfferedModalSpy}
+            openEnrollmentModal={openEnrollmentModalSpy}
             setButtonRef={() => () => {}}
+            openNotesModal={() => {}}
+            isAdmin
           />
         )
         );
@@ -261,7 +256,10 @@ describe('CourseInstanceTable', function () {
           openMeetingModal={openMeetingModalSpy}
           openInstructorModal={openInstructorModalSpy}
           openOfferedModal={openOfferedModalSpy}
+          openEnrollmentModal={openEnrollmentModalSpy}
           setButtonRef={() => () => {}}
+          openNotesModal={() => {}}
+          isAdmin
         />
       )
       );
