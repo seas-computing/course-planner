@@ -12,6 +12,7 @@ on:
         default: 'major'
 jobs:
   update_version:
+    concurrency: course-planner-increment-version
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

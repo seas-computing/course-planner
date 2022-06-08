@@ -1,4 +1,5 @@
 name: Publish Docker Image and Front-End Bundle
+concurrency: course-planner-publish
 on:
   workflow_run:
     workflows:
