@@ -10,8 +10,8 @@ import {
 import { render } from 'test-utils';
 import { cs50CourseInstance } from 'testData';
 import request from 'client/api/request';
+import { HTTP_STATUS } from 'client/api';
 import { TERM } from 'common/constants';
-import { HttpStatus } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
 import EnrollmentModal from '../EnrollmentModal';
 
@@ -44,9 +44,9 @@ describe('Enrollment Modal', function () {
       // Set the fake API up to reject
       putStub.rejects({
         response: {
-          status: HttpStatus.BAD_REQUEST,
+          status: HTTP_STATUS.BAD_REQUEST,
           data: {
-            statusCode: HttpStatus.BAD_REQUEST,
+            statusCode: HTTP_STATUS.BAD_REQUEST,
             error: 'Bad Request',
             message: [
               {
@@ -65,9 +65,9 @@ describe('Enrollment Modal', function () {
       // Set the fake API up to reject
       putStub.rejects({
         response: {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          status: HTTP_STATUS.INTERNAL_SERVER_ERROR,
           data: {
-            statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+            statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR,
             message: 'Internal server error',
           },
         } as Partial<AxiosResponse>,
