@@ -23,10 +23,9 @@ import {
 import CourseInstanceResponseDTO, { Instance } from 'common/dto/courses/CourseInstanceResponse';
 import { TERM } from 'common/constants';
 import { TermKey } from 'common/constants/term';
-import { updateCourseInstance } from 'client/api';
+import { HTTP_STATUS, updateCourseInstance } from 'client/api';
 import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto';
 import { AxiosError } from 'axios';
-import { HttpStatus } from '@nestjs/common';
 import { EnrollmentField } from './tableFields';
 import { BadRequestInfo } from './CourseModal';
 
@@ -275,7 +274,7 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
           const {
             response,
           } = error as AxiosError;
-          if (response.status === HttpStatus.BAD_REQUEST) {
+          if (response.status === HTTP_STATUS.BAD_REQUEST) {
             const errors = [
               ...(response.data as BadRequestInfo).message,
             ].map(
