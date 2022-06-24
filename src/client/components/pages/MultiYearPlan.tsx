@@ -240,9 +240,13 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
                 </b>
               </p>
               <p>
-                Courses.my.harvard.edu is the official listing of courses.
-                If a course is blank it means it does not have an assigned
-                instructor yet and/or it is not planned to be offered.
+                <a href="https://courses.my.harvard.edu/" target="_blank" rel="noreferrer">
+                  Courses.my.harvard.edu
+                </a>
+                {' '}
+                is the official listing of courses. If a course is blank it
+                means it does not have an assigned instructor yet and/or it is
+                not planned to be offered.
               </p>
               <p>Direct questions to: seas-course-planner@g.harvard.edu</p>
             </div>
