@@ -211,6 +211,8 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
   // Calculate the list of semesters once first to avoid recalculation
   const semesters = getSemestersFromYear(metadata.currentAcademicYear);
 
+  const publicHostname = new URL(process.env.PUBLIC_CLIENT_URL).hostname;
+
   return (
     <div className="multi-year-plan">
       {fetching
@@ -220,94 +222,118 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
           </div>
         )
         : (
-          <Table>
-            <TableHead>
-              <TableRow isStriped>
-                <TableHeadingCell scope="col">Catalog Prefix</TableHeadingCell>
-                <TableHeadingCell scope="col">Catalog Number</TableHeadingCell>
-                <TableHeadingCell scope="col">Title</TableHeadingCell>
-                <>
-                  {yearsHeaders(currentMultiYearPlanList, semesters)}
-                </>
-              </TableRow>
-              <TableRow isStriped>
-                <TableHeadingCell scope="col">
-                  <Dropdown
-                    options={
-                      [{ value: 'All', label: 'All' }]
-                        .concat(metadata.catalogPrefixes.map((prefix) => ({
-                          value: prefix,
-                          label: prefix,
-                        })))
-                    }
-                    value={catalogPrefixValue}
-                    name="catalogPrefixValue"
-                    id="catalogPrefixValue"
-                    label="The table will be filtered as selected in the catalog prefix dropdown filter"
-                    isLabelVisible={false}
-                    hideError
-                    onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
-                      setCatalogPrefixValue(event.currentTarget.value);
-                    }}
-                  />
-                </TableHeadingCell>
-                <TableHeadingCell scope="col">
-                  <TextInput
-                    id="catalogNumberValue"
-                    name="catalogNumberValue"
-                    value={catalogNumberValue}
-                    placeholder="Filter by Catalog Number"
-                    label="The table will be filtered as characters are typed in this catalog number filter field"
-                    isLabelVisible={false}
-                    hideError
-                    onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
-                      setCatalogNumberValue(event.currentTarget.value);
-                    }}
-                  />
-                </TableHeadingCell>
-                <TableHeadingCell scope="col">
-                  <TextInput
-                    id="courseTitleValue"
-                    name="courseTitleValue"
-                    value={courseTitleValue}
-                    placeholder="Filter by Course Title"
-                    label="The table will be filtered as characters are typed in this course title filter field"
-                    isLabelVisible={false}
-                    hideError
-                    onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
-                      setCourseTitleValue(event.currentTarget.value);
-                    }}
-                  />
-                </TableHeadingCell>
-                <>
-                  {instructorFilters(currentMultiYearPlanList, semesters)}
-                </>
-              </TableRow>
-            </TableHead>
-            <TableBody isScrollable>
-              {filteredMultiYearPlans()
-                .map((course, courseIndex): TableRow => (
-                  <TableRow isStriped={courseIndex % 2 === 1} key={course.id}>
-                    <TableCell
-                      verticalAlignment={VALIGN.TOP}
-                      backgroundColor={getCatPrefixColor(course.catalogPrefix)}
-                    >
-                      {course.catalogPrefix}
-                    </TableCell>
-                    <TableRowHeadingCell verticalAlignment={VALIGN.TOP} scope="row">
-                      {course.catalogNumber}
-                    </TableRowHeadingCell>
-                    <TableCell verticalAlignment={VALIGN.TOP}>
-                      {course.title}
-                    </TableCell>
-                    <>
-                      {courseInstance(course, semesters)}
-                    </>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-
+          <>
+            <div>
+              <p>How to use this site:</p>
+              <p>
+                This site provides a snapshot of the current and 4-year course
+                plan for courses offered by the Harvard School of Engineering
+                and Applied Sciences. It also lists some specific courses in
+                Earth and Planetary Sciences (EPS) that are typically taught by
+                faculty with SEAS appointments.
+              </p>
+              <p>
+                <b>
+                  Disclaimer: this course plan can change frequently and
+                  should be considered as a tentative, unofficial
+                  guideline only.
+                </b>
+              </p>
+              <p>
+                Courses.my.harvard.edu is the official listing of courses.
+                If a course is blank it means it does not have an assigned
+                instructor yet and/or it is not planned to be offered.
+              </p>
+              <p>Direct questions to: seas-course-planner@g.harvard.edu</p>
+            </div>
+            <Table>
+              <TableHead>
+                <TableRow isStriped>
+                  <TableHeadingCell scope="col">Catalog Prefix</TableHeadingCell>
+                  <TableHeadingCell scope="col">Catalog Number</TableHeadingCell>
+                  <TableHeadingCell scope="col">Title</TableHeadingCell>
+                  <>
+                    {yearsHeaders(currentMultiYearPlanList, semesters)}
+                  </>
+                </TableRow>
+                <TableRow isStriped>
+                  <TableHeadingCell scope="col">
+                    <Dropdown
+                      options={
+                        [{ value: 'All', label: 'All' }]
+                          .concat(metadata.catalogPrefixes.map((prefix) => ({
+                            value: prefix,
+                            label: prefix,
+                          })))
+                      }
+                      value={catalogPrefixValue}
+                      name="catalogPrefixValue"
+                      id="catalogPrefixValue"
+                      label="The table will be filtered as selected in the catalog prefix dropdown filter"
+                      isLabelVisible={false}
+                      hideError
+                      onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
+                        setCatalogPrefixValue(event.currentTarget.value);
+                      }}
+                    />
+                  </TableHeadingCell>
+                  <TableHeadingCell scope="col">
+                    <TextInput
+                      id="catalogNumberValue"
+                      name="catalogNumberValue"
+                      value={catalogNumberValue}
+                      placeholder="Filter by Catalog Number"
+                      label="The table will be filtered as characters are typed in this catalog number filter field"
+                      isLabelVisible={false}
+                      hideError
+                      onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
+                        setCatalogNumberValue(event.currentTarget.value);
+                      }}
+                    />
+                  </TableHeadingCell>
+                  <TableHeadingCell scope="col">
+                    <TextInput
+                      id="courseTitleValue"
+                      name="courseTitleValue"
+                      value={courseTitleValue}
+                      placeholder="Filter by Course Title"
+                      label="The table will be filtered as characters are typed in this course title filter field"
+                      isLabelVisible={false}
+                      hideError
+                      onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
+                        setCourseTitleValue(event.currentTarget.value);
+                      }}
+                    />
+                  </TableHeadingCell>
+                  <>
+                    {instructorFilters(currentMultiYearPlanList, semesters)}
+                  </>
+                </TableRow>
+              </TableHead>
+              <TableBody isScrollable>
+                {filteredMultiYearPlans()
+                  .map((course, courseIndex): TableRow => (
+                    <TableRow isStriped={courseIndex % 2 === 1} key={course.id}>
+                      <TableCell
+                        verticalAlignment={VALIGN.TOP}
+                        backgroundColor={getCatPrefixColor(course.catalogPrefix)}
+                      >
+                        {course.catalogPrefix}
+                      </TableCell>
+                      <TableRowHeadingCell verticalAlignment={VALIGN.TOP} scope="row">
+                        {course.catalogNumber}
+                      </TableRowHeadingCell>
+                      <TableCell verticalAlignment={VALIGN.TOP}>
+                        {course.title}
+                      </TableCell>
+                      <>
+                        {courseInstance(course, semesters)}
+                      </>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </>
         )}
     </div>
   );
