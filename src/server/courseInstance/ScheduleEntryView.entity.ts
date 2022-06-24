@@ -28,6 +28,7 @@ import { Campus } from '../location/campus.entity';
   SelectQueryBuilder<CourseInstance> => connection
     .createQueryBuilder()
     .select('m.id', 'id')
+    .addSelect('ci.id', 'instanceId')
     .addSelect('c.number', 'courseNumber')
     .addSelect('c.isUndergraduate', 'isUndergraduate')
     .addSelect("CONCAT_WS(' ', b.name, r.name)", 'room')
@@ -49,6 +50,13 @@ export class ScheduleEntryView {
    */
   @ViewColumn()
   public id: string;
+
+  /**
+   * From [[CourseInstance]]
+   * The ID of the parent Course Instance, used to link multiple meetings within a week.
+   */
+  @ViewColumn()
+  public instanceId: string;
 
   /**
    * From [[Course]]
