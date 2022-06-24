@@ -34,6 +34,7 @@ import { getSemestersFromYear, SemesterInfo } from 'common/utils/multiYearPlanHe
 import { getCatPrefixColor } from '../../../common/constants';
 import { listFilter } from './Filter';
 import { filterPlansByInstructors } from './utils/filterByInstructorValues';
+import StyledInstructionalTextBox from '../layout/InstructionalTextBox';
 
 /**
  * The component represents the Multi Year Plan page, which will be rendered at
@@ -223,7 +224,7 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
         )
         : (
           <>
-            <div>
+            <StyledInstructionalTextBox>
               <p>How to use this site:</p>
               <p>
                 This site provides a snapshot of the current and 4-year course
@@ -249,7 +250,7 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
                 not planned to be offered.
               </p>
               <p>Direct questions to: seas-course-planner@g.harvard.edu</p>
-            </div>
+            </StyledInstructionalTextBox>
             <Table>
               <TableHead>
                 <TableRow isStriped>
