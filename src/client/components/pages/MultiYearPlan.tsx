@@ -321,7 +321,9 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
                     <TableRow isStriped={courseIndex % 2 === 1} key={course.id}>
                       <TableCell
                         verticalAlignment={VALIGN.TOP}
-                        backgroundColor={getCatPrefixColor(course.catalogPrefix)}
+                        backgroundColor={
+                          getCatPrefixColor(course.catalogPrefix)
+                        }
                       >
                         {course.catalogPrefix}
                       </TableCell>
