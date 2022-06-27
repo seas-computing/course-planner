@@ -7,8 +7,9 @@ import React, {
   Ref,
   useRef,
   useCallback,
+  useMemo
 } from 'react';
-import { LoadSpinner } from 'mark-one';
+import { LoadSpinner, Checkbox, POSITION } from 'mark-one';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { MessageContext } from 'client/context';
 import { FacultyAPI } from 'client/api';
@@ -70,6 +71,13 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
    */
   const [isInitialized, setIsInitialized] = useState(false);
 
+  /**
+   * Controls whether the retired faculty are shown in the Faculty table.
+   * By default, the "Show Retired Faculty" checkbox is unchecked, meaning that
+   * the retired courses are not shown unless the checkbox is checked.
+   */
+  const [showRetired, setShowRetired] = useState(true);
+
   // TODO: Get the actual current academic year in future ticket instead of hard coding
   const acadYear = 2021;
 
@@ -128,6 +136,20 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
       });
   }, [dispatchMessage, isStaleData, isInitialized, closeAbsenceModal]);
 
+  const filteredFaculty = useMemo(() => {
+    let cFS = [... currentFacultySchedules];
+    if (!showRetired) {
+      cFS = cFS.filter(
+        ({ spring, fall }): boolean => (
+          fall.absence.type == 'PRESENT'
+          || spring.absence.type == 'PRESENT')
+      );
+    }
+    console.log(cFS);
+    return cFS;
+  }, [showRetired, currentFacultySchedules]);
+
+
   return (
     <div className="faculty-schedule-table">
       {fetching
@@ -138,9 +160,18 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
         )
         : (
           <>
+            <Checkbox
+              id="showRetiredFaculty"
+              name="showRetiredFaculty"
+              label="Show Retired"
+              checked={showRetired}
+              onChange={() => {setShowRetired(!showRetired)}}
+              labelPosition={POSITION.RIGHT}
+              hideError
+            />
             <FacultyScheduleTable
               academicYear={acadYear}
-              facultySchedules={currentFacultySchedules}
+              facultySchedules={filteredFaculty}
               onEdit={(faculty, absence) => {
                 setAbsenceModalVisible(true);
                 setFaculty(faculty);
