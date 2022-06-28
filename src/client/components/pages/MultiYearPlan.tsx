@@ -224,33 +224,36 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
         )
         : (
           <>
-            <StyledInstructionalTextBox>
-              <p>How to use this site:</p>
-              <p>
-                This site provides a snapshot of the current and 4-year course
-                plan for courses offered by the Harvard School of Engineering
-                and Applied Sciences. It also lists some specific courses in
-                Earth and Planetary Sciences (EPS) that are typically taught by
-                faculty with SEAS appointments.
-              </p>
-              <p>
-                <b>
-                  Disclaimer: this course plan can change frequently and
-                  should be considered as a tentative, unofficial
-                  guideline only.
-                </b>
-              </p>
-              <p>
-                <a href="https://courses.my.harvard.edu/" target="_blank" rel="noreferrer">
-                  Courses.my.harvard.edu
-                </a>
-                {' '}
-                is the official listing of courses. If a course is blank it
-                means it does not have an assigned instructor yet and/or it is
-                not planned to be offered.
-              </p>
-              <p>Direct questions to: seas-course-planner@g.harvard.edu</p>
-            </StyledInstructionalTextBox>
+            {window.location.hostname === publicHostname
+              && (
+                <StyledInstructionalTextBox>
+                  <p>How to use this site:</p>
+                  <p>
+                    This site provides a snapshot of the current and 4-year
+                    course plan for courses offered by the Harvard School of
+                    Engineering and Applied Sciences. It also lists some
+                    specific courses in Earth and Planetary Sciences (EPS)
+                    that are typically taught by faculty with SEAS appointments.
+                  </p>
+                  <p>
+                    <b>
+                      Disclaimer: this course plan can change frequently and
+                      should be considered as a tentative, unofficial
+                      guideline only.
+                    </b>
+                  </p>
+                  <p>
+                    <a href="https://courses.my.harvard.edu/" target="_blank" rel="noreferrer">
+                      Courses.my.harvard.edu
+                    </a>
+                    {' '}
+                    is the official listing of courses. If a course is blank
+                    it means it does not have an assigned instructor yet
+                    and/or it is planned to be offered.
+                  </p>
+                  <p>Direct questions to: seas-course-planner@g.harvard.edu</p>
+                </StyledInstructionalTextBox>
+              )}
             <Table>
               <TableHead>
                 <TableRow isStriped>
