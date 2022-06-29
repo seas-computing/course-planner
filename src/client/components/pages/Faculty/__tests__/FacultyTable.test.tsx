@@ -10,14 +10,12 @@ import {
   BoundFunction,
   AllByRole,
   getRoles,
-  FindByText,
 } from 'test-utils';
 import { strictEqual } from 'assert';
 import {
   waitForElement,
   wait,
   GetByText,
-  FindAllByText,
 } from '@testing-library/react';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import {
@@ -32,8 +30,6 @@ import {
 import { ABSENCE_TYPE } from 'common/constants';
 import FacultySchedule from '../FacultyPage';
 import FacultyScheduleTable from '../FacultyScheduleTable';
-import { FacultyAPI } from 'client/api';
-
 
 /**
  * Helper function used to compare table row contents with faculty schedule data
@@ -71,44 +67,6 @@ const assertRowMatchesResponse = function (
     .map((course) => course.catalogNumber)
     .join(''));
 };
-
-
-
-describe.only('Faculty Page', function () {
-  let getStub: SinonStub;
-  let dispatchMessage: SinonStub;
-  
-  beforeEach(function () {
-    getStub = stub(FacultyAPI, 'getFacultySchedulesForYear');
-    dispatchMessage = stub();
-  });
-  describe('fetching data on render', function () {
-    context('When API request succeeds', function () {
-      let findByText: BoundFunction<FindByText>;
-      let getByLabelText: BoundFunction<GetByText>;
-      let findByLabelText: BoundFunction<FindByText>;
-      beforeEach(function () {
-        getStub.resolves([
-          { ...appliedMathFacultyScheduleResponse },
-        ]);
-        ({ findByText, getByLabelText, findByLabelText } = render(<FacultySchedule />));
-      });
-      it('calls the fetch function on render', function () {
-        strictEqual(getStub.callCount, 1);
-      });
-      it('does not show the retired faculty', async function () {
-        // First, make sure that the Show Retired checkbox is not initially checked
-        const retiredCheckbox = await findByLabelText('Show Retired', { exact: false }) as HTMLInputElement;
-        strictEqual(retiredCheckbox.checked, false, 'The "Show Retired" checkbox is checked when it should initially be unchecked');
-        //strictEqual(queryByText(es247RetiredCourseInstance.catalogNumber), null);
-      });
-
-    });
-  });
-
-});
-
-
 
 describe('FacultyScheduleTable', function () {
   const facultyScheduleList = [

@@ -7,8 +7,10 @@ import React, {
   Ref,
   useRef,
   useCallback,
-  useMemo
+  useMemo,
 } from 'react';
+import { VerticalSpace } from 'client/components/layout';
+import { MenuFlexReverse } from 'client/components/general';
 import { LoadSpinner, Checkbox, POSITION } from 'mark-one';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { MessageContext } from 'client/context';
@@ -137,18 +139,16 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
   }, [dispatchMessage, isStaleData, isInitialized, closeAbsenceModal]);
 
   const filteredFaculty = useMemo(() => {
-    let cFS = [... currentFacultySchedules];
+    let faculty = [...currentFacultySchedules];
     if (!showRetired) {
-      cFS = cFS.filter(
+      faculty = faculty.filter(
         ({ spring, fall }): boolean => (
-          fall.absence.type == 'PRESENT'
-          || spring.absence.type == 'PRESENT')
+          fall.absence.type === 'PRESENT'
+          || spring.absence.type === 'PRESENT')
       );
     }
-    console.log(cFS);
-    return cFS;
+    return faculty;
   }, [showRetired, currentFacultySchedules]);
-
 
   return (
     <div className="faculty-schedule-table">
@@ -160,15 +160,19 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
         )
         : (
           <>
-            <Checkbox
-              id="showRetiredFaculty"
-              name="showRetiredFaculty"
-              label="Show Retired"
-              checked={showRetired}
-              onChange={() => {setShowRetired(!showRetired)}}
-              labelPosition={POSITION.RIGHT}
-              hideError
-            />
+            <VerticalSpace>
+              <MenuFlexReverse>
+                <Checkbox
+                  id="showRetiredFaculty"
+                  name="showRetiredFaculty"
+                  label="Show Retired"
+                  checked={showRetired}
+                  onChange={() => setShowRetired(!showRetired)}
+                  labelPosition={POSITION.RIGHT}
+                  hideError
+                />
+              </MenuFlexReverse>
+            </VerticalSpace>
             <FacultyScheduleTable
               academicYear={acadYear}
               facultySchedules={filteredFaculty}
