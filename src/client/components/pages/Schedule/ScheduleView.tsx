@@ -112,8 +112,12 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
               const resolvedDuration = Math.round(
                 duration / minuteResolution
               );
+              const popoverInBlock = courses.some(({
+                instanceId,
+              }) => instanceId === currentPopover);
               return [...blocks, (
                 <SessionBlock
+                  isFaded={currentPopover && !popoverInBlock}
                   key={sessionId}
                   prefix={coursePrefix}
                   startRow={resolvedStartRow}
@@ -132,9 +136,12 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
                     const displayEndTime = PGTime.toDisplay(
                       `${endHour}:${endMinute.toString().padStart(2, '0')}`
                     );
+                    const isSelected = currentPopover === instanceId;
                     return (
                       <CourseListing key={meetingId}>
                         <CourseListingButton
+                          isHighlighted={popoverInBlock && isSelected}
+                          isFaded={popoverInBlock && !isSelected}
                           aria-disabled
                           aria-labelledby={`${meetingId}-description`}
                           onClick={(event) => {
@@ -151,7 +158,7 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
                           xOffset="0.5rem"
                           yOffset="1rem"
                           title={catalogNumber}
-                          isVisible={currentPopover === instanceId}
+                          isVisible={isSelected}
                         >
                           <p>{day}</p>
                           <p>{`${displayStartTime} - ${displayEndTime}`}</p>
