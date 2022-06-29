@@ -76,7 +76,7 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
    * By default, the "Show Retired Faculty" checkbox is unchecked, meaning that
    * the retired courses are not shown unless the checkbox is checked.
    */
-  const [showRetired, setShowRetired] = useState(true);
+  const [showRetired, setShowRetired] = useState(false);
 
   // TODO: Get the actual current academic year in future ticket instead of hard coding
   const acadYear = 2021;
