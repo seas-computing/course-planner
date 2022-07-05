@@ -46,7 +46,7 @@ describe('Faculty Page', function () {
       });
       it('does not show the retired faculty', async function () {
         // First, make sure that the Show Retired checkbox is not initially checked
-        const retiredCheckbox = await findByLabelText('Show Retired', { exact: false }) as HTMLInputElement;
+        const retiredCheckbox = await findByLabelText('Show "No Longer Active" Faculty', { exact: false }) as HTMLInputElement;
         strictEqual(retiredCheckbox.checked, false, 'The "Show Retired" checkbox is checked when it should initially be unchecked');
         strictEqual(
           queryByText(notActiveACSFacultyScheduleResponse.area), null
@@ -54,13 +54,13 @@ describe('Faculty Page', function () {
       });
       it('show faculty that are not retired in all semesters', async function () {
         // First, make sure that the Show Retired checkbox is not initially checked
-        const retiredCheckbox = await findByLabelText('Show Retired', { exact: false }) as HTMLInputElement;
+        const retiredCheckbox = await findByLabelText('Show "No Longer Active" Faculty', { exact: false }) as HTMLInputElement;
         strictEqual(retiredCheckbox.checked, false, 'The "Show Retired" checkbox is checked when it should initially be unchecked');
         return findByText(partiallyActiveAMFacultyScheduleResponse.firstName);
       });
       it('shows the retired faculty', async function () {
         // First, make sure that the Show Retired checkbox is not initially checked
-        const retiredCheckbox = await findByLabelText('Show Retired', { exact: false }) as HTMLInputElement;
+        const retiredCheckbox = await findByLabelText('Show "No Longer Active" Faculty', { exact: false }) as HTMLInputElement;
         strictEqual(retiredCheckbox.checked, false, 'The "Show Retired" checkbox is checked when it should initially be unchecked');
         fireEvent.click(retiredCheckbox);
         return findByText(notActiveACSFacultyScheduleResponse.firstName);

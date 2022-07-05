@@ -10,7 +10,7 @@ import React, {
   useMemo,
 } from 'react';
 import { VerticalSpace } from 'client/components/layout';
-import { MenuFlexReverse } from 'client/components/general';
+import { MenuFlex } from 'client/components/general';
 import { LoadSpinner, Checkbox, POSITION } from 'mark-one';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { MessageContext } from 'client/context';
@@ -138,6 +138,9 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
       });
   }, [dispatchMessage, isStaleData, isInitialized, closeAbsenceModal]);
 
+  /**
+   * Filter/unfilter  faculty based on the showRetired checkbox, memoizing the result
+   */
   const filteredFaculty = useMemo(() => {
     let faculty = [...currentFacultySchedules];
     if (!showRetired) {
@@ -161,17 +164,17 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
         : (
           <>
             <VerticalSpace>
-              <MenuFlexReverse>
+              <MenuFlex>
                 <Checkbox
                   id="showRetiredFaculty"
                   name="showRetiredFaculty"
-                  label="Show Retired"
+                  label='Show "No Longer Active" Faculty'
                   checked={showRetired}
-                  onChange={() => setShowRetired(!showRetired)}
+                  onChange={() => setShowRetired((showRetired) => !showRetired)}
                   labelPosition={POSITION.RIGHT}
                   hideError
                 />
-              </MenuFlexReverse>
+              </MenuFlex>
             </VerticalSpace>
             <FacultyScheduleTable
               academicYear={acadYear}

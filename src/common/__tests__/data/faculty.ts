@@ -289,7 +289,7 @@ export const notActiveACSFacultyScheduleResponse: FacultyResponseDTO = {
     academicYear: 2021,
     courses: [
       {
-        id: 'cnn6382b-54c5-484f-bf6c-a0a052c4f5c8',
+        id: 'caa6382b-54c5-484f-bf6c-a0a052c4f5c8',
         catalogNumber: 'ACS 33',
       },
     ],
@@ -331,7 +331,7 @@ export const partiallyActiveAMFacultyScheduleResponse: FacultyResponseDTO = {
     academicYear: 2021,
     courses: [
       {
-        id: 'cnn6382b-54c5-484f-bf6c-a0a052c4f5c8',
+        id: 'caa6382b-54c5-484f-bf6c-a0a052c4f5c8',
         catalogNumber: 'AM 23',
       },
     ],
