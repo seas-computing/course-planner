@@ -170,7 +170,9 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
                   name="showRetiredFaculty"
                   label='Show "No Longer Active" Faculty'
                   checked={showRetired}
-                  onChange={() => setShowRetired((showRetired) => !showRetired)}
+                  onChange={
+                    () => setShowRetired((prevShowRetired) => !prevShowRetired)
+                  }
                   labelPosition={POSITION.RIGHT}
                   hideError
                 />
