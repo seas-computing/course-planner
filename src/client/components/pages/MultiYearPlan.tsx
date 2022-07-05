@@ -35,6 +35,7 @@ import { getCatPrefixColor } from '../../../common/constants';
 import { listFilter } from './Filter';
 import { filterPlansByInstructors } from './utils/filterByInstructorValues';
 import StyledInstructionalTextBox from '../layout/InstructionalTextBox';
+import { WindowUtils } from './utils/getHostname';
 
 /**
  * The component represents the Multi Year Plan page, which will be rendered at
@@ -224,7 +225,7 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
         )
         : (
           <>
-            {window.location.hostname === publicHostname
+            {WindowUtils.getHostname() === publicHostname
               && (
                 <StyledInstructionalTextBox>
                   <p>How to use this site:</p>
