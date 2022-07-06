@@ -53,6 +53,7 @@ describe('CourseInstance API', function () {
   let ciRepository: Repository<CourseInstance>;
   let api: HttpServer;
   let authStub: SinonStub;
+  let configService: ConfigService;
 
   beforeEach(async function () {
     authStub = stub(TestingStrategy.prototype, 'login');
@@ -94,6 +95,7 @@ describe('CourseInstance API', function () {
     meetingRepository = testModule.get(getRepositoryToken(Meeting));
     fciRepository = testModule.get(getRepositoryToken(FacultyCourseInstance));
     ciRepository = testModule.get(getRepositoryToken(CourseInstance));
+    configService = testModule.get<ConfigService>(ConfigService);
     const nestApp = await testModule
       .createNestApplication()
       .useGlobalPipes(new BadRequestExceptionPipe())
@@ -1046,6 +1048,7 @@ describe('CourseInstance API', function () {
     let newOfferedValue: OFFERED;
     let response: Response;
     let testCourseInstance: CourseInstance;
+    const currentAcademicYear = 2022;
     const testRequest: CourseInstanceUpdateDTO = {
       offered: OFFERED.N,
       preEnrollment: 0,
@@ -1053,11 +1056,12 @@ describe('CourseInstance API', function () {
       actualEnrollment: 0,
     };
     beforeEach(async function () {
+      stub(configService, 'academicYear').get(() => currentAcademicYear);
       testCourseInstance = await ciRepository.findOne(
         {
           where: {
             semester: {
-              academicYear: 2022,
+              academicYear: currentAcademicYear,
             },
           },
           relations: [
