@@ -54,6 +54,9 @@ describe('CourseInstance API', function () {
   let api: HttpServer;
   let authStub: SinonStub;
   let configService: ConfigService;
+  // The current academic year will be set via a stub to avoid the issue of not
+  // being allowed to retire course instances of past years.
+  const currentAcademicYear = 2022;
 
   beforeEach(async function () {
     authStub = stub(TestingStrategy.prototype, 'login');
@@ -1048,7 +1051,6 @@ describe('CourseInstance API', function () {
     let newOfferedValue: OFFERED;
     let response: Response;
     let testCourseInstance: CourseInstance;
-    const currentAcademicYear = 2022;
     const testRequest: CourseInstanceUpdateDTO = {
       offered: OFFERED.N,
       preEnrollment: 0,
