@@ -53,6 +53,10 @@ describe('CourseInstance API', function () {
   let ciRepository: Repository<CourseInstance>;
   let api: HttpServer;
   let authStub: SinonStub;
+  let configService: ConfigService;
+  // The current academic year will be set via a stub to avoid the issue of not
+  // being allowed to retire course instances of past years.
+  const currentAcademicYear = 2022;
 
   beforeEach(async function () {
     authStub = stub(TestingStrategy.prototype, 'login');
@@ -94,6 +98,7 @@ describe('CourseInstance API', function () {
     meetingRepository = testModule.get(getRepositoryToken(Meeting));
     fciRepository = testModule.get(getRepositoryToken(FacultyCourseInstance));
     ciRepository = testModule.get(getRepositoryToken(CourseInstance));
+    configService = testModule.get<ConfigService>(ConfigService);
     const nestApp = await testModule
       .createNestApplication()
       .useGlobalPipes(new BadRequestExceptionPipe())
@@ -1053,11 +1058,12 @@ describe('CourseInstance API', function () {
       actualEnrollment: 0,
     };
     beforeEach(async function () {
+      stub(configService, 'academicYear').get(() => currentAcademicYear);
       testCourseInstance = await ciRepository.findOne(
         {
           where: {
             semester: {
-              academicYear: 2022,
+              academicYear: currentAcademicYear,
             },
           },
           relations: [
