@@ -26,6 +26,11 @@ export abstract class ScheduleEntry {
     example: true,
   })
   isUndergraduate: boolean;
+
+  @ApiProperty({
+    example: 'b4e377a7-3300-4db0-a51e-53f7d2957360',
+  })
+  instanceId: string;
 }
 
 export abstract class ScheduleViewResponseDTO {

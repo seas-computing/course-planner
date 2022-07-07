@@ -79,11 +79,35 @@ describe('ScheduleView', function () {
     describe('Popover details', function () {
       let testBlock: ScheduleViewResponseDTO;
       let testMeeting: ScheduleEntry;
+      let meetingCount: Record<string, number>;
       beforeEach(function () {
-        ([testBlock] = testCourseScheduleData);
-        ([testMeeting] = testBlock.courses);
+        meetingCount = testCourseScheduleData.reduce((total, current) => {
+          const count = { ...total };
+          if (current.courses.length > 0) {
+            current.courses.forEach(({ instanceId }) => {
+              if (instanceId in count) {
+                count[instanceId] += 1;
+              } else {
+                count[instanceId] = 1;
+              }
+            });
+          }
+          return count;
+        }, {});
       });
-      context('When clicking on a course', function () {
+      context('When clicking on a course with one entry', function () {
+        beforeEach(function () {
+          const [singleEntryInstanceId] = Object.entries(meetingCount)
+            .find(([, count]) => count === 1);
+          testBlock = testCourseScheduleData.find(
+            ({ courses }) => courses.some(
+              ({ instanceId }) => instanceId === singleEntryInstanceId
+            )
+          );
+          testMeeting = testBlock.courses.find(
+            ({ instanceId }) => instanceId === singleEntryInstanceId
+          );
+        });
         it('Should display the full course name', function () {
           const fullName = `${testBlock.coursePrefix} ${testMeeting.courseNumber}`;
           // first check that that the full name is not on the page
@@ -139,18 +163,113 @@ describe('ScheduleView', function () {
           // Now make sure the room name is on the page
           return page.findByText(testMeeting.room);
         });
+        context('When clicking elsewhere', function () {
+          it('Should close the popover', function () {
+            const [testListButton] = page.getAllByText(
+              testMeeting.courseNumber
+            );
+            fireEvent.click(testListButton);
+            // first check that that the room name is not on the page
+            page.getByText(testMeeting.room);
+            const heading = page.getByText(testBlock.coursePrefix);
+            fireEvent.click(heading);
+            // Now make sure that the room name is gone.
+            const roomElem = page.queryByText(testMeeting.room);
+            strictEqual(roomElem, null);
+          });
+        });
       });
-      context('When clicking on a course, then clicking elsewhere', function () {
-        it('Should close the popover', function () {
+      context('When clicking on a course with multiple entries', function () {
+        let mutliEntryInstanceCount: number;
+        beforeEach(function () {
+          const [
+            multiEntryInstanceId,
+          ] = Object.entries(meetingCount)
+            .find(([, count]) => count >= 1);
+          testBlock = testCourseScheduleData.find(
+            ({ courses }) => courses.some(
+              ({ instanceId }) => instanceId === multiEntryInstanceId
+            )
+          );
+          testMeeting = testBlock.courses.find(
+            ({ instanceId }) => instanceId === multiEntryInstanceId
+          );
+          mutliEntryInstanceCount = meetingCount[multiEntryInstanceId];
+        });
+        it('Should include a course with multiple entries', function () {
+          // Sanity check in case our underlying data changes
+          notStrictEqual(mutliEntryInstanceCount, 0);
+        });
+        it('Should display the full course name in each block', async function () {
+          const fullName = `${testBlock.coursePrefix} ${testMeeting.courseNumber}`;
+          // first check that that the full name is not on the page
+          const nameElement = page.queryByText(fullName);
+          strictEqual(nameElement, null);
           const [testListButton] = page.getAllByText(testMeeting.courseNumber);
           fireEvent.click(testListButton);
+          // Now make sure the full name is on the page
+          const popups = await page.findAllByText(fullName);
+          strictEqual(popups.length, mutliEntryInstanceCount);
+        });
+        it('Should display the day the meeting is held', function () {
+          // first check that that the day name only appears once on the page
+          // In the column header
+          let dayName = page.queryAllByText(
+            dayEnumToString(testBlock.weekday)
+          );
+          strictEqual(dayName.length, 1);
+          const [testListButton] = page.getAllByText(testMeeting.courseNumber);
+          fireEvent.click(testListButton);
+          // Now make sure the room name is on the page
+          dayName = page.queryAllByText(
+            dayEnumToString(testBlock.weekday)
+          );
+          strictEqual(dayName.length, 2);
+        });
+        it('Should display the start and end time', function () {
+          const {
+            startHour,
+            startMinute,
+            endHour,
+            endMinute,
+          } = testBlock;
+          // first check that that the full time is not on the page
+          const displayStartTime = PGTime.toDisplay(
+            `${startHour}:${startMinute.toString().padStart(2, '0')}`
+          );
+          const displayEndTime = PGTime.toDisplay(
+            `${endHour}:${endMinute.toString().padStart(2, '0')}`
+          );
+          const timeElem = page.queryByText(`${displayStartTime} - ${displayEndTime}`);
+          strictEqual(timeElem, null);
+          const [testListButton] = page.getAllByText(testMeeting.courseNumber);
+          fireEvent.click(testListButton);
+          // Now make sure the room name is on the page
+          return page.findAllByText(`${displayStartTime} - ${displayEndTime}`);
+        });
+        it('Should display the room name', function () {
           // first check that that the room name is not on the page
-          page.getByText(testMeeting.room);
-          const heading = page.getByText(testBlock.coursePrefix);
-          fireEvent.click(heading);
-          // Now make sure that the room name is gone.
-          const roomElem = page.queryByText(testMeeting.room);
-          strictEqual(roomElem, null);
+          const roomName = page.queryByText(testMeeting.room);
+          strictEqual(roomName, null);
+          const [testListButton] = page.getAllByText(testMeeting.courseNumber);
+          fireEvent.click(testListButton);
+          // Now make sure the room name is on the page
+          return page.findAllByText(testMeeting.room);
+        });
+        context('When clicking elsewhere', function () {
+          it('Should close the popover', function () {
+            const [testListButton] = page.getAllByText(
+              testMeeting.courseNumber
+            );
+            fireEvent.click(testListButton);
+            // first check that that the room name is not on the page
+            page.getAllByText(testMeeting.room);
+            const [heading] = page.getAllByText(testBlock.coursePrefix);
+            fireEvent.click(heading);
+            // Now make sure that the room name is gone.
+            const roomElem = page.queryAllByText(testMeeting.room);
+            strictEqual(roomElem.length, 0);
+          });
         });
       });
     });

@@ -120,7 +120,8 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
                   duration={resolvedDuration}
                 >
                   {courses.map(({
-                    id: courseId,
+                    id: meetingId,
+                    instanceId,
                     courseNumber,
                     room,
                   }) => {
@@ -132,14 +133,14 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
                       `${endHour}:${endMinute.toString().padStart(2, '0')}`
                     );
                     return (
-                      <CourseListing key={courseId}>
+                      <CourseListing key={meetingId}>
                         <CourseListingButton
                           aria-disabled
-                          aria-labelledby={`${courseId}-description`}
+                          aria-labelledby={`${meetingId}-description`}
                           onClick={(event) => {
                             event.stopPropagation();
                             setCurrentPopover((current) => (
-                              current === courseId ? null : courseId
+                              current === instanceId ? null : instanceId
                             ));
                           }}
                         >
@@ -150,13 +151,13 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
                           xOffset="0.5rem"
                           yOffset="1rem"
                           title={catalogNumber}
-                          isVisible={currentPopover === courseId}
+                          isVisible={currentPopover === instanceId}
                         >
                           <p>{day}</p>
                           <p>{`${displayStartTime} - ${displayEndTime}`}</p>
                           <p>{room}</p>
                         </Popover>
-                        <HiddenText id={`${courseId}-description`}>
+                        <HiddenText id={`${meetingId}-description`}>
                           {`${catalogNumber} on ${day}, ${displayStartTime} to ${displayEndTime} in ${room}`}
                         </HiddenText>
                       </CourseListing>
