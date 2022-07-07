@@ -7,8 +7,11 @@ import React, {
   Ref,
   useRef,
   useCallback,
+  useMemo,
 } from 'react';
-import { LoadSpinner } from 'mark-one';
+import { VerticalSpace } from 'client/components/layout';
+import { MenuFlex } from 'client/components/general';
+import { LoadSpinner, Checkbox, POSITION } from 'mark-one';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { MessageContext } from 'client/context';
 import { FacultyAPI } from 'client/api';
@@ -70,6 +73,13 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
    */
   const [isInitialized, setIsInitialized] = useState(false);
 
+  /**
+   * Controls whether the retired faculty are shown in the Faculty table.
+   * By default, the "Show Retired Faculty" checkbox is unchecked, meaning that
+   * the retired courses are not shown unless the checkbox is checked.
+   */
+  const [showRetired, setShowRetired] = useState(false);
+
   // TODO: Get the actual current academic year in future ticket instead of hard coding
   const acadYear = 2021;
 
@@ -128,6 +138,21 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
       });
   }, [dispatchMessage, isStaleData, isInitialized, closeAbsenceModal]);
 
+  /**
+   * Filter/unfilter  faculty based on the showRetired checkbox, memoizing the result
+   */
+  const filteredFaculty = useMemo(() => {
+    let faculty = [...currentFacultySchedules];
+    if (!showRetired) {
+      faculty = faculty.filter(
+        ({ spring, fall }): boolean => (
+          fall.absence.type === 'PRESENT'
+          || spring.absence.type === 'PRESENT')
+      );
+    }
+    return faculty;
+  }, [showRetired, currentFacultySchedules]);
+
   return (
     <div className="faculty-schedule-table">
       {fetching
@@ -138,9 +163,24 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
         )
         : (
           <>
+            <VerticalSpace>
+              <MenuFlex>
+                <Checkbox
+                  id="showRetiredFaculty"
+                  name="showRetiredFaculty"
+                  label='Show "No Longer Active" Faculty'
+                  checked={showRetired}
+                  onChange={
+                    () => setShowRetired((prevShowRetired) => !prevShowRetired)
+                  }
+                  labelPosition={POSITION.RIGHT}
+                  hideError
+                />
+              </MenuFlex>
+            </VerticalSpace>
             <FacultyScheduleTable
               academicYear={acadYear}
-              facultySchedules={currentFacultySchedules}
+              facultySchedules={filteredFaculty}
               onEdit={(faculty, absence) => {
                 setAbsenceModalVisible(true);
                 setFaculty(faculty);

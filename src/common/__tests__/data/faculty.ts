@@ -259,6 +259,90 @@ FacultyResponseDTO = {
 };
 
 /**
+ * An example [[FacultyResponseDTO]] response representing a schedule of a non
+ * Active Applied ComputationalScience
+ */
+
+export const notActiveACSFacultyScheduleResponse: FacultyResponseDTO = {
+  id: 'adacda77-0941-48de-8128-24f92787b2ae',
+  firstName: 'Schutt',
+  lastName: 'Rachel',
+  category: FACULTY_TYPE.NON_LADDER,
+  area: 'ACS',
+  jointWith: '',
+  fall: {
+    id: '74f52c12-5fc2-40b3-9c8d-dfb62252346a',
+    academicYear: 2020,
+    courses: [
+      {
+        id: 'bbc7492a-5fc2-40b3-9c8d-a0a052c4f5c8',
+        catalogNumber: 'ACS 21',
+      },
+    ],
+    absence: {
+      id: '007fa61c-6824-449d-b56d-02400a94553e',
+      type: ABSENCE_TYPE.NO_LONGER_ACTIVE,
+    },
+  },
+  spring: {
+    id: 'd7fc148d-54c5-484f-bf6c-532850ca4eda',
+    academicYear: 2021,
+    courses: [
+      {
+        id: 'caa6382b-54c5-484f-bf6c-a0a052c4f5c8',
+        catalogNumber: 'ACS 33',
+      },
+    ],
+    absence: {
+      id: '0604e7d5-2230-4bf2-8cb5-a8066ff78072',
+      type: ABSENCE_TYPE.NO_LONGER_ACTIVE,
+    },
+  },
+};
+
+/**
+ * An example [[FacultyResponseDTO]] response representing a schedule of a partially
+ * Active Applied ComputationalScience
+ */
+
+export const partiallyActiveAMFacultyScheduleResponse: FacultyResponseDTO = {
+  id: '594df85e-46c1-422e-b17b-72ea0cb354a2',
+  firstName: '"Elizabeth"',
+  lastName: 'Chen',
+  category: FACULTY_TYPE.NON_LADDER,
+  area: 'AM',
+  jointWith: '',
+  fall: {
+    id: '74f52c12-5fc2-40b3-9c8d-dfb62252346a',
+    academicYear: 2020,
+    courses: [
+      {
+        id: 'bbc7492a-5fc2-40b3-9c8d-a0a052c4f5c8',
+        catalogNumber: 'AM 45',
+      },
+    ],
+    absence: {
+      id: 'c31f48c9-f26c-4c44-8724-abbaf1e93452',
+      type: ABSENCE_TYPE.PRESENT,
+    },
+  },
+  spring: {
+    id: 'd7fc148d-54c5-484f-bf6c-532850ca4eda',
+    academicYear: 2021,
+    courses: [
+      {
+        id: 'caa6382b-54c5-484f-bf6c-a0a052c4f5c8',
+        catalogNumber: 'AM 23',
+      },
+    ],
+    absence: {
+      id: '09553d71-527e-4b71-8a45-abbf01e94a32',
+      type: ABSENCE_TYPE.NO_LONGER_ACTIVE,
+    },
+  },
+};
+
+/**
  * An example [[FacultyResponseDTO]] response representing a schedule of a
  * faculty member in an area that does not yet exist for the purpose of testing
  * that the backgroundColor prop is not passed when area does not exist
