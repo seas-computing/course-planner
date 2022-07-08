@@ -252,7 +252,11 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
                     it means it does not have an assigned instructor yet
                     and/or it is planned to be offered.
                   </p>
-                  <p>Direct questions to: seas-course-planner@g.harvard.edu</p>
+                  <p>
+                    Direct questions to:
+                    {' '}
+                    <a href="mailto:seas-course-planner@g.harvard.edu">seas-course-planner@g.harvard.edu</a>
+                  </p>
                 </StyledInstructionalTextBox>
               )}
             <Table>
