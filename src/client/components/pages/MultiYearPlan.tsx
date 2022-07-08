@@ -34,7 +34,7 @@ import { getSemestersFromYear, SemesterInfo } from 'common/utils/multiYearPlanHe
 import { getCatPrefixColor } from '../../../common/constants';
 import { listFilter } from './Filter';
 import { filterPlansByInstructors } from './utils/filterByInstructorValues';
-import StyledInstructionalTextBox from '../layout/InstructionalTextBox';
+import InstructionalTextBox from '../layout/InstructionalTextBox';
 import { WindowUtils } from './utils/getHostname';
 
 /**
@@ -227,7 +227,7 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
           <>
             {WindowUtils.getHostname() === publicHostname
               && (
-                <StyledInstructionalTextBox>
+                <InstructionalTextBox>
                   <p>How to use this site:</p>
                   <p>
                     This site provides a snapshot of the current and 4-year
@@ -257,7 +257,7 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
                     {' '}
                     <a href="mailto:seas-course-planner@g.harvard.edu">seas-course-planner@g.harvard.edu</a>
                   </p>
-                </StyledInstructionalTextBox>
+                </InstructionalTextBox>
               )}
             <Table>
               <TableHead>

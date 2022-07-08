@@ -1,7 +1,7 @@
 import { fromTheme } from 'mark-one';
 import styled from 'styled-components';
 
-const StyledInstructionalTextBox = styled.div`
+const InstructionalTextBox = styled.div`
   border: ${fromTheme('border', 'light')};
   margin-top: ${fromTheme('ws', 'xsmall')};
   margin-bottom: ${fromTheme('ws', 'xsmall')};
@@ -13,4 +13,4 @@ const StyledInstructionalTextBox = styled.div`
   }
 `;
 
-export default StyledInstructionalTextBox;
+export default InstructionalTextBox;
