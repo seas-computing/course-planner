@@ -8,12 +8,13 @@ import React, {
   useRef,
   useCallback,
   useMemo,
+  ChangeEvent,
 } from 'react';
 import { VerticalSpace } from 'client/components/layout';
 import { MenuFlex } from 'client/components/general';
 import { LoadSpinner, Checkbox, POSITION } from 'mark-one';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
-import { MessageContext } from 'client/context';
+import { MessageContext, MetadataContext } from 'client/context';
 import { FacultyAPI } from 'client/api';
 import {
   AppMessage,
@@ -21,6 +22,8 @@ import {
   MESSAGE_ACTION,
 } from 'client/classes';
 import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
+import Dropdown, { DropdownProps } from 'mark-one/lib/Forms/Dropdown';
+import { TERM } from 'common/constants';
 import FacultyAbsenceModal from './FacultyAbsenceModal';
 import FacultyScheduleTable from './FacultyScheduleTable';
 
@@ -80,8 +83,40 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
    */
   const [showRetired, setShowRetired] = useState(false);
 
-  // TODO: Get the actual current academic year in future ticket instead of hard coding
-  const acadYear = 2021;
+  /**
+   * Grab the metadata necessary to display the current year's data
+   */
+  const { currentAcademicYear, semesters } = useContext(MetadataContext);
+
+  /**
+   * Compute the range of academic years that will be displayed in the dropdown
+   * at the top of the page
+   */
+  const academicYearOptions = useMemo(
+    () => semesters.reduce<DropdownProps['options']>(
+      (years, semester) => {
+        if (semester.startsWith(TERM.SPRING)) {
+          const academicYear = parseInt(
+            semester.replace(/\D/g, ''),
+            10
+          );
+          return years.concat([{
+            label: `Fall ${academicYear - 1} - Spring ${academicYear}`,
+            value: academicYear.toString(),
+          }]);
+        }
+        return years;
+      }, []
+    ), [semesters]
+  );
+
+  /**
+   * Track the academic year for which data will be shown in the table
+   */
+  const [
+    selectedAcademicYear,
+    setSelectedAcademicYear,
+  ] = useState(currentAcademicYear);
 
   /**
    * The current value of the edit fall absence button
@@ -120,7 +155,7 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
     if (!isInitialized) {
       setFetching(true);
     }
-    FacultyAPI.getFacultySchedulesForYear(acadYear)
+    FacultyAPI.getFacultySchedulesForYear(selectedAcademicYear)
       .then((facultySchedules): void => {
         setFacultySchedules(facultySchedules);
       })
@@ -136,7 +171,13 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
         setIsInitialized(true);
         closeAbsenceModal();
       });
-  }, [dispatchMessage, isStaleData, isInitialized, closeAbsenceModal]);
+  }, [
+    dispatchMessage,
+    isStaleData,
+    isInitialized,
+    closeAbsenceModal,
+    selectedAcademicYear,
+  ]);
 
   /**
    * Filter/unfilter  faculty based on the showRetired checkbox, memoizing the result
@@ -165,6 +206,22 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
           <>
             <VerticalSpace>
               <MenuFlex>
+                <Dropdown
+                  id="academic-year-selector"
+                  name="academic-year-selector"
+                  label="Academic Year"
+                  isLabelVisible
+                  options={academicYearOptions}
+                  value={selectedAcademicYear.toString()}
+                  onChange={
+                    ({
+                      target: { value },
+                    }: ChangeEvent<HTMLSelectElement>) => {
+                      setIsStaleData(true);
+                      setSelectedAcademicYear(parseInt(value, 10));
+                    }
+                  }
+                />
                 <Checkbox
                   id="showRetiredFaculty"
                   name="showRetiredFaculty"
@@ -179,7 +236,7 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
               </MenuFlex>
             </VerticalSpace>
             <FacultyScheduleTable
-              academicYear={acadYear}
+              academicYear={selectedAcademicYear}
               facultySchedules={filteredFaculty}
               onEdit={(faculty, absence) => {
                 setAbsenceModalVisible(true);
