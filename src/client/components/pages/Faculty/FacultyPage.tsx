@@ -202,6 +202,37 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
 
   return (
     <div className="faculty-schedule-table">
+      <VerticalSpace>
+        <MenuFlex>
+          <Dropdown
+            id="academic-year-selector"
+            name="academic-year-selector"
+            label="Academic Year"
+            isLabelVisible
+            options={academicYearOptions}
+            value={selectedAcademicYear.toString()}
+            onChange={
+              ({
+                target: { value },
+              }: ChangeEvent<HTMLSelectElement>) => {
+                setIsStaleData(true);
+                setSelectedAcademicYear(parseInt(value, 10));
+              }
+            }
+          />
+          <Checkbox
+            id="showRetiredFaculty"
+            name="showRetiredFaculty"
+            label='Show "No Longer Active" Faculty'
+            checked={showRetired}
+            onChange={
+              () => setShowRetired((prevShowRetired) => !prevShowRetired)
+            }
+            labelPosition={POSITION.RIGHT}
+            hideError
+          />
+        </MenuFlex>
+      </VerticalSpace>
       {fetching
         ? (
           <div>
@@ -210,37 +241,6 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
         )
         : (
           <>
-            <VerticalSpace>
-              <MenuFlex>
-                <Dropdown
-                  id="academic-year-selector"
-                  name="academic-year-selector"
-                  label="Academic Year"
-                  isLabelVisible
-                  options={academicYearOptions}
-                  value={selectedAcademicYear.toString()}
-                  onChange={
-                    ({
-                      target: { value },
-                    }: ChangeEvent<HTMLSelectElement>) => {
-                      setIsStaleData(true);
-                      setSelectedAcademicYear(parseInt(value, 10));
-                    }
-                  }
-                />
-                <Checkbox
-                  id="showRetiredFaculty"
-                  name="showRetiredFaculty"
-                  label='Show "No Longer Active" Faculty'
-                  checked={showRetired}
-                  onChange={
-                    () => setShowRetired((prevShowRetired) => !prevShowRetired)
-                  }
-                  labelPosition={POSITION.RIGHT}
-                  hideError
-                />
-              </MenuFlex>
-            </VerticalSpace>
             <FacultyScheduleTable
               academicYear={selectedAcademicYear}
               facultySchedules={filteredFaculty}
