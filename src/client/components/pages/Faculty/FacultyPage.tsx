@@ -144,11 +144,17 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
    * If it fails, display a message for the user
    */
   useEffect((): void => {
-    // If we have initialized and are not stale, do nothing
+    // If the table has been initialized with data and the data is stale,
+    // display the loading spinner while the new data is being fetched.
+    // If we have initialized the data but the data is not stale, do nothing.
     // This is required to prevent an infinite loop based on the changing
     // object value of currentFacultySchedules.
-    if (isInitialized && !isStaleData) {
-      return;
+    if (isInitialized) {
+      if (isStaleData) {
+        setFetching(true);
+      } else {
+        return;
+      }
     }
     // Only set the fetching the first time to avoid replacing elements
     // after fetching, which causes button refocusing to fail.
