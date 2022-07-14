@@ -24,6 +24,7 @@ import {
 import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
 import Dropdown, { DropdownProps } from 'mark-one/lib/Forms/Dropdown';
 import { TERM } from 'common/constants';
+import { useStoredState } from 'client/hooks/useStoredState';
 import FacultyAbsenceModal from './FacultyAbsenceModal';
 import FacultyScheduleTable from './FacultyScheduleTable';
 
@@ -116,7 +117,11 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
   const [
     selectedAcademicYear,
     setSelectedAcademicYear,
-  ] = useState(currentAcademicYear);
+  ] = useStoredState(
+    'currentAcademicYear',
+    currentAcademicYear,
+    'sessionStorage'
+  );
 
   /**
    * The current value of the edit fall absence button
