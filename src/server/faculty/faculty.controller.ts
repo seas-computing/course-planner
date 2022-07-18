@@ -141,26 +141,18 @@ export class FacultyController {
   })
   public async updateFacultyAbsence(@Body() absenceInfo: AbsenceRequestDTO):
   Promise<AbsenceResponseDTO> {
-    let existingAbsence: Absence;
     try {
-      existingAbsence = await this.absenceRepository
-        .findOneOrFail({
-          where: {
-            id: absenceInfo.id,
-          },
-        });
-    } catch (e) {
-      if (e instanceof EntityNotFoundError) {
-        throw new NotFoundException('The entered Absence does not exist');
+      const results = await this.facultyService
+        .updateFacultyAbsence(absenceInfo);
+      return results;
+    } catch (error) {
+      if (error instanceof EntityNotFoundError) {
+        throw new NotFoundException(error.message);
       }
-      throw e;
+      throw error;
     }
-    const validAbsence = {
-      ...absenceInfo,
-      id: existingAbsence.id,
-    };
-    return this.absenceRepository.save(validAbsence);
   }
+  
 
   @UseGuards(new RequireGroup(GROUP.ADMIN))
   @Post('/')
