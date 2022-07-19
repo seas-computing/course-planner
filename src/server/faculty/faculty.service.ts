@@ -8,6 +8,7 @@ import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
 import { AbsenceRequestDTO } from 'common/dto/faculty/AbsenceRequest.dto';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { NotFoundException } from '@nestjs/common'
+import { int } from 'testData';
 
 export class FacultyService {
   @InjectRepository(Faculty)
@@ -51,9 +52,13 @@ export class FacultyService {
   Promise<AbsenceResponseDTO> {
     let existingAbsence: Absence;
     try {
-      console.log (absenceInfo)
       existingAbsence = await this.absenceRepository
         .findOneOrFail({
+          relations: [
+            'faculty',
+            'faculty.absences',
+            'faculty.absences.semester',
+          ],
           where: {
             id: absenceInfo.id,
           },
@@ -64,10 +69,36 @@ export class FacultyService {
       }
       throw e;
     }
+
+    // Get the absence year to update the absence of the following years accordingly.
+    // If FALL chosen then start from the next year
+    let filteredAbsence: Absence = existingAbsence.faculty.absences
+      .find(absence => absence.id === existingAbsence.id);
+    let absenceYear =  Number(filteredAbsence.semester.academicYear);
+    if (filteredAbsence.semester.term == 'FALL') {
+      absenceYear = absenceYear + 1;
+    }
+
+    // Update the absences, FALL will not be updated. 
+    let futureAbsences = existingAbsence.faculty.absences
+      .map(absence => {
+        return (Number(absence.semester.academicYear) >= absenceYear)
+        ? {...absence, type: absenceInfo.type}
+        : {...absence}
+      })
+
+    await this.facultyRepository.save({
+      id: existingAbsence.faculty.id,
+      absences: futureAbsences,
+    });
+
+    // This will update FALL term.
+    // If SPRING term chosen then this will re update the spring
     const validAbsence = {
       ...absenceInfo,
       id: existingAbsence.id,
     };
+
     return this.absenceRepository.save(validAbsence);
   }
 

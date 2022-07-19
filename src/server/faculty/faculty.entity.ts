@@ -68,7 +68,7 @@ export class Faculty extends BaseEntity {
   @OneToMany(
     (): ObjectType<Absence> => Absence,
     ({ faculty }): Faculty => faculty,
-    { cascade: ['insert'] }
+    { cascade: ['insert','update'] }
   )
   public absences: Absence[];
 
