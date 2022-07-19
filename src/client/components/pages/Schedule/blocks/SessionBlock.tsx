@@ -1,6 +1,7 @@
 import React, { FunctionComponent, ReactElement } from 'react';
 import styled from 'styled-components';
 import { getCatPrefixColor } from 'common/constants';
+import { fromTheme } from 'mark-one';
 import CourseListing from './CourseListing';
 
 interface SessionBlockProps {
@@ -63,13 +64,13 @@ type SessionBlockBodyProps = Pick<SessionBlockProps, 'children'>;
 const SessionBlockWrapper = styled.div<SessionBlockWrapperProps>`
   background-color: ${({ prefix }) => getCatPrefixColor(prefix)};
   grid-row: ${({ startRow, duration }) => `${startRow}/ span ${duration}`};
-  padding-left: 3px;
-  padding-right: 3px;
   border-left: 1px solid #fff;
   border-right: 1px solid #fff;
   overflow-wrap: anywhere;
   overflow-y: scroll;
   opacity: ${({ isFaded }) => (isFaded ? '0.6' : '1')};
+  min-width: 2.5em;
+  position: relative;
 `;
 
 /**
@@ -79,8 +80,10 @@ const SessionBlockWrapper = styled.div<SessionBlockWrapperProps>`
 const SessionBlockHeading = styled.h4<SessionBlockHeadingProps>`
   background-color: inherit;
   position: absolute;
+  width: 100%;
+  padding-left: ${fromTheme('ws', 'xsmall')};
+  padding-right: ${fromTheme('ws', 'xsmall')};
   font-size: 1.2em;
-  padding: 0px;
   border-bottom: 1px solid rgba(255,255,255,0.5);
   text-transform: uppercase;
 `;
@@ -92,6 +95,8 @@ const SessionBlockHeading = styled.h4<SessionBlockHeadingProps>`
 const SessionBlockBody = styled.ul<SessionBlockBodyProps>`
   list-style: none;
   margin-top: 2em;
+  padding-left: ${fromTheme('ws', 'xsmall')};
+  padding-right: ${fromTheme('ws', 'xsmall')};
 `;
 
 /**
