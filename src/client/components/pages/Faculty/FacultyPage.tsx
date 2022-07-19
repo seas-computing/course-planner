@@ -12,7 +12,12 @@ import React, {
 } from 'react';
 import { VerticalSpace } from 'client/components/layout';
 import { MenuFlex } from 'client/components/general';
-import { LoadSpinner, Checkbox, POSITION } from 'mark-one';
+import {
+  LoadSpinner,
+  Checkbox,
+  POSITION,
+  Dropdown,
+} from 'mark-one';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { MessageContext, MetadataContext } from 'client/context';
 import { FacultyAPI } from 'client/api';
@@ -22,11 +27,10 @@ import {
   MESSAGE_ACTION,
 } from 'client/classes';
 import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
-import Dropdown, { DropdownProps } from 'mark-one/lib/Forms/Dropdown';
-import { TERM } from 'common/constants';
 import { useStoredState } from 'client/hooks/useStoredState';
 import FacultyAbsenceModal from './FacultyAbsenceModal';
 import FacultyScheduleTable from './FacultyScheduleTable';
+import { AcademicYearUtils } from '../utils/academicYearOptions';
 
 /**
  * This component represents the Faculty page, which will be rendered at
@@ -94,21 +98,8 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
    * at the top of the page
    */
   const academicYearOptions = useMemo(
-    () => semesters.reduce<DropdownProps['options']>(
-      (years, semester) => {
-        if (semester.startsWith(TERM.SPRING)) {
-          const academicYear = parseInt(
-            semester.replace(/\D/g, ''),
-            10
-          );
-          return years.concat([{
-            label: `Fall ${academicYear - 1} - Spring ${academicYear}`,
-            value: academicYear.toString(),
-          }]);
-        }
-        return years;
-      }, []
-    ), [semesters]
+    () => AcademicYearUtils.getAcademicYearOptions(semesters),
+    [semesters]
   );
 
   /**
