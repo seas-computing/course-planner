@@ -114,7 +114,7 @@ const SessionBlock: FunctionComponent<SessionBlockProps> = ({
     isFaded={isFaded}
   >
     <SessionBlockHeading>
-      {prefix}
+      {prefix.substr(0, 3)}
     </SessionBlockHeading>
     <SessionBlockBody>
       {children}
