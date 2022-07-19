@@ -109,7 +109,7 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
     selectedAcademicYear,
     setSelectedAcademicYear,
   ] = useStoredState(
-    'currentAcademicYear',
+    'FACULTY_SELECTED_ACADEMIC_YEAR',
     currentAcademicYear,
     'sessionStorage'
   );
