@@ -68,6 +68,7 @@ const SessionBlockWrapper = styled.div<SessionBlockWrapperProps>`
   border-left: 1px solid #fff;
   border-right: 1px solid #fff;
   overflow-wrap: anywhere;
+  overflow-y: scroll;
   opacity: ${({ isFaded }) => (isFaded ? '0.6' : '1')};
 `;
 
@@ -76,6 +77,8 @@ const SessionBlockWrapper = styled.div<SessionBlockWrapperProps>`
  * catalog prefix for all courses during the session
  */
 const SessionBlockHeading = styled.h4<SessionBlockHeadingProps>`
+  background-color: inherit;
+  position: absolute;
   font-size: 1.2em;
   padding: 0px;
   border-bottom: 1px solid rgba(255,255,255,0.5);
@@ -88,6 +91,7 @@ const SessionBlockHeading = styled.h4<SessionBlockHeadingProps>`
  */
 const SessionBlockBody = styled.ul<SessionBlockBodyProps>`
   list-style: none;
+  margin-top: 2em;
 `;
 
 /**
