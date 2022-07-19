@@ -66,7 +66,7 @@ const SessionBlockWrapper = styled.div<SessionBlockWrapperProps>`
   grid-row: ${({ startRow, duration }) => `${startRow}/ span ${duration}`};
   border-left: 1px solid #fff;
   border-right: 1px solid #fff;
-  overflow-wrap: anywhere;
+  border-bottom: 1px solid #fff;
   overflow-y: scroll;
   opacity: ${({ isFaded }) => (isFaded ? '0.6' : '1')};
   min-width: 2.5em;
