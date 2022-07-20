@@ -29,6 +29,11 @@ interface SessionBlockProps {
    * computation
    */
   duration: number;
+  /**
+   * Whether the block should be faded out, as when a course in another block
+   * has been clicked
+   */
+  isFaded: boolean;
 }
 
 /**
@@ -36,7 +41,7 @@ interface SessionBlockProps {
  */
 type SessionBlockWrapperProps = Pick<
 SessionBlockProps,
-'prefix' | 'duration' | 'startRow'
+'prefix' | 'duration' | 'startRow' | 'isFaded'
 >;
 
 /**
@@ -63,6 +68,7 @@ const SessionBlockWrapper = styled.div<SessionBlockWrapperProps>`
   border-left: 1px solid #fff;
   border-right: 1px solid #fff;
   overflow-wrap: anywhere;
+  opacity: ${({ isFaded }) => (isFaded ? '0.6' : '1')};
 `;
 
 /**
@@ -95,11 +101,13 @@ const SessionBlock: FunctionComponent<SessionBlockProps> = ({
   startRow,
   duration,
   children,
+  isFaded,
 }) => (
   <SessionBlockWrapper
     prefix={prefix}
     startRow={startRow}
     duration={duration}
+    isFaded={isFaded}
   >
     <SessionBlockHeading>
       {prefix}
