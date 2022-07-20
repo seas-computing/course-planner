@@ -8,12 +8,18 @@ import React, {
   useRef,
   useCallback,
   useMemo,
+  ChangeEvent,
 } from 'react';
 import { VerticalSpace } from 'client/components/layout';
 import { MenuFlex } from 'client/components/general';
-import { LoadSpinner, Checkbox, POSITION } from 'mark-one';
+import {
+  LoadSpinner,
+  Checkbox,
+  POSITION,
+  Dropdown,
+} from 'mark-one';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
-import { MessageContext } from 'client/context';
+import { MessageContext, MetadataContext } from 'client/context';
 import { FacultyAPI } from 'client/api';
 import {
   AppMessage,
@@ -21,8 +27,10 @@ import {
   MESSAGE_ACTION,
 } from 'client/classes';
 import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
+import { useStoredState } from 'client/hooks/useStoredState';
 import FacultyAbsenceModal from './FacultyAbsenceModal';
 import FacultyScheduleTable from './FacultyScheduleTable';
+import { AcademicYearUtils } from '../utils/academicYearOptions';
 
 /**
  * This component represents the Faculty page, which will be rendered at
@@ -80,8 +88,31 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
    */
   const [showRetired, setShowRetired] = useState(false);
 
-  // TODO: Get the actual current academic year in future ticket instead of hard coding
-  const acadYear = 2021;
+  /**
+   * Grab the metadata necessary to display the current year's data
+   */
+  const { currentAcademicYear, semesters } = useContext(MetadataContext);
+
+  /**
+   * Compute the range of academic years that will be displayed in the dropdown
+   * at the top of the page
+   */
+  const academicYearOptions = useMemo(
+    () => AcademicYearUtils.getAcademicYearOptions(semesters),
+    [semesters]
+  );
+
+  /**
+   * Track the academic year for which data will be shown in the table
+   */
+  const [
+    selectedAcademicYear,
+    setSelectedAcademicYear,
+  ] = useStoredState(
+    'FACULTY_SELECTED_ACADEMIC_YEAR',
+    currentAcademicYear,
+    'sessionStorage'
+  );
 
   /**
    * The current value of the edit fall absence button
@@ -109,18 +140,24 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
    * If it fails, display a message for the user
    */
   useEffect((): void => {
-    // If we have initialized and are not stale, do nothing
+    // If the table has been initialized with data and the data is stale,
+    // display the loading spinner while the new data is being fetched.
+    // If we have initialized the data but the data is not stale, do nothing.
     // This is required to prevent an infinite loop based on the changing
     // object value of currentFacultySchedules.
-    if (isInitialized && !isStaleData) {
-      return;
+    if (isInitialized) {
+      if (isStaleData) {
+        setFetching(true);
+      } else {
+        return;
+      }
     }
     // Only set the fetching the first time to avoid replacing elements
     // after fetching, which causes button refocusing to fail.
     if (!isInitialized) {
       setFetching(true);
     }
-    FacultyAPI.getFacultySchedulesForYear(acadYear)
+    FacultyAPI.getFacultySchedulesForYear(selectedAcademicYear)
       .then((facultySchedules): void => {
         setFacultySchedules(facultySchedules);
       })
@@ -136,7 +173,13 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
         setIsInitialized(true);
         closeAbsenceModal();
       });
-  }, [dispatchMessage, isStaleData, isInitialized, closeAbsenceModal]);
+  }, [
+    dispatchMessage,
+    isStaleData,
+    isInitialized,
+    closeAbsenceModal,
+    selectedAcademicYear,
+  ]);
 
   /**
    * Filter/unfilter  faculty based on the showRetired checkbox, memoizing the result
@@ -155,6 +198,37 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
 
   return (
     <div className="faculty-schedule-table">
+      <VerticalSpace>
+        <MenuFlex>
+          <Dropdown
+            id="academic-year-selector"
+            name="academic-year-selector"
+            label="Academic Year"
+            isLabelVisible
+            options={academicYearOptions}
+            value={selectedAcademicYear.toString()}
+            onChange={
+              ({
+                target: { value },
+              }: ChangeEvent<HTMLSelectElement>) => {
+                setIsStaleData(true);
+                setSelectedAcademicYear(parseInt(value, 10));
+              }
+            }
+          />
+          <Checkbox
+            id="showRetiredFaculty"
+            name="showRetiredFaculty"
+            label='Show "No Longer Active" Faculty'
+            checked={showRetired}
+            onChange={
+              () => setShowRetired((prevShowRetired) => !prevShowRetired)
+            }
+            labelPosition={POSITION.RIGHT}
+            hideError
+          />
+        </MenuFlex>
+      </VerticalSpace>
       {fetching
         ? (
           <div>
@@ -163,23 +237,8 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
         )
         : (
           <>
-            <VerticalSpace>
-              <MenuFlex>
-                <Checkbox
-                  id="showRetiredFaculty"
-                  name="showRetiredFaculty"
-                  label='Show "No Longer Active" Faculty'
-                  checked={showRetired}
-                  onChange={
-                    () => setShowRetired((prevShowRetired) => !prevShowRetired)
-                  }
-                  labelPosition={POSITION.RIGHT}
-                  hideError
-                />
-              </MenuFlex>
-            </VerticalSpace>
             <FacultyScheduleTable
-              academicYear={acadYear}
+              academicYear={selectedAcademicYear}
               facultySchedules={filteredFaculty}
               onEdit={(faculty, absence) => {
                 setAbsenceModalVisible(true);
