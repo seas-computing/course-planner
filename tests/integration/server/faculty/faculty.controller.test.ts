@@ -80,6 +80,7 @@ describe('Faculty API', function () {
     mockFacultyService = {
       find: stub(),
       getInstructorList: stub(),
+      updateFacultyAbsences: stub(),
     };
 
     mockAreaRepository = {
@@ -571,8 +572,8 @@ describe('Faculty API', function () {
         authStub.rejects(new ForbiddenException());
       });
       it('cannot update an absence entry', async function () {
-        mockAbsenceRepository.findOneOrFail.resolves(facultyAbsenceResponse);
-        mockAbsenceRepository.save.resolves(facultyAbsenceResponse);
+        mockFacultyService.updateFacultyAbsences
+          .resolves(facultyAbsenceResponse);
         const response = await request(api)
           .put(`/api/faculty/absence/${facultyAbsenceRequest.id}`)
           .send(updatedAbsence);

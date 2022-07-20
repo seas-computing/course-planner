@@ -142,9 +142,7 @@ export class FacultyController {
   public async updateFacultyAbsence(@Body() absenceInfo: AbsenceRequestDTO):
   Promise<AbsenceResponseDTO> {
     try {
-      const results = await this.facultyService
-        .updateFacultyAbsence(absenceInfo);
-      return results;
+      return this.facultyService.updateFacultyAbsences(absenceInfo);
     } catch (error) {
       if (error instanceof EntityNotFoundError) {
         throw new NotFoundException(error.message);
@@ -152,7 +150,6 @@ export class FacultyController {
       throw error;
     }
   }
-  
 
   @UseGuards(new RequireGroup(GROUP.ADMIN))
   @Post('/')

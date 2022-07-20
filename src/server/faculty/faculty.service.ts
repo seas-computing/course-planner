@@ -1,14 +1,12 @@
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Faculty } from './faculty.entity';
-import { InstructorResponseDTO } from '../../common/dto/courses/InstructorResponse.dto';
-
+import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
+import { NotFoundException } from '@nestjs/common';
 import { Absence } from 'server/absence/absence.entity';
 import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
 import { AbsenceRequestDTO } from 'common/dto/faculty/AbsenceRequest.dto';
-import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
-import { NotFoundException } from '@nestjs/common'
-import { int } from 'testData';
+import { Faculty } from './faculty.entity';
+import { InstructorResponseDTO } from '../../common/dto/courses/InstructorResponse.dto';
 
 export class FacultyService {
   @InjectRepository(Faculty)
@@ -16,7 +14,7 @@ export class FacultyService {
 
   @InjectRepository(Absence)
   private absenceRepository: Repository<Absence>;
-  
+
   /**
    * Retrieve all faculty members in the database with their associated area,
    * sorted by:
@@ -47,8 +45,7 @@ export class FacultyService {
       .getRawMany();
   }
 
-
-  public async updateFacultyAbsence( absenceInfo: AbsenceRequestDTO):
+  public async updateFacultyAbsences(absenceInfo: AbsenceRequestDTO):
   Promise<AbsenceResponseDTO> {
     let existingAbsence: Absence;
     try {
@@ -72,26 +69,23 @@ export class FacultyService {
 
     // Get the absence year to update the absence of the following years accordingly.
     // If FALL chosen then start from the next year
-    let filteredAbsence: Absence = existingAbsence.faculty.absences
-      .find(absence => absence.id === existingAbsence.id);
-    let absenceYear =  Number(filteredAbsence.semester.academicYear);
-    if (filteredAbsence.semester.term == 'FALL') {
-      absenceYear = absenceYear + 1;
+    const filteredAbsence: Absence = existingAbsence.faculty.absences
+      .find((absence) => absence.id === existingAbsence.id);
+    let absenceYear = Number(filteredAbsence.semester.academicYear);
+    if (filteredAbsence.semester.term === 'FALL') {
+      absenceYear += 1;
     }
-
-    // Update the absences, FALL will not be updated. 
-    let futureAbsences = existingAbsence.faculty.absences
-      .map(absence => {
-        return (Number(absence.semester.academicYear) >= absenceYear)
-        ? {...absence, type: absenceInfo.type}
-        : {...absence}
-      })
-
-    await this.facultyRepository.save({
+    // Update the absences, FALL will not be updated.
+    const futureAbsences = existingAbsence.faculty.absences.map((absence) => {
+      if (Number(absence.semester.academicYear) >= absenceYear) {
+        return { ...absence, type: absenceInfo.type };
+      }
+      return { ...absence };
+    });
+    const savefaculty = await this.facultyRepository.save({
       id: existingAbsence.faculty.id,
       absences: futureAbsences,
     });
-
     // This will update FALL term.
     // If SPRING term chosen then this will re update the spring
     const validAbsence = {
@@ -101,5 +95,4 @@ export class FacultyService {
 
     return this.absenceRepository.save(validAbsence);
   }
-
 }

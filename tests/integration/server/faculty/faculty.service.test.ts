@@ -224,4 +224,14 @@ describe('Faculty service', function () {
       deepStrictEqual(result, sortedResult);
     });
   });
+  // import { FacultyAbsence } from 'common/dto/faculty/FacultyResponse.dto';
+  // describe('updateFacultyAbsences', function () {
+  //   let result: FacultyAbsence;
+  //   beforeEach(async function () {
+  //     result = await facultyService.updateFacultyAbsences (absenceDTO);
+  //   });
+  //   it('returns absence update', async function () {
+  //     strictEqual(result, absenceDTO);
+  //   });
+  // });
 });
