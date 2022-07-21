@@ -82,7 +82,7 @@ export class FacultyService {
       }
       return { ...absence };
     });
-    const savefaculty = await this.facultyRepository.save({
+    await this.facultyRepository.save({
       id: existingAbsence.faculty.id,
       absences: futureAbsences,
     });

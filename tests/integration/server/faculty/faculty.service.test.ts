@@ -12,22 +12,17 @@ import {
   bioengineeringFacultyMember,
 } from 'testData';
 import { Area } from 'server/area/area.entity';
-import { Absence } from 'server/absence/absence.entity';
 import { AuthModule } from 'server/auth/auth.module';
 import { AUTH_MODE, ABSENCE_TYPE } from 'common/constants';
+import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import { InstructorResponseDTO } from '../../../../src/common/dto/courses/InstructorResponse.dto';
-import { AbsenceRequestDTO } from 'common/dto/faculty/AbsenceRequest.dto';
-import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
-import { FacultyAbsence } from 'common/dto/faculty/FacultyResponse.dto';
 
 describe('Faculty service', function () {
   let facultyService: FacultyService;
   let facultyRepository: Repository<Faculty>;
   let areaRepository: Repository<Area>;
-  let absenceRepository: Repository<Absence>;
-  let facultyAbsenceRepository: Repository<FacultyAbsence>;
   let testModule: TestingModule;
 
   beforeEach(async function () {
@@ -68,7 +63,6 @@ describe('Faculty service', function () {
     facultyService = testModule.get<FacultyService>(FacultyService);
     facultyRepository = testModule.get(getRepositoryToken(Faculty));
     areaRepository = testModule.get(getRepositoryToken(Area));
-    absenceRepository = testModule.get(getRepositoryToken(Absence));
     await testModule.createNestApplication().init();
   });
   afterEach(async function () {
@@ -236,8 +230,8 @@ describe('Faculty service', function () {
   });
   describe('updateFacultyAbsences', function () {
     let faculty1: Faculty;
-    let firstYear: number;
-    let firstYearSemesterAbsence: AbsenceResponseDTO;
+    let firstYr: number;
+    let firstSmstrAbsence: AbsenceResponseDTO;
     let midYear: number;
     let midYearFallAbsence: AbsenceResponseDTO;
     let midYearSpringAbsence: AbsenceResponseDTO;
@@ -246,17 +240,17 @@ describe('Faculty service', function () {
       faculty1 = facultyarray[0];
       const allyears = (faculty1.absences
         .map((year) => Number(year.semester.academicYear))).sort();
-      firstYear = allyears[0];
+      firstYr = allyears[0];
       const firstYearAbsence = faculty1.absences
-        .filter((absence) => absence.semester.academicYear === String(firstYear));
+        .filter((absence) => absence.semester.academicYear === String(firstYr));
       try {
         const firstYearSpring = firstYearAbsence.find((absence) => absence.semester.term === 'SPRING');
-        firstYearSemesterAbsence = (({ id, type }) => ({ id, type }))(firstYearSpring);
+        firstSmstrAbsence = (({ id, type }) => ({ id, type }))(firstYearSpring);
       } catch {
         const firstYearFall = firstYearAbsence.find((absence) => absence.semester.term === 'FALL');
-        firstYearSemesterAbsence = (({ id, type }) => ({ id, type }))(firstYearFall);
+        firstSmstrAbsence = (({ id, type }) => ({ id, type }))(firstYearFall);
       }
-      midYear = allyears[~~(allyears.length / 2)];
+      midYear = allyears[Math.floor(allyears.length / 2)];
       const midYearAbsence = faculty1.absences
         .filter((absence) => absence.semester.academicYear === String(midYear));
       try {
@@ -273,7 +267,7 @@ describe('Faculty service', function () {
       }
       // update the faculty absense to be present for all the semesters
       await facultyService.updateFacultyAbsences(
-        { ...firstYearSemesterAbsence, type: ABSENCE_TYPE.PRESENT }
+        { ...firstSmstrAbsence, type: ABSENCE_TYPE.PRESENT }
       );
     });
     it('check all the faculty absence are PRESENT', async function () {
@@ -284,7 +278,7 @@ describe('Faculty service', function () {
         },
       });
       const check = faculty2.absences
-        .filter((absence => absence.type !== ABSENCE_TYPE.PRESENT));
+        .filter((absence) => absence.type !== ABSENCE_TYPE.PRESENT);
       strictEqual(check.length, 0);
     });
     it('update midyears spring absences to NO_LONGER_ACTIVE', async function () {
