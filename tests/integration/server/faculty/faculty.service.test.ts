@@ -4,7 +4,7 @@ import { ConfigService } from 'server/config/config.service';
 import { ConfigModule } from 'server/config/config.module';
 import { TypeOrmModule, TypeOrmModuleOptions, getRepositoryToken } from '@nestjs/typeorm';
 import { FacultyModule } from 'server/faculty/faculty.module';
-import { deepStrictEqual, strictEqual } from 'assert';
+import { deepStrictEqual, notStrictEqual, strictEqual } from 'assert';
 import { Repository } from 'typeorm';
 import { Faculty } from 'server/faculty/faculty.entity';
 import {
@@ -234,41 +234,34 @@ describe('Faculty service', function () {
       deepStrictEqual(result, sortedResult);
     });
   });
-
-  describe.only('updateFacultyAbsences', function () {
+  describe('updateFacultyAbsences', function () {
     let faculty1: Faculty;
-
     let firstYear: number;
     let firstYearSemesterAbsence: AbsenceResponseDTO;
-
     let midYear: number;
     let midYearFallAbsence: AbsenceResponseDTO;
     let midYearSpringAbsence: AbsenceResponseDTO;
-
     beforeEach(async function () {
       const facultyarray = await facultyRepository.find({ relations: ['absences', 'absences.semester'] });
       faculty1 = facultyarray[0];
-      const allyears = (faculty1.absences.map((year) =>
-        Number(year.semester.academicYear))).sort();
+      const allyears = (faculty1.absences
+        .map((year) => Number(year.semester.academicYear))).sort();
       firstYear = allyears[0];
-      const firstYearAbsence = faculty1.absences.filter((absence) =>
-        absence.semester.academicYear === String(firstYear));
+      const firstYearAbsence = faculty1.absences
+        .filter((absence) => absence.semester.academicYear === String(firstYear));
       try {
         const firstYearSpring = firstYearAbsence.find((absence) => absence.semester.term === 'SPRING');
-        firstYearSemesterAbsence = (({ id, type }) =>
-          ({ id, type }))(firstYearSpring);
+        firstYearSemesterAbsence = (({ id, type }) => ({ id, type }))(firstYearSpring);
       } catch {
         const firstYearFall = firstYearAbsence.find((absence) => absence.semester.term === 'FALL');
-        firstYearSemesterAbsence = (({ id, type }) =>
-          ({ id, type }))(firstYearFall);
+        firstYearSemesterAbsence = (({ id, type }) => ({ id, type }))(firstYearFall);
       }
       midYear = allyears[~~(allyears.length / 2)];
-      const midYearAbsence = faculty1.absences.filter((absence) =>
-        absence.semester.academicYear === String(midYear));
+      const midYearAbsence = faculty1.absences
+        .filter((absence) => absence.semester.academicYear === String(midYear));
       try {
         const spring = midYearAbsence.find((absence) => absence.semester.term === 'SPRING');
-        midYearSpringAbsence = (({ id, type }) =>
-          ({ id, type }))(spring);
+        midYearSpringAbsence = (({ id, type }) => ({ id, type }))(spring);
       } catch {
         midYearSpringAbsence = null;
       }
@@ -290,12 +283,11 @@ describe('Faculty service', function () {
           id: faculty1.id,
         },
       });
-      const check = faculty2.absences.filter(
-        (absence => absence.type !== ABSENCE_TYPE.PRESENT)
-      );
+      const check = faculty2.absences
+        .filter((absence => absence.type !== ABSENCE_TYPE.PRESENT));
       strictEqual(check.length, 0);
     });
-    it('update half of the absences of the faculty to NO_LONGER_ACTIVE', async function () {
+    it('update midyears spring absences to NO_LONGER_ACTIVE', async function () {
       await facultyService.updateFacultyAbsences(
         { ...midYearSpringAbsence, type: ABSENCE_TYPE.NO_LONGER_ACTIVE }
       );
@@ -305,11 +297,45 @@ describe('Faculty service', function () {
           id: faculty1.id,
         },
       });
-      const check = faculty2.absences.filter((absence) =>
-        absence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE
-        && Number(absence.semester.academicYear) >= midYear);
-      // check that all absences starting from midYear are NO_LONGER_ACTIVE
-      strictEqual(1, 1);
+      const nla = faculty2.absences
+        .filter((absence) => absence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE);
+      const present = faculty2.absences
+        .filter((absence) => absence.type === ABSENCE_TYPE.PRESENT);
+      const chech_nla = nla
+        .filter((absence) => Number(absence.semester.academicYear) < midYear);
+      const chech_present = present
+        .filter((absence) => Number(absence.semester.academicYear) >= midYear);
+      const totalAbsences = present.length + nla.length;
+      notStrictEqual(present.length, 0);
+      notStrictEqual(nla.length, 0);
+      strictEqual(chech_present.length, 0);
+      strictEqual(chech_nla.length, 0);
+      strictEqual(faculty1.absences.length, totalAbsences);
+    });
+    it('update midyears fall absences to NO_LONGER_ACTIVE', async function () {
+      await facultyService.updateFacultyAbsences(
+        { ...midYearFallAbsence, type: ABSENCE_TYPE.NO_LONGER_ACTIVE }
+      );
+      const faculty2 = await facultyRepository.findOne({
+        relations: ['absences', 'absences.semester'],
+        where: {
+          id: faculty1.id,
+        },
+      });
+      const nla = faculty2.absences
+        .filter((absence) => absence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE);
+      const present = faculty2.absences
+        .filter((absence) => absence.type === ABSENCE_TYPE.PRESENT);
+      const chech_nla = nla
+        .filter((absence) => Number(absence.semester.academicYear) < midYear);
+      const chech_present = present
+        .filter((absence) => Number(absence.semester.academicYear) >= midYear);
+      const totalAbsences = present.length + nla.length;
+      notStrictEqual(present.length, 0);
+      notStrictEqual(nla.length, 0);
+      strictEqual(chech_present.length, 1);
+      strictEqual(chech_nla.length, 0);
+      strictEqual(faculty1.absences.length, totalAbsences);
     });
   });
 });
