@@ -139,10 +139,10 @@ export class FacultyController {
   @ApiNotFoundResponse({
     description: 'Not Found: The requested entity with the ID supplied could not be found',
   })
-  public async updateFacultyAbsence(@Body() absenceInfo: AbsenceRequestDTO):
+  public async updateFacultyAbsence(@Body() absenceReqInfo: AbsenceRequestDTO):
   Promise<AbsenceResponseDTO> {
     try {
-      return this.facultyService.updateFacultyAbsences(absenceInfo,'');
+      return this.facultyService.updateFacultyAbsences(absenceReqInfo, '');
     } catch (error) {
       if (error instanceof EntityNotFoundError) {
         throw new NotFoundException(error.message);

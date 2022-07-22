@@ -1,13 +1,14 @@
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
-import { NotFoundException, Inject} from '@nestjs/common';
+import { NotFoundException, Inject } from '@nestjs/common';
 import { Absence } from 'server/absence/absence.entity';
 import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
 import { AbsenceRequestDTO } from 'common/dto/faculty/AbsenceRequest.dto';
+import { ABSENCE_TYPE } from 'common/constants';
+import { ConfigService } from 'server/config/config.service';
 import { Faculty } from './faculty.entity';
 import { InstructorResponseDTO } from '../../common/dto/courses/InstructorResponse.dto';
-import { ConfigService } from 'server/config/config.service';
 
 export class FacultyService {
   @InjectRepository(Faculty)
@@ -49,10 +50,32 @@ export class FacultyService {
       .getRawMany();
   }
 
-  public async updateFacultyAbsences(absenceInfo: AbsenceRequestDTO, academicYear:String):
-  Promise<AbsenceResponseDTO> {
+  /**
+   * Check selecterAcademicYear not in the past
+   */
+  public check_absence(
+    semesterTerm: string,
+    selectAcademicYear: number,
+    currentAcademicYear: number
+  ) :boolean {
+    let selecterAcademicYear = selectAcademicYear;
+    if (semesterTerm === 'FALL') {
+      selecterAcademicYear += 1;
+    }
+    if (selecterAcademicYear < currentAcademicYear) {
+      return false;
+    }
+    return true;
+  }
+
+  public async updateFacultyAbsences(
+    absenceReqInfo: AbsenceRequestDTO,
+    academicYear:string
+  ): Promise<AbsenceResponseDTO> {
     let existingAbsence: Absence;
-    const currentAcademicYear = academicYear || this.configService.academicYear;
+    let absenceInfo: AbsenceRequestDTO = { ...absenceReqInfo };
+    const currentAcademicYear = Number(academicYear
+      || this.configService.academicYear);
     try {
       existingAbsence = await this.absenceRepository
         .findOneOrFail({
@@ -63,11 +86,22 @@ export class FacultyService {
             'faculty.absences.semester',
           ],
           where: {
-            id: absenceInfo.id,
+            id: absenceReqInfo.id,
           },
         });
-      if ( Number(existingAbsence.semester.academicYear)  < Number(currentAcademicYear)) {
-        throw new Error('Can not update previous semester absence');
+      const selectAcademicYear = Number(existingAbsence.semester.academicYear);
+      const semesterTerm = existingAbsence.semester.term;
+      if (absenceReqInfo.type === ABSENCE_TYPE.NO_LONGER_ACTIVE
+        || existingAbsence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE) {
+        const validAbsenceYear = this.check_absence(semesterTerm,
+          selectAcademicYear, currentAcademicYear);
+        if (!validAbsenceYear) {
+          throw new Error('Can not update previous NO_LONGER_ACTIVE absence');
+        }
+        if (existingAbsence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE
+          && absenceInfo.type !== existingAbsence.type) {
+          absenceInfo = { ...absenceReqInfo, type: ABSENCE_TYPE.PRESENT };
+        }
       }
     } catch (e) {
       if (e instanceof EntityNotFoundError) {
@@ -75,7 +109,6 @@ export class FacultyService {
       }
       throw e;
     }
-
     // Get the absence year to update the absence of the following years accordingly.
     // If FALL chosen then start from the next year
     const filteredAbsence: Absence = existingAbsence.faculty.absences
@@ -91,10 +124,13 @@ export class FacultyService {
       }
       return { ...absence };
     });
-    await this.facultyRepository.save({
-      id: existingAbsence.faculty.id,
-      absences: futureAbsences,
-    });
+    if (absenceReqInfo.type === ABSENCE_TYPE.NO_LONGER_ACTIVE
+      || existingAbsence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE) {
+      await this.facultyRepository.save({
+        id: existingAbsence.faculty.id,
+        absences: futureAbsences,
+      });
+    }
     // This will update FALL term.
     // If SPRING term chosen then this will re update the spring
     const validAbsence = {
