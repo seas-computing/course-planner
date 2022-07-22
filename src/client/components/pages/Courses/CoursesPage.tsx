@@ -30,7 +30,6 @@ import { VerticalSpace } from 'client/components/layout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWrench, faDownload } from '@fortawesome/free-solid-svg-icons';
 import { MenuFlex } from 'client/components/general';
-import { DropdownProps } from 'mark-one/lib/Forms/Dropdown';
 import { useGroupGuard } from 'client/hooks/useGroupGuard';
 import CourseInstanceTable from './CourseInstanceTable';
 import ViewModal from './ViewModal';
@@ -45,6 +44,7 @@ import NotesModal from './NotesModal';
 import ReportDownloadModal from './ReportDownloadModal';
 import { useStoredState } from '../../../hooks/useStoredState';
 import EnrollmentModal from './EnrollmentModal';
+import { AcademicYearUtils } from '../utils/academicYearOptions';
 
 /**
  * The initial, empty state for the filters
@@ -508,21 +508,8 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
    * at the top of the page
    */
   const academicYearOptions = useMemo(
-    () => semesters.reduce<DropdownProps['options']>(
-      (years, semester) => {
-        if (semester.startsWith(TERM.SPRING)) {
-          const academicYear = parseInt(
-            semester.replace(/\D/g, ''),
-            10
-          );
-          return years.concat([{
-            label: `Fall ${academicYear - 1} - Spring ${academicYear}`,
-            value: academicYear.toString(),
-          }]);
-        }
-        return years;
-      }, []
-    ), [semesters]
+    () => AcademicYearUtils.getAcademicYearOptions(semesters),
+    [semesters]
   );
 
   /**
