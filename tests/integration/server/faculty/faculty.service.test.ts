@@ -270,7 +270,7 @@ describe('Faculty service', function () {
         { ...firstSmstrAbsence, type: ABSENCE_TYPE.PRESENT }
       );
     });
-    it('check all the faculty absence are PRESENT', async function () {
+    it('all the absence of the selected faculty should be PRESENT', async function () {
       const faculty2 = await facultyRepository.findOne({
         relations: ['absences', 'absences.semester'],
         where: {
@@ -281,7 +281,7 @@ describe('Faculty service', function () {
         .filter((absence) => absence.type !== ABSENCE_TYPE.PRESENT);
       strictEqual(check.length, 0);
     });
-    it('update midyears spring absences to NO_LONGER_ACTIVE', async function () {
+    it('update SPRING absences to NO_LONGER_ACTIVE', async function () {
       await facultyService.updateFacultyAbsences(
         { ...midYearSpringAbsence, type: ABSENCE_TYPE.NO_LONGER_ACTIVE }
       );
@@ -306,7 +306,7 @@ describe('Faculty service', function () {
       strictEqual(chech_nla.length, 0);
       strictEqual(faculty1.absences.length, totalAbsences);
     });
-    it('update midyears fall absences to NO_LONGER_ACTIVE', async function () {
+    it('update FALL absences to NO_LONGER_ACTIVE', async function () {
       await facultyService.updateFacultyAbsences(
         { ...midYearFallAbsence, type: ABSENCE_TYPE.NO_LONGER_ACTIVE }
       );
@@ -329,6 +329,8 @@ describe('Faculty service', function () {
       notStrictEqual(nla.length, 0);
       strictEqual(chech_present.length, 1);
       strictEqual(chech_nla.length, 0);
+      strictEqual(chech_present[0].semester.term, 'SPRING');
+      strictEqual(Number(chech_present[0].semester.academicYear), midYear);
       strictEqual(faculty1.absences.length, totalAbsences);
     });
   });
