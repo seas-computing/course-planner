@@ -1,12 +1,13 @@
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, Inject} from '@nestjs/common';
 import { Absence } from 'server/absence/absence.entity';
 import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
 import { AbsenceRequestDTO } from 'common/dto/faculty/AbsenceRequest.dto';
 import { Faculty } from './faculty.entity';
 import { InstructorResponseDTO } from '../../common/dto/courses/InstructorResponse.dto';
+import { ConfigService } from 'server/config/config.service';
 
 export class FacultyService {
   @InjectRepository(Faculty)
@@ -14,6 +15,9 @@ export class FacultyService {
 
   @InjectRepository(Absence)
   private absenceRepository: Repository<Absence>;
+
+  @Inject(ConfigService)
+  private readonly configService: ConfigService;
 
   /**
    * Retrieve all faculty members in the database with their associated area,
@@ -45,13 +49,15 @@ export class FacultyService {
       .getRawMany();
   }
 
-  public async updateFacultyAbsences(absenceInfo: AbsenceRequestDTO):
+  public async updateFacultyAbsences(absenceInfo: AbsenceRequestDTO, academicYear:String):
   Promise<AbsenceResponseDTO> {
     let existingAbsence: Absence;
+    const currentAcademicYear = academicYear || this.configService.academicYear;
     try {
       existingAbsence = await this.absenceRepository
         .findOneOrFail({
           relations: [
+            'semester',
             'faculty',
             'faculty.absences',
             'faculty.absences.semester',
@@ -60,6 +66,9 @@ export class FacultyService {
             id: absenceInfo.id,
           },
         });
+      if ( Number(existingAbsence.semester.academicYear)  < Number(currentAcademicYear)) {
+        throw new Error('Can not update previous semester absence');
+      }
     } catch (e) {
       if (e instanceof EntityNotFoundError) {
         throw new NotFoundException('The entered Absence does not exist');

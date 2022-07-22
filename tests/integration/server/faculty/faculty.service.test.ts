@@ -10,6 +10,7 @@ import { Faculty } from 'server/faculty/faculty.entity';
 import {
   appliedMathFacultyMemberRequest,
   bioengineeringFacultyMember,
+  string,
 } from 'testData';
 import { Area } from 'server/area/area.entity';
 import { AuthModule } from 'server/auth/auth.module';
@@ -228,7 +229,7 @@ describe('Faculty service', function () {
       deepStrictEqual(result, sortedResult);
     });
   });
-  describe('updateFacultyAbsences', function () {
+  describe.only('updateFacultyAbsences', function () {
     let faculty1: Faculty;
     let firstYr: number;
     let firstSmstrAbsence: AbsenceResponseDTO;
@@ -267,7 +268,7 @@ describe('Faculty service', function () {
       }
       // update the faculty absense to be present for all the semesters
       await facultyService.updateFacultyAbsences(
-        { ...firstSmstrAbsence, type: ABSENCE_TYPE.PRESENT }
+        { ...firstSmstrAbsence, type: ABSENCE_TYPE.PRESENT }, String(firstYr)
       );
     });
     it('all the absence of the selected faculty should be PRESENT', async function () {
@@ -283,7 +284,7 @@ describe('Faculty service', function () {
     });
     it('update SPRING absences to NO_LONGER_ACTIVE', async function () {
       await facultyService.updateFacultyAbsences(
-        { ...midYearSpringAbsence, type: ABSENCE_TYPE.NO_LONGER_ACTIVE }
+        { ...midYearSpringAbsence, type: ABSENCE_TYPE.NO_LONGER_ACTIVE } , String(midYear)
       );
       const faculty2 = await facultyRepository.findOne({
         relations: ['absences', 'absences.semester'],
@@ -308,7 +309,7 @@ describe('Faculty service', function () {
     });
     it('update FALL absences to NO_LONGER_ACTIVE', async function () {
       await facultyService.updateFacultyAbsences(
-        { ...midYearFallAbsence, type: ABSENCE_TYPE.NO_LONGER_ACTIVE }
+        { ...midYearFallAbsence, type: ABSENCE_TYPE.NO_LONGER_ACTIVE }, String(midYear)
       );
       const faculty2 = await facultyRepository.findOne({
         relations: ['absences', 'absences.semester'],
@@ -332,6 +333,17 @@ describe('Faculty service', function () {
       strictEqual(chech_present[0].semester.term, 'SPRING');
       strictEqual(Number(chech_present[0].semester.academicYear), midYear);
       strictEqual(faculty1.absences.length, totalAbsences);
+    });
+    it('update previous SPRING  absences to NO_LONGER_ACTIVE', async function () {
+      let result;
+      try {
+        result = await facultyService.updateFacultyAbsences(
+          { ...midYearSpringAbsence, type: ABSENCE_TYPE.NO_LONGER_ACTIVE } , String(midYear+1)
+        );
+        } catch (e) {
+        result = e.message
+      }
+      strictEqual(result, 'Can not update previous semester absence');
     });
   });
 });

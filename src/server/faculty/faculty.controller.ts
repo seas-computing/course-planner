@@ -142,7 +142,7 @@ export class FacultyController {
   public async updateFacultyAbsence(@Body() absenceInfo: AbsenceRequestDTO):
   Promise<AbsenceResponseDTO> {
     try {
-      return this.facultyService.updateFacultyAbsences(absenceInfo);
+      return this.facultyService.updateFacultyAbsences(absenceInfo,'');
     } catch (error) {
       if (error instanceof EntityNotFoundError) {
         throw new NotFoundException(error.message);
