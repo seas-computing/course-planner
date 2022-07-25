@@ -70,7 +70,7 @@ export class FacultyService {
 
   public async updateFacultyAbsences(
     absenceReqInfo: AbsenceRequestDTO,
-    academicYear:string
+    academicYear?:string
   ): Promise<AbsenceResponseDTO> {
     let existingAbsence: Absence;
     let absenceInfo: AbsenceRequestDTO = { ...absenceReqInfo };
@@ -103,11 +103,11 @@ export class FacultyService {
           absenceInfo = { ...absenceReqInfo, type: ABSENCE_TYPE.PRESENT };
         }
       }
-    } catch (e) {
-      if (e instanceof EntityNotFoundError) {
+    } catch (error) {
+      if (error instanceof EntityNotFoundError) {
         throw new NotFoundException('The entered Absence does not exist');
       }
-      throw e;
+      throw error;
     }
     // Get the absence year to update the absence of the following years accordingly.
     // If FALL chosen then start from the next year
@@ -117,13 +117,14 @@ export class FacultyService {
     if (filteredAbsence.semester.term === 'FALL') {
       absenceYear += 1;
     }
-    // Update the absences, FALL will not be updated.
+    // Update the absences, FALL will not be updated here.
     const futureAbsences = existingAbsence.faculty.absences.map((absence) => {
       if (Number(absence.semester.academicYear) >= absenceYear) {
         return { ...absence, type: absenceInfo.type };
       }
       return { ...absence };
     });
+    // Save the updated future absences only for no longer active
     if (absenceReqInfo.type === ABSENCE_TYPE.NO_LONGER_ACTIVE
       || existingAbsence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE) {
       await this.facultyRepository.save({

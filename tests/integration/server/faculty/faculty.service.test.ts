@@ -340,9 +340,9 @@ describe('Faculty service', function () {
       strictEqual(faculty1.absences.length, totalAbsences);
     });
     it('update previous SPRING  absences to NO_LONGER_ACTIVE', async function () {
-      let result:any;
+      let result:string;
       try {
-        result = await facultyService.updateFacultyAbsences(
+        await facultyService.updateFacultyAbsences(
           { ...midYearSpringAbsence, type: ABSENCE_TYPE.NO_LONGER_ACTIVE },
           String(midYear + 1)
         );

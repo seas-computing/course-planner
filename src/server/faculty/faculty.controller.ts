@@ -9,6 +9,7 @@ import {
   NotFoundException,
   Inject,
   Query,
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -142,10 +143,13 @@ export class FacultyController {
   public async updateFacultyAbsence(@Body() absenceReqInfo: AbsenceRequestDTO):
   Promise<AbsenceResponseDTO> {
     try {
-      return this.facultyService.updateFacultyAbsences(absenceReqInfo, '');
+      return await this.facultyService.updateFacultyAbsences(absenceReqInfo);
     } catch (error) {
       if (error instanceof EntityNotFoundError) {
         throw new NotFoundException(error.message);
+      }
+      if (error instanceof Error) {
+        throw new BadRequestException(error.message);
       }
       throw error;
     }
