@@ -67,7 +67,6 @@ const SessionBlockWrapper = styled.div<SessionBlockWrapperProps>`
   border-left: 1px solid #fff;
   border-right: 1px solid #fff;
   border-bottom: 1px solid #fff;
-  overflow-y: scroll;
   opacity: ${({ isFaded }) => (isFaded ? '0.6' : '1')};
   min-width: 2.5em;
   position: relative;
@@ -80,12 +79,24 @@ const SessionBlockWrapper = styled.div<SessionBlockWrapperProps>`
 const SessionBlockHeading = styled.h4<SessionBlockHeadingProps>`
   background-color: inherit;
   position: absolute;
+  top: 0;
   width: 100%;
   padding-left: ${fromTheme('ws', 'xsmall')};
   padding-right: ${fromTheme('ws', 'xsmall')};
   font-size: 1.2em;
-  border-bottom: 1px solid rgba(255,255,255,0.5);
   text-transform: uppercase;
+`;
+
+/**
+ * A wrapper around the table to handle scrolling within the list only.
+ */
+const SessionBlockBodyWrapper = styled.div`
+  overflow-y: scroll;
+  position: absolute;
+  width: 100%;
+  top: 2em;
+  bottom: 0;
+  border-top: 1px solid rgba(255,255,255,0.5);
 `;
 
 /**
@@ -94,7 +105,6 @@ const SessionBlockHeading = styled.h4<SessionBlockHeadingProps>`
  */
 const SessionBlockBody = styled.ul<SessionBlockBodyProps>`
   list-style: none;
-  margin-top: 2em;
   padding-left: ${fromTheme('ws', 'xsmall')};
   padding-right: ${fromTheme('ws', 'xsmall')};
 `;
@@ -121,9 +131,11 @@ const SessionBlock: FunctionComponent<SessionBlockProps> = ({
     <SessionBlockHeading>
       {prefix.substr(0, 3)}
     </SessionBlockHeading>
-    <SessionBlockBody>
-      {children}
-    </SessionBlockBody>
+    <SessionBlockBodyWrapper>
+      <SessionBlockBody>
+        {children}
+      </SessionBlockBody>
+    </SessionBlockBodyWrapper>
   </SessionBlockWrapper>
 );
 
