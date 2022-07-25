@@ -35,6 +35,12 @@ interface SessionBlockProps {
    * has been clicked
    */
   isFaded: boolean;
+  /**
+   * The collection of Popover elements corresponding to the buttons in the
+   * list. These need to be rendered at the top level of the session block in order
+   * to break out of the overflow defined within the body wrapper
+   */
+  popovers: JSX.Element[];
 }
 
 /**
@@ -121,6 +127,7 @@ const SessionBlock: FunctionComponent<SessionBlockProps> = ({
   duration,
   children,
   isFaded,
+  popovers,
 }) => (
   <SessionBlockWrapper
     prefix={prefix}
@@ -136,6 +143,7 @@ const SessionBlock: FunctionComponent<SessionBlockProps> = ({
         {children}
       </SessionBlockBody>
     </SessionBlockBodyWrapper>
+    {popovers}
   </SessionBlockWrapper>
 );
 
