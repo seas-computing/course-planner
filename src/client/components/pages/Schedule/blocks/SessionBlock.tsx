@@ -1,7 +1,24 @@
-import React, { FunctionComponent, ReactElement } from 'react';
+import React, {
+  FunctionComponent,
+  ReactElement,
+  useState,
+  useLayoutEffect,
+  useRef,
+  useCallback,
+} from 'react';
 import styled from 'styled-components';
 import { getCatPrefixColor } from 'common/constants';
+import { fromTheme } from 'mark-one';
 import CourseListing from './CourseListing';
+
+/**
+ * Defines the up/down symbols used to indicate that there is scrollable
+ * content inside the block.
+ */
+enum OVERFLOW {
+  UP = '⌃',
+  DOWN = '⌄',
+}
 
 interface SessionBlockProps {
   /**
@@ -34,16 +51,31 @@ interface SessionBlockProps {
    * has been clicked
    */
   isFaded: boolean;
+  /**
+   * The collection of Popover elements corresponding to the buttons in the
+   * list. These need to be rendered at the top level of the session block in order
+   * to break out of the overflow defined within the body wrapper
+   */
+  popovers: JSX.Element[];
 }
 
 /**
- * Takes the prefix, duration, and startRow props from the SessionBlock
+ * Takes a subset of props from the SessionBlock, then adds the additional
+ * overflow props
  */
-type SessionBlockWrapperProps = Pick<
+interface SessionBlockWrapperProps extends Pick<
 SessionBlockProps,
 'prefix' | 'duration' | 'startRow' | 'isFaded'
->;
-
+> {
+  /**
+   * Check if there are elements overflowing the bottom of the list
+   */
+  hasBottomOverflow: boolean;
+  /**
+   * Check if there are elements overflowing the top of the list
+   */
+  hasTopOverflow: boolean;
+}
 /**
  * Takes as children the prefix prop from the SessionBlock
  */
@@ -63,12 +95,36 @@ type SessionBlockBodyProps = Pick<SessionBlockProps, 'children'>;
 const SessionBlockWrapper = styled.div<SessionBlockWrapperProps>`
   background-color: ${({ prefix }) => getCatPrefixColor(prefix)};
   grid-row: ${({ startRow, duration }) => `${startRow}/ span ${duration}`};
-  padding-left: 3px;
-  padding-right: 3px;
   border-left: 1px solid #fff;
   border-right: 1px solid #fff;
-  overflow-wrap: anywhere;
+  border-bottom: 1px solid #fff;
   opacity: ${({ isFaded }) => (isFaded ? '0.6' : '1')};
+  min-width: 2.5em;
+  position: relative;
+  ${({ hasBottomOverflow, theme }) => (
+    // Show down indicator when there are courses overflowing the bottom
+    hasBottomOverflow
+      ? `&:after {
+         content: '${OVERFLOW.DOWN}';
+         position: absolute;
+         bottom: ${theme.ws.zero};
+         right: ${theme.ws.small};
+         color: ${theme.color.text.medium};
+      }`
+      : null
+  )};
+  ${({ hasTopOverflow, theme }) => (
+    // Show up indicator when there are courses overflowing the top
+    hasTopOverflow
+      ? `&:before {
+         content: '${OVERFLOW.UP}';
+         position: absolute;
+         top: 2em;
+         right: ${theme.ws.small};
+         color: ${theme.color.text.medium};
+      }`
+      : null
+  )};
 `;
 
 /**
@@ -76,10 +132,26 @@ const SessionBlockWrapper = styled.div<SessionBlockWrapperProps>`
  * catalog prefix for all courses during the session
  */
 const SessionBlockHeading = styled.h4<SessionBlockHeadingProps>`
+  background-color: inherit;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  padding-left: ${fromTheme('ws', 'xsmall')};
+  padding-right: ${fromTheme('ws', 'xsmall')};
   font-size: 1.2em;
-  padding: 0px;
-  border-bottom: 1px solid rgba(255,255,255,0.5);
   text-transform: uppercase;
+`;
+
+/**
+ * A wrapper around the table to handle scrolling within the list only.
+ */
+const SessionBlockBodyWrapper = styled.div`
+  overflow-y: scroll;
+  position: absolute;
+  width: 100%;
+  top: 2em;
+  bottom: 0;
+  border-top: 1px solid rgba(255,255,255,0.5);
 `;
 
 /**
@@ -88,6 +160,8 @@ const SessionBlockHeading = styled.h4<SessionBlockHeadingProps>`
  */
 const SessionBlockBody = styled.ul<SessionBlockBodyProps>`
   list-style: none;
+  padding-left: ${fromTheme('ws', 'xsmall')};
+  padding-right: ${fromTheme('ws', 'xsmall')};
 `;
 
 /**
@@ -102,21 +176,78 @@ const SessionBlock: FunctionComponent<SessionBlockProps> = ({
   duration,
   children,
   isFaded,
-}) => (
-  <SessionBlockWrapper
-    prefix={prefix}
-    startRow={startRow}
-    duration={duration}
-    isFaded={isFaded}
-  >
-    <SessionBlockHeading>
-      {prefix}
-    </SessionBlockHeading>
-    <SessionBlockBody>
-      {children}
-    </SessionBlockBody>
-  </SessionBlockWrapper>
-);
+  popovers,
+}) => {
+  /**
+   * To be assigned to the inner body wrapper for measuring content overflow
+   */
+  const bodyWrapperRef = useRef<HTMLDivElement>();
+
+  /**
+   * Track whether there are courses outside the visible bounds of the block
+   */
+  const [
+    hasOverflow,
+    setHasOverflow,
+  ] = useState<Record<'top'|'bottom', boolean>>({
+    top: false,
+    bottom: false,
+  });
+
+  /**
+   * Check the bounding rectangle of the inner block body for any overflowing
+   * courses
+   */
+  const checkOverflow = useCallback(() => {
+    if (bodyWrapperRef.current) {
+      const childListItems = bodyWrapperRef.current.querySelectorAll('li');
+      const {
+        top: parentTop,
+        bottom: parentBottom,
+      } = bodyWrapperRef.current.getBoundingClientRect();
+      const {
+        top: firstChildTop,
+      } = (childListItems[0]).getBoundingClientRect();
+      const {
+        bottom: lastChildBottom,
+      } = (childListItems[childListItems.length - 1]).getBoundingClientRect();
+      // Use floor/ceiling to correct for fractional placements.
+      setHasOverflow({
+        top: Math.round(firstChildTop) < Math.round(parentTop),
+        bottom: Math.round(lastChildBottom) > Math.round(parentBottom),
+      });
+    }
+  }, []);
+
+  /**
+   * Run an initial check for overflows after the schedule content is rendered
+   */
+  useLayoutEffect(checkOverflow, [checkOverflow, children]);
+
+  return (
+    <SessionBlockWrapper
+      prefix={prefix}
+      startRow={startRow}
+      duration={duration}
+      isFaded={isFaded}
+      onScroll={checkOverflow}
+      hasTopOverflow={hasOverflow.top}
+      hasBottomOverflow={hasOverflow.bottom}
+    >
+      <SessionBlockHeading>
+        {prefix.substr(0, 3)}
+      </SessionBlockHeading>
+      <SessionBlockBodyWrapper
+        ref={bodyWrapperRef}
+      >
+        <SessionBlockBody>
+          {children}
+        </SessionBlockBody>
+      </SessionBlockBodyWrapper>
+      {popovers}
+    </SessionBlockWrapper>
+  );
+};
 
 declare type SessionBlock = ReactElement<SessionBlockProps>;
 

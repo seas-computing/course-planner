@@ -122,6 +122,35 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
                   prefix={coursePrefix}
                   startRow={resolvedStartRow}
                   duration={resolvedDuration}
+                  popovers={
+                    courses.map(({
+                      id: meetingId,
+                      instanceId,
+                      courseNumber,
+                      room,
+                    }, listIndex) => {
+                      const displayStartTime = PGTime.toDisplay(
+                        `${startHour}:${startMinute.toString().padStart(2, '0')}`
+                      );
+                      const displayEndTime = PGTime.toDisplay(
+                        `${endHour}:${endMinute.toString().padStart(2, '0')}`
+                      );
+                      return (
+                        <Popover
+                          key={`${meetingId}-popover`}
+                          aria-hidden
+                          xOffset="0.5rem"
+                          yOffset={`-${2 + listIndex}rem`}
+                          title={`${coursePrefix} ${courseNumber}`}
+                          isVisible={currentPopover === instanceId}
+                        >
+                          <p>{day}</p>
+                          <p>{`${displayStartTime} - ${displayEndTime}`}</p>
+                          <p>{room}</p>
+                        </Popover>
+                      );
+                    })
+                  }
                 >
                   {courses.map(({
                     id: meetingId,
@@ -153,17 +182,6 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
                         >
                           {courseNumber}
                         </CourseListingButton>
-                        <Popover
-                          aria-hidden
-                          xOffset="0.5rem"
-                          yOffset="1rem"
-                          title={catalogNumber}
-                          isVisible={isSelected}
-                        >
-                          <p>{day}</p>
-                          <p>{`${displayStartTime} - ${displayEndTime}`}</p>
-                          <p>{room}</p>
-                        </Popover>
                         <HiddenText id={`${meetingId}-description`}>
                           {`${catalogNumber} on ${day}, ${displayStartTime} to ${displayEndTime} in ${room}`}
                         </HiddenText>
