@@ -228,7 +228,7 @@ describe('Faculty service', function () {
       deepStrictEqual(result, sortedResult);
     });
   });
-  describe('updateFacultyNoLongerActiveAbsences', function () {
+  describe('updateFacultyAbsences', function () {
     let faculty1: Faculty;
     let firstYr: number;
     let firstSmstrAbsence: AbsenceResponseDTO;
