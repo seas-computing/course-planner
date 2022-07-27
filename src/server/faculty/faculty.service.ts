@@ -72,7 +72,7 @@ export class FacultyService {
   public async updateFacultyAbsences(
     absenceReqInfo: AbsenceRequestDTO,
     academicYear?:string
-  ): Promise<AbsenceResponseDTO> {
+  ): Promise<Absence> {
     let existingAbsence: Absence;
     let absenceInfo: AbsenceRequestDTO = { ...absenceReqInfo };
     const currentAcademicYear = Number(academicYear
