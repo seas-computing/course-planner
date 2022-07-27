@@ -52,8 +52,9 @@ export class FacultyService {
 
   /**
    * Check selecterAcademicYear not in the past
+   * @internal
    */
-  public check_absence(
+  private check_absence(
     semesterTerm: string,
     selectAcademicYear: number,
     currentAcademicYear: number
