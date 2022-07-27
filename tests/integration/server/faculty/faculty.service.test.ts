@@ -13,7 +13,7 @@ import {
 } from 'testData';
 import { Area } from 'server/area/area.entity';
 import { AuthModule } from 'server/auth/auth.module';
-import { AUTH_MODE, ABSENCE_TYPE } from 'common/constants';
+import { AUTH_MODE, ABSENCE_TYPE, TERM } from 'common/constants';
 import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
@@ -236,7 +236,8 @@ describe('Faculty service', function () {
     let midYearFallAbsence: AbsenceResponseDTO;
     let midYearSpringAbsence: AbsenceResponseDTO;
     beforeEach(async function () {
-      const facultyarray = await facultyRepository.find({ relations: ['absences', 'absences.semester'] });
+      const facultyarray = await facultyRepository
+        .find({ relations: ['absences', 'absences.semester'] });
       faculty1 = facultyarray[0];
       const allyears = (faculty1.absences
         .map((year) => Number(year.semester.academicYear))).sort();
@@ -244,23 +245,27 @@ describe('Faculty service', function () {
       const firstYearAbsence = faculty1.absences
         .filter((absence) => absence.semester.academicYear === String(firstYr));
       try {
-        const firstYearSpring = firstYearAbsence.find((absence) => absence.semester.term === 'SPRING');
+        const firstYearSpring = firstYearAbsence
+          .find((absence) => absence.semester.term === TERM.SPRING);
         firstSmstrAbsence = (({ id, type }) => ({ id, type }))(firstYearSpring);
       } catch {
-        const firstYearFall = firstYearAbsence.find((absence) => absence.semester.term === 'FALL');
+        const firstYearFall = firstYearAbsence
+          .find((absence) => absence.semester.term === TERM.FALL);
         firstSmstrAbsence = (({ id, type }) => ({ id, type }))(firstYearFall);
       }
       midYear = allyears[Math.floor(allyears.length / 2)];
       const midYearAbsence = faculty1.absences
         .filter((absence) => absence.semester.academicYear === String(midYear));
       try {
-        const spring = midYearAbsence.find((absence) => absence.semester.term === 'SPRING');
+        const spring = midYearAbsence
+          .find((absence) => absence.semester.term === TERM.SPRING);
         midYearSpringAbsence = (({ id, type }) => ({ id, type }))(spring);
       } catch {
         midYearSpringAbsence = null;
       }
       try {
-        const fall = midYearAbsence.find((absence) => absence.semester.term === 'FALL');
+        const fall = midYearAbsence
+          .find((absence) => absence.semester.term === TERM.FALL);
         midYearFallAbsence = (({ id, type }) => ({ id, type }))(fall);
       } catch {
         midYearFallAbsence = null;

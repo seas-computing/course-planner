@@ -5,7 +5,7 @@ import { NotFoundException, Inject } from '@nestjs/common';
 import { Absence } from 'server/absence/absence.entity';
 import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
 import { AbsenceRequestDTO } from 'common/dto/faculty/AbsenceRequest.dto';
-import { ABSENCE_TYPE } from 'common/constants';
+import { ABSENCE_TYPE, TERM } from 'common/constants';
 import { ConfigService } from 'server/config/config.service';
 import { Faculty } from './faculty.entity';
 import { InstructorResponseDTO } from '../../common/dto/courses/InstructorResponse.dto';
@@ -59,7 +59,7 @@ export class FacultyService {
     currentAcademicYear: number
   ) :boolean {
     let selecterAcademicYear = selectAcademicYear;
-    if (semesterTerm === 'FALL') {
+    if (semesterTerm === TERM.FALL) {
       selecterAcademicYear += 1;
     }
     if (selecterAcademicYear < currentAcademicYear) {
@@ -114,7 +114,7 @@ export class FacultyService {
     const filteredAbsence: Absence = existingAbsence.faculty.absences
       .find((absence) => absence.id === existingAbsence.id);
     let absenceYear = Number(filteredAbsence.semester.academicYear);
-    if (filteredAbsence.semester.term === 'FALL') {
+    if (filteredAbsence.semester.term === TERM.FALL) {
       absenceYear += 1;
     }
     // Update the absences, FALL will not be updated here.
