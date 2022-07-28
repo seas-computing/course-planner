@@ -222,7 +222,7 @@ describe('Schedule Page', function () {
     context('when data is not empty', function () {
       it('Should render the data into the schedule', async function () {
         apiStub.resolves(dummy.testCourseScheduleData);
-        const { queryByText } = render(
+        const { queryByText, queryAllByText } = render(
           <SchedulePage />
         );
         await waitForElementToBeRemoved(() => queryByText(
@@ -231,8 +231,8 @@ describe('Schedule Page', function () {
         strictEqual(apiStub.callCount, 1);
         const [testSessionBlock] = dummy.testCourseScheduleData;
         const [testCourseBlock] = testSessionBlock.courses;
-        const sessionBlock = queryByText(testSessionBlock.coursePrefix);
-        const courseListing = queryByText(testCourseBlock.courseNumber);
+        const sessionBlock = queryAllByText(testSessionBlock.coursePrefix);
+        const courseListing = queryAllByText(testCourseBlock.courseNumber);
         strictEqual(!!sessionBlock, true);
         strictEqual(!!courseListing, true);
       });

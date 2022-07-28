@@ -75,6 +75,7 @@ describe('Faculty Schedule Modal Behavior', function () {
           fireEvent.click(submitButton);
           await wait(() => !queryByText('Sabbatical/Leave', { exact: false }));
           // Reopen the modal to check the dropdown selected item
+          editAppliedMathFallAbsenceButton = getByLabelText('edit faculty fall absence');
           fireEvent.click(editAppliedMathFallAbsenceButton);
           await findByText('Sabbatical/Leave');
           strictEqual(
@@ -124,6 +125,7 @@ describe('Faculty Schedule Modal Behavior', function () {
           fireEvent.click(submitButton);
           await wait(() => !queryByText('Sabbatical/Leave', { exact: false }));
           // Reopen the modal to check the dropdown selected item
+          editAppliedMathSpringAbsenceButton = getByLabelText('edit faculty spring absence');
           fireEvent.click(editAppliedMathSpringAbsenceButton);
           await findByText('Sabbatical/Leave');
           strictEqual(
