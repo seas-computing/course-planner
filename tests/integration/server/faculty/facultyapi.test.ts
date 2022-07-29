@@ -74,4 +74,167 @@ describe('Faculty API', function () {
   afterEach(async function () {
     await testModule.close();
   });
+  describe('GET /faculty', function () {
+    describe('User is not authenticated', function () {
+      it('is inaccessible to unauthenticated users', async function () {
+        authStub.rejects(new ForbiddenException());
+
+        const response = await request(api).get('/api/faculty');
+
+        strictEqual(response.status, HttpStatus.FORBIDDEN);
+      });
+    });
+    describe('User is authenticated', function () {
+      beforeEach(function () {
+        authStub.resolves(regularUser);
+      });
+      describe('User is a member of the admin group', function () {
+        beforeEach(function () {
+          authStub.resolves(adminUser);
+        });
+        it('returns all faculty members in the database', async function () {
+          const expectedFacultyCount = await facultyRepository.count({
+            relations: ['area'],
+          });
+
+          const {
+            body: returnedFaculty,
+          } = await request(api).get('/api/faculty');
+
+          strictEqual(returnedFaculty.length, expectedFacultyCount);
+        });
+        it('sorts faculty members by area', async function () {
+          await facultyRepository.query(`TRUNCATE ${Faculty.name} CASCADE`);
+          const [
+            appliedMath,
+            bioengineering,
+          ] = await areaRepository.save([
+            {
+              name: appliedMathFacultyMemberRequest.area,
+            },
+            {
+              name: bioengineeringFacultyMember.area,
+            },
+          ]);
+
+          // Save two faculty members in the database with their faculty areas
+          // deliberately not in alphabetical order
+          await facultyRepository.save([
+            {
+              ...bioengineeringFacultyMember,
+              area: bioengineering,
+            },
+            {
+              ...appliedMathFacultyMemberRequest,
+              area: appliedMath,
+            },
+          ]);
+
+          const response = await request(api).get('/api/faculty');
+
+          const faculty = response.body as Faculty[];
+          deepStrictEqual(
+            faculty.map(({ area }) => area.name),
+            [
+              appliedMath.name,
+              bioengineering.name,
+            ]
+          );
+        });
+        it('sorts faculty members by last name in ascending order', async function () {
+          await facultyRepository.query(`TRUNCATE ${Faculty.name} CASCADE`);
+          const [appliedMath] = await areaRepository.save([
+            {
+              name: appliedMathFacultyMemberRequest.area,
+            },
+          ]);
+          // Save two example faculty members in the database, deliberately not
+          // in alphabetical order
+          const [
+            faculty1,
+            faculty2,
+          ] = await facultyRepository.save([
+            {
+              ...appliedMathFacultyMemberRequest,
+              // Slightly weird lastName to force the sorting and prove that it's
+              // working
+              lastName: 'zzzzzzzzz',
+              area: appliedMath,
+            },
+            {
+              ...bioengineeringFacultyMember,
+              // Slightly weird lastName to force the sorting and prove that it's
+              // working
+              lastName: 'aaaaaaaaa',
+              area: appliedMath,
+            },
+          ]);
+
+          const response = await request(api).get('/api/faculty');
+          const actualFaculty = response.body as Faculty[];
+          const actualLastNames = [
+            ...new Set(actualFaculty.map(({ lastName }) => lastName)),
+          ];
+
+          // Faculty 2 should come before faculty 1 because we're sorting by
+          // lastname ASC (aaa comes before zzz)
+          deepStrictEqual(actualLastNames, [
+            faculty2.lastName,
+            faculty1.lastName,
+          ]);
+        });
+        it('sorts faculty members by first name in ascending order', async function () {
+          await facultyRepository.query(`TRUNCATE ${Faculty.name} CASCADE`);
+          const [appliedMath] = await areaRepository.save([
+            {
+              name: appliedMathFacultyMemberRequest.area,
+            },
+          ]);
+          // Save two example faculty members in the database, deliberately not
+          // in alphabetical order
+          const [
+            faculty1,
+            faculty2,
+          ] = await facultyRepository.save([
+            {
+              ...appliedMathFacultyMemberRequest,
+              // Slightly weird first and last names to force the sorting and prove
+              // that it's working
+              firstName: 'zzzzzzzzz',
+              lastName: 'zzzzzzzzz',
+              area: appliedMath,
+            },
+            {
+              ...bioengineeringFacultyMember,
+              // Slightly weird first and last names to force the sorting and prove
+              // that it's working
+              firstName: 'zaaaazzzz',
+              lastName: 'zzzzzzzzz',
+              area: appliedMath,
+            },
+          ]);
+
+          const response = await request(api).get('/api/faculty');
+          const actualFaculty = response.body as Faculty[];
+          const actualLastNames = [
+            ...new Set(actualFaculty.map(({ firstName }) => firstName)),
+          ];
+
+          // Faculty 2 should come before faculty 1 because we're sorting by
+          // lastname ASC (aaa comes before zzz)
+          deepStrictEqual(actualLastNames, [
+            faculty2.firstName,
+            faculty1.firstName,
+          ]);
+        });
+      });
+      describe('User is not a member of the admin group', function () {
+        it('is inaccessible to unauthorized users', async function () {
+          const response = await request(api).get('/api/faculty');
+
+          strictEqual(response.status, HttpStatus.FORBIDDEN);
+        });
+      });
+    });
+  });
 });

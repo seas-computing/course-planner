@@ -184,51 +184,6 @@ describe('Faculty API', function () {
           });
       });
   });
-
-  describe('GET /', function () {
-    describe('User is not authenticated', function () {
-      it('is inaccessible to unauthenticated users', async function () {
-        authStub.rejects(new ForbiddenException());
-
-        const response = await request(api).get('/api/faculty');
-
-        strictEqual(response.ok, false);
-        strictEqual(response.status, HttpStatus.FORBIDDEN);
-        strictEqual(mockFacultyService.find.callCount, 0);
-      });
-    });
-    describe('User is authenticated', function () {
-      describe('User is a member of the admin group', function () {
-        it('returns all faculty in the database', async function () {
-          authStub.resolves(adminUser);
-          const mockFaculty = Array(10).fill({
-            ...new Faculty(),
-            area: new Area(),
-          });
-          mockFacultyService.find.resolves(mockFaculty);
-
-          const response = await request(api).get('/api/faculty');
-
-          const body = response.body as Faculty[];
-
-          strictEqual(response.ok, true);
-          strictEqual(body.length, mockFaculty.length);
-          strictEqual(mockFacultyService.find.callCount, 1);
-        });
-      });
-      describe('User is not a member of the admin group', function () {
-        it('is inaccessible to unauthorized users', async function () {
-          authStub.resolves(regularUser);
-
-          const response = await request(api).get('/api/faculty');
-
-          strictEqual(response.ok, false);
-          strictEqual(response.status, HttpStatus.FORBIDDEN);
-          strictEqual(mockFacultyService.find.callCount, 0);
-        });
-      });
-    });
-  });
   describe('GET /instructors', function () {
     describe('User is not authenticated', function () {
       it('is inaccessible to unauthenticated users', async function () {
