@@ -4,6 +4,8 @@ import { getRepositoryToken, TypeOrmModule, TypeOrmModuleOptions } from '@nestjs
 import { deepStrictEqual, strictEqual } from 'assert';
 import { AxiosResponse } from 'axios';
 import { AUTH_MODE } from 'common/constants';
+import { InstructorRequestDTO } from 'common/dto/courses/InstructorRequest.dto';
+import { InstructorResponseDTO } from 'common/dto/courses/InstructorResponse.dto';
 import { Request, Response } from 'express';
 import { SessionModule } from 'nestjs-session';
 import { Area } from 'server/area/area.entity';
@@ -15,7 +17,11 @@ import { FacultyModule } from 'server/faculty/faculty.module';
 import { stub, SinonStub } from 'sinon';
 import request from 'supertest';
 import {
-  adminUser, appliedMathFacultyMemberRequest, bioengineeringFacultyMember, regularUser, string,
+  adminUser,
+  appliedMathFacultyMemberRequest,
+  bioengineeringFacultyMember,
+  regularUser,
+  string,
 } from 'testData';
 import { Repository } from 'typeorm';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
@@ -231,6 +237,82 @@ describe('Faculty API', function () {
       describe('User is not a member of the admin group', function () {
         it('is inaccessible to unauthorized users', async function () {
           const response = await request(api).get('/api/faculty');
+
+          strictEqual(response.status, HttpStatus.FORBIDDEN);
+        });
+      });
+    });
+  });
+  describe('GET /faculty/instructors', function () {
+    describe('User is not authenticated', function () {
+      it('is inaccessible to unauthenticated users', async function () {
+        authStub.rejects(new ForbiddenException());
+
+        const response = await request(api).get('/api/faculty/instructors');
+
+        strictEqual(response.status, HttpStatus.FORBIDDEN);
+      });
+    });
+    describe('User is authenticated', function () {
+      beforeEach(function () {
+        authStub.resolves(regularUser);
+      });
+      describe('User is a member of the admin group', function () {
+        beforeEach(function () {
+          authStub.resolves(adminUser);
+        });
+        it('returns all faculty members in the database', async function () {
+          const expectedFacultyCount = await facultyRepository.count({
+            relations: ['area'],
+          });
+
+          const {
+            body: returnedFaculty,
+          } = await request(api).get('/api/faculty/instructors');
+
+          strictEqual(returnedFaculty.length, expectedFacultyCount);
+        });
+        it('orders by display name', async function () {
+          const facultyRecords = await facultyRepository.find({
+            relations: ['area'],
+            take: 5, // 🎷🎶
+          });
+
+          await facultyRepository.query(`TRUNCATE ${Faculty.name} CASCADE`);
+          const newFaculty = await facultyRepository.save(facultyRecords);
+
+          const response = await request(api).get('/api/faculty/instructors');
+          const result: InstructorResponseDTO[] = response.body;
+
+          const sortedInstructors = newFaculty.map((
+            { area, ...faculty }
+          ) => ({
+            ...faculty,
+            displayName: `${faculty.lastName}, ${faculty.firstName}`,
+          })).sort(
+            (
+              { displayName: a },
+              { displayName: b }
+            ) => {
+              if (a < b) {
+                return -1;
+              }
+              if (b < a) {
+                return 1;
+              }
+              return 0;
+            }
+          );
+
+          deepStrictEqual(
+            result.map(({ displayName }) => displayName),
+            sortedInstructors.map(({ displayName }) => displayName)
+          );
+        });
+      });
+      describe('User is not a member of the admin group', function () {
+        it('is inaccessible to unauthorized users', async function () {
+          const response = await request(api).get('/api/faculty/instructors');
 
           strictEqual(response.status, HttpStatus.FORBIDDEN);
         });

@@ -184,54 +184,6 @@ describe('Faculty API', function () {
           });
       });
   });
-  describe('GET /instructors', function () {
-    describe('User is not authenticated', function () {
-      it('is inaccessible to unauthenticated users', async function () {
-        authStub.rejects(new ForbiddenException());
-
-        const response = await request(api).get('/api/faculty/instructors');
-
-        strictEqual(response.ok, false);
-        strictEqual(response.status, HttpStatus.FORBIDDEN);
-        strictEqual(mockFacultyService.getInstructorList.callCount, 0);
-      });
-    });
-    describe('User is authenticated', function () {
-      describe('User is a member of the admin group', function () {
-        it('returns all faculty in the database', async function () {
-          authStub.resolves(adminUser);
-          const mockInstructors = [
-            appliedMathFacultyMember,
-            bioengineeringFacultyMember,
-          ].map(({ id, firstName, lastName }) => ({
-            id,
-            displayName: `${lastName}, ${firstName}`,
-          }));
-
-          mockFacultyService.getInstructorList.resolves(mockInstructors);
-
-          const response = await request(api).get('/api/faculty/instructors');
-
-          const body = response.body as InstructorResponseDTO[];
-
-          strictEqual(response.ok, true);
-          strictEqual(body.length, mockInstructors.length);
-          strictEqual(mockFacultyService.getInstructorList.callCount, 1);
-        });
-      });
-      describe('User is not a member of the admin group', function () {
-        it('is inaccessible to unauthorized users', async function () {
-          authStub.resolves(regularUser);
-
-          const response = await request(api).get('/api/faculty/instructors');
-
-          strictEqual(response.ok, false);
-          strictEqual(response.status, HttpStatus.FORBIDDEN);
-          strictEqual(mockFacultyService.find.callCount, 0);
-        });
-      });
-    });
-  });
   describe('POST /', function () {
     describe('User is not authenticated', function () {
       beforeEach(function () {

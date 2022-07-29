@@ -68,33 +68,6 @@ describe('Faculty service', function () {
   afterEach(async function () {
     await testModule.close();
   });
-  describe('getInstructorList', function () {
-    let result: InstructorResponseDTO[];
-    beforeEach(async function () {
-      result = await facultyService.getInstructorList();
-    });
-    it('returns all of the faculty', async function () {
-      const facultyCount = await facultyRepository.count();
-      strictEqual(result.length, facultyCount);
-    });
-    it('orders by the display name', function () {
-      const sortedResult = [...result].sort(
-        (
-          { displayName: a },
-          { displayName: b }
-        ) => {
-          if (a < b) {
-            return -1;
-          }
-          if (b < a) {
-            return 1;
-          }
-          return 0;
-        }
-      );
-      deepStrictEqual(result, sortedResult);
-    });
-  });
   describe('updateFacultyAbsences', function () {
     let faculty1: Faculty;
     let firstYr: number;
