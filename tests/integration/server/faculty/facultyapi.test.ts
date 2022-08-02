@@ -4,10 +4,11 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken, TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { deepStrictEqual, notStrictEqual, strictEqual } from 'assert';
-import { AUTH_MODE } from 'common/constants';
+import { ABSENCE_TYPE, AUTH_MODE } from 'common/constants';
 import { InstructorResponseDTO } from 'common/dto/courses/InstructorResponse.dto';
 import { Request, Response } from 'express';
 import { SessionModule } from 'nestjs-session';
+import { Absence } from 'server/absence/absence.entity';
 import { Area } from 'server/area/area.entity';
 import { AuthModule } from 'server/auth/auth.module';
 import { ConfigModule } from 'server/config/config.module';
@@ -607,6 +608,71 @@ describe('Faculty API', function () {
           const response = await request(api)
             .put(`/api/faculty/${existingFacultyMember.id}`)
             .send(existingFacultyMember);
+
+          strictEqual(response.status, HttpStatus.FORBIDDEN);
+        });
+      });
+    });
+  });
+  describe('PUT /faculty/absence/:id', function () {
+    let facultyWithAbsences: Faculty;
+    let existingAbsence: Absence;
+    beforeEach(async function () {
+      facultyWithAbsences = await facultyRepository
+        .createQueryBuilder('f')
+        .leftJoinAndMapMany(
+          'f.absences',
+          Absence, 'a',
+          'a."facultyId" = f."id"'
+        )
+        .getOne();
+      ([existingAbsence] = facultyWithAbsences.absences);
+    });
+    describe('User is not authenticated', function () {
+      it('is inaccessible to unauthenticated users', async function () {
+        authStub.rejects(new ForbiddenException());
+
+        const response = await request(api)
+          .put(`/api/faculty/absence/${existingAbsence.id}`)
+          .send({
+            ...existingAbsence,
+            type: ABSENCE_TYPE.TEACHING_RELIEF,
+          });
+
+        strictEqual(response.status, HttpStatus.FORBIDDEN);
+      });
+    });
+    describe('User is authenticated', function () {
+      describe('User is a member of the admin group', function () {
+        beforeEach(function () {
+          authStub.returns(adminUser);
+        });
+        it('updates a faculty member\'s absence entry in the database', async function () {
+          const response = await request(api)
+            .put(`/api/faculty/absence/${existingAbsence.id}`)
+            .send({
+              ...existingAbsence,
+              type: ABSENCE_TYPE.TEACHING_RELIEF,
+            });
+          strictEqual(response.status, HttpStatus.OK);
+        });
+        it('throws a Not Found exception if absence does not exist', async function () {
+          const { status, body } = await request(api)
+            .put(`/api/faculty/absence/${uuid}`)
+            .send({
+              ...existingAbsence,
+              id: uuid,
+            });
+            console.log(body);
+          strictEqual(status, HttpStatus.NOT_FOUND);
+          strictEqual((body.message as string).includes('Absence'), true);
+        });
+      });
+      describe('User is not a member of the admin group', function () {
+        it('is inaccessible to unauthorized users', async function () {
+          const response = await request(api)
+            .put(`/api/faculty/absence/${existingAbsence.id}`)
+            .send(existingAbsence);
 
           strictEqual(response.status, HttpStatus.FORBIDDEN);
         });
