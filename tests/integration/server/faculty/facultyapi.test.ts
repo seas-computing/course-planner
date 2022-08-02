@@ -1,4 +1,6 @@
-import { ForbiddenException, HttpServer, HttpStatus } from '@nestjs/common';
+import {
+  ForbiddenException, HttpServer, HttpStatus, ValidationError,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken, TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { deepStrictEqual, strictEqual } from 'assert';
@@ -17,6 +19,7 @@ import { stub, SinonStub } from 'sinon';
 import request from 'supertest';
 import {
   adminUser,
+  appliedMathFacultyMember,
   appliedMathFacultyMemberRequest,
   bioengineeringFacultyMember,
   regularUser,
@@ -315,6 +318,139 @@ describe('Faculty API', function () {
       describe('User is not a member of the admin group', function () {
         it('is inaccessible to unauthorized users', async function () {
           const response = await request(api).get('/api/faculty/instructors');
+
+          strictEqual(response.status, HttpStatus.FORBIDDEN);
+        });
+      });
+    });
+  });
+  describe('POST /faculty', function () {
+    describe('User is not authenticated', function () {
+      it('is inaccessible to unauthenticated users', async function () {
+        authStub.rejects(new ForbiddenException());
+
+        const response = await request(api)
+          .post('/api/faculty')
+          .send(appliedMathFacultyMemberRequest);
+
+        strictEqual(response.status, HttpStatus.FORBIDDEN);
+      });
+    });
+    describe('User is authenticated', function () {
+      beforeEach(function () {
+        authStub.resolves(regularUser);
+      });
+      describe('User is a member of the admin group', function () {
+        beforeEach(function () {
+          authStub.resolves(adminUser);
+        });
+        it('creates a new faculty member in the database', async function () {
+          await facultyRepository.query(`TRUNCATE ${Faculty.name} CASCADE`);
+
+          const response = await request(api)
+            .post('/api/faculty')
+            .send(appliedMathFacultyMemberRequest);
+
+          const expectedFacultyCount = await facultyRepository.count();
+
+          strictEqual(response.status, HttpStatus.CREATED);
+          strictEqual(expectedFacultyCount, 1);
+        });
+        it('reports a validation error when HUID is missing', async function () {
+          const {
+            status,
+            body,
+          } = await request(api)
+            .post('/api/faculty')
+            .send({
+              firstName: appliedMathFacultyMember.firstName,
+              lastName: appliedMathFacultyMember.lastName,
+              category: appliedMathFacultyMember.category,
+              area: appliedMathFacultyMember.area.name,
+            });
+
+          strictEqual(status, HttpStatus.BAD_REQUEST);
+          deepStrictEqual(
+            (body.message as ValidationError[]).map(({ property }) => property),
+            ['HUID']
+          );
+        });
+        it('reports a validation error when category is missing', async function () {
+          const {
+            status,
+            body,
+          } = await request(api)
+            .post('/api/faculty')
+            .send({
+              HUID: appliedMathFacultyMember.HUID,
+              firstName: appliedMathFacultyMember.firstName,
+              lastName: appliedMathFacultyMember.lastName,
+              area: appliedMathFacultyMember.area.name,
+            });
+
+          strictEqual(status, HttpStatus.BAD_REQUEST);
+          deepStrictEqual(
+            (body.message as ValidationError[]).map(({ property }) => property),
+            ['category']
+          );
+        });
+        it('does not require a first name', async function () {
+          const {
+            status,
+            body,
+          } = await request(api)
+            .post('/api/faculty')
+            .send({
+              HUID: appliedMathFacultyMember.HUID,
+              category: appliedMathFacultyMember.category,
+              lastName: appliedMathFacultyMember.lastName,
+              area: appliedMathFacultyMember.area.name,
+            });
+
+          strictEqual(status, HttpStatus.CREATED);
+          deepStrictEqual(body.HUID, appliedMathFacultyMember.HUID);
+        });
+        it('requires a last name', async function () {
+          const {
+            status,
+            body,
+          } = await request(api)
+            .post('/api/faculty')
+            .send({
+              HUID: appliedMathFacultyMember.HUID,
+              category: appliedMathFacultyMember.category,
+              firstName: appliedMathFacultyMember.firstName,
+              area: appliedMathFacultyMember.area.name,
+            });
+
+          strictEqual(status, HttpStatus.BAD_REQUEST);
+          deepStrictEqual(
+            (body.message as ValidationError[]).map(({ property }) => property),
+            ['lastName']
+          );
+        });
+        it('throws a Not Found exception if area does not exist', async function () {
+          const {
+            status,
+            body,
+          } = await request(api)
+            .post('/api/faculty')
+            .send({
+              HUID: appliedMathFacultyMember.HUID,
+              category: appliedMathFacultyMember.category,
+              firstName: appliedMathFacultyMember.firstName,
+              lastName: appliedMathFacultyMember.lastName,
+              area: string,
+            });
+          strictEqual(status, HttpStatus.NOT_FOUND);
+          strictEqual((body.message as string).includes('Area'), true);
+        });
+      });
+      describe('User is not a member of the admin group', function () {
+        it('is inaccessible to unauthorized users', async function () {
+          const response = await request(api)
+            .post('/api/faculty')
+            .send(appliedMathFacultyMemberRequest);
 
           strictEqual(response.status, HttpStatus.FORBIDDEN);
         });
