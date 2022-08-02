@@ -72,7 +72,7 @@ services:
       - ".:/node:rw"
     command: ["npm", "run", "start:client"]
   redis:
-    image: bitnami/redis:6.2
+    image: bitnami/redis:6.2.6
     environment:
       - REDIS_PASSWORD
     ports:
