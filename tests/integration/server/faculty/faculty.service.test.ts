@@ -15,14 +15,14 @@ import { Area } from 'server/area/area.entity';
 import { AuthModule } from 'server/auth/auth.module';
 import { AUTH_MODE, ABSENCE_TYPE, TERM } from 'common/constants';
 import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
+import { Absence } from 'server/absence/absence.entity';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
-import { InstructorResponseDTO } from '../../../../src/common/dto/courses/InstructorResponse.dto';
 
 describe('Faculty service', function () {
   let facultyService: FacultyService;
   let facultyRepository: Repository<Faculty>;
-  let areaRepository: Repository<Area>;
+  let absenceRepository: Repository<Absence>;
   let testModule: TestingModule;
 
   beforeEach(async function () {
@@ -62,27 +62,26 @@ describe('Faculty service', function () {
 
     facultyService = testModule.get<FacultyService>(FacultyService);
     facultyRepository = testModule.get(getRepositoryToken(Faculty));
-    areaRepository = testModule.get(getRepositoryToken(Area));
+    absenceRepository = testModule.get(getRepositoryToken(Absence));
     await testModule.createNestApplication().init();
   });
   afterEach(async function () {
     await testModule.close();
   });
   describe('updateFacultyAbsences', function () {
-    let faculty1: Faculty;
+    let faculty: Faculty;
     let firstYr: number;
     let firstSmstrAbsence: AbsenceResponseDTO;
     let midYear: number;
     let midYearFallAbsence: AbsenceResponseDTO;
     let midYearSpringAbsence: AbsenceResponseDTO;
     beforeEach(async function () {
-      const facultyarray = await facultyRepository
-        .find({ relations: ['absences', 'absences.semester'] });
-      faculty1 = facultyarray[0];
-      const allyears = (faculty1.absences
+      (faculty = await facultyRepository
+        .findOne({ relations: ['absences', 'absences.semester'] }));
+      const allyears = (faculty.absences
         .map((year) => Number(year.semester.academicYear))).sort();
       firstYr = allyears[0];
-      const firstYearAbsence = faculty1.absences
+      const firstYearAbsence = faculty.absences
         .filter((absence) => absence.semester.academicYear === String(firstYr));
       try {
         const firstYearSpring = firstYearAbsence
@@ -94,7 +93,7 @@ describe('Faculty service', function () {
         firstSmstrAbsence = (({ id, type }) => ({ id, type }))(firstYearFall);
       }
       midYear = allyears[Math.floor(allyears.length / 2)];
-      const midYearAbsence = faculty1.absences
+      const midYearAbsence = faculty.absences
         .filter((absence) => absence.semester.academicYear === String(midYear));
       try {
         const spring = midYearAbsence
@@ -120,13 +119,12 @@ describe('Faculty service', function () {
       );
     });
     it('all the absence of the selected faculty should be PRESENT', async function () {
-      const faculty2 = await facultyRepository.findOne({
-        relations: ['absences', 'absences.semester'],
+      const absences = await absenceRepository.find({
         where: {
-          id: faculty1.id,
+          faculty: faculty.id,
         },
       });
-      const check = faculty2.absences
+      const check = absences
         .filter((absence) => absence.type !== ABSENCE_TYPE.PRESENT);
       strictEqual(check.length, 0);
     });
@@ -135,15 +133,15 @@ describe('Faculty service', function () {
         { ...midYearSpringAbsence, type: ABSENCE_TYPE.NO_LONGER_ACTIVE },
         String(midYear)
       );
-      const faculty2 = await facultyRepository.findOne({
-        relations: ['absences', 'absences.semester'],
+      const absences = await absenceRepository.find({
+        relations: ['semester'],
         where: {
-          id: faculty1.id,
+          faculty: faculty.id,
         },
       });
-      const nla = faculty2.absences
+      const nla = absences
         .filter((absence) => absence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE);
-      const present = faculty2.absences
+      const present = absences
         .filter((absence) => absence.type === ABSENCE_TYPE.PRESENT);
       const chech_nla = nla
         .filter((absence) => Number(absence.semester.academicYear) < midYear);
@@ -154,22 +152,22 @@ describe('Faculty service', function () {
       notStrictEqual(nla.length, 0);
       strictEqual(chech_present.length, 0);
       strictEqual(chech_nla.length, 0);
-      strictEqual(faculty1.absences.length, totalAbsences);
+      strictEqual(faculty.absences.length, totalAbsences);
     });
     it('update FALL absences to NO_LONGER_ACTIVE', async function () {
       await facultyService.updateFacultyAbsences(
         { ...midYearFallAbsence, type: ABSENCE_TYPE.NO_LONGER_ACTIVE },
         String(midYear)
       );
-      const faculty2 = await facultyRepository.findOne({
-        relations: ['absences', 'absences.semester'],
+      const absences = await absenceRepository.find({
+        relations: ['semester'],
         where: {
-          id: faculty1.id,
+          faculty: faculty.id,
         },
       });
-      const nla = faculty2.absences
+      const nla = absences
         .filter((absence) => absence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE);
-      const present = faculty2.absences
+      const present = absences
         .filter((absence) => absence.type === ABSENCE_TYPE.PRESENT);
       const chech_nla = nla
         .filter((absence) => Number(absence.semester.academicYear) < midYear);
@@ -182,7 +180,7 @@ describe('Faculty service', function () {
       strictEqual(chech_nla.length, 0);
       strictEqual(chech_present[0].semester.term, 'SPRING');
       strictEqual(Number(chech_present[0].semester.academicYear), midYear);
-      strictEqual(faculty1.absences.length, totalAbsences);
+      strictEqual(faculty.absences.length, totalAbsences);
     });
     it('update previous SPRING  absences to NO_LONGER_ACTIVE', async function () {
       let result:string;
