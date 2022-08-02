@@ -5,7 +5,7 @@ import { ConfigModule } from 'server/config/config.module';
 import { TypeOrmModule, TypeOrmModuleOptions, getRepositoryToken } from '@nestjs/typeorm';
 import { FacultyModule } from 'server/faculty/faculty.module';
 import { deepStrictEqual, notStrictEqual, strictEqual } from 'assert';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { Faculty } from 'server/faculty/faculty.entity';
 import {
   appliedMathFacultyMemberRequest,
@@ -119,14 +119,13 @@ describe('Faculty service', function () {
       );
     });
     it('all the absence of the selected faculty should be PRESENT', async function () {
-      const absences = await absenceRepository.find({
+      const absenceCount = await absenceRepository.count({
         where: {
           faculty: faculty.id,
+          type: Not(ABSENCE_TYPE.PRESENT),
         },
       });
-      const check = absences
-        .filter((absence) => absence.type !== ABSENCE_TYPE.PRESENT);
-      strictEqual(check.length, 0);
+      strictEqual(absenceCount, 0);
     });
     it('update SPRING absences to NO_LONGER_ACTIVE', async function () {
       await facultyService.updateFacultyAbsences(
