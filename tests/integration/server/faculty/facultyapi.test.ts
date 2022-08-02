@@ -663,7 +663,6 @@ describe('Faculty API', function () {
               ...existingAbsence,
               id: uuid,
             });
-            console.log(body);
           strictEqual(status, HttpStatus.NOT_FOUND);
           strictEqual((body.message as string).includes('Absence'), true);
         });
