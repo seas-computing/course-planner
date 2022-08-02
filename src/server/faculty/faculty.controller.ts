@@ -143,7 +143,24 @@ export class FacultyController {
   public async updateFacultyAbsence(@Body() absenceReqInfo: AbsenceRequestDTO):
   Promise<AbsenceResponseDTO> {
     try {
-      return await this.facultyService.updateFacultyAbsences(absenceReqInfo);
+      // Throws an EntityNotFoundError if the absence doesn't exist. This
+      // gets caught and re-thrown as a 404
+      const absence = await this.absenceRepository
+        .findOneOrFail({
+          relations: [
+            'semester',
+            'faculty',
+            'faculty.absences',
+            'faculty.absences.semester',
+          ],
+          where: {
+            id: absenceReqInfo.id,
+          },
+        });
+      return await this.facultyService.updateFacultyAbsences({
+        ...absence,
+        ...absenceReqInfo,
+      });
     } catch (error) {
       if (error instanceof EntityNotFoundError) {
         throw new NotFoundException(error.message);
