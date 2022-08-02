@@ -12,6 +12,7 @@ import { ConfigModule } from 'server/config/config.module';
 import { ConfigService } from 'server/config/config.service';
 import { Faculty } from 'server/faculty/faculty.entity';
 import { FacultyModule } from 'server/faculty/faculty.module';
+import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 import { stub, SinonStub } from 'sinon';
 import request from 'supertest';
 import {
@@ -73,7 +74,9 @@ describe('Faculty API', function () {
     areaRepository = testModule
       .get<Repository<Area>>(getRepositoryToken(Area));
 
-    const app = await testModule.createNestApplication().init();
+    const app = await testModule.createNestApplication()
+      .useGlobalPipes(new BadRequestExceptionPipe())
+      .init();
     api = app.getHttpServer() as HttpServer<Request, Response>;
   });
   afterEach(async function () {
