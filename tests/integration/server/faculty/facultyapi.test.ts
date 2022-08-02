@@ -3,7 +3,7 @@ import {
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken, TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { deepStrictEqual, strictEqual } from 'assert';
+import { deepStrictEqual, notStrictEqual, strictEqual } from 'assert';
 import { AUTH_MODE } from 'common/constants';
 import { InstructorResponseDTO } from 'common/dto/courses/InstructorResponse.dto';
 import { Request, Response } from 'express';
@@ -24,6 +24,7 @@ import {
   bioengineeringFacultyMember,
   regularUser,
   string,
+  uuid,
 } from 'testData';
 import { Repository } from 'typeorm';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
@@ -451,6 +452,161 @@ describe('Faculty API', function () {
           const response = await request(api)
             .post('/api/faculty')
             .send(appliedMathFacultyMemberRequest);
+
+          strictEqual(response.status, HttpStatus.FORBIDDEN);
+        });
+      });
+    });
+  });
+  describe('PUT /faculty/:id', function () {
+    let existingFacultyMember: Faculty;
+    beforeEach(async function () {
+      existingFacultyMember = await facultyRepository.findOne({
+        relations: ['area'],
+      });
+    });
+    describe('User is not authenticated', function () {
+      it('is inaccessible to unauthenticated users', async function () {
+        authStub.rejects(new ForbiddenException());
+
+        const response = await request(api)
+          .put(`/api/faculty/${existingFacultyMember.id}`)
+          .send(existingFacultyMember);
+
+        strictEqual(response.status, HttpStatus.FORBIDDEN);
+      });
+    });
+    describe('User is authenticated', function () {
+      describe('User is a member of the admin group', function () {
+        beforeEach(function () {
+          authStub.resolves(adminUser);
+        });
+        it('updates a faculty member entry in the database', async function () {
+          const { status, body } = await request(api)
+            .put(`/api/faculty/${existingFacultyMember.id}`)
+            .send({
+              ...existingFacultyMember,
+              lastName: string,
+              area: existingFacultyMember.area.name,
+            });
+          const { updatedAt, ...updatedFaculty } = body;
+          const {
+            updatedAt: existingFacultyUpdatedAt,
+            ...existingFacultyMemberWithoutUpdatedAt
+          } = existingFacultyMember;
+
+          strictEqual(status, HttpStatus.OK);
+          deepStrictEqual(updatedFaculty, {
+            ...existingFacultyMemberWithoutUpdatedAt,
+            lastName: string,
+            area: { ...existingFacultyMemberWithoutUpdatedAt.area },
+          });
+          notStrictEqual(updatedAt, existingFacultyMember.updatedAt);
+        });
+        it('reports a validation error when HUID is missing', async function () {
+          const { HUID, ...facultyWithoutHuid } = existingFacultyMember;
+          const {
+            status,
+            body,
+          } = await request(api)
+            .put(`/api/faculty/${existingFacultyMember.id}`)
+            .send({
+              ...facultyWithoutHuid,
+              area: facultyWithoutHuid.area.name,
+            });
+          strictEqual(status, HttpStatus.BAD_REQUEST);
+          deepStrictEqual(
+            (body.message as ValidationError[]).map(({ property }) => property),
+            ['HUID']
+          );
+        });
+        it('reports a validation error when category is missing', async function () {
+          const { category, ...facultyWithoutCategory } = existingFacultyMember;
+          const {
+            status,
+            body,
+          } = await request(api)
+            .put(`/api/faculty/${existingFacultyMember.id}`)
+            .send({
+              ...facultyWithoutCategory,
+              area: facultyWithoutCategory.area.name,
+            });
+
+          strictEqual(status, HttpStatus.BAD_REQUEST);
+          deepStrictEqual(
+            (body.message as ValidationError[]).map(({ property }) => property),
+            ['category']
+          );
+        });
+        it('does not require a first name', async function () {
+          const {
+            firstName,
+            ...facultyWithoutFirstName
+          } = existingFacultyMember;
+          const {
+            status,
+            body,
+          } = await request(api)
+            .put(`/api/faculty/${existingFacultyMember.id}`)
+            .send({
+              ...facultyWithoutFirstName,
+              area: facultyWithoutFirstName.area.name,
+            });
+
+          strictEqual(status, HttpStatus.OK);
+          deepStrictEqual(body.HUID, existingFacultyMember.HUID);
+        });
+        it('requires a last name', async function () {
+          const { lastName, ...facultyWithoutLastname } = existingFacultyMember;
+          const {
+            status,
+            body,
+          } = await request(api)
+            .put(`/api/faculty/${existingFacultyMember.id}`)
+            .send({
+              ...facultyWithoutLastname,
+              area: facultyWithoutLastname.area.name,
+            });
+
+          strictEqual(status, HttpStatus.BAD_REQUEST);
+          deepStrictEqual(
+            (body.message as ValidationError[]).map(({ property }) => property),
+            ['lastName']
+          );
+        });
+        it('throws a Not Found exception if area does not exist', async function () {
+          const {
+            status,
+            body,
+          } = await request(api)
+            .put(`/api/faculty/${existingFacultyMember.id}`)
+            .send({
+              ...existingFacultyMember,
+              area: string,
+            });
+          strictEqual(status, HttpStatus.NOT_FOUND);
+          strictEqual((body.message as string).includes('Area'), true);
+        });
+        it('throws a Not Found exception if faculty does not exist', async function () {
+          const {
+            status,
+            body,
+          } = await request(api)
+            .put(`/api/faculty/${uuid}`)
+            .send({
+              ...existingFacultyMember,
+              area: existingFacultyMember.area.name,
+            });
+
+          strictEqual(status, HttpStatus.NOT_FOUND);
+          strictEqual((body.message as string).includes('Faculty'), true);
+        });
+      });
+      describe('User is not a member of the admin group', function () {
+        it('is inaccessible to unauthorized users', async function () {
+          const response = await request(api)
+            .put(`/api/faculty/${existingFacultyMember.id}`)
+            .send(existingFacultyMember);
 
           strictEqual(response.status, HttpStatus.FORBIDDEN);
         });
