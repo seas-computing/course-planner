@@ -118,6 +118,7 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
               return [...blocks, (
                 <SessionBlock
                   isFaded={currentPopover && !popoverInBlock}
+                  isPopoverVisible={!!currentPopover}
                   key={sessionId}
                   prefix={coursePrefix}
                   startRow={resolvedStartRow}
