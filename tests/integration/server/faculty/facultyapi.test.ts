@@ -70,7 +70,8 @@ describe('Faculty API', function () {
 
     facultyRepository = testModule
       .get<Repository<Faculty>>(getRepositoryToken(Faculty));
-    areaRepository = testModule.get(getRepositoryToken(Area));
+    areaRepository = testModule
+      .get<Repository<Area>>(getRepositoryToken(Area));
 
     const app = await testModule.createNestApplication().init();
     api = app.getHttpServer() as HttpServer<Request, Response>;
