@@ -57,6 +57,10 @@ interface SessionBlockProps {
    * to break out of the overflow defined within the body wrapper
    */
   popovers: JSX.Element[];
+  /**
+   * Whether a popover is currently visible
+   */
+  isPopoverVisible: boolean;
 }
 
 /**
@@ -87,6 +91,12 @@ type SessionBlockHeadingProps = {
  * Takes the children from the SessionBlock
  */
 type SessionBlockBodyProps = Pick<SessionBlockProps, 'children'>;
+
+/**
+ * Takes the isPopoverVisible prop from the SessionBlock
+ */
+ type SessionBlockBodyWrapperProps = Pick<
+ SessionBlockProps, 'isPopoverVisible' | 'isFaded'>;
 
 /**
  * The top level of the SessionBlock, which handles setting the placement
@@ -145,8 +155,12 @@ const SessionBlockHeading = styled.h4<SessionBlockHeadingProps>`
 /**
  * A wrapper around the table to handle scrolling within the list only.
  */
-const SessionBlockBodyWrapper = styled.div`
-  overflow-y: scroll;
+const SessionBlockBodyWrapper = styled.div<SessionBlockBodyWrapperProps>`
+  overflow-y: ${({ isPopoverVisible, isFaded }): string => (
+    isPopoverVisible && !isFaded
+      ? 'hidden'
+      : 'scroll'
+  )};
   position: absolute;
   width: 100%;
   top: 2em;
@@ -176,6 +190,7 @@ const SessionBlock: FunctionComponent<SessionBlockProps> = ({
   duration,
   children,
   isFaded,
+  isPopoverVisible,
   popovers,
 }) => {
   /**
@@ -238,6 +253,8 @@ const SessionBlock: FunctionComponent<SessionBlockProps> = ({
         {prefix.substr(0, 3)}
       </SessionBlockHeading>
       <SessionBlockBodyWrapper
+        isPopoverVisible={isPopoverVisible}
+        isFaded={isFaded}
         ref={bodyWrapperRef}
       >
         <SessionBlockBody>
