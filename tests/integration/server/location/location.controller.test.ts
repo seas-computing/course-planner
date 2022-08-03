@@ -97,7 +97,7 @@ describe('Location API', function () {
     await testModule.close();
   });
 
-  describe('GET /rooms', function () {
+  describe('GET /rooms/availability', function () {
     const testParams: RoomRequest = {
       calendarYear: '2020',
       term: TERM.FALL,
@@ -114,7 +114,7 @@ describe('Location API', function () {
         authStub.rejects(new ForbiddenException());
 
         response = await request(api)
-          .get('/api/rooms')
+          .get('/api/rooms/availability')
           .query(testParams);
 
         strictEqual(response.ok, false);
@@ -130,7 +130,7 @@ describe('Location API', function () {
             authStub.resolves(adminUser);
             const invalidYear = '1902';
             response = await request(api)
-              .get('/api/rooms')
+              .get('/api/rooms/availability')
               .query({ ...testParams, calendarYear: invalidYear });
             result = response.body;
           });
@@ -150,7 +150,7 @@ describe('Location API', function () {
             authStub.resolves(adminUser);
             const invalidTerm = 'fakeTerm' as TERM;
             response = await request(api)
-              .get('/api/rooms')
+              .get('/api/rooms/availability')
               .query({ ...testParams, term: invalidTerm });
           });
           it('should return a 400 status', function () {
@@ -162,7 +162,7 @@ describe('Location API', function () {
             authStub.resolves(adminUser);
             const invalidDay = 'fakeDay' as DAY;
             response = await request(api)
-              .get('/api/rooms')
+              .get('/api/rooms/availability')
               .query({ ...testParams, day: invalidDay });
           });
           it('should return a 400 status', function () {
@@ -174,7 +174,7 @@ describe('Location API', function () {
             authStub.resolves(adminUser);
             const invalidStartTime = '10:00AM';
             response = await request(api)
-              .get('/api/rooms')
+              .get('/api/rooms/availability')
               .query({ ...testParams, startTime: invalidStartTime });
           });
           it('should return a 400 status', function () {
@@ -186,7 +186,7 @@ describe('Location API', function () {
             authStub.resolves(adminUser);
             const invalidEndTime = '26:00:00';
             response = await request(api)
-              .get('/api/rooms')
+              .get('/api/rooms/availability')
               .query({ ...testParams, endTime: invalidEndTime });
           });
           it('should return a 400 status', function () {
@@ -198,7 +198,7 @@ describe('Location API', function () {
             authStub.resolves(adminUser);
             const invalidExcludeParent = 'notUUID';
             response = await request(api)
-              .get('/api/rooms')
+              .get('/api/rooms/availability')
               .query({ ...testParams, excludeParent: invalidExcludeParent });
           });
           it('should return a 400 status', function () {
@@ -211,7 +211,7 @@ describe('Location API', function () {
             beforeEach(async function () {
               authStub.resolves(adminUser);
               response = await request(api)
-                .get('/api/rooms')
+                .get('/api/rooms/availability')
                 .query(testParams);
               result = response.body;
             });
@@ -276,7 +276,7 @@ describe('Location API', function () {
               testInstance = await testInstanceQuery
                 .getRawOne();
               response = await request(api)
-                .get('/api/rooms')
+                .get('/api/rooms/availability')
                 .query({
                   ...testParams,
                   excludeParent: testInstance.ci_id,
@@ -337,7 +337,7 @@ describe('Location API', function () {
         beforeEach(async function () {
           authStub.resolves(regularUser);
           response = await request(api)
-            .get('/api/rooms')
+            .get('/api/rooms/availability')
             .query(testParams);
         });
         it('is inaccessible to unauthenticated users', function () {
