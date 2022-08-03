@@ -29,6 +29,17 @@ export class LocationController {
   private readonly locationService: LocationService;
 
   @Get('/')
+  @ApiOperation({ summary: 'Retrieve Room Data' })
+  @ApiOkResponse({
+    type: RoomResponse,
+    description: 'An array of the existing rooms along with their building and campus information',
+    isArray: true,
+  })
+  public async getRooms(): Promise<RoomResponse[]> {
+    return this.locationService.getRoomList();
+  }
+
+  @Get('/availability')
   @ApiOperation({ summary: 'Retrieve all rooms from the database along with the meetings that take place in them' })
   @ApiOkResponse({
     type: RoomResponse,

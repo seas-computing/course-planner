@@ -32,6 +32,16 @@ export class LocationService {
   @InjectRepository(RoomBookingInfoView)
   private readonly roomBookingRepository: Repository<RoomBookingInfoView>;
 
+  public async getRoomList(): Promise<RoomResponse[]> {
+    return this.roomListingViewRepository
+      .createQueryBuilder()
+      .select('id')
+      .addSelect('name')
+      .addSelect('campus')
+      .addSelect('capacity')
+      .getRawMany();
+  }
+
   /**
    * Queries the view of room booking info in our database for any existing
    * bookings that might overlap with the meeting represented by the data in
