@@ -97,6 +97,60 @@ describe('Location API', function () {
     await testModule.close();
   });
 
+  describe('GET /rooms', function () {
+    let response: Response;
+    context('As an unauthenticated user', function () {
+      beforeEach(function () {
+        authStub.resolves(null);
+      });
+      it('should return a 400 status', async function () {
+        authStub.rejects(new ForbiddenException());
+
+        response = await request(api)
+          .get('/api/rooms');
+
+        strictEqual(response.ok, false);
+        strictEqual(response.status, HttpStatus.FORBIDDEN);
+      });
+    });
+    context('As an authenticated user', function () {
+      let result: RoomResponse[];
+      beforeEach(async function () {
+        authStub.resolves(adminUser);
+        response = await request(api)
+          .get('/api/rooms');
+        result = response.body;
+      });
+      it('should return a 200 status', function () {
+        strictEqual(response.status, HttpStatus.OK);
+      });
+      it('should return a nonempty array of data', function () {
+        strictEqual(Array.isArray(result), true);
+        notStrictEqual(result, 0);
+      });
+      it('returns all rooms in the database', async function () {
+        const actualRooms = result.map((room) => room.name).sort();
+        const rawRooms = await locationRepo.createQueryBuilder('r')
+          .select('CONCAT_WS(\' \', b.name, r.name)', 'name')
+          .leftJoin('r.building', 'b')
+          .leftJoin('b.campus', 'c')
+          .getRawMany();
+        const expectedRooms = rawRooms.map(({ name }) => <string>name).sort();
+        deepStrictEqual(actualRooms, expectedRooms);
+      });
+    });
+    context('As a non-admin user', function () {
+      beforeEach(async function () {
+        authStub.resolves(regularUser);
+        response = await request(api)
+          .get('/api/rooms');
+      });
+      it('is inaccessible to unauthenticated users', function () {
+        authStub.rejects(new ForbiddenException());
+        strictEqual(response.status, HttpStatus.FORBIDDEN);
+      });
+    });
+  });
   describe('GET /rooms/availability', function () {
     const testParams: RoomRequest = {
       calendarYear: '2020',
