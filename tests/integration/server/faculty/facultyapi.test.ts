@@ -3,7 +3,9 @@ import {
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken, TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { deepStrictEqual, notStrictEqual, strictEqual } from 'assert';
+import {
+  deepStrictEqual, notDeepStrictEqual, notStrictEqual, strictEqual,
+} from 'assert';
 import { ABSENCE_TYPE, AUTH_MODE, TERM } from 'common/constants';
 import { InstructorResponseDTO } from 'common/dto/courses/InstructorResponse.dto';
 import { Request, Response } from 'express';
