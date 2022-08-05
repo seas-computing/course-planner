@@ -622,6 +622,7 @@ describe('Faculty API', function () {
     let facultyWithAbsences: Faculty;
     let existingAbsence: Absence;
     let stubAcademicYear: SinonStub;
+    let absenceRepository: Repository<Absence>;
     beforeEach(async function () {
       facultyWithAbsences = await facultyRepository
         .createQueryBuilder('f')
@@ -631,6 +632,8 @@ describe('Faculty API', function () {
           'a."facultyId" = f."id"'
       stubAcademicYear = stub(ConfigService.prototype, 'academicYear');
       stubAcademicYear.get(() => 2021);
+      absenceRepository = testModule
+        .get<Repository<Absence>>(getRepositoryToken(Absence));
         )
         .getOne();
       ([existingAbsence] = facultyWithAbsences.absences);
@@ -651,11 +654,8 @@ describe('Faculty API', function () {
     });
     describe('User is authenticated', function () {
       describe('User is a member of the admin group', function () {
-        let absenceRepository: Repository<Absence>;
         beforeEach(function () {
           authStub.returns(adminUser);
-          absenceRepository = testModule
-            .get<Repository<Absence>>(getRepositoryToken(Absence));
         });
         it('throws a Not Found exception if absence does not exist', async function () {
           const { status, body } = await request(api)
