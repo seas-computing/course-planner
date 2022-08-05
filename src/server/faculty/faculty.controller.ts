@@ -165,10 +165,7 @@ export class FacultyController {
       if (error instanceof EntityNotFoundError) {
         throw new NotFoundException(error.message);
       }
-      if (error instanceof Error) {
-        throw new BadRequestException(error.message);
-      }
-      throw error;
+      throw new BadRequestException((error as Error).message);
     }
   }
 
