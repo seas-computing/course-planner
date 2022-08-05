@@ -731,6 +731,36 @@ describe('Faculty API', function () {
           strictEqual(status, HttpStatus.OK);
           notStrictEqual(updatedAt, springAbsenceThisYear.updatedAt);
         });
+        it('does not allow modification of absences before the current academic year', async function () {
+          const absenceLastYear = await absenceRepository
+            .createQueryBuilder('a')
+            .select('a.updatedAt')
+            .leftJoinAndMapOne(
+              'a.semester',
+              Semester, 's',
+              'a."semesterId" = s."id"'
+            )
+            .where(
+              's."academicYear"=:acyr',
+              { acyr: (configService.academicYear - 1) }
+            )
+            .getOne();
+          const { status } = await request(api)
+            .put(`/api/faculty/absence/${absenceLastYear.id}`)
+            .send({
+              id: absenceLastYear.id,
+              type: ABSENCE_TYPE.TEACHING_RELIEF,
+            });
+
+          const {
+            updatedAt,
+          } = await absenceRepository.findOne(
+            absenceLastYear.id,
+            { select: ['updatedAt'] }
+          );
+          strictEqual(status, HttpStatus.BAD_REQUEST);
+          deepStrictEqual(updatedAt, absenceLastYear.updatedAt);
+        });
       });
       describe('User is not a member of the admin group', function () {
         it('is inaccessible to unauthorized users', async function () {

@@ -38,6 +38,7 @@ import { Faculty } from './faculty.entity';
 import { FacultyService } from './faculty.service';
 import { FacultyScheduleService } from './facultySchedule.service';
 import { InstructorResponseDTO } from '../../common/dto/courses/InstructorResponse.dto';
+import { ConfigService } from 'server/config/config.service';
 
 @ApiTags('Faculty')
 @UseGuards(Authentication)
@@ -61,6 +62,9 @@ export class FacultyController {
 
   @Inject(SemesterService)
   private readonly semesterService: SemesterService;
+
+  @Inject(ConfigService)
+  private readonly configService: ConfigService;
 
   @UseGuards(new RequireGroup(GROUP.ADMIN))
   @Get('/')
@@ -157,6 +161,13 @@ export class FacultyController {
             id: absenceReqInfo.id,
           },
         });
+
+      if (
+        parseInt(absence.semester.academicYear, 10)
+          < this.configService.academicYear
+      ) {
+        throw new BadRequestException('Cannot update absence for previous academic year');
+      }
       return await this.facultyService.updateFacultyAbsences({
         ...absence,
         ...absenceReqInfo,
