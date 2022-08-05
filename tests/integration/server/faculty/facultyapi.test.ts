@@ -4,7 +4,7 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken, TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { deepStrictEqual, notStrictEqual, strictEqual } from 'assert';
-import { ABSENCE_TYPE, AUTH_MODE } from 'common/constants';
+import { ABSENCE_TYPE, AUTH_MODE, TERM } from 'common/constants';
 import { InstructorResponseDTO } from 'common/dto/courses/InstructorResponse.dto';
 import { Request, Response } from 'express';
 import { SessionModule } from 'nestjs-session';
@@ -15,6 +15,7 @@ import { ConfigModule } from 'server/config/config.module';
 import { ConfigService } from 'server/config/config.service';
 import { Faculty } from 'server/faculty/faculty.entity';
 import { FacultyModule } from 'server/faculty/faculty.module';
+import { Semester } from 'server/semester/semester.entity';
 import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 import { stub, SinonStub } from 'sinon';
 import request from 'supertest';
@@ -29,6 +30,7 @@ import {
 } from 'testData';
 import { Repository } from 'typeorm';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
+import { semesters } from '../../../mocks/database/population/data';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 
 describe('Faculty API', function () {
@@ -37,6 +39,7 @@ describe('Faculty API', function () {
   let facultyRepository: Repository<Faculty>;
   let areaRepository: Repository<Area>;
   let testModule: TestingModule;
+  let configService: ConfigService;
   beforeEach(async function () {
     authStub = stub(TestingStrategy.prototype, 'login');
     testModule = await Test.createTestingModule({
@@ -78,6 +81,7 @@ describe('Faculty API', function () {
       .get<Repository<Faculty>>(getRepositoryToken(Faculty));
     areaRepository = testModule
       .get<Repository<Area>>(getRepositoryToken(Area));
+    configService = testModule.get<ConfigService>(ConfigService);
 
     const app = await testModule.createNestApplication()
       .useGlobalPipes(new BadRequestExceptionPipe())
@@ -644,8 +648,13 @@ describe('Faculty API', function () {
     });
     describe('User is authenticated', function () {
       describe('User is a member of the admin group', function () {
+        let absenceRepository: Repository<Absence>;
+        let stubAcademicYear: SinonStub;
         beforeEach(function () {
           authStub.returns(adminUser);
+          absenceRepository = testModule
+            .get<Repository<Absence>>(getRepositoryToken(Absence));
+          stubAcademicYear = stub(ConfigService.prototype, 'academicYear');
         });
         it('updates a faculty member\'s absence entry in the database', async function () {
           const {
@@ -669,6 +678,72 @@ describe('Faculty API', function () {
             });
           strictEqual(status, HttpStatus.NOT_FOUND);
           strictEqual((body.message as string).includes('Absence'), true);
+        });
+        it('allows modification of absences for fall in the current academic year', async function () {
+          stubAcademicYear
+            .get(() => semesters[semesters.length - 1].academicYear);
+          const springAbsenceThisYear = await absenceRepository
+            .createQueryBuilder('a')
+            .leftJoinAndMapOne(
+              'a.semester',
+              Semester, 's',
+              'a."semesterId" = s."id"'
+            )
+            .where(
+              's."academicYear"=:acyr',
+              {
+                acyr: configService.academicYear,
+                term: TERM.FALL,
+              }
+            )
+            .getOne();
+
+          const { status } = await request(api)
+            .put(`/api/faculty/absence/${springAbsenceThisYear.id}`)
+            .send({
+              id: springAbsenceThisYear.id,
+              type: ABSENCE_TYPE.TEACHING_RELIEF,
+            });
+
+          const { updatedAt } = await absenceRepository.findOne(
+            springAbsenceThisYear.id,
+            { select: ['updatedAt'] }
+          );
+          strictEqual(status, HttpStatus.OK);
+          notStrictEqual(updatedAt, springAbsenceThisYear.updatedAt);
+        });
+        it('allows modification of absences for spring in the current academic year', async function () {
+          stubAcademicYear
+            .get(() => semesters[semesters.length - 1].academicYear);
+          const springAbsenceThisYear = await absenceRepository
+            .createQueryBuilder('a')
+            .leftJoinAndMapOne(
+              'a.semester',
+              Semester, 's',
+              'a."semesterId" = s."id"'
+            )
+            .where(
+              's."academicYear"=:acyr',
+              {
+                acyr: configService.academicYear,
+                term: TERM.SPRING,
+              }
+            )
+            .getOne();
+
+          const { status } = await request(api)
+            .put(`/api/faculty/absence/${springAbsenceThisYear.id}`)
+            .send({
+              id: springAbsenceThisYear.id,
+              type: ABSENCE_TYPE.TEACHING_RELIEF,
+            });
+
+          const { updatedAt } = await absenceRepository.findOne(
+            springAbsenceThisYear.id,
+            { select: ['updatedAt'] }
+          );
+          strictEqual(status, HttpStatus.OK);
+          notStrictEqual(updatedAt, springAbsenceThisYear.updatedAt);
         });
       });
       describe('User is not a member of the admin group', function () {
