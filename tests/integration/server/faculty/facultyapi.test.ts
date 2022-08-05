@@ -663,8 +663,8 @@ describe('Faculty API', function () {
           const { status, body } = await request(api)
             .put(`/api/faculty/absence/${uuid}`)
             .send({
-              ...absenceThisYear,
               id: uuid,
+              type: absenceThisYear.type,
             });
           strictEqual(status, HttpStatus.NOT_FOUND);
           strictEqual((body.message as string).includes('Absence'), true);
