@@ -619,33 +619,35 @@ describe('Faculty API', function () {
     });
   });
   describe('PUT /faculty/absence/:id', function () {
-    let facultyWithAbsences: Faculty;
-    let existingAbsence: Absence;
+    let absenceThisYear: Absence;
     let stubAcademicYear: SinonStub;
     let absenceRepository: Repository<Absence>;
     beforeEach(async function () {
-      facultyWithAbsences = await facultyRepository
-        .createQueryBuilder('f')
-        .leftJoinAndMapMany(
-          'f.absences',
-          Absence, 'a',
-          'a."facultyId" = f."id"'
       stubAcademicYear = stub(ConfigService.prototype, 'academicYear');
       stubAcademicYear.get(() => 2021);
       absenceRepository = testModule
         .get<Repository<Absence>>(getRepositoryToken(Absence));
+      absenceThisYear = await absenceRepository.createQueryBuilder('a')
+        .leftJoinAndMapOne(
+          'a.semester',
+          Semester, 's',
+          'a."semesterId" = s."id"'
         )
+        .where(
+          's.academicYear=:acyr',
+          { acyr: configService.academicYear }
+        )
+        .limit(1)
         .getOne();
-      ([existingAbsence] = facultyWithAbsences.absences);
     });
     describe('User is not authenticated', function () {
       it('is inaccessible to unauthenticated users', async function () {
         authStub.rejects(new ForbiddenException());
 
         const response = await request(api)
-          .put(`/api/faculty/absence/${existingAbsence.id}`)
+          .put(`/api/faculty/absence/${absenceThisYear.id}`)
           .send({
-            ...existingAbsence,
+            ...absenceThisYear,
             type: ABSENCE_TYPE.TEACHING_RELIEF,
           });
 
@@ -661,7 +663,7 @@ describe('Faculty API', function () {
           const { status, body } = await request(api)
             .put(`/api/faculty/absence/${uuid}`)
             .send({
-              ...existingAbsence,
+              ...absenceThisYear,
               id: uuid,
             });
           strictEqual(status, HttpStatus.NOT_FOUND);
@@ -733,8 +735,8 @@ describe('Faculty API', function () {
       describe('User is not a member of the admin group', function () {
         it('is inaccessible to unauthorized users', async function () {
           const response = await request(api)
-            .put(`/api/faculty/absence/${existingAbsence.id}`)
-            .send(existingAbsence);
+            .put(`/api/faculty/absence/${absenceThisYear.id}`)
+            .send(absenceThisYear);
 
           strictEqual(response.status, HttpStatus.FORBIDDEN);
         });
