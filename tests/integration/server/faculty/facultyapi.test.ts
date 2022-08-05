@@ -30,7 +30,6 @@ import {
 } from 'testData';
 import { Repository } from 'typeorm';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
-import { semesters } from '../../../mocks/database/population/data';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 
 describe('Faculty API', function () {
