@@ -621,6 +621,7 @@ describe('Faculty API', function () {
   describe('PUT /faculty/absence/:id', function () {
     let facultyWithAbsences: Faculty;
     let existingAbsence: Absence;
+    let stubAcademicYear: SinonStub;
     beforeEach(async function () {
       facultyWithAbsences = await facultyRepository
         .createQueryBuilder('f')
@@ -628,6 +629,8 @@ describe('Faculty API', function () {
           'f.absences',
           Absence, 'a',
           'a."facultyId" = f."id"'
+      stubAcademicYear = stub(ConfigService.prototype, 'academicYear');
+      stubAcademicYear.get(() => 2021);
         )
         .getOne();
       ([existingAbsence] = facultyWithAbsences.absences);
@@ -649,12 +652,10 @@ describe('Faculty API', function () {
     describe('User is authenticated', function () {
       describe('User is a member of the admin group', function () {
         let absenceRepository: Repository<Absence>;
-        let stubAcademicYear: SinonStub;
         beforeEach(function () {
           authStub.returns(adminUser);
           absenceRepository = testModule
             .get<Repository<Absence>>(getRepositoryToken(Absence));
-          stubAcademicYear = stub(ConfigService.prototype, 'academicYear');
         });
         it('updates a faculty member\'s absence entry in the database', async function () {
           const {
@@ -680,8 +681,6 @@ describe('Faculty API', function () {
           strictEqual((body.message as string).includes('Absence'), true);
         });
         it('allows modification of absences for fall in the current academic year', async function () {
-          stubAcademicYear
-            .get(() => semesters[semesters.length - 1].academicYear);
           const springAbsenceThisYear = await absenceRepository
             .createQueryBuilder('a')
             .leftJoinAndMapOne(
@@ -713,8 +712,6 @@ describe('Faculty API', function () {
           notStrictEqual(updatedAt, springAbsenceThisYear.updatedAt);
         });
         it('allows modification of absences for spring in the current academic year', async function () {
-          stubAcademicYear
-            .get(() => semesters[semesters.length - 1].academicYear);
           const springAbsenceThisYear = await absenceRepository
             .createQueryBuilder('a')
             .leftJoinAndMapOne(
