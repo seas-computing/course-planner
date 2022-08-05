@@ -740,19 +740,6 @@ describe('Faculty API', function () {
           notStrictEqual(updatedAt, springAbsenceThisYear.updatedAt);
         });
         it('does not allow modification of absences before the current academic year', async function () {
-          const absenceLastYear = await absenceRepository
-            .createQueryBuilder('a')
-            .select('a.updatedAt')
-            .leftJoinAndMapOne(
-              'a.semester',
-              Semester, 's',
-              'a."semesterId" = s."id"'
-            )
-            .where(
-              's."academicYear"=:acyr',
-              { acyr: (configService.academicYear - 1) }
-            )
-            .getOne();
           const { status } = await request(api)
             .put(`/api/faculty/absence/${absenceLastYear.id}`)
             .send({
