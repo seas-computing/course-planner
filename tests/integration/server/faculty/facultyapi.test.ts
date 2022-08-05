@@ -657,19 +657,6 @@ describe('Faculty API', function () {
           absenceRepository = testModule
             .get<Repository<Absence>>(getRepositoryToken(Absence));
         });
-        it('updates a faculty member\'s absence entry in the database', async function () {
-          const {
-            status,
-            body,
-          } = await request(api)
-            .put(`/api/faculty/absence/${existingAbsence.id}`)
-            .send({
-              ...existingAbsence,
-              type: ABSENCE_TYPE.TEACHING_RELIEF,
-            });
-          strictEqual(status, HttpStatus.OK);
-          notStrictEqual(body.updatedAt, existingAbsence.updatedAt);
-        });
         it('throws a Not Found exception if absence does not exist', async function () {
           const { status, body } = await request(api)
             .put(`/api/faculty/absence/${uuid}`)
