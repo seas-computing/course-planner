@@ -756,6 +756,23 @@ describe('Faculty API', function () {
           strictEqual(status, HttpStatus.BAD_REQUEST);
           deepStrictEqual(updatedAt, absenceLastYear.updatedAt);
         });
+        it('allows modification of absences after the current academic year', async function () {
+          const { status } = await request(api)
+            .put(`/api/faculty/absence/${absenceNextYear.id}`)
+            .send({
+              id: absenceNextYear.id,
+              type: ABSENCE_TYPE.TEACHING_RELIEF,
+            });
+
+          const {
+            updatedAt,
+          } = await absenceRepository.findOne(
+            absenceNextYear.id,
+            { select: ['updatedAt'] }
+          );
+          strictEqual(status, HttpStatus.OK);
+          notDeepStrictEqual(updatedAt, absenceNextYear.updatedAt);
+        });
       });
       describe('User is not a member of the admin group', function () {
         it('is inaccessible to unauthorized users', async function () {
