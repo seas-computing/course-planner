@@ -618,7 +618,9 @@ describe('Faculty API', function () {
     });
   });
   describe('PUT /faculty/absence/:id', function () {
+    let absenceLastYear: Absence;
     let absenceThisYear: Absence;
+    let absenceNextYear: Absence;
     let stubAcademicYear: SinonStub;
     let absenceRepository: Repository<Absence>;
     beforeEach(async function () {
@@ -626,18 +628,25 @@ describe('Faculty API', function () {
       stubAcademicYear.get(() => 2021);
       absenceRepository = testModule
         .get<Repository<Absence>>(getRepositoryToken(Absence));
-      absenceThisYear = await absenceRepository.createQueryBuilder('a')
+      ([
+        absenceLastYear,
+        absenceThisYear,
+        absenceNextYear,
+      ] = await Promise.all([
+        (configService.academicYear - 1),
+        configService.academicYear,
+        (configService.academicYear + 1),
+      ].map((acyr) => absenceRepository.createQueryBuilder('a')
+        .select('a.id')
+        .addSelect('a.updatedAt')
         .leftJoinAndMapOne(
           'a.semester',
           Semester, 's',
           'a."semesterId" = s."id"'
         )
-        .where(
-          's.academicYear=:acyr',
-          { acyr: configService.academicYear }
-        )
+        .where('s.academicYear=:acyr', { acyr })
         .limit(1)
-        .getOne();
+        .getOne())));
     });
     describe('User is not authenticated', function () {
       it('is inaccessible to unauthenticated users', async function () {
