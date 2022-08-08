@@ -28,6 +28,7 @@ import { LocationModule } from 'server/location/location.module';
 import RoomRequest from 'common/dto/room/RoomRequest.dto';
 import flatMap from 'lodash.flatmap';
 import { Repository } from 'typeorm';
+import RoomMeetingResponse from 'common/dto/room/RoomMeetingResponse.dto';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import { rooms } from '../../../mocks/database/population/data/rooms';
@@ -179,7 +180,7 @@ describe('Location API', function () {
       let response: Response;
       context('As an admin user', function () {
         context('With an invalid year', function () {
-          let result: RoomResponse[];
+          let result: RoomMeetingResponse[];
           beforeEach(async function () {
             authStub.resolves(adminUser);
             const invalidYear = '1902';
@@ -260,7 +261,7 @@ describe('Location API', function () {
           });
         });
         context('With valid parameters', function () {
-          let result: RoomResponse[];
+          let result: RoomMeetingResponse[];
           context('Without an excludeParent value', function () {
             beforeEach(async function () {
               authStub.resolves(adminUser);

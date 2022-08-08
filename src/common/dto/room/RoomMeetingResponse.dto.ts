@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export default abstract class RoomResponse {
+export default abstract class RoomMeetingResponse {
   /**
    * The database uuid of the room
    */
@@ -36,4 +36,17 @@ export default abstract class RoomResponse {
     example: 200,
   })
   public capacity: number;
+
+  /**
+   * An array of course titles and non-class meeting titles whose occurrences
+   * overlap with the requested times.
+   *
+   * If the array is empty, there are no courses or non-class meetings that
+   * overlap with the requested times.
+   */
+  @ApiProperty({
+    isArray: true,
+    example: ['AC 209', 'Staff Meeting', 'ES 115', 'AM 218'],
+  })
+  public meetingTitles: string[];
 }
