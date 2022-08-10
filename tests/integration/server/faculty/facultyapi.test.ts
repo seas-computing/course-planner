@@ -8,6 +8,7 @@ import {
 } from 'assert';
 import { ABSENCE_TYPE, AUTH_MODE, TERM } from 'common/constants';
 import { InstructorResponseDTO } from 'common/dto/courses/InstructorResponse.dto';
+import { absenceEnumToTitleCase } from 'common/utils/facultyHelperFunctions';
 import { Request, Response } from 'express';
 import { SessionModule } from 'nestjs-session';
 import { Absence } from 'server/absence/absence.entity';
