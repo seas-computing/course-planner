@@ -914,6 +914,49 @@ describe('Faculty API', function () {
               );
             });
           });
+          describe('updating fall', function () {
+            beforeEach(async function () {
+              const { id: semesterId } = await semesterRepository.findOne({
+                where: { academicYear: thisAcademicYear, term: TERM.FALL },
+              });
+              // Update the absence to be longer active
+              await absenceRepository.createQueryBuilder('a')
+                .update(Absence)
+                .set({ type: ABSENCE_TYPE.NO_LONGER_ACTIVE })
+                .where({ semester: semesterId, faculty: facultyId })
+                .execute();
+              noLongerActiveAbsence = await absenceRepository
+                .findOne({
+                  relations: ['faculty'],
+                  where: { semester: semesterId, faculty: facultyId },
+                });
+            });
+            it('only updates fall', async function () {
+              await request(api)
+                .put(`/api/faculty/absence/${noLongerActiveAbsence.id}`)
+                .send({
+                  id: noLongerActiveAbsence.id,
+                  type: ABSENCE_TYPE.TEACHING_RELIEF,
+                });
+              const [
+                fall,
+                spring,
+              ] = (await absenceRepository.find({
+                select: ['type'],
+                relations: ['semester'],
+                where: { faculty: noLongerActiveAbsence.faculty.id },
+                order: {
+                  type: 'ASC',
+                },
+              }))
+                .filter(({ semester }) => parseInt(semester.academicYear, 10)
+              === thisAcademicYear);
+              console.log(fall, spring);
+
+              deepStrictEqual(fall.type, ABSENCE_TYPE.NO_LONGER_ACTIVE);
+              deepStrictEqual(spring.type, ABSENCE_TYPE.PRESENT);
+            });
+          });
         });
       });
       describe('User is not a member of the admin group', function () {
