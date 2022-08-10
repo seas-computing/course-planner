@@ -685,101 +685,108 @@ describe('Faculty API', function () {
           strictEqual(status, HttpStatus.NOT_FOUND);
           strictEqual((body.message as string).includes('Absence'), true);
         });
-        it('allows modification of absences for fall in the current academic year', async function () {
-          const springAbsenceThisYear = await absenceRepository
-            .createQueryBuilder('a')
-            .leftJoinAndMapOne(
-              'a.semester',
-              Semester, 's',
-              'a."semesterId" = s."id"'
-            )
-            .where(
-              's."academicYear"=:acyr',
-              {
-                acyr: configService.academicYear,
-                term: TERM.FALL,
-              }
-            )
-            .getOne();
+        describe('absences in previous academic years', function () {
+          it('cannot be changed', async function () {
+            const { status } = await request(api)
+              .put(`/api/faculty/absence/${absenceLastYear.id}`)
+              .send({
+                id: absenceLastYear.id,
+                type: ABSENCE_TYPE.TEACHING_RELIEF,
+              });
 
-          const { status } = await request(api)
-            .put(`/api/faculty/absence/${springAbsenceThisYear.id}`)
-            .send({
-              id: springAbsenceThisYear.id,
-              type: ABSENCE_TYPE.TEACHING_RELIEF,
-            });
-
-          const { updatedAt } = await absenceRepository.findOne(
-            springAbsenceThisYear.id,
-            { select: ['updatedAt'] }
-          );
-          strictEqual(status, HttpStatus.OK);
-          notStrictEqual(updatedAt, springAbsenceThisYear.updatedAt);
+            const {
+              updatedAt,
+            } = await absenceRepository.findOne(
+              absenceLastYear.id,
+              { select: ['updatedAt'] }
+            );
+            strictEqual(status, HttpStatus.BAD_REQUEST);
+            deepStrictEqual(updatedAt, absenceLastYear.updatedAt);
+          });
         });
-        it('allows modification of absences for spring in the current academic year', async function () {
-          const springAbsenceThisYear = await absenceRepository
-            .createQueryBuilder('a')
-            .leftJoinAndMapOne(
-              'a.semester',
-              Semester, 's',
-              'a."semesterId" = s."id"'
-            )
-            .where(
-              's."academicYear"=:acyr',
-              {
-                acyr: configService.academicYear,
-                term: TERM.SPRING,
-              }
-            )
-            .getOne();
+        describe('absences in the current academic year', function () {
+          it('allows modification of absences for fall in the current academic year', async function () {
+            const springAbsenceThisYear = await absenceRepository
+              .createQueryBuilder('a')
+              .leftJoinAndMapOne(
+                'a.semester',
+                Semester, 's',
+                'a."semesterId" = s."id"'
+              )
+              .where(
+                's."academicYear"=:acyr',
+                {
+                  acyr: thisAcademicYear,
+                  term: TERM.FALL,
+                }
+              )
+              .getOne();
 
-          const { status } = await request(api)
-            .put(`/api/faculty/absence/${springAbsenceThisYear.id}`)
-            .send({
-              id: springAbsenceThisYear.id,
-              type: ABSENCE_TYPE.TEACHING_RELIEF,
-            });
+            const { status } = await request(api)
+              .put(`/api/faculty/absence/${springAbsenceThisYear.id}`)
+              .send({
+                id: springAbsenceThisYear.id,
+                type: ABSENCE_TYPE.TEACHING_RELIEF,
+              });
 
-          const { updatedAt } = await absenceRepository.findOne(
-            springAbsenceThisYear.id,
-            { select: ['updatedAt'] }
-          );
-          strictEqual(status, HttpStatus.OK);
-          notStrictEqual(updatedAt, springAbsenceThisYear.updatedAt);
+            const { updatedAt } = await absenceRepository.findOne(
+              springAbsenceThisYear.id,
+              { select: ['updatedAt'] }
+            );
+            strictEqual(status, HttpStatus.OK);
+            notStrictEqual(updatedAt, springAbsenceThisYear.updatedAt);
+          });
+          it('allows modification of absences for spring in the current academic year', async function () {
+            const springAbsenceThisYear = await absenceRepository
+              .createQueryBuilder('a')
+              .leftJoinAndMapOne(
+                'a.semester',
+                Semester, 's',
+                'a."semesterId" = s."id"'
+              )
+              .where(
+                's."academicYear"=:acyr',
+                {
+                  acyr: thisAcademicYear,
+                  term: TERM.SPRING,
+                }
+              )
+              .getOne();
+
+            const { status } = await request(api)
+              .put(`/api/faculty/absence/${springAbsenceThisYear.id}`)
+              .send({
+                id: springAbsenceThisYear.id,
+                type: ABSENCE_TYPE.TEACHING_RELIEF,
+              });
+
+            const { updatedAt } = await absenceRepository.findOne(
+              springAbsenceThisYear.id,
+              { select: ['updatedAt'] }
+            );
+            strictEqual(status, HttpStatus.OK);
+            notStrictEqual(updatedAt, springAbsenceThisYear.updatedAt);
+          });
         });
-        it('does not allow modification of absences before the current academic year', async function () {
-          const { status } = await request(api)
-            .put(`/api/faculty/absence/${absenceLastYear.id}`)
-            .send({
-              id: absenceLastYear.id,
-              type: ABSENCE_TYPE.TEACHING_RELIEF,
-            });
+        describe('absences in future academic years', function () {
+          it('allows modification of absences after the current academic year', async function () {
+            const { status } = await request(api)
+              .put(`/api/faculty/absence/${absenceNextYear.id}`)
+              .send({
+                id: absenceNextYear.id,
+                type: ABSENCE_TYPE.TEACHING_RELIEF,
+              });
 
-          const {
-            updatedAt,
-          } = await absenceRepository.findOne(
-            absenceLastYear.id,
-            { select: ['updatedAt'] }
-          );
-          strictEqual(status, HttpStatus.BAD_REQUEST);
-          deepStrictEqual(updatedAt, absenceLastYear.updatedAt);
+            const {
+              updatedAt,
+            } = await absenceRepository.findOne(
+              absenceNextYear.id,
+              { select: ['updatedAt'] }
+            );
+            strictEqual(status, HttpStatus.OK);
+            notDeepStrictEqual(updatedAt, absenceNextYear.updatedAt);
+          });
         });
-        it('allows modification of absences after the current academic year', async function () {
-          const { status } = await request(api)
-            .put(`/api/faculty/absence/${absenceNextYear.id}`)
-            .send({
-              id: absenceNextYear.id,
-              type: ABSENCE_TYPE.TEACHING_RELIEF,
-            });
-
-          const {
-            updatedAt,
-          } = await absenceRepository.findOne(
-            absenceNextYear.id,
-            { select: ['updatedAt'] }
-          );
-          strictEqual(status, HttpStatus.OK);
-          notDeepStrictEqual(updatedAt, absenceNextYear.updatedAt);
         });
       });
       describe('User is not a member of the admin group', function () {
