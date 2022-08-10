@@ -134,7 +134,6 @@ describe('Location API', function () {
         const rawRooms = await locationRepo.createQueryBuilder('r')
           .select('CONCAT_WS(\' \', b.name, r.name)', 'name')
           .leftJoin('r.building', 'b')
-          .leftJoin('b.campus', 'c')
           .getRawMany();
         const expectedRooms = rawRooms.map(({ name }) => <string>name).sort();
         deepStrictEqual(actualRooms, expectedRooms);
