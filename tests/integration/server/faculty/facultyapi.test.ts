@@ -791,12 +791,13 @@ describe('Faculty API', function () {
         describe(`changing FROM ${absenceEnumToTitleCase(ABSENCE_TYPE.NO_LONGER_ACTIVE)}`, function () {
           let noLongerActiveAbsence: Absence;
           let semesterRepository: Repository<Semester>;
+          let facultyId: string;
           beforeEach(async function () {
             // Get faculty member's current absence status for the curent
             // academic year
             semesterRepository = testModule
               .get<Repository<Semester>>(getRepositoryToken(Semester));
-            const { id: facultyId } = await facultyRepository.findOne();
+            ({ id: facultyId } = await facultyRepository.findOne());
             const { id: semesterId } = await semesterRepository.findOne({
               where: { academicYear: thisAcademicYear, term: TERM.SPRING },
             });
@@ -870,6 +871,48 @@ describe('Faculty API', function () {
               absences.every(({ type }) => type === ABSENCE_TYPE.PRESENT),
               true
             );
+          });
+          describe('updating spring', function () {
+            beforeEach(async function () {
+              const { id: semesterId } = await semesterRepository.findOne({
+                where: { academicYear: thisAcademicYear, term: TERM.SPRING },
+              });
+              // Update the absence to be longer active
+              await absenceRepository.createQueryBuilder('a')
+                .update(Absence)
+                .set({ type: ABSENCE_TYPE.NO_LONGER_ACTIVE })
+                .where({ semester: semesterId, faculty: facultyId })
+                .execute();
+              noLongerActiveAbsence = await absenceRepository
+                .findOne({
+                  relations: ['faculty'],
+                  where: { semester: semesterId, faculty: facultyId },
+                });
+            });
+            it('updates both spring and fall', async function () {
+              await request(api)
+                .put(`/api/faculty/absence/${noLongerActiveAbsence.id}`)
+                .send({
+                  id: noLongerActiveAbsence.id,
+                  type: ABSENCE_TYPE.TEACHING_RELIEF,
+                });
+              const absences = (await absenceRepository.find({
+                select: ['type'],
+                relations: ['semester'],
+                where: { faculty: noLongerActiveAbsence.faculty.id },
+                order: {
+                  type: 'ASC',
+                },
+              }))
+                .filter(({ semester }) => parseInt(semester.academicYear, 10)
+              === thisAcademicYear);
+
+              deepStrictEqual(
+                absences
+                  .every(({ type }) => type === ABSENCE_TYPE.PRESENT),
+                true
+              );
+            });
           });
         });
       });
