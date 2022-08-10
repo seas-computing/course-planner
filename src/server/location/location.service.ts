@@ -39,12 +39,9 @@ export class LocationService {
    */
   public async getRoomList(): Promise<RoomResponse[]> {
     return this.roomListingViewRepository
-      .createQueryBuilder()
-      .select('id')
-      .addSelect('name')
-      .addSelect('campus')
-      .addSelect('capacity')
-      .getRawMany();
+      .find({
+        select: ['name', 'campus', 'capacity'],
+      });
   }
 
   /**
