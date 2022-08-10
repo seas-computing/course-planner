@@ -848,6 +848,29 @@ describe('Faculty API', function () {
               absencesAfterUpdate.map(({ type, id }) => ({ type, id }))
             );
           });
+          it(`sets all future absences to ${absenceEnumToTitleCase(ABSENCE_TYPE.PRESENT)}`, async function () {
+            await request(api)
+              .put(`/api/faculty/absence/${noLongerActiveAbsence.id}`)
+              .send({
+                id: noLongerActiveAbsence.id,
+                type: ABSENCE_TYPE.TEACHING_RELIEF,
+              });
+            const absences = (await absenceRepository.find({
+              select: ['type'],
+              relations: ['semester'],
+              where: { faculty: noLongerActiveAbsence.faculty.id },
+              order: {
+                type: 'ASC',
+              },
+            }))
+              .filter(({ semester }) => parseInt(semester.academicYear, 10)
+                > thisAcademicYear);
+
+            deepStrictEqual(
+              absences.every(({ type }) => type === ABSENCE_TYPE.PRESENT),
+              true
+            );
+          });
         });
       });
       describe('User is not a member of the admin group', function () {
