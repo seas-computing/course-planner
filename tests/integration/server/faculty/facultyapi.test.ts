@@ -951,7 +951,6 @@ describe('Faculty API', function () {
               }))
                 .filter(({ semester }) => parseInt(semester.academicYear, 10)
               === thisAcademicYear);
-              console.log(fall, spring);
 
               deepStrictEqual(fall.type, ABSENCE_TYPE.NO_LONGER_ACTIVE);
               deepStrictEqual(spring.type, ABSENCE_TYPE.PRESENT);
