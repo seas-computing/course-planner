@@ -787,6 +787,66 @@ describe('Faculty API', function () {
             notDeepStrictEqual(updatedAt, absenceNextYear.updatedAt);
           });
         });
+        describe(`changing FROM ${absenceEnumToTitleCase(ABSENCE_TYPE.NO_LONGER_ACTIVE)}`, function () {
+          let noLongerActiveAbsence: Absence;
+          let semesterRepository: Repository<Semester>;
+          beforeEach(async function () {
+            // Get faculty member's current absence status for the curent
+            // academic year
+            semesterRepository = testModule
+              .get<Repository<Semester>>(getRepositoryToken(Semester));
+            const { id: facultyId } = await facultyRepository.findOne();
+            const { id: semesterId } = await semesterRepository.findOne({
+              where: { academicYear: thisAcademicYear, term: TERM.SPRING },
+            });
+            // Update the absence to be longer active
+            await absenceRepository.createQueryBuilder('a')
+              .update(Absence)
+              .set({ type: ABSENCE_TYPE.NO_LONGER_ACTIVE })
+              .where({ semester: semesterId, faculty: facultyId })
+              .execute();
+
+            // Find absence that is currently NLA in the current academic year
+            noLongerActiveAbsence = await absenceRepository
+              .findOne({
+                relations: ['faculty'],
+                where: { semester: semesterId, faculty: facultyId },
+              });
+          });
+          it('does not modify past absences', async function () {
+            const absencesBeforeUpdate = (await absenceRepository.find({
+              select: ['type'],
+              relations: ['semester'],
+              where: { faculty: noLongerActiveAbsence.faculty.id },
+              order: {
+                type: 'ASC',
+              },
+            }))
+              .filter(({ semester }) => parseInt(semester.academicYear, 10)
+                < thisAcademicYear);
+
+            await request(api)
+              .put(`/api/faculty/absence/${noLongerActiveAbsence.id}`)
+              .send({
+                id: noLongerActiveAbsence.id,
+                type: ABSENCE_TYPE.TEACHING_RELIEF,
+              });
+            const absencesAfterUpdate = (await absenceRepository.find({
+              select: ['type'],
+              relations: ['semester'],
+              where: { faculty: noLongerActiveAbsence.faculty.id },
+              order: {
+                type: 'ASC',
+              },
+            }))
+              .filter(({ semester }) => parseInt(semester.academicYear, 10)
+                < thisAcademicYear);
+
+            deepStrictEqual(
+              absencesBeforeUpdate.map(({ type, id }) => ({ type, id })),
+              absencesAfterUpdate.map(({ type, id }) => ({ type, id }))
+            );
+          });
         });
       });
       describe('User is not a member of the admin group', function () {
