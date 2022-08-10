@@ -33,6 +33,10 @@ export class LocationService {
   @InjectRepository(RoomBookingInfoView)
   private readonly roomBookingRepository: Repository<RoomBookingInfoView>;
 
+  /**
+   * Retrieves all rooms in the database along with their campus and capacity
+   * information.
+   */
   public async getRoomList(): Promise<RoomResponse[]> {
     return this.roomListingViewRepository
       .createQueryBuilder()
