@@ -625,19 +625,25 @@ describe('Faculty API', function () {
     let absenceNextYear: Absence;
     let stubAcademicYear: SinonStub;
     let absenceRepository: Repository<Absence>;
+    let lastAcademicYear: number;
+    let thisAcademicYear: number;
+    let nextAcademicYear: number;
     beforeEach(async function () {
       stubAcademicYear = stub(ConfigService.prototype, 'academicYear');
       stubAcademicYear.get(() => 2021);
       absenceRepository = testModule
         .get<Repository<Absence>>(getRepositoryToken(Absence));
+      lastAcademicYear = configService.academicYear - 1;
+      thisAcademicYear = configService.academicYear;
+      nextAcademicYear = configService.academicYear + 1;
       ([
         absenceLastYear,
         absenceThisYear,
         absenceNextYear,
       ] = await Promise.all([
-        (configService.academicYear - 1),
-        configService.academicYear,
-        (configService.academicYear + 1),
+        lastAcademicYear,
+        thisAcademicYear,
+        nextAcademicYear,
       ].map((acyr) => absenceRepository.createQueryBuilder('a')
         .select('a.id')
         .addSelect('a.updatedAt')
