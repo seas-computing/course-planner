@@ -127,7 +127,7 @@ describe('Location API', function () {
       });
       it('should return a nonempty array of data', function () {
         strictEqual(Array.isArray(result), true);
-        notStrictEqual(result, 0);
+        notStrictEqual(result.length, 0);
       });
       it('returns all rooms in the database', async function () {
         const actualRooms = result.map((room) => room.name).sort();
