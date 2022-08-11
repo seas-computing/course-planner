@@ -1,4 +1,4 @@
-import RoomResponse from 'common/dto/room/RoomResponse.dto';
+import RoomMeetingResponse from 'common/dto/room/RoomMeetingResponse.dto';
 import { DAY, TERM } from '../../constants';
 import RoomRequest from '../../dto/room/RoomRequest.dto';
 
@@ -9,7 +9,7 @@ import RoomRequest from '../../dto/room/RoomRequest.dto';
 /**
  * A room response where another course has already booked the room
  */
-export const bookedRoom: RoomResponse = {
+export const bookedRoom: RoomMeetingResponse = {
   id: '608ec29b-0e9e-4efe-87b6-73a52f098f62',
   name: 'Pierce Hall 121',
   campus: 'Cambridge',
@@ -20,7 +20,7 @@ export const bookedRoom: RoomResponse = {
 /**
  * A room response where multiple courses have already booked the room
  */
-export const multiBookedRoom: RoomResponse = {
+export const multiBookedRoom: RoomMeetingResponse = {
   id: '17fe9fe8-aaed-4757-90f4-31c38b51aa17',
   name: 'Maxwell Dworkin G125',
   campus: 'Cambridge',
@@ -30,7 +30,7 @@ export const multiBookedRoom: RoomResponse = {
 /**
  * A room response where the room is available
  */
-export const freeRoom: RoomResponse = {
+export const freeRoom: RoomMeetingResponse = {
   id: 'e559c201-1913-4698-888f-91e3f13c8498',
   name: 'SEC 2121',
   campus: 'Allston',
@@ -41,7 +41,7 @@ export const freeRoom: RoomResponse = {
 /**
  * A room response for an FAS room with no meetings booked
  */
-export const freeFASRoom: RoomResponse = {
+export const freeFASRoom: RoomMeetingResponse = {
   id: '7a1918d1-173c-4628-baac-cd6cf10a9b95',
   name: 'Science Center Auditorium C',
   campus: 'FAS',
@@ -52,7 +52,7 @@ export const freeFASRoom: RoomResponse = {
 /**
  * A room response for an FAS room with meetings booked
  */
-export const bookedFASRoom: RoomResponse = {
+export const bookedFASRoom: RoomMeetingResponse = {
   id: '6b923cb4-0215-4fa6-b7cf-db2b0b456b45',
   name: 'William James Hall B101',
   campus: 'FAS',

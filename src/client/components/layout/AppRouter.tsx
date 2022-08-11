@@ -13,6 +13,7 @@ import {
   MultiYearPlan,
   Schedule,
   NonClassMeetings,
+  RoomSchedule,
 } from '../pages';
 import { useGroupGuard } from '../../hooks/useGroupGuard';
 import ForbiddenPage from '../pages/ForbiddenPage';
@@ -46,6 +47,7 @@ const AppRouter: FunctionComponent = (): ReactElement => {
         <Redirect exact from="/" to="/four-year-plan" />
         <Route exact path="/four-year-plan" component={MultiYearPlan} />
         <Route exact path="/schedule" component={Schedule} />
+        <Route exact path="/room-schedule" component={RoomSchedule} />
         <Route
           exact
           path={[
@@ -87,6 +89,7 @@ const AppRouter: FunctionComponent = (): ReactElement => {
         />
         <Route exact path="/four-year-plan" component={MultiYearPlan} />
         <Route exact path="/schedule" component={Schedule} />
+        <Route exact path="/room-schedule" component={RoomSchedule} />
         <Route
           exact
           path="/course-admin"
@@ -117,6 +120,7 @@ const AppRouter: FunctionComponent = (): ReactElement => {
           '/faculty',
           '/four-year-plan',
           '/schedule',
+          '/room-schedule',
           '/course-admin',
           '/faculty-admin',
         ]}

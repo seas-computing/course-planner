@@ -167,6 +167,16 @@ describe('Application Routing and Authorization', function () {
           return findByText('Select Semester');
         });
       });
+      context('/room-schedule', function () {
+        it('renders the Room Schedule component', function () {
+          const { findByText } = render(
+            <MemoryRouter initialEntries={['/room-schedule']}>
+              <App />
+            </MemoryRouter>
+          );
+          return findByText('Select a room');
+        });
+      });
       context('Undefined routes', function () {
         it('renders the NoMatch component', function () {
           const { findByText } = render(
@@ -250,6 +260,16 @@ describe('Application Routing and Authorization', function () {
             </MemoryRouter>
           );
           return findByText('Select Semester');
+        });
+      });
+      context('/room-schedule', function () {
+        it('renders the Room Schedule component', function () {
+          const { findByText } = render(
+            <MemoryRouter initialEntries={['/room-schedule']}>
+              <App />
+            </MemoryRouter>
+          );
+          return findByText('Select a room');
         });
       });
       context('Undefined routes', function () {
@@ -343,6 +363,16 @@ describe('Application Routing and Authorization', function () {
           return findByText(/401/);
         });
       });
+      context('/room-schedule', function () {
+        it('renders the UnauthorizedPage component', function () {
+          const { findByText } = render(
+            <MemoryRouter initialEntries={['/room-schedule']}>
+              <App />
+            </MemoryRouter>
+          );
+          return findByText(/401/);
+        });
+      });
       context('Undefined routes', function () {
         it('renders the NoMatch component', function () {
           const { findByText } = render(
@@ -427,6 +457,16 @@ describe('Application Routing and Authorization', function () {
             </MemoryRouter>
           );
           return findByText('Select Semester');
+        });
+      });
+      context('/room-schedule', function () {
+        it('renders the Room Schedule component', function () {
+          const { findByText } = render(
+            <MemoryRouter initialEntries={['/room-schedule']}>
+              <App />
+            </MemoryRouter>
+          );
+          return findByText('Select a room');
         });
       });
       context('Undefined routes', function () {
