@@ -24,6 +24,7 @@ import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
 import { SemesterService } from 'server/semester/semester.service';
 import { EntityNotFoundError } from 'typeorm';
 import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto';
+import { RoomScheduleResponseDTO } from 'common/dto/schedule/roomSchedule.dto';
 import { CourseInstanceService } from './courseInstance.service';
 import { InstructorResponseDTO } from '../../common/dto/courses/InstructorResponse.dto';
 import { RequireGroup } from '../auth/group.guard';
@@ -120,6 +121,34 @@ export class CourseInstanceController {
       return [];
     }
     return this.ciService.getCourseSchedule(term, year);
+  }
+
+  /**
+   * Retrieves the course schedule information for a given room and term
+   */
+
+  @ApiTags('Course Instance')
+  @ApiOperation({ summary: 'Retrieve Course Schedule Data for a given room and term' })
+  @ApiOkResponse({
+    type: RoomScheduleResponseDTO,
+    description: 'An array of the schedule data for a given room and term',
+    isArray: true,
+  })
+  @Get('/room-schedule')
+  public async getRoomScheduleData(
+    @Query('roomId') roomId: string,
+      @Query('term') term: TERM,
+      @Query('year') year: string
+  ): Promise<RoomScheduleResponseDTO[]> {
+    const validTerms = Object.values(TERM);
+    if (!validTerms.includes(term)) {
+      throw new BadRequestException(`"term" must be "${validTerms.join('" or "')}"`);
+    }
+    const validYears = await this.semesterService.getYearList();
+    if (!validYears.includes(year)) {
+      return [];
+    }
+    return this.ciService.getRoomSchedule(roomId, term, year);
   }
 
   /**
