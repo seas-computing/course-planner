@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { NotFoundException, Inject } from '@nestjs/common';
 import { Absence } from 'server/absence/absence.entity';
-import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
 import { AbsenceRequestDTO } from 'common/dto/faculty/AbsenceRequest.dto';
 import { ABSENCE_TYPE, TERM } from 'common/constants';
 import { ConfigService } from 'server/config/config.service';

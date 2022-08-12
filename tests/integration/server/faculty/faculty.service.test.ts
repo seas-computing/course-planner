@@ -4,13 +4,9 @@ import { ConfigService } from 'server/config/config.service';
 import { ConfigModule } from 'server/config/config.module';
 import { TypeOrmModule, TypeOrmModuleOptions, getRepositoryToken } from '@nestjs/typeorm';
 import { FacultyModule } from 'server/faculty/faculty.module';
-import { deepStrictEqual, notStrictEqual, strictEqual } from 'assert';
+import { notStrictEqual, strictEqual } from 'assert';
 import { Not, Repository } from 'typeorm';
 import { Faculty } from 'server/faculty/faculty.entity';
-import {
-  appliedMathFacultyMemberRequest,
-  bioengineeringFacultyMember,
-} from 'testData';
 import { Area } from 'server/area/area.entity';
 import { AuthModule } from 'server/auth/auth.module';
 import { AUTH_MODE, ABSENCE_TYPE, TERM } from 'common/constants';
