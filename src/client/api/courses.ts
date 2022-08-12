@@ -5,6 +5,7 @@ import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse
 import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
 import { TERM } from 'common/constants';
 import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto';
+import { RoomScheduleResponseDTO } from 'common/dto/schedule/roomSchedule.dto';
 import request from './request';
 import { InstructorResponseDTO } from '../../common/dto/courses/InstructorResponse.dto';
 import { InstructorRequestDTO } from '../../common/dto/courses/InstructorRequest.dto';
@@ -53,6 +54,21 @@ export const getCourseScheduleForSemester = async (
   const response = await request
     .get(`/api/course-instances/schedule?year=${calendarYear}&term=${term}`);
   return response.data as ScheduleViewResponseDTO[];
+};
+
+/**
+ * Given a room id, calendar year, and term, this will retrieve the course
+ * information for the courses that will occur in the requested room and
+ * semester.
+ */
+export const getRoomScheduleForSemester = async (
+  roomId: string,
+  calendarYear: number,
+  term: TERM
+): Promise<RoomScheduleResponseDTO[]> => {
+  const response = await request
+    .get(`/api/course-instances/room-schedule?roomId=${roomId}?term=${term}&year=${calendarYear}`);
+  return response.data as RoomScheduleResponseDTO[];
 };
 
 /**
