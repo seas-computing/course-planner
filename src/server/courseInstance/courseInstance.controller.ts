@@ -22,9 +22,11 @@ import { ConfigService } from 'server/config/config.service';
 import { NUM_YEARS, TERM, GROUP } from 'common/constants';
 import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
 import { SemesterService } from 'server/semester/semester.service';
-import { EntityNotFoundError } from 'typeorm';
+import { EntityNotFoundError, Repository } from 'typeorm';
 import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto';
 import { RoomScheduleResponseDTO } from 'common/dto/schedule/roomSchedule.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Room } from 'server/location/room.entity';
 import { CourseInstanceService } from './courseInstance.service';
 import { InstructorResponseDTO } from '../../common/dto/courses/InstructorResponse.dto';
 import { RequireGroup } from '../auth/group.guard';
@@ -41,6 +43,9 @@ export class CourseInstanceController {
 
   @Inject(ConfigService)
   private readonly configService: ConfigService;
+
+  @InjectRepository(Room)
+  private roomRepository: Repository<Room>;
 
   /**
    * Responds with an aggregated list of courses and their instances.
@@ -140,6 +145,19 @@ export class CourseInstanceController {
       @Query('term') term: TERM,
       @Query('year') year: string
   ): Promise<RoomScheduleResponseDTO[]> {
+    try {
+      await this.roomRepository
+        .findOneOrFail({
+          where: {
+            id: roomId,
+          },
+        });
+    } catch (e) {
+      if (e instanceof EntityNotFoundError) {
+        throw new NotFoundException('The requested room does not exist');
+      }
+      throw e;
+    }
     const validTerms = Object.values(TERM);
     if (!validTerms.includes(term)) {
       throw new BadRequestException(`"term" must be "${validTerms.join('" or "')}"`);
