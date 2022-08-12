@@ -1,4 +1,4 @@
-import { LocationAPI } from 'client/api/rooms';
+import { LocationAPI } from 'client/api';
 import { AppMessage, MESSAGE_TYPE, MESSAGE_ACTION } from 'client/classes';
 import { MenuFlex } from 'client/components/general';
 import { VerticalSpace } from 'client/components/layout';
