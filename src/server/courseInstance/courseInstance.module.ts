@@ -15,6 +15,7 @@ import { CourseInstance } from './courseinstance.entity';
 import { Faculty } from '../faculty/faculty.entity';
 import { FacultyCourseInstance } from './facultycourseinstance.entity';
 import { CourseInstanceListingView } from './CourseInstanceListingView.entity';
+import { RoomScheduleBlockView } from './RoomScheduleBlockView.entity';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { CourseInstanceListingView } from './CourseInstanceListingView.entity';
       ScheduleEntryView,
       CourseInstanceListingView,
       SemesterView,
+      RoomScheduleBlockView,
     ]),
     SemesterModule,
   ],
