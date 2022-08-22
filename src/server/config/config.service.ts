@@ -32,6 +32,7 @@ import { RedisStore } from 'connect-redis';
 import { NonClassEventView } from 'server/nonClassEvent/NonClassEvent.view.entity';
 import { NonClassParentView } from 'server/nonClassEvent/NonClassParentView.entity';
 import { ClientOpts } from 'redis';
+import { RoomScheduleBlockView } from 'server/courseInstance/RoomScheduleBlockView.entity';
 import LOG_LEVEL from '../../common/constants/logLevels';
 import { ScheduleBlockView } from '../courseInstance/ScheduleBlockView.entity';
 import { ScheduleEntryView } from '../courseInstance/ScheduleEntryView.entity';
@@ -201,6 +202,7 @@ class ConfigService {
         Semester,
         SemesterView,
         View,
+        RoomScheduleBlockView,
       ],
     };
   }
