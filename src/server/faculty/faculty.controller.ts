@@ -146,28 +146,29 @@ export class FacultyController {
   })
   public async updateFacultyAbsence(@Body() absenceReqInfo: AbsenceRequestDTO):
   Promise<AbsenceResponseDTO> {
-    try {
-      // Throws an EntityNotFoundError if the absence doesn't exist. This
-      // gets caught and re-thrown as a 404
-      const absence = await this.absenceRepository
-        .findOneOrFail({
-          relations: [
-            'semester',
-            'faculty',
-            'faculty.absences',
-            'faculty.absences.semester',
-          ],
-          where: {
-            id: absenceReqInfo.id,
-          },
-        });
-
-      if (
+    const absence = await this.absenceRepository.findOne({
+      relations: [
+        'semester',
+        'faculty',
+        'faculty.absences',
+        'faculty.absences.semester',
+      ],
+      where: {
+        id: absenceReqInfo.id,
+      },
+    });
+    if (!absence) {
+      throw new NotFoundException('The entered Absence does not exist');
+    }
+    if (
+      absence?.semester?.academicYear && (
         parseInt(absence.semester.academicYear, 10)
-          < this.configService.academicYear
-      ) {
-        throw new BadRequestException('Cannot update absence for previous academic year');
-      }
+        < this.configService.academicYear
+      )
+    ) {
+      throw new BadRequestException('Cannot update absence for previous academic year');
+    }
+    try {
       return await this.facultyService.updateFacultyAbsences({
         ...absence,
         ...absenceReqInfo,

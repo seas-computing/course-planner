@@ -6,6 +6,8 @@ import { bioengineeringFacultyMember, appliedMathFacultyMember } from 'testData'
 import { Semester } from 'server/semester/semester.entity';
 import { FacultyService } from '../faculty.service';
 import { Faculty } from '../faculty.entity';
+import { ConfigModule } from 'server/config/config.module';
+import { Absence } from 'server/absence/absence.entity';
 
 const mockQueryBuilder = {
   leftJoinAndSelect: stub().returnsThis(),
@@ -23,7 +25,12 @@ describe('Faculty service', function () {
 
   beforeEach(async function () {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [ConfigModule],
       providers: [
+        {
+          provide: getRepositoryToken(Absence),
+          useValue: {},
+        },
         {
           provide: getRepositoryToken(Semester),
           useValue: {},

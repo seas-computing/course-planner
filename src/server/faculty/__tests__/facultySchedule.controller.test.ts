@@ -17,6 +17,7 @@ import { facultyAbsenceRequest, facultyAbsenceResponse } from 'testData';
 import { ABSENCE_TYPE } from 'common/constants';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
+import { ConfigModule } from 'server/config/config.module';
 import { FacultyController } from '../faculty.controller';
 import { FacultyScheduleService } from '../facultySchedule.service';
 import { Faculty } from '../faculty.entity';
@@ -41,10 +42,11 @@ describe('Faculty Schedule Controller', function () {
     getYearListStub = stub();
     updateFacultyAbsencesStub = stub();
     mockAbsenceRepository = {
-      findOneOrFail: stub(),
+      findOne: stub(),
       save: stub(),
     };
     const testModule = await Test.createTestingModule({
+      imports: [ConfigModule],
       controllers: [FacultyController],
       providers: [
         {
@@ -154,7 +156,7 @@ describe('Faculty Schedule Controller', function () {
       context('when absence record exists', function () {
         beforeEach(function () {
           mockAbsenceRepository
-            .findOneOrFail
+            .findOne
             .resolves(facultyAbsenceResponse);
           mockAbsenceRepository.save.resolves(updatedAbsence);
           updateFacultyAbsencesStub.resolves(updatedAbsence);
@@ -184,7 +186,7 @@ describe('Faculty Schedule Controller', function () {
       context('when there are other errors', function () {
         it('allows other error types to bubble up', async function () {
           mockAbsenceRepository
-            .findOneOrFail
+            .findOne
             .rejects(new InternalServerErrorException());
           try {
             await fsController
