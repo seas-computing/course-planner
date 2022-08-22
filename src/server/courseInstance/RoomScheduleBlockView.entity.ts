@@ -20,6 +20,7 @@ import { CourseInstance } from './courseinstance.entity';
     .addSelect('c."isUndergraduate"', 'isUndergraduate')
     .addSelect('m.day', 'weekday')
     .addSelect('m."roomId"', 'roomId')
+    .addSelect('ci.id', 'courseInstanceId')
     .addSelect('s."academicYear"', 'calendarYear')
     .addSelect('s.term', 'term')
     .addSelect('EXTRACT(HOUR FROM m."startTime")', 'startHour')
@@ -32,12 +33,6 @@ import { CourseInstance } from './courseinstance.entity';
     .leftJoin(CourseInstance, 'ci', 'ci."courseId" = c.id')
     .innerJoin(Semester, 's', 's.id = ci."semesterId"')
     .innerJoin(Meeting, 'm', 'm."courseInstanceId" = ci.id')
-    .leftJoinAndMapMany(
-      'ci.faculty',
-      FacultyListingView,
-      'instructors',
-      'instructors."courseInstanceId" = ci.id'
-    )
     .where(`c."isSEAS" <> '${IS_SEAS.N}'`),
 })
 export class RoomScheduleBlockView {
@@ -67,8 +62,7 @@ export class RoomScheduleBlockView {
   /**
    * The instructors associated with the course instance
    */
-  @ViewColumn()
-  public instructors: RoomScheduleInstructors[];
+  public instructors: FacultyListingView[];
 
   /**
    * From [[Course]]
@@ -139,26 +133,4 @@ export class RoomScheduleBlockView {
    */
   @ViewColumn()
   public duration: number;
-
-  /**
-   * From [[Faculty]]
-   * A concatenation of the form lastName, firstName
-   */
-  @ViewColumn()
-  public displayName: string;
-
-  /**
-   * From [[Faculty]]
-   * Notes specific to the faculty member outlining preferences and additional information
-   */
-  @ViewColumn()
-  public notes: string;
-
-  /**
-   * From [[FacultyCourseInstance]]
-   * An index associated with the instructor that indicates what their order is
-   * in relation to other instructors of the same course instance.
-   */
-  @ViewColumn()
-  public instructorOrder: number;
 }
