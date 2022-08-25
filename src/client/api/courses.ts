@@ -102,4 +102,5 @@ export const CourseAPI = {
   getCourseScheduleForSemester,
   updateInstructorList,
   updateCourseInstance,
+  getRoomScheduleForSemester,
 };
