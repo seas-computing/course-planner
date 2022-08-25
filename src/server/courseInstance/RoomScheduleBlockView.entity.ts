@@ -1,5 +1,4 @@
 import { DAY, IS_SEAS, TERM } from 'common/constants';
-import { RoomScheduleInstructors } from 'common/dto/schedule/roomSchedule.dto';
 import { Course } from 'server/course/course.entity';
 import { FacultyListingView } from 'server/faculty/FacultyListingView.entity';
 import { Meeting } from 'server/meeting/meeting.entity';
@@ -62,7 +61,7 @@ export class RoomScheduleBlockView {
   /**
    * The instructors associated with the course instance
    */
-  public instructors: FacultyListingView[];
+  public faculty: FacultyListingView[];
 
   /**
    * From [[Course]]
@@ -84,6 +83,13 @@ export class RoomScheduleBlockView {
    */
   @ViewColumn()
   public roomId: string;
+
+  /**
+   * Many [[CourseInstance]]
+   * The ID of the course instance used to join the course instance table to
+   * the [[FacultyListingView]] in the service.
+   */
+  public courseInstanceId: string;
 
   /**
    * From [[Semester]]

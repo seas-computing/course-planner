@@ -70,7 +70,7 @@ export abstract class RoomScheduleResponseDTO {
     ],
     default: [],
   })
-  public instructors: RoomScheduleInstructors[] = [];
+  public faculty: RoomScheduleInstructors[] = [];
 
   @ApiProperty({
     enum: DAY,
