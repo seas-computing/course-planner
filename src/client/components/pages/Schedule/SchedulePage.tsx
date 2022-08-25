@@ -24,7 +24,7 @@ const FIRST_HOUR = 8;
 const LAST_HOUR = 22;
 
 /** Describes the currently selected semester */
-interface SemesterSelection {
+export interface SemesterSelection {
   term: TERM;
   calendarYear: number;
 }
