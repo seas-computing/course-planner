@@ -2,7 +2,7 @@ import { getRoomScheduleForSemester, LocationAPI } from 'client/api';
 import { AppMessage, MESSAGE_TYPE, MESSAGE_ACTION } from 'client/classes';
 import { MenuFlex } from 'client/components/general';
 import { VerticalSpace } from 'client/components/layout';
-import { MessageContext } from 'client/context';
+import { MessageContext, MetadataContext } from 'client/context';
 import { useStoredState } from 'client/hooks/useStoredState';
 import { DAY, TERM } from 'common/constants';
 import { dayEnumToString } from 'common/constants/day';
@@ -10,7 +10,14 @@ import RoomResponse from 'common/dto/room/RoomResponse.dto';
 import { RoomScheduleResponseDTO } from 'common/dto/schedule/roomSchedule.dto';
 import { PGTime } from 'common/utils/PGTime';
 import { termEnumToTitleCase } from 'common/utils/termHelperFunctions';
-import { Combobox, LoadSpinner, NoteText } from 'mark-one';
+import { toTitleCase } from 'common/utils/util';
+import {
+  Combobox,
+  Dropdown,
+  LoadSpinner,
+  NoteText,
+  POSITION,
+} from 'mark-one';
 import React, {
   FunctionComponent, useCallback, useContext, useEffect, useState,
 } from 'react';
@@ -62,10 +69,11 @@ const RoomSchedule: FunctionComponent = () => {
    * Provides the current Academic Year from the server
    * Later, we may add the current Term to metadata
    */
-  // const { currentAcademicYear, semesters } = useContext(MetadataContext);
+  const { currentAcademicYear, semesters } = useContext(MetadataContext);
   // This hardcoded academic year will be replaced with the above. Since there
   // is no current data for Fall 2022, we are using 2020 as the year for now.
-  const currentAcademicYear = 2020;
+
+  // const currentAcademicYear = 2020;
 
   /**
    * Keeps track of the currently selected term
@@ -79,6 +87,33 @@ const RoomSchedule: FunctionComponent = () => {
    * Whether an API request is in progress
    */
   const [isFetching, setFetching] = useState<boolean>(false);
+
+  /**
+   * Map the metadata semesters into Dropdown-compatible options
+   */
+  const semesterOptions = semesters
+    .map((semester) => ({
+      value: semester,
+      label: toTitleCase(semester),
+    }));
+
+  /**
+   * Update handler for the dropdown, which passes the selected term/year combo
+   * into the state value
+   */
+  const updateTerm = ({
+    target: {
+      value,
+    },
+  }: React.ChangeEvent<HTMLSelectElement>) => {
+    if (value) {
+      const [term, year] = value.split(' ');
+      setSelectedSemester({
+        term: (term.toUpperCase() === TERM.SPRING) ? TERM.SPRING : TERM.FALL,
+        calendarYear: parseInt(year, 10),
+      });
+    }
+  };
 
   /**
    * Maintain the complete room schedule data from the API in state
@@ -182,9 +217,15 @@ const RoomSchedule: FunctionComponent = () => {
         <MenuFlex>
           {selectedSemester && (
             <>
-              <NoteText>
-                {`Current Semester: ${selectedSemester.term} ${selectedSemester.calendarYear}`}
-              </NoteText>
+              <Dropdown
+                id="room-schedule-semester-selector"
+                name="room-schedule-semester-selector"
+                label="Select Semester"
+                labelPosition={POSITION.LEFT}
+                value={`${selectedSemester.term} ${selectedSemester.calendarYear}`}
+                options={semesterOptions}
+                onChange={updateTerm}
+              />
               <NoteText>
                 {currentRoom.displayName
                   ? `Current Room: ${currentRoom.displayName}`
