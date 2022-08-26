@@ -10,7 +10,7 @@ export const testRoomScheduleData: RoomScheduleResponseDTO[] = [
     catalogNumber: 'AM 10',
     title: 'Applied Math for Computation',
     isUndergraduate: true,
-    instructors: [
+    faculty: [
       {
         id: '5c8e015f-eae6-4586-9eb0-fc7d243403bf',
         displayName: 'Rogers, Chris',
@@ -36,7 +36,7 @@ export const testRoomScheduleData: RoomScheduleResponseDTO[] = [
     catalogNumber: 'CS 226',
     title: 'Sketching Algorithms for Big Data',
     isUndergraduate: false,
-    instructors: [
+    faculty: [
       {
         id: '907bcf6a-7000-449d-ba54-16f9954ee4ba',
         displayName: 'Malan, David',
@@ -62,7 +62,7 @@ export const testRoomScheduleData: RoomScheduleResponseDTO[] = [
     catalogNumber: 'CHEM 060',
     title: 'Foundations of Physical Chemistry',
     isUndergraduate: true,
-    instructors: [
+    faculty: [
       {
         id: 'cb61d580-646a-487e-9151-6f0ee6fd692e',
         displayName: 'Tamer, Elie',
