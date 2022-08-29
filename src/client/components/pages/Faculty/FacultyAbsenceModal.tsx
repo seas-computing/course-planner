@@ -204,6 +204,8 @@ FunctionComponent<AbsenceModalProps> = ({
                   const axiosError = error.response.data as Error;
                   setAbsenceErrorMessage(axiosError.message);
                 }
+              } else {
+                setAbsenceErrorMessage('Something went wrong. If the error persists, please contact SEAS Computing');
               }
             }
           }}
