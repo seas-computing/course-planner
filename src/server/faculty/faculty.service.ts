@@ -109,12 +109,12 @@ export class FacultyService {
       absenceYear += 1;
     }
     // Update the absences, FALL will not be updated here.
-    const futureAbsences = existingAbsence.faculty.absences.map((absence) => {
-      if (Number(absence.semester.academicYear) >= absenceYear) {
-        return { ...absence, type: absenceInfo.type };
-      }
-      return { ...absence };
-    });
+    const futureAbsences = existingAbsence.faculty.absences
+      .map((absence) => this.absenceRepository.create({
+        ...absence,
+        type: (Number(absence.semester.academicYear) >= absenceYear)
+          ? absenceInfo.type : absence.type,
+      }));
     // Save the updated future absences only for no longer active
     if (absenceReqInfo.type === ABSENCE_TYPE.NO_LONGER_ACTIVE
       || existingAbsence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE) {
