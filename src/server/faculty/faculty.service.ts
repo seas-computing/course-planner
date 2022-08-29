@@ -6,6 +6,7 @@ import { Absence } from 'server/absence/absence.entity';
 import { AbsenceRequestDTO } from 'common/dto/faculty/AbsenceRequest.dto';
 import { ABSENCE_TYPE, TERM } from 'common/constants';
 import { ConfigService } from 'server/config/config.service';
+import { absenceEnumToTitleCase } from 'common/utils/facultyHelperFunctions';
 import { Faculty } from './faculty.entity';
 import { InstructorResponseDTO } from '../../common/dto/courses/InstructorResponse.dto';
 
@@ -91,7 +92,7 @@ export class FacultyService {
       const validAbsenceYear = this.check_absence(semesterTerm,
         selectAcademicYear, this.configService.academicYear);
       if (!validAbsenceYear) {
-        throw new Error('Can not update previous NO_LONGER_ACTIVE absence');
+        throw new Error(`Can not update previous ${absenceEnumToTitleCase(ABSENCE_TYPE.NO_LONGER_ACTIVE.toLowerCase())} absence`);
       }
       if (existingAbsence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE
         && absenceInfo.type !== existingAbsence.type) {
