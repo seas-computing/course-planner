@@ -69,13 +69,10 @@ export class FacultyService {
   }
 
   public async updateFacultyAbsences(
-    absenceReqInfo: AbsenceRequestDTO,
-    academicYear?:string
+    absenceReqInfo: AbsenceRequestDTO
   ): Promise<Absence> {
     let existingAbsence: Absence;
     let absenceInfo: AbsenceRequestDTO = { ...absenceReqInfo };
-    const currentAcademicYear = Number(academicYear
-      || this.configService.academicYear);
     try {
       existingAbsence = await this.absenceRepository
         .findOneOrFail({
@@ -94,7 +91,7 @@ export class FacultyService {
       if (absenceReqInfo.type === ABSENCE_TYPE.NO_LONGER_ACTIVE
         || existingAbsence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE) {
         const validAbsenceYear = this.check_absence(semesterTerm,
-          selectAcademicYear, currentAcademicYear);
+          selectAcademicYear, this.configService.academicYear);
         if (!validAbsenceYear) {
           throw new Error('Can not update previous NO_LONGER_ACTIVE absence');
         }
