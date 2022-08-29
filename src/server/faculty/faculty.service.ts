@@ -71,40 +71,32 @@ export class FacultyService {
   public async updateFacultyAbsences(
     absenceReqInfo: AbsenceRequestDTO
   ): Promise<Absence> {
-    let existingAbsence: Absence;
     let absenceInfo: AbsenceRequestDTO = { ...absenceReqInfo };
-    try {
-      existingAbsence = await this.absenceRepository
-        .findOneOrFail({
-          relations: [
-            'semester',
-            'faculty',
-            'faculty.absences',
-            'faculty.absences.semester',
-          ],
-          where: {
-            id: absenceReqInfo.id,
-          },
-        });
-      const selectAcademicYear = Number(existingAbsence.semester.academicYear);
-      const semesterTerm = existingAbsence.semester.term;
-      if (absenceReqInfo.type === ABSENCE_TYPE.NO_LONGER_ACTIVE
-        || existingAbsence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE) {
-        const validAbsenceYear = this.check_absence(semesterTerm,
-          selectAcademicYear, this.configService.academicYear);
-        if (!validAbsenceYear) {
-          throw new Error('Can not update previous NO_LONGER_ACTIVE absence');
-        }
-        if (existingAbsence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE
-          && absenceInfo.type !== existingAbsence.type) {
-          absenceInfo = { ...absenceReqInfo, type: ABSENCE_TYPE.PRESENT };
-        }
+    const existingAbsence = await this.absenceRepository
+      .findOne({
+        relations: [
+          'semester',
+          'faculty',
+          'faculty.absences',
+          'faculty.absences.semester',
+        ],
+        where: {
+          id: absenceReqInfo.id,
+        },
+      });
+    const selectAcademicYear = Number(existingAbsence.semester.academicYear);
+    const semesterTerm = existingAbsence.semester.term;
+    if (absenceReqInfo.type === ABSENCE_TYPE.NO_LONGER_ACTIVE
+      || existingAbsence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE) {
+      const validAbsenceYear = this.check_absence(semesterTerm,
+        selectAcademicYear, this.configService.academicYear);
+      if (!validAbsenceYear) {
+        throw new Error('Can not update previous NO_LONGER_ACTIVE absence');
       }
-    } catch (error) {
-      if (error instanceof EntityNotFoundError) {
-        throw new NotFoundException('The entered Absence does not exist');
+      if (existingAbsence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE
+        && absenceInfo.type !== existingAbsence.type) {
+        absenceInfo = { ...absenceReqInfo, type: ABSENCE_TYPE.PRESENT };
       }
-      throw error;
     }
     // Get the absence year to update the absence of the following years accordingly.
     // If FALL chosen then start from the next year
