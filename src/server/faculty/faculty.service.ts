@@ -56,14 +56,13 @@ export class FacultyService {
    */
   private check_absence(
     semesterTerm: string,
-    selectAcademicYear: number,
-    currentAcademicYear: number
+    selectAcademicYear: number | string
   ) :boolean {
-    let selecterAcademicYear = selectAcademicYear;
+    let selecterAcademicYear = Number(selectAcademicYear);
     if (semesterTerm === TERM.FALL) {
       selecterAcademicYear += 1;
     }
-    if (selecterAcademicYear < currentAcademicYear) {
+    if (selecterAcademicYear < this.configService.academicYear) {
       return false;
     }
     return true;
@@ -89,8 +88,10 @@ export class FacultyService {
     const semesterTerm = existingAbsence.semester.term;
     if (absenceReqInfo.type === ABSENCE_TYPE.NO_LONGER_ACTIVE
       || existingAbsence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE) {
-      const validAbsenceYear = this.check_absence(semesterTerm,
-        selectAcademicYear, this.configService.academicYear);
+      const validAbsenceYear = this.check_absence(
+        semesterTerm,
+        selectAcademicYear
+      );
       if (!validAbsenceYear) {
         throw new Error(`Can not update previous ${absenceEnumToTitleCase(ABSENCE_TYPE.NO_LONGER_ACTIVE.toLowerCase())} absence`);
       }
