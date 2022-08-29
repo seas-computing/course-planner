@@ -100,7 +100,7 @@ export class FacultyService {
     }
     // Get the absence year to update the absence of the following years accordingly.
     // If FALL chosen then start from the next year
-    const filteredAbsence: Absence = existingAbsence.faculty.absences
+    const filteredAbsence = existingAbsence.faculty.absences
       .find((absence) => absence.id === existingAbsence.id);
     let absenceYear = Number(filteredAbsence.semester.academicYear);
     if (filteredAbsence.semester.term === TERM.FALL) {
