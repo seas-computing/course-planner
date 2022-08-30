@@ -226,11 +226,6 @@ const RoomSchedule: FunctionComponent = () => {
                 options={semesterOptions}
                 onChange={updateTerm}
               />
-              <NoteText>
-                {currentRoom.displayName
-                  ? `Current Room: ${currentRoom.displayName}`
-                  : 'Current Room: None Selected'}
-              </NoteText>
               <Combobox
                 options={fullRoomList
                   .map((room): { value: string; label: string; } => ({
@@ -257,6 +252,13 @@ const RoomSchedule: FunctionComponent = () => {
           )}
         </MenuFlex>
       </VerticalSpace>
+      <div>
+        <NoteText>
+          {currentRoom.displayName
+            ? `Current Room: ${currentRoom.displayName}`
+            : 'Current Room: None Selected'}
+        </NoteText>
+      </div>
       {currentRoom.id === ''
       && (
         <NoteText>
