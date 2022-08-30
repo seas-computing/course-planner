@@ -39,6 +39,7 @@ import { Faculty } from './faculty.entity';
 import { FacultyService } from './faculty.service';
 import { FacultyScheduleService } from './facultySchedule.service';
 import { InstructorResponseDTO } from '../../common/dto/courses/InstructorResponse.dto';
+import { resolveAcademicYear } from 'common/utils/termHelperFunctions';
 
 @ApiTags('Faculty')
 @UseGuards(Authentication)
@@ -162,8 +163,7 @@ export class FacultyController {
     }
     if (
       absence?.semester?.academicYear && (
-        parseInt(absence.semester.academicYear, 10)
-        < this.configService.academicYear
+        resolveAcademicYear(absence.semester) < this.configService.academicYear
       )
     ) {
       throw new BadRequestException('Cannot update absence for previous academic year');

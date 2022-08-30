@@ -9,6 +9,8 @@ import { ConfigService } from 'server/config/config.service';
 import { absenceEnumToTitleCase } from 'common/utils/facultyHelperFunctions';
 import { Faculty } from './faculty.entity';
 import { InstructorResponseDTO } from '../../common/dto/courses/InstructorResponse.dto';
+import { Semester } from 'server/semester/semester.entity';
+import { resolveAcademicYear } from 'common/utils/termHelperFunctions';
 
 export class FacultyService {
   @InjectRepository(Faculty)
@@ -50,24 +52,6 @@ export class FacultyService {
       .getRawMany();
   }
 
-  /**
-   * Check selecterAcademicYear not in the past
-   * @internal
-   */
-  private check_absence(
-    semesterTerm: string,
-    selectAcademicYear: number | string
-  ) :boolean {
-    let selecterAcademicYear = Number(selectAcademicYear);
-    if (semesterTerm === TERM.FALL) {
-      selecterAcademicYear += 1;
-    }
-    if (selecterAcademicYear < this.configService.academicYear) {
-      return false;
-    }
-    return true;
-  }
-
   public async updateFacultyAbsences(
     absenceReqInfo: AbsenceRequestDTO
   ): Promise<Absence> {
@@ -84,15 +68,12 @@ export class FacultyService {
           id: absenceReqInfo.id,
         },
       });
-    const selectAcademicYear = Number(existingAbsence.semester.academicYear);
-    const semesterTerm = existingAbsence.semester.term;
     if (absenceReqInfo.type === ABSENCE_TYPE.NO_LONGER_ACTIVE
       || existingAbsence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE) {
-      const validAbsenceYear = this.check_absence(
-        semesterTerm,
-        selectAcademicYear
-      );
-      if (!validAbsenceYear) {
+      if (
+        resolveAcademicYear(existingAbsence.semester)
+        < this.configService.academicYear
+      ) {
         throw new Error(`Can not update previous ${absenceEnumToTitleCase(ABSENCE_TYPE.NO_LONGER_ACTIVE.toLowerCase())} absence`);
       }
       if (existingAbsence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE
