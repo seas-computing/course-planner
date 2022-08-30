@@ -654,6 +654,7 @@ describe('Faculty API', function () {
           'a."semesterId" = s."id"'
         )
         .where('s.academicYear=:acyr', { acyr })
+        .andWhere('s.term=:term', { term: TERM.SPRING })
         .limit(1)
         .getOne())));
     });
