@@ -6,11 +6,8 @@ import { Absence } from 'server/absence/absence.entity';
 import { AbsenceRequestDTO } from 'common/dto/faculty/AbsenceRequest.dto';
 import { ABSENCE_TYPE, TERM } from 'common/constants';
 import { ConfigService } from 'server/config/config.service';
-import { absenceEnumToTitleCase } from 'common/utils/facultyHelperFunctions';
 import { Faculty } from './faculty.entity';
 import { InstructorResponseDTO } from '../../common/dto/courses/InstructorResponse.dto';
-import { Semester } from 'server/semester/semester.entity';
-import { resolveAcademicYear } from 'common/utils/termHelperFunctions';
 
 export class FacultyService {
   @InjectRepository(Faculty)
@@ -70,12 +67,6 @@ export class FacultyService {
       });
     if (absenceReqInfo.type === ABSENCE_TYPE.NO_LONGER_ACTIVE
       || existingAbsence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE) {
-      if (
-        resolveAcademicYear(existingAbsence.semester)
-        < this.configService.academicYear
-      ) {
-        throw new Error(`Can not update previous ${absenceEnumToTitleCase(ABSENCE_TYPE.NO_LONGER_ACTIVE.toLowerCase())} absence`);
-      }
       if (existingAbsence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE
         && absenceInfo.type !== existingAbsence.type) {
         absenceInfo = { ...absenceReqInfo, type: ABSENCE_TYPE.PRESENT };
