@@ -1,10 +1,11 @@
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Inject } from '@nestjs/common';
 import { Absence } from 'server/absence/absence.entity';
 import { AbsenceRequestDTO } from 'common/dto/faculty/AbsenceRequest.dto';
 import { ABSENCE_TYPE, TERM } from 'common/constants';
 import { ConfigService } from 'server/config/config.service';
+import { Semester } from 'server/semester/semester.entity';
 import { Faculty } from './faculty.entity';
 import { InstructorResponseDTO } from '../../common/dto/courses/InstructorResponse.dto';
 
@@ -49,58 +50,48 @@ export class FacultyService {
   }
 
   public async updateFacultyAbsences(
-    absenceReqInfo: AbsenceRequestDTO
+    absenceReqInfo: Pick<Absence, 'id' | 'type'>
   ): Promise<Absence> {
-    let absenceInfo: AbsenceRequestDTO = { ...absenceReqInfo };
     const existingAbsence = await this.absenceRepository
       .findOne({
-        relations: [
-          'semester',
-          'faculty',
-          'faculty.absences',
-          'faculty.absences.semester',
-        ],
-        where: {
-          id: absenceReqInfo.id,
-        },
+        relations: ['faculty'],
+        where: { id: absenceReqInfo.id },
       });
-    if (absenceReqInfo.type === ABSENCE_TYPE.NO_LONGER_ACTIVE
-      || existingAbsence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE) {
-      if (existingAbsence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE
-        && absenceInfo.type !== existingAbsence.type) {
-        absenceInfo = { ...absenceReqInfo, type: ABSENCE_TYPE.PRESENT };
-      }
-    }
-    // Get the absence year to update the absence of the following years accordingly.
-    // If FALL chosen then start from the next year
-    const filteredAbsence = existingAbsence.faculty.absences
-      .find((absence) => absence.id === existingAbsence.id);
-    let absenceYear = Number(filteredAbsence.semester.academicYear);
-    if (filteredAbsence.semester.term === TERM.FALL) {
-      absenceYear += 1;
-    }
-    // Update the absences, FALL will not be updated here.
-    const futureAbsences = existingAbsence.faculty.absences
-      .map((absence) => this.absenceRepository.create({
-        ...absence,
-        type: (Number(absence.semester.academicYear) >= absenceYear)
-          ? absenceInfo.type : absence.type,
-      }));
-    // Save the updated future absences only for no longer active
-    if (absenceReqInfo.type === ABSENCE_TYPE.NO_LONGER_ACTIVE
-      || existingAbsence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE) {
-      await this.facultyRepository.save({
-        id: existingAbsence.faculty.id,
-        absences: futureAbsences,
-      });
-    }
-    // This will update FALL term.
-    // If SPRING term chosen then this will re update the spring
-    const validAbsence = {
-      ...absenceInfo,
-      id: existingAbsence.id,
-    };
+    const ids = (await this.absenceRepository.createQueryBuilder('a')
+      .leftJoin(Semester, 's', 'a."semesterId" = s.id')
+      .where({ faculty: existingAbsence.faculty.id })
+      .andWhere(new Brackets((q) => {
+        q.where(
+          's."academicYear" >= :acyr',
+          { acyr: this.configService.academicYear }
+        ).orWhere(
+          's."academicYear" = :acyr AND s.term = :term ',
+          { acyr: this.configService.academicYear + 1, term: TERM.FALL }
+        );
+      }))
+      .getMany()).map(({ id }) => id);
 
-    return this.absenceRepository.save(validAbsence);
+    const updateQuery = this.absenceRepository.createQueryBuilder()
+      .update(Absence)
+      .where('id IN (:...ids)', { ids });
+
+    // Changing TO NO_LONGER_ACTIVE
+    if (
+      existingAbsence.type !== ABSENCE_TYPE.NO_LONGER_ACTIVE
+      && absenceReqInfo.type === ABSENCE_TYPE.NO_LONGER_ACTIVE
+    ) {
+      updateQuery.set({ type: ABSENCE_TYPE.NO_LONGER_ACTIVE });
+    }
+
+    // Changing FROM NO_LONGER_ACTIVE
+    if (
+      existingAbsence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE
+      && absenceReqInfo.type !== ABSENCE_TYPE.NO_LONGER_ACTIVE
+    ) {
+      updateQuery.set({ type: ABSENCE_TYPE.PRESENT });
+    }
+
+    await updateQuery.execute();
+    return this.absenceRepository.findOne(absenceReqInfo.id);
   }
 }
