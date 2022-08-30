@@ -47,6 +47,73 @@ describe('Room Schedule Page', function () {
     scheduleApiStub.restore();
     getRoomListApiStub.restore();
   });
+  describe('Semester Dropdown', function () {
+    let renderResult: RenderResult;
+    beforeEach(async function () {
+      scheduleApiStub.resolves([]);
+      getRoomListApiStub.resolves([
+        freeFASRoom,
+        freeRoom,
+      ]);
+      const fakeDate = new Date(testAcademicYear, 5, 30);
+      clock = FakeTimers.install({
+        toFake: ['Date'],
+      });
+      clock.tick(fakeDate.valueOf());
+      renderResult = render(
+        <RoomSchedule />,
+        {
+          metadataContext: metadata,
+          dispatchMessage,
+        }
+      );
+      const { findByRole, findByText, getByText } = renderResult;
+      const selectRoomInput = await findByRole('textbox');
+      fireEvent.change(
+        selectRoomInput,
+        {
+          target: {
+            value: freeFASRoom.name.substr(0, 10),
+          },
+        }
+      );
+      await findByText(freeFASRoom.name);
+      fireEvent.click(getByText(freeFASRoom.name));
+      await waitForElementToBeRemoved(() => getByText(
+        'Fetching Room Schedule', { exact: false }
+      ));
+    });
+    afterEach(function () {
+      clock.uninstall();
+    });
+    it('renders the list of existing semesters', function () {
+      const { semesters: metadataSemesters } = metadata;
+      const { getByLabelText } = renderResult;
+      const dropdown = getByLabelText(/semester/i);
+      const options = within(dropdown).getAllByRole('option')
+        .map(({ value }: HTMLOptionElement) => value);
+
+      deepStrictEqual(metadataSemesters, options);
+    });
+    it('defaults to the current semester', function () {
+      const { getByLabelText } = renderResult;
+      const dropdown = getByLabelText(/semester/i) as HTMLSelectElement;
+      const currentValue = dropdown.value;
+      strictEqual(currentValue, `${TERM.SPRING} ${testAcademicYear}`);
+    });
+    it('requests the selected semester data', async function () {
+      const { getByLabelText, getByText } = renderResult;
+      const dropdown = getByLabelText(/semester/i) as HTMLSelectElement;
+      fireEvent.change(dropdown, { target: { value: `${TERM.FALL} ${testAcademicYear}` } });
+      await waitForElementToBeRemoved(() => getByText(
+        'Fetching Room Schedule'
+      ));
+      // check the second call to the API
+      const [, calendarYear, term] = scheduleApiStub.args[1];
+      strictEqual(calendarYear, testAcademicYear);
+      strictEqual(term, TERM.FALL);
+    });
+  });
   describe('Requesting Semester Data', function () {
     let calendarYear: number;
     let term: TERM;
@@ -63,27 +130,186 @@ describe('Room Schedule Page', function () {
     afterEach(function () {
       clock.uninstall();
     });
-    // NOTE: Need to edit tests to account for the fact that a schedule is not
-    // fetched until the user selects a room from the combobox.
-    // context('When current date is before July 1', function () {
-    //   beforeEach(function () {
-    //     const fakeDate = new Date(testAcademicYear, 5, 30);
-    //     clock.tick(fakeDate.valueOf());
-    //     render(
-    //       <RoomSchedule />,
-    //       { metadataContext: metadata }
-    //     );
-    //     // TODO: Select a room from the combobox
-    //     console.log('schedule API stub: ', scheduleApiStub.args[0]);
-    //     ([, calendarYear, term] = scheduleApiStub.args[0]);
-    //   });
-    //   it('Should fetch Spring data', function () {
-    //     strictEqual(term, TERM.SPRING);
-    //   });
-    //   it('Should use the academicYear in metadata', function () {
-    //     strictEqual(calendarYear, testAcademicYear);
-    //   });
-    // });
+    context('When current date is before July 1', function () {
+      beforeEach(async function () {
+        const fakeDate = new Date(testAcademicYear, 5, 30);
+        clock.tick(fakeDate.valueOf());
+        const {
+          getByText, findByText, findByRole,
+        } = render(
+          <RoomSchedule />,
+          {
+            metadataContext: metadata,
+            dispatchMessage,
+          }
+        );
+        const selectRoomInput = await findByRole('textbox');
+        fireEvent.change(
+          selectRoomInput,
+          {
+            target: {
+              value: freeFASRoom.name.substr(0, 10),
+            },
+          }
+        );
+        await findByText(freeFASRoom.name);
+        fireEvent.click(getByText(freeFASRoom.name));
+        await waitForElementToBeRemoved(() => getByText(
+          'Fetching Room Schedule'
+        ));
+        ([, calendarYear, term] = scheduleApiStub.args[0]);
+      });
+      it('Should fetch Spring data', function () {
+        strictEqual(term, TERM.SPRING);
+      });
+      it('Should use the academicYear in metadata', function () {
+        strictEqual(calendarYear, testAcademicYear);
+      });
+    });
+    context('When current date is after July 1', function () {
+      beforeEach(async function () {
+        const fakeDate = new Date(testAcademicYear, 8, 13);
+        clock.tick(fakeDate.valueOf());
+        const {
+          getByText, findByText, findByRole,
+        } = render(
+          <RoomSchedule />,
+          {
+            metadataContext: metadata,
+            dispatchMessage,
+          }
+        );
+        const selectRoomInput = await findByRole('textbox');
+        fireEvent.change(
+          selectRoomInput,
+          {
+            target: {
+              value: freeFASRoom.name.substr(0, 10),
+            },
+          }
+        );
+        await findByText(freeFASRoom.name);
+        fireEvent.click(getByText(freeFASRoom.name));
+        await waitForElementToBeRemoved(() => getByText(
+          'Fetching Room Schedule'
+        ));
+        ([, calendarYear, term] = scheduleApiStub.args[0]);
+      });
+      it('Should fetch Fall data', function () {
+        strictEqual(term, TERM.FALL);
+      });
+      it('Should use the year before the academicYear in metadata', function () {
+        strictEqual(calendarYear, testAcademicYear - 1);
+      });
+    });
+    context('When current date is July 1', function () {
+      beforeEach(async function () {
+        const fakeDate = new Date(testAcademicYear, 6, 1);
+        clock.tick(fakeDate.valueOf());
+        const {
+          getByText, findByText, findByRole,
+        } = render(
+          <RoomSchedule />,
+          {
+            metadataContext: metadata,
+            dispatchMessage,
+          }
+        );
+        const selectRoomInput = await findByRole('textbox');
+        fireEvent.change(
+          selectRoomInput,
+          {
+            target: {
+              value: freeFASRoom.name.substr(0, 10),
+            },
+          }
+        );
+        await findByText(freeFASRoom.name);
+        fireEvent.click(getByText(freeFASRoom.name));
+        await waitForElementToBeRemoved(() => getByText(
+          'Fetching Room Schedule'
+        ));
+        ([, calendarYear, term] = scheduleApiStub.args[0]);
+      });
+      it('Should fetch Fall data', function () {
+        strictEqual(term, TERM.FALL);
+      });
+      it('Should use the year before the academicYear in metadata', function () {
+        strictEqual(calendarYear, testAcademicYear - 1);
+      });
+    });
+    context('When current date is new year\'s day', function () {
+      beforeEach(async function () {
+        const fakeDate = new Date(testAcademicYear, 0, 1);
+        clock.tick(fakeDate.valueOf());
+        const {
+          getByText, findByText, findByRole,
+        } = render(
+          <RoomSchedule />,
+          {
+            metadataContext: metadata,
+            dispatchMessage,
+          }
+        );
+        const selectRoomInput = await findByRole('textbox');
+        fireEvent.change(
+          selectRoomInput,
+          {
+            target: {
+              value: freeFASRoom.name.substr(0, 10),
+            },
+          }
+        );
+        await findByText(freeFASRoom.name);
+        fireEvent.click(getByText(freeFASRoom.name));
+        await waitForElementToBeRemoved(() => getByText(
+          'Fetching Room Schedule'
+        ));
+        ([, calendarYear, term] = scheduleApiStub.args[0]);
+      });
+      it('Should fetch Spring data', function () {
+        strictEqual(term, TERM.SPRING);
+      });
+      it('Should use the academicYear in metadata', function () {
+        strictEqual(calendarYear, testAcademicYear);
+      });
+    });
+    context('When current date is new year\'s eve', function () {
+      beforeEach(async function () {
+        const fakeDate = new Date(testAcademicYear, 11, 31);
+        clock.tick(fakeDate.valueOf());
+        const {
+          getByText, findByText, findByRole,
+        } = render(
+          <RoomSchedule />,
+          {
+            metadataContext: metadata,
+            dispatchMessage,
+          }
+        );
+        const selectRoomInput = await findByRole('textbox');
+        fireEvent.change(
+          selectRoomInput,
+          {
+            target: {
+              value: freeFASRoom.name.substr(0, 10),
+            },
+          }
+        );
+        await findByText(freeFASRoom.name);
+        fireEvent.click(getByText(freeFASRoom.name));
+        await waitForElementToBeRemoved(() => getByText(
+          'Fetching Room Schedule'
+        ));
+        ([, calendarYear, term] = scheduleApiStub.args[0]);
+      });
+      it('Should fetch Fall data', function () {
+        strictEqual(term, TERM.FALL);
+      });
+      it('Should use the academicYear in metadata', function () {
+        strictEqual(calendarYear, testAcademicYear - 1);
+      });
+    });
     context('On initial page load', function () {
       it('Should prompt the user to select a room', function () {
         const { queryByText } = render(
