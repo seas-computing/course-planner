@@ -16,8 +16,8 @@ import { strictEqual, deepStrictEqual } from 'assert';
 import * as dummy from 'testData';
 import { MetadataContextValue } from 'client/context/MetadataContext';
 import { TERM } from 'common/constants';
-import { freeFASRoom, freeRoom } from 'testData';
-import * as LocationAPI from 'client/api/rooms';
+import { freeFASRoom, freeRoom, testRoomScheduleData } from 'testData';
+import { LocationAPI } from 'client/api/rooms';
 import RoomSchedule from '../RoomSchedule';
 
 describe('Room Schedule Page', function () {
@@ -95,16 +95,14 @@ describe('Room Schedule Page', function () {
       });
     });
     context('While fetching data', function () {
-      it.only('Should display the spinner', function () {
-        getRoomListApiStub.resolves([
-          freeFASRoom,
-          freeRoom,
-        ]);
-        const { queryByText, getByRole, getByText } = render(
+      it('Should display the spinner', async function () {
+        const {
+          queryByText, getByText, findByText, findByRole,
+        } = render(
           <RoomSchedule />,
           { metadataContext: metadata }
         );
-        const selectRoomInput = getByRole('textbox');
+        const selectRoomInput = await findByRole('textbox');
         fireEvent.change(
           selectRoomInput,
           {
@@ -116,9 +114,104 @@ describe('Room Schedule Page', function () {
             },
           }
         );
+        await findByText(freeFASRoom.name);
         fireEvent.click(getByText(freeFASRoom.name));
         const spinner = queryByText('Fetching Room Schedule');
         strictEqual(!!spinner, true);
+      });
+    });
+    context('when the API call returns data', function () {
+      context('when data is empty', function () {
+        it('shows an error message saying there is no data', async function () {
+          scheduleApiStub.resolves([]);
+          const fakeDispatchMessage = stub();
+          const {
+            getByText, findByText, findByRole,
+          } = render(
+            <RoomSchedule />,
+            {
+              metadataContext: metadata,
+              dispatchMessage: fakeDispatchMessage,
+            }
+          );
+          const selectRoomInput = await findByRole('textbox');
+          fireEvent.change(
+            selectRoomInput,
+            {
+              target: {
+                value: freeFASRoom.name.substr(0, 10),
+              },
+            }
+          );
+          await findByText(freeFASRoom.name);
+          fireEvent.click(getByText(freeFASRoom.name));
+          await waitForElementToBeRemoved(() => getByText(
+            'Fetching Room Schedule'
+          ));
+          const dispatchArgs = fakeDispatchMessage.args[0][0];
+          const errorMsg = dispatchArgs.message.text as string;
+          strictEqual(
+            errorMsg.includes('There is no schedule data'),
+            true
+          );
+        });
+      });
+      context('when data is not empty', function () {
+        it('should render the data into the schedule', async function () {
+          const {
+            getByText, findByText, findByRole, queryAllByText,
+          } = render(
+            <RoomSchedule />,
+            { metadataContext: metadata }
+          );
+          const selectRoomInput = await findByRole('textbox');
+          fireEvent.change(
+            selectRoomInput,
+            {
+              target: {
+                value: freeFASRoom.name.substr(0, 10),
+              },
+            }
+          );
+          await findByText(freeFASRoom.name);
+          fireEvent.click(getByText(freeFASRoom.name));
+          await waitForElementToBeRemoved(() => getByText(
+            'Fetching Room Schedule'
+          ));
+          scheduleApiStub.resolves([testRoomScheduleData]);
+          const [testSessionBlock] = testRoomScheduleData;
+          const sessionBlock = queryAllByText(testSessionBlock.catalogNumber);
+          strictEqual(!!sessionBlock, true);
+        });
+      });
+    });
+    context('When the API call fails', function () {
+      it('Should dispatch an error', async function () {
+        scheduleApiStub.rejects(dummy.error);
+        const {
+          getByText, findByText, findByRole,
+        } = render(
+          <RoomSchedule />,
+          {
+            metadataContext: metadata,
+            dispatchMessage,
+          }
+        );
+        const selectRoomInput = await findByRole('textbox');
+        fireEvent.change(
+          selectRoomInput,
+          {
+            target: {
+              value: freeFASRoom.name.substr(0, 10),
+            },
+          }
+        );
+        await findByText(freeFASRoom.name);
+        fireEvent.click(getByText(freeFASRoom.name));
+        await waitForElementToBeRemoved(() => getByText(
+          'Fetching Room Schedule'
+        ));
+        strictEqual(dispatchMessage.callCount, 1);
       });
     });
   });
