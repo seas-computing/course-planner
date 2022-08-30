@@ -145,18 +145,11 @@ export class FacultyController {
   @ApiNotFoundResponse({
     description: 'Not Found: The requested entity with the ID supplied could not be found',
   })
-  public async updateFacultyAbsence(@Body() absenceReqInfo: AbsenceRequestDTO):
+  public async updateFacultyAbsence(@Body() { id, type }: AbsenceRequestDTO):
   Promise<AbsenceResponseDTO> {
     const absence = await this.absenceRepository.findOne({
-      relations: [
-        'semester',
-        'faculty',
-        'faculty.absences',
-        'faculty.absences.semester',
-      ],
-      where: {
-        id: absenceReqInfo.id,
-      },
+      relations: ['semester'],
+      where: { id },
     });
     if (!absence) {
       throw new NotFoundException('The entered Absence does not exist');
@@ -169,8 +162,8 @@ export class FacultyController {
       throw new BadRequestException('Cannot update absence for previous academic year');
     }
     return this.facultyService.updateFacultyAbsences({
-      ...absence,
-      ...absenceReqInfo,
+      id: absence.id,
+      type,
     });
   }
 
