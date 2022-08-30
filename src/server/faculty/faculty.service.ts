@@ -1,7 +1,6 @@
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
-import { NotFoundException, Inject } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 import { Absence } from 'server/absence/absence.entity';
 import { AbsenceRequestDTO } from 'common/dto/faculty/AbsenceRequest.dto';
 import { ABSENCE_TYPE, TERM } from 'common/constants';

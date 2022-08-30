@@ -15,7 +15,6 @@ import {
   render,
   RenderResult,
   wait,
-  waitForElement,
 } from 'test-utils';
 import {
   appliedMathFacultyScheduleResponse,

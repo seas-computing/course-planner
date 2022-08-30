@@ -35,11 +35,11 @@ import { Absence } from 'server/absence/absence.entity';
 import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
 import { AbsenceRequestDTO } from 'common/dto/faculty/AbsenceRequest.dto';
 import { ConfigService } from 'server/config/config.service';
+import { resolveAcademicYear } from 'common/utils/termHelperFunctions';
 import { Faculty } from './faculty.entity';
 import { FacultyService } from './faculty.service';
 import { FacultyScheduleService } from './facultySchedule.service';
 import { InstructorResponseDTO } from '../../common/dto/courses/InstructorResponse.dto';
-import { resolveAcademicYear } from 'common/utils/termHelperFunctions';
 
 @ApiTags('Faculty')
 @UseGuards(Authentication)
