@@ -677,6 +677,20 @@ describe('Faculty API', function () {
         beforeEach(function () {
           authStub.returns(adminUser);
         });
+        it('updates the specified absence', async function () {
+          const { status } = await request(api)
+            .put(`/api/faculty/absence/${absenceThisYear.id}`)
+            .send({
+              id: absenceThisYear.id,
+              type: ABSENCE_TYPE.TEACHING_RELIEF,
+            });
+
+          const { type } = await absenceRepository.findOne(
+            absenceThisYear.id
+          );
+          strictEqual(status, HttpStatus.OK);
+          strictEqual(type, ABSENCE_TYPE.TEACHING_RELIEF);
+        });
         it('throws a Not Found exception if absence does not exist', async function () {
           const { status, body } = await request(api)
             .put(`/api/faculty/absence/${uuid}`)

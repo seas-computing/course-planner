@@ -57,38 +57,51 @@ export class FacultyService {
         relations: ['faculty'],
         where: { id: absenceReqInfo.id },
       });
-    const ids = (await this.absenceRepository.createQueryBuilder('a')
-      .leftJoin(Semester, 's', 'a."semesterId" = s.id')
-      .where({ faculty: existingAbsence.faculty.id })
-      .andWhere(new Brackets((q) => {
-        q.where(
-          's."academicYear" >= :acyr',
-          { acyr: this.configService.academicYear }
-        ).orWhere(
-          's."academicYear" = :acyr AND s.term = :term ',
-          { acyr: this.configService.academicYear + 1, term: TERM.FALL }
-        );
-      }))
-      .getMany()).map(({ id }) => id);
 
     const updateQuery = this.absenceRepository.createQueryBuilder()
-      .update(Absence)
-      .where('id IN (:...ids)', { ids });
+      .update(Absence);
 
-    // Changing TO NO_LONGER_ACTIVE
+    // Are we going to have to do NO_LONGER_ACTIVE gymnastics?
     if (
-      existingAbsence.type !== ABSENCE_TYPE.NO_LONGER_ACTIVE
-      && absenceReqInfo.type === ABSENCE_TYPE.NO_LONGER_ACTIVE
+      [existingAbsence.type, absenceReqInfo.type]
+        .includes(ABSENCE_TYPE.NO_LONGER_ACTIVE)
     ) {
-      updateQuery.set({ type: ABSENCE_TYPE.NO_LONGER_ACTIVE });
-    }
+      // Looks like it - strap in!
+      const ids = (await this.absenceRepository.createQueryBuilder('a')
+        .leftJoin(Semester, 's', 'a."semesterId" = s.id')
+        .where({ faculty: existingAbsence.faculty.id })
+        .andWhere(new Brackets((q) => {
+          q.where(
+            's."academicYear" >= :acyr',
+            { acyr: this.configService.academicYear }
+          ).orWhere(
+            's."academicYear" = :acyr AND s.term = :term ',
+            { acyr: this.configService.academicYear + 1, term: TERM.FALL }
+          );
+        }))
+        .getMany()).map(({ id }) => id);
 
-    // Changing FROM NO_LONGER_ACTIVE
-    if (
-      existingAbsence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE
+      // Changing TO NO_LONGER_ACTIVE
+      if (
+        existingAbsence.type !== ABSENCE_TYPE.NO_LONGER_ACTIVE
+        && absenceReqInfo.type === ABSENCE_TYPE.NO_LONGER_ACTIVE
+      ) {
+        updateQuery.set({ type: ABSENCE_TYPE.NO_LONGER_ACTIVE })
+          .where('id IN (:...ids)', { ids });
+      }
+
+      // Changing FROM NO_LONGER_ACTIVE
+      if (
+        existingAbsence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE
       && absenceReqInfo.type !== ABSENCE_TYPE.NO_LONGER_ACTIVE
-    ) {
-      updateQuery.set({ type: ABSENCE_TYPE.PRESENT });
+      ) {
+        updateQuery.set({ type: ABSENCE_TYPE.PRESENT })
+          .where('id IN (:...ids)', { ids });
+      }
+    } else {
+      // Nope, just updating a single absence record.
+      updateQuery.set({ type: absenceReqInfo.type })
+        .where({ id: absenceReqInfo.id });
     }
 
     await updateQuery.execute();
