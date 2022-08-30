@@ -168,17 +168,10 @@ export class FacultyController {
     ) {
       throw new BadRequestException('Cannot update absence for previous academic year');
     }
-    try {
-      return await this.facultyService.updateFacultyAbsences({
-        ...absence,
-        ...absenceReqInfo,
-      });
-    } catch (error) {
-      if (error instanceof EntityNotFoundError) {
-        throw new NotFoundException(error.message);
-      }
-      throw new BadRequestException((error as Error).message);
-    }
+    return this.facultyService.updateFacultyAbsences({
+      ...absence,
+      ...absenceReqInfo,
+    });
   }
 
   @UseGuards(new RequireGroup(GROUP.ADMIN))
