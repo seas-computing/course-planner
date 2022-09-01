@@ -31,7 +31,7 @@ import {
   string,
   uuid,
 } from 'testData';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 
@@ -832,11 +832,11 @@ describe('Faculty API', function () {
           });
           it('does not modify past absences', async function () {
             const absencesBeforeUpdate = (await absenceRepository.find({
-              select: ['type'],
+              select: ['type', 'id'],
               relations: ['semester'],
               where: { faculty: noLongerActiveAbsence.faculty.id },
               order: {
-                type: 'ASC',
+                id: 'ASC',
               },
             }))
               .filter(({ semester }) => parseInt(semester.academicYear, 10)
@@ -848,16 +848,16 @@ describe('Faculty API', function () {
                 id: noLongerActiveAbsence.id,
                 type: ABSENCE_TYPE.TEACHING_RELIEF,
               });
-            const absencesAfterUpdate = (await absenceRepository.find({
-              select: ['type'],
+            const absencesAfterUpdate = await absenceRepository.find({
+              select: ['type', 'id'],
               relations: ['semester'],
-              where: { faculty: noLongerActiveAbsence.faculty.id },
-              order: {
-                type: 'ASC',
+              where: {
+                id: In(absencesBeforeUpdate.map(({ id }) => id)),
               },
-            }))
-              .filter(({ semester }) => parseInt(semester.academicYear, 10)
-                < thisAcademicYear);
+              order: {
+                id: 'ASC',
+              },
+            });
 
             deepStrictEqual(
               absencesBeforeUpdate.map(({ type, id }) => ({ type, id })),
@@ -917,11 +917,11 @@ describe('Faculty API', function () {
           });
           it('does not modify past absences', async function () {
             const absencesBeforeUpdate = (await absenceRepository.find({
-              select: ['type'],
+              select: ['type', 'id'],
               relations: ['semester'],
               where: { faculty: noLongerActiveAbsence.faculty.id },
               order: {
-                type: 'ASC',
+                id: 'ASC',
               },
             }))
               .filter(({ semester }) => parseInt(semester.academicYear, 10)
@@ -933,16 +933,16 @@ describe('Faculty API', function () {
                 id: noLongerActiveAbsence.id,
                 type: ABSENCE_TYPE.NO_LONGER_ACTIVE,
               });
-            const absencesAfterUpdate = (await absenceRepository.find({
-              select: ['type'],
+            const absencesAfterUpdate = await absenceRepository.find({
+              select: ['type', 'id'],
               relations: ['semester'],
-              where: { faculty: noLongerActiveAbsence.faculty.id },
-              order: {
-                type: 'ASC',
+              where: {
+                id: In(absencesBeforeUpdate.map(({ id }) => id)),
               },
-            }))
-              .filter(({ semester }) => parseInt(semester.academicYear, 10)
-                < thisAcademicYear);
+              order: {
+                id: 'ASC',
+              },
+            });
 
             deepStrictEqual(
               absencesBeforeUpdate.map(({ type, id }) => ({ type, id })),
