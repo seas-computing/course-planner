@@ -53,7 +53,7 @@ export class FacultyService {
   ): Promise<Absence> {
     const existingAbsence = await this.absenceRepository
       .findOne({
-        relations: ['faculty'],
+        relations: ['faculty', 'semester'],
         where: { id: absenceReqInfo.id },
       });
 
@@ -70,12 +70,13 @@ export class FacultyService {
         .leftJoin(Semester, 's', 'a."semesterId" = s.id')
         .where({ faculty: existingAbsence.faculty.id })
         .andWhere(new Brackets((q) => {
+          const { academicYear } = existingAbsence.semester;
           q.where(
             's."academicYear" >= :acyr',
-            { acyr: this.configService.academicYear }
+            { acyr: academicYear }
           ).orWhere(
             's."academicYear" = :lastAcyr AND s.term = :term ',
-            { lastAcyr: this.configService.academicYear + 1, term: TERM.FALL }
+            { lastAcyr: Number(academicYear) - 1, term: TERM.FALL }
           );
         }))
         .getMany()).map(({ id }) => id);
