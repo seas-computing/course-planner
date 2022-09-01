@@ -2,7 +2,6 @@ import { Brackets, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Inject } from '@nestjs/common';
 import { Absence } from 'server/absence/absence.entity';
-import { AbsenceRequestDTO } from 'common/dto/faculty/AbsenceRequest.dto';
 import { ABSENCE_TYPE, TERM } from 'common/constants';
 import { ConfigService } from 'server/config/config.service';
 import { Semester } from 'server/semester/semester.entity';
