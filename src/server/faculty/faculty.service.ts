@@ -63,7 +63,7 @@ export class FacultyService {
     // Are we going to have to do NO_LONGER_ACTIVE gymnastics?
     if (
       [existingAbsence.type, absenceReqInfo.type]
-        .includes(ABSENCE_TYPE.NO_LONGER_ACTIVE)
+        .some((value) => value === ABSENCE_TYPE.NO_LONGER_ACTIVE)
     ) {
       // Looks like it - strap in!
       const ids = (await this.absenceRepository.createQueryBuilder('a')
