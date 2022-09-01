@@ -74,8 +74,8 @@ export class FacultyService {
             's."academicYear" >= :acyr',
             { acyr: this.configService.academicYear }
           ).orWhere(
-            's."academicYear" = :acyr AND s.term = :term ',
-            { acyr: this.configService.academicYear + 1, term: TERM.FALL }
+            's."academicYear" = :lastAcyr AND s.term = :term ',
+            { lastAcyr: this.configService.academicYear + 1, term: TERM.FALL }
           );
         }))
         .getMany()).map(({ id }) => id);
