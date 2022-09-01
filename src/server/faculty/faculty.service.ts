@@ -81,13 +81,14 @@ export class FacultyService {
         }))
         .getMany()).map(({ id }) => id);
 
+      updateQuery.where('id IN (:...ids)', { ids });
+
       // Changing TO NO_LONGER_ACTIVE
       if (
         existingAbsence.type !== ABSENCE_TYPE.NO_LONGER_ACTIVE
         && absenceReqInfo.type === ABSENCE_TYPE.NO_LONGER_ACTIVE
       ) {
-        updateQuery.set({ type: ABSENCE_TYPE.NO_LONGER_ACTIVE })
-          .where('id IN (:...ids)', { ids });
+        updateQuery.set({ type: ABSENCE_TYPE.NO_LONGER_ACTIVE });
       }
 
       // Changing FROM NO_LONGER_ACTIVE
@@ -95,8 +96,7 @@ export class FacultyService {
         existingAbsence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE
       && absenceReqInfo.type !== ABSENCE_TYPE.NO_LONGER_ACTIVE
       ) {
-        updateQuery.set({ type: ABSENCE_TYPE.PRESENT })
-          .where('id IN (:...ids)', { ids });
+        updateQuery.set({ type: ABSENCE_TYPE.PRESENT });
       }
     } else {
       // Nope, just updating a single absence record.
