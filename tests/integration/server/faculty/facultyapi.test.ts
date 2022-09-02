@@ -807,27 +807,31 @@ describe('Faculty API', function () {
           let noLongerActiveAbsence: Absence;
           let semesterRepository: Repository<Semester>;
           let facultyId: string;
+          let springId: string;
+          let fallId: string;
           beforeEach(async function () {
             // Get faculty member's current absence status for the curent
             // academic year
             semesterRepository = testModule
               .get<Repository<Semester>>(getRepositoryToken(Semester));
             ({ id: facultyId } = await facultyRepository.findOne());
-            const { id: semesterId } = await semesterRepository.findOne({
+            ({ id: springId } = await semesterRepository.findOne({
               where: { academicYear: thisAcademicYear, term: TERM.SPRING },
-            });
+            }));
+            ({ id: fallId } = await semesterRepository.findOne({
+              where: { academicYear: lastAcademicYear, term: TERM.FALL },
+            }));
             // Update the absence to be longer active
             await absenceRepository.createQueryBuilder('a')
               .update(Absence)
               .set({ type: ABSENCE_TYPE.NO_LONGER_ACTIVE })
-              .where({ semester: semesterId, faculty: facultyId })
+              .where({ semester: In([springId, fallId]), faculty: facultyId })
               .execute();
-
             // Find absence that is currently NLA in the current academic year
             noLongerActiveAbsence = await absenceRepository
               .findOne({
                 relations: ['faculty'],
-                where: { semester: semesterId, faculty: facultyId },
+                where: { semester: springId, faculty: facultyId },
               });
           });
           it('does not modify past absences', async function () {
@@ -886,6 +890,60 @@ describe('Faculty API', function () {
               absences.every(({ type }) => type === ABSENCE_TYPE.PRESENT),
               true
             );
+          });
+          it('only updates spring of the next academic year if editing spring', async function () {
+            // Find spring in this academic year
+            const springAbsence = await absenceRepository.findOne({
+              select: ['id', 'updatedAt'],
+              relations: ['semester'],
+              where: { semester: springId, faculty: facultyId },
+            });
+            const fallAbsence = await absenceRepository.findOne({
+              select: ['id', 'updatedAt'],
+              relations: ['semester'],
+              where: { semester: fallId, faculty: facultyId },
+            });
+
+            await request(api)
+              .put(`/api/faculty/absence/${springAbsence.id}`)
+              .send({
+                id: springAbsence.id,
+                type: ABSENCE_TYPE.TEACHING_RELIEF,
+              });
+            // Make sure that spring has been edited and fall has not
+            const springAfterUpdate = await absenceRepository.findOne({
+              id: springAbsence.id,
+            });
+            const fallAfterUpdate = await absenceRepository.findOne({
+              select: ['id', 'updatedAt'],
+              where: {
+                id: fallAbsence.id,
+              },
+            });
+            strictEqual(springAfterUpdate.type, ABSENCE_TYPE.PRESENT);
+            deepStrictEqual(fallAfterUpdate.updatedAt, fallAbsence.updatedAt);
+          });
+          it('updates fall of the current academic year and spring of the next academic year if updating fall', async function () {
+            const fallAbsence = await absenceRepository.findOne({
+              select: ['id', 'updatedAt'],
+              where: { semester: fallId, faculty: facultyId },
+            });
+            await request(api)
+              .put(`/api/faculty/absence/${fallAbsence.id}`)
+              .send({
+                id: fallAbsence.id,
+                type: ABSENCE_TYPE.TEACHING_RELIEF,
+              });
+
+            const [
+              fallAfterUpdate,
+              springAfterUpdate,
+            ] = await absenceRepository.find({
+              relations: ['semester'],
+              where: { semester: In([springId, fallId]), faculty: facultyId },
+            });
+            strictEqual(fallAfterUpdate.type, ABSENCE_TYPE.PRESENT, 'Fall failed');
+            strictEqual(springAfterUpdate.type, ABSENCE_TYPE.PRESENT, 'Spring failed');
           });
         });
         describe(`changing TO ${absenceEnumToTitleCase(ABSENCE_TYPE.NO_LONGER_ACTIVE)}`, function () {

@@ -70,14 +70,21 @@ export class FacultyService {
         .leftJoin(Semester, 's', 'a."semesterId" = s.id')
         .where({ faculty: existingAbsence.faculty.id })
         .andWhere(new Brackets((q) => {
-          const { academicYear } = existingAbsence.semester;
-          q.where(
-            's."academicYear" >= :acyr',
-            { acyr: academicYear }
-          ).orWhere(
-            's."academicYear" = :lastAcyr AND s.term = :term ',
-            { lastAcyr: Number(academicYear) - 1, term: TERM.FALL }
-          );
+          const { academicYear, term } = existingAbsence.semester;
+          if (term === TERM.SPRING) {
+            q.where(
+              's."academicYear" >= :academicYear',
+              { academicYear }
+            );
+          } else if (term === TERM.FALL) {
+            q.where(
+              's."academicYear" > :academicYear',
+              { academicYear }
+            ).orWhere(
+              's."academicYear" = :academicYear AND s."term" = :fall',
+              { academicYear, fall: TERM.FALL }
+            );
+          }
         }))
         .getMany()).map(({ id }) => id);
 
