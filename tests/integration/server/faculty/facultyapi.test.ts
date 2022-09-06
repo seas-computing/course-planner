@@ -955,7 +955,7 @@ describe('Faculty API', function () {
             noLongerActiveAbsence = await absenceRepository
               .findOne({
                 relations: ['faculty'],
-                where: { semester: semesterId, faculty: facultyId },
+                where: { semester: springId, faculty: facultyId },
               });
           });
           it('does not modify past absences', async function () {
