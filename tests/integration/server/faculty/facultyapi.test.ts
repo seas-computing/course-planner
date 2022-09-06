@@ -674,8 +674,21 @@ describe('Faculty API', function () {
     });
     describe('User is authenticated', function () {
       describe('User is a member of the admin group', function () {
-        beforeEach(function () {
+        let semesterRepository: Repository<Semester>;
+        let facultyId: string;
+        let springId: string;
+        let fallId: string;
+        beforeEach(async function () {
           authStub.returns(adminUser);
+          semesterRepository = testModule
+            .get<Repository<Semester>>(getRepositoryToken(Semester));
+          ({ id: facultyId } = await facultyRepository.findOne());
+          ({ id: springId } = await semesterRepository.findOne({
+            where: { academicYear: thisAcademicYear, term: TERM.SPRING },
+          }));
+          ({ id: fallId } = await semesterRepository.findOne({
+            where: { academicYear: lastAcademicYear, term: TERM.FALL },
+          }));
         });
         it('updates the specified absence', async function () {
           const { status } = await request(api)
@@ -805,22 +818,7 @@ describe('Faculty API', function () {
         });
         describe(`changing FROM ${absenceEnumToTitleCase(ABSENCE_TYPE.NO_LONGER_ACTIVE)}`, function () {
           let noLongerActiveAbsence: Absence;
-          let semesterRepository: Repository<Semester>;
-          let facultyId: string;
-          let springId: string;
-          let fallId: string;
           beforeEach(async function () {
-            // Get faculty member's current absence status for the curent
-            // academic year
-            semesterRepository = testModule
-              .get<Repository<Semester>>(getRepositoryToken(Semester));
-            ({ id: facultyId } = await facultyRepository.findOne());
-            ({ id: springId } = await semesterRepository.findOne({
-              where: { academicYear: thisAcademicYear, term: TERM.SPRING },
-            }));
-            ({ id: fallId } = await semesterRepository.findOne({
-              where: { academicYear: lastAcademicYear, term: TERM.FALL },
-            }));
             // Update the absence to be longer active
             await absenceRepository.createQueryBuilder('a')
               .update(Absence)
@@ -948,17 +946,7 @@ describe('Faculty API', function () {
         });
         describe(`changing TO ${absenceEnumToTitleCase(ABSENCE_TYPE.NO_LONGER_ACTIVE)}`, function () {
           let noLongerActiveAbsence: Absence;
-          let semesterRepository: Repository<Semester>;
-          let facultyId: string;
           beforeEach(async function () {
-            // Get faculty member's current absence status for the curent
-            // academic year
-            semesterRepository = testModule
-              .get<Repository<Semester>>(getRepositoryToken(Semester));
-            ({ id: facultyId } = await facultyRepository.findOne());
-            const { id: semesterId } = await semesterRepository.findOne({
-              where: { academicYear: thisAcademicYear, term: TERM.SPRING },
-            });
             // Update the absence to be longer active
             await absenceRepository.createQueryBuilder('a')
               .update(Absence)
