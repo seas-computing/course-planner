@@ -67,9 +67,10 @@ export class FacultyService {
     ) {
       const { academicYear, term } = existingAbsence.semester;
       // Looks like it - strap in!
-      const ids = (await this.absenceRepository.createQueryBuilder('a')
+      const ids = this.absenceRepository.createQueryBuilder('a')
+        .select('a.id')
         .leftJoin(Semester, 's', 'a."semesterId" = s.id')
-        .where({ faculty: existingAbsence.faculty.id })
+        .where('faculty = :facultyId')
         .andWhere(new Brackets((q) => {
           if (term === TERM.SPRING) {
             q.where('s."academicYear" >= :academicYear');
@@ -80,12 +81,8 @@ export class FacultyService {
               's."academicYear" = :academicYear AND s."term" = :fall'
             );
           }
-        }))
-        .setParameters({ academicYear, fall: TERM.FALL })
-        .getMany()).map(({ id }) => id);
-
-      updateQuery.where('id IN (:...ids)', { ids });
-
+        }));
+      updateQuery.where(`id IN (${ids.getQuery()})`);
       // Changing TO NO_LONGER_ACTIVE
       if (
         existingAbsence.type !== ABSENCE_TYPE.NO_LONGER_ACTIVE
@@ -101,6 +98,11 @@ export class FacultyService {
       ) {
         updateQuery.set({ type: ABSENCE_TYPE.PRESENT });
       }
+      updateQuery.setParameters({
+        facultyId: existingAbsence.faculty.id,
+        academicYear,
+        fall: TERM.FALL,
+      });
     } else {
       // Nope, just updating a single absence record.
       updateQuery.set({ type: absenceReqInfo.type })
