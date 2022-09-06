@@ -937,8 +937,8 @@ describe('Faculty API', function () {
               relations: ['semester'],
               where: { semester: In([springId, fallId]), faculty: facultyId },
             });
-            strictEqual(fallAfterUpdate.type, ABSENCE_TYPE.PRESENT, 'Fall failed');
-            strictEqual(springAfterUpdate.type, ABSENCE_TYPE.PRESENT, 'Spring failed');
+            strictEqual(fallAfterUpdate.type, ABSENCE_TYPE.PRESENT);
+            strictEqual(springAfterUpdate.type, ABSENCE_TYPE.PRESENT);
           });
         });
         describe(`changing TO ${absenceEnumToTitleCase(ABSENCE_TYPE.NO_LONGER_ACTIVE)}`, function () {
