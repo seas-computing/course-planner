@@ -890,36 +890,33 @@ describe('Faculty API', function () {
             );
           });
           it('only updates spring of the next academic year if editing spring', async function () {
-            // Find spring in this academic year
-            const springAbsence = await absenceRepository.findOne({
+            const [
+              fallBeforeUpdate,
+              springBeforeUpdate,
+            ] = await absenceRepository.find({
               select: ['id', 'updatedAt'],
               relations: ['semester'],
-              where: { semester: springId, faculty: facultyId },
+              where: { semester: In([springId, fallId]), faculty: facultyId },
             });
-            const fallAbsence = await absenceRepository.findOne({
-              select: ['id', 'updatedAt'],
-              relations: ['semester'],
-              where: { semester: fallId, faculty: facultyId },
-            });
-
             await request(api)
-              .put(`/api/faculty/absence/${springAbsence.id}`)
+              .put(`/api/faculty/absence/${springBeforeUpdate.id}`)
               .send({
-                id: springAbsence.id,
+                id: springBeforeUpdate.id,
                 type: ABSENCE_TYPE.TEACHING_RELIEF,
               });
             // Make sure that spring has been edited and fall has not
-            const springAfterUpdate = await absenceRepository.findOne({
-              id: springAbsence.id,
-            });
-            const fallAfterUpdate = await absenceRepository.findOne({
-              select: ['id', 'updatedAt'],
-              where: {
-                id: fallAbsence.id,
-              },
-            });
+            const [
+              fallAfterUpdate,
+              springAfterUpdate,
+            ] = await absenceRepository.findByIds([
+              fallBeforeUpdate.id,
+              springBeforeUpdate.id,
+            ], { select: ['id', 'updatedAt'] });
             strictEqual(springAfterUpdate.type, ABSENCE_TYPE.PRESENT);
-            deepStrictEqual(fallAfterUpdate.updatedAt, fallAbsence.updatedAt);
+            deepStrictEqual(
+              fallAfterUpdate.updatedAt,
+              fallBeforeUpdate.updatedAt
+            );
           });
           it('updates fall of the current academic year and spring of the next academic year if updating fall', async function () {
             const fallAbsence = await absenceRepository.findOne({
