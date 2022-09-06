@@ -947,8 +947,8 @@ describe('Faculty API', function () {
             // Update the absence to be longer active
             await absenceRepository.createQueryBuilder('a')
               .update(Absence)
-              .set({ type: ABSENCE_TYPE.PARENTAL_LEAVE })
-              .where({ semester: semesterId, faculty: facultyId })
+              .set({ type: ABSENCE_TYPE.PRESENT })
+              .where({ semester: In([springId, fallId]), faculty: facultyId })
               .execute();
 
             // Find absence that is currently NLA in the current academic year
