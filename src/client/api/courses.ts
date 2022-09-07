@@ -67,7 +67,7 @@ export const getRoomScheduleForSemester = async (
   term: TERM
 ): Promise<RoomScheduleResponseDTO[]> => {
   const response = await request
-    .get(`/api/course-instances/room-schedule?roomId=${roomId}?term=${term}&year=${calendarYear}`);
+    .get(`/api/course-instances/room-schedule?roomId=${roomId}&term=${term}&year=${calendarYear}`);
   return response.data as RoomScheduleResponseDTO[];
 };
 
