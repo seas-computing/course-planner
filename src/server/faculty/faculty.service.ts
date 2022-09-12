@@ -70,7 +70,7 @@ export class FacultyService {
       const ids = this.absenceRepository.createQueryBuilder('a')
         .select('a.id')
         .leftJoin(Semester, 's', 'a."semesterId" = s.id')
-        .where('faculty = :facultyId')
+        .where('a."facultyId" = :facultyId')
         .andWhere(new Brackets((q) => {
           if (term === TERM.SPRING) {
             q.where('s."academicYear" >= :academicYear');
