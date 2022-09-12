@@ -1003,6 +1003,31 @@ describe('Faculty API', function () {
               true
             );
           });
+          it('only updates spring of the next academic year if editing spring', async function () {
+            const fallBeforeUpdate = await absenceRepository.findOne({
+              select: ['updatedAt'],
+              where: { id: fallAbsence.id },
+            });
+            await request(api)
+              .put(`/api/faculty/absence/${springAbsence.id}`)
+              .send({
+                id: springAbsence.id,
+                type: ABSENCE_TYPE.NO_LONGER_ACTIVE,
+              });
+
+            const fallAfterUpdate = await absenceRepository.findOne({
+              select: ['id', 'updatedAt', 'createdAt'],
+              where: { id: fallAbsence.id },
+            });
+            const springAfterUpdate = await absenceRepository
+              .findOne(springAbsence.id);
+
+            strictEqual(springAfterUpdate.type, ABSENCE_TYPE.NO_LONGER_ACTIVE);
+            deepStrictEqual(
+              fallAfterUpdate.updatedAt,
+              fallBeforeUpdate.updatedAt
+            );
+          });
           it('updates fall of the current academic year and spring of the next academic year if updating fall', async function () {
             await request(api)
               .put(`/api/faculty/absence/${fallAbsence.id}`)
