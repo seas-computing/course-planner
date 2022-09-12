@@ -1,4 +1,4 @@
-import { Brackets, Repository } from 'typeorm';
+import { Brackets, In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Inject } from '@nestjs/common';
 import { Absence } from 'server/absence/absence.entity';
