@@ -675,20 +675,28 @@ describe('Faculty API', function () {
     describe('User is authenticated', function () {
       describe('User is a member of the admin group', function () {
         let semesterRepository: Repository<Semester>;
-        let facultyId: string;
-        let springId: string;
-        let fallId: string;
+        let springAbsence: Absence;
+        let fallAbsence: Absence;
         beforeEach(async function () {
           authStub.returns(adminUser);
           semesterRepository = testModule
             .get<Repository<Semester>>(getRepositoryToken(Semester));
-          ({ id: facultyId } = await facultyRepository.findOne());
-          ({ id: springId } = await semesterRepository.findOne({
+          const { id: facultyId } = await facultyRepository.findOne();
+          const { id: springId } = await semesterRepository.findOne({
             where: { academicYear: thisAcademicYear, term: TERM.SPRING },
-          }));
-          ({ id: fallId } = await semesterRepository.findOne({
+          });
+          const { id: fallId } = await semesterRepository.findOne({
             where: { academicYear: lastAcademicYear, term: TERM.FALL },
-          }));
+          });
+          fallAbsence = await absenceRepository.findOne({
+            select: ['id', 'updatedAt'],
+            where: { semester: fallId, faculty: facultyId },
+          });
+          springAbsence = await absenceRepository.findOne({
+            select: ['id', 'updatedAt'],
+            relations: ['faculty'],
+            where: { semester: springId, faculty: facultyId },
+          });
         });
         it('updates the specified absence', async function () {
           const { status } = await request(api)
@@ -817,26 +825,19 @@ describe('Faculty API', function () {
           });
         });
         describe(`changing FROM ${absenceEnumToTitleCase(ABSENCE_TYPE.NO_LONGER_ACTIVE)}`, function () {
-          let noLongerActiveAbsence: Absence;
           beforeEach(async function () {
             // Update the absence to be longer active
             await absenceRepository.createQueryBuilder('a')
               .update(Absence)
               .set({ type: ABSENCE_TYPE.NO_LONGER_ACTIVE })
-              .where({ semester: In([springId, fallId]), faculty: facultyId })
+              .where({ id: In([springAbsence.id, fallAbsence.id]) })
               .execute();
-            // Find absence that is currently NLA in the current academic year
-            noLongerActiveAbsence = await absenceRepository
-              .findOne({
-                relations: ['faculty'],
-                where: { semester: springId, faculty: facultyId },
-              });
           });
           it('does not modify past absences', async function () {
             const absencesBeforeUpdate = (await absenceRepository.find({
               select: ['type', 'id'],
               relations: ['semester'],
-              where: { faculty: noLongerActiveAbsence.faculty.id },
+              where: { faculty: springAbsence.faculty.id },
               order: {
                 id: 'ASC',
               },
@@ -845,9 +846,9 @@ describe('Faculty API', function () {
                 < thisAcademicYear);
 
             await request(api)
-              .put(`/api/faculty/absence/${noLongerActiveAbsence.id}`)
+              .put(`/api/faculty/absence/${springAbsence.id}`)
               .send({
-                id: noLongerActiveAbsence.id,
+                id: springAbsence.id,
                 type: ABSENCE_TYPE.TEACHING_RELIEF,
               });
             const absencesAfterUpdate = await absenceRepository.find({
@@ -868,15 +869,15 @@ describe('Faculty API', function () {
           });
           it(`sets all future absences to ${absenceEnumToTitleCase(ABSENCE_TYPE.PRESENT)}`, async function () {
             await request(api)
-              .put(`/api/faculty/absence/${noLongerActiveAbsence.id}`)
+              .put(`/api/faculty/absence/${springAbsence.id}`)
               .send({
-                id: noLongerActiveAbsence.id,
+                id: springAbsence.id,
                 type: ABSENCE_TYPE.TEACHING_RELIEF,
               });
             const absences = (await absenceRepository.find({
               select: ['type'],
               relations: ['semester'],
-              where: { faculty: noLongerActiveAbsence.faculty.id },
+              where: { faculty: springAbsence.faculty.id },
               order: {
                 type: 'ASC',
               },
@@ -890,28 +891,26 @@ describe('Faculty API', function () {
             );
           });
           it('only updates spring of the next academic year if editing spring', async function () {
-            const [
-              fallBeforeUpdate,
-              springBeforeUpdate,
-            ] = await absenceRepository.find({
-              select: ['id', 'updatedAt'],
-              relations: ['semester'],
-              where: { semester: In([springId, fallId]), faculty: facultyId },
+            const fallBeforeUpdate = await absenceRepository.findOne({
+              select: ['updatedAt'],
+              where: { id: fallAbsence.id },
             });
             await request(api)
-              .put(`/api/faculty/absence/${springBeforeUpdate.id}`)
+              .put(`/api/faculty/absence/${springAbsence.id}`)
               .send({
-                id: springBeforeUpdate.id,
+                id: springAbsence.id,
                 type: ABSENCE_TYPE.TEACHING_RELIEF,
               });
-            // Make sure that spring has been edited and fall has not
-            const [
-              fallAfterUpdate,
-              springAfterUpdate,
-            ] = await absenceRepository.findByIds([
-              fallBeforeUpdate.id,
-              springBeforeUpdate.id,
-            ], { select: ['id', 'updatedAt'] });
+
+            const fallAfterUpdate = await absenceRepository.findOne({
+              select: ['id', 'updatedAt', 'createdAt'],
+              where: { id: fallAbsence.id },
+            });
+            const springAfterUpdate = await absenceRepository.findOne({
+              select: ['id', 'updatedAt'],
+              where: { id: springAbsence.id },
+            });
+
             strictEqual(springAfterUpdate.type, ABSENCE_TYPE.PRESENT);
             deepStrictEqual(
               fallAfterUpdate.updatedAt,
@@ -919,10 +918,6 @@ describe('Faculty API', function () {
             );
           });
           it('updates fall of the current academic year and spring of the next academic year if updating fall', async function () {
-            const fallAbsence = await absenceRepository.findOne({
-              select: ['id', 'updatedAt'],
-              where: { semester: fallId, faculty: facultyId },
-            });
             await request(api)
               .put(`/api/faculty/absence/${fallAbsence.id}`)
               .send({
@@ -935,34 +930,26 @@ describe('Faculty API', function () {
               springAfterUpdate,
             ] = await absenceRepository.find({
               relations: ['semester'],
-              where: { semester: In([springId, fallId]), faculty: facultyId },
+              where: { id: In([springAbsence.id, fallAbsence.id]) },
             });
             strictEqual(fallAfterUpdate.type, ABSENCE_TYPE.PRESENT);
             strictEqual(springAfterUpdate.type, ABSENCE_TYPE.PRESENT);
           });
         });
         describe(`changing TO ${absenceEnumToTitleCase(ABSENCE_TYPE.NO_LONGER_ACTIVE)}`, function () {
-          let noLongerActiveAbsence: Absence;
           beforeEach(async function () {
             // Update the absence to be longer active
             await absenceRepository.createQueryBuilder('a')
               .update(Absence)
               .set({ type: ABSENCE_TYPE.PRESENT })
-              .where({ semester: In([springId, fallId]), faculty: facultyId })
+              .where({ id: In([springAbsence.id, fallAbsence.id]) })
               .execute();
-
-            // Find absence that is currently NLA in the current academic year
-            noLongerActiveAbsence = await absenceRepository
-              .findOne({
-                relations: ['faculty'],
-                where: { semester: springId, faculty: facultyId },
-              });
           });
           it('does not modify past absences', async function () {
             const absencesBeforeUpdate = (await absenceRepository.find({
               select: ['type', 'id'],
               relations: ['semester'],
-              where: { faculty: noLongerActiveAbsence.faculty.id },
+              where: { faculty: springAbsence.faculty.id },
               order: {
                 id: 'ASC',
               },
@@ -971,9 +958,9 @@ describe('Faculty API', function () {
                 < thisAcademicYear);
 
             await request(api)
-              .put(`/api/faculty/absence/${noLongerActiveAbsence.id}`)
+              .put(`/api/faculty/absence/${springAbsence.id}`)
               .send({
-                id: noLongerActiveAbsence.id,
+                id: springAbsence.id,
                 type: ABSENCE_TYPE.NO_LONGER_ACTIVE,
               });
             const absencesAfterUpdate = await absenceRepository.find({
@@ -994,15 +981,15 @@ describe('Faculty API', function () {
           });
           it(`sets all future absences to ${absenceEnumToTitleCase(ABSENCE_TYPE.NO_LONGER_ACTIVE)}`, async function () {
             await request(api)
-              .put(`/api/faculty/absence/${noLongerActiveAbsence.id}`)
+              .put(`/api/faculty/absence/${springAbsence.id}`)
               .send({
-                id: noLongerActiveAbsence.id,
+                id: springAbsence.id,
                 type: ABSENCE_TYPE.NO_LONGER_ACTIVE,
               });
             const absences = (await absenceRepository.find({
               select: ['type'],
               relations: ['semester'],
-              where: { faculty: noLongerActiveAbsence.faculty.id },
+              where: { faculty: springAbsence.faculty.id },
               order: {
                 type: 'ASC',
               },
