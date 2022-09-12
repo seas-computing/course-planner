@@ -1003,6 +1003,24 @@ describe('Faculty API', function () {
               true
             );
           });
+          it('updates fall of the current academic year and spring of the next academic year if updating fall', async function () {
+            await request(api)
+              .put(`/api/faculty/absence/${fallAbsence.id}`)
+              .send({
+                id: fallAbsence.id,
+                type: ABSENCE_TYPE.NO_LONGER_ACTIVE,
+              });
+
+            const [
+              fallAfterUpdate,
+              springAfterUpdate,
+            ] = await absenceRepository.find({
+              relations: ['semester'],
+              where: { id: In([springAbsence.id, fallAbsence.id]) },
+            });
+            strictEqual(fallAfterUpdate.type, ABSENCE_TYPE.NO_LONGER_ACTIVE);
+            strictEqual(springAfterUpdate.type, ABSENCE_TYPE.NO_LONGER_ACTIVE);
+          });
         });
       });
       describe('User is not a member of the admin group', function () {
