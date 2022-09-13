@@ -32,7 +32,7 @@ describe('Offered Modal', function () {
   let onCloseStub: SinonStub;
   let onSaveStub: SinonStub;
   let putStub: SinonStub;
-  const meetingTerm = TERM.FALL;
+  const meetingTerm = TERM.SPRING;
   const semKey = meetingTerm.toLowerCase() as TermKey;
   const testCourseInstance = cs50CourseInstance;
   describe('rendering', function () {
@@ -44,7 +44,7 @@ describe('Offered Modal', function () {
           isVisible
           currentCourseInstance={testCourseInstance}
           currentSemester={{
-            calendarYear: testCourseInstance[semKey].calendarYear,
+            academicYear: testCourseInstance[semKey].calendarYear,
             term: meetingTerm,
           }}
           onClose={onCloseStub}
