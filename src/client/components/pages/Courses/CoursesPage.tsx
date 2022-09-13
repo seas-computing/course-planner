@@ -769,7 +769,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
         isVisible={offeredModalData.visible}
         currentSemester={{
           term: offeredModalData.term,
-          calendarYear: selectedAcademicYear.toString(),
+          academicYear: selectedAcademicYear.toString(),
         }}
         currentCourseInstance={offeredModalData.course}
         onClose={closeOfferedModal}
