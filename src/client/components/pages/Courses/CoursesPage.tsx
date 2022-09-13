@@ -806,7 +806,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
         course={enrollmentModalData.course}
         currentSemester={{
           term: enrollmentModalData.term,
-          calendarYear: selectedAcademicYear.toString(),
+          academicYear: selectedAcademicYear.toString(),
         }}
         onSave={(data) => {
           const semKey = enrollmentModalData.term.toLowerCase() as TermKey;
