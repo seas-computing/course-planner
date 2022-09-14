@@ -30,6 +30,7 @@ import { InstructorResponseDTO } from '../../../../common/dto/courses/Instructor
 import { getAllInstructors } from '../../../api/faculty';
 import { ManageFacultyResponseDTO } from '../../../../common/dto/faculty/ManageFacultyResponse.dto';
 import { updateInstructorList } from '../../../api';
+import { getInstanceIdentifier } from '../utils/getInstanceIdentifier';
 
 /**
 * Implement flexbox inside our ListItem to handle row spacing for handling
@@ -55,7 +56,7 @@ interface InstructorModalProps {
    */
   currentSemester: {
     term: TERM,
-    calendarYear: string,
+    academicYear: string,
   };
   /**
    * Full details of the course/instances whose instructors are being edited
@@ -265,16 +266,11 @@ const InstructorModal: FunctionComponent<InstructorModalProps> = ({
       setSaving(false);
     }
   };
-
-  const instanceIdentifier = currentCourse && currentSemester
-    ? `${
-      currentCourse.catalogNumber
-    }, ${
-      currentSemester.term
-    } ${
-      currentSemester.calendarYear
-    }`
-    : '';
+  // Generate and store the instance identifier so that it can be used
+  // in the modal header and as alternative text
+  const instanceIdentifier = getInstanceIdentifier(
+    currentCourse, currentSemester
+  );
   return (
     <Modal
       ariaLabelledBy="edit-instructors-header"
