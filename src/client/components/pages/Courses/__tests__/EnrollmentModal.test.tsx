@@ -31,7 +31,7 @@ describe('Enrollment Modal', function () {
         <EnrollmentModal
           course={testData}
           currentSemester={{
-            calendarYear: testData.spring.calendarYear,
+            academicYear: testData.spring.calendarYear,
             term: TERM.SPRING,
           }}
           onClose={closeStub}
