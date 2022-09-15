@@ -10,6 +10,9 @@ import {
   QueryByText,
   GetByText,
   renderWithMessaging,
+  waitForElementToBeRemoved,
+  RenderResult,
+  within,
 } from 'test-utils';
 import {
   stub,
@@ -43,17 +46,12 @@ describe('Faculty Schedule Modal Behavior', function () {
     let getByLabelText: BoundFunction<GetByText>;
     let editAppliedMathFallAbsenceButton: HTMLElement;
     let editAppliedMathSpringAbsenceButton: HTMLElement;
+    let page: RenderResult;
     beforeEach(function () {
       putStub = stub(FacultyAPI, 'updateFacultyAbsence');
       putStub.resolves({ data: facultyAbsenceResponse });
-      ({
-        findByText,
-        queryByText,
-        getByLabelText,
-      } = renderWithMessaging(
-        <FacultySchedule />
-      )
-      );
+      page = renderWithMessaging(<FacultySchedule />);
+      ({ findByText, queryByText, getByLabelText } = page);
     });
     context('when a Fall semester edit faculty button has been clicked', function () {
       beforeEach(async function () {
@@ -97,10 +95,17 @@ describe('Faculty Schedule Modal Behavior', function () {
         });
       });
       context('when the absence modal is submitted', function () {
-        it('should show a success message', async function () {
-          const submitButton = await findByText('Submit', { exact: false });
+        let modal: HTMLDivElement;
+        beforeEach(async function () {
+          modal = await page.findByRole('dialog') as HTMLDivElement;
+          const submitButton = await within(modal)
+            .findByText('Submit', { exact: false });
           fireEvent.click(submitButton);
-          await wait(() => !queryByText('Sabbatical/Leave for', { exact: false }));
+          await waitForElementToBeRemoved(
+            () => page.queryByText('Sabbatical/Leave for', { exact: false })
+          );
+        });
+        it('should show a success message', async function () {
           return findByText('Faculty absence was updated', { exact: false });
         });
       });
