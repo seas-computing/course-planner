@@ -347,6 +347,7 @@ export class CourseInstanceService {
       .orderBy('weekday', 'ASC')
       .addOrderBy('"startHour"', 'ASC')
       .addOrderBy('"startMinute"', 'ASC')
+      .addOrderBy('instructors."instructorOrder"', 'ASC')
       .getMany() as Promise<RoomScheduleResponseDTO[]>;
   }
 }
