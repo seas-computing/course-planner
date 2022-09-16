@@ -70,10 +70,6 @@ const RoomSchedule: FunctionComponent = () => {
    * Later, we may add the current Term to metadata
    */
   const { currentAcademicYear, semesters } = useContext(MetadataContext);
-  // This hardcoded academic year will be replaced with the above. Since there
-  // is no current data for Fall 2022, we are using 2020 as the year for now.
-
-  // const currentAcademicYear = 2020;
 
   /**
    * Keeps track of the currently selected term
