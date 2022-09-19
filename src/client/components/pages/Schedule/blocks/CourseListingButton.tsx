@@ -10,7 +10,7 @@ interface CourseListingButtonProps {
    * Whether the text of the button should fade into the background, e.g. when
    * one of the other courses in this block is highlighted
    */
-  isFaded?: boolean;
+  //isFaded?: boolean;
 }
 
 /**
@@ -25,7 +25,7 @@ const CourseListingButton = styled.button.attrs({
   )};
   border: none;
   font-size: inherit;
-  opacity: ${({ isFaded }) => (isFaded ? '0.5' : '1')};
+  opacity: ${({ disabled }) => (disabled ? '0.5' : '1')};
   padding: 0;
   margin: 0;
   width: 100%;

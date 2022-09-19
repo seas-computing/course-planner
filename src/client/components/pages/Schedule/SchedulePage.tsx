@@ -1,9 +1,9 @@
 import React, {
-  FunctionComponent, useState, useEffect, useContext,
+  FunctionComponent, useState, useEffect, useContext, ChangeEvent,
 } from 'react';
 import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
 import { getCourseScheduleForSemester } from 'client/api/courses';
-import { TERM } from 'common/constants';
+import { DEGREE_PROGRAM, TERM } from 'common/constants';
 import { Dropdown, POSITION, LoadSpinner } from 'mark-one';
 import { AppMessage, MESSAGE_TYPE, MESSAGE_ACTION } from 'client/classes';
 import { MessageContext, MetadataContext } from 'client/context';
@@ -22,7 +22,9 @@ import { useStoredState } from '../../../hooks/useStoredState';
 
 const FIRST_HOUR = 8;
 const LAST_HOUR = 22;
-
+declare type DegreeProgramEvent=ChangeEvent<HTMLSelectElement> & {
+  target :{value: DEGREE_PROGRAM}
+};
 /** Describes the currently selected semester */
 interface SemesterSelection {
   term: TERM;
@@ -41,6 +43,9 @@ const SchedulePage: FunctionComponent = () => {
    */
   const [schedule, setSchedule] = useState<ScheduleViewResponseDTO[]>([]);
 
+  const [
+    displaySchedule,
+    setDisplaySchedule] = useState<ScheduleViewResponseDTO[]>([]);
   /**
    * The function for displaying messages in the user interface
    */
@@ -60,6 +65,12 @@ const SchedulePage: FunctionComponent = () => {
     setSelectedSemester,
   ] = useStoredState<SemesterSelection>('SCHEDULE_SEMESTER_SELECTION');
 
+  /* Track the degree program for which data will be shown in the table
+  */
+  const [
+    selectedDegreeProgram,
+    setSelectedDegreeProgram,
+  ] = useState < DEGREE_PROGRAM >(DEGREE_PROGRAM.BOTH);
   /**
    * Whether an API request is in progress
    */
@@ -133,6 +144,7 @@ const SchedulePage: FunctionComponent = () => {
             });
           }
           setSchedule(data);
+          setDisplaySchedule(data);
         })
         .catch(():void => {
           dispatchMessage({
@@ -167,6 +179,23 @@ const SchedulePage: FunctionComponent = () => {
             onChange={updateTerm}
           />
         )}
+        <Dropdown
+          id="degree-program-selector"
+          name="degree-program-selector"
+          label="Degree Program"
+          isLabelVisible
+          options={[{ label: 'Both', value: DEGREE_PROGRAM.BOTH },
+            { label: 'Graduate', value: DEGREE_PROGRAM.GRADUATE },
+            { label: 'Undergraduate', value: DEGREE_PROGRAM.UNDERGRADUATE }]}
+          value={selectedDegreeProgram.toString()}
+          onChange={
+            ({
+              target: { value },
+            }: DegreeProgramEvent) => {
+              setSelectedDegreeProgram(value);
+            }
+          }
+        />
       </VerticalSpace>
       {isFetching
         ? (
@@ -179,6 +208,7 @@ const SchedulePage: FunctionComponent = () => {
             schedule={schedule}
             firstHour={FIRST_HOUR}
             lastHour={LAST_HOUR}
+            degreeProgram={selectedDegreeProgram}
           />
         )}
     </>

@@ -61,6 +61,7 @@ interface SessionBlockProps {
    * Whether a popover is currently visible
    */
   isPopoverVisible: boolean;
+
 }
 
 /**
@@ -174,6 +175,7 @@ const SessionBlockBodyWrapper = styled.div<SessionBlockBodyWrapperProps>`
  */
 const SessionBlockBody = styled.ul<SessionBlockBodyProps>`
   list-style: none;
+
   padding-left: ${fromTheme('ws', 'xsmall')};
   padding-right: ${fromTheme('ws', 'xsmall')};
 `;

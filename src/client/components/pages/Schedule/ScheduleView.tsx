@@ -2,11 +2,13 @@ import React, { FunctionComponent, useState } from 'react';
 import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
 import DAY, { dayEnumToString } from 'common/constants/day';
 import { Popover } from 'mark-one';
+import { DEGREE_PROGRAM } from 'common/constants';
 import {
   WeekBlock, DayBlock, CourseListing, SessionBlock, CourseListingButton,
 } from './blocks';
 import { PGTime } from '../../../../common/utils/PGTime';
 import { HiddenText } from '../../general';
+import { courses } from '../../../../../tests/mocks/database/population/data';
 
 interface ScheduleViewProps {
   /**
@@ -45,6 +47,12 @@ interface ScheduleViewProps {
    * represented by each grid row is controller by the minuteResolution prop
    */
   rowHeight?: string;
+
+  /* * The Degree program of the data currently being displayed
+  */
+
+  degreeProgram?: DEGREE_PROGRAM
+
 }
 
 /**
@@ -59,6 +67,7 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
   minuteResolution,
   rowHeight,
   days,
+  degreeProgram,
 }) => {
   // Convert the range of hours covered by our Schedule to a number of
   // css-grid rows
@@ -69,7 +78,6 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
    * Track the prefix and catalog number of the course whose details should be shown.
    */
   const [currentPopover, setCurrentPopover] = useState('');
-
   return (
     <WeekBlock
       firstHour={firstHour}
@@ -99,7 +107,7 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
             endMinute,
             duration,
             weekday,
-            courses,
+            courses
           }) => {
             if (dayEnumToString(weekday) === day) {
               const resolvedStartRow = Math.round(
@@ -117,7 +125,7 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
               }) => instanceId === currentPopover);
               return [...blocks, (
                 <SessionBlock
-                  isFaded={currentPopover && !popoverInBlock}
+                  isFaded={(currentPopover && !popoverInBlock)}
                   isPopoverVisible={!!currentPopover}
                   key={sessionId}
                   prefix={coursePrefix}
@@ -158,6 +166,7 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
                     instanceId,
                     courseNumber,
                     room,
+                    isUndergraduate,
                   }) => {
                     const catalogNumber = `${coursePrefix} ${courseNumber}`;
                     const displayStartTime = PGTime.toDisplay(
@@ -167,18 +176,30 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
                       `${endHour}:${endMinute.toString().padStart(2, '0')}`
                     );
                     const isSelected = currentPopover === instanceId;
+                    const isSeletedDegreeProgram= degreeProgram===DEGREE_PROGRAM.BOTH 
+                    || (isUndergraduate && degreeProgram === DEGREE_PROGRAM.UNDERGRADUATE)
+                   ||(!isUndergraduate && degreeProgram === DEGREE_PROGRAM.GRADUATE)
                     return (
                       <CourseListing key={meetingId}>
                         <CourseListingButton
                           isHighlighted={popoverInBlock && isSelected}
-                          isFaded={popoverInBlock && !isSelected}
-                          aria-disabled
+                          disabled={
+                            !isSeletedDegreeProgram
+                            || (popoverInBlock && !isSelected)
+                          }
                           aria-labelledby={`${meetingId}-description`}
+                          data-testid={meetingId}
+                          data-disabled={
+                            !isSeletedDegreeProgram
+                            || (popoverInBlock && !isSelected)
+                          }
                           onClick={(event) => {
                             event.stopPropagation();
-                            setCurrentPopover((current) => (
-                              current === instanceId ? null : instanceId
-                            ));
+                            if (isSeletedDegreeProgram) {
+                              setCurrentPopover((current) => (
+                                current === instanceId ? null : instanceId
+                              ));
+                            }
                           }}
                         >
                           {courseNumber}
@@ -204,6 +225,7 @@ ScheduleView.defaultProps = {
   minuteResolution: 5,
   rowHeight: '0.5em',
   days: Object.values(DAY).map(dayEnumToString),
+  degreeProgram: DEGREE_PROGRAM.BOTH,
 };
 
 export default ScheduleView;

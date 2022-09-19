@@ -10,6 +10,7 @@ import ScheduleView from '../ScheduleView';
 import { dayEnumToString } from '../../../../../common/constants/day';
 import { PGTime } from '../../../../../common/utils/PGTime';
 import { ScheduleViewResponseDTO, ScheduleEntry } from '../../../../../common/dto/schedule/schedule.dto';
+//import { DEGREE_PROGRAM } from 'common/constants';
 
 describe('ScheduleView', function () {
   let page: RenderResult;
