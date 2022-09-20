@@ -10,7 +10,6 @@ interface CourseListingButtonProps {
    * Whether the text of the button should fade into the background, e.g. when
    * one of the other courses in this block is highlighted
    */
-  //isFaded?: boolean;
 }
 
 /**

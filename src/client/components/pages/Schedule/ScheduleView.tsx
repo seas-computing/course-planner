@@ -8,7 +8,6 @@ import {
 } from './blocks';
 import { PGTime } from '../../../../common/utils/PGTime';
 import { HiddenText } from '../../general';
-import { courses } from '../../../../../tests/mocks/database/population/data';
 
 interface ScheduleViewProps {
   /**
@@ -107,7 +106,7 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
             endMinute,
             duration,
             weekday,
-            courses
+            courses,
           }) => {
             if (dayEnumToString(weekday) === day) {
               const resolvedStartRow = Math.round(
@@ -125,7 +124,6 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
               }) => instanceId === currentPopover);
               return [...blocks, (
                 <SessionBlock
-                  isFaded={(currentPopover && !popoverInBlock)}
                   isPopoverVisible={!!currentPopover}
                   key={sessionId}
                   prefix={coursePrefix}

@@ -70,7 +70,7 @@ FunctionComponent<CourseInstanceTableBodyProps> = ({
   <TableBody>
     {courseList.map((course, index) => (
       <TableRow key={course.id} isStriped={index % 2 !== 0}>
-        { tableData.map(
+        {tableData.map(
           (field: CourseInstanceListColumn): ReactElement => {
             const { FieldContent } = field;
             if (field.viewColumn === COURSE_TABLE_COLUMN.CATALOG_NUMBER) {
@@ -92,8 +92,7 @@ FunctionComponent<CourseInstanceTableBodyProps> = ({
                 key={field.key}
                 backgroundColor={
                   field.viewColumn === COURSE_TABLE_COLUMN.AREA
-                     && getAreaColor(course.area)
-
+                    && getAreaColor(course.area)
                 }
               >
                 <CellLayout>

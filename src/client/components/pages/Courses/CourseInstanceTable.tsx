@@ -24,7 +24,6 @@ import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse
 import { CourseInstanceListColumn } from './tableFields';
 import { FilterState } from './filters.d';
 import CourseInstanceTableBody from './CourseInstanceTableBody';
-import { courses } from '../../../../../tests/mocks/database/population/data';
 
 interface CourseInstanceTableProps {
   /**

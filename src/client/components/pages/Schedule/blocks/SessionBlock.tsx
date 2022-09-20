@@ -50,7 +50,6 @@ interface SessionBlockProps {
    * Whether the block should be faded out, as when a course in another block
    * has been clicked
    */
-  isFaded: boolean;
   /**
    * The collection of Popover elements corresponding to the buttons in the
    * list. These need to be rendered at the top level of the session block in order
@@ -70,7 +69,7 @@ interface SessionBlockProps {
  */
 interface SessionBlockWrapperProps extends Pick<
 SessionBlockProps,
-'prefix' | 'duration' | 'startRow' | 'isFaded'
+'prefix' | 'duration' | 'startRow'
 > {
   /**
    * Check if there are elements overflowing the bottom of the list
@@ -97,7 +96,7 @@ type SessionBlockBodyProps = Pick<SessionBlockProps, 'children'>;
  * Takes the isPopoverVisible prop from the SessionBlock
  */
  type SessionBlockBodyWrapperProps = Pick<
- SessionBlockProps, 'isPopoverVisible' | 'isFaded'>;
+ SessionBlockProps, 'isPopoverVisible'>;
 
 /**
  * The top level of the SessionBlock, which handles setting the placement
@@ -109,7 +108,6 @@ const SessionBlockWrapper = styled.div<SessionBlockWrapperProps>`
   border-left: 1px solid #fff;
   border-right: 1px solid #fff;
   border-bottom: 1px solid #fff;
-  opacity: ${({ isFaded }) => (isFaded ? '0.6' : '1')};
   min-width: 2.5em;
   position: relative;
   ${({ hasBottomOverflow, theme }) => (
@@ -157,8 +155,8 @@ const SessionBlockHeading = styled.h4<SessionBlockHeadingProps>`
  * A wrapper around the table to handle scrolling within the list only.
  */
 const SessionBlockBodyWrapper = styled.div<SessionBlockBodyWrapperProps>`
-  overflow-y: ${({ isPopoverVisible, isFaded }): string => (
-    isPopoverVisible && !isFaded
+  overflow-y: ${({ isPopoverVisible }): string => (
+    isPopoverVisible
       ? 'hidden'
       : 'scroll'
   )};
@@ -175,7 +173,6 @@ const SessionBlockBodyWrapper = styled.div<SessionBlockBodyWrapperProps>`
  */
 const SessionBlockBody = styled.ul<SessionBlockBodyProps>`
   list-style: none;
-
   padding-left: ${fromTheme('ws', 'xsmall')};
   padding-right: ${fromTheme('ws', 'xsmall')};
 `;
@@ -191,7 +188,6 @@ const SessionBlock: FunctionComponent<SessionBlockProps> = ({
   startRow,
   duration,
   children,
-  isFaded,
   isPopoverVisible,
   popovers,
 }) => {
@@ -246,7 +242,6 @@ const SessionBlock: FunctionComponent<SessionBlockProps> = ({
       prefix={prefix}
       startRow={startRow}
       duration={duration}
-      isFaded={isFaded}
       onScroll={checkOverflow}
       hasTopOverflow={hasOverflow.top}
       hasBottomOverflow={hasOverflow.bottom}
@@ -256,7 +251,6 @@ const SessionBlock: FunctionComponent<SessionBlockProps> = ({
       </SessionBlockHeading>
       <SessionBlockBodyWrapper
         isPopoverVisible={isPopoverVisible}
-        isFaded={isFaded}
         ref={bodyWrapperRef}
       >
         <SessionBlockBody>
