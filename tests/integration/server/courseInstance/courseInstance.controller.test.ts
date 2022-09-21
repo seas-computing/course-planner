@@ -1473,6 +1473,32 @@ describe('CourseInstance API', function () {
               // Get the relevant test course instance id in order to use the
               // id to get the associated instructors
               const ci = await ciRepository
+                .createQueryBuilder('ci')
+                .innerJoinAndSelect('ci.semester', 's')
+                .innerJoinAndSelect('ci.course', 'c')
+                .where('c.title = :title', { title: result.title })
+                .andWhere('s.term = :testTerm', { testTerm })
+                .andWhere('s."academicYear" = :testAcademicYear', { testAcademicYear })
+                .getOne();
+              // Get the existing instructors organized by instructorOrder
+              const existingInstructors = await fciRepository.find({
+                where: {
+                  courseInstance: ci.id,
+                },
+                order: {
+                  order: 'ASC',
+                },
+                relations: ['faculty'],
+              });
+              const expectedInstructorIds = existingInstructors
+                .map(({ faculty }) => faculty.id);
+              const actualInstructorIds = result.faculty
+                .map((facultyMember) => facultyMember.id);
+              deepStrictEqual(expectedInstructorIds, actualInstructorIds);
+            }));
+          });
+        });
+      });
     });
   });
 });
