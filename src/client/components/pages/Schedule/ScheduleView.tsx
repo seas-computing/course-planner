@@ -174,9 +174,12 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
                       `${endHour}:${endMinute.toString().padStart(2, '0')}`
                     );
                     const isSelected = currentPopover === instanceId;
-                    const isSeletedDegreeProgram= degreeProgram===DEGREE_PROGRAM.BOTH 
-                    || (isUndergraduate && degreeProgram === DEGREE_PROGRAM.UNDERGRADUATE)
-                   ||(!isUndergraduate && degreeProgram === DEGREE_PROGRAM.GRADUATE)
+                    const isSeletedDegreeProgram = degreeProgram
+                    === DEGREE_PROGRAM.BOTH
+                    || (isUndergraduate && degreeProgram
+                      === DEGREE_PROGRAM.UNDERGRADUATE)
+                   || (!isUndergraduate && degreeProgram
+                    === DEGREE_PROGRAM.GRADUATE);
                     return (
                       <CourseListing key={meetingId}>
                         <CourseListingButton

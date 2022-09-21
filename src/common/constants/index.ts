@@ -1,7 +1,7 @@
 export { default as ABSENCE_TYPE } from './absenceType';
 export { default as AREA_COLORS, getAreaColor } from './areaColors';
 export { default as CATALOG_PREFIX_COLORS, getCatPrefixColor } from './catalogPrefixColors';
-export { default as DEGREE_PROGRAM} from './degreeProgram';
+export { default as DEGREE_PROGRAM } from './degreeProgram';
 export { default as FACULTY_TYPE } from './facultyType';
 export { default as DAY } from './day';
 export { default as OFFERED, offeredEnumToString } from './offered';

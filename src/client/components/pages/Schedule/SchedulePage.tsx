@@ -43,9 +43,6 @@ const SchedulePage: FunctionComponent = () => {
    */
   const [schedule, setSchedule] = useState<ScheduleViewResponseDTO[]>([]);
 
-  const [
-    displaySchedule,
-    setDisplaySchedule] = useState<ScheduleViewResponseDTO[]>([]);
   /**
    * The function for displaying messages in the user interface
    */
@@ -144,7 +141,6 @@ const SchedulePage: FunctionComponent = () => {
             });
           }
           setSchedule(data);
-          setDisplaySchedule(data);
         })
         .catch(():void => {
           dispatchMessage({

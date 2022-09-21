@@ -16,11 +16,8 @@ import { strictEqual, deepStrictEqual } from 'assert';
 import * as dummy from 'testData';
 import { MetadataContextValue } from 'client/context/MetadataContext';
 import { DEGREE_PROGRAM, TERM } from 'common/constants';
-import SchedulePage from '../SchedulePage';
-import ScheduleView from '../ScheduleView';
 import { testCourseScheduleData } from 'testData';
-import { assert } from 'console';
-import { Equal } from 'typeorm';
+import SchedulePage from '../SchedulePage';
 
 describe('Schedule Page', function () {
   let dispatchMessage: SinonStub;
@@ -94,7 +91,7 @@ describe('Schedule Page', function () {
   });
   describe('Degree Program Dropdown', function () {
     let renderResult: RenderResult;
-    beforeEach( async function () {
+    beforeEach(async function () {
       apiStub.resolves(testCourseScheduleData);
       const fakeDate = new Date(testAcademicYear, 5, 30);
       clock = FakeTimers.install({
@@ -105,7 +102,7 @@ describe('Schedule Page', function () {
         <SchedulePage />,
         { metadataContext: metadata }
       );
-      await waitForElementToBeRemoved(()=> renderResult.getByText('Fetching Course Schedule'))
+      await waitForElementToBeRemoved(() => renderResult.getByText('Fetching Course Schedule'));
     });
     afterEach(function () {
       clock.uninstall();
@@ -125,7 +122,7 @@ describe('Schedule Page', function () {
   });
   describe('Degree Program Selected', function () {
     let renderResult: RenderResult;
-    beforeEach( async function () {
+    beforeEach(async function () {
       apiStub.resolves(testCourseScheduleData);
       const fakeDate = new Date(testAcademicYear, 5, 30);
       clock = FakeTimers.install({
@@ -136,32 +133,31 @@ describe('Schedule Page', function () {
         <SchedulePage />,
         { metadataContext: metadata }
       );
-      await waitForElementToBeRemoved(()=> renderResult.getByText('Fetching Course Schedule'))
+      await waitForElementToBeRemoved(() => renderResult.getByText('Fetching Course Schedule'));
     });
     afterEach(function () {
       clock.uninstall();
     });
-    it('The course program button is not faded when both is selected', () => {
+    it('The course program button is not faded when both is selected', function () {
       const { getByLabelText } = renderResult;
       const degreeProgramDropDown = getByLabelText(/Degree Program/i) as HTMLSelectElement;
       const selectedDegreeProgram = degreeProgramDropDown.value;
-      fireEvent.change(degreeProgramDropDown, { target: { value: DEGREE_PROGRAM.BOTH } });
-      let undergradCourseId= testCourseScheduleData[0].courses[0].id
-      let undergradFaded=  (renderResult.getByTestId(undergradCourseId).getAttribute('data-disabled')==='true')
+      fireEvent.change(degreeProgramDropDown,
+        { target: { value: DEGREE_PROGRAM.BOTH } });
+      const undergradCourseId = testCourseScheduleData[0].courses[0].id;
+      const undergradFaded = (renderResult.getByTestId(undergradCourseId).getAttribute('data-disabled') === 'true');
       strictEqual(selectedDegreeProgram === 'BOTH', undergradFaded === false);
-      
-    })
-    it('The grad course program is not faded when undergrad is selected ', ()=>{
+    });
+    it('The grad course program is not faded when undergrad is selected ', function () {
       const { getByLabelText } = renderResult;
       const degreeProgramDropDown = getByLabelText(/Degree Program/i) as HTMLSelectElement;
-      const selectedDegreeProgram = degreeProgramDropDown.value;
-      fireEvent.change(degreeProgramDropDown, { target: { value: DEGREE_PROGRAM.GRADUATE } });
-      let gradCourseId= testCourseScheduleData[0].courses[0].id
-      console.log(gradCourseId)
-      let gradFaded=  (renderResult.getByTestId(gradCourseId).getAttribute('data-disabled')==='true')
+      // const selectedDegreeProgram = degreeProgramDropDown.value;
+      fireEvent.change(degreeProgramDropDown,
+        { target: { value: DEGREE_PROGRAM.GRADUATE } });
+      const gradCourseId = testCourseScheduleData[0].courses[0].id;
+      const gradFaded = (renderResult.getByTestId(gradCourseId).getAttribute('data-disabled') === 'true');
       strictEqual(gradCourseId === 'Graduate', gradFaded === false);
-    })
-    
+    });
   });
   describe('Requesting Semester Data', function () {
     let calendarYear: number;
