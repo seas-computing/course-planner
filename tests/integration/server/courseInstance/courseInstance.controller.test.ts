@@ -40,8 +40,6 @@ import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
 import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto';
 import { Room } from 'server/location/room.entity';
 import { RoomScheduleResponseDTO } from 'common/dto/schedule/roomSchedule.dto';
-import { LocationModule } from 'server/location/location.module';
-import { FacultyModule } from 'server/faculty/faculty.module';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import { PGTime } from '../../../../src/common/utils/PGTime';
