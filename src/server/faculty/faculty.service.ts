@@ -96,9 +96,22 @@ export class FacultyService {
         existingAbsence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE
       && absenceReqInfo.type !== ABSENCE_TYPE.NO_LONGER_ACTIVE
       ) {
+        // Set everything to PRESENT
         updateQuery.set({ type: ABSENCE_TYPE.PRESENT });
+
+        // ...everything except the original absence
+        updateQuery.where('id <> :absenceId');
+        await this.absenceRepository
+          .createQueryBuilder()
+          .update(Absence)
+          .where({
+            id: existingAbsence.id,
+          })
+          .set({ type: absenceReqInfo.type })
+          .execute();
       }
       updateQuery.setParameters({
+        absenceId: existingAbsence.id,
         facultyId: existingAbsence.faculty.id,
         academicYear,
         fall: TERM.FALL,

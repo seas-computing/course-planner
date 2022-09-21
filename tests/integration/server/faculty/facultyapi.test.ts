@@ -935,6 +935,19 @@ describe('Faculty API', function () {
             strictEqual(fallAfterUpdate.type, ABSENCE_TYPE.PRESENT);
             strictEqual(springAfterUpdate.type, ABSENCE_TYPE.PRESENT);
           });
+          it(`does not mark the specified absence as ${absenceEnumToTitleCase(ABSENCE_TYPE.PRESENT)}`, async function () {
+            const { status } = await request(api)
+              .put(`/api/faculty/absence/${fallAbsence.id}`)
+              .send({
+                id: fallAbsence.id,
+                type: ABSENCE_TYPE.TEACHING_RELIEF,
+              });
+
+            const { type } = await absenceRepository.findOne(fallAbsence.id);
+
+            strictEqual(status, HttpStatus.OK);
+            strictEqual(type, ABSENCE_TYPE.TEACHING_RELIEF);
+          });
         });
         describe(`changing TO ${absenceEnumToTitleCase(ABSENCE_TYPE.NO_LONGER_ACTIVE)}`, function () {
           beforeEach(async function () {
