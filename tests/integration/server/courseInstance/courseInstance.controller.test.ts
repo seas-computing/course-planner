@@ -39,6 +39,9 @@ import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
 import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto';
 import { Room } from 'server/location/room.entity';
+import { RoomScheduleResponseDTO } from 'common/dto/schedule/roomSchedule.dto';
+import { LocationModule } from 'server/location/location.module';
+import { FacultyModule } from 'server/faculty/faculty.module';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import { PGTime } from '../../../../src/common/utils/PGTime';
@@ -1419,6 +1422,57 @@ describe('CourseInstance API', function () {
           );
         });
       });
+      context('with valid year, term, and room id', function () {
+        let testRoomId: string;
+        let testTerm: TERM;
+        let testAcademicYear: string;
+        let testCalendarYear: string;
+        let results: RoomScheduleResponseDTO[];
+
+        beforeEach(async function () {
+          // Find a course instance that has at least one meeting in a room
+          const testCI = await ciRepository
+            .createQueryBuilder('ci')
+            .innerJoinAndSelect('ci.meetings', 'm')
+            .innerJoinAndSelect('m.room', 'r')
+            .innerJoinAndSelect('ci.semester', 's')
+            .innerJoinAndSelect('ci.facultyCourseInstances', 'fci')
+            .innerJoinAndSelect('fci.faculty', 'f')
+            .where('s."academicYear" > :year', { year: 2021 })
+            .orderBy('f')
+            .getOne();
+          testRoomId = testCI.meetings[0].room.id;
+          testTerm = testCI.semester.term;
+          testAcademicYear = testCI.semester.academicYear;
+          testCalendarYear = testTerm === TERM.SPRING
+            ? testAcademicYear
+            : (parseInt(testAcademicYear, 10) - 1).toString();
+          response = await request(api)
+            .get(`/api/course-instances/room-schedule?roomId=${testRoomId}&term=${testTerm}&year=${testCalendarYear}`);
+          results = response.body;
+        });
+
+        it('should return a 200 status', function () {
+          strictEqual(response.status, HttpStatus.OK);
+        });
+
+        it('should return JSON', function () {
+          strictEqual(response.type, 'application/json');
+        });
+
+        it('should return a nonempty array of data', function () {
+          strictEqual(Array.isArray(results), true);
+          notStrictEqual(results.length, 0);
+        });
+
+        describe('Ordering', function () {
+          it('should order the faculty according to instructorOrder', async function () {
+            // For every room schedule result, loop through to find each course
+            // instance id in order to find the ordered faculty of each instance
+            await Promise.all(results.map(async (result) => {
+              // Get the relevant test course instance id in order to use the
+              // id to get the associated instructors
+              const ci = await ciRepository
     });
   });
 });
