@@ -10,12 +10,12 @@ RUN chown node:node ${APP_DIR}
 COPY --chown=node:node package*.json ./
 RUN ["npm", "install", "--global", "npm"]
 USER node
-RUN ["npm", "ci", "--no-optional"]
+RUN ["npm", "ci", "--omit", "optional"]
 COPY --chown=node:node . . 
 
 # STAGE 2: Extend the base image as a builder image
 FROM base as builder
-RUN npm run build:server && rm -rf node_modules && npm ci --no-optional --production
+RUN npm run build:server && rm -rf node_modules && npm ci --omit optional --omit dev
 
 # STAGE 3: Copy the 'build' directory from previous stage and run in alpine
 # Since this does not extend the base image, we need to set workdir, user, etc. again.

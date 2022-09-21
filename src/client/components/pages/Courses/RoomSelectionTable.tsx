@@ -17,13 +17,13 @@ import {
   TableRowHeadingCell,
   TextInput,
 } from 'mark-one';
-import RoomResponse from 'common/dto/room/RoomResponse.dto';
+import RoomMeetingResponse from 'common/dto/room/RoomMeetingResponse.dto';
 import { CourseInstanceResponseMeeting } from '../../../../common/dto/courses/CourseInstanceResponse';
 import { listFilter } from '../Filter';
 
 interface RoomSelectionTableProps {
   /** The list of rooms to show in the list */
-  roomList: RoomResponse[];
+  roomList: RoomMeetingResponse[];
   /** A handler to be called when the add button is clicked */
   addButtonHandler: (
     roomData: CourseInstanceResponseMeeting['room']
@@ -56,7 +56,7 @@ export enum CAMPUS {
  * Formats the meeting data for the "Availability" column
  */
 const displayAvailability = (
-  { id, campus, meetingTitles }: RoomResponse,
+  { id, campus, meetingTitles }: RoomMeetingResponse,
   currentRoomId: string
 ) => {
   if (id === currentRoomId) {
@@ -105,7 +105,7 @@ const RoomSelectionTable = (
   /**
    * Return filtered rooms based on the campus, room, and availability filters
    */
-  const filteredRooms = useMemo((): RoomResponse[] => {
+  const filteredRooms = useMemo((): RoomMeetingResponse[] => {
     let filteredRoomList = [...roomList];
     if (campusFilter !== 'All') {
       filteredRoomList = listFilter(

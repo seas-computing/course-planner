@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { RoomListingView } from 'server/location/RoomListingView.entity';
 import RoomResponse from 'common/dto/room/RoomResponse.dto';
 import RoomRequest from 'common/dto/room/RoomRequest.dto';
+import RoomMeetingResponse from 'common/dto/room/RoomMeetingResponse.dto';
 import { RoomBookingInfoView } from './RoomBookingInfoView.entity';
 
 /**
@@ -31,6 +32,17 @@ export class LocationService {
 
   @InjectRepository(RoomBookingInfoView)
   private readonly roomBookingRepository: Repository<RoomBookingInfoView>;
+
+  /**
+   * Retrieves all rooms in the database along with their campus and capacity
+   * information.
+   */
+  public async getRoomList(): Promise<RoomResponse[]> {
+    return this.roomListingViewRepository
+      .find({
+        select: ['name', 'campus', 'capacity'],
+      });
+  }
 
   /**
    * Queries the view of room booking info in our database for any existing
@@ -92,7 +104,7 @@ export class LocationService {
       excludeParent,
       ...roomInfo
     }: RoomRequest
-  ): Promise<RoomResponse[]> {
+  ): Promise<RoomMeetingResponse[]> {
     const roomQuery = this.roomListingViewRepository
       .createQueryBuilder('r')
       .leftJoin((qb) => {

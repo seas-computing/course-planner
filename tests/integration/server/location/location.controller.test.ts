@@ -28,6 +28,7 @@ import { LocationModule } from 'server/location/location.module';
 import RoomRequest from 'common/dto/room/RoomRequest.dto';
 import flatMap from 'lodash.flatmap';
 import { Repository } from 'typeorm';
+import RoomMeetingResponse from 'common/dto/room/RoomMeetingResponse.dto';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import { rooms } from '../../../mocks/database/population/data/rooms';
@@ -98,6 +99,59 @@ describe('Location API', function () {
   });
 
   describe('GET /rooms', function () {
+    let response: Response;
+    context('As an unauthenticated user', function () {
+      beforeEach(function () {
+        authStub.resolves(null);
+      });
+      it('should return a 400 status', async function () {
+        authStub.rejects(new ForbiddenException());
+
+        response = await request(api)
+          .get('/api/rooms');
+
+        strictEqual(response.ok, false);
+        strictEqual(response.status, HttpStatus.FORBIDDEN);
+      });
+    });
+    context('As an authenticated user', function () {
+      let result: RoomResponse[];
+      beforeEach(async function () {
+        authStub.resolves(adminUser);
+        response = await request(api)
+          .get('/api/rooms');
+        result = response.body;
+      });
+      it('should return a 200 status', function () {
+        strictEqual(response.status, HttpStatus.OK);
+      });
+      it('should return a nonempty array of data', function () {
+        strictEqual(Array.isArray(result), true);
+        notStrictEqual(result.length, 0);
+      });
+      it('returns all rooms in the database', async function () {
+        const actualRooms = result.map((room) => room.name).sort();
+        const rawRooms = await locationRepo.createQueryBuilder('r')
+          .select('CONCAT_WS(\' \', b.name, r.name)', 'name')
+          .leftJoin('r.building', 'b')
+          .getRawMany();
+        const expectedRooms = rawRooms.map(({ name }) => <string>name).sort();
+        deepStrictEqual(actualRooms, expectedRooms);
+      });
+    });
+    context('As a non-admin user', function () {
+      beforeEach(async function () {
+        authStub.resolves(regularUser);
+        response = await request(api)
+          .get('/api/rooms');
+      });
+      it('is inaccessible to unauthenticated users', function () {
+        authStub.rejects(new ForbiddenException());
+        strictEqual(response.status, HttpStatus.FORBIDDEN);
+      });
+    });
+  });
+  describe('GET /rooms/availability', function () {
     const testParams: RoomRequest = {
       calendarYear: '2020',
       term: TERM.FALL,
@@ -114,7 +168,7 @@ describe('Location API', function () {
         authStub.rejects(new ForbiddenException());
 
         response = await request(api)
-          .get('/api/rooms')
+          .get('/api/rooms/availability')
           .query(testParams);
 
         strictEqual(response.ok, false);
@@ -125,12 +179,12 @@ describe('Location API', function () {
       let response: Response;
       context('As an admin user', function () {
         context('With an invalid year', function () {
-          let result: RoomResponse[];
+          let result: RoomMeetingResponse[];
           beforeEach(async function () {
             authStub.resolves(adminUser);
             const invalidYear = '1902';
             response = await request(api)
-              .get('/api/rooms')
+              .get('/api/rooms/availability')
               .query({ ...testParams, calendarYear: invalidYear });
             result = response.body;
           });
@@ -150,7 +204,7 @@ describe('Location API', function () {
             authStub.resolves(adminUser);
             const invalidTerm = 'fakeTerm' as TERM;
             response = await request(api)
-              .get('/api/rooms')
+              .get('/api/rooms/availability')
               .query({ ...testParams, term: invalidTerm });
           });
           it('should return a 400 status', function () {
@@ -162,7 +216,7 @@ describe('Location API', function () {
             authStub.resolves(adminUser);
             const invalidDay = 'fakeDay' as DAY;
             response = await request(api)
-              .get('/api/rooms')
+              .get('/api/rooms/availability')
               .query({ ...testParams, day: invalidDay });
           });
           it('should return a 400 status', function () {
@@ -174,7 +228,7 @@ describe('Location API', function () {
             authStub.resolves(adminUser);
             const invalidStartTime = '10:00AM';
             response = await request(api)
-              .get('/api/rooms')
+              .get('/api/rooms/availability')
               .query({ ...testParams, startTime: invalidStartTime });
           });
           it('should return a 400 status', function () {
@@ -186,7 +240,7 @@ describe('Location API', function () {
             authStub.resolves(adminUser);
             const invalidEndTime = '26:00:00';
             response = await request(api)
-              .get('/api/rooms')
+              .get('/api/rooms/availability')
               .query({ ...testParams, endTime: invalidEndTime });
           });
           it('should return a 400 status', function () {
@@ -198,7 +252,7 @@ describe('Location API', function () {
             authStub.resolves(adminUser);
             const invalidExcludeParent = 'notUUID';
             response = await request(api)
-              .get('/api/rooms')
+              .get('/api/rooms/availability')
               .query({ ...testParams, excludeParent: invalidExcludeParent });
           });
           it('should return a 400 status', function () {
@@ -206,12 +260,12 @@ describe('Location API', function () {
           });
         });
         context('With valid parameters', function () {
-          let result: RoomResponse[];
+          let result: RoomMeetingResponse[];
           context('Without an excludeParent value', function () {
             beforeEach(async function () {
               authStub.resolves(adminUser);
               response = await request(api)
-                .get('/api/rooms')
+                .get('/api/rooms/availability')
                 .query(testParams);
               result = response.body;
             });
@@ -276,7 +330,7 @@ describe('Location API', function () {
               testInstance = await testInstanceQuery
                 .getRawOne();
               response = await request(api)
-                .get('/api/rooms')
+                .get('/api/rooms/availability')
                 .query({
                   ...testParams,
                   excludeParent: testInstance.ci_id,
@@ -337,7 +391,7 @@ describe('Location API', function () {
         beforeEach(async function () {
           authStub.resolves(regularUser);
           response = await request(api)
-            .get('/api/rooms')
+            .get('/api/rooms/availability')
             .query(testParams);
         });
         it('is inaccessible to unauthenticated users', function () {
