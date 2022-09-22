@@ -28,8 +28,14 @@ interface SessionBlockProps {
   children: CourseListing | CourseListing[];
 
   /**
+   * A concatenation of the course prefix and number, which will be displayed
+   * as the heading in the Room Schedule blocks.
+   */
+  catalogNumber?: string;
+
+  /**
    * The catalog prefix shared by the courses in the session, which will be
-   * used as the heading
+   * used as the heading in the Schedule blocks.
    */
   prefix: string;
 
@@ -69,7 +75,7 @@ interface SessionBlockProps {
  */
 interface SessionBlockWrapperProps extends Pick<
 SessionBlockProps,
-'prefix' | 'duration' | 'startRow' | 'isFaded'
+'prefix' | 'catalogNumber' | 'duration' | 'startRow' | 'isFaded'
 > {
   /**
    * Check if there are elements overflowing the bottom of the list
@@ -186,6 +192,7 @@ const SessionBlockBody = styled.ul<SessionBlockBodyProps>`
  */
 const SessionBlock: FunctionComponent<SessionBlockProps> = ({
   prefix,
+  catalogNumber,
   startRow,
   duration,
   children,
@@ -242,6 +249,7 @@ const SessionBlock: FunctionComponent<SessionBlockProps> = ({
   return (
     <SessionBlockWrapper
       prefix={prefix}
+      catalogNumber={catalogNumber}
       startRow={startRow}
       duration={duration}
       isFaded={isFaded}
@@ -250,7 +258,7 @@ const SessionBlock: FunctionComponent<SessionBlockProps> = ({
       hasBottomOverflow={hasOverflow.bottom}
     >
       <SessionBlockHeading>
-        {prefix.substr(0, 3)}
+        {catalogNumber || prefix.substr(0, 3)}
       </SessionBlockHeading>
       <SessionBlockBodyWrapper
         isPopoverVisible={isPopoverVisible}
@@ -267,5 +275,9 @@ const SessionBlock: FunctionComponent<SessionBlockProps> = ({
 };
 
 declare type SessionBlock = ReactElement<SessionBlockProps>;
+
+SessionBlock.defaultProps = {
+  catalogNumber: '',
+};
 
 export default SessionBlock;

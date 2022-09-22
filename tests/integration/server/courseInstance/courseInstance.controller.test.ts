@@ -9,6 +9,7 @@ import {
   HttpStatus,
   HttpServer,
   BadRequestException,
+  NotFoundException,
 } from '@nestjs/common';
 import {
   strictEqual,
@@ -37,6 +38,8 @@ import * as dummy from 'testData';
 import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
 import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto';
+import { Room } from 'server/location/room.entity';
+import { RoomScheduleResponseDTO } from 'common/dto/schedule/roomSchedule.dto';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import { PGTime } from '../../../../src/common/utils/PGTime';
@@ -51,6 +54,7 @@ describe('CourseInstance API', function () {
   let meetingRepository: Repository<Meeting>;
   let fciRepository: Repository<FacultyCourseInstance>;
   let ciRepository: Repository<CourseInstance>;
+  let roomRepository: Repository<Room>;
   let api: HttpServer;
   let authStub: SinonStub;
   let configService: ConfigService;
@@ -98,6 +102,7 @@ describe('CourseInstance API', function () {
     meetingRepository = testModule.get(getRepositoryToken(Meeting));
     fciRepository = testModule.get(getRepositoryToken(FacultyCourseInstance));
     ciRepository = testModule.get(getRepositoryToken(CourseInstance));
+    roomRepository = testModule.get(getRepositoryToken(Room));
     configService = testModule.get<ConfigService>(ConfigService);
     const nestApp = await testModule
       .createNestApplication()
@@ -1299,6 +1304,197 @@ describe('CourseInstance API', function () {
         });
         it('should return a Forbidden Error', function () {
           strictEqual(response.statusCode, HttpStatus.FORBIDDEN);
+        });
+      });
+    });
+  });
+
+  describe('GET /room-schedule', function () {
+    context('As an unauthenticated user', function () {
+      let response: Response;
+      beforeEach(function () {
+        authStub.resolves(null);
+      });
+      context('With an invalid term', function () {
+        const testTerm = 'foo' as TERM;
+        const testYear = '2019';
+        let result: BadRequestException;
+
+        beforeEach(async function () {
+          const testRoom = await roomRepository.findOne();
+          response = await request(api)
+            .get(`/api/course-instances/room-schedule?roomId=${testRoom.id}&term=${testTerm}&year=${testYear}`);
+          result = response.body;
+        });
+
+        it('Should return a 400 status', function () {
+          strictEqual(response.status, HttpStatus.BAD_REQUEST);
+        });
+
+        it('Should return JSON', function () {
+          strictEqual(response.type, 'application/json');
+        });
+
+        it('Should return an error message', function () {
+          deepStrictEqual(
+            result.message,
+            `"term" must be "${Object.values(TERM).join('" or "')}"`
+          );
+        });
+      });
+      context('With invalid year', function () {
+        const testTerm = TERM.FALL;
+        const testYear = '1920';
+        let result: ScheduleViewResponseDTO[];
+
+        beforeEach(async function () {
+          const testRoom = await roomRepository.findOne();
+          response = await request(api)
+            .get(`/api/course-instances/room-schedule?roomId=${testRoom.id}&term=${testTerm}&year=${testYear}`);
+          result = response.body;
+        });
+
+        it('Should return a 200 status', function () {
+          strictEqual(response.status, HttpStatus.OK);
+        });
+
+        it('Should return JSON', function () {
+          strictEqual(response.type, 'application/json');
+        });
+
+        it('Should return an empty array', function () {
+          deepStrictEqual(result, []);
+        });
+      });
+      context('With invalid room id', function () {
+        const testTerm = TERM.FALL;
+        const testYear = '2020';
+        const invalidTestRoomId = '6c3a1da0-3b51-43b8-ad04-e2cf0601ae30';
+        let result: NotFoundException;
+
+        beforeEach(async function () {
+          response = await request(api)
+            .get(`/api/course-instances/room-schedule?roomId=${invalidTestRoomId}&term=${testTerm}&year=${testYear}`);
+          result = response.body;
+        });
+
+        it('Should return a 400 status', function () {
+          strictEqual(response.status, HttpStatus.NOT_FOUND);
+        });
+
+        it('Should return JSON', function () {
+          strictEqual(response.type, 'application/json');
+        });
+
+        it('Should return an error message', function () {
+          deepStrictEqual(
+            result.message,
+            'The requested room does not exist'
+          );
+        });
+      });
+      context('With invalid year AND invalid term', function () {
+        const testTerm = 'foo' as TERM;
+        const testYear = '1920';
+        let result: BadRequestException;
+
+        beforeEach(async function () {
+          const testRoom = await roomRepository.findOne();
+          response = await request(api)
+            .get(`/api/course-instances/room-schedule?roomId=${testRoom.id}&term=${testTerm}&year=${testYear}`);
+          result = response.body;
+        });
+
+        it('Should return a 400 status', function () {
+          strictEqual(response.status, HttpStatus.BAD_REQUEST);
+        });
+
+        it('Should return JSON', function () {
+          strictEqual(response.type, 'application/json');
+        });
+
+        it('Should return an error message', function () {
+          deepStrictEqual(
+            result.message,
+            `"term" must be "${Object.values(TERM).join('" or "')}"`
+          );
+        });
+      });
+      context('with valid year, term, and room id', function () {
+        let testRoomId: string;
+        let testTerm: TERM;
+        let testAcademicYear: string;
+        let testCalendarYear: string;
+        let results: RoomScheduleResponseDTO[];
+
+        beforeEach(async function () {
+          // Find a course instance that has at least one meeting in a room
+          const testCI = await ciRepository
+            .createQueryBuilder('ci')
+            .innerJoinAndSelect('ci.meetings', 'm')
+            .innerJoinAndSelect('m.room', 'r')
+            .innerJoinAndSelect('ci.semester', 's')
+            .innerJoinAndSelect('ci.facultyCourseInstances', 'fci')
+            .innerJoinAndSelect('fci.faculty', 'f')
+            .where('s."academicYear" > :year', { year: 2021 })
+            .orderBy('f')
+            .getOne();
+          testRoomId = testCI.meetings[0].room.id;
+          testTerm = testCI.semester.term;
+          testAcademicYear = testCI.semester.academicYear;
+          testCalendarYear = testTerm === TERM.SPRING
+            ? testAcademicYear
+            : (parseInt(testAcademicYear, 10) - 1).toString();
+          response = await request(api)
+            .get(`/api/course-instances/room-schedule?roomId=${testRoomId}&term=${testTerm}&year=${testCalendarYear}`);
+          results = response.body;
+        });
+
+        it('should return a 200 status', function () {
+          strictEqual(response.status, HttpStatus.OK);
+        });
+
+        it('should return JSON', function () {
+          strictEqual(response.type, 'application/json');
+        });
+
+        it('should return a nonempty array of data', function () {
+          strictEqual(Array.isArray(results), true);
+          notStrictEqual(results.length, 0);
+        });
+
+        describe('Ordering', function () {
+          it('should order the faculty according to instructorOrder', async function () {
+            // For every room schedule result, loop through to find each course
+            // instance id in order to find the ordered faculty of each instance
+            await Promise.all(results.map(async (result) => {
+              // Get the relevant test course instance id in order to use the
+              // id to get the associated instructors
+              const ci = await ciRepository
+                .createQueryBuilder('ci')
+                .innerJoinAndSelect('ci.semester', 's')
+                .innerJoinAndSelect('ci.course', 'c')
+                .where('c.title = :title', { title: result.title })
+                .andWhere('s.term = :testTerm', { testTerm })
+                .andWhere('s."academicYear" = :testAcademicYear', { testAcademicYear })
+                .getOne();
+              // Get the existing instructors organized by instructorOrder
+              const existingInstructors = await fciRepository.find({
+                where: {
+                  courseInstance: ci.id,
+                },
+                order: {
+                  order: 'ASC',
+                },
+                relations: ['faculty'],
+              });
+              const expectedInstructorIds = existingInstructors
+                .map(({ faculty }) => faculty.id);
+              const actualInstructorIds = result.faculty
+                .map((facultyMember) => facultyMember.id);
+              deepStrictEqual(expectedInstructorIds, actualInstructorIds);
+            }));
+          });
         });
       });
     });

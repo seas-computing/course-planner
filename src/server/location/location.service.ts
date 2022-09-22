@@ -40,7 +40,7 @@ export class LocationService {
   public async getRoomList(): Promise<RoomResponse[]> {
     return this.roomListingViewRepository
       .find({
-        select: ['name', 'campus', 'capacity'],
+        select: ['id', 'name', 'campus', 'capacity'],
       });
   }
 
