@@ -47,11 +47,10 @@ interface ScheduleViewProps {
    */
   rowHeight?: string;
 
-  /* * The Degree program of the data currently being displayed
-  */
-
+  /**
+   * The Degree program of the data currently being displayed
+   */
   degreeProgram?: DEGREE_PROGRAM
-
 }
 
 /**
@@ -178,8 +177,8 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
                     === DEGREE_PROGRAM.BOTH
                     || (isUndergraduate && degreeProgram
                       === DEGREE_PROGRAM.UNDERGRADUATE)
-                   || (!isUndergraduate && degreeProgram
-                    === DEGREE_PROGRAM.GRADUATE);
+                    || (!isUndergraduate && degreeProgram
+                      === DEGREE_PROGRAM.GRADUATE);
                     return (
                       <CourseListing key={meetingId}>
                         <CourseListingButton

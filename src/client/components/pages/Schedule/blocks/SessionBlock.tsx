@@ -46,21 +46,18 @@ interface SessionBlockProps {
    * computation
    */
   duration: number;
-  /**
-   * Whether the block should be faded out, as when a course in another block
-   * has been clicked
-   */
+
   /**
    * The collection of Popover elements corresponding to the buttons in the
    * list. These need to be rendered at the top level of the session block in order
    * to break out of the overflow defined within the body wrapper
    */
   popovers: JSX.Element[];
+
   /**
    * Whether a popover is currently visible
    */
   isPopoverVisible: boolean;
-
 }
 
 /**

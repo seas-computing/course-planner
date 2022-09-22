@@ -151,7 +151,6 @@ describe('Schedule Page', function () {
     it('The grad course program is not faded when undergrad is selected ', function () {
       const { getByLabelText } = renderResult;
       const degreeProgramDropDown = getByLabelText(/Degree Program/i) as HTMLSelectElement;
-      // const selectedDegreeProgram = degreeProgramDropDown.value;
       fireEvent.change(degreeProgramDropDown,
         { target: { value: DEGREE_PROGRAM.GRADUATE } });
       const gradCourseId = testCourseScheduleData[0].courses[0].id;

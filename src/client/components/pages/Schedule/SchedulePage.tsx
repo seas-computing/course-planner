@@ -23,7 +23,7 @@ import { useStoredState } from '../../../hooks/useStoredState';
 const FIRST_HOUR = 8;
 const LAST_HOUR = 22;
 declare type DegreeProgramEvent=ChangeEvent<HTMLSelectElement> & {
-  target :{value: DEGREE_PROGRAM}
+  target: {value: DEGREE_PROGRAM}
 };
 /** Describes the currently selected semester */
 interface SemesterSelection {
@@ -67,7 +67,7 @@ const SchedulePage: FunctionComponent = () => {
   const [
     selectedDegreeProgram,
     setSelectedDegreeProgram,
-  ] = useState < DEGREE_PROGRAM >(DEGREE_PROGRAM.BOTH);
+  ] = useState<DEGREE_PROGRAM>(DEGREE_PROGRAM.BOTH);
   /**
    * Whether an API request is in progress
    */

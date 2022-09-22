@@ -5,13 +5,7 @@ interface CourseListingButtonProps {
    * Whether this button should have a highlighted background
    */
   isHighlighted?: boolean;
-
-  /**
-   * Whether the text of the button should fade into the background, e.g. when
-   * one of the other courses in this block is highlighted
-   */
 }
-
 /**
  * An essentially unstyled button used to trigger the Popover containing the
  * course details

@@ -39,7 +39,6 @@ interface CourseInstanceTableProps {
    */
   academicYear: number;
   /**
-  /**
    * A handler to update the courses as the user changes the filters
    */
   genericFilterUpdate: (field: string, value: string) => void;

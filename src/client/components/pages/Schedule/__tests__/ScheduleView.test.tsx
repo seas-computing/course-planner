@@ -274,7 +274,6 @@ describe('ScheduleView', function () {
       });
     });
     describe('Accessibility', function () {
-      // eslint-disable-next-line mocha/no-exclusive-tests
       it('Should not include any active buttons on the page', function () {
         const buttonRoles = page.queryAllByRole('button');
         const activeButtons = buttonRoles.filter(
