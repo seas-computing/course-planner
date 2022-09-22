@@ -927,8 +927,8 @@ describe('Faculty API', function () {
               });
 
             const [
-              fallAfterUpdate,
               springAfterUpdate,
+              fallAfterUpdate,
             ] = await absenceRepository.find({
               relations: ['semester'],
               where: { id: In([springAbsence.id, fallAbsence.id]) },
