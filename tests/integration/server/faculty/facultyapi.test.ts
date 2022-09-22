@@ -835,16 +835,20 @@ describe('Faculty API', function () {
               .execute();
           });
           it('does not modify past absences', async function () {
-            const absencesBeforeUpdate = (await absenceRepository.find({
-              select: ['type', 'id'],
-              relations: ['semester'],
-              where: { faculty: springAbsence.faculty.id },
-              order: {
-                id: 'ASC',
-              },
-            }))
-              .filter(({ semester }) => parseInt(semester.academicYear, 10)
-                < thisAcademicYear);
+            const query = absenceRepository.createQueryBuilder('a')
+              .leftJoinAndMapOne(
+                'a.semester',
+                Semester, 's',
+                'a."semesterId" = s."id"'
+              )
+              .where('a."facultyId" = :facultyId')
+              .andWhere('s."academicYear" < :academicYear')
+              .orderBy('a.id', 'ASC')
+              .setParameters({
+                facultyId: springAbsence.faculty.id,
+                academicYear: thisAcademicYear,
+              });
+            const absencesBeforeUpdate = await query.getMany();
 
             await request(api)
               .put(`/api/faculty/absence/${springAbsence.id}`)
@@ -852,20 +856,12 @@ describe('Faculty API', function () {
                 id: springAbsence.id,
                 type: ABSENCE_TYPE.TEACHING_RELIEF,
               });
-            const absencesAfterUpdate = await absenceRepository.find({
-              select: ['type', 'id'],
-              relations: ['semester'],
-              where: {
-                id: In(absencesBeforeUpdate.map(({ id }) => id)),
-              },
-              order: {
-                id: 'ASC',
-              },
-            });
+
+            const absencesAfterUpdate = await query.getMany();
 
             deepStrictEqual(
-              absencesBeforeUpdate.map(({ type, id }) => ({ type, id })),
-              absencesAfterUpdate.map(({ type, id }) => ({ type, id }))
+              absencesAfterUpdate.map(({ type, id }) => ({ type, id })),
+              absencesBeforeUpdate.map(({ type, id }) => ({ type, id }))
             );
           });
           it(`sets all future absences to ${absenceEnumToTitleCase(ABSENCE_TYPE.PRESENT)}`, async function () {
@@ -892,10 +888,15 @@ describe('Faculty API', function () {
             );
           });
           it('only updates spring of the next academic year if editing spring', async function () {
-            const fallBeforeUpdate = await absenceRepository.findOne({
-              select: ['updatedAt', 'type'],
-              where: { id: fallAbsence.id },
-            });
+            const query = absenceRepository.createQueryBuilder('a')
+              .select('id')
+              .addSelect('"updatedAt"')
+              .where('a.id = :id');
+
+            const fallBeforeUpdate = await query
+              .setParameter('id', fallAbsence.id)
+              .getRawOne();
+
             await request(api)
               .put(`/api/faculty/absence/${springAbsence.id}`)
               .send({
@@ -903,16 +904,15 @@ describe('Faculty API', function () {
                 type: ABSENCE_TYPE.TEACHING_RELIEF,
               });
 
-            const fallAfterUpdate = await absenceRepository.findOne({
-              select: ['id', 'updatedAt', 'createdAt', 'type'],
-              where: { id: fallAbsence.id },
-            });
-            const springAfterUpdate = await absenceRepository.findOne({
-              select: ['id', 'updatedAt', 'type'],
-              where: { id: springAbsence.id },
-            });
+            const fallAfterUpdate = await query
+              .setParameter('id', fallBeforeUpdate.id)
+              .getRawOne();
+            const springAfterUpdate = await query
+              .addSelect('type')
+              .setParameter('id', springAbsence.id)
+              .getRawOne();
 
-            strictEqual(springAfterUpdate.type, ABSENCE_TYPE.PRESENT);
+            strictEqual(springAfterUpdate.type, ABSENCE_TYPE.TEACHING_RELIEF);
             deepStrictEqual(
               fallAfterUpdate.updatedAt,
               fallBeforeUpdate.updatedAt
@@ -933,7 +933,7 @@ describe('Faculty API', function () {
               relations: ['semester'],
               where: { id: In([springAbsence.id, fallAbsence.id]) },
             });
-            strictEqual(fallAfterUpdate.type, ABSENCE_TYPE.PRESENT);
+            strictEqual(fallAfterUpdate.type, ABSENCE_TYPE.TEACHING_RELIEF);
             strictEqual(springAfterUpdate.type, ABSENCE_TYPE.PRESENT);
           });
           it(`does not mark the specified absence as ${absenceEnumToTitleCase(ABSENCE_TYPE.PRESENT)}`, async function () {
@@ -960,33 +960,27 @@ describe('Faculty API', function () {
               .execute();
           });
           it('does not modify past absences', async function () {
-            const absencesBeforeUpdate = (await absenceRepository.find({
-              select: ['type', 'id'],
-              relations: ['semester'],
-              where: { faculty: springAbsence.faculty.id },
-              order: {
-                id: 'ASC',
-              },
-            }))
-              .filter(({ semester }) => parseInt(semester.academicYear, 10)
-                < thisAcademicYear);
-
+            const query = absenceRepository.createQueryBuilder('a')
+              .leftJoinAndMapOne(
+                'a.semester',
+                Semester, 's',
+                'a."semesterId" = s."id"'
+              )
+              .where('a."facultyId" = :facultyId')
+              .andWhere('s."academicYear" < :academicYear')
+              .orderBy('a.id', 'ASC')
+              .setParameters({
+                facultyId: springAbsence.faculty.id,
+                academicYear: thisAcademicYear,
+              });
+            const absencesBeforeUpdate = await query.getMany();
             await request(api)
               .put(`/api/faculty/absence/${springAbsence.id}`)
               .send({
                 id: springAbsence.id,
                 type: ABSENCE_TYPE.NO_LONGER_ACTIVE,
               });
-            const absencesAfterUpdate = await absenceRepository.find({
-              select: ['type', 'id'],
-              relations: ['semester'],
-              where: {
-                id: In(absencesBeforeUpdate.map(({ id }) => id)),
-              },
-              order: {
-                id: 'ASC',
-              },
-            });
+            const absencesAfterUpdate = await query.getMany();
 
             deepStrictEqual(
               absencesBeforeUpdate.map(({ type, id }) => ({ type, id })),
@@ -1018,23 +1012,27 @@ describe('Faculty API', function () {
             );
           });
           it('only updates spring of the next academic year if editing spring', async function () {
-            const fallBeforeUpdate = await absenceRepository.findOne({
-              select: ['updatedAt'],
-              where: { id: fallAbsence.id },
-            });
+            const query = absenceRepository.createQueryBuilder('a')
+              .select('id')
+              .addSelect('"updatedAt"')
+              .where('id = :id');
+
+            const fallBeforeUpdate = await query
+              .setParameter('id', fallAbsence.id)
+              .getRawOne();
             await request(api)
               .put(`/api/faculty/absence/${springAbsence.id}`)
               .send({
                 id: springAbsence.id,
                 type: ABSENCE_TYPE.NO_LONGER_ACTIVE,
               });
-
-            const fallAfterUpdate = await absenceRepository.findOne({
-              select: ['id', 'updatedAt', 'createdAt'],
-              where: { id: fallAbsence.id },
-            });
-            const springAfterUpdate = await absenceRepository
-              .findOne(springAbsence.id);
+            const fallAfterUpdate = await query
+              .setParameter('id', fallAbsence.id)
+              .getRawOne();
+            const springAfterUpdate = await query
+              .addSelect('type')
+              .setParameter('id', springAbsence.id)
+              .getRawOne();
 
             strictEqual(springAfterUpdate.type, ABSENCE_TYPE.NO_LONGER_ACTIVE);
             deepStrictEqual(
