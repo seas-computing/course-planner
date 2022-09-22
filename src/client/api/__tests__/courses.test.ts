@@ -268,4 +268,37 @@ describe('Course Admin API', function () {
       });
     });
   });
+  describe('getRoomScheduleForSemester', function () {
+    beforeEach(function () {
+      getStub = stub(request, 'get');
+    });
+    context('When fetch succeeds', function () {
+      const testResponse = [
+        dummy.testRoomScheduleData,
+      ];
+      beforeEach(function () {
+        getStub.resolves({
+          data: testResponse,
+        });
+      });
+      it('Should return the data portion of the request', async function () {
+        const testResult = await CourseAPI
+          .getRoomScheduleForSemester(dummy.freeRoom.id, 2021, TERM.FALL);
+        deepStrictEqual(testResult, testResponse);
+      });
+    });
+    context('When fetch fails', function () {
+      beforeEach(function () {
+        getStub.rejects(dummy.error);
+      });
+      it('should throw an error', function () {
+        return rejects(
+          () => CourseAPI.getRoomScheduleForSemester(
+            dummy.freeRoom.id, 2021, TERM.FALL
+          ),
+          dummy.error
+        );
+      });
+    });
+  });
 });

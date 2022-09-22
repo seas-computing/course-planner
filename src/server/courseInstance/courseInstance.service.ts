@@ -12,6 +12,7 @@ import { FacultyListingView } from 'server/faculty/FacultyListingView.entity';
 import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto';
 import { ConfigService } from 'server/config/config.service';
 import { getFutureTerms } from 'common/utils/termHelperFunctions';
+import { RoomScheduleResponseDTO } from 'common/dto/schedule/roomSchedule.dto';
 import { MultiYearPlanInstanceView } from './MultiYearPlanInstanceView.entity';
 import { ScheduleViewResponseDTO } from '../../common/dto/schedule/schedule.dto';
 import { ScheduleBlockView } from './ScheduleBlockView.entity';
@@ -21,6 +22,7 @@ import { CourseInstance } from './courseinstance.entity';
 import { InstructorRequestDTO } from '../../common/dto/courses/InstructorRequest.dto';
 import { InstructorResponseDTO } from '../../common/dto/courses/InstructorResponse.dto';
 import { CourseInstanceListingView } from './CourseInstanceListingView.entity';
+import { RoomScheduleBlockView } from './RoomScheduleBlockView.entity';
 
 /**
  * @class CourseInstanceService
@@ -59,6 +61,9 @@ export class CourseInstanceService {
 
   @InjectRepository(SemesterView)
   private readonly semesterRepository: Repository<SemesterView>;
+
+  @InjectRepository(RoomScheduleBlockView)
+  private readonly roomScheduleRepository: Repository<RoomScheduleBlockView>;
 
   /**
    * Resolves a list of courses, which in turn contain sub-lists of instances
@@ -321,5 +326,28 @@ export class CourseInstanceService {
     return {
       offered, preEnrollment, studyCardEnrollment, actualEnrollment,
     };
+  }
+
+  public async getRoomSchedule(
+    roomId: string,
+    term: TERM,
+    calendarYear: string
+  ): Promise<RoomScheduleResponseDTO[]> {
+    return this.roomScheduleRepository
+      .createQueryBuilder('block')
+      .leftJoinAndMapMany(
+        'block.faculty',
+        FacultyListingView,
+        'instructors',
+        'instructors."courseInstanceId" = block."courseInstanceId"'
+      )
+      .where('block."roomId" = :roomId', { roomId })
+      .andWhere('block.term = :term', { term })
+      .andWhere('block."calendarYear" = :calendarYear', { calendarYear })
+      .orderBy('weekday', 'ASC')
+      .addOrderBy('"startHour"', 'ASC')
+      .addOrderBy('"startMinute"', 'ASC')
+      .addOrderBy('instructors."instructorOrder"', 'ASC')
+      .getMany() as Promise<RoomScheduleResponseDTO[]>;
   }
 }

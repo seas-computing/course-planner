@@ -174,7 +174,7 @@ describe('Application Routing and Authorization', function () {
               <App />
             </MemoryRouter>
           );
-          return findByText('Select a room');
+          return findByText('Select a room', { exact: false });
         });
       });
       context('Undefined routes', function () {
@@ -269,7 +269,7 @@ describe('Application Routing and Authorization', function () {
               <App />
             </MemoryRouter>
           );
-          return findByText('Select a room');
+          return findByText('Select a room', { exact: false });
         });
       });
       context('Undefined routes', function () {
@@ -466,7 +466,7 @@ describe('Application Routing and Authorization', function () {
               <App />
             </MemoryRouter>
           );
-          return findByText('Select a room');
+          return findByText('Select a room', { exact: false });
         });
       });
       context('Undefined routes', function () {

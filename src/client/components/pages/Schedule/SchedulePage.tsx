@@ -26,7 +26,7 @@ declare type DegreeProgramEvent=ChangeEvent<HTMLSelectElement> & {
   target: {value: DEGREE_PROGRAM}
 };
 /** Describes the currently selected semester */
-interface SemesterSelection {
+export interface SemesterSelection {
   term: TERM;
   calendarYear: number;
 }
