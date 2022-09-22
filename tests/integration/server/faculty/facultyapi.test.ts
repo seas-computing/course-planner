@@ -647,6 +647,7 @@ describe('Faculty API', function () {
         nextAcademicYear,
       ].map((acyr) => absenceRepository.createQueryBuilder('a')
         .select('a.id')
+        .addSelect('a.type')
         .addSelect('a.updatedAt')
         .leftJoinAndMapOne(
           'a.semester',
@@ -892,7 +893,7 @@ describe('Faculty API', function () {
           });
           it('only updates spring of the next academic year if editing spring', async function () {
             const fallBeforeUpdate = await absenceRepository.findOne({
-              select: ['updatedAt'],
+              select: ['updatedAt', 'type'],
               where: { id: fallAbsence.id },
             });
             await request(api)
@@ -903,11 +904,11 @@ describe('Faculty API', function () {
               });
 
             const fallAfterUpdate = await absenceRepository.findOne({
-              select: ['id', 'updatedAt', 'createdAt'],
+              select: ['id', 'updatedAt', 'createdAt', 'type'],
               where: { id: fallAbsence.id },
             });
             const springAfterUpdate = await absenceRepository.findOne({
-              select: ['id', 'updatedAt'],
+              select: ['id', 'updatedAt', 'type'],
               where: { id: springAbsence.id },
             });
 
