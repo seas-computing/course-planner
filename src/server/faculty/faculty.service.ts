@@ -100,7 +100,7 @@ export class FacultyService {
         updateQuery.set({ type: ABSENCE_TYPE.PRESENT });
 
         // ...everything except the original absence
-        updateQuery.where('id <> :absenceId');
+        updateQuery.andWhere('id <> :absenceId');
         await this.absenceRepository
           .createQueryBuilder()
           .update(Absence)
