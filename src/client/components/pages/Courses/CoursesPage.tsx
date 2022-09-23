@@ -707,7 +707,9 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
         isVisible={meetingModalData.visible}
         currentSemester={{
           term: meetingModalData.term,
-          calendarYear: selectedAcademicYear.toString(),
+          calendarYear: meetingModalData.term === TERM.SPRING
+            ? selectedAcademicYear.toString()
+            : (selectedAcademicYear - 1).toString(),
         }}
         currentCourse={meetingModalData.visible
           ? meetingModalData.course
