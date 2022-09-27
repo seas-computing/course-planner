@@ -1,5 +1,6 @@
 import { TERM } from 'common/constants';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
+import { toTitleCase } from 'common/utils/util';
 
 interface semester {
   term: TERM,
@@ -16,18 +17,18 @@ export const getInstanceIdentifier = (
   semester: semester
 ): string => {
   if (courseInstance && semester) {
-    return semester.term === TERM.FALL
+    return semester.term.toUpperCase() === TERM.FALL
       ? `${
         courseInstance.catalogNumber
       }, ${
-        semester.term
+        toTitleCase(semester.term)
       } ${
         parseInt(semester.academicYear, 10) - 1
       }`
       : `${
         courseInstance.catalogNumber
       }, ${
-        semester.term
+        toTitleCase(semester.term)
       } ${
         semester.academicYear
       }`;
