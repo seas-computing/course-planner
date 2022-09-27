@@ -173,30 +173,25 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
                       `${endHour}:${endMinute.toString().padStart(2, '0')}`
                     );
                     const isSelected = currentPopover === instanceId;
-                    const isSeletedDegreeProgram = degreeProgram
-                    === DEGREE_PROGRAM.BOTH
-                    || (isUndergraduate && degreeProgram
-                      === DEGREE_PROGRAM.UNDERGRADUATE)
-                    || (!isUndergraduate && degreeProgram
-                      === DEGREE_PROGRAM.GRADUATE);
+                    const isSelectedDegreeProgram = (
+                      degreeProgram === DEGREE_PROGRAM.BOTH
+                        || (isUndergraduate
+                          && degreeProgram === DEGREE_PROGRAM.UNDERGRADUATE)
+                        || (!isUndergraduate
+                          && degreeProgram === DEGREE_PROGRAM.GRADUATE));
                     return (
                       <CourseListing key={meetingId}>
                         <CourseListingButton
                           isHighlighted={popoverInBlock && isSelected}
                           disabled={
-                            !isSeletedDegreeProgram
+                            !isSelectedDegreeProgram
                             || (popoverInBlock && !isSelected)
                           }
                           aria-disabled
                           aria-labelledby={`${meetingId}-description`}
-                          data-testid={meetingId}
-                          data-disabled={
-                            !isSeletedDegreeProgram
-                            || (popoverInBlock && !isSelected)
-                          }
                           onClick={(event) => {
                             event.stopPropagation();
-                            if (isSeletedDegreeProgram) {
+                            if (isSelectedDegreeProgram) {
                               setCurrentPopover((current) => (
                                 current === instanceId ? null : instanceId
                               ));

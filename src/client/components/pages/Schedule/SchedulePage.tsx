@@ -180,10 +180,9 @@ const SchedulePage: FunctionComponent = () => {
           name="degree-program-selector"
           label="Degree Program"
           isLabelVisible
-          options={[{ label: 'Both', value: DEGREE_PROGRAM.BOTH },
-            { label: 'Graduate', value: DEGREE_PROGRAM.GRADUATE },
-            { label: 'Undergraduate', value: DEGREE_PROGRAM.UNDERGRADUATE }]}
-          value={selectedDegreeProgram.toString()}
+          options={Object.values(DEGREE_PROGRAM)
+            .map((value) => ({ value, label: value }))}
+          value={selectedDegreeProgram}
           onChange={
             ({
               target: { value },

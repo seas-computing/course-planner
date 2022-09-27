@@ -1,3 +1,4 @@
+import { fromTheme } from 'mark-one';
 import styled from 'styled-components';
 
 interface CourseListingButtonProps {
@@ -18,11 +19,14 @@ const CourseListingButton = styled.button.attrs({
   )};
   border: none;
   font-size: inherit;
-  opacity: ${({ disabled }) => (disabled ? '0.5' : '1')};
+  &:disabled {
+    color: ${fromTheme('color', 'text', 'medium')};
+    opacity: 0.8;
+  }
   padding: 0;
   margin: 0;
   width: 100%;
-  cursor: pointer;
+  cursor: ${({ disabled }) => (disabled ? '' : 'pointer')};
   text-align: left;
 `;
 
