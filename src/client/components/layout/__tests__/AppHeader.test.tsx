@@ -78,6 +78,10 @@ describe('AppHeader', function () {
         const link = queryByText('Faculty Admin');
         assert(link);
       });
+      it('should display the "Room Admin" link', function () {
+        const link = queryByText('Room Admin');
+        assert(link);
+      });
       it('Should display a log out link', function () {
         const link = queryByText('Log Out');
         assert(link);
@@ -124,6 +128,10 @@ describe('AppHeader', function () {
       });
       it('should NOT display the "Faculty Admin" link', function () {
         const link = queryByText('Faculty Admin');
+        assert.strictEqual(link, null);
+      });
+      it('should NOT display the "Room Admin" link', function () {
+        const link = queryByText('Room Admin');
         assert.strictEqual(link, null);
       });
       it('Should display a log out link', function () {
@@ -181,6 +189,10 @@ describe('AppHeader', function () {
     });
     it('should NOT display the "Faculty Admin" link', function () {
       const link = queryByText('Faculty Admin');
+      assert.strictEqual(link, null);
+    });
+    it('should NOT display the "Room Admin" link', function () {
+      const link = queryByText('Room Admin');
       assert.strictEqual(link, null);
     });
     it('Should not display a log out link', function () {
