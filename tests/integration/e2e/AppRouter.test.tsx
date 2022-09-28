@@ -127,6 +127,16 @@ describe('Application Routing and Authorization', function () {
           return findAllByText(/HUID/);
         });
       });
+      context('/room-admin', function () {
+        it('renders the RoomAdmin component', function () {
+          const { findAllByText } = render(
+            <MemoryRouter initialEntries={['/room-admin']}>
+              <App />
+            </MemoryRouter>
+          );
+          return findAllByText(/Building/);
+        });
+      });
       context('/faculty', function () {
         it('renders the Faculty component', function () {
           const { findAllByText } = render(
@@ -216,6 +226,16 @@ describe('Application Routing and Authorization', function () {
         it('renders the NoMatch component', function () {
           const { findByText } = render(
             <MemoryRouter initialEntries={['/faculty-admin']}>
+              <App />
+            </MemoryRouter>
+          );
+          return findByText(/403/);
+        });
+      });
+      context('/room-admin', function () {
+        it('renders the NoMatch component', function () {
+          const { findByText } = render(
+            <MemoryRouter initialEntries={['/room-admin']}>
               <App />
             </MemoryRouter>
           );
@@ -323,6 +343,16 @@ describe('Application Routing and Authorization', function () {
           return findByText(/401/);
         });
       });
+      context('/room-admin', function () {
+        it('renders the UnauthorizedPage component', function () {
+          const { findByText } = render(
+            <MemoryRouter initialEntries={['/room-admin']}>
+              <App />
+            </MemoryRouter>
+          );
+          return findByText(/401/);
+        });
+      });
       context('/faculty', function () {
         it('renders the UnauthorizedPage component', function () {
           const { findByText } = render(
@@ -413,6 +443,16 @@ describe('Application Routing and Authorization', function () {
         it('renders the UnauthorizedPage component', function () {
           const { findByText } = render(
             <MemoryRouter initialEntries={['/faculty-admin']}>
+              <App />
+            </MemoryRouter>
+          );
+          return findByText(/401/);
+        });
+      });
+      context('/room-admin', function () {
+        it('renders the UnauthorizedPage component', function () {
+          const { findByText } = render(
+            <MemoryRouter initialEntries={['/room-admin']}>
               <App />
             </MemoryRouter>
           );
