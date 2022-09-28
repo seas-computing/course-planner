@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, {
   FunctionComponent,
   ReactElement,
@@ -25,6 +26,7 @@ import { absenceEnumToTitleCase } from 'common/utils/facultyHelperFunctions';
 import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
 import { AppMessage, MESSAGE_TYPE, MESSAGE_ACTION } from 'client/classes';
 import { MessageContext } from 'client/context';
+import { ErrorInfo, BadRequestInfo } from 'client/components/pages/Courses/OfferedModal';
 
 interface AbsenceModalProps {
   /**
@@ -184,8 +186,27 @@ FunctionComponent<AbsenceModalProps> = ({
               });
               onSuccess();
             } catch (error) {
-              setAbsenceErrorMessage((error as Error).message);
-              // leave the modal visible after an error
+              if (axios.isAxiosError(error)) {
+                if ('error' in error.response.data
+                  && (error.response.data as ErrorInfo).error === 'Bad Request') {
+                  const serverErr = error.response.data as BadRequestInfo;
+                  // If only a single message is returned, convert it to an array so
+                  // that it can be mapped over.
+                  if (!Array.isArray(serverErr.message)) {
+                    setAbsenceErrorMessage(serverErr.message);
+                  } else {
+                    setAbsenceErrorMessage(serverErr.message.map((message) => {
+                      const values = Object.values(message.constraints);
+                      return values.join('; ');
+                    }).join('; '));
+                  }
+                } else {
+                  const axiosError = error.response.data as Error;
+                  setAbsenceErrorMessage(axiosError.message);
+                }
+              } else {
+                setAbsenceErrorMessage('Something went wrong. If the error persists, please contact SEAS Computing');
+              }
             }
           }}
           variant={VARIANT.PRIMARY}

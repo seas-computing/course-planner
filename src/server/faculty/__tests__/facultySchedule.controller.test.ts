@@ -16,8 +16,8 @@ import { Absence } from 'server/absence/absence.entity';
 import { facultyAbsenceRequest, facultyAbsenceResponse } from 'testData';
 import { ABSENCE_TYPE } from 'common/constants';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
+import { ConfigModule } from 'server/config/config.module';
 import { FacultyController } from '../faculty.controller';
 import { FacultyScheduleService } from '../facultySchedule.service';
 import { Faculty } from '../faculty.entity';
@@ -28,6 +28,7 @@ describe('Faculty Schedule Controller', function () {
   let getAllByYearStub: SinonStub;
   let getYearListStub: SinonStub;
   let findStub: SinonStub;
+  let updateFacultyAbsencesStub: SinonStub;
   const mockRepository: Record<string, SinonStub> = {};
   let mockAbsenceRepository: Record<string, SinonStub>;
   const fakeYearList = [
@@ -39,11 +40,13 @@ describe('Faculty Schedule Controller', function () {
   beforeEach(async function () {
     getAllByYearStub = stub();
     getYearListStub = stub();
+    updateFacultyAbsencesStub = stub();
     mockAbsenceRepository = {
-      findOneOrFail: stub(),
+      findOne: stub(),
       save: stub(),
     };
     const testModule = await Test.createTestingModule({
+      imports: [ConfigModule],
       controllers: [FacultyController],
       providers: [
         {
@@ -62,6 +65,7 @@ describe('Faculty Schedule Controller', function () {
           provide: FacultyService,
           useValue: {
             find: findStub,
+            updateFacultyAbsences: updateFacultyAbsencesStub,
           },
         },
         {
@@ -152,14 +156,15 @@ describe('Faculty Schedule Controller', function () {
       context('when absence record exists', function () {
         beforeEach(function () {
           mockAbsenceRepository
-            .findOneOrFail
+            .findOne
             .resolves(facultyAbsenceResponse);
           mockAbsenceRepository.save.resolves(updatedAbsence);
+          updateFacultyAbsencesStub.resolves(updatedAbsence);
         });
         it('updates the absence record', async function () {
           await fsController
             .updateFacultyAbsence(updatedAbsence);
-          strictEqual(mockAbsenceRepository.save.callCount, 1);
+          strictEqual(updateFacultyAbsencesStub.callCount, 1);
         });
         it('returns the updated absence record', async function () {
           const newlyUpdatedAbsence = await fsController
@@ -169,11 +174,8 @@ describe('Faculty Schedule Controller', function () {
       });
       context('when absence record does not exist', function () {
         it('throws a Not Found Error', async function () {
-          mockAbsenceRepository
-            .findOneOrFail
-            .rejects(new EntityNotFoundError(Absence, {
-              where: { id: facultyAbsenceRequest.id },
-            }));
+          updateFacultyAbsencesStub
+            .rejects(new NotFoundException('The entered Absence does not exist'));
           return rejects(
             () => (fsController.updateFacultyAbsence(updatedAbsence)), {
               message: 'The entered Absence does not exist',
@@ -184,7 +186,7 @@ describe('Faculty Schedule Controller', function () {
       context('when there are other errors', function () {
         it('allows other error types to bubble up', async function () {
           mockAbsenceRepository
-            .findOneOrFail
+            .findOne
             .rejects(new InternalServerErrorException());
           try {
             await fsController

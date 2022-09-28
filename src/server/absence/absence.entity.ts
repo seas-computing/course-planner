@@ -21,7 +21,7 @@ export class Absence extends BaseEntity {
     comment: 'The type of absence (i.e: Parental Leave, Research Leave etc.)',
     default: ABSENCE_TYPE.PRESENT,
   })
-  public type: ABSENCE_TYPE = ABSENCE_TYPE.PRESENT;
+  public type: ABSENCE_TYPE;
 
   /**
    * The [[Semester]] this absence occurs in.

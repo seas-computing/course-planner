@@ -13,8 +13,8 @@ import {
   GetByText,
   QueryByText,
   render,
+  RenderResult,
   wait,
-  waitForElement,
 } from 'test-utils';
 import {
   appliedMathFacultyScheduleResponse,
@@ -99,12 +99,13 @@ describe('Faculty Absence Modal', function () {
     });
     context('when there is an error', function () {
       const errorMessage = 'There was a problem with editing an absence entry.';
+      let result: RenderResult;
       beforeEach(function () {
         putStub = stub(FacultyAPI, 'updateFacultyAbsence');
         putStub.rejects(new Error(errorMessage));
         onSuccessStub = stub();
         onCancelStub = stub();
-        ({ getByText } = render(
+        result = render(
           <FacultyAbsenceModal
             isVisible
             currentFaculty={appliedMathFacultyScheduleResponse}
@@ -112,7 +113,8 @@ describe('Faculty Absence Modal', function () {
             onSuccess={onSuccessStub}
             onCancel={onCancelStub}
           />
-        ));
+        );
+        ({ getByText } = result);
         const submitButton = getByText('Submit');
         fireEvent.click(submitButton);
       });
@@ -123,9 +125,7 @@ describe('Faculty Absence Modal', function () {
         strictEqual(onCancelStub.callCount, 0);
       });
       it('renders the error message', async function () {
-        return waitForElement(
-          () => getByText(errorMessage, { exact: false })
-        );
+        return result.findByRole('dialog');
       });
     });
   });
