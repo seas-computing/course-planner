@@ -92,8 +92,8 @@ describe('Schedule Page', function () {
   describe('Degree Program Selected', function () {
     let renderResult: RenderResult;
     let courses: {
-      courseId:string,
-      isUndergraduate:boolean,
+      courseId: string,
+      isUndergraduate: boolean,
       coursePrefix: string,
       courseNumber: string
     }[];
@@ -152,7 +152,7 @@ describe('Schedule Page', function () {
           const targetCourseListing = within(
             targetBlock.parentElement
           ).getByText(course.courseNumber);
-          strictEqual(targetCourseListing.hasAttribute('disabled'), false, `${course.coursePrefix} ${course.courseNumber}-was disabled when it shouldt be`);
+          strictEqual(targetCourseListing.hasAttribute('disabled'), false, `${course.coursePrefix} ${course.courseNumber}-was disabled when it shouldn't be`);
         });
       });
     });
