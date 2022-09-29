@@ -1,9 +1,9 @@
 import React, {
-  FunctionComponent, useState, useEffect, useContext,
+  FunctionComponent, useState, useEffect, useContext, ChangeEvent,
 } from 'react';
 import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
 import { getCourseScheduleForSemester } from 'client/api/courses';
-import { TERM } from 'common/constants';
+import { DEGREE_PROGRAM, TERM } from 'common/constants';
 import { Dropdown, POSITION, LoadSpinner } from 'mark-one';
 import { AppMessage, MESSAGE_TYPE, MESSAGE_ACTION } from 'client/classes';
 import { MessageContext, MetadataContext } from 'client/context';
@@ -22,7 +22,9 @@ import { useStoredState } from '../../../hooks/useStoredState';
 
 const FIRST_HOUR = 8;
 const LAST_HOUR = 22;
-
+declare type DegreeProgramEvent=ChangeEvent<HTMLSelectElement> & {
+  target: {value: DEGREE_PROGRAM}
+};
 /** Describes the currently selected semester */
 export interface SemesterSelection {
   term: TERM;
@@ -60,6 +62,12 @@ const SchedulePage: FunctionComponent = () => {
     setSelectedSemester,
   ] = useStoredState<SemesterSelection>('SCHEDULE_SEMESTER_SELECTION');
 
+  /* Track the degree program for which data will be shown in the table
+  */
+  const [
+    selectedDegreeProgram,
+    setSelectedDegreeProgram,
+  ] = useState<DEGREE_PROGRAM>(DEGREE_PROGRAM.BOTH);
   /**
    * Whether an API request is in progress
    */
@@ -167,6 +175,22 @@ const SchedulePage: FunctionComponent = () => {
             onChange={updateTerm}
           />
         )}
+        <Dropdown
+          id="degree-program-selector"
+          name="degree-program-selector"
+          label="Degree Program"
+          isLabelVisible
+          options={Object.values(DEGREE_PROGRAM)
+            .map((value) => ({ value, label: value }))}
+          value={selectedDegreeProgram}
+          onChange={
+            ({
+              target: { value },
+            }: DegreeProgramEvent) => {
+              setSelectedDegreeProgram(value);
+            }
+          }
+        />
       </VerticalSpace>
       {isFetching
         ? (
@@ -179,6 +203,7 @@ const SchedulePage: FunctionComponent = () => {
             schedule={schedule}
             firstHour={FIRST_HOUR}
             lastHour={LAST_HOUR}
+            degreeProgram={selectedDegreeProgram}
           />
         )}
     </>

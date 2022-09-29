@@ -1,3 +1,4 @@
+import { fromTheme } from 'mark-one';
 import styled from 'styled-components';
 
 interface CourseListingButtonProps {
@@ -5,14 +6,7 @@ interface CourseListingButtonProps {
    * Whether this button should have a highlighted background
    */
   isHighlighted?: boolean;
-
-  /**
-   * Whether the text of the button should fade into the background, e.g. when
-   * one of the other courses in this block is highlighted
-   */
-  isFaded?: boolean;
 }
-
 /**
  * An essentially unstyled button used to trigger the Popover containing the
  * course details
@@ -25,11 +19,14 @@ const CourseListingButton = styled.button.attrs({
   )};
   border: none;
   font-size: inherit;
-  opacity: ${({ isFaded }) => (isFaded ? '0.5' : '1')};
+  &:disabled {
+    color: ${fromTheme('color', 'text', 'medium')};
+    opacity: 0.8;
+  }
   padding: 0;
   margin: 0;
   width: 100%;
-  cursor: pointer;
+  cursor: ${({ disabled }) => (disabled ? '' : 'pointer')};
   text-align: left;
 `;
 
