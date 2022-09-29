@@ -124,19 +124,17 @@ describe('Schedule Page', function () {
     afterEach(function () {
       clock.uninstall();
     });
-    context('the degree dropdown is selected', function () {
-      it('renders the list of degree program options', function () {
-        const { getByLabelText } = renderResult;
-        const dropdown = getByLabelText(/Degree Program/i);
-        const options = within(dropdown).getAllByRole('option')
-          .map(({ value }: HTMLOptionElement) => value);
-        const degreeProgramOptions = [
-          DEGREE_PROGRAM.BOTH,
-          DEGREE_PROGRAM.UNDERGRADUATE,
-          DEGREE_PROGRAM.GRADUATE,
-        ];
-        deepStrictEqual(options, degreeProgramOptions);
-      });
+    it('renders the list of degree program options', function () {
+      const { getByLabelText } = renderResult;
+      const dropdown = getByLabelText(/Degree Program/i);
+      const options = within(dropdown).getAllByRole('option')
+        .map(({ value }: HTMLOptionElement) => value);
+      const degreeProgramOptions = [
+        DEGREE_PROGRAM.BOTH,
+        DEGREE_PROGRAM.UNDERGRADUATE,
+        DEGREE_PROGRAM.GRADUATE,
+      ];
+      deepStrictEqual(options, degreeProgramOptions);
     });
     context('Both is selected from dropdown menu', function () {
       it('should not fade any course-listing buttons', function () {
