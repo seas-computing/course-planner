@@ -2,7 +2,7 @@ import { TERM } from 'common/constants';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { toTitleCase } from 'common/utils/util';
 
-interface semester {
+interface Semester {
   term: TERM,
   academicYear: string,
 }
