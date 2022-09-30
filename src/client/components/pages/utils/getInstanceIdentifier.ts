@@ -14,7 +14,7 @@ interface Semester {
  */
 export const getInstanceIdentifier = (
   courseInstance: CourseInstanceResponseDTO,
-  semester: semester
+  semester: Semester
 ): string => {
   if (courseInstance && semester) {
     return semester.term.toUpperCase() === TERM.FALL
