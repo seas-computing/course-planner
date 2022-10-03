@@ -1,3 +1,4 @@
+import RoomAdminResponse from 'common/dto/room/RoomAdminResponse.dto';
 import RoomMeetingResponse from 'common/dto/room/RoomMeetingResponse.dto';
 import RoomRequest from 'common/dto/room/RoomRequest.dto';
 import RoomResponse from 'common/dto/room/RoomResponse.dto';
@@ -27,7 +28,16 @@ Promise<RoomMeetingResponse[]> => {
   return response.data as RoomMeetingResponse[];
 };
 
+/**
+ * Retrieves all room numbers along with their building and campus info
+ */
+export const getAdminRooms = async ():Promise<RoomAdminResponse[]> => {
+  const response = await request.get('/api/rooms/admin');
+  return response.data as RoomAdminResponse[];
+};
+
 export const LocationAPI = {
   getRoomAvailability,
   getRooms,
+  getAdminRooms,
 };
