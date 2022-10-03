@@ -25,6 +25,7 @@ import React, {
   useState,
 } from 'react';
 import { updateCourseInstance } from '../../../api';
+import { getInstanceIdentifier } from '../utils/getInstanceIdentifier';
 
 interface OfferedModalProps {
   /**
@@ -37,7 +38,7 @@ interface OfferedModalProps {
    */
   currentSemester: {
     term: TERM,
-    calendarYear: string,
+    academicYear: string,
   };
   /**
    * Full details of the instance for which the offered value is being edited
@@ -129,16 +130,6 @@ const OfferedModal: FunctionComponent<OfferedModalProps> = ({
     });
   };
 
-  const instanceIdentifier = currentCourseInstance && currentSemester
-    ? `${
-      currentCourseInstance.catalogNumber
-    }, ${
-      currentSemester.term
-    } ${
-      currentSemester.calendarYear
-    }`
-    : '';
-
   useEffect(() => {
     if (currentSemester && currentCourseInstance) {
       const currentTermKey = currentSemester.term.toLowerCase() as TermKey;
@@ -217,7 +208,7 @@ const OfferedModal: FunctionComponent<OfferedModalProps> = ({
         tabIndex={0}
       >
         <span id="edit-offered-header">
-          {`Edit Offered Value for ${instanceIdentifier}`}
+          {`Edit Offered Value for ${getInstanceIdentifier(currentCourseInstance, currentSemester)}`}
         </span>
       </ModalHeader>
       <ModalBody>

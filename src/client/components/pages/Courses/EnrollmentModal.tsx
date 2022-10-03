@@ -28,6 +28,7 @@ import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto
 import { AxiosError } from 'axios';
 import { EnrollmentField } from './tableFields';
 import { BadRequestInfo } from './CourseModal';
+import { getInstanceIdentifier } from '../utils/getInstanceIdentifier';
 
 interface EnrollmentModalProps {
   /**
@@ -56,7 +57,7 @@ interface EnrollmentModalProps {
    */
   currentSemester: {
     term: TERM,
-    calendarYear: string
+    academicYear: string
   };
 }
 
@@ -331,7 +332,7 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
         tabIndex={0}
       >
         <span id="enrollment-modal-header">
-          {`Enrollment for ${course?.catalogNumber}, ${currentSemester?.term} ${currentSemester.calendarYear}`}
+          {`Enrollment for ${getInstanceIdentifier(course, currentSemester)}`}
         </span>
       </ModalHeader>
       <ModalBody>

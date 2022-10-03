@@ -21,6 +21,7 @@ import React, {
 } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
+import { toTitleCase } from 'common/utils/util';
 import { MeetingTimesList } from './MeetingTimesList';
 import RoomSelection from './RoomSelection';
 import RoomRequest from '../../../../common/dto/room/RoomRequest.dto';
@@ -480,7 +481,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
     ? `${
       currentCourse.catalogNumber
     }, ${
-      currentSemester.term
+      toTitleCase(currentSemester.term)
     } ${
       currentSemester.calendarYear
     }`

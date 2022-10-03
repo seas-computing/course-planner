@@ -33,6 +33,7 @@ import * as roomAPI from 'client/api/rooms';
 import * as meetingAPI from 'client/api/meetings';
 import { Button, VARIANT } from 'mark-one';
 import axios from 'axios';
+import { toTitleCase } from 'common/utils/util';
 import MeetingModal from '../MeetingModal';
 import { PGTime } from '../../../../../common/utils/PGTime';
 import * as filters from '../../Filter';
@@ -88,7 +89,7 @@ describe('Meeting Modal', function () {
     describe('On Open Behavior', function () {
       it('populates the heading with the correct course instance information', function () {
         return waitForElement(
-          () => getByText(`Meetings for ${cs50CourseInstance.catalogNumber}, ${meetingTerm} ${cs50CourseInstance[semKey].calendarYear}`)
+          () => getByText(`Meetings for ${cs50CourseInstance.catalogNumber}, ${toTitleCase(meetingTerm)} ${cs50CourseInstance[semKey].calendarYear}`)
         );
       });
       describe('Meeting Times', function () {

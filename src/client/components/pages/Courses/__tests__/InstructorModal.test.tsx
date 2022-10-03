@@ -8,6 +8,7 @@ import * as dummy from 'testData';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { stub, SinonStub } from 'sinon';
 import { strictEqual, deepStrictEqual, notStrictEqual } from 'assert';
+import { TermKey } from 'common/constants/term';
 import * as facultyAPI from '../../../../api/faculty';
 import * as courseAPI from '../../../../api/courses';
 import InstructorModal from '../InstructorModal';
@@ -17,8 +18,13 @@ describe('InstructorModal', function () {
   let testCourse: CourseInstanceResponseDTO;
   let instructorNames: string[];
   let instructorFetchStub: SinonStub;
-  const term = TERM.FALL;
-  const { calendarYear } = dummy.cs50CourseInstance.fall;
+  const testTerm = TERM.FALL;
+  const semKey = testTerm.toLowerCase() as TermKey;
+  const testAcademicYear = testTerm === TERM.FALL
+    ? (parseInt(
+      dummy.cs50CourseInstance[semKey].calendarYear, 10
+    ) + 1).toString()
+    : dummy.cs50CourseInstance[semKey].calendarYear;
   let onCloseStub: SinonStub;
   let onSaveStub: SinonStub;
   beforeEach(function () {
@@ -43,7 +49,10 @@ describe('InstructorModal', function () {
           <InstructorModal
             isVisible
             currentCourse={testCourse}
-            currentSemester={{ term, calendarYear }}
+            currentSemester={{
+              term: testTerm,
+              academicYear: testAcademicYear,
+            }}
             closeModal={onCloseStub}
             onSave={onSaveStub}
           />
@@ -72,7 +81,10 @@ describe('InstructorModal', function () {
           <InstructorModal
             isVisible
             currentCourse={testCourse}
-            currentSemester={{ term, calendarYear }}
+            currentSemester={{
+              term: testTerm,
+              academicYear: testAcademicYear,
+            }}
             closeModal={onCloseStub}
             onSave={onSaveStub}
           />
@@ -120,7 +132,10 @@ describe('InstructorModal', function () {
           <InstructorModal
             isVisible
             currentCourse={testCourse}
-            currentSemester={{ term, calendarYear }}
+            currentSemester={{
+              term: testTerm,
+              academicYear: testAcademicYear,
+            }}
             closeModal={onCloseStub}
             onSave={onSaveStub}
           />
@@ -188,7 +203,10 @@ describe('InstructorModal', function () {
           <InstructorModal
             isVisible
             currentCourse={testCourse}
-            currentSemester={{ term, calendarYear }}
+            currentSemester={{
+              term: testTerm,
+              academicYear: testAcademicYear,
+            }}
             closeModal={onCloseStub}
             onSave={onSaveStub}
           />
@@ -265,7 +283,10 @@ describe('InstructorModal', function () {
         <InstructorModal
           isVisible
           currentCourse={testCourse}
-          currentSemester={{ term, calendarYear }}
+          currentSemester={{
+            term: testTerm,
+            academicYear: testAcademicYear,
+          }}
           closeModal={onCloseStub}
           onSave={onSaveStub}
         />
@@ -325,7 +346,10 @@ describe('InstructorModal', function () {
         <InstructorModal
           isVisible
           currentCourse={testCourse}
-          currentSemester={{ term, calendarYear }}
+          currentSemester={{
+            term: testTerm,
+            academicYear: testAcademicYear,
+          }}
           closeModal={onCloseStub}
           onSave={onSaveStub}
         />
@@ -370,7 +394,10 @@ describe('InstructorModal', function () {
         <InstructorModal
           isVisible
           currentCourse={testCourse}
-          currentSemester={{ term, calendarYear }}
+          currentSemester={{
+            term: testTerm,
+            academicYear: testAcademicYear,
+          }}
           closeModal={onCloseStub}
           onSave={onSaveStub}
         />
@@ -407,7 +434,10 @@ describe('InstructorModal', function () {
         <InstructorModal
           isVisible
           currentCourse={testCourse}
-          currentSemester={{ term, calendarYear }}
+          currentSemester={{
+            term: testTerm,
+            academicYear: testAcademicYear,
+          }}
           closeModal={onCloseStub}
           onSave={onSaveStub}
         />

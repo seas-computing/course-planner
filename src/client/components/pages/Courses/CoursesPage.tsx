@@ -707,7 +707,9 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
         isVisible={meetingModalData.visible}
         currentSemester={{
           term: meetingModalData.term,
-          calendarYear: selectedAcademicYear.toString(),
+          calendarYear: meetingModalData.term === TERM.SPRING
+            ? selectedAcademicYear.toString()
+            : (selectedAcademicYear - 1).toString(),
         }}
         currentCourse={meetingModalData.visible
           ? meetingModalData.course
@@ -748,7 +750,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
         isVisible={instructorModalData.visible}
         currentSemester={{
           term: instructorModalData.term,
-          calendarYear: selectedAcademicYear.toString(),
+          academicYear: selectedAcademicYear.toString(),
         }}
         currentCourse={instructorModalData.course}
         closeModal={closeInstructorModal}
@@ -769,7 +771,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
         isVisible={offeredModalData.visible}
         currentSemester={{
           term: offeredModalData.term,
-          calendarYear: selectedAcademicYear.toString(),
+          academicYear: selectedAcademicYear.toString(),
         }}
         currentCourseInstance={offeredModalData.course}
         onClose={closeOfferedModal}
@@ -806,7 +808,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
         course={enrollmentModalData.course}
         currentSemester={{
           term: enrollmentModalData.term,
-          calendarYear: selectedAcademicYear.toString(),
+          academicYear: selectedAcademicYear.toString(),
         }}
         onSave={(data) => {
           const semKey = enrollmentModalData.term.toLowerCase() as TermKey;
