@@ -5,7 +5,9 @@ import { RoomListingView } from 'server/location/RoomListingView.entity';
 import RoomResponse from 'common/dto/room/RoomResponse.dto';
 import RoomRequest from 'common/dto/room/RoomRequest.dto';
 import RoomMeetingResponse from 'common/dto/room/RoomMeetingResponse.dto';
+import RoomAdminResponse from 'common/dto/room/RoomAdminResponse.dto';
 import { RoomBookingInfoView } from './RoomBookingInfoView.entity';
+import { Room } from './room.entity';
 
 /**
  * A service for managing room, building, and campus entities in the database.
@@ -32,6 +34,9 @@ export class LocationService {
 
   @InjectRepository(RoomBookingInfoView)
   private readonly roomBookingRepository: Repository<RoomBookingInfoView>;
+
+  @InjectRepository(Room)
+  private roomRepository: Repository<Room>;
 
   /**
    * Retrieves all rooms in the database along with their campus and capacity
@@ -139,5 +144,26 @@ export class LocationService {
       meetingTitles: meetings
         .filter((title) => !!title),
     }));
+  }
+
+  /**
+   * Resolves with a list of rooms along with their associated campus and
+   * building information. This is used to populate the Room Admin table.
+   */
+  public async getAdminRooms(): Promise<RoomAdminResponse[]> {
+    return this.roomRepository
+      .createQueryBuilder('r')
+      .leftJoinAndSelect(
+        'r.building',
+        'building'
+      )
+      .leftJoinAndSelect(
+        'building.campus',
+        'campus'
+      )
+      .orderBy('campus.name', 'ASC')
+      .addOrderBy('building.name', 'ASC')
+      .addOrderBy('r.name', 'ASC')
+      .getMany() as Promise<RoomAdminResponse[]>;
   }
 }

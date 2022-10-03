@@ -14,6 +14,7 @@ import { Authentication } from 'server/auth/authentication.guard';
 import RoomResponse from 'common/dto/room/RoomResponse.dto';
 import RoomRequest from 'common/dto/room/RoomRequest.dto';
 import RoomMeetingResponse from 'common/dto/room/RoomMeetingResponse.dto';
+import RoomAdminResponse from 'common/dto/room/RoomAdminResponse.dto';
 import { LocationService } from './location.service';
 
 @ApiTags('Rooms')
@@ -50,5 +51,16 @@ export class LocationController {
   public async getRoomAvailability(@Query() roomInfo: RoomRequest)
     : Promise<RoomMeetingResponse[]> {
     return this.locationService.getRooms(roomInfo);
+  }
+
+  @Get('/admin')
+  @ApiOperation({ summary: 'Retrieve all room names and corresponding building and campus data' })
+  @ApiOkResponse({
+    type: RoomAdminResponse,
+    description: 'An array of all room names and corresponding building and campus data',
+    isArray: true,
+  })
+  public async getAdminRooms(): Promise<RoomAdminResponse[]> {
+    return this.locationService.getAdminRooms();
   }
 }
