@@ -65,6 +65,7 @@ const RoomAdmin: FunctionComponent = () => {
             <TableHeadingCell scope="col">Campus</TableHeadingCell>
             <TableHeadingCell scope="col">Building</TableHeadingCell>
             <TableHeadingCell scope="col">Room Name</TableHeadingCell>
+            <TableHeadingCell scope="col">Capacity</TableHeadingCell>
             <TableHeadingCell scope="col">Edit</TableHeadingCell>
           </TableRow>
         </TableHead>
@@ -74,6 +75,7 @@ const RoomAdmin: FunctionComponent = () => {
               <TableCell>{room.building.campus.name}</TableCell>
               <TableCell>{room.building.name}</TableCell>
               <TableCell>{room.name}</TableCell>
+              <TableCell>{room.capacity}</TableCell>
               <TableCell alignment={ALIGN.CENTER}>
                 <BorderlessButton
                   id={`edit-${room.id}`}
