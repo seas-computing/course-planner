@@ -72,44 +72,62 @@ export const roomRequest: RoomRequest = {
   calendarYear: '2020',
 };
 
+/**
+ * A room response object, for use in testing the room admin table
+ */
+export const secRoomResponse: RoomAdminResponse = {
+  id: '36f876da-f152-4b62-b254-55cee104ceb4',
+  name: '101A',
+  capacity: 20,
+  building: {
+    id: '9b22ae2d-20a8-4e3d-a6ed-7096ee50cd19',
+    name: 'SEC',
+    campus: {
+      id: '73016f1f-11d3-4a60-95a4-34f2864c9408',
+      name: 'Allston',
+    },
+  },
+};
+
+/**
+ * A room response object, for use in testing the room admin table
+ */
+export const oxfordRoomResponse: RoomAdminResponse = {
+  id: '2d545f2e-ebc7-48d2-a7e3-59bb120233a2',
+  name: '330',
+  capacity: 60,
+  building: {
+    id: 'ec635477-d92f-4ebd-a3a1-322c899488e3',
+    name: '60 Oxford Street',
+    campus: {
+      id: 'def023e0-d47a-4346-bdfb-bf7daed9e18d',
+      name: 'Cambridge',
+    },
+  },
+};
+
+/**
+ * A room response object, for use in testing the room admin table
+ */
+export const bauerRoomResponse: RoomAdminResponse = {
+  id: '7298b3fb-ad0a-42aa-ba1e-62052984e1e0',
+  name: 'Bauer G18 Naito Lobby',
+  capacity: 100,
+  building: {
+    id: 'd0dbf5ae-ed8f-4b39-bcab-dd644aff4c4f',
+    name: 'Bauer Laboratory',
+    campus: {
+      id: 'aa6099b1-8d07-478d-94ba-abd2a97c1920',
+      name: 'Cambridge',
+    },
+  },
+};
+
+/**
+ * An array of room responses, for use in testing the room admin table
+ */
 export const adminRoomsResponse: RoomAdminResponse[] = [
-  {
-    id: '36f876da-f152-4b62-b254-55cee104ceb4',
-    name: '101A',
-    capacity: 20,
-    building: {
-      id: '9b22ae2d-20a8-4e3d-a6ed-7096ee50cd19',
-      name: 'SEC',
-      campus: {
-        id: '73016f1f-11d3-4a60-95a4-34f2864c9408',
-        name: 'Allston',
-      },
-    },
-  },
-  {
-    id: '2d545f2e-ebc7-48d2-a7e3-59bb120233a2',
-    name: '330',
-    capacity: 60,
-    building: {
-      id: 'ec635477-d92f-4ebd-a3a1-322c899488e3',
-      name: '60 Oxford Street',
-      campus: {
-        id: 'def023e0-d47a-4346-bdfb-bf7daed9e18d',
-        name: 'Cambridge',
-      },
-    },
-  },
-  {
-    id: '7298b3fb-ad0a-42aa-ba1e-62052984e1e0',
-    name: 'Bauer G18 Naito Lobby',
-    capacity: 100,
-    building: {
-      id: 'd0dbf5ae-ed8f-4b39-bcab-dd644aff4c4f',
-      name: 'Bauer Laboratory',
-      campus: {
-        id: 'aa6099b1-8d07-478d-94ba-abd2a97c1920',
-        name: 'Cambridge',
-      },
-    },
-  },
+  secRoomResponse,
+  oxfordRoomResponse,
+  bauerRoomResponse,
 ];
