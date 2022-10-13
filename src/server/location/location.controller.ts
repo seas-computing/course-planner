@@ -60,7 +60,7 @@ export class LocationController {
     description: 'An array of all room names and corresponding building and campus data',
     isArray: true,
   })
-  public async getAdminRooms(): Promise<RoomAdminResponse[]> {
+  public async getFullRoomList(): Promise<RoomAdminResponse[]> {
     return this.locationService.getFullRoomList();
   }
 }
