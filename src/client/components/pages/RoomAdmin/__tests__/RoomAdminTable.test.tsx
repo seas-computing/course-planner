@@ -30,7 +30,7 @@ describe('Room Admin Table', function () {
         getStub.resolves(adminRoomsResponse);
       });
       context('when there are room records', function () {
-        it('displays the correct number of rows in the table', async function () {
+        it('displays one table row per room', async function () {
           const { getAllByRole } = render(
             <RoomAdmin />
           );

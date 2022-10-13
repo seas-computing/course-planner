@@ -408,7 +408,7 @@ describe('Location API', function () {
       beforeEach(function () {
         authStub.resolves(null);
       });
-      it('should return a 400 status', async function () {
+      it('returns a forbidden error', async function () {
         authStub.rejects(new ForbiddenException());
 
         response = await request(api)
