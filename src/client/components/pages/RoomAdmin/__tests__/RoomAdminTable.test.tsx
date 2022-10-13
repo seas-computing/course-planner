@@ -23,14 +23,6 @@ import RoomAdmin from '../RoomAdmin';
 
 describe('Room Admin Table', function () {
   let getStub: SinonStub;
-  describe('rendering', function () {
-    it('creates a table', async function () {
-      const { container } = render(
-        <RoomAdmin />
-      );
-      return waitForElement(() => container.querySelector('.room-admin-table'));
-    });
-  });
   describe('data fetching', function () {
     context('when room data fetch succeeds', function () {
       beforeEach(function () {
