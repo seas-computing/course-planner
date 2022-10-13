@@ -104,7 +104,7 @@ export class LocationService {
    * the server so that we can strictly compare by UUID, not by the
    * (potentially not unique) meeting title string.
    */
-  public async getRooms(
+  public async getRoomAvailability(
     {
       excludeParent,
       ...roomInfo
@@ -150,7 +150,7 @@ export class LocationService {
    * Resolves with a list of rooms along with their associated campus and
    * building information.
    */
-  public async getAdminRooms(): Promise<RoomAdminResponse[]> {
+  public async getFullRoomList(): Promise<RoomAdminResponse[]> {
     return this.roomRepository
       .createQueryBuilder('r')
       .leftJoinAndSelect(

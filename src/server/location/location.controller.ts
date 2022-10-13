@@ -50,7 +50,7 @@ export class LocationController {
   })
   public async getRoomAvailability(@Query() roomInfo: RoomRequest)
     : Promise<RoomMeetingResponse[]> {
-    return this.locationService.getRooms(roomInfo);
+    return this.locationService.getRoomAvailability(roomInfo);
   }
 
   @Get('/admin')
@@ -61,6 +61,6 @@ export class LocationController {
     isArray: true,
   })
   public async getAdminRooms(): Promise<RoomAdminResponse[]> {
-    return this.locationService.getAdminRooms();
+    return this.locationService.getFullRoomList();
   }
 }
