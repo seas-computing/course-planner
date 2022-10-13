@@ -426,13 +426,6 @@ describe('Location API', function () {
           .get('/api/rooms/admin');
         result = response.body;
       });
-      it('should return a 200 status', function () {
-        strictEqual(response.status, HttpStatus.OK);
-      });
-      it('should return a nonempty array of data', function () {
-        strictEqual(Array.isArray(result), true);
-        notStrictEqual(result.length, 0);
-      });
       it('returns all rooms in the database', async function () {
         let expectedRooms: RoomAdminResponse[] = await locationRepo.createQueryBuilder('r')
           .leftJoinAndSelect(
