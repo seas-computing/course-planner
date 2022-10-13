@@ -148,7 +148,7 @@ export class LocationService {
 
   /**
    * Resolves with a list of rooms along with their associated campus and
-   * building information. This is used to populate the Room Admin table.
+   * building information.
    */
   public async getAdminRooms(): Promise<RoomAdminResponse[]> {
     return this.roomRepository
