@@ -128,7 +128,7 @@ describe('Room Admin Table', function () {
         beforeEach(function () {
           getStub.resolves(emptyTestData);
         });
-        it('displays the correct number of rows in the table (only the header row)', async function () {
+        it('displays only the header row', async function () {
           const { getAllByRole } = render(
             <RoomAdmin />
           );
