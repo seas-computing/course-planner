@@ -427,7 +427,7 @@ describe('Location API', function () {
         result = response.body;
       });
       it('returns all rooms in the database', async function () {
-        let expectedRooms: RoomAdminResponse[] = await locationRepo.createQueryBuilder('r')
+        const expectedRooms: RoomAdminResponse[] = await locationRepo.createQueryBuilder('r')
           .leftJoinAndSelect(
             'r.building',
             'building'
@@ -440,20 +440,9 @@ describe('Location API', function () {
           .addOrderBy('building.name', 'ASC')
           .addOrderBy('r.name', 'ASC')
           .getMany();
-        expectedRooms = expectedRooms.map((room) => ({
-          id: room.id,
-          name: room.name,
-          capacity: room.capacity,
-          building: {
-            id: room.building.id,
-            name: room.building.name,
-            campus: {
-              id: room.building.campus.id,
-              name: room.building.campus.name,
-            },
-          },
-        }));
-        deepStrictEqual(result, expectedRooms);
+        const expectedRoomIds = expectedRooms.map((room) => room.id).sort();
+        const resultIds = result.map((room) => room.id).sort();
+        deepStrictEqual(expectedRoomIds, resultIds);
       });
     });
     context('As a non-admin user', function () {
