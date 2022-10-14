@@ -1,12 +1,48 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-interface BuildingInfo {
-  id: string;
-  name: string;
-  campus: {
-    id: string;
-    name: string;
-  }
+export abstract class CampusInfo {
+  /**
+   * The database uuid of the campus
+   */
+  @ApiProperty({
+    type: 'string',
+    example: 'a1f2651d-db94-4565-8816-b8ce9d3533ab',
+  })
+  public id: string;
+
+  /**
+   * The campus name
+   */
+  @ApiProperty({
+    type: 'string',
+    example: 'Allston',
+  })
+  public name: string;
+}
+
+export abstract class BuildingInfo {
+  /**
+   * The database uuid of the building
+   */
+  @ApiProperty({
+    type: 'string',
+    example: 'bf1f7364-b53a-49f6-a8e5-393b770d1ede',
+  })
+  public id: string;
+
+  /**
+   * The building name
+   */
+  @ApiProperty({
+    type: 'string',
+    example: 'SEC',
+  })
+  public name: string;
+
+  @ApiProperty({
+    type: CampusInfo,
+  })
+  public campus: CampusInfo;
 }
 
 export default abstract class RoomAdminResponse {
@@ -37,19 +73,8 @@ export default abstract class RoomAdminResponse {
   })
   public capacity: number;
 
-  /**
-   * The building and campus name information of the room
-   */
   @ApiProperty({
-    example: {
-      id: 'b5478231-478e-464d-b29c-45c98fa472b3',
-      name: 'Maxwell Dworkin',
-      campus: {
-        id: '4193a3e5-5987-4083-97cf-a949c146260f',
-        name: 'Cambridge',
-      },
-    },
-    isArray: false,
+    type: BuildingInfo,
   })
   public building: BuildingInfo;
 }
