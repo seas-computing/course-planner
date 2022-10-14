@@ -3,6 +3,7 @@ import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
 import DAY, { dayEnumToString } from 'common/constants/day';
 import { Popover } from 'mark-one';
 import { DEGREE_PROGRAM } from 'common/constants';
+import { prefix } from '@fortawesome/free-solid-svg-icons';
 import {
   WeekBlock, DayBlock, CourseListing, SessionBlock, CourseListingButton,
 } from './blocks';
@@ -50,7 +51,8 @@ interface ScheduleViewProps {
   /**
    * The Degree program of the data currently being displayed
    */
-  degreeProgram?: DEGREE_PROGRAM
+  degreeProgram?: DEGREE_PROGRAM;
+  isPrefixActive: (prefix:string)=> boolean
 }
 
 /**
@@ -66,6 +68,7 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
   rowHeight,
   days,
   degreeProgram,
+  isPrefixActive,
 }) => {
   // Convert the range of hours covered by our Schedule to a number of
   // css-grid rows
@@ -107,6 +110,7 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
             weekday,
             courses,
           }) => {
+            // const isSelectedCoursePrefix = isPrefixActive(coursePrefix);
             if (dayEnumToString(weekday) === day) {
               const resolvedStartRow = Math.round(
               // Convert the start time and duration of the course to a
@@ -123,6 +127,7 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
               }) => instanceId === currentPopover);
               return [...blocks, (
                 <SessionBlock
+                  isFaded={isPrefixActive(coursePrefix)}
                   isPopoverVisible={!!currentPopover}
                   key={sessionId}
                   prefix={coursePrefix}
@@ -172,6 +177,7 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
                     const displayEndTime = PGTime.toDisplay(
                       `${endHour}:${endMinute.toString().padStart(2, '0')}`
                     );
+                    // const is1SelectedCoursePrefix= isPrefixActive(coursePrefix)
                     const isSelected = currentPopover === instanceId;
                     const isSelectedDegreeProgram = (
                       degreeProgram === DEGREE_PROGRAM.BOTH

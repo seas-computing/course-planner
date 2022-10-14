@@ -1,15 +1,19 @@
 import React, {
-  FunctionComponent, useState, useEffect, useContext, ChangeEvent,
+  FunctionComponent, useState, useEffect, useContext, ChangeEvent, useCallback,
 } from 'react';
 import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
 import { getCourseScheduleForSemester } from 'client/api/courses';
-import { DEGREE_PROGRAM, TERM } from 'common/constants';
-import { Dropdown, POSITION, LoadSpinner } from 'mark-one';
+import { DEGREE_PROGRAM, TERM, getCatPrefixColor } from 'common/constants';
+import {
+  Dropdown, POSITION, LoadSpinner, Button, VARIANT,
+} from 'mark-one';
 import { AppMessage, MESSAGE_TYPE, MESSAGE_ACTION } from 'client/classes';
 import { MessageContext, MetadataContext } from 'client/context';
 import { VerticalSpace } from 'client/components/layout';
 import { termEnumToTitleCase } from 'common/utils/termHelperFunctions';
 import { toTitleCase } from 'common/utils/util';
+import { ButtonProps } from 'mark-one/lib/Buttons/Button';
+import styled from 'styled-components';
 import ScheduleView from './ScheduleView';
 import { useStoredState } from '../../../hooks/useStoredState';
 
@@ -30,6 +34,14 @@ export interface SemesterSelection {
   term: TERM;
   calendarYear: number;
 }
+export interface PrefixState{
+  prefix: string;
+  active:boolean;
+
+}
+// put note here
+const PrefixButton = styled(Button)<ButtonProps & {prefix:string}>`
+background-color: ${({ prefix }) => getCatPrefixColor(prefix)};`;
 
 /**
  * This is the top-level page component for the Schedule. It's responsible for
@@ -52,7 +64,11 @@ const SchedulePage: FunctionComponent = () => {
    * Provides the current Academic Year from the server
    * Later, we may add the current Term to metadata
    */
-  const { currentAcademicYear, semesters } = useContext(MetadataContext);
+  const {
+    currentAcademicYear,
+    semesters,
+    catalogPrefixes,
+  } = useContext(MetadataContext);
 
   /**
    * Keeps track of the currently selectedterm
@@ -61,7 +77,40 @@ const SchedulePage: FunctionComponent = () => {
     selectedSemester,
     setSelectedSemester,
   ] = useStoredState<SemesterSelection>('SCHEDULE_SEMESTER_SELECTION');
+  /* Filter the courses for which data will be shown in the table
+  */
+  const [prefixes, setPrefixes] = useState <PrefixState[]>([]);
+  useEffect(() => {
+    const newPrefixes = catalogPrefixes.map((prefix) => ({
+      prefix,
+      active: true,
+    }));
+    setPrefixes(newPrefixes);
+  }, [catalogPrefixes]);
 
+  function togglePrefix(prefix:string) {
+    const prefixObj = prefixes.find((p) => p.prefix === prefix);
+    console.log('prefix name', prefixObj);
+    prefixObj.active = !prefixObj.active;
+    setPrefixes(prefixes);
+  }
+  console.log('array of prefixes?', prefixes);
+  const isPrefixActive = useCallback((prefix:string) => {
+    const prefixObj = prefixes.find((p) => p.prefix === prefix);
+    console.log("prefixes",prefixes);
+    return prefixObj.active;
+  }, [prefixes]);
+  const prefixToggleButtons = prefixes.map((prefixObj) => (
+    <PrefixButton
+      prefix={prefixObj.prefix}
+      variant={VARIANT.BASE}
+      key={prefixObj.prefix}
+      onClick={() => togglePrefix(prefixObj.prefix)}
+    >
+      {prefixObj.prefix}
+    </PrefixButton>
+  ));
+  console.log('prefix', prefixToggleButtons);
   /* Track the degree program for which data will be shown in the table
   */
   const [
@@ -164,6 +213,7 @@ const SchedulePage: FunctionComponent = () => {
   return (
     <>
       <VerticalSpace>
+        {prefixToggleButtons}
         {selectedSemester && (
           <Dropdown
             id="schedule-semester-selector"
@@ -204,6 +254,7 @@ const SchedulePage: FunctionComponent = () => {
             firstHour={FIRST_HOUR}
             lastHour={LAST_HOUR}
             degreeProgram={selectedDegreeProgram}
+            isPrefixActive={isPrefixActive}
           />
         )}
     </>
