@@ -48,78 +48,33 @@ describe('Room Admin Table', function () {
             .map(
               (row) => (Array.from(row.cells).map((cell) => cell.textContent))
             );
-          const secRoomCampus = rowsContent[1][0];
-          const secRoomBuilding = rowsContent[1][1];
-          const secRoomName = rowsContent[1][2];
-          const secRoomCapacity = rowsContent[1][3];
-          const oxfordRoomCampus = rowsContent[2][0];
-          const oxfordRoomBuilding = rowsContent[2][1];
-          const oxfordRoomName = rowsContent[2][2];
-          const oxfordRoomCapacity = rowsContent[2][3];
-          const bauerRoomCampus = rowsContent[3][0];
-          const bauerRoomBuilding = rowsContent[3][1];
-          const bauerRoomName = rowsContent[3][2];
-          const bauerRoomCapacity = rowsContent[3][3];
-          strictEqual(
-            secRoomCampus,
-            secRoomResponse.building.campus.name,
-            'The SEC campus is not being displayed as expected.'
-          );
-          strictEqual(
-            secRoomBuilding,
-            secRoomResponse.building.name,
-            'The SEC building is not being displayed as expected.'
-          );
-          strictEqual(
-            secRoomName,
+          // An amalgamation of all room information
+          const roomInfo = [
             secRoomResponse.name,
-            'The SEC room name is not being displayed as expected.'
-          );
-          strictEqual(
-            secRoomCapacity,
+            secRoomResponse.building.name,
+            secRoomResponse.building.campus.name,
             secRoomResponse.capacity.toString(),
-            'The SEC room capacity is not being displayed as expected.'
-          );
-          strictEqual(
-            oxfordRoomCampus,
-            oxfordRoomResponse.building.campus.name,
-            'The 60 Oxford Street campus is not being displayed as expected.'
-          );
-          strictEqual(
-            oxfordRoomBuilding,
-            oxfordRoomResponse.building.name,
-            'The 60 Oxford Street building is not being displayed as expected.'
-          );
-          strictEqual(
-            oxfordRoomName,
             oxfordRoomResponse.name,
-            'The 60 Oxford Street room name is not being displayed as expected.'
-          );
-          strictEqual(
-            oxfordRoomCapacity,
+            oxfordRoomResponse.building.name,
+            oxfordRoomResponse.building.campus.name,
             oxfordRoomResponse.capacity.toString(),
-            'The 60 Oxford Street room capacity is not being displayed as expected.'
-          );
-          strictEqual(
-            bauerRoomCampus,
-            bauerRoomResponse.building.campus.name,
-            'The Bauer room campus is not being displayed as expected.'
-          );
-          strictEqual(
-            bauerRoomBuilding,
-            bauerRoomResponse.building.name,
-            'The Bauer room building is not being displayed as expected.'
-          );
-          strictEqual(
-            bauerRoomName,
             bauerRoomResponse.name,
-            'The Bauer room name is not being displayed as expected.'
-          );
-          strictEqual(
-            bauerRoomCapacity,
+            bauerRoomResponse.building.name,
+            bauerRoomResponse.building.campus.name,
             bauerRoomResponse.capacity.toString(),
-            'The Bauer room capacity is not being displayed as expected.'
-          );
+          ];
+
+          for (let i = 1; i < rows.length; i++) {
+            rowsContent[i] = rowsContent[i].slice(0, -1);
+            rowsContent[i].forEach((data) => {
+              // Remove the Edit column, which contains no table data.
+              strictEqual(
+                roomInfo.includes(data),
+                true,
+                `${data} is not in the table as expected`
+              );
+            });
+          }
         });
       });
       context('when there are no room records', function () {
