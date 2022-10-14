@@ -3,7 +3,6 @@ import {
   strictEqual,
 } from 'assert';
 import {
-  waitForElement,
   wait,
 } from '@testing-library/react';
 import {
