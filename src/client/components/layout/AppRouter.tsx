@@ -18,6 +18,7 @@ import {
 import { useGroupGuard } from '../../hooks/useGroupGuard';
 import ForbiddenPage from '../pages/ForbiddenPage';
 import UnauthorizedPage from '../pages/UnauthorizedPage';
+import RoomAdmin from '../pages/RoomAdmin/RoomAdmin';
 
 /**
  * Selects which body component to render based on the current URL path. The
@@ -56,6 +57,7 @@ const AppRouter: FunctionComponent = (): ReactElement => {
             '/faculty',
             '/course-admin',
             '/faculty-admin',
+            '/room-admin',
           ]}
           component={UnauthorizedPage}
         />
@@ -100,6 +102,11 @@ const AppRouter: FunctionComponent = (): ReactElement => {
           path="/faculty-admin"
           component={isAdmin ? FacultyAdmin : ForbiddenPage}
         />
+        <Route
+          exact
+          path="/room-admin"
+          component={isAdmin ? RoomAdmin : ForbiddenPage}
+        />
         <Route component={NoMatch} />
       </Switch>
     );
@@ -123,6 +130,7 @@ const AppRouter: FunctionComponent = (): ReactElement => {
           '/room-schedule',
           '/course-admin',
           '/faculty-admin',
+          '/room-admin',
         ]}
         component={UnauthorizedPage}
       />

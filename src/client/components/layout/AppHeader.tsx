@@ -43,6 +43,7 @@ const AppHeader:FunctionComponent = () => {
     { link: '/room-schedule', text: 'Room Schedule', isVisible: true },
     { link: '/course-admin', text: 'Course Admin', isVisible: isAdmin },
     { link: '/faculty-admin', text: 'Faculty Admin', isVisible: isAdmin },
+    { link: '/room-admin', text: 'Room Admin', isVisible: isAdmin },
   ];
 
   /**

@@ -29,6 +29,7 @@ import RoomRequest from 'common/dto/room/RoomRequest.dto';
 import flatMap from 'lodash.flatmap';
 import { Repository } from 'typeorm';
 import RoomMeetingResponse from 'common/dto/room/RoomMeetingResponse.dto';
+import RoomAdminResponse from 'common/dto/room/RoomAdminResponse.dto';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import { rooms } from '../../../mocks/database/population/data/rooms';
@@ -398,6 +399,61 @@ describe('Location API', function () {
           authStub.rejects(new ForbiddenException());
           strictEqual(response.status, HttpStatus.FORBIDDEN);
         });
+      });
+    });
+  });
+  describe('GET /rooms/admin', function () {
+    let response: Response;
+    context('As an unauthenticated user', function () {
+      beforeEach(function () {
+        authStub.resolves(null);
+      });
+      it('returns a forbidden error', async function () {
+        authStub.rejects(new ForbiddenException());
+
+        response = await request(api)
+          .get('/api/rooms/admin');
+
+        strictEqual(response.ok, false);
+        strictEqual(response.status, HttpStatus.FORBIDDEN);
+      });
+    });
+    context('As an authenticated user', function () {
+      let result: RoomAdminResponse[];
+      beforeEach(async function () {
+        authStub.resolves(adminUser);
+        response = await request(api)
+          .get('/api/rooms/admin');
+        result = response.body;
+      });
+      it('returns all rooms in the database', async function () {
+        const expectedRooms: RoomAdminResponse[] = await locationRepo.createQueryBuilder('r')
+          .leftJoinAndSelect(
+            'r.building',
+            'building'
+          )
+          .leftJoinAndSelect(
+            'building.campus',
+            'campus'
+          )
+          .orderBy('campus.name', 'ASC')
+          .addOrderBy('building.name', 'ASC')
+          .addOrderBy('r.name', 'ASC')
+          .getMany();
+        const expectedRoomIds = expectedRooms.map((room) => room.id).sort();
+        const resultIds = result.map((room) => room.id).sort();
+        deepStrictEqual(expectedRoomIds, resultIds);
+      });
+    });
+    context('As a non-admin user', function () {
+      beforeEach(async function () {
+        authStub.resolves(regularUser);
+        response = await request(api)
+          .get('/api/rooms/admin');
+      });
+      it('is inaccessible to unauthenticated users', function () {
+        authStub.rejects(new ForbiddenException());
+        strictEqual(response.status, HttpStatus.FORBIDDEN);
       });
     });
   });
