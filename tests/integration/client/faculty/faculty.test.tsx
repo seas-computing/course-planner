@@ -49,7 +49,7 @@ describe('Faculty Schedule Modal Behavior', function () {
     let page: RenderResult;
     beforeEach(function () {
       putStub = stub(FacultyAPI, 'updateFacultyAbsence');
-      putStub.resolves({ data: facultyAbsenceResponse });
+      putStub.resolves(testData[0]);
       page = renderWithMessaging(<FacultySchedule />);
       ({ findByText, queryByText, getByLabelText } = page);
     });
