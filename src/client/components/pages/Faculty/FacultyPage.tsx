@@ -28,6 +28,7 @@ import {
 } from 'client/classes';
 import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
 import { useStoredState } from 'client/hooks/useStoredState';
+import { ABSENCE_TYPE } from 'common/constants';
 import FacultyAbsenceModal from './FacultyAbsenceModal';
 import FacultyScheduleTable from './FacultyScheduleTable';
 import { AcademicYearUtils } from '../utils/academicYearOptions';
@@ -189,8 +190,8 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
     if (!showRetired) {
       faculty = faculty.filter(
         ({ spring, fall }): boolean => (
-          fall.absence.type === 'PRESENT'
-          || spring.absence.type === 'PRESENT')
+          fall.absence.type === ABSENCE_TYPE.PRESENT
+          || spring.absence.type === ABSENCE_TYPE.PRESENT)
       );
     }
     return faculty;
