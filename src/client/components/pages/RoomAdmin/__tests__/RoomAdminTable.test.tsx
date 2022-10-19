@@ -4,6 +4,7 @@ import {
 } from 'assert';
 import {
   wait,
+  within,
 } from '@testing-library/react';
 import {
   stub,
@@ -43,38 +44,35 @@ describe('Room Admin Table', function () {
             <RoomAdmin />
           );
           await wait(() => getAllByRole('row').length > 1);
-          const rows = Array.from(getAllByRole('row')) as HTMLTableRowElement[];
-          const rowsContent = rows
-            .map(
-              (row) => (Array.from(row.cells).map((cell) => cell.textContent))
-            );
-          // An amalgamation of all room information
-          const roomInfo = [
-            secRoomResponse.name,
-            secRoomResponse.building.name,
-            secRoomResponse.building.campus.name,
-            secRoomResponse.capacity.toString(),
-            oxfordRoomResponse.name,
-            oxfordRoomResponse.building.name,
-            oxfordRoomResponse.building.campus.name,
-            oxfordRoomResponse.capacity.toString(),
-            bauerRoomResponse.name,
-            bauerRoomResponse.building.name,
-            bauerRoomResponse.building.campus.name,
-            bauerRoomResponse.capacity.toString(),
-          ];
-
-          for (let i = 1; i < rows.length; i++) {
-            rowsContent[i] = rowsContent[i].slice(0, -1);
-            rowsContent[i].forEach((data) => {
-              // Remove the Edit column, which contains no table data.
+          const rows = getAllByRole('row').slice(1) as HTMLTableRowElement[];
+          [
+            [
+              secRoomResponse.name,
+              secRoomResponse.building.name,
+              secRoomResponse.building.campus.name,
+              secRoomResponse.capacity.toString(),
+            ],
+            [
+              oxfordRoomResponse.name,
+              oxfordRoomResponse.building.name,
+              oxfordRoomResponse.building.campus.name,
+              oxfordRoomResponse.capacity.toString(),
+            ],
+            [
+              bauerRoomResponse.name,
+              bauerRoomResponse.building.name,
+              bauerRoomResponse.building.campus.name,
+              bauerRoomResponse.capacity.toString(),
+            ],
+          ].forEach((roomData, index) => {
+            roomData.forEach((data) => {
               strictEqual(
-                roomInfo.includes(data),
+                within(rows[index]).queryByText(data) !== null,
                 true,
                 `${data} is not in the table as expected`
               );
             });
-          }
+          });
         });
       });
       context('when there are no room records', function () {
