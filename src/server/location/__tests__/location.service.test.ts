@@ -7,7 +7,6 @@ import {
 } from 'sinon';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import {
-  strictEqual,
   deepStrictEqual,
 } from 'assert';
 import { SelectQueryBuilder } from 'typeorm';
