@@ -7,6 +7,7 @@ import { Area } from 'server/area/area.entity';
 import { CourseService } from 'server/course/course.service';
 import { Course } from 'server/course/course.entity';
 import { SemesterModule } from 'server/semester/semester.module';
+import { LocationModule } from 'server/location/location.module';
 import { MetadataController } from './metadata.controller';
 
 @Module({
@@ -17,6 +18,7 @@ import { MetadataController } from './metadata.controller';
       Course,
     ]),
     SemesterModule,
+    LocationModule,
   ],
   controllers: [MetadataController],
   providers: [
