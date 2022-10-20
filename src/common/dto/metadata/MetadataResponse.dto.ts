@@ -6,6 +6,7 @@
  */
 
 import { ApiProperty } from '@nestjs/swagger';
+import { CampusResponse } from '../room/CampusResponse.dto';
 
 export abstract class MetadataResponse {
   @ApiProperty({
@@ -34,4 +35,10 @@ export abstract class MetadataResponse {
     isArray: true,
   })
   public catalogPrefixes: string[];
+
+  @ApiProperty({
+    type: CampusResponse,
+    isArray: true,
+  })
+  public campuses: CampusResponse[];
 }

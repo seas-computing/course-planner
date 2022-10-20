@@ -5,6 +5,8 @@ import { RoomListingView } from 'server/location/RoomListingView.entity';
 import { LocationController } from './location.controller';
 import { LocationService } from './location.service';
 import { Room } from './room.entity';
+import { Campus } from './campus.entity';
+import { Building } from './building.entity';
 
 @Module({
   imports: [
@@ -12,6 +14,8 @@ import { Room } from './room.entity';
       RoomListingView,
       RoomBookingInfoView,
       Room,
+      Campus,
+      Building,
     ]),
   ],
   controllers: [LocationController],
