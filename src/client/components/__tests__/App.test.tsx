@@ -43,6 +43,7 @@ describe('App', function () {
           areas: [],
           semesters: [],
           catalogPrefixes: [],
+          campuses: [],
         }
       )
       .returns(
@@ -52,6 +53,7 @@ describe('App', function () {
             areas: [],
             semesters: [],
             catalogPrefixes: [],
+            campuses: [],
           },
           setMetaStateStub,
         ]

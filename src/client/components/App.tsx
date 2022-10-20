@@ -59,6 +59,7 @@ const App: FunctionComponent = (): ReactElement => {
     areas: [],
     semesters: [],
     catalogPrefixes: [],
+    campuses: [],
   });
 
   const metadataContext = new MetadataContextValue(currentMetadata,
