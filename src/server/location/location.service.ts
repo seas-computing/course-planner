@@ -6,8 +6,10 @@ import RoomResponse from 'common/dto/room/RoomResponse.dto';
 import RoomRequest from 'common/dto/room/RoomRequest.dto';
 import RoomMeetingResponse from 'common/dto/room/RoomMeetingResponse.dto';
 import RoomAdminResponse from 'common/dto/room/RoomAdminResponse.dto';
+import { CampusResponse } from 'common/dto/room/CampusResponse.dto';
 import { RoomBookingInfoView } from './RoomBookingInfoView.entity';
 import { Room } from './room.entity';
+import { Campus } from './campus.entity';
 
 /**
  * A service for managing room, building, and campus entities in the database.
@@ -37,6 +39,9 @@ export class LocationService {
 
   @InjectRepository(Room)
   private roomRepository: Repository<Room>;
+
+  @InjectRepository(Campus)
+  private campusRepository: Repository<Campus>;
 
   /**
    * Retrieves all rooms in the database along with their campus and capacity
@@ -165,5 +170,25 @@ export class LocationService {
       .addOrderBy('building.name', 'ASC')
       .addOrderBy('r.name', 'ASC')
       .getMany() as Promise<RoomAdminResponse[]>;
+  }
+
+  /**
+   * Returns a list of campuses along with their building and room information.
+   */
+  public async getCampusMetadata(): Promise<CampusResponse[]> {
+    return await this.campusRepository
+      .createQueryBuilder('c')
+      .leftJoinAndSelect(
+        'c.buildings',
+        'b'
+      )
+      .leftJoinAndSelect(
+        'b.rooms',
+        'r'
+      )
+      .orderBy('c.name', 'ASC')
+      .addOrderBy('b.name', 'ASC')
+      .addOrderBy('r.name', 'ASC')
+      .getMany() as CampusResponse[];
   }
 }
