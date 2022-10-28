@@ -5,6 +5,7 @@ import {
   within,
   RenderResult,
   fireEvent,
+  getAllByTitle,
 } from 'test-utils';
 import {
   stub,
@@ -18,6 +19,7 @@ import { MetadataContextValue } from 'client/context/MetadataContext';
 import { DEGREE_PROGRAM, TERM } from 'common/constants';
 import { testCourseScheduleData } from 'testData';
 import SchedulePage from '../SchedulePage';
+import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
 
 describe('Schedule Page', function () {
   let dispatchMessage: SinonStub;
@@ -89,6 +91,73 @@ describe('Schedule Page', function () {
       strictEqual(term, TERM.FALL);
     });
   });
+  describe('Course Prefix Filter Buttons', function () {
+    let testBlock: ScheduleViewResponseDTO;
+    let testMeeting: ScheduleEntry;
+    let meetingCount: Record<string, number>;
+    let renderResult: RenderResult;
+    let courses: {
+      coursePrefix: string,
+      courseNumber: string
+    }[];
+    beforeEach(async function () {
+      apiStub.resolves(testCourseScheduleData);
+      const fakeDate = new Date(testAcademicYear, 5, 30);
+      clock = FakeTimers.install({
+        toFake: ['Date'],
+      });
+      clock.tick(fakeDate.valueOf());
+      renderResult = render(
+        <SchedulePage />,
+        { metadataContext: metadata }
+      );
+      courses = [];
+      testCourseScheduleData.forEach((block) => {
+        block.courses.forEach((course) => {
+          courses.push({
+            coursePrefix: block.coursePrefix,
+            courseNumber: course.courseNumber,
+          });
+        });
+      });
+      await waitForElementToBeRemoved(() => renderResult.getByText('Fetching Course Schedule'));
+    });
+    afterEach(function () {
+      clock.uninstall();
+    });
+    it('renders list of course filter buttons', function () {
+      const { getAllByLabelText } = renderResult;
+      const courseFilterButtons = getAllByLabelText('Course Filter Button')
+        .map((button) => button.textContent);
+      deepStrictEqual(
+        courseFilterButtons, dummy.metadata.catalogPrefixes
+      );
+    });
+    context('a button is selected from course filter buttons', function () {
+      it('disables the popover for courselisting button of selected course prefix', function () {
+        const { getAllByLabelText, getAllByText } = renderResult;
+        let testBlock: ScheduleViewResponseDTO;
+      let testMeeting: ScheduleEntry;
+      let meetingCount: Record<string, number>;
+        const courseFilterButtons = getAllByLabelText('Course Filter Button');
+        const [testListButton] = renderResult.getAllByText(
+          testMeeting.courseNumber
+        );
+        //loop through all prefixes for fireevent then check popover.
+        courseFilterButtons.forEach((button) => {
+          fireEvent.click(button);
+        });
+          const targetSessionBlock = prefixBlocks.find((block) => (
+            within(block.parentElement).queryByText(course.courseNumber)
+          ));
+          const targetCourseListing = within(
+            targetBlock.parentElement
+          ).getByText(course.courseNumber);
+        });
+      });
+    });
+  });
+
   describe('Degree Program Selected', function () {
     let renderResult: RenderResult;
     let courses: {

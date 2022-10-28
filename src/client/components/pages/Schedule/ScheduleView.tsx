@@ -3,7 +3,6 @@ import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
 import DAY, { dayEnumToString } from 'common/constants/day';
 import { Popover } from 'mark-one';
 import { DEGREE_PROGRAM } from 'common/constants';
-import { prefix } from '@fortawesome/free-solid-svg-icons';
 import {
   WeekBlock, DayBlock, CourseListing, SessionBlock, CourseListingButton,
 } from './blocks';
@@ -52,6 +51,10 @@ interface ScheduleViewProps {
    * The Degree program of the data currently being displayed
    */
   degreeProgram?: DEGREE_PROGRAM;
+
+  /**
+   * The course prefix data that's currently active
+   */
   isPrefixActive: (prefix:string)=> boolean
 }
 
@@ -177,7 +180,7 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
                     const displayEndTime = PGTime.toDisplay(
                       `${endHour}:${endMinute.toString().padStart(2, '0')}`
                     );
-                    // const is1SelectedCoursePrefix= isPrefixActive(coursePrefix)
+                    const isSelectedCoursePrefix = isPrefixActive(coursePrefix);
                     const isSelected = currentPopover === instanceId;
                     const isSelectedDegreeProgram = (
                       degreeProgram === DEGREE_PROGRAM.BOTH
@@ -197,7 +200,9 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
                           aria-labelledby={`${meetingId}-description`}
                           onClick={(event) => {
                             event.stopPropagation();
-                            if (isSelectedDegreeProgram) {
+                            if (
+                              isSelectedDegreeProgram && isSelectedCoursePrefix
+                            ) {
                               setCurrentPopover((current) => (
                                 current === instanceId ? null : instanceId
                               ));

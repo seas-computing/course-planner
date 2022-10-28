@@ -39,7 +39,7 @@ export interface PrefixState{
   active:boolean;
 
 }
-// put note here
+/** A button to filter course prefixes and fade sessionblock based on selected value */
 const PrefixButton = styled(Button)<ButtonProps & {prefix:string}>`
 background-color: ${({ prefix }) => getCatPrefixColor(prefix)};`;
 
@@ -90,18 +90,16 @@ const SchedulePage: FunctionComponent = () => {
 
   function togglePrefix(prefix:string) {
     const prefixObj = prefixes.find((p) => p.prefix === prefix);
-    console.log('prefix name', prefixObj);
     prefixObj.active = !prefixObj.active;
-    setPrefixes(prefixes);
+    setPrefixes([...prefixes]);
   }
-  console.log('array of prefixes?', prefixes);
   const isPrefixActive = useCallback((prefix:string) => {
     const prefixObj = prefixes.find((p) => p.prefix === prefix);
-    console.log("prefixes",prefixes);
     return prefixObj.active;
   }, [prefixes]);
   const prefixToggleButtons = prefixes.map((prefixObj) => (
     <PrefixButton
+      alt="Course Filter Button"
       prefix={prefixObj.prefix}
       variant={VARIANT.BASE}
       key={prefixObj.prefix}
@@ -110,7 +108,6 @@ const SchedulePage: FunctionComponent = () => {
       {prefixObj.prefix}
     </PrefixButton>
   ));
-  console.log('prefix', prefixToggleButtons);
   /* Track the degree program for which data will be shown in the table
   */
   const [
@@ -260,5 +257,4 @@ const SchedulePage: FunctionComponent = () => {
     </>
   );
 };
-
 export default SchedulePage;

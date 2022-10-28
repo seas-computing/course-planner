@@ -111,7 +111,7 @@ type SessionBlockBodyProps = Pick<SessionBlockProps, 'children'>;
  * within the DayBlock grid and the background color
  */
 const SessionBlockWrapper = styled.div<SessionBlockWrapperProps>`
-  background-color: ${({ prefix }) => getCatPrefixColor(prefix)};
+  background-color: ${({ prefix }) => getCatPrefixColor(prefix)}; 
   grid-row: ${({ startRow, duration }) => `${startRow}/ span ${duration}`};
   border-left: 1px solid #fff;
   border-right: 1px solid #fff;

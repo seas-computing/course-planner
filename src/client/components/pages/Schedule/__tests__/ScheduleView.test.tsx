@@ -17,6 +17,7 @@ describe('ScheduleView', function () {
     beforeEach(function () {
       page = render(
         <ScheduleView
+          isPrefixActive={() => true}
           schedule={testCourseScheduleData}
           firstHour={8}
           lastHour={20}
@@ -44,6 +45,7 @@ describe('ScheduleView', function () {
     beforeEach(function () {
       page = render(
         <ScheduleView
+          isPrefixActive={() => true}
           schedule={testCourseScheduleData}
           firstHour={8}
           lastHour={20}
