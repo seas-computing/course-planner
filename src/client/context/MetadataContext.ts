@@ -1,5 +1,6 @@
 import { createContext } from 'react';
 import { MetadataResponse } from 'common/dto/metadata/MetadataResponse.dto';
+import { CampusResponse } from 'common/dto/room/CampusResponse.dto';
 
 type MetadataUpdater = (metadata: MetadataResponse) => void;
 
@@ -38,6 +39,10 @@ export class MetadataContextValue {
 
   get catalogPrefixes(): string[] {
     return this.value.catalogPrefixes;
+  }
+
+  get campuses(): CampusResponse[] {
+    return this.value.campuses;
   }
 }
 
