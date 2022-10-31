@@ -279,8 +279,6 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
       .find(campus => selectedCampus === campus.name);
     const campusBuildings = campus.buildings
       .map(building => building.name);
-    console.log('campuses: ', campus);
-    console.log('campusBuildings: ', campusBuildings);
     return [{ value: '', label: '' }]
     .concat(campusBuildings.map((building): {
       value: string; label: string;
