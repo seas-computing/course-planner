@@ -34,7 +34,7 @@ import { Repository } from 'typeorm';
 import { LocationService } from 'server/location/location.service';
 import { Room } from 'server/location/room.entity';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
-import { adminUser, string } from 'testData';
+import { adminUser, createSEC555Room, string } from 'testData';
 import { LocationModule } from 'server/location/location.module';
 import { Campus } from 'server/location/campus.entity';
 import { Building } from 'server/location/building.entity';
@@ -193,6 +193,33 @@ describe('Room Admin Modal Behavior', function () {
               fireEvent.click(submitButton);
               await findByText('Capacity is required', { exact: false });
             });
+          });
+        });
+        context('when required fields are provided', function () {
+          it('does not display a validation error', async function () {
+            const campusSelect = getByLabelText('Existing Campus') as HTMLSelectElement;
+            const buildingSelect = getByLabelText('Existing Building') as HTMLSelectElement;
+            const roomNameInput = getByLabelText('Room Number', { exact: false }) as HTMLInputElement;
+            const capacityInput = getByLabelText('Capacity', { exact: false }) as HTMLInputElement;
+            fireEvent.change(
+              campusSelect,
+              { target: { value: createSEC555Room.campus } }
+            );
+            fireEvent.change(
+              buildingSelect,
+              { target: { value: createSEC555Room.building } }
+            );
+            fireEvent.change(
+              roomNameInput,
+              { target: { value: createSEC555Room.name } }
+            );
+            fireEvent.change(
+              capacityInput,
+              { target: { value: createSEC555Room.capacity } }
+            );
+            const submitButton = getByText('Submit');
+            fireEvent.click(submitButton);
+            await wait(() => !queryByText('required fields', { exact: false }));
           });
         });
       });
