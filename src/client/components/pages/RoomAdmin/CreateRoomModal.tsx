@@ -183,7 +183,7 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
       setRoomNameError('Room number is required to submit this form.')
       isValid = false;
     }
-    if (!form.capacity && Number.isNaN(parseInt(form.capacity, 10))) {
+    if (Number.isNaN(parseInt(form.capacity, 10))) {
       setCapacityError('Capacity is required to submit this form, and it must be a number.');
       isValid = false;
     }
