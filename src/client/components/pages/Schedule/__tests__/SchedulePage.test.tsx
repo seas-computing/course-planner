@@ -5,7 +5,6 @@ import {
   within,
   RenderResult,
   fireEvent,
-  getAllByTitle,
 } from 'test-utils';
 import {
   stub,
@@ -19,7 +18,6 @@ import { MetadataContextValue } from 'client/context/MetadataContext';
 import { DEGREE_PROGRAM, TERM } from 'common/constants';
 import { testCourseScheduleData } from 'testData';
 import SchedulePage from '../SchedulePage';
-import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
 
 describe('Schedule Page', function () {
   let dispatchMessage: SinonStub;
@@ -92,9 +90,6 @@ describe('Schedule Page', function () {
     });
   });
   describe('Course Prefix Filter Buttons', function () {
-    let testBlock: ScheduleViewResponseDTO;
-    let testMeeting: ScheduleEntry;
-    let meetingCount: Record<string, number>;
     let renderResult: RenderResult;
     let courses: {
       coursePrefix: string,
@@ -134,26 +129,28 @@ describe('Schedule Page', function () {
       );
     });
     context('a button is selected from course filter buttons', function () {
-      it('disables the popover for courselisting button of selected course prefix', function () {
+      it('disables the popover for course listing button of selected course prefix', function () {
         const { getAllByLabelText, getAllByText } = renderResult;
-        let testBlock: ScheduleViewResponseDTO;
-      let testMeeting: ScheduleEntry;
-      let meetingCount: Record<string, number>;
         const courseFilterButtons = getAllByLabelText('Course Filter Button');
-        const [testListButton] = renderResult.getAllByText(
-          testMeeting.courseNumber
+        const coursePrefix = testCourseScheduleData.map(
+          (coursePrefixes) => coursePrefixes.coursePrefix
         );
-        //loop through all prefixes for fireevent then check popover.
+        const courseNumber = testCourseScheduleData.map(
+          (block) => block.courses.map((number) => number.courseNumber)
+        );
+        // When all of the prefix filter buttons are clicked.
         courseFilterButtons.forEach((button) => {
           fireEvent.click(button);
         });
-          const targetSessionBlock = prefixBlocks.find((block) => (
-            within(block.parentElement).queryByText(course.courseNumber)
-          ));
-          const targetCourseListing = within(
-            targetBlock.parentElement
-          ).getByText(course.courseNumber);
-        });
+        const courseDetail = `${coursePrefix}  ${courseNumber}`;
+        const popoverDetails = renderResult.getAllByTitle(courseDetail);
+        const sessionBlocks = getAllByText(courses[0].coursePrefix);
+        const courseListingButton = sessionBlocks.find((block) => (
+          within(block.parentElement).q(courses)
+        ));
+        console.log(courseListingButton);
+        fireEvent.click(courseListingButton);
+        strictEqual(popoverDetails, null);
       });
     });
   });
