@@ -110,36 +110,14 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
   };
 
   /**
-   * The current value of the error message for the campus field
+   * The current error messages for fields in the Create Room modal
    */
-  const [
-    campusError,
-    setCampusError,
-  ] = useState('');
-
-  /**
-   * The current value of the error message for the building field
-   */
-   const [
-    buildingError,
-    setBuildingError,
-  ] = useState('');
-
-  /**
-   * The current value of the error message for the room name field
-   */
-   const [
-    roomNameError,
-    setRoomNameError,
-  ] = useState('');
-
-  /**
-   * The current value of the error message for the capacity field
-   */
-   const [
-    capacityError,
-    setCapacityError,
-  ] = useState('');
+  const [formErrors, setFormErrors] = useState({
+    campus: '',
+    building: '',
+    roomName: '',
+    capacity: '',
+  } as FormErrors)
 
   /**
    * The overall error message for the Create Room Modal
@@ -169,25 +147,44 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
   const submitRoomForm = async ():
   Promise<RoomAdminResponse> => {
     let isValid = true;
+    let updatedFormErrors = {
+      campus: '',
+      building: '',
+      roomName: '',
+      capacity: '',
+    }
     // Either an existing or new campus must be provided.
     if (!form.existingCampus && !form.newCampus) {
-      setCampusError('Campus is required to submit this form.');
+      updatedFormErrors = {
+        ...updatedFormErrors,
+        campus: 'Campus is required to submit this form.'
+      }
       isValid = false;
     }
     // Either an existing or new building must be provided.
     if (!form.existingBuilding && !form.newBuilding) {
-      setBuildingError('Building is required to submit this form.');
+      updatedFormErrors = {
+        ...updatedFormErrors,
+        building: 'Building is required to submit this form.'
+      }
       isValid = false;
     }
     if (!form.roomName) {
-      setRoomNameError('Room number is required to submit this form.')
+      updatedFormErrors = {
+        ...updatedFormErrors,
+        roomName: 'Room number is required to submit this form.'
+      }
       isValid = false;
     }
     if (Number.isNaN(parseInt(form.capacity, 10))) {
-      setCapacityError('Capacity is required to submit this form, and it must be a number.');
+      updatedFormErrors = {
+        ...updatedFormErrors,
+        capacity: 'Capacity is required to submit this form, and it must be a number.'
+      }
       isValid = false;
     }
     if (!isValid) {
+      setFormErrors(updatedFormErrors);
       throw new ValidationException('Please fill in the required fields and try again. If the problem persists, contact SEAS Computing.');
     }
     // If the user is trying to create a room with an existing campus, use the
@@ -230,11 +227,12 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
         roomName: '',
         capacity: '',
       });
-      setCampusError('');
-      setBuildingError('');
-      setRoomNameError('');
-      setCapacityError('');
-      setRoomModalErrorMessage('');
+      setFormErrors({
+        campus: '',
+        building: '',
+        roomName: '',
+        capacity: ''
+      });
       setRoomModalErrorMessage('');
       setRoomAdminModalFocus();
     }
@@ -310,7 +308,7 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
             legend="Campus"
             isBorderVisible
             isLegendVisible
-            errorMessage={campusError}
+            errorMessage={formErrors.campus}
             isRequired
           >
             <RadioButton
@@ -361,7 +359,7 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
             legend="Building"
             isBorderVisible
             isLegendVisible
-            errorMessage={buildingError}
+            errorMessage={formErrors.building}
             isRequired
           >
             <RadioButton
@@ -416,7 +414,7 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
             placeholder="e.g. 150A"
             onChange={updateFormFields}
             value={form.roomName}
-            errorMessage={roomNameError}
+            errorMessage={formErrors.roomName}
             isRequired
           />
           <TextInput
@@ -427,7 +425,7 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
             placeholder="e.g. 75"
             onChange={updateFormFields}
             value={form.capacity}
-            errorMessage={capacityError}
+            errorMessage={formErrors.capacity}
             isRequired
           />
           {roomModalErrorMessage && (
