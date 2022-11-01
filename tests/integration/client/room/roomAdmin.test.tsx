@@ -196,7 +196,7 @@ describe('Room Admin Modal Behavior', function () {
           });
         });
         context('when required fields are provided', function () {
-          it('does not display a validation error', async function () {
+          it('does not display a validation error related to missing required fields', async function () {
             const campusSelect = getByLabelText('Existing Campus') as HTMLSelectElement;
             const buildingSelect = getByLabelText('Existing Building') as HTMLSelectElement;
             const roomNameInput = getByLabelText('Room Number', { exact: false }) as HTMLInputElement;
@@ -220,6 +220,83 @@ describe('Room Admin Modal Behavior', function () {
             const submitButton = getByText('Submit');
             fireEvent.click(submitButton);
             await wait(() => !queryByText('required fields', { exact: false }));
+          });
+          context('when capacity value provided is not a number', function () {
+            it('displays a validation error', async function () {
+            const capacityInput = getByLabelText('Capacity', { exact: false }) as HTMLInputElement;
+            fireEvent.change(
+              capacityInput,
+              { target: { value: 'Fifty' } }
+            );
+              const submitButton = getByText('Submit');
+              fireEvent.click(submitButton);
+              await findByText('Capacity is required to submit this form, and it must be a number.', { exact: false });
+            });
+          });
+        });
+      });
+    });
+    describe('other errors', function () {
+      context('when creating a course', function () {
+        beforeEach(function () {
+          stub(locationService, 'saveRoom').rejects(new InternalServerErrorException());
+          onSuccessStub = stub();
+          postStub = stub(request, 'post');
+          postStub.callsFake(async (url, data) => {
+            const result = await supertestedApi.post(url)
+              .send(data);
+            // An error is not thrown for an error HTTP status,
+            // so we must throw it ourselves.
+            if (result.error) {
+              throw new AxiosSupertestError(result);
+            }
+            return {
+              ...result,
+              data: result.body,
+            };
+          });
+          onCloseStub = stub();
+          ({
+            getByText,
+            findByText,
+            queryByText,
+            getByLabelText,
+          } = render(
+            <CreateRoomModal
+              isVisible
+              onSuccess={onSuccessStub}
+              onClose={onCloseStub}
+            />
+          ));
+        });
+        afterEach(function () {
+          (locationService.saveRoom as SinonStub).restore();
+        });
+        context('when there is an internal server error', function () {
+          it('displays the error', async function () {
+            const campusSelect = getByLabelText('Existing Campus') as HTMLSelectElement;
+            const buildingSelect = getByLabelText('Existing Building') as HTMLSelectElement;
+            const roomNameInput = getByLabelText('Room Number', { exact: false }) as HTMLInputElement;
+            const capacityInput = getByLabelText('Capacity', { exact: false }) as HTMLInputElement;
+            fireEvent.change(
+              campusSelect,
+              { target: { value: createSEC555Room.campus } }
+            );
+            fireEvent.change(
+              buildingSelect,
+              { target: { value: createSEC555Room.building } }
+            );
+            fireEvent.change(
+              roomNameInput,
+              { target: { value: createSEC555Room.name } }
+            );
+            fireEvent.change(
+              capacityInput,
+              { target: { value: createSEC555Room.capacity } }
+            );
+            const submitButton = getByText('Submit');
+            fireEvent.click(submitButton);
+            await wait(() => !queryByText('Internal Server Error', { exact: false }));
           });
         });
       });
