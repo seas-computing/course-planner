@@ -132,25 +132,20 @@ describe('Schedule Page', function () {
       it('disables the popover for course listing button of selected course prefix', function () {
         const { getAllByLabelText, getAllByText } = renderResult;
         const courseFilterButtons = getAllByLabelText('Course Filter Button');
-        const coursePrefix = testCourseScheduleData.map(
-          (coursePrefixes) => coursePrefixes.coursePrefix
-        );
-        const courseNumber = testCourseScheduleData.map(
-          (block) => block.courses.map((number) => number.courseNumber)
-        );
-        // When all of the prefix filter buttons are clicked.
+        // When all of the courseprefix filter buttons are clicked.
         courseFilterButtons.forEach((button) => {
           fireEvent.click(button);
+          const sessionBlockPrefix = button.textContent;
+          const sessionBlocks = getAllByText(sessionBlockPrefix).filter((el) => el.tagName === 'H4').map((el) => el.parentElement);
+          sessionBlocks.forEach((sessionBlock) => {
+            within(sessionBlock).getAllByRole('button').forEach((courseButton) => {
+              fireEvent.click(courseButton);
+              const courseDetail = `${sessionBlockPrefix} ${courseButton.textContent}`;
+              const popoverDetails = renderResult.queryAllByText(courseDetail);
+              strictEqual(popoverDetails.length, 0);
+            });
+          });
         });
-        const courseDetail = `${coursePrefix}  ${courseNumber}`;
-        const popoverDetails = renderResult.getAllByTitle(courseDetail);
-        const sessionBlocks = getAllByText(courses[0].coursePrefix);
-        const courseListingButton = sessionBlocks.find((block) => (
-          within(block.parentElement).q(courses)
-        ));
-        console.log(courseListingButton);
-        fireEvent.click(courseListingButton);
-        strictEqual(popoverDetails, null);
       });
     });
   });
