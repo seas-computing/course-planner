@@ -54,8 +54,7 @@ interface FormErrors {
 }
 
 const displayNames: Record<string, string> = {
-  existingCampus: 'Existing Campus',
-  newCampus: 'New Campus',
+  campus: 'Campus',
   existingBuilding: 'Existing Building',
   newBuilding: 'New Building',
   roomName: 'Room Number',
@@ -87,9 +86,7 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
    * Keeps track of the values of the admin modal form fields
    */
   const [form, setFormFields] = useState({
-    campusType: 'existingCampus',
-    existingCampus: '',
-    newCampus: '',
+    campus: '',
     buildingType: 'existingBuilding',
     existingBuilding: '',
     newBuilding: '',
@@ -153,8 +150,7 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
       roomName: '',
       capacity: '',
     }
-    // Either an existing or new campus must be provided.
-    if (!form.existingCampus && !form.newCampus) {
+    if (!form.campus) {
       updatedFormErrors = {
         ...updatedFormErrors,
         campus: 'Campus is required to submit this form.'
@@ -187,11 +183,6 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
       setFormErrors(updatedFormErrors);
       throw new ValidationException('Please fill in the required fields and try again. If the problem persists, contact SEAS Computing.');
     }
-    // If the user is trying to create a room with an existing campus, use the
-    // existing campus form field value instead of the new campus form field value.
-    const campus = form.campusType === 'existingCampus'
-      ? form.existingCampus
-      : form.newCampus;
 
     // If the user is trying to create a room with an existing building, use the
     // existing building form field value instead of the new building form field value.
@@ -200,7 +191,7 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
       : form.newBuilding;
 
     const roomInfo = {
-      campus,
+      campus: form.campus,
       building,
       name: form.roomName,
       capacity: parseInt(form.capacity, 10),
@@ -218,9 +209,7 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
   useEffect(() => {
     if (isVisible) {
       setFormFields({
-        campusType: 'existingCampus',
-        existingCampus: '',
-        newCampus: '',
+        campus: '',
         buildingType: 'existingBuilding',
         existingBuilding: '',
         newBuilding: '',
@@ -304,57 +293,15 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
           id="createRoomForm"
           label="Create Room Form"
         >
-          <Fieldset
-            legend="Campus"
-            isBorderVisible
-            isLegendVisible
-            errorMessage={formErrors.campus}
+          <Dropdown
+            id="campus"
+            value={form.campus}
+            name="campus"
+            onChange={updateFormFields}
+            label={displayNames.campus}
+            options={campusOptions}
             isRequired
-          >
-            <RadioButton
-              label="Select an existing campus"
-              value="existingCampus"
-              name="campusType"
-              checked={form.campusType === 'existingCampus'}
-              onChange={updateFormFields}
-            />
-            <Dropdown
-              id="existingCampus"
-              value={form.existingCampus}
-              name="existingCampus"
-              onChange={updateFormFields}
-              onClick={(e): void => {
-                e.preventDefault();
-                setFormFields({
-                  ...form,
-                  campusType: 'existingCampus',
-                });
-              }}
-              label={displayNames.existingCampus}
-              isLabelVisible={false}
-              options={campusOptions}
-            />
-            <RadioButton
-              label="Create a new campus"
-              value="createCampus"
-              name="campusType"
-              checked={form.campusType === 'createCampus'}
-              onChange={updateFormFields}
-            />
-            <TextInput
-              id="newCampus"
-              value={form.newCampus}
-              name="newCampus"
-              onChange={updateFormFields}
-              onClick={(): void => setFormFields({
-                ...form,
-                campusType: 'createCampus',
-              })}
-              label={displayNames.newCampus}
-              isLabelVisible={false}
-              labelPosition={POSITION.TOP}
-            />
-          </Fieldset>
+          />
           <Fieldset
             legend="Building"
             isBorderVisible
