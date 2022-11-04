@@ -98,31 +98,29 @@ const SchedulePage: FunctionComponent = () => {
   }, [catalogPrefixes]);
 
   const togglePrefix = (prefix: string) => {
-    const prefixObj = prefixes.find((p) => p.prefix === prefix);
-    prefixObj.active = !prefixObj.active;
-    setPrefixes([...prefixes]);
+    setPrefixes((prevState) => {
+      // duplicate the array, though object references will stay the same
+      const newState = [...prevState];
+      // find the desired prefix object and replace it in our newState
+      const prefixIndex = newState.findIndex((p) => p.prefix === prefix);
+      newState.splice(
+        prefixIndex, 1, { prefix, active: !prevState[prefixIndex].active }
+      );
+      return newState;
+    });
   };
   const isPrefixActive = useCallback((prefix:string) => {
     const prefixObj = prefixes.find((p) => p.prefix === prefix);
     return prefixObj.active;
   }, [prefixes]);
-  const prefixToggleButtons = prefixes.map((prefixObj) => (
-    <PrefixButton
-      alt="Course Filter Button"
-      prefix={prefixObj.prefix}
-      variant={VARIANT.BASE}
-      key={prefixObj.prefix}
-      onClick={() => togglePrefix(prefixObj.prefix)}
-    >
-      {prefixObj.prefix}
-    </PrefixButton>
-  ));
+
   /* Track the degree program for which data will be shown in the table
   */
   const [
     selectedDegreeProgram,
     setSelectedDegreeProgram,
   ] = useState<DEGREE_PROGRAM>(DEGREE_PROGRAM.BOTH);
+
   /**
    * Whether an API request is in progress
    */
@@ -219,7 +217,17 @@ const SchedulePage: FunctionComponent = () => {
   return (
     <>
       <VerticalSpace>
-        {prefixToggleButtons}
+        {prefixes.map((prefixObj) => (
+          <PrefixButton
+            alt="Course Filter Button"
+            prefix={prefixObj.prefix}
+            variant={VARIANT.BASE}
+            key={prefixObj.prefix}
+            onClick={() => togglePrefix(prefixObj.prefix)}
+          >
+            {prefixObj.prefix}
+          </PrefixButton>
+        ))}
         {selectedSemester && (
           <Dropdown
             id="schedule-semester-selector"
