@@ -213,12 +213,16 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
         || fall.absence.id === id
         );
         if (index !== -1) {
-          const faculty = facultyData[index];
-          const absences: [keyof Pick<FacultyResponseDTO, 'spring' | 'fall'>, FacultyAbsence][] = [
-            ['spring', faculty.spring.absence],
-            ['fall', faculty.fall.absence],
-          ];
-          const [term, absence] = absences
+          const { spring, fall } = facultyData[index];
+          const [term, absence] = (
+            [
+              ['spring', spring.absence],
+              ['fall', fall.absence],
+            ] as [
+              keyof Pick<FacultyResponseDTO, 'spring' | 'fall'>,
+              FacultyAbsence
+            ][]
+          )
             .find(([, { id: absenceId }]) => absenceId === id);
           facultyData[index][term].absence = {
             ...absence,
