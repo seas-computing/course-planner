@@ -319,6 +319,7 @@ const RoomSchedule: FunctionComponent = () => {
                     .map(({ displayName }) => displayName).join('; ');
                   return [...blocks, (
                     <SessionBlock
+                      isFaded={false}
                       isPopoverVisible={false}
                       key={sessionId}
                       prefix={catalogNumber.split(' ')[0]}

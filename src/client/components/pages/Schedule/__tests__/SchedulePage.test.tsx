@@ -89,6 +89,67 @@ describe('Schedule Page', function () {
       strictEqual(term, TERM.FALL);
     });
   });
+  describe('Course Prefix Filter Buttons', function () {
+    let renderResult: RenderResult;
+    let courses: {
+      coursePrefix: string,
+      courseNumber: string
+    }[];
+    beforeEach(async function () {
+      apiStub.resolves(testCourseScheduleData);
+      const fakeDate = new Date(testAcademicYear, 5, 30);
+      clock = FakeTimers.install({
+        toFake: ['Date'],
+      });
+      clock.tick(fakeDate.valueOf());
+      renderResult = render(
+        <SchedulePage />,
+        { metadataContext: metadata }
+      );
+      courses = [];
+      testCourseScheduleData.forEach((block) => {
+        block.courses.forEach((course) => {
+          courses.push({
+            coursePrefix: block.coursePrefix,
+            courseNumber: course.courseNumber,
+          });
+        });
+      });
+      await waitForElementToBeRemoved(() => renderResult.getByText('Fetching Course Schedule'));
+    });
+    afterEach(function () {
+      clock.uninstall();
+    });
+    it('renders list of course filter buttons', function () {
+      const { getAllByLabelText } = renderResult;
+      const courseFilterButtons = getAllByLabelText('Course Filter Button')
+        .map((button) => button.textContent);
+      deepStrictEqual(
+        courseFilterButtons, dummy.metadata.catalogPrefixes
+      );
+    });
+    context('a button is selected from course filter buttons', function () {
+      it('disables the popover for course listing button of selected course prefix', function () {
+        const { getAllByLabelText, getAllByText } = renderResult;
+        const courseFilterButtons = getAllByLabelText('Course Filter Button');
+        // When all of the courseprefix filter buttons are clicked.
+        courseFilterButtons.forEach((button) => {
+          fireEvent.click(button);
+          const sessionBlockPrefix = button.textContent;
+          const sessionBlocks = getAllByText(sessionBlockPrefix).filter((el) => el.tagName === 'H4').map((el) => el.parentElement);
+          sessionBlocks.forEach((sessionBlock) => {
+            within(sessionBlock).getAllByRole('button').forEach((courseButton) => {
+              fireEvent.click(courseButton);
+              const courseDetail = `${sessionBlockPrefix} ${courseButton.textContent}`;
+              const popoverDetails = renderResult.queryAllByText(courseDetail);
+              strictEqual(popoverDetails.length, 0);
+            });
+          });
+        });
+      });
+    });
+  });
+
   describe('Degree Program Selected', function () {
     let renderResult: RenderResult;
     let courses: {

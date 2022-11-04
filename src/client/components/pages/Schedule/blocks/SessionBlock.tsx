@@ -64,6 +64,11 @@ interface SessionBlockProps {
    * Whether a popover is currently visible
    */
   isPopoverVisible: boolean;
+
+  /**
+   * Whether the sessionblock is faded
+   */
+  isFaded: boolean;
 }
 
 /**
@@ -72,7 +77,7 @@ interface SessionBlockProps {
  */
 interface SessionBlockWrapperProps extends Pick<
 SessionBlockProps,
-'prefix' | 'catalogNumber' | 'duration' | 'startRow'
+'prefix' | 'catalogNumber' | 'duration' | 'startRow' | 'isFaded'
 > {
   /**
    * Check if there are elements overflowing the bottom of the list
@@ -113,6 +118,8 @@ const SessionBlockWrapper = styled.div<SessionBlockWrapperProps>`
   border-bottom: 1px solid #fff;
   min-width: 2.5em;
   position: relative;
+  opacity: ${({ isFaded }) => (isFaded ? '0.6' : '1')};
+
   ${({ hasBottomOverflow, theme }) => (
     // Show down indicator when there are courses overflowing the bottom
     hasBottomOverflow
@@ -189,6 +196,7 @@ const SessionBlockBody = styled.ul<SessionBlockBodyProps>`
 const SessionBlock: FunctionComponent<SessionBlockProps> = ({
   prefix,
   catalogNumber,
+  isFaded,
   startRow,
   duration,
   children,
@@ -243,6 +251,7 @@ const SessionBlock: FunctionComponent<SessionBlockProps> = ({
 
   return (
     <SessionBlockWrapper
+      isFaded={isFaded}
       prefix={prefix}
       catalogNumber={catalogNumber}
       startRow={startRow}
