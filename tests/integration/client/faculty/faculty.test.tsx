@@ -21,15 +21,20 @@ import {
 import { FacultyAPI } from 'client/api/faculty';
 import {
   appliedMathFacultyScheduleResponse,
-  facultyAbsenceResponse,
 } from 'testData';
 import { ABSENCE_TYPE } from 'common/constants';
 import FacultySchedule from 'client/components/pages/Faculty/FacultyPage';
+import { absenceEnumToTitleCase } from 'common/utils/facultyHelperFunctions';
 
 describe('Faculty Schedule Modal Behavior', function () {
   let getStub: SinonStub;
-  let putStub: SinonStub;
-  const testData = [appliedMathFacultyScheduleResponse];
+  let putStub: SinonStub<
+  Parameters<typeof FacultyAPI['updateFacultyAbsence']>,
+  ReturnType<typeof FacultyAPI['updateFacultyAbsence']>
+  >;
+  const testData = [
+    appliedMathFacultyScheduleResponse,
+  ];
   const acadYear = testData[0].fall.academicYear;
   it('draws from test data from the same academic year', function () {
     testData.forEach((response) => {
@@ -49,7 +54,7 @@ describe('Faculty Schedule Modal Behavior', function () {
     let page: RenderResult;
     beforeEach(function () {
       putStub = stub(FacultyAPI, 'updateFacultyAbsence');
-      putStub.resolves(testData[0]);
+      putStub.resolves(testData[0].fall.absence);
       page = renderWithMessaging(<FacultySchedule />);
       ({ findByText, queryByText, getByLabelText } = page);
     });
@@ -96,17 +101,36 @@ describe('Faculty Schedule Modal Behavior', function () {
       });
       context('when the absence modal is submitted', function () {
         let modal: HTMLDivElement;
+        let submitButton: HTMLButtonElement;
         beforeEach(async function () {
           modal = await page.findByRole('dialog') as HTMLDivElement;
-          const submitButton = await within(modal)
-            .findByText('Submit', { exact: false });
+          submitButton = await within(modal)
+            .findByText('Submit', { exact: false }) as HTMLButtonElement;
+        });
+        it('should show a success message', async function () {
           fireEvent.click(submitButton);
           await waitForElementToBeRemoved(
             () => page.queryByText('Sabbatical/Leave for', { exact: false })
           );
-        });
-        it('should show a success message', async function () {
           return findByText('Faculty absence was updated', { exact: false });
+        });
+        it('updates absence data in place', async function () {
+          const absenceTypeDropdown = await within(modal).findByRole('combobox');
+          const absenceType = ABSENCE_TYPE.RESEARCH_LEAVE;
+          putStub.resolves({
+            ...testData[0].fall.absence,
+            type: absenceType,
+          });
+          fireEvent.change(absenceTypeDropdown, {
+            target: { value: `${absenceType}` },
+          });
+          fireEvent.click(submitButton);
+          await waitForElementToBeRemoved(
+            () => page.queryByText('Sabbatical/Leave for', { exact: false })
+          );
+          const tableCell = editAppliedMathFallAbsenceButton.closest('td');
+          return within(tableCell)
+            .findByText(absenceEnumToTitleCase(absenceType));
         });
       });
     });

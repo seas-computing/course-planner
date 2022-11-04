@@ -18,7 +18,7 @@ import {
   POSITION,
   Dropdown,
 } from 'mark-one';
-import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
+import { FacultyAbsence, FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { MessageContext, MetadataContext } from 'client/context';
 import { FacultyAPI } from 'client/api';
 import {
@@ -197,6 +197,40 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
     return faculty;
   }, [showRetired, currentFacultySchedules]);
 
+  /**
+   * Update a staff absence in local state.
+   *
+   * Loops through each member of faculty in local state, checks to see if the
+   * ID of the absence that was just updated matches any absence record IDs for
+   * their spring and fall absences, and makes the necessary updates.
+   */
+  const updateLocalAbsenceState = useCallback(
+    ({ id, type }: AbsenceResponseDTO): void => {
+      setFacultySchedules((prevState) => {
+        const facultyData = [...prevState];
+        const index = facultyData.findIndex(
+          ({ spring, fall }) => spring.absence.id === id
+        || fall.absence.id === id
+        );
+        if (index !== -1) {
+          const faculty = facultyData[index];
+          const absences: [keyof Pick<FacultyResponseDTO, 'spring' | 'fall'>, FacultyAbsence][] = [
+            ['spring', faculty.spring.absence],
+            ['fall', faculty.fall.absence],
+          ];
+          const [term, absence] = absences
+            .find(([, { id: absenceId }]) => absenceId === id);
+          facultyData[index][term].absence = {
+            ...absence,
+            type,
+          };
+        }
+        return facultyData;
+      });
+      closeAbsenceModal();
+    }, [setFacultySchedules, closeAbsenceModal]
+  );
+
   return (
     <div className="faculty-schedule-table">
       <VerticalSpace>
@@ -254,9 +288,7 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
                   isVisible={absenceModalVisible}
                   currentFaculty={currentFaculty}
                   currentAbsence={currentAbsence}
-                  onSuccess={(): void => {
-                    setIsStaleData(true);
-                  }}
+                  onSuccess={updateLocalAbsenceState}
                   onCancel={closeAbsenceModal}
                 />
               )
