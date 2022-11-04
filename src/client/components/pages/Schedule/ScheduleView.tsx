@@ -55,7 +55,7 @@ interface ScheduleViewProps {
   /**
    * The course prefix data that's currently active
    */
-  isPrefixActive: (prefix:string)=> boolean
+  isPrefixActive: (prefix: string) => boolean;
 }
 
 /**
@@ -113,7 +113,6 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
             weekday,
             courses,
           }) => {
-            // const isSelectedCoursePrefix = isPrefixActive(coursePrefix);
             if (dayEnumToString(weekday) === day) {
               const resolvedStartRow = Math.round(
               // Convert the start time and duration of the course to a
@@ -130,7 +129,7 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
               }) => instanceId === currentPopover);
               return [...blocks, (
                 <SessionBlock
-                  isFaded={isPrefixActive(coursePrefix)}
+                  isFaded={!isPrefixActive(coursePrefix)}
                   isPopoverVisible={!!currentPopover}
                   key={sessionId}
                   prefix={coursePrefix}

@@ -68,7 +68,7 @@ interface SessionBlockProps {
   /**
    * Whether the sessionblock is faded
    */
-  isFaded:boolean;
+  isFaded: boolean;
 }
 
 /**
@@ -111,14 +111,14 @@ type SessionBlockBodyProps = Pick<SessionBlockProps, 'children'>;
  * within the DayBlock grid and the background color
  */
 const SessionBlockWrapper = styled.div<SessionBlockWrapperProps>`
-  background-color: ${({ prefix }) => getCatPrefixColor(prefix)}; 
+  background-color: ${({ prefix }) => getCatPrefixColor(prefix)};
   grid-row: ${({ startRow, duration }) => `${startRow}/ span ${duration}`};
   border-left: 1px solid #fff;
   border-right: 1px solid #fff;
   border-bottom: 1px solid #fff;
   min-width: 2.5em;
   position: relative;
-  opacity: ${({ isFaded }) => (isFaded ? '1' : '0.6')};
+  opacity: ${({ isFaded }) => (isFaded ? '0.6' : '1')};
 
   ${({ hasBottomOverflow, theme }) => (
     // Show down indicator when there are courses overflowing the bottom

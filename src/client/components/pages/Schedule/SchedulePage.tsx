@@ -34,14 +34,21 @@ export interface SemesterSelection {
   term: TERM;
   calendarYear: number;
 }
+/**
+ * Represents a state field for tracking whether a course prefix is
+ * active or inactive in the schedule.
+ */
 export interface PrefixState{
   prefix: string;
-  active:boolean;
-
+  active: boolean;
 }
-/** A button to filter course prefixes and fade sessionblock based on selected value */
-const PrefixButton = styled(Button)<ButtonProps & {prefix:string}>`
-background-color: ${({ prefix }) => getCatPrefixColor(prefix)};`;
+/**
+ * A button to filter course prefixes and fade sessionblock based
+ * on selected value
+ */
+const PrefixButton = styled(Button)<ButtonProps & { prefix: string }>`
+ background-color: ${({ prefix }) => getCatPrefixColor(prefix)};
+`;
 
 /**
  * This is the top-level page component for the Schedule. It's responsible for
@@ -77,8 +84,10 @@ const SchedulePage: FunctionComponent = () => {
     selectedSemester,
     setSelectedSemester,
   ] = useStoredState<SemesterSelection>('SCHEDULE_SEMESTER_SELECTION');
-  /* Filter the courses for which data will be shown in the table
-  */
+
+  /**
+ * Filter the courses for which data will be shown in the table
+ */
   const [prefixes, setPrefixes] = useState <PrefixState[]>([]);
   useEffect(() => {
     const newPrefixes = catalogPrefixes.map((prefix) => ({
@@ -88,11 +97,11 @@ const SchedulePage: FunctionComponent = () => {
     setPrefixes(newPrefixes);
   }, [catalogPrefixes]);
 
-  function togglePrefix(prefix:string) {
+  const togglePrefix = (prefix: string) => {
     const prefixObj = prefixes.find((p) => p.prefix === prefix);
     prefixObj.active = !prefixObj.active;
     setPrefixes([...prefixes]);
-  }
+  };
   const isPrefixActive = useCallback((prefix:string) => {
     const prefixObj = prefixes.find((p) => p.prefix === prefix);
     return prefixObj.active;
