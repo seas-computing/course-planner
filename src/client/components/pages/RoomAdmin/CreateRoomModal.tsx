@@ -300,6 +300,7 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
             onChange={updateFormFields}
             label={displayNames.campus}
             options={campusOptions}
+            errorMessage={formErrors.campus}
             isRequired
           />
           <Fieldset
