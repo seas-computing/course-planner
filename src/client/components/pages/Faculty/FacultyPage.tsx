@@ -190,8 +190,8 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
     if (!showRetired) {
       faculty = faculty.filter(
         ({ spring, fall }): boolean => (
-          fall.absence.type === ABSENCE_TYPE.PRESENT
-          || spring.absence.type === ABSENCE_TYPE.PRESENT)
+          fall.absence.type !== ABSENCE_TYPE.NO_LONGER_ACTIVE
+         || spring.absence.type !== ABSENCE_TYPE.NO_LONGER_ACTIVE)
       );
     }
     return faculty;
