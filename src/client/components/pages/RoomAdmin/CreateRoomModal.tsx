@@ -150,6 +150,7 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
       roomName: '',
       capacity: '',
     }
+    setFormErrors(updatedFormErrors);
     if (!form.campus) {
       updatedFormErrors = {
         ...updatedFormErrors,
