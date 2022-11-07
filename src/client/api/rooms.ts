@@ -1,3 +1,5 @@
+import { CreateRoomRequest } from 'common/dto/room/CreateRoomRequest.dto';
+import { ManageRoomResponse } from 'common/dto/room/ManageRoomResponse.dto';
 import RoomAdminResponse from 'common/dto/room/RoomAdminResponse.dto';
 import RoomMeetingResponse from 'common/dto/room/RoomMeetingResponse.dto';
 import RoomRequest from 'common/dto/room/RoomRequest.dto';
@@ -36,8 +38,18 @@ export const getAdminRooms = async ():Promise<RoomAdminResponse[]> => {
   return response.data as RoomAdminResponse[];
 };
 
+/**
+ * Creates a new room
+ */
+export const createRoom = async (roomInfo: CreateRoomRequest):
+Promise<ManageRoomResponse> => {
+  const response = await request.post('/api/rooms/', roomInfo);
+  return response.data as ManageRoomResponse;
+};
+
 export const LocationAPI = {
   getRoomAvailability,
   getRooms,
   getAdminRooms,
+  createRoom,
 };
