@@ -394,7 +394,10 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
               const createdCourse = await submitRoomForm();
               await onSuccess(createdCourse);
             } catch (error) {
-              setRoomModalErrorMessage((error as Error).message);
+              const serverError = error?.response?.data?.message;
+              setRoomModalErrorMessage(serverError
+                ? serverError
+                : 'An error occurred. Please contact SEAS Computing if the problem persists.');
               // leave the modal visible after an error
               return;
             }
