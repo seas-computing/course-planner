@@ -1,5 +1,5 @@
 import {
-  Controller, Get, UseGuards, Query, Inject,
+  Controller, Get, UseGuards, Query, Inject, Post, Body, NotFoundException,
 } from '@nestjs/common';
 import {
   ApiOkResponse,
@@ -7,6 +7,8 @@ import {
   ApiUnauthorizedResponse,
   ApiTags,
   ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiBadRequestResponse,
 } from '@nestjs/swagger';
 import { RequireGroup } from 'server/auth/group.guard';
 import { GROUP } from 'common/constants';
@@ -15,7 +17,12 @@ import RoomResponse from 'common/dto/room/RoomResponse.dto';
 import RoomRequest from 'common/dto/room/RoomRequest.dto';
 import RoomMeetingResponse from 'common/dto/room/RoomMeetingResponse.dto';
 import RoomAdminResponse from 'common/dto/room/RoomAdminResponse.dto';
+import { CreateRoomRequest } from 'common/dto/room/CreateRoomRequest.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { EntityNotFoundError, Repository } from 'typeorm';
 import { LocationService } from './location.service';
+import { Campus } from './campus.entity';
+import { Building } from './building.entity';
 
 @ApiTags('Rooms')
 @Controller('api/rooms')
@@ -29,6 +36,12 @@ import { LocationService } from './location.service';
 export class LocationController {
   @Inject(LocationService)
   private readonly locationService: LocationService;
+
+  @InjectRepository(Campus)
+  private readonly campusRepository: Repository<Campus>;
+
+  @InjectRepository(Building)
+  private readonly buildingRepository: Repository<Building>;
 
   @Get('/')
   @ApiOperation({ summary: 'Retrieve Room Data' })
@@ -62,5 +75,32 @@ export class LocationController {
   })
   public async getFullRoomList(): Promise<RoomAdminResponse[]> {
     return this.locationService.getFullRoomList();
+  }
+
+  @Post('/')
+  @ApiOperation({ summary: 'Create a new room in the database' })
+  @ApiOkResponse({
+    type: RoomAdminResponse,
+    description: 'An object with the newly created room information.',
+    isArray: false,
+  })
+  @ApiNotFoundResponse({
+    description: 'Not Found: The requested campus/building entities could not be found',
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad Request: the request is not in accordance with the createFaculty DTO',
+  })
+  public async create(
+    @Body() room: CreateRoomRequest
+  ): Promise<RoomAdminResponse> {
+    try {
+      const results = await this.locationService.createRoom(room);
+      return results;
+    } catch (error) {
+      if (error instanceof EntityNotFoundError) {
+        throw new NotFoundException(error.message);
+      }
+      throw error;
+    }
   }
 }
