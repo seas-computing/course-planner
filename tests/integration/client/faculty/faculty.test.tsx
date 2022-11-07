@@ -102,10 +102,13 @@ describe('Faculty Schedule Modal Behavior', function () {
       context('when the absence modal is submitted', function () {
         let modal: HTMLDivElement;
         let submitButton: HTMLButtonElement;
+        let dropdown: HTMLSelectElement;
         beforeEach(async function () {
           modal = await page.findByRole('dialog') as HTMLDivElement;
           submitButton = await within(modal)
             .findByText('Submit', { exact: false }) as HTMLButtonElement;
+          dropdown = await within(modal)
+            .findByRole('combobox') as HTMLSelectElement;
         });
         it('should show a success message', async function () {
           fireEvent.click(submitButton);
@@ -115,13 +118,12 @@ describe('Faculty Schedule Modal Behavior', function () {
           return findByText('Faculty absence was updated', { exact: false });
         });
         it('updates absence data in place', async function () {
-          const absenceTypeDropdown = await within(modal).findByRole('combobox');
           const absenceType = ABSENCE_TYPE.RESEARCH_LEAVE;
           putStub.resolves({
             ...testData[0].fall.absence,
             type: absenceType,
           });
-          fireEvent.change(absenceTypeDropdown, {
+          fireEvent.change(dropdown, {
             target: { value: `${absenceType}` },
           });
           fireEvent.click(submitButton);
@@ -131,6 +133,32 @@ describe('Faculty Schedule Modal Behavior', function () {
           const tableCell = editAppliedMathFallAbsenceButton.closest('td');
           return within(tableCell)
             .findByText(absenceEnumToTitleCase(absenceType));
+        });
+        describe(`going to ${absenceEnumToTitleCase(ABSENCE_TYPE.NO_LONGER_ACTIVE)}`, function () {
+          beforeEach(function () {
+            const filterCheckBox = page
+              .getByLabelText('Show "No Longer Active" Faculty');
+            fireEvent.click(filterCheckBox);
+            putStub.resolves({
+              ...testData[0].fall.absence,
+              type: ABSENCE_TYPE.NO_LONGER_ACTIVE,
+            });
+          });
+          it('updates spring and fall', async function () {
+            fireEvent.change(
+              dropdown,
+              { target: { value: ABSENCE_TYPE.NO_LONGER_ACTIVE } }
+            );
+            fireEvent.click(submitButton);
+            await waitForElementToBeRemoved(
+              () => page.queryByText('Sabbatical/Leave for', { exact: false })
+            );
+            const tableRow = editAppliedMathFallAbsenceButton.closest('tr');
+            const nlaAbsences = within(tableRow).queryAllByText(
+              absenceEnumToTitleCase(ABSENCE_TYPE.NO_LONGER_ACTIVE)
+            );
+            strictEqual(nlaAbsences.length, 2);
+          });
         });
       });
     });

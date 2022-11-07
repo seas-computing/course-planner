@@ -214,7 +214,7 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
         );
         if (index !== -1) {
           const { spring, fall } = facultyData[index];
-          const [term, absence] = (
+          const [term] = (
             [
               ['spring', spring.absence],
               ['fall', fall.absence],
@@ -222,12 +222,13 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
               keyof Pick<FacultyResponseDTO, 'spring' | 'fall'>,
               FacultyAbsence
             ][]
-          )
-            .find(([, { id: absenceId }]) => absenceId === id);
-          facultyData[index][term].absence = {
-            ...absence,
-            type,
-          };
+          ).find(([, { id: absenceId }]) => absenceId === id);
+          if (type === ABSENCE_TYPE.NO_LONGER_ACTIVE) {
+            if (term === 'fall') {
+              facultyData[index].spring.absence.type = type;
+            }
+          }
+          facultyData[index][term].absence.type = type;
         }
         return facultyData;
       });
