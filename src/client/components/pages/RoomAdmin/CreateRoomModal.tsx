@@ -114,7 +114,7 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
     building: '',
     roomName: '',
     capacity: '',
-  } as FormErrors)
+  } as FormErrors);
 
   /**
    * The overall error message for the Create Room Modal
@@ -149,7 +149,7 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
       building: '',
       roomName: '',
       capacity: '',
-    }
+    };
     // If the user is trying to create a room with an existing building, use the
     // existing building form field value instead of the new building form field value.
     const building = form.buildingType === 'existingBuilding'
@@ -157,25 +157,27 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
       : form.newBuilding;
 
     const metadataCampusIndex = metadata.campuses
-      .findIndex(metadataCampus => metadataCampus.name.toLowerCase() === form.campus.toLowerCase());
+      .findIndex((metadataCampus) => metadataCampus.name.toLowerCase()
+        === form.campus.toLowerCase());
     const metadataCampus = metadata.campuses[metadataCampusIndex];
     const metadataBuildingIndex = metadataCampus.buildings
-      .findIndex(metadataBuilding => metadataBuilding.name.toLowerCase() === building.toLowerCase());
+      .findIndex((metadataBuilding) => metadataBuilding.name.toLowerCase()
+      === building.toLowerCase());
 
     setFormErrors(updatedFormErrors);
     if (!form.campus) {
       updatedFormErrors = {
         ...updatedFormErrors,
-        campus: 'Campus is required to submit this form.'
-      }
+        campus: 'Campus is required to submit this form.',
+      };
       isValid = false;
     }
     // Either an existing or new building must be provided.
     if (!form.existingBuilding && !form.newBuilding) {
       updatedFormErrors = {
         ...updatedFormErrors,
-        building: 'Building is required to submit this form.'
-      }
+        building: 'Building is required to submit this form.',
+      };
       isValid = false;
     }
     // If the building already exists within the selected campus and the user
@@ -184,22 +186,22 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
     if (form.buildingType === 'createBuilding' && metadataBuildingIndex !== -1) {
       updatedFormErrors = {
         ...updatedFormErrors,
-        building: 'This building already exists in the selected campus. Please select the building from the dropdown instead.'
-      }
+        building: 'This building already exists in the selected campus. Please select the building from the dropdown instead.',
+      };
       isValid = false;
     }
     if (!form.roomName) {
       updatedFormErrors = {
         ...updatedFormErrors,
-        roomName: 'Room number is required to submit this form.'
-      }
+        roomName: 'Room number is required to submit this form.',
+      };
       isValid = false;
     }
     if (Number.isNaN(parseInt(form.capacity, 10))) {
       updatedFormErrors = {
         ...updatedFormErrors,
-        capacity: 'Capacity is required to submit this form, and it must be a number.'
-      }
+        capacity: 'Capacity is required to submit this form, and it must be a number.',
+      };
       isValid = false;
     }
     if (!isValid) {
@@ -241,7 +243,7 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
         campus: '',
         building: '',
         roomName: '',
-        capacity: ''
+        capacity: '',
       });
       setRoomModalErrorMessage('');
       setRoomAdminModalFocus();
@@ -412,12 +414,12 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
           onClick={async (): Promise<void> => {
             try {
               const createdCourse = await submitRoomForm();
-              await onSuccess(createdCourse);
+              onSuccess(createdCourse);
             } catch (error) {
+              // if (error instanceof Error && axios.isAxiosError(error)) {
               const serverError = error?.response?.data?.message;
-              setRoomModalErrorMessage(serverError
-                ? serverError
-                : 'An error occurred. Please contact SEAS Computing if the problem persists.');
+              // }
+              setRoomModalErrorMessage(serverError || 'An error occurred. Please contact SEAS Computing if the problem persists.');
               // leave the modal visible after an error
               return;
             }

@@ -46,8 +46,8 @@ export class MetadataContextValue {
     const { campuses } = this.value;
     // Finds the campus that the new building will be in so that we can
     // add the building to that campus' list of buildings
-    let updatedCampusIndex: number = campuses
-      .findIndex(campus => campus.name === room.building.campus.name);
+    const updatedCampusIndex: number = campuses
+      .findIndex((campus) => campus.name === room.building.campus.name);
     campuses[updatedCampusIndex].buildings.push({
       id: room.building.id,
       name: room.building.name,
@@ -62,8 +62,8 @@ export class MetadataContextValue {
     // Sort the buildings within the campus in alphabetical order ascending
     campuses[updatedCampusIndex].buildings.sort((a, b) => {
       if (a.name < b.name) {
-        return -1
-      } else if (a.name > b.name) {
+        return -1;
+      } if (a.name > b.name) {
         return 1;
       }
       return 0;

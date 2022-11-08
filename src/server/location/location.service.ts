@@ -7,10 +7,10 @@ import RoomRequest from 'common/dto/room/RoomRequest.dto';
 import RoomMeetingResponse from 'common/dto/room/RoomMeetingResponse.dto';
 import RoomAdminResponse from 'common/dto/room/RoomAdminResponse.dto';
 import { CampusResponse } from 'common/dto/room/CampusResponse.dto';
+import { CreateRoomRequest } from 'common/dto/room/CreateRoomRequest.dto';
 import { RoomBookingInfoView } from './RoomBookingInfoView.entity';
 import { Room } from './room.entity';
 import { Campus } from './campus.entity';
-import { CreateRoomRequest } from 'common/dto/room/CreateRoomRequest.dto';
 import { Building } from './building.entity';
 
 /**
@@ -208,42 +208,45 @@ export class LocationService {
     try {
       campus = await this.campusRepository.findOneOrFail({
         where: {
-          name: room.campus
-        }
-      })
+          name: room.campus,
+        },
+      });
     } catch (e) {
       if (e instanceof EntityNotFoundError) {
-        throw new NotFoundException(`Unable to find a campus called "${room.campus}".`)
+        throw new NotFoundException(`Unable to find a campus called "${room.campus}".`);
       } else {
         throw e;
       }
     }
     // The user should not be able to to create a building that exists on a
     // different campus, because a building cannot exist on multiple campuses.
-    let otherCampuses = await this.campusRepository.find({
+    const otherCampuses = await this.campusRepository.find({
       where: {
-        name: Not(room.campus)
+        name: Not(room.campus),
       },
       relations: ['buildings'],
-    })
+    });
 
-    otherCampuses.map(otherCampus => otherCampus.buildings.map(building => {
-      if (building.name.toLowerCase() === room.building.toLowerCase()) {
-        throw new BadRequestException(`${room.building} already exists within another campus.`);
-      }
-    }));
-
-       // Check that the room being created is not a duplicate of an existing room
-      let dbRooms = await this.roomListingViewRepository.createQueryBuilder()
-        .where("LOWER(name) = LOWER(:name)", {
-          name: `${room.building} ${room.name}`
+    otherCampuses.forEach(
+      (otherCampus) => otherCampus.buildings
+        .forEach((building) => {
+          if (building.name.toLowerCase() === room.building.toLowerCase()) {
+            throw new BadRequestException(`${room.building} already exists within another campus.`);
+          }
         })
-        .getMany();
+    );
 
-      if (dbRooms.length > 0) {
-        throw new BadRequestException(`The room ${room.name} already exists in ${room.building}.`);
-      }
-  
+    // Check that the room being created is not a duplicate of an existing room
+    const dbRooms = await this.roomListingViewRepository.createQueryBuilder()
+      .where('LOWER(name) = LOWER(:name)', {
+        name: `${room.building} ${room.name}`,
+      })
+      .getMany();
+
+    if (dbRooms.length > 0) {
+      throw new BadRequestException(`The room ${room.name} already exists in ${room.building}.`);
+    }
+
     let building: Partial<Building> = await this.buildingRepository
       .findOne({
         where: {
