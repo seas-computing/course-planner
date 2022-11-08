@@ -150,6 +150,18 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
       roomName: '',
       capacity: '',
     }
+    // If the user is trying to create a room with an existing building, use the
+    // existing building form field value instead of the new building form field value.
+    const building = form.buildingType === 'existingBuilding'
+      ? form.existingBuilding
+      : form.newBuilding;
+
+    const metadataCampusIndex = metadata.campuses
+      .findIndex(metadataCampus => metadataCampus.name.toLowerCase() === form.campus.toLowerCase());
+    const metadataCampus = metadata.campuses[metadataCampusIndex];
+    const metadataBuildingIndex = metadataCampus.buildings
+      .findIndex(metadataBuilding => metadataBuilding.name.toLowerCase() === building.toLowerCase());
+
     setFormErrors(updatedFormErrors);
     if (!form.campus) {
       updatedFormErrors = {
@@ -163,6 +175,16 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
       updatedFormErrors = {
         ...updatedFormErrors,
         building: 'Building is required to submit this form.'
+      }
+      isValid = false;
+    }
+    // If the building already exists within the selected campus and the user
+    // is trying to create the building, request that the user selects the
+    // building from the dropdown instead.
+    if (form.buildingType === 'createBuilding' && metadataBuildingIndex !== -1) {
+      updatedFormErrors = {
+        ...updatedFormErrors,
+        building: 'This building already exists in the selected campus. Please select the building from the dropdown instead.'
       }
       isValid = false;
     }
@@ -185,12 +207,6 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
       throw new ValidationException('Please fill in the required fields and try again. If the problem persists, contact SEAS Computing.');
     }
 
-    // If the user is trying to create a room with an existing building, use the
-    // existing building form field value instead of the new building form field value.
-    const building = form.buildingType === 'existingBuilding'
-      ? form.existingBuilding
-      : form.newBuilding;
-
     const roomInfo = {
       campus: form.campus,
       building,
@@ -202,10 +218,6 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
 
     // Checks that the new building does not already exist in the metadata
     // before adding it.
-    const metadataCampusIndex = metadata.campuses.findIndex(campus => campus.name === result.building.campus.name);
-    const metadataCampus = metadata.campuses[metadataCampusIndex];
-    const metadataBuildingIndex = metadataCampus.buildings.findIndex(building => building.name === result.building.name);
-
     if (form.buildingType === 'createBuilding'
     && metadataBuildingIndex === -1) {
       metadata.updateCampuses(result);
