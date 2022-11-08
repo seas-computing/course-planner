@@ -138,6 +138,8 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
     setTimeout((): void => modalHeaderRef.current.focus());
   };
 
+  let metadataBuildingIndex: number;
+
   /**
    * Submits the room form, checking for valid inputs
    */
@@ -156,13 +158,15 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
       ? form.existingBuilding
       : form.newBuilding;
 
-    const metadataCampusIndex = metadata.campuses
-      .findIndex((metadataCampus) => metadataCampus.name.toLowerCase()
+    if (form.campus) {
+      const metadataCampusIndex = metadata.campuses
+        .findIndex((metadataCampus) => metadataCampus.name.toLowerCase()
         === form.campus.toLowerCase());
-    const metadataCampus = metadata.campuses[metadataCampusIndex];
-    const metadataBuildingIndex = metadataCampus.buildings
-      .findIndex((metadataBuilding) => metadataBuilding.name.toLowerCase()
+      const metadataCampus = metadata.campuses[metadataCampusIndex];
+      metadataBuildingIndex = metadataCampus.buildings
+        .findIndex((metadataBuilding) => metadataBuilding.name.toLowerCase()
       === building.toLowerCase());
+    }
 
     setFormErrors(updatedFormErrors);
     if (!form.campus) {
