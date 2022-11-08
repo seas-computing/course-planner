@@ -150,8 +150,8 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
       roomName: '',
       capacity: '',
     };
-    // If the user is trying to create a room with an existing building, use the
-    // existing building form field value instead of the new building form field value.
+    // If the user has selected the existing building radio button, use the
+    // existing building value rather than the new building text input value
     const building = form.buildingType === 'existingBuilding'
       ? form.existingBuilding
       : form.newBuilding;
