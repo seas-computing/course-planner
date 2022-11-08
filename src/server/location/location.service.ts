@@ -203,7 +203,7 @@ export class LocationService {
    * requested does not already exist.
    */
   public async createRoom(room: CreateRoomRequest):
-  Promise<Room> {
+  Promise<RoomAdminResponse> {
     let campus: Campus;
     try {
       campus = await this.campusRepository.findOneOrFail({
@@ -249,18 +249,32 @@ export class LocationService {
         where: {
           name: room.building,
         },
+        relations: ['campus'],
       });
     // If the building doesn't exist yet, it will be created
     // by the cascade insert set on the Room entity.
     if (building == null) {
-      building = { name: room.building };
+      building = { name: room.building, campus };
     }
 
+    // Remove properties that shouldn't be saved on room
+    const { campus: requestCampus, ...roomProps } = room;
+
     const roomToCreate = {
-      ...room,
-      campus,
+      ...roomProps,
       building,
     };
-    return this.roomRepository.save(roomToCreate);
+
+    const response = await this.roomRepository.save(roomToCreate);
+
+    const result = {
+      id: response.id,
+      name: response.name,
+      capacity: response.capacity,
+      building: {
+        ...response.building,
+      },
+    };
+    return result;
   }
 }
