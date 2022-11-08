@@ -200,8 +200,16 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
 
     const result: RoomAdminResponse = await LocationAPI.createRoom(roomInfo);
 
-    // ** TODO: Update campuses metadata after the user has created a new room **
+    // Checks that the new building does not already exist in the metadata
+    // before adding it.
+    const metadataCampusIndex = metadata.campuses.findIndex(campus => campus.name === result.building.campus.name);
+    const metadataCampus = metadata.campuses[metadataCampusIndex];
+    const metadataBuildingIndex = metadataCampus.buildings.findIndex(building => building.name === result.building.name);
 
+    if (form.buildingType === 'createBuilding'
+    && metadataBuildingIndex === -1) {
+      metadata.updateCampuses(result);
+    }
     return result;
   };
 
