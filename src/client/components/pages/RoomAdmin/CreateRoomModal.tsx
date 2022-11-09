@@ -7,6 +7,8 @@ import React, {
   useEffect,
   ChangeEvent,
   Ref,
+  useMemo,
+  useCallback,
 } from 'react';
 import {
   VARIANT,
@@ -287,20 +289,34 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
   /**
    * Gets a list of buildings from the metadata for a specific campus.
    * Insert an empty option so that no building is pre-selected in dropdown.
+   * If the campus does not exist, return a blank option.
    */
-  const findCampusBuildings = (selectedCampus: string) => {
+  const findCampusBuildings = useCallback((selectedCampus: string) => {
     const campus: CampusResponse = metadata.campuses
-      .find(campus => selectedCampus === campus.name);
-    const campusBuildings = campus.buildings
-      .map(building => building.name);
-    return [{ value: '', label: '' }]
-    .concat(campusBuildings.map((building): {
-      value: string; label: string;
-    } => ({
-      value: building,
-      label: building
-    })))
-  };
+      .find((metadataCampus) => selectedCampus.toLowerCase()
+        === metadataCampus.name.toLowerCase());
+    if (campus) {
+      const campusBuildings = campus.buildings
+        .map((building) => building.name);
+      return [{ value: '', label: '' }]
+        .concat(campusBuildings.map((building): {
+          value: string; label: string;
+        } => ({
+          value: building,
+          label: building,
+        })));
+    }
+    return [{ value: '', label: '' }];
+  }, [metadata.campuses]);
+
+  /**
+   * Find the building options that will be displayed in the dropdown based off
+   * of the campus that was selected.
+   */
+  const buildingOptions = useMemo(
+    () => findCampusBuildings(form.campus),
+    [findCampusBuildings, form.campus]
+  );
 
   return (
     <Modal
@@ -358,7 +374,7 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
               }}
               label={displayNames.existingBuilding}
               isLabelVisible={false}
-              options={findCampusBuildings('Allston')}
+              options={buildingOptions}
             />
             <RadioButton
               label="Create a new building"
