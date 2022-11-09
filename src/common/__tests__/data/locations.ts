@@ -1,3 +1,4 @@
+import { CreateRoomRequest } from 'common/dto/room/CreateRoomRequest.dto';
 import RoomAdminResponse from 'common/dto/room/RoomAdminResponse.dto';
 import RoomMeetingResponse from 'common/dto/room/RoomMeetingResponse.dto';
 import { DAY, TERM } from '../../constants';
@@ -131,3 +132,24 @@ export const adminRoomsResponse: RoomAdminResponse[] = [
   oxfordRoomResponse,
   bauerRoomResponse,
 ];
+
+export const createSEC555Room: CreateRoomRequest = {
+  campus: 'Allston',
+  building: 'SEC',
+  name: '555',
+  capacity: 70,
+};
+
+export const sec555RoomResponse: RoomAdminResponse = {
+  id: 'c149f216-553f-421d-91e0-6bde970045f9',
+  name: createSEC555Room.name,
+  capacity: createSEC555Room.capacity,
+  building: {
+    id: '2de0aaac-dc6e-4871-acc5-7569d2a72548',
+    name: createSEC555Room.building,
+    campus: {
+      id: 'acda43fe-db55-4a68-87db-b10dd9bf4a84',
+      name: createSEC555Room.campus,
+    },
+  },
+};
