@@ -239,7 +239,7 @@ describe('Room Admin Modal Behavior', function () {
     describe('other errors', function () {
       context('when creating a course', function () {
         beforeEach(function () {
-          stub(locationService, 'saveRoom').rejects(new InternalServerErrorException());
+          stub(locationService, 'createRoom').rejects(new InternalServerErrorException());
           onSuccessStub = stub();
           postStub = stub(request, 'post');
           postStub.callsFake(async (url, data) => {
@@ -270,7 +270,7 @@ describe('Room Admin Modal Behavior', function () {
           ));
         });
         afterEach(function () {
-          (locationService.saveRoom as SinonStub).restore();
+          (locationService.createRoom as SinonStub).restore();
         });
         context('when there is an internal server error', function () {
           it('displays the error', async function () {
