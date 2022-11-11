@@ -1,8 +1,5 @@
 import React from 'react';
 import {
-  strictEqual,
-} from 'assert';
-import {
   fireEvent,
   BoundFunction,
   GetByText,
@@ -32,19 +29,18 @@ import { render } from 'test-utils';
 import { SessionModule } from 'nestjs-session';
 import { Repository } from 'typeorm';
 import { LocationService } from 'server/location/location.service';
-import { Room } from 'server/location/room.entity';
-import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import { adminUser, createSEC555Room, string } from 'testData';
 import { LocationModule } from 'server/location/location.module';
 import { Campus } from 'server/location/campus.entity';
 import { Building } from 'server/location/building.entity';
 import CreateRoomModal from 'client/components/pages/RoomAdmin/CreateRoomModal';
+import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 /**
  * This class takes a supertest response with an error
  * and reshapes it into error with the same structure as AxiosError.
  */
- class AxiosSupertestError extends Error {
+class AxiosSupertestError extends Error {
   public response: supertest.Response;
 
   constructor(response) {
@@ -63,11 +59,9 @@ describe('Room Admin Modal Behavior', function () {
   let getByLabelText: BoundFunction<GetByText>;
   let onSuccessStub: SinonStub;
   let onCloseStub: SinonStub;
-  let putStub: SinonStub;
   let postStub: SinonStub;
   let authStub: SinonStub;
   let locationService: LocationService;
-  let roomRepository: Repository<Room>;
 
   let testModule: TestingModule;
   let api: HttpServer;
@@ -120,7 +114,6 @@ describe('Room Admin Modal Behavior', function () {
       .useValue(new ConfigService(this.database.connectionEnv))
       .compile();
     locationService = testModule.get<LocationService>(LocationService);
-    roomRepository = testModule.get(getRepositoryToken(Room));
     const nestApp = await testModule.createNestApplication()
       .useGlobalPipes(new BadRequestExceptionPipe())
       .init();
@@ -197,7 +190,7 @@ describe('Room Admin Modal Behavior', function () {
         });
         context('when required fields are provided', function () {
           it('does not display a validation error related to missing required fields', async function () {
-            const campusSelect = getByLabelText('Existing Campus') as HTMLSelectElement;
+            const campusSelect = getByLabelText('Campus', { exact: false }) as HTMLSelectElement;
             const buildingSelect = getByLabelText('Existing Building') as HTMLSelectElement;
             const roomNameInput = getByLabelText('Room Number', { exact: false }) as HTMLInputElement;
             const capacityInput = getByLabelText('Capacity', { exact: false }) as HTMLInputElement;
@@ -223,11 +216,11 @@ describe('Room Admin Modal Behavior', function () {
           });
           context('when capacity value provided is not a number', function () {
             it('displays a validation error', async function () {
-            const capacityInput = getByLabelText('Capacity', { exact: false }) as HTMLInputElement;
-            fireEvent.change(
-              capacityInput,
-              { target: { value: 'Fifty' } }
-            );
+              const capacityInput = getByLabelText('Capacity', { exact: false }) as HTMLInputElement;
+              fireEvent.change(
+                capacityInput,
+                { target: { value: 'Fifty' } }
+              );
               const submitButton = getByText('Submit');
               fireEvent.click(submitButton);
               await findByText('Capacity is required to submit this form, and it must be a number.', { exact: false });
@@ -274,7 +267,7 @@ describe('Room Admin Modal Behavior', function () {
         });
         context('when there is an internal server error', function () {
           it('displays the error', async function () {
-            const campusSelect = getByLabelText('Existing Campus') as HTMLSelectElement;
+            const campusSelect = getByLabelText('Campus', { exact: false }) as HTMLSelectElement;
             const buildingSelect = getByLabelText('Existing Building') as HTMLSelectElement;
             const roomNameInput = getByLabelText('Room Number', { exact: false }) as HTMLInputElement;
             const capacityInput = getByLabelText('Capacity', { exact: false }) as HTMLInputElement;
