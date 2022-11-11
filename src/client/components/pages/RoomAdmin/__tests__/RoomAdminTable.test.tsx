@@ -92,7 +92,6 @@ describe('Room Admin Table', function () {
       });
     });
     context('when room data fetch fails', function () {
-      const emptyTestData = [];
       let dispatchMessage: SinonStub;
       beforeEach(function () {
         dispatchMessage = stub();
@@ -103,11 +102,12 @@ describe('Room Admin Table', function () {
         getStub.restore();
       });
       it('should throw an error', async function () {
-        const { getAllByRole } = render(
+        const { findByText } = render(
           <RoomAdmin />,
           { dispatchMessage }
         );
-        await wait(() => getAllByRole('row').length === emptyTestData.length + 1);
+
+        await findByText('Fetching Room Data');
         strictEqual(dispatchMessage.callCount, 1);
       });
     });
