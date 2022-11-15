@@ -342,6 +342,30 @@ describe('End-to-end Room Admin updating', function () {
             });
           });
         });
+        context('with an existing building entered into the new building field', function () {
+          beforeEach(function () {
+            // Find an existing building and populate that existing building
+            // into the New Building field
+            buildingSelect = renderResult.getByLabelText('Existing Building') as HTMLSelectElement;
+            const options = within(buildingSelect).getAllByRole('option')
+              .map(({ value }: HTMLOptionElement) => value);
+            const testBuilding = options[1];
+            const newBuildingRadioButton = renderResult.getByLabelText('Create a new building', { exact: false });
+            fireEvent.click(newBuildingRadioButton);
+            fireEvent.change(buildingInput,
+              { target: { value: testBuilding.trim() } });
+            fireEvent.change(roomNameInput,
+              { target: { value: '100b' } });
+            fireEvent.change(capacityInput,
+              { target: { value: 100 } });
+          });
+          it('displays an error indicating the building already exists', function () {
+            const submitButton = renderResult.getByText('Submit');
+            fireEvent.click(submitButton);
+            const errorMessage = renderResult.queryByText('This building already exists in the selected campus', { exact: false });
+            notStrictEqual(errorMessage, null);
+          });
+        });
       });
     });
   });
