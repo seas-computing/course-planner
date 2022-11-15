@@ -31,6 +31,8 @@ import { MetadataContext } from 'client/context';
 import ValidationException from 'common/errors/ValidationException';
 import { LocationAPI } from 'client/api';
 import { CampusResponse } from 'common/dto/room/CampusResponse.dto';
+import { AxiosError } from 'axios';
+import { ServerErrorInfo } from '../Courses/CourseModal';
 
 interface CreateRoomModalProps {
   /**
@@ -436,11 +438,17 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
               const createdCourse = await submitRoomForm();
               onSuccess(createdCourse);
             } catch (error) {
-              // if (error instanceof Error && axios.isAxiosError(error)) {
-              const serverError = error?.response?.data?.message;
-              // }
-              setRoomModalErrorMessage(serverError || 'An error occurred. Please contact SEAS Computing if the problem persists.');
-              // leave the modal visible after an error
+              if ((error as AxiosError).response) {
+                const serverError = error as AxiosError;
+                const { response } = serverError;
+                if (response.data
+                  && (response.data as ServerErrorInfo).message) {
+                  setRoomModalErrorMessage(
+                    String((response.data as ServerErrorInfo).message)
+                    || 'An error occurred. Please contact SEAS Computing if the problem persists.'
+                  );
+                }
+              }
               return;
             }
             setIsChanged(false);
