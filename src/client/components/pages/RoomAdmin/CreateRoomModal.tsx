@@ -445,9 +445,10 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
                   && (response.data as ServerErrorInfo).message) {
                   setRoomModalErrorMessage(
                     String((response.data as ServerErrorInfo).message)
-                    || 'An error occurred. Please contact SEAS Computing if the problem persists.'
                   );
                 }
+              } else {
+                setRoomModalErrorMessage('An error occurred. Please contact SEAS Computing if the problem persists.');
               }
               return;
             }
