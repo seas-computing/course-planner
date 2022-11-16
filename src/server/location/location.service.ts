@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { EntityNotFoundError, Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RoomListingView } from 'server/location/RoomListingView.entity';
 import RoomResponse from 'common/dto/room/RoomResponse.dto';
@@ -7,9 +7,11 @@ import RoomRequest from 'common/dto/room/RoomRequest.dto';
 import RoomMeetingResponse from 'common/dto/room/RoomMeetingResponse.dto';
 import RoomAdminResponse from 'common/dto/room/RoomAdminResponse.dto';
 import { CampusResponse } from 'common/dto/room/CampusResponse.dto';
+import { CreateRoomRequest } from 'common/dto/room/CreateRoomRequest.dto';
 import { RoomBookingInfoView } from './RoomBookingInfoView.entity';
 import { Room } from './room.entity';
 import { Campus } from './campus.entity';
+import { Building } from './building.entity';
 
 /**
  * A service for managing room, building, and campus entities in the database.
@@ -42,6 +44,9 @@ export class LocationService {
 
   @InjectRepository(Campus)
   private campusRepository: Repository<Campus>;
+
+  @InjectRepository(Building)
+  private buildingRepository: Repository<Building>;
 
   /**
    * Retrieves all rooms in the database along with their campus and capacity
@@ -190,5 +195,89 @@ export class LocationService {
       .addOrderBy('b.name', 'ASC')
       .addOrderBy('r.name', 'ASC')
       .getMany() as CampusResponse[];
+  }
+
+  /**
+   * Creates a new room after validating that the provided campus exists, that
+   * the building does not exist within another campus, and that the room
+   * requested does not already exist.
+   */
+  public async createRoom(room: CreateRoomRequest):
+  Promise<RoomAdminResponse> {
+    let campus: Campus;
+    try {
+      campus = await this.campusRepository.findOneOrFail({
+        where: {
+          name: room.campus,
+        },
+      });
+    } catch (e) {
+      if (e instanceof EntityNotFoundError) {
+        throw new NotFoundException(`Unable to find a campus called "${room.campus}".`);
+      } else {
+        throw e;
+      }
+    }
+    // The user should not be able to to create a building that exists on a
+    // different campus, because a building cannot exist on multiple campuses.
+    const otherCampuses = await this.campusRepository.find({
+      where: {
+        name: Not(room.campus),
+      },
+      relations: ['buildings'],
+    });
+
+    otherCampuses.forEach(
+      (otherCampus) => otherCampus.buildings
+        .forEach((building) => {
+          if (building.name.toLowerCase() === room.building.toLowerCase()) {
+            throw new BadRequestException(`${room.building} already exists within another campus.`);
+          }
+        })
+    );
+
+    // Check that the room being created is not a duplicate of an existing room
+    const dbRooms = await this.roomListingViewRepository.createQueryBuilder()
+      .where('LOWER(name) = LOWER(:name)', {
+        name: `${room.building} ${room.name}`,
+      })
+      .getMany();
+
+    if (dbRooms.length > 0) {
+      throw new BadRequestException(`The room ${room.name} already exists in ${room.building}.`);
+    }
+
+    let building: Partial<Building> = await this.buildingRepository
+      .findOne({
+        where: {
+          name: room.building,
+        },
+        relations: ['campus'],
+      });
+    // If the building doesn't exist yet, it will be created
+    // by the cascade insert set on the Room entity.
+    if (building == null) {
+      building = { name: room.building, campus };
+    }
+
+    // Remove properties that shouldn't be saved on room
+    const { campus: requestCampus, ...roomProps } = room;
+
+    const roomToCreate = {
+      ...roomProps,
+      building,
+    };
+
+    const response = await this.roomRepository.save(roomToCreate);
+
+    const result = {
+      id: response.id,
+      name: response.name,
+      capacity: response.capacity,
+      building: {
+        ...response.building,
+      },
+    };
+    return result;
   }
 }

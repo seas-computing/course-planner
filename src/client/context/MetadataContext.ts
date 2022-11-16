@@ -1,5 +1,7 @@
 import { createContext } from 'react';
 import { MetadataResponse } from 'common/dto/metadata/MetadataResponse.dto';
+import { CampusResponse } from 'common/dto/room/CampusResponse.dto';
+import RoomAdminResponse from 'common/dto/room/RoomAdminResponse.dto';
 
 type MetadataUpdater = (metadata: MetadataResponse) => void;
 
@@ -38,6 +40,42 @@ export class MetadataContextValue {
 
   get catalogPrefixes(): string[] {
     return this.value.catalogPrefixes;
+  }
+
+  updateCampuses(room: RoomAdminResponse): void {
+    const { campuses } = this.value;
+    // Finds the campus that the new building will be in so that we can
+    // add the building to that campus' list of buildings
+    const updatedCampusIndex: number = campuses
+      .findIndex((campus) => campus.name === room.building.campus.name);
+    campuses[updatedCampusIndex].buildings.push({
+      id: room.building.id,
+      name: room.building.name,
+      rooms: [
+        {
+          id: room.id,
+          name: room.name,
+          capacity: room.capacity,
+        },
+      ],
+    });
+    // Sort the buildings within the campus in alphabetical order ascending
+    campuses[updatedCampusIndex].buildings.sort((a, b) => {
+      if (a.name < b.name) {
+        return -1;
+      } if (a.name > b.name) {
+        return 1;
+      }
+      return 0;
+    });
+    this.update({
+      ...this.value,
+      campuses,
+    });
+  }
+
+  get campuses(): CampusResponse[] {
+    return this.value.campuses;
   }
 }
 

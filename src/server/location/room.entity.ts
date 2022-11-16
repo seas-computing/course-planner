@@ -41,7 +41,8 @@ export class Room extends BaseEntity {
    */
   @OneToMany(
     (): ObjectType<Meeting> => Meeting,
-    ({ room }): Room => room
+    ({ room }): Room => room,
+    { cascade: ['insert'] }
   )
   public meetings: Meeting[];
 
@@ -53,7 +54,11 @@ export class Room extends BaseEntity {
    */
   @ManyToOne(
     (): ObjectType<Building> => Building,
-    ({ rooms }): Room[] => rooms
+    ({ rooms }): Room[] => rooms,
+    {
+      nullable: false,
+      cascade: ['insert'],
+    }
   )
   public building: Building;
 }

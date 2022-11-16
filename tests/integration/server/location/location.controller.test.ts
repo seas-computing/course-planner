@@ -11,7 +11,11 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { ConfigService } from 'server/config/config.service';
-import { adminUser, regularUser } from 'testData';
+import {
+  adminUser,
+  createSEC555Room,
+  regularUser,
+} from 'testData';
 import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 import {
   strictEqual, deepStrictEqual, notStrictEqual, notDeepStrictEqual,
@@ -454,6 +458,66 @@ describe('Location API', function () {
       it('is inaccessible to unauthenticated users', function () {
         authStub.rejects(new ForbiddenException());
         strictEqual(response.status, HttpStatus.FORBIDDEN);
+      });
+    });
+  });
+  describe('POST /rooms', function () {
+    let response: Response;
+    context('User is not authenticated', function () {
+      beforeEach(function () {
+        authStub.resolves(null);
+      });
+      it('is inaccessible', async function () {
+        authStub.rejects(new ForbiddenException());
+
+        response = await request(api)
+          .post('/api/rooms')
+          .send(createSEC555Room);
+
+        strictEqual(response.ok, false);
+        strictEqual(response.status, HttpStatus.FORBIDDEN);
+      });
+    });
+    context('User is authenticated', function () {
+      context('User is a member of the admin group', function () {
+        beforeEach(async function () {
+          authStub.resolves(dummy.adminUser);
+          response = await request(api)
+            .post('/api/rooms')
+            .send(createSEC555Room);
+        });
+        it('should return OK', function () {
+          strictEqual(response.statusCode, HttpStatus.CREATED);
+        });
+        it('should return the newly created course', function () {
+          strictEqual(response.body.name, createSEC555Room.name);
+        });
+        it('should save the room in the database', async function () {
+          const savedRoom = await locationRepo.find({
+            where: {
+              name: createSEC555Room.name,
+              building: {
+                name: createSEC555Room.building,
+                campus: {
+                  name: createSEC555Room.campus,
+                },
+              },
+            },
+            relations: ['building', 'building.campus'],
+          });
+          strictEqual(savedRoom.length, 1);
+        });
+      });
+      context('User is not a member of the admin group', function () {
+        beforeEach(async function () {
+          authStub.resolves(dummy.regularUser);
+          response = await request(api)
+            .post('/api/rooms')
+            .send(createSEC555Room);
+        });
+        it('should return a forbidden error', function () {
+          strictEqual(response.statusCode, HttpStatus.FORBIDDEN);
+        });
       });
     });
   });

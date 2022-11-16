@@ -18,6 +18,7 @@ import { Campus } from '../campus.entity';
 import { Room } from '../room.entity';
 import { RoomBookingInfoView } from '../RoomBookingInfoView.entity';
 import { RoomListingView } from '../RoomListingView.entity';
+import { Building } from '../building.entity';
 
 describe('Location service', function () {
   let locationService: LocationService;
@@ -27,6 +28,7 @@ describe('Location service', function () {
   let mockRoomBookingRepository: Record<string, SinonStub>;
   let mockRoomRepository: Record<string, SinonStub>;
   let mockCampusRepository: Record<string, SinonStub>;
+  let mockBuildingRepository: Record<string, SinonStub>;
 
   beforeEach(async function () {
     mockLocationQueryBuilder = createStubInstance(SelectQueryBuilder);
@@ -54,6 +56,10 @@ describe('Location service', function () {
       createQueryBuilder: stub().returns(mockLocationQueryBuilder),
     };
 
+    mockBuildingRepository = {
+      createQueryBuilder: stub().returns(mockLocationQueryBuilder),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         LocationService,
@@ -72,6 +78,10 @@ describe('Location service', function () {
         {
           provide: getRepositoryToken(Campus),
           useValue: mockCampusRepository,
+        },
+        {
+          provide: getRepositoryToken(Building),
+          useValue: mockBuildingRepository,
         },
       ],
       controllers: [],

@@ -42,7 +42,11 @@ export class Building extends BaseEntity {
    */
   @ManyToOne(
     (): ObjectType<Campus> => Campus,
-    ({ buildings }): Building[] => buildings
+    ({ buildings }): Building[] => buildings,
+    {
+      nullable: false,
+      cascade: ['insert'],
+    }
   )
   public campus: Campus;
 }
