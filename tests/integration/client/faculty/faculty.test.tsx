@@ -160,6 +160,59 @@ describe('Faculty Schedule Modal Behavior', function () {
             strictEqual(nlaAbsences.length, 2);
           });
         });
+        describe(`going from ${absenceEnumToTitleCase(ABSENCE_TYPE.NO_LONGER_ACTIVE)}`, function () {
+          beforeEach(async function () {
+            fireEvent.click(editAppliedMathFallAbsenceButton);
+            // Fake the return value of the API so that the absence in react state is NLA
+            putStub.resolves({
+              ...testData[0].fall.absence,
+              type: ABSENCE_TYPE.NO_LONGER_ACTIVE,
+            });
+            fireEvent.click(submitButton);
+            await waitForElementToBeRemoved(
+              () => page.queryByText('Sabbatical/Leave for', { exact: false })
+            );
+            fireEvent.click(editAppliedMathFallAbsenceButton);
+
+            // Get a new reference to the modal (and submit button) because
+            // closing the modal has broken the reference we had to the original
+            // elements
+            modal = await page.findByRole('dialog') as HTMLDivElement;
+            submitButton = await within(modal)
+              .findByText('Submit', { exact: false }) as HTMLButtonElement;
+
+            putStub.resolves({
+              ...testData[0].fall.absence,
+              type: ABSENCE_TYPE.PARENTAL_LEAVE,
+            });
+          });
+          it('updates fall to match the selected value', async function () {
+            const value = ABSENCE_TYPE.PARENTAL_LEAVE;
+            fireEvent.change(dropdown, { target: { value } });
+            fireEvent.click(submitButton);
+            await waitForElementToBeRemoved(
+              () => page.queryByText('Sabbatical/Leave for', { exact: false })
+            );
+            const tableRow = editAppliedMathFallAbsenceButton.closest('tr');
+            const [fall] = within(tableRow).getAllByRole('button')
+              .map((button) => button.closest('td'));
+
+            strictEqual(fall.textContent, absenceEnumToTitleCase(value));
+          });
+          it(`updates spring to ${absenceEnumToTitleCase(ABSENCE_TYPE.PRESENT)}`, async function () {
+            const value = ABSENCE_TYPE.PARENTAL_LEAVE;
+            fireEvent.change(dropdown, { target: { value } });
+            fireEvent.click(submitButton);
+            await waitForElementToBeRemoved(
+              () => page.queryByText('Sabbatical/Leave for', { exact: false })
+            );
+            const tableRow = editAppliedMathFallAbsenceButton.closest('tr');
+            const [,spring] = within(tableRow).getAllByRole('button')
+              .map((button) => button.closest('td'));
+
+            strictEqual(spring.textContent, '');
+          });
+        });
       });
     });
     context('when a Spring semester edit faculty button has been clicked', function () {

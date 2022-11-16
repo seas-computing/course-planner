@@ -223,9 +223,17 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
               FacultyAbsence
             ][]
           ).find(([, { id: absenceId }]) => absenceId === id);
-          if (type === ABSENCE_TYPE.NO_LONGER_ACTIVE) {
+          if (
+            [
+              type,
+              facultyData[index][term].absence.type,
+            ].includes(ABSENCE_TYPE.NO_LONGER_ACTIVE)
+          ) {
             if (term === 'fall') {
-              facultyData[index].spring.absence.type = type;
+              facultyData[index].spring.absence.type = (
+                type !== ABSENCE_TYPE.NO_LONGER_ACTIVE
+                  ? ABSENCE_TYPE.PRESENT : type
+              );
             }
           }
           facultyData[index][term].absence.type = type;
