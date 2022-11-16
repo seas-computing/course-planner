@@ -272,6 +272,25 @@ describe('Faculty Schedule Modal Behavior', function () {
           return within(tableCell)
             .findByText(absenceEnumToTitleCase(absenceType));
         });
+        describe(`going to ${absenceEnumToTitleCase(ABSENCE_TYPE.NO_LONGER_ACTIVE)}`, function () {
+          it(`sets spring to ${absenceEnumToTitleCase(ABSENCE_TYPE.NO_LONGER_ACTIVE)}`, async function () {
+            const value = ABSENCE_TYPE.NO_LONGER_ACTIVE;
+            putStub.resolves({
+              ...testData[0].spring.absence,
+              type: value,
+            });
+            fireEvent.change(dropdown, { target: { value } });
+            fireEvent.click(submitButton);
+            await waitForElementToBeRemoved(
+              () => page.queryByText('Sabbatical/Leave for', { exact: false })
+            );
+            const tableRow = editAppliedMathSpringAbsenceButton.closest('tr');
+            const [,spring] = within(tableRow).getAllByRole('button')
+              .map((button) => button.closest('td'));
+
+            strictEqual(spring.textContent, absenceEnumToTitleCase(value));
+          });
+        });
       });
       context('when the absence modal is closed', function () {
         it('returns focus to the original edit faculty button', async function () {
