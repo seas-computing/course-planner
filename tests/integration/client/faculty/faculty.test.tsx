@@ -65,7 +65,6 @@ describe('Faculty Schedule Modal Behavior', function () {
     });
     context('when a Fall semester edit faculty button has been clicked', function () {
       beforeEach(async function () {
-        // show the edit faculty modal
         editAppliedMathFallAbsenceButton = getByLabelText('edit faculty fall absence');
         fireEvent.click(editAppliedMathFallAbsenceButton);
         await findByText('Sabbatical/Leave');
@@ -82,7 +81,6 @@ describe('Faculty Schedule Modal Behavior', function () {
           const submitButton = await findByText('Submit', { exact: false });
           fireEvent.click(submitButton);
           await wait(() => !queryByText('Sabbatical/Leave', { exact: false }));
-          // Reopen the modal to check the dropdown selected item
           editAppliedMathFallAbsenceButton = getByLabelText('edit faculty fall absence');
           fireEvent.click(editAppliedMathFallAbsenceButton);
           await findByText('Sabbatical/Leave');
