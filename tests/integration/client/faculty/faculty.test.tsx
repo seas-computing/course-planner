@@ -244,6 +244,35 @@ describe('Faculty Schedule Modal Behavior', function () {
           );
         });
       });
+      context('when the submit button is clicked', function () {
+        let modal: HTMLDivElement;
+        let submitButton: HTMLButtonElement;
+        let dropdown: HTMLSelectElement;
+        beforeEach(async function () {
+          modal = await page.findByRole('dialog') as HTMLDivElement;
+          submitButton = await within(modal)
+            .findByText('Submit', { exact: false }) as HTMLButtonElement;
+          dropdown = await within(modal)
+            .findByRole('combobox') as HTMLSelectElement;
+        });
+        it('updates absence data in place', async function () {
+          const absenceType = ABSENCE_TYPE.RESEARCH_LEAVE;
+          putStub.resolves({
+            ...testData[0].spring.absence,
+            type: absenceType,
+          });
+          fireEvent.change(dropdown, {
+            target: { value: `${absenceType}` },
+          });
+          fireEvent.click(submitButton);
+          await waitForElementToBeRemoved(
+            () => page.queryByText('Sabbatical/Leave for', { exact: false })
+          );
+          const tableCell = editAppliedMathSpringAbsenceButton.closest('td');
+          return within(tableCell)
+            .findByText(absenceEnumToTitleCase(absenceType));
+        });
+      });
       context('when the absence modal is closed', function () {
         it('returns focus to the original edit faculty button', async function () {
           const cancelButton = await findByText('Cancel', { exact: false });
