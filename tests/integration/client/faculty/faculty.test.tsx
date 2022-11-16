@@ -57,6 +57,11 @@ describe('Faculty Schedule Modal Behavior', function () {
       putStub.resolves(testData[0].fall.absence);
       page = renderWithMessaging(<FacultySchedule />);
       ({ findByText, queryByText, getByLabelText } = page);
+      const nlaCheckbox = page
+        .getByLabelText(`Show "${absenceEnumToTitleCase(ABSENCE_TYPE.NO_LONGER_ACTIVE)}" Faculty`) as HTMLInputElement;
+      if (!nlaCheckbox.checked) {
+        fireEvent.click(nlaCheckbox);
+      }
     });
     context('when a Fall semester edit faculty button has been clicked', function () {
       beforeEach(async function () {
@@ -136,9 +141,6 @@ describe('Faculty Schedule Modal Behavior', function () {
         });
         describe(`going to ${absenceEnumToTitleCase(ABSENCE_TYPE.NO_LONGER_ACTIVE)}`, function () {
           beforeEach(function () {
-            const filterCheckBox = page
-              .getByLabelText('Show "No Longer Active" Faculty');
-            fireEvent.click(filterCheckBox);
             putStub.resolves({
               ...testData[0].fall.absence,
               type: ABSENCE_TYPE.NO_LONGER_ACTIVE,
