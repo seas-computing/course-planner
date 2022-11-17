@@ -284,11 +284,74 @@ describe('Faculty Schedule Modal Behavior', function () {
             await waitForElementToBeRemoved(
               () => page.queryByText('Sabbatical/Leave for', { exact: false })
             );
-            const tableRow = editAppliedMathSpringAbsenceButton.closest('tr');
-            const [,spring] = within(tableRow).getAllByRole('button')
-              .map((button) => button.closest('td'));
+            const spring = within(
+              editAppliedMathSpringAbsenceButton.closest('tr')
+            ).getByLabelText('edit faculty spring absence').closest('td');
 
             strictEqual(spring.textContent, absenceEnumToTitleCase(value));
+          });
+          it('does not update fall', async function () {
+            const value = ABSENCE_TYPE.NO_LONGER_ACTIVE;
+            putStub.resolves({
+              ...testData[0].spring.absence,
+              type: value,
+            });
+            fireEvent.change(dropdown, { target: { value } });
+            const valueBeforeChange = within(
+              editAppliedMathSpringAbsenceButton.closest('tr')
+            ).getByLabelText('edit faculty fall absence').closest('td');
+
+            fireEvent.click(submitButton);
+            await waitForElementToBeRemoved(
+              () => page.queryByText('Sabbatical/Leave for', { exact: false })
+            );
+
+            const fall = within(
+              editAppliedMathSpringAbsenceButton.closest('tr')
+            ).getByLabelText('edit faculty fall absence').closest('td');
+
+            strictEqual(fall.textContent, valueBeforeChange.textContent);
+          });
+        });
+        describe(`going from ${absenceEnumToTitleCase(ABSENCE_TYPE.NO_LONGER_ACTIVE)}`, function () {
+          it('updates spring to the selected value', async function () {
+            const value = ABSENCE_TYPE.PARENTAL_LEAVE;
+            putStub.resolves({
+              ...testData[0].spring.absence,
+              type: value,
+            });
+            fireEvent.change(dropdown, { target: { value } });
+            fireEvent.click(submitButton);
+            await waitForElementToBeRemoved(
+              () => page.queryByText('Sabbatical/Leave for', { exact: false })
+            );
+            const spring = within(
+              editAppliedMathSpringAbsenceButton.closest('tr')
+            ).getByLabelText('edit faculty spring absence').closest('td');
+
+            strictEqual(spring.textContent, absenceEnumToTitleCase(value));
+          });
+          it('does not update fall', async function () {
+            const value = ABSENCE_TYPE.NO_LONGER_ACTIVE;
+            putStub.resolves({
+              ...testData[0].spring.absence,
+              type: value,
+            });
+            fireEvent.change(dropdown, { target: { value } });
+            const valueBeforeChange = within(
+              editAppliedMathSpringAbsenceButton.closest('tr')
+            ).getByLabelText('edit faculty fall absence').closest('td');
+
+            fireEvent.click(submitButton);
+            await waitForElementToBeRemoved(
+              () => page.queryByText('Sabbatical/Leave for', { exact: false })
+            );
+
+            const fall = within(
+              editAppliedMathSpringAbsenceButton.closest('tr')
+            ).getByLabelText('edit faculty fall absence').closest('td');
+
+            strictEqual(fall.textContent, valueBeforeChange.textContent);
           });
         });
       });

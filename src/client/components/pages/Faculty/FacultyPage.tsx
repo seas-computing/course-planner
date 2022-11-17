@@ -18,7 +18,7 @@ import {
   POSITION,
   Dropdown,
 } from 'mark-one';
-import { FacultyAbsence, FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
+import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { MessageContext, MetadataContext } from 'client/context';
 import { FacultyAPI } from 'client/api';
 import {
@@ -205,7 +205,7 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
    * their spring and fall absences, and makes the necessary updates.
    */
   const updateLocalAbsenceState = useCallback(
-    ({ id, type }: AbsenceResponseDTO): void => {
+    ({ id, type: newAbsenceType }: AbsenceResponseDTO): void => {
       setFacultySchedules((prevState) => {
         const facultyData = [...prevState];
         const index = facultyData.findIndex(
@@ -214,29 +214,46 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
         );
         if (index !== -1) {
           const { spring, fall } = facultyData[index];
-          const [term] = (
-            [
-              ['spring', spring.absence],
-              ['fall', fall.absence],
-            ] as [
-              keyof Pick<FacultyResponseDTO, 'spring' | 'fall'>,
-              FacultyAbsence
-            ][]
-          ).find(([, { id: absenceId }]) => absenceId === id);
+          const [term] = ([
+            ['spring', spring.absence],
+            ['fall', fall.absence],
+          ] as [
+            keyof Pick<FacultyResponseDTO, 'spring' | 'fall'>,
+            AbsenceResponseDTO
+          ][]).find(([, { id: absenceId }]) => absenceId === id);
+          const existingAbsenceType = facultyData[index][term].absence.type;
           if (
-            [
-              type,
-              facultyData[index][term].absence.type,
-            ].includes(ABSENCE_TYPE.NO_LONGER_ACTIVE)
+            [newAbsenceType, existingAbsenceType]
+              .includes(ABSENCE_TYPE.NO_LONGER_ACTIVE)
           ) {
-            if (term === 'fall') {
-              facultyData[index].spring.absence.type = (
-                type !== ABSENCE_TYPE.NO_LONGER_ACTIVE
-                  ? ABSENCE_TYPE.PRESENT : type
-              );
+            if (
+              existingAbsenceType !== ABSENCE_TYPE.NO_LONGER_ACTIVE
+                && newAbsenceType === ABSENCE_TYPE.NO_LONGER_ACTIVE
+            ) {
+              facultyData[index].spring.absence
+                .type = ABSENCE_TYPE.NO_LONGER_ACTIVE;
+              if (term === 'fall') {
+                facultyData[index].fall.absence
+                  .type = ABSENCE_TYPE.NO_LONGER_ACTIVE;
+              }
             }
+            if (
+              existingAbsenceType === ABSENCE_TYPE.NO_LONGER_ACTIVE
+                && newAbsenceType !== ABSENCE_TYPE.NO_LONGER_ACTIVE
+            ) {
+              if (term === 'fall') {
+                facultyData[index].fall.absence
+                  .type = newAbsenceType;
+                facultyData[index].spring.absence
+                  .type = ABSENCE_TYPE.PRESENT;
+              } else if (term === 'spring') {
+                facultyData[index].spring.absence
+                  .type = newAbsenceType;
+              }
+            }
+          } else {
+            facultyData[index][term].absence.type = newAbsenceType;
           }
-          facultyData[index][term].absence.type = type;
         }
         return facultyData;
       });
