@@ -222,37 +222,32 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
             AbsenceResponseDTO
           ][]).find(([, { id: absenceId }]) => absenceId === id);
           const existingAbsenceType = facultyData[index][term].absence.type;
+
+          facultyData[index][term].absence.type = newAbsenceType;
           if (
-            [newAbsenceType, existingAbsenceType]
-              .includes(ABSENCE_TYPE.NO_LONGER_ACTIVE)
+            existingAbsenceType !== ABSENCE_TYPE.NO_LONGER_ACTIVE
+              && newAbsenceType === ABSENCE_TYPE.NO_LONGER_ACTIVE
           ) {
-            if (
-              existingAbsenceType !== ABSENCE_TYPE.NO_LONGER_ACTIVE
-                && newAbsenceType === ABSENCE_TYPE.NO_LONGER_ACTIVE
-            ) {
-              facultyData[index].spring.absence
+            facultyData[index].spring.absence
+              .type = ABSENCE_TYPE.NO_LONGER_ACTIVE;
+            if (term === 'fall') {
+              facultyData[index].fall.absence
                 .type = ABSENCE_TYPE.NO_LONGER_ACTIVE;
-              if (term === 'fall') {
-                facultyData[index].fall.absence
-                  .type = ABSENCE_TYPE.NO_LONGER_ACTIVE;
-              }
             }
-            if (
-              existingAbsenceType === ABSENCE_TYPE.NO_LONGER_ACTIVE
-                && newAbsenceType !== ABSENCE_TYPE.NO_LONGER_ACTIVE
-            ) {
-              if (term === 'fall') {
-                facultyData[index].fall.absence
-                  .type = newAbsenceType;
-                facultyData[index].spring.absence
-                  .type = ABSENCE_TYPE.PRESENT;
-              } else if (term === 'spring') {
-                facultyData[index].spring.absence
-                  .type = newAbsenceType;
-              }
+          }
+          if (
+            existingAbsenceType === ABSENCE_TYPE.NO_LONGER_ACTIVE
+              && newAbsenceType !== ABSENCE_TYPE.NO_LONGER_ACTIVE
+          ) {
+            if (term === 'fall') {
+              facultyData[index].fall.absence
+                .type = newAbsenceType;
+              facultyData[index].spring.absence
+                .type = ABSENCE_TYPE.PRESENT;
+            } else if (term === 'spring') {
+              facultyData[index].spring.absence
+                .type = newAbsenceType;
             }
-          } else {
-            facultyData[index][term].absence.type = newAbsenceType;
           }
         }
         return facultyData;
