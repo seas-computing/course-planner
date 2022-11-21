@@ -44,7 +44,7 @@ interface AbsenceModalProps {
   /**
    * Handler to be invoked when the edit is successful
    */
-  onSuccess: () => void;
+  onSuccess: (absence: AbsenceResponseDTO) => void;
   /**
    * Handler to be invoked when the modal is canceled
    */
@@ -111,8 +111,7 @@ FunctionComponent<AbsenceModalProps> = ({
       id: currentAbsence.id,
       type: form.absence as ABSENCE_TYPE,
     };
-    const result: AbsenceResponseDTO = await FacultyAPI
-      .updateFacultyAbsence(updatedAbsenceInfo);
+    const result = await FacultyAPI.updateFacultyAbsence(updatedAbsenceInfo);
     return result;
   };
 
@@ -179,12 +178,12 @@ FunctionComponent<AbsenceModalProps> = ({
           id="editSabbaticalLeaveSubmit"
           onClick={async (): Promise<void> => {
             try {
-              await submitAbsenceForm();
+              const result = await submitAbsenceForm();
               dispatchMessage({
                 message: new AppMessage('Faculty absence was updated.', MESSAGE_TYPE.SUCCESS),
                 type: MESSAGE_ACTION.PUSH,
               });
-              onSuccess();
+              onSuccess(result);
             } catch (error) {
               if (axios.isAxiosError(error)) {
                 if ('error' in error.response.data
