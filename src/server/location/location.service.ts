@@ -8,6 +8,7 @@ import RoomMeetingResponse from 'common/dto/room/RoomMeetingResponse.dto';
 import RoomAdminResponse from 'common/dto/room/RoomAdminResponse.dto';
 import { CampusResponse } from 'common/dto/room/CampusResponse.dto';
 import { CreateRoomRequest } from 'common/dto/room/CreateRoomRequest.dto';
+import UpdateRoom from 'common/dto/room/UpdateRoom.dto';
 import { RoomBookingInfoView } from './RoomBookingInfoView.entity';
 import { Room } from './room.entity';
 import { Campus } from './campus.entity';
@@ -278,6 +279,41 @@ export class LocationService {
         ...response.building,
       },
     };
+    return result;
+  }
+
+  /**
+   * Updates an existing room's name and capacity information.
+   * The campus and building cannot be updated.
+   */
+  public async updateRoom(roomId: string, roomInfo: UpdateRoom)
+    : Promise<RoomAdminResponse> {
+    let existingRoom: Room;
+    try {
+      existingRoom = await this.roomRepository.findOneOrFail(roomId);
+    } catch (e) {
+      if (e instanceof EntityNotFoundError) {
+        throw new NotFoundException(`Unable to find room ${roomId}`);
+      } else {
+        throw e;
+      }
+    }
+
+    const validRoom = {
+      ...existingRoom,
+      name: roomInfo.name,
+      capacity: roomInfo.capacity,
+    };
+
+    const response = await this.roomRepository.save(validRoom);
+
+    const result: RoomAdminResponse = {
+      id: response.id,
+      name: response.name,
+      capacity: response.capacity,
+      building: response.building,
+    };
+
     return result;
   }
 }
