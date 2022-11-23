@@ -6,6 +6,8 @@ import {
   createSEC555Room,
   error,
   sec555RoomResponse,
+  updateSEC555Room,
+  updateSECRoomResponse,
 } from 'testData';
 import request, { AxiosResponse } from '../request';
 import { LocationAPI } from '../rooms';
@@ -14,7 +16,9 @@ describe('Location API', function () {
   let getAdminRoomsResponse: RoomAdminResponse[];
   let getStub: SinonStub;
   let postStub: SinonStub;
+  let putStub: SinonStub;
   let createRoomResult: RoomAdminResponse;
+  let editRoomResult: RoomAdminResponse;
   describe('GET /rooms/admin', function () {
     beforeEach(function () {
       getStub = stub(request, 'get');
@@ -88,6 +92,41 @@ describe('Location API', function () {
       it('should throw an error', async function () {
         try {
           await LocationAPI.createRoom(createSEC555Room);
+          fail('Did not throw an error');
+        } catch (err) {
+          strictEqual((err as Error).message, errorMessage);
+        }
+      });
+    });
+  });
+  describe('PUT /rooms/:id', function () {
+    beforeEach(function () {
+      putStub = stub(request, 'put');
+    });
+    context('when successfully editing a room', function () {
+      beforeEach(async function () {
+        putStub.resolves({
+          data: updateSECRoomResponse,
+        } as AxiosResponse<RoomAdminResponse>);
+        editRoomResult = await LocationAPI.editRoom(updateSEC555Room);
+      });
+      it('should make the request to /api/rooms/:id', function () {
+        const [[path]] = putStub.args;
+        strictEqual(path, `/api/rooms/${updateSEC555Room.id}`);
+        strictEqual(putStub.callCount, 1);
+      });
+      it('should return the updated room information', function () {
+        strictEqual(editRoomResult, updateSECRoomResponse);
+      });
+    });
+    context('when failing to edit a room', function () {
+      const errorMessage = 'There was a problem with updating the room.';
+      beforeEach(function () {
+        putStub.rejects(new Error(errorMessage));
+      });
+      it('should throw an error', async function () {
+        try {
+          await LocationAPI.editRoom(updateSEC555Room);
           fail('Did not throw an error');
         } catch (err) {
           strictEqual((err as Error).message, errorMessage);
