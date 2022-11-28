@@ -20,9 +20,22 @@ import {
 } from 'mark-one';
 import { TableRowProps } from 'mark-one/lib/Tables/TableRow';
 import React, {
-  FunctionComponent, ReactElement, useCallback, useContext, useEffect, useState,
+  FunctionComponent,
+  ReactElement,
+  Ref,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
 } from 'react';
 import CreateRoomModal from './CreateRoomModal';
+import EditRoomModal from './EditRoomModal';
+
+interface EditRoomModalData {
+  room?: RoomAdminResponse;
+  visible: boolean;
+}
 
 const RoomAdmin: FunctionComponent = (): ReactElement => {
   /**
@@ -47,6 +60,52 @@ const RoomAdmin: FunctionComponent = (): ReactElement => {
    * Indicates whether the Create Room modal is open
    */
   const [createRoomModalVisible, setCreateRoomModalVisible] = useState(false);
+
+  /**
+   * The current value of the edit room button
+   */
+  const editButtonRef: Ref<HTMLButtonElement> = useRef(null);
+
+  /**
+   * Set the ref focus for the edit button
+   */
+  const setEditButtonFocus = (): void => {
+    setTimeout((): void => {
+      if (editButtonRef.current) {
+        editButtonRef.current.focus();
+      }
+    });
+  };
+
+  /**
+   * Keeps track of the information related to the edit room modal
+   */
+  const [
+    editRoomModalData,
+    setEditRoomModalData,
+  ] = useState<EditRoomModalData>({
+    room: null,
+    visible: false,
+  });
+
+  /**
+   * Takes the specified room and displays a modal to edit the room information
+   */
+  const openEditRoomModal = useCallback(
+    (room: RoomAdminResponse) => {
+      setEditRoomModalData({ room, visible: true });
+    },
+    [setEditRoomModalData]
+  );
+
+  /**
+   * Handles closing the edit room modal and setting the focus back to the
+   * button that opened the modal.
+   */
+  const closeEditRoomModal = useCallback(() => {
+    setEditRoomModalData({ room: null, visible: false });
+    setEditButtonFocus();
+  }, [setEditRoomModalData]);
 
   /**
    * Get all of the room information to populate the room admin table
@@ -75,6 +134,15 @@ const RoomAdmin: FunctionComponent = (): ReactElement => {
   useEffect((): void => {
     void loadRooms();
   }, [loadRooms]);
+
+  /**
+   * Keeps track of which edit room button was clicked to determine which
+   * button should regain focus when edit room modal is closed
+   */
+  const [
+    editedRoom,
+    setEditedRoom,
+  ] = useState<RoomAdminResponse>(null);
 
   return (
     <div className="room-admin-page">
@@ -122,7 +190,13 @@ const RoomAdmin: FunctionComponent = (): ReactElement => {
                           id={`edit-${room.id}`}
                           alt={`Edit room information for ${room.building.name} ${room.name}`}
                           variant={VARIANT.INFO}
-                          onClick={(): void => { }}
+                          onClick={(): void => {
+                            openEditRoomModal(room);
+                            setEditedRoom(room);
+                          }}
+                          forwardRef={
+                            editedRoom ? editButtonRef : null
+                          }
                         >
                           <FontAwesomeIcon icon={faEdit} />
                         </BorderlessButton>
@@ -147,6 +221,22 @@ const RoomAdmin: FunctionComponent = (): ReactElement => {
                   });
                 }}
               />
+              {editRoomModalData.room && (
+                <EditRoomModal
+                  isVisible={editRoomModalData.visible}
+                  currentRoom={editRoomModalData.room}
+                  onSuccess={async (): Promise<void> => {
+                  // wait for the rooms to load before allowing the dialog to close
+                    await loadRooms();
+                    // display a success message after successful update and loading of rooms
+                    dispatchMessage({
+                      message: new AppMessage('Room was updated.', MESSAGE_TYPE.SUCCESS),
+                      type: MESSAGE_ACTION.PUSH,
+                    });
+                  }}
+                  onClose={closeEditRoomModal}
+                />
+              )}
             </div>
           )}
       </>
