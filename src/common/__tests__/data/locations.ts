@@ -1,6 +1,7 @@
 import { CreateRoomRequest } from 'common/dto/room/CreateRoomRequest.dto';
 import RoomAdminResponse from 'common/dto/room/RoomAdminResponse.dto';
 import RoomMeetingResponse from 'common/dto/room/RoomMeetingResponse.dto';
+import UpdateRoom from 'common/dto/room/UpdateRoom.dto';
 import { DAY, TERM } from '../../constants';
 import RoomRequest from '../../dto/room/RoomRequest.dto';
 
@@ -152,4 +153,17 @@ export const sec555RoomResponse: RoomAdminResponse = {
       name: createSEC555Room.campus,
     },
   },
+};
+
+export const updateSEC555Room: UpdateRoom = {
+  id: secRoomResponse.id,
+  name: '555a',
+  capacity: 95,
+};
+
+export const updateSECRoomResponse: RoomAdminResponse = {
+  id: sec555RoomResponse.id,
+  name: updateSEC555Room.name,
+  capacity: updateSEC555Room.capacity,
+  building: sec555RoomResponse.building,
 };
