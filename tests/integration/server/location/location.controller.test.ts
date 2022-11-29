@@ -15,6 +15,7 @@ import {
   adminUser,
   createSEC555Room,
   regularUser,
+  updateSEC555Room,
 } from 'testData';
 import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 import {
@@ -34,6 +35,7 @@ import flatMap from 'lodash.flatmap';
 import { Repository } from 'typeorm';
 import RoomMeetingResponse from 'common/dto/room/RoomMeetingResponse.dto';
 import RoomAdminResponse from 'common/dto/room/RoomAdminResponse.dto';
+import UpdateRoom from 'common/dto/room/UpdateRoom.dto';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import { rooms } from '../../../mocks/database/population/data/rooms';
@@ -517,6 +519,70 @@ describe('Location API', function () {
         });
         it('should return a forbidden error', function () {
           strictEqual(response.statusCode, HttpStatus.FORBIDDEN);
+        });
+      });
+    });
+  });
+  describe('PUT /rooms/:roomId', function () {
+    let response: Response;
+    let roomToUpdate: Room;
+    let roomUpdateInfo: UpdateRoom;
+    beforeEach(async function () {
+      roomToUpdate = await locationRepo.findOne();
+      roomUpdateInfo = {
+        id: roomToUpdate.id,
+        name: updateSEC555Room.name,
+        capacity: updateSEC555Room.capacity,
+      };
+    });
+    context('User is not authenticated', function () {
+      beforeEach(function () {
+        authStub.resolves(null);
+      });
+      it('is inaccessible', async function () {
+        authStub.rejects(new ForbiddenException());
+
+        response = await request(api)
+          .put(`/api/rooms/${roomToUpdate.id}`)
+          .send(roomUpdateInfo);
+
+        strictEqual(response.ok, false);
+        strictEqual(response.status, HttpStatus.FORBIDDEN);
+      });
+    });
+    context('User is authenticated', function () {
+      describe('User is a member of the admin group', function () {
+        beforeEach(async function () {
+          authStub.resolves(adminUser);
+
+          response = await request(api)
+            .put(`/api/rooms/${roomToUpdate.id}`)
+            .send(roomUpdateInfo);
+        });
+        it('should return OK', function () {
+          strictEqual(response.ok, true);
+        });
+        it('should save the updated room in the database', async function () {
+          const updatedRoom = await locationRepo.find({
+            where: {
+              id: roomUpdateInfo.id,
+              name: roomUpdateInfo.name,
+              capacity: roomUpdateInfo.capacity,
+            },
+          });
+          strictEqual(updatedRoom.length, 1);
+        });
+      });
+      describe('User is a not member of the admin group', function () {
+        it('is inaccessible', async function () {
+          authStub.resolves(regularUser);
+
+          response = await request(api)
+            .put(`/api/rooms/${roomToUpdate.id}`)
+            .send(roomUpdateInfo);
+
+          strictEqual(response.ok, false);
+          strictEqual(response.status, HttpStatus.FORBIDDEN);
         });
       });
     });
