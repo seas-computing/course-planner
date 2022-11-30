@@ -290,7 +290,9 @@ export class LocationService {
     : Promise<RoomAdminResponse> {
     let existingRoom: Room;
     try {
-      existingRoom = await this.roomRepository.findOneOrFail(roomId);
+      existingRoom = await this.roomRepository.findOneOrFail(roomId, {
+        relations: ['building'],
+      });
     } catch (e) {
       if (e instanceof EntityNotFoundError) {
         throw new NotFoundException(`Unable to find room ${roomId}`);
@@ -299,8 +301,8 @@ export class LocationService {
       }
     }
 
-    const validRoom = {
-      ...existingRoom,
+    const validRoom: UpdateRoom = {
+      id: existingRoom.id,
       name: roomInfo.name,
       capacity: roomInfo.capacity,
     };
@@ -311,7 +313,7 @@ export class LocationService {
       id: response.id,
       name: response.name,
       capacity: response.capacity,
-      building: response.building,
+      building: existingRoom.building,
     };
 
     return result;
