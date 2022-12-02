@@ -155,12 +155,18 @@ export const sec555RoomResponse: RoomAdminResponse = {
   },
 };
 
+/**
+ * A room request object, for use in testing updating a room
+ */
 export const updateSEC555Room: UpdateRoom = {
   id: secRoomResponse.id,
   name: '555a',
   capacity: 95,
 };
 
+/**
+ * A room response object, for use in testing the outcome of updating a room
+ */
 export const updateSECRoomResponse: RoomAdminResponse = {
   id: sec555RoomResponse.id,
   name: updateSEC555Room.name,

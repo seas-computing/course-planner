@@ -32,6 +32,10 @@ import React, {
 import CreateRoomModal from './CreateRoomModal';
 import EditRoomModal from './EditRoomModal';
 
+/**
+ * Keeps track of the information needed to display the edit room modal for a
+ * specific room.
+ */
 interface EditRoomModalData {
   room?: RoomAdminResponse;
   visible: boolean;

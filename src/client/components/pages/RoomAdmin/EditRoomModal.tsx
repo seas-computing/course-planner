@@ -45,6 +45,9 @@ interface EditRoomModalProps {
   onClose: () => void;
 }
 
+/**
+ * Represents the potential form errors within the edit room modal.
+ */
 interface FormErrors {
   roomName: string;
   capacity: string;
