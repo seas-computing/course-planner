@@ -199,7 +199,7 @@ FunctionComponent<EditRoomModalProps> = ({
 
   return (
     <Modal
-      ariaLabelledBy="editRoom"
+      ariaLabelledBy="edit-room-modal-header"
       closeHandler={onModalClose}
       isVisible={isVisible}
     >
@@ -207,7 +207,9 @@ FunctionComponent<EditRoomModalProps> = ({
         forwardRef={modalHeaderRef}
         tabIndex={0}
       >
-        {`Edit room ${currentRoom.building.name} ${currentRoom.name}`}
+        <span id="edit-room-modal-header">
+          {`Edit room ${currentRoom.building.name} ${currentRoom.name}`}
+        </span>
       </ModalHeader>
       <ModalBody>
         <NoteText>Note: * denotes a required field</NoteText>
