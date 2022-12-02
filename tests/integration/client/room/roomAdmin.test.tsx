@@ -223,7 +223,7 @@ describe('Room Admin Modal Behavior', function () {
               );
               const submitButton = getByText('Submit');
               fireEvent.click(submitButton);
-              await findByText('Capacity is required to submit this form, and it must be a positive number.', { exact: false });
+              await findByText('Capacity is required to submit this form, and it must be a number.', { exact: false });
             });
           });
         });

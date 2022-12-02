@@ -141,7 +141,7 @@ FunctionComponent<EditRoomModalProps> = ({
     if (!/^\d+$/.test(form.capacity)) {
       updatedFormErrors = {
         ...updatedFormErrors,
-        capacity: 'Capacity is required to submit this form, and it must be a positive number.',
+        capacity: 'Capacity is required to submit this form, and it must be a number.',
       };
       isValid = false;
     }

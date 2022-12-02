@@ -415,7 +415,7 @@ describe('End-to-end Room Admin updating', function () {
               { target: { value: '' } });
             const submitButton = renderResult.getByText('Submit');
             fireEvent.click(submitButton);
-            const errorMessage = 'Capacity is required to submit this form, and it must be a positive number';
+            const errorMessage = 'Capacity is required to submit this form, and it must be a number';
             return waitForElement(
               () => renderResult.getByText(errorMessage, { exact: false })
             );
@@ -427,7 +427,7 @@ describe('End-to-end Room Admin updating', function () {
               { target: { value: '100z' } });
             const submitButton = renderResult.getByText('Submit');
             fireEvent.click(submitButton);
-            const errorMessage = 'Capacity is required to submit this form, and it must be a positive number';
+            const errorMessage = 'Capacity is required to submit this form, and it must be a number';
             return waitForElement(
               () => renderResult.getByText(errorMessage, { exact: false })
             );
