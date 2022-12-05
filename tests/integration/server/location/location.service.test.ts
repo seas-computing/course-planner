@@ -12,7 +12,7 @@ import RoomAdminResponse from 'common/dto/room/RoomAdminResponse.dto';
 import { CreateRoomRequest } from 'common/dto/room/CreateRoomRequest.dto';
 import UpdateRoom from 'common/dto/room/UpdateRoom.dto';
 import { Room } from 'server/location/room.entity';
-import { Repository } from 'typeorm';
+import { EntityNotFoundError, Repository } from 'typeorm';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import { campuses, rooms } from '../../../mocks/database/population/data';
@@ -177,8 +177,8 @@ describe('Location Service', function () {
           response = error;
         }
       });
-      it('should throw a Not Found exception', function () {
-        strictEqual(response.status, 404);
+      it('should return an EntityNotFound error', function () {
+        strictEqual(response instanceof EntityNotFoundError, true);
       });
     });
     context('when updating an existing room', function () {
