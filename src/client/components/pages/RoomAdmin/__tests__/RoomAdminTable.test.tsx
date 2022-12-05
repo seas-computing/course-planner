@@ -1,8 +1,11 @@
 import React from 'react';
 import {
+  deepStrictEqual,
   strictEqual,
 } from 'assert';
 import {
+  fireEvent,
+  RenderResult,
   wait,
   within,
 } from '@testing-library/react';
@@ -21,6 +24,187 @@ import {
 } from 'testData';
 import RoomAdmin from '../RoomAdmin';
 
+describe('Campus Dropdown', function () {
+  let getStub: SinonStub;
+  let renderResult: RenderResult;
+  beforeEach(function () {
+    getStub = stub(LocationAPI, 'getAdminRooms');
+    getStub.resolves(adminRoomsResponse);
+    renderResult = render(
+      <RoomAdmin />
+    );
+  });
+  it('defaults to all', function () {
+    const campusDropDown = renderResult.getByLabelText('The table will be filtered by selected campus name', { exact: true }) as HTMLSelectElement;
+    strictEqual(campusDropDown.value, 'All');
+  });
+  context('When the campus dropdown menu is selected', function () {
+    it('lists all available campus options', function () {
+      const campusDropDown = renderResult.getByLabelText('The table will be filtered by selected campus name');
+      const dropdownOptions = within(campusDropDown)
+        .getAllByRole('option') as HTMLOptionElement[];
+      const campusDropdownLabels = dropdownOptions
+        .map(({ textContent }) => textContent);
+      deepStrictEqual(
+        campusDropdownLabels,
+        ['All', 'Allston', 'Cambridge']
+      );
+    });
+  });
+  context('When campus dropdown value change', function () {
+    it('filteres table data when allston selected', async function () {
+      await wait(() => renderResult.getAllByRole('row').length > 1);
+      const [campusDropDown] = renderResult.getAllByLabelText('The table will be filtered by selected campus name');
+      fireEvent.change(campusDropDown, { target: { value: 'Allston' } });
+      await wait(() => renderResult.getAllByRole('row').length > 1);
+      const rows = renderResult.getAllByRole('row');
+      const bodyRow = rows.filter((row) => (
+        within(row).queryAllByRole('columnheader').length === 0
+      ));
+      bodyRow.forEach((row) => {
+        strictEqual(
+          within(row).queryByText('Allston') !== null,
+          true,
+          'Allston is not in the table as expected'
+        );
+      });
+    });
+    it('filters table data when cambridge is selected', async function () {
+      await wait(() => renderResult.getAllByRole('row').length > 1);
+      const [campusDropDown] = renderResult.getAllByLabelText('The table will be filtered by selected campus name');
+      fireEvent.change(campusDropDown, { target: { value: 'Cambridge' } });
+      await wait(() => renderResult.getAllByRole('row').length > 1);
+      const rows = renderResult.getAllByRole('row');
+      const bodyRow = rows.filter((row) => (
+        within(row).queryAllByRole('columnheader').length === 0
+      ));
+      bodyRow.forEach((row) => {
+        strictEqual(
+          within(row).queryByText('Cambridge') !== null,
+          true,
+          'Cambridge is not in the table as expected'
+        );
+      });
+    });
+  });
+});
+describe('Building Dropdown', function () {
+  let getStub: SinonStub;
+  let renderResult: RenderResult;
+  beforeEach(function () {
+    getStub = stub(LocationAPI, 'getAdminRooms');
+    getStub.resolves(adminRoomsResponse);
+    renderResult = render(
+      <RoomAdmin />
+    );
+  });
+  it('defaults to all', async function () {
+    await wait(() => renderResult.getAllByRole('row').length > 1);
+    const buildingDropDown = renderResult.getByLabelText('The table will be filtered by selected building name', { exact: true }) as HTMLSelectElement;
+    strictEqual(buildingDropDown.value, 'All');
+  });
+  it('lists all available building options', async function () {
+    await wait(() => renderResult.getAllByRole('row').length > 1);
+    const buildingDropDown = renderResult.getByLabelText('The table will be filtered by selected building name');
+    const dropdownOptions = within(buildingDropDown)
+      .getAllByRole('option') as HTMLOptionElement[];
+    const buildingDropdownLabels = dropdownOptions
+      .map(({ textContent }) => textContent);
+    const buildingList = adminRoomsResponse.map((el) => el.building.name);
+    // slicing 'All' value as it's manually added default value not generated from adminRoomsResponse
+    strictEqual(
+      buildingDropdownLabels.slice(1).length === buildingList.length, true,
+      'building dropdown menu is not listing all available buildings'
+    );
+  });
+  context('when building dropdown value change', function () {
+    it('filters table data for selected value', async function () {
+      await wait(() => renderResult.getAllByRole('row').length > 1);
+      const [buildingDropDown] = renderResult.getAllByLabelText('The table will be filtered by selected building name');
+      const dropdownOptions = within(buildingDropDown)
+        .getAllByRole('option') as HTMLOptionElement[];
+      fireEvent.change(buildingDropDown, { target: { value: 'Bauer Laboratory' } });
+      await wait(() => renderResult.getAllByRole('row').length > 1);
+      const rows = renderResult.getAllByRole('row');
+      const bodyRow = rows.filter((row) => (
+        within(row).queryAllByRole('columnheader').length === 0
+      ));
+      bodyRow.forEach((row) => {
+        strictEqual(
+          within(row).queryByText('Bauer Laboratory') !== null,
+          true,
+          'Bauer Laboratory is not in the table as expected'
+        );
+      });
+    });
+  });
+});
+describe('Room input filter', function () {
+  let getStub: SinonStub;
+  let renderResult: RenderResult;
+  beforeEach(function () {
+    getStub = stub(LocationAPI, 'getAdminRooms');
+    getStub.resolves(adminRoomsResponse);
+    renderResult = render(
+      <RoomAdmin />
+    );
+  });
+  it('defaults to null', async function () {
+    await wait(() => renderResult.getAllByRole('row').length > 1);
+    const roomFilterInput = renderResult.getByLabelText('The table will be filtered by selected room name', { exact: true }) as HTMLSelectElement;
+    strictEqual(roomFilterInput.value, '');
+  });
+  it('filters table data when room name is entered', async function () {
+    await wait(() => renderResult.getAllByRole('row').length > 1);
+    const [roomInput] = renderResult.getAllByLabelText('The table will be filtered by selected room name');
+    fireEvent.change(roomInput, { target: { value: '101A' } });
+    await wait(() => renderResult.getAllByRole('row').length > 1);
+    const rows = renderResult.getAllByRole('row');
+    const bodyRow = rows.filter((row) => (
+      within(row).queryAllByRole('columnheader').length === 0
+    ));
+    bodyRow.forEach((row) => {
+      strictEqual(
+        within(row).queryByText('101A') !== null,
+        true,
+        '101A is not in the table as expected'
+      );
+    });
+  });
+});
+describe('capacity input filter', function () {
+  let getStub: SinonStub;
+  let renderResult: RenderResult;
+  beforeEach(function () {
+    getStub = stub(LocationAPI, 'getAdminRooms');
+    getStub.resolves(adminRoomsResponse);
+    renderResult = render(
+      <RoomAdmin />
+    );
+  });
+  it('defaults to null', async function () {
+    await wait(() => renderResult.getAllByRole('row').length > 1);
+    const capacityFilterInput = renderResult.getByLabelText('The table will be filtered by entered capacity', { exact: true }) as HTMLSelectElement;
+    strictEqual(capacityFilterInput.value, '');
+  });
+  it('filters table data by entered capacity entered', async function () {
+    await wait(() => renderResult.getAllByRole('row').length > 1);
+    const [capacityFilterInput] = renderResult.getAllByLabelText('The table will be filtered by selected room name');
+    fireEvent.change(capacityFilterInput, { target: { value: '20' } });
+    await wait(() => renderResult.getAllByRole('row').length > 1);
+    const rows = renderResult.getAllByRole('row');
+    const bodyRow = rows.filter((row) => (
+      within(row).queryAllByRole('columnheader').length === 0
+    ));
+    bodyRow.forEach((row) => {
+      strictEqual(
+        within(row).queryByText('20') !== null,
+        true,
+        'room capacity filter is not populating data properly'
+      );
+    });
+  });
+});
 describe('Room Admin Table', function () {
   let getStub: SinonStub;
   describe('data fetching', function () {

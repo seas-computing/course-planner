@@ -255,66 +255,76 @@ const RoomAdmin: FunctionComponent = (): ReactElement => {
                     <TableHeadingCell scope="col">Capacity</TableHeadingCell>
                     <TableHeadingCell scope="col">Edit</TableHeadingCell>
                   </TableRow>
+                  <TableRow isStriped>
+                    <TableHeadingCell scope="col">
+                      <Dropdown
+                        options={
+                          [{ value: 'All', label: 'All' }, ...campusDropDown]
+                        }
+                        name="filterByCampusName"
+                        id="filterByCampusName"
+                        label="The table will be filtered by selected campus name"
+                        isLabelVisible={false}
+                        hideError
+                        onChange={
+                          (event:React.ChangeEvent<HTMLInputElement>) => {
+                            setCampusFilter(event.currentTarget.value);
+                          }
+                        }
+                      />
+                    </TableHeadingCell>
+                    <TableHeadingCell scope="col">
+                      <Dropdown
+                        options={
+                          [{ value: 'All', label: 'All' }, ...buildingDropDown]
+                        }
+                        name="filterByBuildingName"
+                        id="filterByBuildingName"
+                        label="The table will be filtered by selected building name"
+                        isLabelVisible={false}
+                        hideError
+                        onChange={
+                          (event:React.ChangeEvent<HTMLInputElement>) => {
+                            setBuildingFilter(event.currentTarget.value);
+                          }
+                        }
+                      />
+                    </TableHeadingCell>
+                    <TableHeadingCell scope="col">
+                      <TextInput
+                        id="filterByRoomName"
+                        name="filterByRoomName"
+                        placeholder="Filter by Room Name"
+                        value={roomFilter}
+                        label="The table will be filtered by selected room name"
+                        isLabelVisible={false}
+                        hideError
+                        onChange={
+                          (event:React.ChangeEvent<HTMLInputElement>) => {
+                            setRoomFilter(event.currentTarget.value);
+                          }
+                        }
+                      />
+                    </TableHeadingCell>
+                    <TableHeadingCell scope="col">
+                      <TextInput
+                        id="filterByCapacityName"
+                        name="filterByCapacityName"
+                        placeholder="Enter Capacity"
+                        value={capacityFilter}
+                        label=""
+                        isLabelVisible={false}
+                        hideError
+                        onChange={
+                          (event:React.ChangeEvent<HTMLInputElement>) => {
+                            setCapacity(event.currentTarget.value);
+                          }
+                        }
+                      />
+                    </TableHeadingCell>
+                    <TableHeadingCell scope="col"> </TableHeadingCell>
+                  </TableRow>
                 </TableHead>
-                <TableHeadingCell scope="col">
-                  <Dropdown
-                    options={
-                      [{ value: 'All', label: 'All' }, ...campusDropDown]
-                    }
-                    name="filterByCampusName"
-                    id="filterByCampusName"
-                    label="The table will be filtered by selected campus name"
-                    isLabelVisible={false}
-                    hideError
-                    onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
-                      setCampusFilter(event.currentTarget.value);
-                    }}
-                  />
-                </TableHeadingCell>
-                <TableHeadingCell scope="col">
-                  <Dropdown
-                    options={
-                      [{ value: 'All', label: 'All' }, ...buildingDropDown]
-                    }
-                    name="filterByBuildingName"
-                    id="filterByBuildingName"
-                    label="The table will be filtered by selected building name"
-                    isLabelVisible={false}
-                    hideError
-                    onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
-                      setBuildingFilter(event.currentTarget.value);
-                    }}
-                  />
-                </TableHeadingCell>
-                <TableHeadingCell scope="col">
-                  <TextInput
-                    id="filterByRoomName"
-                    name="filterByRoomName"
-                    placeholder="Filter by Room Name"
-                    value={roomFilter}
-                    label="The table will be filtered by selected room name"
-                    isLabelVisible={false}
-                    hideError
-                    onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
-                      setRoomFilter(event.currentTarget.value);
-                    }}
-                  />
-                </TableHeadingCell>
-                <TableHeadingCell scope="col">
-                  <TextInput
-                    id="filterByCapacityName"
-                    name="filterByCapacityName"
-                    placeholder="Enter Capacity"
-                    value={capacityFilter}
-                    label=""
-                    isLabelVisible={false}
-                    hideError
-                    onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
-                      setCapacity(event.currentTarget.value);
-                    }}
-                  />
-                </TableHeadingCell>
-                <TableHeadingCell scope="col"> </TableHeadingCell>
                 <TableBody isScrollable>
                   {filteredRoomList()
                     .map((room, i): ReactElement<TableRowProps> => (
