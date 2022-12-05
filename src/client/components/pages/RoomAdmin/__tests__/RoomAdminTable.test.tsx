@@ -121,8 +121,6 @@ describe('Building Dropdown', function () {
     it('filters table data for selected value', async function () {
       await wait(() => renderResult.getAllByRole('row').length > 1);
       const [buildingDropDown] = renderResult.getAllByLabelText('The table will be filtered by selected building name');
-      const dropdownOptions = within(buildingDropDown)
-        .getAllByRole('option') as HTMLOptionElement[];
       fireEvent.change(buildingDropDown, { target: { value: 'Bauer Laboratory' } });
       await wait(() => renderResult.getAllByRole('row').length > 1);
       const rows = renderResult.getAllByRole('row');
