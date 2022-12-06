@@ -292,18 +292,17 @@ export class LocationService {
       relations: ['building'],
     });
 
-    // Check that the entered room is not a duplicate of an existing room
+    // Check that the entered room is not a duplicate of an existing room.
+    // If the user submits the edit modal without updating the room name, make
+    // sure that they don't get an error for creating a duplicate room.
     const dbRooms = await this.roomListingViewRepository.createQueryBuilder()
       .where('LOWER(name) = LOWER(:name)', {
         name: `${existingRoom.building.name} ${roomInfo.name}`,
       })
+      .andWhere('id <> :roomId', { roomId })
       .getMany();
 
-    // If the user submits the edit modal without updating the room name, make
-    // sure that they don't get an error for creating a duplicate room.
-    const otherRooms = dbRooms.filter((room) => room.id !== roomId);
-
-    if (otherRooms.length > 0) {
+    if (dbRooms.length > 0) {
       throw new BadRequestException(`The room ${roomInfo.name} already exists in ${existingRoom.building.name}.`);
     }
 
