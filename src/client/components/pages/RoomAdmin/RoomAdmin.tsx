@@ -225,22 +225,20 @@ const RoomAdmin: FunctionComponent = (): ReactElement => {
                   });
                 }}
               />
-              {editRoomModalData.room && (
-                <EditRoomModal
-                  isVisible={editRoomModalData.visible}
-                  currentRoom={editRoomModalData.room}
-                  onSuccess={async (): Promise<void> => {
+              <EditRoomModal
+                isVisible={editRoomModalData.visible}
+                currentRoom={editRoomModalData.room}
+                onSuccess={async (): Promise<void> => {
                   // wait for the rooms to load before allowing the dialog to close
-                    await loadRooms();
-                    // display a success message after successful update and loading of rooms
-                    dispatchMessage({
-                      message: new AppMessage('Room was updated.', MESSAGE_TYPE.SUCCESS),
-                      type: MESSAGE_ACTION.PUSH,
-                    });
-                  }}
-                  onClose={closeEditRoomModal}
-                />
-              )}
+                  await loadRooms();
+                  // display a success message after successful update and loading of rooms
+                  dispatchMessage({
+                    message: new AppMessage('Room was updated.', MESSAGE_TYPE.SUCCESS),
+                    type: MESSAGE_ACTION.PUSH,
+                  });
+                }}
+                onClose={closeEditRoomModal}
+              />
             </div>
           )}
       </>

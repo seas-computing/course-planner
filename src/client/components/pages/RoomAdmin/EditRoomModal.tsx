@@ -167,8 +167,8 @@ FunctionComponent<EditRoomModalProps> = ({
   useEffect(() => {
     if (isVisible) {
       setFormFields({
-        roomName: currentRoom.name,
-        capacity: currentRoom.capacity.toString(),
+        roomName: currentRoom?.name,
+        capacity: currentRoom?.capacity.toString(),
       });
       setFormErrors({
         roomName: '',
@@ -208,7 +208,7 @@ FunctionComponent<EditRoomModalProps> = ({
         tabIndex={0}
       >
         <span id="edit-room-modal-header">
-          {`Edit room ${currentRoom.building.name} ${currentRoom.name}`}
+          {`Edit room ${currentRoom?.building?.name} ${currentRoom?.name}`}
         </span>
       </ModalHeader>
       <ModalBody>
@@ -222,7 +222,7 @@ FunctionComponent<EditRoomModalProps> = ({
             name="campus"
             label="Campus"
             labelPosition={POSITION.TOP}
-            value={currentRoom.building.campus.name}
+            value={currentRoom?.building?.campus?.name}
             onChange={() => {}}
             disabled
             isRequired
@@ -232,7 +232,7 @@ FunctionComponent<EditRoomModalProps> = ({
             name="building"
             label="Building"
             labelPosition={POSITION.TOP}
-            value={currentRoom.building.name}
+            value={currentRoom?.building?.name}
             onChange={() => {}}
             disabled
             isRequired
@@ -270,23 +270,25 @@ FunctionComponent<EditRoomModalProps> = ({
         <Button
           id="editRoomSubmit"
           onClick={async (): Promise<void> => {
-            try {
-              await submitRoomForm();
-              onSuccess();
-            } catch (error) {
-              if ((error as AxiosError).response) {
-                const serverError = error as AxiosError;
-                const { response } = serverError;
-                if (response.data
-                  && (response.data as ServerErrorInfo).message) {
-                  setRoomModalErrorMessage(
-                    String((response.data as ServerErrorInfo).message)
-                  );
+            if (currentRoom) {
+              try {
+                await submitRoomForm();
+                onSuccess();
+              } catch (error) {
+                if ((error as AxiosError).response) {
+                  const serverError = error as AxiosError;
+                  const { response } = serverError;
+                  if (response.data
+                    && (response.data as ServerErrorInfo).message) {
+                    setRoomModalErrorMessage(
+                      String((response.data as ServerErrorInfo).message)
+                    );
+                  }
+                } else {
+                  setRoomModalErrorMessage('An error occurred. Please contact SEAS Computing if the problem persists.');
                 }
-              } else {
-                setRoomModalErrorMessage('An error occurred. Please contact SEAS Computing if the problem persists.');
+                return;
               }
-              return;
             }
             setIsChanged(false);
             onClose();
