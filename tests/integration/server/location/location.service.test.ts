@@ -12,7 +12,8 @@ import RoomAdminResponse from 'common/dto/room/RoomAdminResponse.dto';
 import { CreateRoomRequest } from 'common/dto/room/CreateRoomRequest.dto';
 import UpdateRoom from 'common/dto/room/UpdateRoom.dto';
 import { Room } from 'server/location/room.entity';
-import { EntityNotFoundError, Repository } from 'typeorm';
+import { EntityNotFoundError, Not, Repository } from 'typeorm';
+import { HTTP_STATUS } from 'client/api';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import { campuses, rooms } from '../../../mocks/database/population/data';
@@ -206,6 +207,40 @@ describe('Location Service', function () {
           capacity: updateRoomRequest.capacity,
         };
         deepStrictEqual(result, expectedResult);
+      });
+      context('when trying to set the room name to an existing building and room combination', function () {
+        it('should throw a Bad Request Exception', async function () {
+          const testBuilding = 'Maxwell Dworkin';
+          testRoom = await roomRepository.findOne({
+            where: {
+              building: {
+                name: testBuilding,
+              },
+            },
+            relations: ['building'],
+          });
+          const otherRoom = await roomRepository.findOne({
+            where: {
+              name: Not(testRoom.name),
+              building: {
+                name: testBuilding,
+              },
+            },
+            relations: ['building'],
+          });
+          updateRoomRequest = {
+            id: testRoom.id,
+            name: otherRoom.name,
+            capacity: 75,
+          };
+          try {
+            result = await locationService
+              .updateRoom(testRoom.id, updateRoomRequest);
+          } catch (error) {
+            response = error;
+          }
+          strictEqual(response.status, HTTP_STATUS.BAD_REQUEST);
+        });
       });
     });
   });
