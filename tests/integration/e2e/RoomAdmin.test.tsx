@@ -10,6 +10,7 @@ import {
   render,
   within,
   waitForElement,
+  wait,
 } from '@testing-library/react';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import request from 'client/api/request';
@@ -435,14 +436,16 @@ describe('End-to-end Room Admin updating', function () {
         });
       });
       context('when the field values provided are valid', function () {
+        const updatedRoomNumber = '513a';
+        const updatedCapacity = 100;
         beforeEach(function () {
           const modal = renderResult.getByRole('dialog');
           roomNameInput = within(modal).getByLabelText('Room Number', { exact: false }) as HTMLInputElement;
           capacityInput = within(modal).getByLabelText('Capacity', { exact: false }) as HTMLInputElement;
           fireEvent.change(roomNameInput,
-            { target: { value: '513' } });
-          fireEvent.change(roomNameInput,
-            { target: { value: 100 } });
+            { target: { value: updatedRoomNumber } });
+          fireEvent.change(capacityInput,
+            { target: { value: updatedCapacity } });
         });
         context('when the user tries to exit the modal', function () {
           it('should show the unsaved changes warning', async function () {
@@ -468,6 +471,26 @@ describe('End-to-end Room Admin updating', function () {
             await waitForElementToBeRemoved(() => renderResult.queryByText('Submit'));
             await waitForElementToBeRemoved(() => renderResult.queryByText('Fetching Room Data'));
             return renderResult.findByText('Room was updated', { exact: false });
+          });
+          it('displays the updated room data', async function () {
+            const submitButton = renderResult.getByText('Submit');
+            fireEvent.click(submitButton);
+            await waitForElementToBeRemoved(() => renderResult.queryByText('Submit'));
+            await waitForElementToBeRemoved(() => renderResult.queryByText('Fetching Room Data'));
+            await wait(() => renderResult.getAllByRole('row').length > 0);
+            const tableBodyRows = renderResult.queryAllByRole('row')
+              .filter((row) => (
+                within(row).queryAllByRole('columnheader').length === 0
+              ));
+            let numMatchingRows = 0;
+            tableBodyRows.forEach((row) => {
+              console.log('==', row.textContent);
+              if (within(row).queryByText(updatedRoomNumber) !== null
+              && within(row).queryByText(updatedCapacity.toString()) !== null) {
+                numMatchingRows += 1;
+              }
+            });
+            notStrictEqual(numMatchingRows, 0);
           });
         });
       });
