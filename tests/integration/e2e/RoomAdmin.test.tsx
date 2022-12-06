@@ -434,6 +434,22 @@ describe('End-to-end Room Admin updating', function () {
             );
           });
         });
+        context('when the room already exists', function () {
+          it('displays a validation error', function () {
+            const existingRoomIndex = rooms
+              .findIndex((room) => room.building === testRoom.building
+              && room.name !== testRoom.name);
+            const existingRoom = rooms[existingRoomIndex];
+            fireEvent.change(roomNameInput,
+              { target: { value: existingRoom.name } });
+            const submitButton = renderResult.getByText('Submit');
+            fireEvent.click(submitButton);
+            const errorMessage = `The room ${existingRoom.name} already exists in ${existingRoom.building}`;
+            return waitForElement(
+              () => renderResult.getByText(errorMessage, { exact: false })
+            );
+          });
+        });
       });
       context('when the field values provided are valid', function () {
         const updatedRoomNumber = '513a';
@@ -484,7 +500,6 @@ describe('End-to-end Room Admin updating', function () {
               ));
             let numMatchingRows = 0;
             tableBodyRows.forEach((row) => {
-              console.log('==', row.textContent);
               if (within(row).queryByText(updatedRoomNumber) !== null
               && within(row).queryByText(updatedCapacity.toString()) !== null) {
                 numMatchingRows += 1;
