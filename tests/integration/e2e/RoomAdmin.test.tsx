@@ -10,6 +10,7 @@ import {
   render,
   within,
   waitForElement,
+  wait,
 } from '@testing-library/react';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import request from 'client/api/request';
@@ -364,6 +365,147 @@ describe('End-to-end Room Admin updating', function () {
             fireEvent.click(submitButton);
             const errorMessage = renderResult.queryByText('This building already exists in the selected campus', { exact: false });
             notStrictEqual(errorMessage, null);
+          });
+        });
+      });
+    });
+  });
+  describe('Editing a room', function () {
+    let renderResult: RenderResult;
+    let roomNameInput;
+    let capacityInput;
+    beforeEach(async function () {
+      renderResult = render(
+        <MemoryRouter initialEntries={['/room-admin']}>
+          <App />
+        </MemoryRouter>
+      );
+      await renderResult.findAllByText(rooms[0].building, { exact: false });
+    });
+    context('when the modal opens', function () {
+      const testRoom = rooms[0];
+      beforeEach(async function () {
+        const editButton = renderResult.getByLabelText(`Edit room information for ${testRoom.building} ${testRoom.name}`);
+        fireEvent.click(editButton);
+        await renderResult.findByText('Note: * denotes a required field', { exact: false });
+      });
+      it('shifts the focus to the modal header', function () {
+        strictEqual(document.activeElement.textContent, `Edit room ${testRoom.building} ${testRoom.name}`);
+      });
+      context('when the field values provided are invalid', function () {
+        beforeEach(function () {
+          const modal = renderResult.getByRole('dialog');
+          roomNameInput = within(modal).getByLabelText('Room Number', { exact: false }) as HTMLInputElement;
+          capacityInput = within(modal).getByLabelText('Capacity', { exact: false }) as HTMLInputElement;
+        });
+        context('when Room Name is not provided', function () {
+          it('displays a validation error', async function () {
+            fireEvent.change(roomNameInput,
+              { target: { value: '' } });
+            const submitButton = renderResult.getByText('Submit');
+            fireEvent.click(submitButton);
+            const errorMessage = 'Room number is required to submit this form';
+            return waitForElement(
+              () => renderResult.getByText(errorMessage, { exact: false })
+            );
+          });
+        });
+        context('when Capacity is not provided', function () {
+          it('displays a validation error', async function () {
+            fireEvent.change(capacityInput,
+              { target: { value: '' } });
+            const submitButton = renderResult.getByText('Submit');
+            fireEvent.click(submitButton);
+            const errorMessage = 'Capacity is required to submit this form, and it must be a number';
+            return waitForElement(
+              () => renderResult.getByText(errorMessage, { exact: false })
+            );
+          });
+        });
+        context('when Capacity is invalid', function () {
+          it('displays a validation error', async function () {
+            fireEvent.change(capacityInput,
+              { target: { value: '100z' } });
+            const submitButton = renderResult.getByText('Submit');
+            fireEvent.click(submitButton);
+            const errorMessage = 'Capacity is required to submit this form, and it must be a number';
+            return waitForElement(
+              () => renderResult.getByText(errorMessage, { exact: false })
+            );
+          });
+        });
+        context('when the room already exists', function () {
+          it('displays a validation error', function () {
+            const existingRoomIndex = rooms
+              .findIndex((room) => room.building === testRoom.building
+              && room.name !== testRoom.name);
+            const existingRoom = rooms[existingRoomIndex];
+            fireEvent.change(roomNameInput,
+              { target: { value: existingRoom.name } });
+            const submitButton = renderResult.getByText('Submit');
+            fireEvent.click(submitButton);
+            const errorMessage = `The room ${existingRoom.name} already exists in ${existingRoom.building}`;
+            return waitForElement(
+              () => renderResult.getByText(errorMessage, { exact: false })
+            );
+          });
+        });
+      });
+      context('when the field values provided are valid', function () {
+        const updatedRoomNumber = '513a';
+        const updatedCapacity = 100;
+        beforeEach(function () {
+          const modal = renderResult.getByRole('dialog');
+          roomNameInput = within(modal).getByLabelText('Room Number', { exact: false }) as HTMLInputElement;
+          capacityInput = within(modal).getByLabelText('Capacity', { exact: false }) as HTMLInputElement;
+          fireEvent.change(roomNameInput,
+            { target: { value: updatedRoomNumber } });
+          fireEvent.change(capacityInput,
+            { target: { value: updatedCapacity } });
+        });
+        context('when the user tries to exit the modal', function () {
+          it('should show the unsaved changes warning', async function () {
+            const windowConfirmStub = stub(window, 'confirm');
+            windowConfirmStub.returns(true);
+            // Attempt to close the modal without saving
+            const cancelButton = await renderResult.findByText('Cancel');
+            fireEvent.click(cancelButton);
+            strictEqual(windowConfirmStub.callCount, 1);
+          });
+        });
+        context('when the form is submitted', function () {
+          it('should close the modal without an unsaved changes warning', async function () {
+            const submitButton = renderResult.getByText('Submit');
+            fireEvent.click(submitButton);
+            await waitForElementToBeRemoved(() => renderResult.queryByText('Submit'));
+            const modal = renderResult.queryByRole('dialog');
+            strictEqual(modal, null);
+          });
+          it('should show a success message', async function () {
+            const submitButton = renderResult.getByText('Submit');
+            fireEvent.click(submitButton);
+            await waitForElementToBeRemoved(() => renderResult.queryByText('Submit'));
+            await waitForElementToBeRemoved(() => renderResult.queryByText('Fetching Room Data'));
+            return renderResult.findByText('Room was updated', { exact: false });
+          });
+          it('displays the updated room data', async function () {
+            const submitButton = renderResult.getByText('Submit');
+            fireEvent.click(submitButton);
+            await waitForElementToBeRemoved(() => renderResult.queryByText('Submit'));
+            await waitForElementToBeRemoved(() => renderResult.queryByText('Fetching Room Data'));
+            await wait(() => renderResult.getAllByRole('row').length > 0);
+            const tableBodyRows = renderResult.queryAllByRole('row')
+              .filter((row) => (
+                within(row).queryAllByRole('columnheader').length === 0
+              ));
+            let numMatchingRows = 0;
+            tableBodyRows.forEach((row) => {
+              if (within(row).queryByText(updatedRoomNumber) !== null
+              && within(row).queryByText(updatedCapacity.toString()) !== null) {
+                numMatchingRows += 1;
+              }
+            });
+            notStrictEqual(numMatchingRows, 0);
           });
         });
       });

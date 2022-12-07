@@ -205,7 +205,7 @@ const CreateRoomModal: FunctionComponent<CreateRoomModalProps> = function ({
       };
       isValid = false;
     }
-    if (Number.isNaN(parseInt(form.capacity, 10))) {
+    if (!/^\d+$/.test(form.capacity)) {
       updatedFormErrors = {
         ...updatedFormErrors,
         capacity: 'Capacity is required to submit this form, and it must be a number.',

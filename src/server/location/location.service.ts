@@ -8,6 +8,7 @@ import RoomMeetingResponse from 'common/dto/room/RoomMeetingResponse.dto';
 import RoomAdminResponse from 'common/dto/room/RoomAdminResponse.dto';
 import { CampusResponse } from 'common/dto/room/CampusResponse.dto';
 import { CreateRoomRequest } from 'common/dto/room/CreateRoomRequest.dto';
+import UpdateRoom from 'common/dto/room/UpdateRoom.dto';
 import { RoomBookingInfoView } from './RoomBookingInfoView.entity';
 import { Room } from './room.entity';
 import { Campus } from './campus.entity';
@@ -278,6 +279,48 @@ export class LocationService {
         ...response.building,
       },
     };
+    return result;
+  }
+
+  /**
+   * Updates an existing room's name and capacity information.
+   * The campus and building cannot be updated.
+   */
+  public async updateRoom(roomId: string, roomInfo: UpdateRoom)
+    : Promise<RoomAdminResponse> {
+    const existingRoom: Room = await this.roomRepository.findOneOrFail(roomId, {
+      relations: ['building'],
+    });
+
+    // Check that the entered room is not a duplicate of an existing room.
+    // If the user submits the edit modal without updating the room name, make
+    // sure that they don't get an error for creating a duplicate room.
+    const dbRooms = await this.roomListingViewRepository.createQueryBuilder()
+      .where('LOWER(name) = LOWER(:name)', {
+        name: `${existingRoom.building.name} ${roomInfo.name}`,
+      })
+      .andWhere('id <> :roomId', { roomId })
+      .getMany();
+
+    if (dbRooms.length > 0) {
+      throw new BadRequestException(`The room ${roomInfo.name} already exists in ${existingRoom.building.name}.`);
+    }
+
+    const validRoom: UpdateRoom = {
+      id: existingRoom.id,
+      name: roomInfo.name,
+      capacity: roomInfo.capacity,
+    };
+
+    const response = await this.roomRepository.save(validRoom);
+
+    const result: RoomAdminResponse = {
+      id: response.id,
+      name: response.name,
+      capacity: response.capacity,
+      building: existingRoom.building,
+    };
+
     return result;
   }
 }

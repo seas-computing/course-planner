@@ -1,5 +1,14 @@
 import {
-  Controller, Get, UseGuards, Query, Inject, Post, Body, NotFoundException,
+  Controller,
+  Get,
+  UseGuards,
+  Query,
+  Inject,
+  Post,
+  Body,
+  NotFoundException,
+  Put,
+  Param,
 } from '@nestjs/common';
 import {
   ApiOkResponse,
@@ -20,6 +29,7 @@ import RoomAdminResponse from 'common/dto/room/RoomAdminResponse.dto';
 import { CreateRoomRequest } from 'common/dto/room/CreateRoomRequest.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityNotFoundError, Repository } from 'typeorm';
+import UpdateRoom from 'common/dto/room/UpdateRoom.dto';
 import { LocationService } from './location.service';
 import { Campus } from './campus.entity';
 import { Building } from './building.entity';
@@ -85,7 +95,7 @@ export class LocationController {
     isArray: false,
   })
   @ApiNotFoundResponse({
-    description: 'Not Found: The requested campus/building entities could not be found',
+    description: 'Not Found: The requested campus entity could not be found',
   })
   @ApiBadRequestResponse({
     description: 'Bad Request: the request is not in accordance with the createFaculty DTO',
@@ -95,6 +105,31 @@ export class LocationController {
   ): Promise<RoomAdminResponse> {
     try {
       const results = await this.locationService.createRoom(room);
+      return results;
+    } catch (error) {
+      if (error instanceof EntityNotFoundError) {
+        throw new NotFoundException(error.message);
+      }
+      throw error;
+    }
+  }
+
+  @Put(':id')
+  @ApiOperation({ summary: 'Update an existing room' })
+  @ApiOkResponse({
+    type: RoomAdminResponse,
+    description: 'An object with the updated room information.',
+  })
+  @ApiNotFoundResponse({
+    description: 'The room you attempted to be update could not be found',
+  })
+  @ApiBadRequestResponse({
+    description: 'The supplied data did not meet validation requirements',
+  })
+  public async update(@Param('id') roomId: string, @Body() roomInfo: UpdateRoom)
+    : Promise<RoomAdminResponse> {
+    try {
+      const results = await this.locationService.updateRoom(roomId, roomInfo);
       return results;
     } catch (error) {
       if (error instanceof EntityNotFoundError) {

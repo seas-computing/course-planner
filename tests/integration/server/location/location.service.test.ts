@@ -1,6 +1,6 @@
-import { strictEqual } from 'assert';
+import { deepStrictEqual, strictEqual } from 'assert';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { getRepositoryToken, TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { LocationService } from 'server/location/location.service';
 import { ConfigService } from 'server/config/config.service';
 import { ConfigModule } from 'server/config/config.module';
@@ -10,6 +10,10 @@ import { AUTH_MODE } from 'common/constants';
 import { BadRequestExceptionPipe } from 'server/utils/BadRequestExceptionPipe';
 import RoomAdminResponse from 'common/dto/room/RoomAdminResponse.dto';
 import { CreateRoomRequest } from 'common/dto/room/CreateRoomRequest.dto';
+import UpdateRoom from 'common/dto/room/UpdateRoom.dto';
+import { Room } from 'server/location/room.entity';
+import { EntityNotFoundError, Not, Repository } from 'typeorm';
+import { HTTP_STATUS } from 'client/api';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import { campuses, rooms } from '../../../mocks/database/population/data';
@@ -18,6 +22,8 @@ describe('Location Service', function () {
   let testModule: TestingModule;
   let locationService: LocationService;
   let createRoomRequest: CreateRoomRequest;
+  let updateRoomRequest: UpdateRoom;
+  let roomRepository: Repository<Room>;
 
   beforeEach(async function () {
     testModule = await Test.createTestingModule({
@@ -48,6 +54,8 @@ describe('Location Service', function () {
       .useValue(new ConfigService(this.database.connectionEnv))
       .compile();
 
+    roomRepository = testModule
+      .get(getRepositoryToken(Room));
     locationService = testModule.get(LocationService);
     await testModule.createNestApplication()
       .useGlobalPipes(new BadRequestExceptionPipe())
@@ -150,6 +158,89 @@ describe('Location Service', function () {
       });
       it('should throw a Bad Request error', function () {
         strictEqual(response.status, 400);
+      });
+    });
+  });
+  describe('updateRoom', function () {
+    let result: RoomAdminResponse;
+    let response;
+    context('when trying to update a room that does not exist', function () {
+      beforeEach(async function () {
+        updateRoomRequest = {
+          id: '4193a3e5-5987-4083-97cf-a949c146260f',
+          name: '318a',
+          capacity: 35,
+        };
+        try {
+          result = await locationService
+            .updateRoom(updateRoomRequest.id, updateRoomRequest);
+        } catch (error) {
+          response = error;
+        }
+      });
+      it('should return an EntityNotFound error', function () {
+        strictEqual(response instanceof EntityNotFoundError, true);
+      });
+    });
+    context('when updating an existing room', function () {
+      let testRoom: Room;
+      beforeEach(async function () {
+        testRoom = await roomRepository.findOne({
+          relations: ['building'],
+        });
+        updateRoomRequest = {
+          id: testRoom.id,
+          name: '201a',
+          capacity: 75,
+        };
+        try {
+          result = await locationService
+            .updateRoom(testRoom.id, updateRoomRequest);
+        } catch (error) {
+          response = error;
+        }
+      });
+      it('should return the updated room', function () {
+        const expectedResult: RoomAdminResponse = {
+          ...testRoom,
+          name: updateRoomRequest.name,
+          capacity: updateRoomRequest.capacity,
+        };
+        deepStrictEqual(result, expectedResult);
+      });
+      context('when trying to set the room name to an existing building and room combination', function () {
+        it('should throw a Bad Request Exception', async function () {
+          const testBuilding = 'Maxwell Dworkin';
+          testRoom = await roomRepository.findOne({
+            where: {
+              building: {
+                name: testBuilding,
+              },
+            },
+            relations: ['building'],
+          });
+          const otherRoom = await roomRepository.findOne({
+            where: {
+              name: Not(testRoom.name),
+              building: {
+                name: testBuilding,
+              },
+            },
+            relations: ['building'],
+          });
+          updateRoomRequest = {
+            id: testRoom.id,
+            name: otherRoom.name,
+            capacity: 75,
+          };
+          try {
+            result = await locationService
+              .updateRoom(testRoom.id, updateRoomRequest);
+          } catch (error) {
+            response = error;
+          }
+          strictEqual(response.status, HTTP_STATUS.BAD_REQUEST);
+        });
       });
     });
   });

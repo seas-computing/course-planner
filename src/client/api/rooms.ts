@@ -3,6 +3,7 @@ import RoomAdminResponse from 'common/dto/room/RoomAdminResponse.dto';
 import RoomMeetingResponse from 'common/dto/room/RoomMeetingResponse.dto';
 import RoomRequest from 'common/dto/room/RoomRequest.dto';
 import RoomResponse from 'common/dto/room/RoomResponse.dto';
+import UpdateRoom from 'common/dto/room/UpdateRoom.dto';
 import request from './request';
 
 /**
@@ -46,9 +47,19 @@ Promise<RoomAdminResponse> => {
   return response.data as RoomAdminResponse;
 };
 
+/**
+ * Edit an existing room entry
+ */
+const editRoom = async (roomInfo: UpdateRoom):
+Promise<RoomAdminResponse> => {
+  const response = await request.put(`/api/rooms/${roomInfo.id}`, roomInfo);
+  return response.data as RoomAdminResponse;
+};
+
 export const LocationAPI = {
   getRoomAvailability,
   getRooms,
   getAdminRooms,
   createRoom,
+  editRoom,
 };
