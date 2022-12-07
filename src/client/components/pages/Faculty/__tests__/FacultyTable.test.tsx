@@ -89,13 +89,13 @@ describe('FacultyScheduleTable', function () {
         )
         );
       });
-      it('renders two rows of headers', function () {
+      it('renders three rows of headers', function () {
         const allRows = getAllByRole('row');
         const headerRows = allRows.filter((row) => {
           const roles = getRoles(row);
           return 'columnheader' in roles && roles.columnheader.length > 0;
         });
-        strictEqual(headerRows.length, 2);
+        strictEqual(headerRows.length, 3);
       });
       it('renders the semesters into the top header row', function () {
         const [topRow] = getAllByRole('row');
@@ -151,7 +151,7 @@ describe('FacultyScheduleTable', function () {
       it('displays the correct number of rows in the table', async function () {
         await wait(() => getAllByRole('row').length > 2);
         const allRows = getAllByRole('row');
-        strictEqual(allRows.length, facultyScheduleList.length + 2);
+        strictEqual(allRows.length, facultyScheduleList.length + 3);
       });
       it('displays the correct content in the table cells', async function () {
         await wait(() => getAllByRole('row').length > 2);
@@ -188,11 +188,11 @@ describe('FacultyScheduleTable', function () {
           };
         };
         assertRowMatchesResponse(
-          rowsContent[2],
+          rowsContent[3],
           filterOutPresentAbsences(appliedMathFacultyScheduleResponse)
         );
         assertRowMatchesResponse(
-          rowsContent[3],
+          rowsContent[4],
           filterOutPresentAbsences(
             electricalEngineeringFacultyScheduleResponse
           )
