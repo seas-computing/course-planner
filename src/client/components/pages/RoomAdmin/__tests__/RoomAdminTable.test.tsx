@@ -34,7 +34,8 @@ describe('Campus Dropdown', function () {
       <RoomAdmin />
     );
   });
-  it('defaults to all', function () {
+  it('defaults to all', async function () {
+    await wait(() => renderResult.getAllByRole('row').length > 1);
     const campusDropDown = renderResult.getByLabelText('The table will be filtered by selected campus name', { exact: true }) as HTMLSelectElement;
     strictEqual(campusDropDown.value, 'All');
   });
@@ -218,15 +219,16 @@ describe('Room Admin Table', function () {
           );
           await wait(() => getAllByRole('row').length > 1);
           const rows = getAllByRole('row');
-          // The "+1" takes the table headers into account for the number of rows
-          strictEqual(rows.length, adminRoomsResponse.length + 1);
+          // The "+2" takes the table headers into account for the number of rows
+          strictEqual(rows.length, adminRoomsResponse.length + 2);
         });
         it('displays the correct content in the table cells', async function () {
           const { getAllByRole } = render(
             <RoomAdmin />
           );
           await wait(() => getAllByRole('row').length > 1);
-          const rows = getAllByRole('row').slice(1) as HTMLTableRowElement[];
+          // slicing the first 2 headers as the filters are now added
+          const rows = getAllByRole('row').slice(2) as HTMLTableRowElement[];
           [
             [
               secRoomResponse.name,
@@ -269,7 +271,7 @@ describe('Room Admin Table', function () {
           await wait(() => getAllByRole('row').length === emptyTestData.length + 1);
           const rows = getAllByRole('row');
           // With the filter, there are two table header rows
-          strictEqual(rows.length, emptyTestData.length + 1);
+          strictEqual(rows.length, emptyTestData.length + 2);
         });
       });
     });
