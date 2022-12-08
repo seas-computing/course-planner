@@ -12,10 +12,14 @@ import {
   getRoles,
 } from 'test-utils';
 import { strictEqual } from 'assert';
+import * as dummy from 'testData';
 import {
   waitForElement,
   wait,
   GetByText,
+  RenderResult,
+  within,
+  fireEvent,
 } from '@testing-library/react';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import {
@@ -224,6 +228,206 @@ describe('FacultyScheduleTable', function () {
       );
       await wait(() => getAllByRole('row').length === emptyTestData.length + 2);
       strictEqual(dispatchMessage.callCount, 1);
+    });
+  });
+  describe('Filtering', function () {
+    let renderResult: RenderResult;
+    const testFacultySchedules = [
+      dummy.appliedMathFacultyScheduleResponse,
+      dummy.electricalEngineeringFacultyScheduleResponse,
+      dummy.computerScienceFacultyScheduleResponse,
+    ];
+    beforeEach(function () {
+      renderResult = render(
+        <FacultyScheduleTable
+          academicYear={2021}
+          facultySchedules={testFacultySchedules}
+          onEdit={(): void => {}}
+          editButtonRef={null}
+        />
+      );
+    });
+    describe('Area Filter', function () {
+      context('when no filters have been changed', function () {
+        it('should default to the value "All"', async function () {
+          const { getAllByRole } = renderResult;
+          // Wait for there to be more than 3 rows since there are 3 header
+          // rows in the Faculty Schedule table.
+          await wait(() => getAllByRole('row').length > 3);
+          const rows = getAllByRole('row');
+          const utils = within(rows[2]);
+          const filter = utils.queryByLabelText('Change to filter the faculty list by area') as HTMLSelectElement;
+          strictEqual(filter.value, 'All');
+        });
+        it('should show all the rows', async function () {
+          const { queryAllByRole, getAllByRole } = renderResult;
+          await wait(() => getAllByRole('row').length > 3);
+          const tableBodyRows = queryAllByRole('row')
+            .filter((row) => (
+              within(row).queryAllByRole('columnheader').length === 0
+            ));
+          strictEqual(tableBodyRows.length, testFacultySchedules.length);
+        });
+      });
+      context('when the filter is changed', function () {
+        it('should show the rows containing the area selected', async function () {
+          const {
+            queryAllByRole,
+            getAllByRole,
+            queryByLabelText,
+          } = renderResult;
+          const testArea = testFacultySchedules[0].area;
+          const expectedNumRows = testFacultySchedules
+            .filter((faculty) => faculty.area === testArea).length;
+          await wait(() => getAllByRole('row').length > 3);
+          const filter = queryByLabelText('Change to filter the faculty list by area') as HTMLSelectElement;
+          fireEvent.change(
+            filter,
+            {
+              target: {
+                value: testArea,
+              },
+            }
+          );
+          const tableBodyRows = queryAllByRole('row')
+            .filter((row) => (
+              within(row).queryAllByRole('columnheader').length === 0
+            ));
+          const actualNumRows = tableBodyRows.map((row) => (
+            row.textContent
+          )).length;
+          strictEqual(expectedNumRows, actualNumRows);
+        });
+      });
+    });
+    describe('Last Name Filter', function () {
+      context('when no filters have been changed', function () {
+        it('should show all the rows', async function () {
+          const { queryAllByRole, getAllByRole } = renderResult;
+          await wait(() => getAllByRole('row').length > 3);
+          const tableBodyRows = queryAllByRole('row')
+            .filter((row) => (
+              within(row).queryAllByRole('columnheader').length === 0
+            ));
+          strictEqual(tableBodyRows.length, testFacultySchedules.length);
+        });
+      });
+      context('when the filter is changed', function () {
+        it('should show the rows with last names matching the filter', async function () {
+          const {
+            queryAllByRole,
+            getAllByRole,
+            queryByLabelText,
+          } = renderResult;
+          const testLastName = testFacultySchedules[0].lastName;
+          const expectedNumRows = testFacultySchedules
+            .filter((faculty) => faculty.lastName === testLastName).length;
+          await wait(() => getAllByRole('row').length > 3);
+          const filter = queryByLabelText('Change to filter the faculty list by last name') as HTMLInputElement;
+          fireEvent.change(
+            filter,
+            {
+              target: {
+                value: testLastName,
+              },
+            }
+          );
+          const tableBodyRows = queryAllByRole('row')
+            .filter((row) => (
+              within(row).queryAllByRole('columnheader').length === 0
+            ));
+          const actualNumRows = tableBodyRows.map((row) => (
+            row.textContent
+          )).length;
+          strictEqual(expectedNumRows, actualNumRows);
+        });
+      });
+    });
+    describe('First Name Filter', function () {
+      context('when no filters have been changed', function () {
+        it('should show all the rows', async function () {
+          const { queryAllByRole, getAllByRole } = renderResult;
+          await wait(() => getAllByRole('row').length > 3);
+          const tableBodyRows = queryAllByRole('row')
+            .filter((row) => (
+              within(row).queryAllByRole('columnheader').length === 0
+            ));
+          strictEqual(tableBodyRows.length, testFacultySchedules.length);
+        });
+      });
+      context('when the filter is changed', function () {
+        it('should show the rows with first names matching the filter', async function () {
+          const {
+            queryAllByRole,
+            getAllByRole,
+            queryByLabelText,
+          } = renderResult;
+          const testFirstName = testFacultySchedules[0].firstName;
+          const expectedNumRows = testFacultySchedules
+            .filter((faculty) => faculty.firstName === testFirstName).length;
+          await wait(() => getAllByRole('row').length > 3);
+          const filter = queryByLabelText('Change to filter the faculty list by first name') as HTMLInputElement;
+          fireEvent.change(
+            filter,
+            {
+              target: {
+                value: testFirstName,
+              },
+            }
+          );
+          const tableBodyRows = queryAllByRole('row')
+            .filter((row) => (
+              within(row).queryAllByRole('columnheader').length === 0
+            ));
+          const actualNumRows = tableBodyRows.map((row) => (
+            row.textContent
+          )).length;
+          strictEqual(expectedNumRows, actualNumRows);
+        });
+      });
+    });
+    describe('Category Filter', function () {
+      context('when no filters have been changed', function () {
+        it('should show all the rows', async function () {
+          const { queryAllByRole, getAllByRole } = renderResult;
+          await wait(() => getAllByRole('row').length > 3);
+          const tableBodyRows = queryAllByRole('row')
+            .filter((row) => (
+              within(row).queryAllByRole('columnheader').length === 0
+            ));
+          strictEqual(tableBodyRows.length, testFacultySchedules.length);
+        });
+      });
+      context('when the filter is changed', function () {
+        it('should show the rows with category matching the filter', async function () {
+          const {
+            queryAllByRole,
+            getAllByRole,
+            queryByLabelText,
+          } = renderResult;
+          const testCategory = testFacultySchedules[0].category;
+          const expectedNumRows = testFacultySchedules
+            .filter((faculty) => faculty.category === testCategory).length;
+          await wait(() => getAllByRole('row').length > 3);
+          const filter = queryByLabelText('Change to filter the faculty list by category') as HTMLSelectElement;
+          fireEvent.change(
+            filter,
+            {
+              target: {
+                value: testCategory,
+              },
+            }
+          );
+          const tableBodyRows = queryAllByRole('row')
+            .filter((row) => (
+              within(row).queryAllByRole('columnheader').length === 0
+            ));
+          const actualNumRows = tableBodyRows.map((row) => (
+            row.textContent
+          )).length;
+          strictEqual(expectedNumRows, actualNumRows);
+        });
+      });
     });
   });
 });
