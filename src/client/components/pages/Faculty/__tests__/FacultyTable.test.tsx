@@ -429,5 +429,113 @@ describe('FacultyScheduleTable', function () {
         });
       });
     });
+    describe('Fall Absence Filter', function () {
+      context('when no filters have been changed', function () {
+        it('should default to the value "All"', async function () {
+          const { getAllByRole } = renderResult;
+          // Wait for there to be more than 3 rows since there are 3 header
+          // rows in the Faculty Schedule table.
+          await wait(() => getAllByRole('row').length > 3);
+          const rows = getAllByRole('row');
+          const utils = within(rows[2]);
+          const filter = utils.queryByLabelText('Change to filter the faculty list by the fall absence value') as HTMLSelectElement;
+          strictEqual(filter.value, 'All');
+        });
+        it('should show all the rows', async function () {
+          const { queryAllByRole, getAllByRole } = renderResult;
+          await wait(() => getAllByRole('row').length > 3);
+          const tableBodyRows = queryAllByRole('row')
+            .filter((row) => (
+              within(row).queryAllByRole('columnheader').length === 0
+            ));
+          strictEqual(tableBodyRows.length, testFacultySchedules.length);
+        });
+      });
+      context('when the filter is changed', function () {
+        it('should show the rows containing the fall absence value selected', async function () {
+          const {
+            queryAllByRole,
+            getAllByRole,
+            queryByLabelText,
+          } = renderResult;
+          const testAbsence = testFacultySchedules[0].fall.absence.type;
+          const expectedNumRows = testFacultySchedules
+            .filter((faculty) => faculty.fall.absence.type
+            === testAbsence).length;
+          await wait(() => getAllByRole('row').length > 3);
+          const filter = queryByLabelText('Change to filter the faculty list by the fall absence value') as HTMLSelectElement;
+          fireEvent.change(
+            filter,
+            {
+              target: {
+                value: testAbsence,
+              },
+            }
+          );
+          const tableBodyRows = queryAllByRole('row')
+            .filter((row) => (
+              within(row).queryAllByRole('columnheader').length === 0
+            ));
+          const actualNumRows = tableBodyRows.map((row) => (
+            row.textContent
+          )).length;
+          strictEqual(expectedNumRows, actualNumRows);
+        });
+      });
+    });
+    describe('Spring Absence Filter', function () {
+      context('when no filters have been changed', function () {
+        it('should default to the value "All"', async function () {
+          const { getAllByRole } = renderResult;
+          // Wait for there to be more than 3 rows since there are 3 header
+          // rows in the Faculty Schedule table.
+          await wait(() => getAllByRole('row').length > 3);
+          const rows = getAllByRole('row');
+          const utils = within(rows[2]);
+          const filter = utils.queryByLabelText('Change to filter the faculty list by the spring absence value') as HTMLSelectElement;
+          strictEqual(filter.value, 'All');
+        });
+        it('should show all the rows', async function () {
+          const { queryAllByRole, getAllByRole } = renderResult;
+          await wait(() => getAllByRole('row').length > 3);
+          const tableBodyRows = queryAllByRole('row')
+            .filter((row) => (
+              within(row).queryAllByRole('columnheader').length === 0
+            ));
+          strictEqual(tableBodyRows.length, testFacultySchedules.length);
+        });
+      });
+      context('when the filter is changed', function () {
+        it('should show the rows containing the spring absence value selected', async function () {
+          const {
+            queryAllByRole,
+            getAllByRole,
+            queryByLabelText,
+          } = renderResult;
+          const testAbsence = testFacultySchedules[0].spring.absence.type;
+          const expectedNumRows = testFacultySchedules
+            .filter((faculty) => faculty.spring.absence.type
+            === testAbsence).length;
+          await wait(() => getAllByRole('row').length > 3);
+          const filter = queryByLabelText('Change to filter the faculty list by the spring absence value') as HTMLSelectElement;
+          fireEvent.change(
+            filter,
+            {
+              target: {
+                value: testAbsence,
+              },
+            }
+          );
+          const tableBodyRows = queryAllByRole('row')
+            .filter((row) => (
+              within(row).queryAllByRole('columnheader').length === 0
+            ));
+          const actualNumRows = tableBodyRows.map((row) => (
+            row.textContent
+          )).length;
+          strictEqual(expectedNumRows, actualNumRows);
+        });
+      });
+    });
   });
 });
