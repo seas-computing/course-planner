@@ -130,6 +130,22 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
   ] = useState<string>('All');
 
   /**
+   * The current fall absence filter value
+   */
+  const [
+    fallAbsenceFilter,
+    setFallAbsenceFilter,
+  ] = useState<string>('All');
+
+  /**
+   * The current spring absence filter value
+   */
+  const [
+    springAbsenceFilter,
+    setSpringAbsenceFilter,
+  ] = useState<string>('All');
+
+  /**
    * Return filtered rooms based on area, first and last name, category, and
    * sabbatical leave.
    */
@@ -155,12 +171,26 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
         { field: 'category', value: categoryFilter, exact: true }
       );
     }
+    if (fallAbsenceFilter !== 'All') {
+      filteredFacultyList = listFilter(
+        filteredFacultyList,
+        { field: 'fall.absence.type', value: fallAbsenceFilter, exact: true }
+      );
+    }
+    if (springAbsenceFilter !== 'All') {
+      filteredFacultyList = listFilter(
+        filteredFacultyList,
+        { field: 'spring.absence.type', value: springAbsenceFilter, exact: true }
+      );
+    }
     return filteredFacultyList;
   }, [facultySchedules,
     areaFilter,
     lastNameFilter,
     firstNameFilter,
     categoryFilter,
+    fallAbsenceFilter,
+    springAbsenceFilter,
   ]);
   return (
     <Table>
@@ -272,6 +302,52 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
               hideError
               onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
                 setCategoryFilter(event.currentTarget.value);
+              }}
+            />
+          </TableHeadingCell>
+          <TableHeadingCell>
+            <Dropdown
+              options={[{ value: 'All', label: 'All' }]
+                .concat(Object.values(ABSENCE_TYPE)
+                  .map((absence):
+                  {value: string; label: string} => {
+                    const absenceTitle = absenceEnumToTitleCase(absence);
+                    return {
+                      value: absence,
+                      label: absenceTitle,
+                    };
+                  }))}
+              value={fallAbsenceFilter}
+              name="fall-absence-filter"
+              id="fall-absence-filter"
+              label="Change to filter the faculty list by the fall absence value"
+              isLabelVisible={false}
+              hideError
+              onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
+                setFallAbsenceFilter(event.currentTarget.value);
+              }}
+            />
+          </TableHeadingCell>
+          <TableHeadingCell>
+            <Dropdown
+              options={[{ value: 'All', label: 'All' }]
+                .concat(Object.values(ABSENCE_TYPE)
+                  .map((absence):
+                  {value: string; label: string} => {
+                    const absenceTitle = absenceEnumToTitleCase(absence);
+                    return {
+                      value: absence,
+                      label: absenceTitle,
+                    };
+                  }))}
+              value={springAbsenceFilter}
+              name="spring-absence-filter"
+              id="spring-absence-filter"
+              label="Change to filter the faculty list by the spring absence value"
+              isLabelVisible={false}
+              hideError
+              onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
+                setSpringAbsenceFilter(event.currentTarget.value);
               }}
             />
           </TableHeadingCell>
