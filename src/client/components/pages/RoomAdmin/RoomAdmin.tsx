@@ -312,7 +312,7 @@ const RoomAdmin: FunctionComponent = (): ReactElement => {
                         name="filterByCapacityName"
                         placeholder="Enter Capacity"
                         value={capacityFilter}
-                        label=""
+                        label="The table will be filtered by entered capacity"
                         isLabelVisible={false}
                         hideError
                         onChange={
