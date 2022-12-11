@@ -9,11 +9,11 @@ import {
 } from 'mark-one';
 import { AppMessage, MESSAGE_TYPE, MESSAGE_ACTION } from 'client/classes';
 import { MessageContext, MetadataContext } from 'client/context';
-import { VerticalSpace } from 'client/components/layout';
 import { termEnumToTitleCase } from 'common/utils/termHelperFunctions';
 import { toTitleCase } from 'common/utils/util';
 import { ButtonProps } from 'mark-one/lib/Buttons/Button';
 import styled from 'styled-components';
+import StyledVerticalSpace from 'client/components/layout/VerticalSpace';
 import ScheduleView from './ScheduleView';
 import { useStoredState } from '../../../hooks/useStoredState';
 
@@ -46,8 +46,23 @@ export interface PrefixState{
  * A button to filter course prefixes and fade sessionblock based
  * on selected value
  */
-const PrefixButton = styled(Button)<ButtonProps & { prefix: string }>`
- background-color: ${({ prefix }) => getCatPrefixColor(prefix)};
+const PrefixButton = styled(Button) <ButtonProps & { prefix: string, isPrefixActive: (prefix: string) => boolean; }>`
+ margin: 8px;
+ color: ${({ isPrefixActive, prefix }) => (isPrefixActive(prefix) ? 'black' : `${getCatPrefixColor(prefix)}`)};
+ border: ${({ isPrefixActive, prefix }) => (isPrefixActive(prefix) ? '' : `1px solid ${getCatPrefixColor(prefix)}`)};
+ background-color: ${({ isPrefixActive, prefix }) => (isPrefixActive(prefix) ? getCatPrefixColor(prefix) : 'white')}
+`;
+
+/**
+ * A styled component to style the course filter and acadamic year filter dropdown
+ */
+const VerticalSpace = styled(StyledVerticalSpace)`
+display: flex;
+flex-direction: row;
+flex-wrap: nowrap;
+align-items:center;
+gap: 12px;
+justify-content: flex-start;
 `;
 
 /**
@@ -216,9 +231,12 @@ const SchedulePage: FunctionComponent = () => {
 
   return (
     <>
-      <VerticalSpace>
+      <div aria-label="course filter buttons">
+        <span id="Course Filter Button">show/hide catalog prefixes</span>
         {prefixes.map((prefixObj) => (
           <PrefixButton
+            isPrefixActive={isPrefixActive}
+            aria-labelledby="Course Filter Button"
             alt="Course Filter Button"
             prefix={prefixObj.prefix}
             variant={VARIANT.BASE}
@@ -228,22 +246,14 @@ const SchedulePage: FunctionComponent = () => {
             {prefixObj.prefix}
           </PrefixButton>
         ))}
-        {selectedSemester && (
-          <Dropdown
-            id="schedule-semester-selector"
-            name="schedule-semester-selector"
-            label="Select Semester"
-            labelPosition={POSITION.LEFT}
-            value={`${selectedSemester.term} ${selectedSemester.calendarYear}`}
-            options={semesterOptions}
-            onChange={updateTerm}
-          />
-        )}
+      </div>
+      <VerticalSpace>
         <Dropdown
           id="degree-program-selector"
           name="degree-program-selector"
           label="Degree Program"
           isLabelVisible
+          labelPosition={POSITION.LEFT}
           options={Object.values(DEGREE_PROGRAM)
             .map((value) => ({ value, label: value }))}
           value={selectedDegreeProgram}
@@ -255,6 +265,17 @@ const SchedulePage: FunctionComponent = () => {
             }
           }
         />
+        {selectedSemester && (
+          <Dropdown
+            id="schedule-semester-selector"
+            name="schedule-semester-selector"
+            label="Select Semester"
+            labelPosition={POSITION.LEFT}
+            value={`${selectedSemester.term} ${selectedSemester.calendarYear}`}
+            options={semesterOptions}
+            onChange={updateTerm}
+          />
+        )}
       </VerticalSpace>
       {isFetching
         ? (
