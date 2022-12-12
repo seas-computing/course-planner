@@ -2,6 +2,8 @@ import React, {
   FunctionComponent,
   ReactElement,
   Ref,
+  useContext,
+  useMemo,
   useState,
 } from 'react';
 import {
@@ -18,6 +20,8 @@ import {
   TableCellList,
   TableCellListItem,
   VALIGN,
+  Dropdown,
+  TextInput,
 } from 'mark-one';
 import { TableRowProps } from 'mark-one/lib/Tables/TableRow';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -30,6 +34,7 @@ import {
 } from 'common/dto/faculty/FacultyResponse.dto';
 import {
   ABSENCE_TYPE,
+  FACULTY_TYPE,
   getAreaColor,
   TERM,
 } from 'common/constants';
@@ -38,7 +43,9 @@ import {
   facultyTypeEnumToTitleCase,
 } from 'common/utils/facultyHelperFunctions';
 import { CellLayout } from 'client/components/general';
+import { MetadataContext } from 'client/context/MetadataContext';
 import { absenceToVariant } from '../utils/absenceToVariant';
+import { listFilter } from '../Filter';
 
 interface FacultyScheduleTableProps {
   /**
@@ -83,6 +90,107 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
     editedAbsence,
     setEditedAbsence,
   ] = useState<FacultyAbsence>(null);
+
+  /**
+   * The current value for the metadata context
+   */
+  const metadata = useContext(MetadataContext);
+
+  /**
+   * The current area filter value
+   */
+  const [
+    areaFilter,
+    setAreaFilter,
+  ] = useState<string>('All');
+
+  /**
+   * The current last name filter value
+   */
+  const [
+    lastNameFilter,
+    setLastNameFilter,
+  ] = useState<string>('');
+
+  /**
+   * The current first name filter value
+   */
+  const [
+    firstNameFilter,
+    setFirstNameFilter,
+  ] = useState<string>('');
+
+  /**
+   * The current category filter value
+   */
+  const [
+    categoryFilter,
+    setCategoryFilter,
+  ] = useState<string>('All');
+
+  /**
+   * The current fall absence filter value
+   */
+  const [
+    fallAbsenceFilter,
+    setFallAbsenceFilter,
+  ] = useState<string>('All');
+
+  /**
+   * The current spring absence filter value
+   */
+  const [
+    springAbsenceFilter,
+    setSpringAbsenceFilter,
+  ] = useState<string>('All');
+
+  /**
+   * Return filtered rooms based on area, first and last name, category, and
+   * sabbatical leave.
+   */
+  const filteredFaculty = useMemo((): FacultyResponseDTO[] => {
+    let filteredFacultyList = [...facultySchedules];
+    if (areaFilter !== 'All') {
+      filteredFacultyList = listFilter(
+        filteredFacultyList,
+        { field: 'area', value: areaFilter, exact: true }
+      );
+    }
+    filteredFacultyList = listFilter(
+      filteredFacultyList,
+      { field: 'lastName', value: lastNameFilter, exact: false }
+    );
+    filteredFacultyList = listFilter(
+      filteredFacultyList,
+      { field: 'firstName', value: firstNameFilter, exact: false }
+    );
+    if (categoryFilter !== 'All') {
+      filteredFacultyList = listFilter(
+        filteredFacultyList,
+        { field: 'category', value: categoryFilter, exact: true }
+      );
+    }
+    if (fallAbsenceFilter !== 'All') {
+      filteredFacultyList = listFilter(
+        filteredFacultyList,
+        { field: 'fall.absence.type', value: fallAbsenceFilter, exact: true }
+      );
+    }
+    if (springAbsenceFilter !== 'All') {
+      filteredFacultyList = listFilter(
+        filteredFacultyList,
+        { field: 'spring.absence.type', value: springAbsenceFilter, exact: true }
+      );
+    }
+    return filteredFacultyList;
+  }, [facultySchedules,
+    areaFilter,
+    lastNameFilter,
+    firstNameFilter,
+    categoryFilter,
+    fallAbsenceFilter,
+    springAbsenceFilter,
+  ]);
   return (
     <Table>
       <colgroup>
@@ -113,125 +221,244 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
           <TableHeadingSpacer rowSpan={1} />
         </TableRow>
         <TableRow isStriped>
-          <TableHeadingCell scope="col">Area</TableHeadingCell>
-          <TableHeadingCell scope="col">Last Name</TableHeadingCell>
-          <TableHeadingCell scope="col">First Name</TableHeadingCell>
-          <TableHeadingCell scope="col">Category</TableHeadingCell>
-          <TableHeadingCell scope="col">Joint With</TableHeadingCell>
-          <TableHeadingCell scope="col">Sabbatical Leave</TableHeadingCell>
-          <TableHeadingCell scope="col">Courses</TableHeadingCell>
-          <TableHeadingCell scope="col">Sabbatical Leave</TableHeadingCell>
-          <TableHeadingCell scope="col">Courses</TableHeadingCell>
+          <TableHeadingCell scope="col" rowSpan={1}>Area</TableHeadingCell>
+          <TableHeadingCell scope="col" rowSpan={1}>Last Name</TableHeadingCell>
+          <TableHeadingCell scope="col" rowSpan={1}>First Name</TableHeadingCell>
+          <TableHeadingCell scope="col" rowSpan={1}>Category</TableHeadingCell>
+          <TableHeadingCell scope="col" rowSpan={2}>Joint With</TableHeadingCell>
+          <TableHeadingCell scope="col" rowSpan={1}>Sabbatical Leave</TableHeadingCell>
+          <TableHeadingCell scope="col" rowSpan={2}>Courses</TableHeadingCell>
+          <TableHeadingCell scope="col" rowSpan={1}>Sabbatical Leave</TableHeadingCell>
+          <TableHeadingCell scope="col" rowSpan={2}>Courses</TableHeadingCell>
+        </TableRow>
+        <TableRow noHighlight>
+          <TableHeadingCell>
+            <Dropdown
+              options={
+                [{ value: 'All', label: 'All' }]
+                  .concat(metadata.areas.map((area) => ({
+                    value: area,
+                    label: area,
+                  })))
+              }
+              value={areaFilter}
+              name="area-filter"
+              id="area-filter"
+              label="Change to filter the faculty list by area"
+              isLabelVisible={false}
+              hideError
+              onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
+                setAreaFilter(event.currentTarget.value);
+              }}
+            />
+          </TableHeadingCell>
+          <TableHeadingCell>
+            <TextInput
+              hideError
+              id="last-name-filter"
+              name="last-name-filter"
+              placeholder="Filter by Last Name"
+              label="Change to filter the faculty list by last name"
+              isLabelVisible={false}
+              onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
+                setLastNameFilter(event.currentTarget.value);
+              }}
+              value={lastNameFilter}
+            />
+          </TableHeadingCell>
+          <TableHeadingCell>
+            <TextInput
+              hideError
+              id="first-name-filter"
+              name="first-name-filter"
+              placeholder="Filter by First Name"
+              label="Change to filter the faculty list by first name"
+              isLabelVisible={false}
+              onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
+                setFirstNameFilter(event.currentTarget.value);
+              }}
+              value={firstNameFilter}
+            />
+          </TableHeadingCell>
+          <TableHeadingCell>
+            <Dropdown
+              options={[{ value: 'All', label: 'All' }]
+                .concat(Object.values(FACULTY_TYPE)
+                  .map((category):
+                  {value: string; label: string} => {
+                    const categoryTitle = facultyTypeEnumToTitleCase(category);
+                    return {
+                      value: category,
+                      label: categoryTitle,
+                    };
+                  }))}
+              value={categoryFilter}
+              name="category-filter"
+              id="category-filter"
+              label="Change to filter the faculty list by category"
+              isLabelVisible={false}
+              hideError
+              onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
+                setCategoryFilter(event.currentTarget.value);
+              }}
+            />
+          </TableHeadingCell>
+          <TableHeadingCell>
+            <Dropdown
+              options={[{ value: 'All', label: 'All' }]
+                .concat(Object.values(ABSENCE_TYPE)
+                  .map((absence):
+                  {value: string; label: string} => {
+                    const absenceTitle = absenceEnumToTitleCase(absence);
+                    return {
+                      value: absence,
+                      label: absenceTitle,
+                    };
+                  }))}
+              value={fallAbsenceFilter}
+              name="fall-absence-filter"
+              id="fall-absence-filter"
+              label="Change to filter the faculty list by the fall absence value"
+              isLabelVisible={false}
+              hideError
+              onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
+                setFallAbsenceFilter(event.currentTarget.value);
+              }}
+            />
+          </TableHeadingCell>
+          <TableHeadingCell>
+            <Dropdown
+              options={[{ value: 'All', label: 'All' }]
+                .concat(Object.values(ABSENCE_TYPE)
+                  .map((absence):
+                  {value: string; label: string} => {
+                    const absenceTitle = absenceEnumToTitleCase(absence);
+                    return {
+                      value: absence,
+                      label: absenceTitle,
+                    };
+                  }))}
+              value={springAbsenceFilter}
+              name="spring-absence-filter"
+              id="spring-absence-filter"
+              label="Change to filter the faculty list by the spring absence value"
+              isLabelVisible={false}
+              hideError
+              onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
+                setSpringAbsenceFilter(event.currentTarget.value);
+              }}
+            />
+          </TableHeadingCell>
         </TableRow>
       </TableHead>
       <TableBody isScrollable>
-        {facultySchedules && facultySchedules
-          .map((faculty, facultyIndex): ReactElement<TableRowProps> => (
-            <TableRow isStriped={facultyIndex % 2 === 1} key={faculty.id}>
-              <TableCell
-                alignment={ALIGN.CENTER}
-                backgroundColor={getAreaColor(faculty.area)}
-              >
-                {faculty.area}
-              </TableCell>
-              <TableCell>{faculty.lastName}</TableCell>
-              <TableCell>{faculty.firstName}</TableCell>
-              <TableCell>
-                {facultyTypeEnumToTitleCase(faculty.category)}
-              </TableCell>
-              <TableCell>{faculty.jointWith}</TableCell>
-              <TableCell
-                variant={absenceToVariant(faculty.fall.absence)}
-                verticalAlignment={VALIGN.TOP}
-              >
-                <CellLayout>
-                  <TableCellList>
-                    <TableCellListItem>
-                      {absenceEnumToTitleCase(
-                        faculty.fall.absence
+        {filteredFaculty.map((faculty, facultyIndex)
+        : ReactElement<TableRowProps> => (
+          <TableRow isStriped={facultyIndex % 2 === 1} key={faculty.id}>
+            <TableCell
+              alignment={ALIGN.CENTER}
+              backgroundColor={getAreaColor(faculty.area)}
+            >
+              {faculty.area}
+            </TableCell>
+            <TableCell>{faculty.lastName}</TableCell>
+            <TableCell>{faculty.firstName}</TableCell>
+            <TableCell>
+              {facultyTypeEnumToTitleCase(faculty.category)}
+            </TableCell>
+            <TableCell>{faculty.jointWith}</TableCell>
+            <TableCell
+              variant={absenceToVariant(faculty.fall.absence)}
+              verticalAlignment={VALIGN.TOP}
+            >
+              <CellLayout>
+                <TableCellList>
+                  <TableCellListItem>
+                    {absenceEnumToTitleCase(
+                      faculty.fall.absence
                           && faculty.fall.absence.type
                           !== ABSENCE_TYPE.PRESENT
-                          ? faculty.fall.absence.type
-                          : ''
-                      )}
-                    </TableCellListItem>
-                  </TableCellList>
-                  <BorderlessButton
-                    id={computeEditAbsenceButtonId(faculty, TERM.FALL)}
-                    variant={VARIANT.INFO}
-                    onClick={
-                      (): void => {
-                        onEdit(faculty, faculty.fall.absence);
-                        setEditedAbsence(faculty.fall.absence);
-                      }
+                        ? faculty.fall.absence.type
+                        : ''
+                    )}
+                  </TableCellListItem>
+                </TableCellList>
+                <BorderlessButton
+                  id={computeEditAbsenceButtonId(faculty, TERM.FALL)}
+                  variant={VARIANT.INFO}
+                  onClick={
+                    (): void => {
+                      onEdit(faculty, faculty.fall.absence);
+                      setEditedAbsence(faculty.fall.absence);
                     }
-                    forwardRef={
-                      editedAbsence
+                  }
+                  forwardRef={
+                    editedAbsence
                           && faculty.fall.absence
                           && editedAbsence.id === faculty.fall.absence.id
-                        ? editButtonRef
-                        : null
-                    }
-                    alt="edit faculty fall absence"
-                  >
-                    <FontAwesomeIcon icon={faEdit} />
-                  </BorderlessButton>
-                </CellLayout>
-              </TableCell>
-              <TableCell variant={absenceToVariant(faculty.fall.absence)}>
-                {faculty.fall.courses.map((course): ReactElement => (
-                  <div key={course.id}>
-                    {course.catalogNumber}
-                  </div>
-                ))}
-              </TableCell>
-              <TableCell
-                variant={absenceToVariant(faculty.spring.absence)}
-                verticalAlignment={VALIGN.TOP}
-              >
-                <CellLayout>
-                  <TableCellList>
-                    <TableCellListItem>
-                      {absenceEnumToTitleCase(
-                        faculty.spring.absence
+                      ? editButtonRef
+                      : null
+                  }
+                  alt="edit faculty fall absence"
+                >
+                  <FontAwesomeIcon icon={faEdit} />
+                </BorderlessButton>
+              </CellLayout>
+            </TableCell>
+            <TableCell variant={absenceToVariant(faculty.fall.absence)}>
+              {faculty.fall.courses.map((course): ReactElement => (
+                <div key={course.id}>
+                  {course.catalogNumber}
+                </div>
+              ))}
+            </TableCell>
+            <TableCell
+              variant={absenceToVariant(faculty.spring.absence)}
+              verticalAlignment={VALIGN.TOP}
+            >
+              <CellLayout>
+                <TableCellList>
+                  <TableCellListItem>
+                    {absenceEnumToTitleCase(
+                      faculty.spring.absence
                           && faculty.spring.absence.type
                           !== ABSENCE_TYPE.PRESENT
-                          ? faculty.spring.absence.type
-                          : ''
-                      )}
-                    </TableCellListItem>
-                  </TableCellList>
-                  <BorderlessButton
-                    id={computeEditAbsenceButtonId(faculty, TERM.SPRING)}
-                    variant={VARIANT.INFO}
-                    onClick={
-                      (): void => {
-                        onEdit(faculty, faculty.spring.absence);
-                        setEditedAbsence(faculty.spring.absence);
-                      }
+                        ? faculty.spring.absence.type
+                        : ''
+                    )}
+                  </TableCellListItem>
+                </TableCellList>
+                <BorderlessButton
+                  id={computeEditAbsenceButtonId(faculty, TERM.SPRING)}
+                  variant={VARIANT.INFO}
+                  onClick={
+                    (): void => {
+                      onEdit(faculty, faculty.spring.absence);
+                      setEditedAbsence(faculty.spring.absence);
                     }
-                    forwardRef={
-                      editedAbsence
+                  }
+                  forwardRef={
+                    editedAbsence
                           && faculty.spring.absence
                           && editedAbsence.id === faculty.spring.absence.id
-                        ? editButtonRef
-                        : null
-                    }
-                    alt="edit faculty spring absence"
-                  >
-                    <FontAwesomeIcon icon={faEdit} />
-                  </BorderlessButton>
-                </CellLayout>
-              </TableCell>
-              <TableCell variant={absenceToVariant(faculty.spring.absence)}>
-                {faculty.spring.courses.map((course): ReactElement => (
-                  <div key={course.id}>
-                    {course.catalogNumber}
-                  </div>
-                ))}
-              </TableCell>
-            </TableRow>
-          ))}
+                      ? editButtonRef
+                      : null
+                  }
+                  alt="edit faculty spring absence"
+                >
+                  <FontAwesomeIcon icon={faEdit} />
+                </BorderlessButton>
+              </CellLayout>
+            </TableCell>
+            <TableCell variant={absenceToVariant(faculty.spring.absence)}>
+              {faculty.spring.courses.map((course): ReactElement => (
+                <div key={course.id}>
+                  {course.catalogNumber}
+                </div>
+              ))}
+            </TableCell>
+          </TableRow>
+        ))}
       </TableBody>
     </Table>
   );
