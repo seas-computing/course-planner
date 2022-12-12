@@ -4,6 +4,7 @@ import {
   electricalEngineeringFacultyScheduleResponse,
   newAreaFacultyScheduleResponse,
   error,
+  metadata,
 } from 'testData';
 import {
   render,
@@ -11,7 +12,7 @@ import {
   AllByRole,
   getRoles,
 } from 'test-utils';
-import { strictEqual } from 'assert';
+import { deepStrictEqual, strictEqual } from 'assert';
 import * as dummy from 'testData';
 import {
   waitForElement,
@@ -31,7 +32,7 @@ import {
   absenceEnumToTitleCase,
   facultyTypeEnumToTitleCase,
 } from 'common/utils/facultyHelperFunctions';
-import { ABSENCE_TYPE } from 'common/constants';
+import { ABSENCE_TYPE, FACULTY_TYPE } from 'common/constants';
 import FacultySchedule from '../FacultyPage';
 import FacultyScheduleTable from '../FacultyScheduleTable';
 
@@ -259,6 +260,21 @@ describe('FacultyScheduleTable', function () {
           const filter = utils.queryByLabelText('Change to filter the faculty list by area') as HTMLSelectElement;
           strictEqual(filter.value, 'All');
         });
+        it('should show all of the areas and "All" as options', async function () {
+          const { getAllByRole } = renderResult;
+          await wait(() => getAllByRole('row').length > 3);
+          const rows = getAllByRole('row');
+          const utils = within(rows[2]);
+          const filter = utils.queryByLabelText('Change to filter the faculty list by area') as HTMLSelectElement;
+          const options = within(filter)
+            .getAllByRole('option') as HTMLOptionElement[];
+          const actualOptions = options
+            .map(({ textContent }) => textContent);
+          const expectedOptions = metadata.areas;
+          // The default value of the area dropdown is 'All'
+          expectedOptions.unshift('All');
+          deepStrictEqual(actualOptions, expectedOptions);
+        });
         it('should show all the rows', async function () {
           const { queryAllByRole, getAllByRole } = renderResult;
           await wait(() => getAllByRole('row').length > 3);
@@ -397,6 +413,24 @@ describe('FacultyScheduleTable', function () {
             ));
           strictEqual(tableBodyRows.length, testFacultySchedules.length);
         });
+        it('should show all of the categories and "All" as options', async function () {
+          const {
+            getAllByRole,
+            queryByLabelText,
+          } = renderResult;
+          await wait(() => getAllByRole('row').length > 3);
+          const filter = queryByLabelText('Change to filter the faculty list by category') as HTMLSelectElement;
+          const options = within(filter)
+            .getAllByRole('option') as HTMLOptionElement[];
+          const actualOptions = options
+            .map(({ textContent }) => textContent);
+          const expectedOptions = Object.values(FACULTY_TYPE).map((type) => (
+            facultyTypeEnumToTitleCase(type)
+          ));
+          // The default value of the area dropdown is 'All'
+          expectedOptions.unshift('All');
+          deepStrictEqual(actualOptions, expectedOptions);
+        });
       });
       context('when the filter is changed', function () {
         it('should show the rows with category matching the filter', async function () {
@@ -440,6 +474,24 @@ describe('FacultyScheduleTable', function () {
           const utils = within(rows[2]);
           const filter = utils.queryByLabelText('Change to filter the faculty list by the fall absence value') as HTMLSelectElement;
           strictEqual(filter.value, 'All');
+        });
+        it('should show all of the absence types and "All" as options', async function () {
+          const {
+            getAllByRole,
+            queryByLabelText,
+          } = renderResult;
+          await wait(() => getAllByRole('row').length > 3);
+          const filter = queryByLabelText('Change to filter the faculty list by the fall absence value') as HTMLSelectElement;
+          const options = within(filter)
+            .getAllByRole('option') as HTMLOptionElement[];
+          const actualOptions = options
+            .map(({ textContent }) => textContent);
+          const expectedOptions = Object.values(ABSENCE_TYPE).map((type) => (
+            absenceEnumToTitleCase(type)
+          ));
+          // The default value of the area dropdown is 'All'
+          expectedOptions.unshift('All');
+          deepStrictEqual(actualOptions, expectedOptions);
         });
         it('should show all the rows', async function () {
           const { queryAllByRole, getAllByRole } = renderResult;
@@ -494,6 +546,24 @@ describe('FacultyScheduleTable', function () {
           const utils = within(rows[2]);
           const filter = utils.queryByLabelText('Change to filter the faculty list by the spring absence value') as HTMLSelectElement;
           strictEqual(filter.value, 'All');
+        });
+        it('should show all of the absence types and "All" as options', async function () {
+          const {
+            getAllByRole,
+            queryByLabelText,
+          } = renderResult;
+          await wait(() => getAllByRole('row').length > 3);
+          const filter = queryByLabelText('Change to filter the faculty list by the spring absence value') as HTMLSelectElement;
+          const options = within(filter)
+            .getAllByRole('option') as HTMLOptionElement[];
+          const actualOptions = options
+            .map(({ textContent }) => textContent);
+          const expectedOptions = Object.values(ABSENCE_TYPE).map((type) => (
+            absenceEnumToTitleCase(type)
+          ));
+          // The default value of the area dropdown is 'All'
+          expectedOptions.unshift('All');
+          deepStrictEqual(actualOptions, expectedOptions);
         });
         it('should show all the rows', async function () {
           const { queryAllByRole, getAllByRole } = renderResult;
