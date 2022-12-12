@@ -56,7 +56,7 @@ describe('Faculty Page', function () {
         const retiredCheckbox = await findByLabelText('Show "No Longer Active" Faculty', { exact: false }) as HTMLInputElement;
         strictEqual(retiredCheckbox.checked, false, 'The "Show Retired" checkbox is checked when it should initially be unchecked');
         strictEqual(
-          queryByText(notActiveACSFacultyScheduleResponse.area), null
+          queryByText(notActiveACSFacultyScheduleResponse.lastName), null
         );
       });
       it('show faculty that are not retired in all semesters', async function () {
