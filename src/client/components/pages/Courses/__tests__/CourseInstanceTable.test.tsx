@@ -60,7 +60,6 @@ describe('CourseInstanceTable', function () {
         COURSE_TABLE_COLUMN.MEETINGS,
         COURSE_TABLE_COLUMN.ENROLLMENT,
         COURSE_TABLE_COLUMN.NOTES,
-        COURSE_TABLE_COLUMN.DETAILS,
       ];
       let getAllByRole: BoundFunction<AllByRole>;
       const areaFilterLabel = 'The table will be filtered as selected in this area dropdown filter';
@@ -131,7 +130,6 @@ describe('CourseInstanceTable', function () {
       const testView = [
         COURSE_TABLE_COLUMN.AREA,
         COURSE_TABLE_COLUMN.CATALOG_NUMBER,
-        COURSE_TABLE_COLUMN.DETAILS,
       ];
       let getAllByRole: BoundFunction<AllByRole>;
       beforeEach(function () {
@@ -169,7 +167,7 @@ describe('CourseInstanceTable', function () {
         const [firstRow] = getAllByRole('row');
         const { columnheader } = getRoles(firstRow);
         const titles = columnheader.map((elem) => (elem.textContent));
-        deepStrictEqual(titles, ['Area', 'Course', 'Details']);
+        deepStrictEqual(titles, ['Area', 'Course']);
       });
     });
     context('With semesters, but no enrollment data visible', function () {
@@ -177,7 +175,6 @@ describe('CourseInstanceTable', function () {
         COURSE_TABLE_COLUMN.AREA,
         COURSE_TABLE_COLUMN.CATALOG_NUMBER,
         COURSE_TABLE_COLUMN.INSTRUCTORS,
-        COURSE_TABLE_COLUMN.DETAILS,
       ];
       let getAllByRole: BoundFunction<AllByRole>;
       beforeEach(function () {
@@ -221,7 +218,7 @@ describe('CourseInstanceTable', function () {
         const [, secondRow] = getAllByRole('row');
         const { columnheader } = getRoles(secondRow);
         const titles = columnheader.map((elem) => (elem.textContent));
-        deepStrictEqual(titles, ['Area', 'Course', 'Instructors', 'Instructors', 'Details']);
+        deepStrictEqual(titles, ['Area', 'Course', 'Instructors', 'Instructors']);
       });
     });
   });
