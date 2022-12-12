@@ -235,7 +235,6 @@ describe('CourseInstanceTable', function () {
       COURSE_TABLE_COLUMN.MEETINGS,
       COURSE_TABLE_COLUMN.ENROLLMENT,
       COURSE_TABLE_COLUMN.NOTES,
-      COURSE_TABLE_COLUMN.DETAILS,
     ];
     let getAllByRole: BoundFunction<AllByRole>;
     beforeEach(function () {

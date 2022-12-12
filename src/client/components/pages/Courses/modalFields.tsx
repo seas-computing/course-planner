@@ -98,10 +98,4 @@ export const modalFields: ModalFieldsColumn[] = [
     columnGroup: COURSE_TABLE_COLUMN_GROUP.META,
     viewColumn: COURSE_TABLE_COLUMN.NOTES,
   },
-  {
-    name: 'Details',
-    key: 'details',
-    columnGroup: COURSE_TABLE_COLUMN_GROUP.META,
-    viewColumn: COURSE_TABLE_COLUMN.DETAILS,
-  },
 ];
