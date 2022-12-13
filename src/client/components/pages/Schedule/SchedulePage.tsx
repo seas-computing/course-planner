@@ -47,9 +47,9 @@ export interface PrefixState{
  * A button to filter course prefixes and fade sessionblock based
  * on selected value
  */
-const PrefixButton = styled(Button) <ButtonProps & { prefix: string, isPrefixActive: (prefix: string) => boolean; }>`
+const PrefixButton = styled(Button) <ButtonProps & { prefix: string, isPrefixActive: boolean; }>`
  margin: ${fromTheme('ws', 'small')};
- opacity : ${({ isPrefixActive, prefix }) => (isPrefixActive(prefix) ? '' : 0.5)};
+ opacity : ${({ isPrefixActive }) => (isPrefixActive ? '' : 0.5)};
  background-color: ${({ prefix }) => getCatPrefixColor(prefix)};
 `;
 
@@ -222,7 +222,7 @@ const SchedulePage: FunctionComponent = () => {
         <span id="course-filter-buttons">Show/Hide Catalog Prefixes</span>
         {prefixes.map((prefixObj) => (
           <PrefixButton
-            isPrefixActive={isPrefixActive}
+            isPrefixActive={prefixObj.active}
             aria-labelledby="course-filter-button"
             alt="Course Filter Button"
             prefix={prefixObj.prefix}
