@@ -259,6 +259,49 @@ FacultyResponseDTO = {
 };
 
 /**
+ * An example [[FacultyResponseDTO]] response representing a schedule of a
+ * computer science faculty member
+ */
+
+export const computerScienceFacultyScheduleResponse:
+FacultyResponseDTO = {
+  id: '6a0af269-3128-48b9-ac33-22f3dea36b31',
+  firstName: 'David',
+  lastName: 'Malan',
+  category: FACULTY_TYPE.LADDER,
+  area: 'CS',
+  jointWith: '',
+  fall: {
+    id: 'f13c95ba-ea08-421a-9597-4152bb8ae69a',
+    academicYear: 2021,
+    courses: [
+      {
+        id: '92abefb7-d0b3-4ec0-b4a4-9050867aa927',
+        catalogNumber: 'CS 50',
+      },
+    ],
+    absence: {
+      id: '32dea373-1c18-4eab-bf93-b0482f8c843d',
+      type: ABSENCE_TYPE.PRESENT,
+    },
+  },
+  spring: {
+    id: 'e92eea2d-543c-4988-a68f-3e7ca82d306d',
+    academicYear: 2021,
+    courses: [
+      {
+        id: 'bbb0d395-3176-4752-b08d-1af1e20d1c21',
+        catalogNumber: 'CS 226',
+      },
+    ],
+    absence: {
+      id: '1efd670a-f05e-49d4-8c9f-119c4f298f73',
+      type: ABSENCE_TYPE.PRESENT,
+    },
+  },
+};
+
+/**
  * An example [[FacultyResponseDTO]] response representing a schedule of a non
  * Active Applied ComputationalScience
  */
