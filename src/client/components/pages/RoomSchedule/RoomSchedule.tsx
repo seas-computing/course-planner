@@ -21,9 +21,18 @@ import {
 import React, {
   FunctionComponent, useCallback, useContext, useEffect, useState,
 } from 'react';
+import styled from 'styled-components';
 import { CourseListing, SessionBlock, WeekBlock } from '../Schedule/blocks';
 import DayBlock from '../Schedule/blocks/DayBlock';
 import { SemesterSelection } from '../Schedule/SchedulePage';
+
+/**
+ * A wrapper component used to format the Room Selector
+ */
+const RoomSelectorWrapper = styled.span`
+  padding-right: 25%;
+  min-width: 50em;
+`;
 
 /**
  * Parameters for how the schedule view should be displayed. Currently using
@@ -222,28 +231,28 @@ const RoomSchedule: FunctionComponent = () => {
                 options={semesterOptions}
                 onChange={updateTerm}
               />
-              <Combobox
-                options={fullRoomList
-                  .map((room): { value: string; label: string; } => ({
-                    label: room.name,
-                    value: room.id,
-                  }))}
-                currentValue={null}
-                label="Select a room"
-                isLabelVisible={false}
-                placeholder="Select a room"
-                onOptionSelected={({
-                  selectedItem: {
-                    value: id, label: displayName,
-                  },
-                }) => {
-                  setCurrentRoom({ id, displayName });
-                }}
-                filterFunction={(option, inputValue) => {
-                  const re = new RegExp(inputValue, 'i');
-                  return re.test(option.label);
-                }}
-              />
+              <RoomSelectorWrapper>
+                <Combobox
+                  options={fullRoomList
+                    .map((room): { value: string; label: string; } => ({
+                      label: room.name,
+                      value: room.id,
+                    }))}
+                  currentValue={null}
+                  label="Select a room"
+                  onOptionSelected={({
+                    selectedItem: {
+                      value: id, label: displayName,
+                    },
+                  }) => {
+                    setCurrentRoom({ id, displayName });
+                  }}
+                  filterFunction={(option, inputValue) => {
+                    const re = new RegExp(inputValue, 'i');
+                    return re.test(option.label);
+                  }}
+                />
+              </RoomSelectorWrapper>
             </>
           )}
         </MenuFlex>
