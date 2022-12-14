@@ -5,15 +5,16 @@ import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
 import { getCourseScheduleForSemester } from 'client/api/courses';
 import { DEGREE_PROGRAM, TERM, getCatPrefixColor } from 'common/constants';
 import {
-  Dropdown, POSITION, LoadSpinner, Button, VARIANT,
+  Dropdown, POSITION, LoadSpinner, Button, VARIANT, fromTheme,
 } from 'mark-one';
 import { AppMessage, MESSAGE_TYPE, MESSAGE_ACTION } from 'client/classes';
 import { MessageContext, MetadataContext } from 'client/context';
-import { VerticalSpace } from 'client/components/layout';
 import { termEnumToTitleCase } from 'common/utils/termHelperFunctions';
 import { toTitleCase } from 'common/utils/util';
 import { ButtonProps } from 'mark-one/lib/Buttons/Button';
 import styled from 'styled-components';
+import MenuFlex from 'client/components/general/flex/MenuFlex';
+import VerticalSpace from 'client/components/layout/VerticalSpace';
 import ScheduleView from './ScheduleView';
 import { useStoredState } from '../../../hooks/useStoredState';
 
@@ -46,7 +47,9 @@ export interface PrefixState{
  * A button to filter course prefixes and fade sessionblock based
  * on selected value
  */
-const PrefixButton = styled(Button)<ButtonProps & { prefix: string }>`
+const PrefixButton = styled(Button) <ButtonProps & { prefix: string, isPrefixActive: boolean; }>`
+ margin: ${fromTheme('ws', 'small')};
+ opacity : ${({ isPrefixActive }) => (isPrefixActive ? '' : 0.5)};
  background-color: ${({ prefix }) => getCatPrefixColor(prefix)};
 `;
 
@@ -113,7 +116,6 @@ const SchedulePage: FunctionComponent = () => {
     const prefixObj = prefixes.find((p) => p.prefix === prefix);
     return prefixObj.active;
   }, [prefixes]);
-
   /* Track the degree program for which data will be shown in the table
   */
   const [
@@ -216,9 +218,12 @@ const SchedulePage: FunctionComponent = () => {
 
   return (
     <>
-      <VerticalSpace>
+      <div aria-label="course-filter-buttons">
+        <span id="course-filter-buttons">Show/Hide Catalog Prefixes</span>
         {prefixes.map((prefixObj) => (
           <PrefixButton
+            isPrefixActive={prefixObj.active}
+            aria-labelledby="course-filter-button"
             alt="Course Filter Button"
             prefix={prefixObj.prefix}
             variant={VARIANT.BASE}
@@ -228,33 +233,38 @@ const SchedulePage: FunctionComponent = () => {
             {prefixObj.prefix}
           </PrefixButton>
         ))}
-        {selectedSemester && (
+      </div>
+      <VerticalSpace>
+        <MenuFlex>
           <Dropdown
-            id="schedule-semester-selector"
-            name="schedule-semester-selector"
-            label="Select Semester"
+            id="degree-program-selector"
+            name="degree-program-selector"
+            label="Degree Program"
+            isLabelVisible
             labelPosition={POSITION.LEFT}
-            value={`${selectedSemester.term} ${selectedSemester.calendarYear}`}
-            options={semesterOptions}
-            onChange={updateTerm}
-          />
-        )}
-        <Dropdown
-          id="degree-program-selector"
-          name="degree-program-selector"
-          label="Degree Program"
-          isLabelVisible
-          options={Object.values(DEGREE_PROGRAM)
-            .map((value) => ({ value, label: value }))}
-          value={selectedDegreeProgram}
-          onChange={
-            ({
-              target: { value },
-            }: DegreeProgramEvent) => {
-              setSelectedDegreeProgram(value);
+            options={Object.values(DEGREE_PROGRAM)
+              .map((value) => ({ value, label: value }))}
+            value={selectedDegreeProgram}
+            onChange={
+              ({
+                target: { value },
+              }: DegreeProgramEvent) => {
+                setSelectedDegreeProgram(value);
+              }
             }
-          }
-        />
+          />
+          {selectedSemester && (
+            <Dropdown
+              id="schedule-semester-selector"
+              name="schedule-semester-selector"
+              label="Select Semester"
+              labelPosition={POSITION.LEFT}
+              value={`${selectedSemester.term} ${selectedSemester.calendarYear}`}
+              options={semesterOptions}
+              onChange={updateTerm}
+            />
+          )}
+        </MenuFlex>
       </VerticalSpace>
       {isFetching
         ? (
