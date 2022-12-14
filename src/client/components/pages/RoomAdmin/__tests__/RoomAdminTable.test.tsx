@@ -36,12 +36,12 @@ describe('Campus Dropdown', function () {
   });
   it('defaults to all', async function () {
     await wait(() => renderResult.getAllByRole('row').length > 1);
-    const campusDropDown = renderResult.getByLabelText('The table will be filtered by selected campus name', { exact: true }) as HTMLSelectElement;
+    const campusDropDown = renderResult.getByLabelText('Change to filter the list of meetings by campus', { exact: true }) as HTMLSelectElement;
     strictEqual(campusDropDown.value, 'All');
   });
   context('When the campus dropdown menu is selected', function () {
     it('lists all available campus options', function () {
-      const campusDropDown = renderResult.getByLabelText('The table will be filtered by selected campus name');
+      const campusDropDown = renderResult.getByLabelText('Change to filter the list of meetings by campus');
       const dropdownOptions = within(campusDropDown)
         .getAllByRole('option') as HTMLOptionElement[];
       const campusDropdownLabels = dropdownOptions
@@ -52,10 +52,10 @@ describe('Campus Dropdown', function () {
       );
     });
   });
-  context('When campus dropdown value change', function () {
-    it('filteres table data when allston selected', async function () {
+  context('When campus dropdown value changes', function () {
+    it('filteres table data when Allston selected', async function () {
       await wait(() => renderResult.getAllByRole('row').length > 1);
-      const [campusDropDown] = renderResult.getAllByLabelText('The table will be filtered by selected campus name');
+      const [campusDropDown] = renderResult.getAllByLabelText('Change to filter the list of meetings by campus');
       fireEvent.change(campusDropDown, { target: { value: 'Allston' } });
       await wait(() => renderResult.getAllByRole('row').length > 1);
       const rows = renderResult.getAllByRole('row');
@@ -70,9 +70,9 @@ describe('Campus Dropdown', function () {
         );
       });
     });
-    it('filters table data when cambridge is selected', async function () {
+    it('filters table data when Cambridge is selected', async function () {
       await wait(() => renderResult.getAllByRole('row').length > 1);
-      const [campusDropDown] = renderResult.getAllByLabelText('The table will be filtered by selected campus name');
+      const [campusDropDown] = renderResult.getAllByLabelText('Change to filter the list of meetings by campus');
       fireEvent.change(campusDropDown, { target: { value: 'Cambridge' } });
       await wait(() => renderResult.getAllByRole('row').length > 1);
       const rows = renderResult.getAllByRole('row');
@@ -101,12 +101,12 @@ describe('Building Dropdown', function () {
   });
   it('defaults to all', async function () {
     await wait(() => renderResult.getAllByRole('row').length > 1);
-    const buildingDropDown = renderResult.getByLabelText('The table will be filtered by selected building name', { exact: true }) as HTMLSelectElement;
+    const buildingDropDown = renderResult.getByLabelText('Change to filter the list of meetings by building', { exact: true }) as HTMLSelectElement;
     strictEqual(buildingDropDown.value, 'All');
   });
   it('lists all available building options', async function () {
     await wait(() => renderResult.getAllByRole('row').length > 1);
-    const buildingDropDown = renderResult.getByLabelText('The table will be filtered by selected building name');
+    const buildingDropDown = renderResult.getByLabelText('Change to filter the list of meetings by building');
     const dropdownOptions = within(buildingDropDown)
       .getAllByRole('option') as HTMLOptionElement[];
     const buildingDropdownLabels = dropdownOptions
@@ -118,11 +118,15 @@ describe('Building Dropdown', function () {
       'building dropdown menu is not listing all available buildings'
     );
   });
-  context('when building dropdown value change', function () {
+  context('when building dropdown value changes', function () {
     it('filters table data for selected value', async function () {
       await wait(() => renderResult.getAllByRole('row').length > 1);
-      const [buildingDropDown] = renderResult.getAllByLabelText('The table will be filtered by selected building name');
-      fireEvent.change(buildingDropDown, { target: { value: 'Bauer Laboratory' } });
+      const [buildingDropDown] = renderResult.getAllByLabelText('Change to filter the list of meetings by building');
+      const testBuilding = adminRoomsResponse[0].building.name;
+      fireEvent.change(buildingDropDown, {
+        target:
+        { value: testBuilding },
+      });
       await wait(() => renderResult.getAllByRole('row').length > 1);
       const rows = renderResult.getAllByRole('row');
       const bodyRow = rows.filter((row) => (
@@ -130,9 +134,9 @@ describe('Building Dropdown', function () {
       ));
       bodyRow.forEach((row) => {
         strictEqual(
-          within(row).queryByText('Bauer Laboratory') !== null,
+          within(row).queryByText(`${testBuilding}`) !== null,
           true,
-          'Bauer Laboratory is not in the table as expected'
+          ` building ${testBuilding} is not in the table as expected`
         );
       });
     });
@@ -150,13 +154,14 @@ describe('Room input filter', function () {
   });
   it('defaults to null', async function () {
     await wait(() => renderResult.getAllByRole('row').length > 1);
-    const roomFilterInput = renderResult.getByLabelText('The table will be filtered by selected room name', { exact: true }) as HTMLSelectElement;
+    const roomFilterInput = renderResult.getByLabelText('Change to filter the list of meetings by room', { exact: true }) as HTMLSelectElement;
     strictEqual(roomFilterInput.value, '');
   });
   it('filters table data when room name is entered', async function () {
     await wait(() => renderResult.getAllByRole('row').length > 1);
-    const [roomInput] = renderResult.getAllByLabelText('The table will be filtered by selected room name');
-    fireEvent.change(roomInput, { target: { value: '101A' } });
+    const [roomInput] = renderResult.getAllByLabelText('Change to filter the list of meetings by room');
+    const testRoomName = adminRoomsResponse[0].name;
+    fireEvent.change(roomInput, { target: { value: testRoomName } });
     await wait(() => renderResult.getAllByRole('row').length > 1);
     const rows = renderResult.getAllByRole('row');
     const bodyRow = rows.filter((row) => (
@@ -164,9 +169,9 @@ describe('Room input filter', function () {
     ));
     bodyRow.forEach((row) => {
       strictEqual(
-        within(row).queryByText('101A') !== null,
+        within(row).queryByText(`${testRoomName}`) !== null,
         true,
-        '101A is not in the table as expected'
+        `${testRoomName} is not in the table as expected`
       );
     });
   });
@@ -183,25 +188,23 @@ describe('capacity input filter', function () {
   });
   it('defaults to null', async function () {
     await wait(() => renderResult.getAllByRole('row').length > 1);
-    const capacityFilterInput = renderResult.getByLabelText('The table will be filtered by entered capacity', { exact: true }) as HTMLSelectElement;
+    const capacityFilterInput = renderResult.getByLabelText('Change to filter the list of meetings by capacity', { exact: true }) as HTMLSelectElement;
     strictEqual(capacityFilterInput.value, '');
   });
   it('filters table data by entered capacity entered', async function () {
     await wait(() => renderResult.getAllByRole('row').length > 1);
-    const [capacityFilterInput] = renderResult.getAllByLabelText('The table will be filtered by selected room name');
-    fireEvent.change(capacityFilterInput, { target: { value: '20' } });
+    const [capacityFilterInput] = renderResult.getAllByLabelText('Change to filter the list of meetings by capacity');
+    const testCapacity = adminRoomsResponse[0].capacity;
+    fireEvent.change(capacityFilterInput, { target: { value: testCapacity } });
     await wait(() => renderResult.getAllByRole('row').length > 1);
-    const rows = renderResult.getAllByRole('row');
-    const bodyRow = rows.filter((row) => (
-      within(row).queryAllByRole('columnheader').length === 0
-    ));
-    bodyRow.forEach((row) => {
-      strictEqual(
-        within(row).queryByText('20') !== null,
-        true,
-        'room capacity filter is not populating data properly'
-      );
-    });
+    const rows = Array.from(renderResult.getAllByRole('row')) as HTMLTableRowElement[];
+    const rowsContent = rows
+      .map((el) => (Array.from(el.cells).map((i) => i.textContent)));
+    strictEqual(
+      parseInt(rowsContent[2][3]) === testCapacity,
+      true,
+      'room capacity filter is not populating data properly'
+    );
   });
 });
 describe('Room Admin Table', function () {

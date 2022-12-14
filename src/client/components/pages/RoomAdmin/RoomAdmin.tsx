@@ -4,7 +4,6 @@ import { LocationAPI } from 'client/api';
 import { AppMessage, MESSAGE_ACTION, MESSAGE_TYPE } from 'client/classes';
 import { VerticalSpace } from 'client/components/layout';
 import { MessageContext } from 'client/context';
-import RoomAdminResponse from 'common/dto/room/RoomAdminResponse.dto';
 import {
   ALIGN,
   BorderlessButton,
@@ -22,6 +21,7 @@ import {
 } from 'mark-one';
 import { TableRowProps } from 'mark-one/lib/Tables/TableRow';
 import React, {
+  ChangeEvent,
   FunctionComponent,
   ReactElement,
   Ref,
@@ -31,9 +31,11 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import RoomAdminResponse from 'common/dto/room/RoomAdminResponse.dto';
 import CreateRoomModal from './CreateRoomModal';
 import EditRoomModal from './EditRoomModal';
 import { listFilter } from '../Filter';
+import { CAMPUS } from '../Courses/RoomSelectionTable';
 
 /**
  * Keeps track of the information needed to display the edit room modal for a
@@ -59,26 +61,19 @@ const RoomAdmin: FunctionComponent = (): ReactElement => {
   const [campusFilter, setCampusFilter] = useState('All');
 
   /**
-   * The current campus list used to populate campuses the room admin table
-   */
-  const [campusNameList, setCampusNameList] = useState(
-    [] as string[]
-  );
-
-  /**
    * The current buildings name filter value
    */
   const [buildingFilter, setBuildingFilter] = useState('All');
 
   /**
-    * The building list used to populate campuses the room admin table
+    * The building list used to populate buildings in the room admin table
     */
   const [buildingNameList, setBuildingNameList] = useState(
     [] as string[]
   );
 
   /**
-   * The current buildings name filter value
+   * The current room name filter value
    */
   const [roomFilter, setRoomFilter] = useState<string>('');
 
@@ -156,9 +151,7 @@ const RoomAdmin: FunctionComponent = (): ReactElement => {
     try {
       const rooms = await LocationAPI.getAdminRooms();
       setFullRoomList(rooms);
-      const campusNameSet = new Set <string>();
-      rooms.forEach((room) => campusNameSet.add(room.building.campus.name));
-      setCampusNameList(Array.from(campusNameSet.values()));
+      // populates all building information list from room admin
       const buildingsSet = new Set <string>();
       rooms.forEach((room) => buildingsSet.add(room.building.name));
       setBuildingNameList(Array.from(buildingsSet.values()));
@@ -182,9 +175,9 @@ const RoomAdmin: FunctionComponent = (): ReactElement => {
   useEffect((): void => {
     void loadRooms();
   }, [loadRooms]);
-  const campusDropDown = campusNameList.map((campusName) => (
-    { value: campusName, label: campusName }
-  ));
+  /**
+   * Populates building names for the building filter dropdown.
+   */
   const buildingDropDown = buildingNameList.map((buildingName) => (
     { value: buildingName, label: buildingName }
   ));
@@ -258,31 +251,34 @@ const RoomAdmin: FunctionComponent = (): ReactElement => {
                   <TableRow isStriped>
                     <TableHeadingCell scope="col">
                       <Dropdown
-                        options={
-                          [{ value: 'All', label: 'All' }, ...campusDropDown]
-                        }
-                        name="filterByCampusName"
-                        id="filterByCampusName"
-                        label="The table will be filtered by selected campus name"
-                        isLabelVisible={false}
                         hideError
+                        id="campus-filter"
+                        label="Change to filter the list of meetings by campus"
+                        isLabelVisible={false}
                         onChange={
-                          (event:React.ChangeEvent<HTMLInputElement>) => {
-                            setCampusFilter(event.currentTarget.value);
+                          (evt: ChangeEvent<HTMLSelectElement>): void => {
+                            setCampusFilter(evt.target.value as CAMPUS);
                           }
                         }
+                        name="campus-filter"
+                        value={campusFilter}
+                        options={
+                          Object.values(CAMPUS)
+                            .map((value) => ({ value, label: value }))
+                        }
                       />
+
                     </TableHeadingCell>
                     <TableHeadingCell scope="col">
                       <Dropdown
+                        hideError
+                        id="building-filter"
+                        label="Change to filter the list of meetings by building"
+                        isLabelVisible={false}
                         options={
                           [{ value: 'All', label: 'All' }, ...buildingDropDown]
                         }
-                        name="filterByBuildingName"
-                        id="filterByBuildingName"
-                        label="The table will be filtered by selected building name"
-                        isLabelVisible={false}
-                        hideError
+                        name="building-filter"
                         onChange={
                           (event:React.ChangeEvent<HTMLInputElement>) => {
                             setBuildingFilter(event.currentTarget.value);
@@ -292,11 +288,11 @@ const RoomAdmin: FunctionComponent = (): ReactElement => {
                     </TableHeadingCell>
                     <TableHeadingCell scope="col">
                       <TextInput
-                        id="filterByRoomName"
-                        name="filterByRoomName"
+                        id="room-filter"
+                        name="room-filter"
                         placeholder="Filter by Room Name"
                         value={roomFilter}
-                        label="The table will be filtered by selected room name"
+                        label="Change to filter the list of meetings by room"
                         isLabelVisible={false}
                         hideError
                         onChange={
@@ -308,11 +304,11 @@ const RoomAdmin: FunctionComponent = (): ReactElement => {
                     </TableHeadingCell>
                     <TableHeadingCell scope="col">
                       <TextInput
-                        id="filterByCapacityName"
-                        name="filterByCapacityName"
+                        id="capacity-filter"
+                        name="capacity-filter"
                         placeholder="Enter Capacity"
                         value={capacityFilter}
-                        label="The table will be filtered by entered capacity"
+                        label="Change to filter the list of meetings by capacity"
                         isLabelVisible={false}
                         hideError
                         onChange={
