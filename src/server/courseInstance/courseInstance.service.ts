@@ -83,7 +83,7 @@ export class CourseInstanceService {
         'c.spring',
         'CourseInstanceListingView',
         'spring',
-        `spring."courseId" = c.id AND spring.term = '${TERM.SPRING}'`
+        `spring."courseId" = COALESCE(c."sameAsId", c.id) AND spring.term = '${TERM.SPRING}'`
       )
       .leftJoinAndMapMany(
         'spring.instructors',
@@ -107,7 +107,7 @@ export class CourseInstanceService {
         'c.fall',
         'CourseInstanceListingView',
         'fall',
-        `fall."courseId" = c.id AND fall.term = '${TERM.FALL}'`
+        `fall."courseId" = COALESCE(c."sameAsId", c.id) AND fall.term = '${TERM.FALL}'`
       )
       .leftJoinAndMapMany(
         'fall.instructors',
