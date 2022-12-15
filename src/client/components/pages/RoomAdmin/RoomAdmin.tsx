@@ -253,7 +253,7 @@ const RoomAdmin: FunctionComponent = (): ReactElement => {
                       <Dropdown
                         hideError
                         id="campus-filter"
-                        label="Change to filter the list of meetings by campus"
+                        label="Change to filter the list of rooms by campus"
                         isLabelVisible={false}
                         onChange={
                           (evt: ChangeEvent<HTMLSelectElement>): void => {
@@ -273,7 +273,7 @@ const RoomAdmin: FunctionComponent = (): ReactElement => {
                       <Dropdown
                         hideError
                         id="building-filter"
-                        label="Change to filter the list of meetings by building"
+                        label="Change to filter the list of rooms by building"
                         isLabelVisible={false}
                         options={
                           [{ value: 'All', label: 'All' }, ...buildingDropDown]
@@ -292,7 +292,7 @@ const RoomAdmin: FunctionComponent = (): ReactElement => {
                         name="room-filter"
                         placeholder="Filter by Room Name"
                         value={roomFilter}
-                        label="Change to filter the list of meetings by room"
+                        label="Change to filter the list of rooms by room"
                         isLabelVisible={false}
                         hideError
                         onChange={
@@ -308,7 +308,7 @@ const RoomAdmin: FunctionComponent = (): ReactElement => {
                         name="capacity-filter"
                         placeholder="Enter Capacity"
                         value={capacityFilter}
-                        label="Change to filter the list of meetings by capacity"
+                        label="Change to filter the list of rooms by capacity"
                         isLabelVisible={false}
                         hideError
                         onChange={
