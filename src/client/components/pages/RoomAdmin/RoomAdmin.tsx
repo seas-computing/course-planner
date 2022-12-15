@@ -292,7 +292,7 @@ const RoomAdmin: FunctionComponent = (): ReactElement => {
                         name="room-filter"
                         placeholder="Filter by Room Name"
                         value={roomFilter}
-                        label="Change to filter the list of rooms by room"
+                        label="Change to filter the list of rooms by selected room"
                         isLabelVisible={false}
                         hideError
                         onChange={
