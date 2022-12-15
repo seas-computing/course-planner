@@ -154,7 +154,7 @@ describe('Room input filter', function () {
   });
   it('defaults to null', async function () {
     await wait(() => renderResult.getAllByRole('row').length > 1);
-    const roomFilterInput = renderResult.getByLabelText('Change to filter the list of rooms by selected room', { exact: true }) as HTMLSelectElement;
+    const roomFilterInput = renderResult.getByLabelText('Change to filter the list of rooms by selected room name', { exact: true }) as HTMLSelectElement;
     strictEqual(roomFilterInput.value, '');
   });
   it('filters table data when room name is entered', async function () {
