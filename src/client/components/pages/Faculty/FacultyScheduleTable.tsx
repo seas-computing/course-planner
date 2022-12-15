@@ -26,7 +26,6 @@ import {
 import { TableRowProps } from 'mark-one/lib/Tables/TableRow';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faFolderOpen,
   faEdit,
 } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -231,7 +230,6 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
           <TableHeadingCell scope="col" rowSpan={2}>Courses</TableHeadingCell>
           <TableHeadingCell scope="col" rowSpan={1}>Sabbatical Leave</TableHeadingCell>
           <TableHeadingCell scope="col" rowSpan={2}>Courses</TableHeadingCell>
-          <TableHeadingCell scope="col" rowSpan={2}>Detail</TableHeadingCell>
         </TableRow>
         <TableRow noHighlight>
           <TableHeadingCell>
@@ -458,14 +456,6 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
                   {course.catalogNumber}
                 </div>
               ))}
-            </TableCell>
-            <TableCell alignment={ALIGN.CENTER}>
-              <BorderlessButton
-                variant={VARIANT.INFO}
-                onClick={(): void => {}}
-              >
-                <FontAwesomeIcon icon={faFolderOpen} />
-              </BorderlessButton>
             </TableCell>
           </TableRow>
         ))}
