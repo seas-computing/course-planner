@@ -154,7 +154,7 @@ const RoomAdmin: FunctionComponent = (): ReactElement => {
       // populates all building information list from room admin
       const buildingsSet = new Set <string>();
       rooms.forEach((room) => buildingsSet.add(room.building.name));
-      setBuildingNameList(Array.from(buildingsSet.values()));
+      setBuildingNameList(Array.from(buildingsSet.values()).sort());
     } catch (error) {
       dispatchMessage({
         message: new AppMessage(
