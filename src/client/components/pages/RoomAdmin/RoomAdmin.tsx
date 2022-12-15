@@ -66,8 +66,8 @@ const RoomAdmin: FunctionComponent = (): ReactElement => {
   const [buildingFilter, setBuildingFilter] = useState('All');
 
   /**
-    * The building list used to populate buildings in the room admin table
-    */
+   * The building list used to populate buildings in the room admin table
+   */
   const [buildingNameList, setBuildingNameList] = useState(
     [] as string[]
   );
