@@ -182,7 +182,7 @@ const RoomAdmin: FunctionComponent = (): ReactElement => {
     { value: buildingName, label: buildingName }
   ));
   /**
-   * Filters rooms list based on selected campus, building, room and capacity.
+   * Filters rooms list based on selected campus, building, room name and capacity.
    */
   const filteredRoomList = (): RoomAdminResponse[] => {
     let allRoomList = [...fullRoomList];
