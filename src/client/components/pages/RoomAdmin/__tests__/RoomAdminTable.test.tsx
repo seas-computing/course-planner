@@ -159,7 +159,7 @@ describe('Room input filter', function () {
   });
   it('filters table data when room name is entered', async function () {
     await wait(() => renderResult.getAllByRole('row').length > 1);
-    const [roomInput] = renderResult.getAllByLabelText('Change to filter the list of rooms by selected room');
+    const [roomInput] = renderResult.getAllByLabelText('Change to filter the list of rooms by selected room name');
     const testRoomName = adminRoomsResponse[0].name;
     fireEvent.change(roomInput, { target: { value: testRoomName } });
     await wait(() => renderResult.getAllByRole('row').length > 1);
