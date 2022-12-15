@@ -240,6 +240,7 @@ const RoomSchedule: FunctionComponent = () => {
                     }))}
                   currentValue={null}
                   label="Select a room"
+                  placeholder="Type to search..."
                   onOptionSelected={({
                     selectedItem: {
                       value: id, label: displayName,
