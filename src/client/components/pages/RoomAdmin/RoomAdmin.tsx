@@ -309,7 +309,7 @@ const RoomAdmin: FunctionComponent = (): ReactElement => {
                       <TextInput
                         id="capacity-filter"
                         name="capacity-filter"
-                        placeholder="Enter Capacity"
+                        placeholder="Filter by Capacity"
                         value={capacityFilter}
                         label="Change to filter the list of rooms by capacity"
                         isLabelVisible={false}
