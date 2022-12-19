@@ -46,6 +46,11 @@ interface EditRoomModalData {
   visible: boolean;
 }
 
+/**
+ * Defines the possibilities of campus filter values
+ */
+ type CampusOptions = CAMPUS | 'All';
+
 const RoomAdmin: FunctionComponent = (): ReactElement => {
   /**
    * Saves a complete list of rooms in local state
@@ -58,12 +63,12 @@ const RoomAdmin: FunctionComponent = (): ReactElement => {
   /**
    * The campus name filter value
    */
-  const [campusFilter, setCampusFilter] = useState('All');
+  const [campusFilter, setCampusFilter] = useState<CampusOptions>('All');
 
   /**
    * The current buildings name filter value
    */
-  const [buildingFilter, setBuildingFilter] = useState('All');
+  const [buildingFilter, setBuildingFilter] = useState<string>('All');
 
   /**
    * The building list used to populate buildings in the room admin table
@@ -260,7 +265,7 @@ const RoomAdmin: FunctionComponent = (): ReactElement => {
                         isLabelVisible={false}
                         onChange={
                           (evt: ChangeEvent<HTMLSelectElement>): void => {
-                            setCampusFilter(evt.target.value as CAMPUS);
+                            setCampusFilter(evt.target.value as CampusOptions);
                           }
                         }
                         name="campus-filter"
