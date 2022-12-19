@@ -4,11 +4,11 @@ import { LocationAPI } from 'client/api';
 import { AppMessage, MESSAGE_ACTION, MESSAGE_TYPE } from 'client/classes';
 import { VerticalSpace } from 'client/components/layout';
 import { MessageContext } from 'client/context';
-import RoomAdminResponse from 'common/dto/room/RoomAdminResponse.dto';
 import {
   ALIGN,
   BorderlessButton,
   Button,
+  Dropdown,
   LoadSpinner,
   Table,
   TableBody,
@@ -16,10 +16,12 @@ import {
   TableHead,
   TableHeadingCell,
   TableRow,
+  TextInput,
   VARIANT,
 } from 'mark-one';
 import { TableRowProps } from 'mark-one/lib/Tables/TableRow';
 import React, {
+  ChangeEvent,
   FunctionComponent,
   ReactElement,
   Ref,
@@ -29,8 +31,11 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import RoomAdminResponse from 'common/dto/room/RoomAdminResponse.dto';
 import CreateRoomModal from './CreateRoomModal';
 import EditRoomModal from './EditRoomModal';
+import { listFilter } from '../Filter';
+import { CAMPUS } from '../Courses/RoomSelectionTable';
 
 /**
  * Keeps track of the information needed to display the edit room modal for a
@@ -41,6 +46,11 @@ interface EditRoomModalData {
   visible: boolean;
 }
 
+/**
+ * Defines the possibilities of campus filter values
+ */
+ type CampusOptions = CAMPUS | 'All';
+
 const RoomAdmin: FunctionComponent = (): ReactElement => {
   /**
    * Saves a complete list of rooms in local state
@@ -49,6 +59,33 @@ const RoomAdmin: FunctionComponent = (): ReactElement => {
     fullRoomList,
     setFullRoomList,
   ] = useState<RoomAdminResponse[]>([]);
+
+  /**
+   * The campus name filter value
+   */
+  const [campusFilter, setCampusFilter] = useState<CampusOptions>('All');
+
+  /**
+   * The current buildings name filter value
+   */
+  const [buildingFilter, setBuildingFilter] = useState<string>('All');
+
+  /**
+   * The building list used to populate buildings in the room admin table
+   */
+  const [buildingNameList, setBuildingNameList] = useState(
+    [] as string[]
+  );
+
+  /**
+   * The current room name filter value
+   */
+  const [roomFilter, setRoomFilter] = useState<string>('');
+
+  /**
+   * The capacity limit filter value
+   */
+  const [capacityFilter, setCapacity] = useState<string>('');
 
   /**
    * The current value for the message context
@@ -119,8 +156,11 @@ const RoomAdmin: FunctionComponent = (): ReactElement => {
     try {
       const rooms = await LocationAPI.getAdminRooms();
       setFullRoomList(rooms);
-      setFetching(false);
-    } catch (e) {
+      // populates all building information list from room admin
+      const buildingsSet = new Set <string>();
+      rooms.forEach((room) => buildingsSet.add(room.building.name));
+      setBuildingNameList(Array.from(buildingsSet.values()).sort());
+    } catch (error) {
       dispatchMessage({
         message: new AppMessage(
           'Unable to get room data from server. If the problem persists, contact SEAS Computing',
@@ -128,6 +168,8 @@ const RoomAdmin: FunctionComponent = (): ReactElement => {
         ),
         type: MESSAGE_ACTION.PUSH,
       });
+    } finally {
+      setFetching(false);
     }
   }, [dispatchMessage]);
 
@@ -138,7 +180,40 @@ const RoomAdmin: FunctionComponent = (): ReactElement => {
   useEffect((): void => {
     void loadRooms();
   }, [loadRooms]);
-
+  /**
+   * Populates building names for the building filter dropdown.
+   */
+  const buildingDropDown = buildingNameList.map((buildingName) => (
+    { value: buildingName, label: buildingName }
+  ));
+  /**
+   * Filters rooms list based on selected campus, building, room name and capacity.
+   */
+  const filteredRoomList = (): RoomAdminResponse[] => {
+    let allRoomList = [...fullRoomList];
+    if (campusFilter !== 'All') {
+      allRoomList = listFilter(
+        allRoomList,
+        { field: 'building.campus.name', value: campusFilter, exact: true }
+      );
+    }
+    if (buildingFilter !== 'All') {
+      allRoomList = listFilter(
+        allRoomList,
+        { field: 'building.name', value: buildingFilter, exact: true }
+      );
+    }
+    allRoomList = listFilter(
+      allRoomList,
+      { field: 'name', value: roomFilter, exact: false }
+    );
+    if (capacityFilter) {
+      allRoomList = allRoomList.filter(
+        (room) => room.capacity >= parseInt(capacityFilter)
+      );
+    }
+    return allRoomList;
+  };
   /**
    * Keeps track of which edit room button was clicked to determine which
    * button should regain focus when edit room modal is closed
@@ -181,32 +256,105 @@ const RoomAdmin: FunctionComponent = (): ReactElement => {
                     <TableHeadingCell scope="col">Capacity</TableHeadingCell>
                     <TableHeadingCell scope="col">Edit</TableHeadingCell>
                   </TableRow>
+                  <TableRow isStriped>
+                    <TableHeadingCell scope="col">
+                      <Dropdown
+                        hideError
+                        id="campus-filter"
+                        label="Change to filter the list of rooms by campus"
+                        isLabelVisible={false}
+                        onChange={
+                          (evt: ChangeEvent<HTMLSelectElement>): void => {
+                            setCampusFilter(evt.target.value as CampusOptions);
+                          }
+                        }
+                        name="campus-filter"
+                        value={campusFilter}
+                        options={
+                          Object.values(CAMPUS)
+                            .map((value) => ({ value, label: value }))
+                        }
+                      />
+
+                    </TableHeadingCell>
+                    <TableHeadingCell scope="col">
+                      <Dropdown
+                        hideError
+                        id="building-filter"
+                        label="Change to filter the list of rooms by building"
+                        isLabelVisible={false}
+                        options={
+                          [{ value: 'All', label: 'All' }, ...buildingDropDown]
+                        }
+                        name="building-filter"
+                        onChange={
+                          (event:React.ChangeEvent<HTMLInputElement>) => {
+                            setBuildingFilter(event.currentTarget.value);
+                          }
+                        }
+                      />
+                    </TableHeadingCell>
+                    <TableHeadingCell scope="col">
+                      <TextInput
+                        id="room-filter"
+                        name="room-filter"
+                        placeholder="Filter by Room Name"
+                        value={roomFilter}
+                        label="Change to filter the list of rooms by selected room name"
+                        isLabelVisible={false}
+                        hideError
+                        onChange={
+                          (event:React.ChangeEvent<HTMLInputElement>) => {
+                            setRoomFilter(event.currentTarget.value);
+                          }
+                        }
+                      />
+                    </TableHeadingCell>
+                    <TableHeadingCell scope="col">
+                      <TextInput
+                        id="capacity-filter"
+                        name="capacity-filter"
+                        placeholder="Filter by Capacity"
+                        value={capacityFilter}
+                        label="Change to filter the list of rooms by capacity"
+                        isLabelVisible={false}
+                        hideError
+                        onChange={
+                          (event:React.ChangeEvent<HTMLInputElement>) => {
+                            setCapacity(event.currentTarget.value);
+                          }
+                        }
+                      />
+                    </TableHeadingCell>
+                    <TableHeadingCell scope="col"> </TableHeadingCell>
+                  </TableRow>
                 </TableHead>
                 <TableBody isScrollable>
-                  {fullRoomList.map((room, i): ReactElement<TableRowProps> => (
-                    <TableRow isStriped={i % 2 === 1} key={room.id}>
-                      <TableCell>{room.building.campus.name}</TableCell>
-                      <TableCell>{room.building.name}</TableCell>
-                      <TableCell>{room.name}</TableCell>
-                      <TableCell>{room.capacity}</TableCell>
-                      <TableCell alignment={ALIGN.CENTER}>
-                        <BorderlessButton
-                          id={`edit-${room.id}`}
-                          alt={`Edit room information for ${room.building.name} ${room.name}`}
-                          variant={VARIANT.INFO}
-                          onClick={(): void => {
-                            openEditRoomModal(room);
-                            setEditedRoom(room);
-                          }}
-                          forwardRef={
-                            editedRoom ? editButtonRef : null
-                          }
-                        >
-                          <FontAwesomeIcon icon={faEdit} />
-                        </BorderlessButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {filteredRoomList()
+                    .map((room, i): ReactElement<TableRowProps> => (
+                      <TableRow isStriped={i % 2 === 1} key={room.id}>
+                        <TableCell>{room.building.campus.name}</TableCell>
+                        <TableCell>{room.building.name}</TableCell>
+                        <TableCell>{room.name}</TableCell>
+                        <TableCell>{room.capacity}</TableCell>
+                        <TableCell alignment={ALIGN.CENTER}>
+                          <BorderlessButton
+                            id={`edit-${room.id}`}
+                            alt={`Edit room information for ${room.building.name} ${room.name}`}
+                            variant={VARIANT.INFO}
+                            onClick={(): void => {
+                              openEditRoomModal(room);
+                              setEditedRoom(room);
+                            }}
+                            forwardRef={
+                              editedRoom ? editButtonRef : null
+                            }
+                          >
+                            <FontAwesomeIcon icon={faEdit} />
+                          </BorderlessButton>
+                        </TableCell>
+                      </TableRow>
+                    ))}
                 </TableBody>
               </Table>
               <CreateRoomModal
