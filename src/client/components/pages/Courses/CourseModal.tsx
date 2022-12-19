@@ -201,7 +201,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
       prefix: form.catalogPrefix,
       number: form.courseNumber,
       title: form.courseTitle,
-      sameAs: form.sameAs,
+      sameAs: form.sameAs.trim() === '' ? null : form.sameAs,
       isUndergraduate: form.isUndergraduate,
       isSEAS: form.isSEAS as IS_SEAS,
       termPattern: form.termPattern as TERM_PATTERN,
