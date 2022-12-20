@@ -22,6 +22,8 @@ import React, {
 import styled from 'styled-components';
 import axios from 'axios';
 import { toTitleCase } from 'common/utils/util';
+import { dayEnumToString } from 'common/constants/day';
+import { PGTime } from 'common/utils/PGTime';
 import { MeetingTimesList } from './MeetingTimesList';
 import RoomSelection from './RoomSelection';
 import RoomRequest from '../../../../common/dto/room/RoomRequest.dto';
@@ -438,10 +440,11 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
    * parent.
    */
   const saveMeetingData = async () => {
+    let nonOverlappingMeetings = true;
+    let timeErrorMessage = '';
     if (validateTimes()) {
       toggleCurrentEditMeeting();
       setSaveError('');
-      setSaving(true);
       const updatesToSend = mergeMeetings()
         .map(({ id, room, ...meeting }) => {
           const update: MeetingRequestDTO = {
@@ -453,26 +456,53 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
           }
           return { id, ...update };
         });
-      let savedMeetings: MeetingResponseDTO[];
-      try {
-        savedMeetings = await updateMeetingList(
-          currentCourseInstance.id,
-          updatesToSend
-        );
-      } catch (err) {
-        if (axios.isAxiosError(err)) {
-          const serverError = err.response.data as Error;
-          setSaveError(serverError.message);
-        } else if (savedMeetings === undefined) {
-          const errorMessage = (err as Error).message;
-          setSaveError(`Failed to save meeting data. Please try again later.
-          ${errorMessage}`);
+      const meetingsWithoutRooms = updatesToSend
+        .filter((room) => room.roomId === undefined);
+      meetingsWithoutRooms.map((room, index) => {
+        meetingsWithoutRooms.slice(0, index).forEach((prevRoom) => {
+          if (room.day === prevRoom.day) {
+            const meetingEndsBefore = room.endTime.substring(0, 5)
+              <= prevRoom.startTime.substring(0, 5);
+            const meetingStartsAfter = room.startTime.substring(0, 5)
+              >= prevRoom.endTime.substring(0, 5);
+            // A meeting should have ended by the start time of another meeting
+            // or should have started after or at the end of another meeting in
+            // order for the two meetings to not be overlapping.
+            if (!(meetingEndsBefore || meetingStartsAfter)) {
+              nonOverlappingMeetings = false;
+              // The trailing space is there in case of multiple time overlap
+              // conflicts.
+              timeErrorMessage += `The meetings on ${dayEnumToString(room.day)} at ${PGTime.toDisplay(room.startTime)} - ${PGTime.toDisplay(room.endTime)} and ${PGTime.toDisplay(prevRoom.startTime)} - ${PGTime.toDisplay(prevRoom.endTime)} should not overlap. `;
+            }
+          }
+        });
+        return nonOverlappingMeetings;
+      });
+      if (nonOverlappingMeetings) {
+        setSaving(true);
+        let savedMeetings: MeetingResponseDTO[];
+        try {
+          savedMeetings = await updateMeetingList(
+            currentCourseInstance.id,
+            updatesToSend
+          );
+        } catch (err) {
+          if (axios.isAxiosError(err)) {
+            const serverError = err.response.data as Error;
+            setSaveError(serverError.message);
+          } else if (savedMeetings === undefined) {
+            const errorMessage = (err as Error).message;
+            setSaveError(`Failed to save meeting data. Please try again later.
+            ${errorMessage}`);
+          }
+        } finally {
+          setSaving(false);
         }
-      } finally {
-        setSaving(false);
-      }
-      if (savedMeetings) {
-        onSave(savedMeetings);
+        if (savedMeetings) {
+          onSave(savedMeetings);
+        }
+      } else {
+        setSaveError(timeErrorMessage);
       }
     }
   };
