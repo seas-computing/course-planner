@@ -135,7 +135,13 @@ export class CourseInstanceService {
       .addOrderBy('course."numberInteger"', 'ASC')
       .addOrderBy('course."numberAlphabetical"', 'ASC')
       .addOrderBy('fall_instructors."instructorOrder"', 'ASC')
-      .addOrderBy('spring_instructors."instructorOrder"', 'ASC');
+      .addOrderBy('spring_instructors."instructorOrder"', 'ASC')
+      .addOrderBy('fall_meetings.day', 'ASC')
+      .addOrderBy('fall_meetings.startTime', 'ASC')
+      .addOrderBy('fall_meetings.endTime', 'ASC')
+      .addOrderBy('spring_meetings.day', 'ASC')
+      .addOrderBy('spring_meetings.startTime', 'ASC')
+      .addOrderBy('spring_meetings.endTime', 'ASC');
 
     return courseQuery.getMany() as Promise<CourseInstanceResponseDTO[]>;
   }
