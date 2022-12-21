@@ -472,7 +472,7 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
               nonOverlappingMeetings = false;
               // The trailing space is there in case of multiple time overlap
               // conflicts.
-              timeErrorMessage += `The meetings on ${dayEnumToString(room.day)} at ${PGTime.toDisplay(room.startTime)} - ${PGTime.toDisplay(room.endTime)} and ${PGTime.toDisplay(prevRoom.startTime)} - ${PGTime.toDisplay(prevRoom.endTime)} should not overlap. `;
+              timeErrorMessage += `The meetings on ${dayEnumToString(room.day)} at ${PGTime.toDisplay(room.startTime)}-${PGTime.toDisplay(room.endTime)} and ${PGTime.toDisplay(prevRoom.startTime)}-${PGTime.toDisplay(prevRoom.endTime)} should not overlap. `;
             }
           }
         });
