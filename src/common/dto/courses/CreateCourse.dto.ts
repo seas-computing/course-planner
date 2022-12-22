@@ -6,6 +6,7 @@ import {
   IsNotEmpty,
   IsEnum,
   IsOptional,
+  IsUUID,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { trimString } from '../utils';
@@ -57,9 +58,8 @@ export abstract class CreateCourse {
     type: 'string',
     example: 'CS 050',
   })
-  @IsString()
+  @IsUUID()
   @IsOptional()
-  @Transform(trimString)
   public sameAs?: string;
 
   @ApiProperty({

@@ -83,7 +83,7 @@ export class CourseInstanceService {
         'c.spring',
         'CourseInstanceListingView',
         'spring',
-        `spring."courseId" = c.id AND spring.term = '${TERM.SPRING}'`
+        `spring."courseId" = COALESCE(c."sameAsId", c.id) AND spring.term = '${TERM.SPRING}'`
       )
       .leftJoinAndMapMany(
         'spring.instructors',
@@ -107,7 +107,7 @@ export class CourseInstanceService {
         'c.fall',
         'CourseInstanceListingView',
         'fall',
-        `fall."courseId" = c.id AND fall.term = '${TERM.FALL}'`
+        `fall."courseId" = COALESCE(c."sameAsId", c.id) AND fall.term = '${TERM.FALL}'`
       )
       .leftJoinAndMapMany(
         'fall.instructors',
@@ -135,7 +135,13 @@ export class CourseInstanceService {
       .addOrderBy('course."numberInteger"', 'ASC')
       .addOrderBy('course."numberAlphabetical"', 'ASC')
       .addOrderBy('fall_instructors."instructorOrder"', 'ASC')
-      .addOrderBy('spring_instructors."instructorOrder"', 'ASC');
+      .addOrderBy('spring_instructors."instructorOrder"', 'ASC')
+      .addOrderBy('fall_meetings.day', 'ASC')
+      .addOrderBy('fall_meetings.startTime', 'ASC')
+      .addOrderBy('fall_meetings.endTime', 'ASC')
+      .addOrderBy('spring_meetings.day', 'ASC')
+      .addOrderBy('spring_meetings.startTime', 'ASC')
+      .addOrderBy('spring_meetings.endTime', 'ASC');
 
     return courseQuery.getMany() as Promise<CourseInstanceResponseDTO[]>;
   }

@@ -74,8 +74,14 @@ export class CourseController {
       area = { name: course.area };
     }
 
+    let sameAsCourse: Course;
+    if (course.sameAs) {
+      sameAsCourse = await this.courseRepository.findOneOrFail(course.sameAs);
+    }
+
     const fullCourse = {
       ...course,
+      sameAs: sameAsCourse,
       area,
     };
 
@@ -86,9 +92,10 @@ export class CourseController {
     } = await this.courseService.save(fullCourse);
 
     return {
+      ...newCourse,
       prefix,
       number,
-      ...newCourse,
+      sameAs: newCourse.sameAs ? `${newCourse.sameAs.prefix} ${newCourse.sameAs.number}` : '',
       catalogNumber: `${prefix} ${number}`,
     };
   }
@@ -129,8 +136,14 @@ export class CourseController {
       }
     }
 
+    let sameAsCourse: Course;
+    if (course.sameAs) {
+      sameAsCourse = await this.courseRepository.findOneOrFail(course.sameAs);
+    }
+
     const fullCourse = {
       ...course,
+      sameAs: sameAsCourse,
       area,
     };
 
@@ -144,10 +157,11 @@ export class CourseController {
     });
 
     return {
+      ...updatedCourse,
       prefix,
       number,
-      ...updatedCourse,
       catalogNumber: `${prefix} ${number}`,
+      sameAs: updatedCourse.sameAs ? `${updatedCourse.sameAs.prefix} ${updatedCourse.sameAs.number}` : '',
     };
   }
 }

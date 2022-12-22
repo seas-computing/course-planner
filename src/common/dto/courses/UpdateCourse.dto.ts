@@ -65,9 +65,8 @@ export abstract class UpdateCourseDTO {
     type: 'string',
     example: 'CS 050',
   })
-  @IsString()
+  @IsUUID()
   @IsOptional()
-  @Transform(trimString)
   public sameAs?: string;
 
   @ApiProperty({

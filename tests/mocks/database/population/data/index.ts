@@ -50,7 +50,7 @@ export interface CourseData {
   private: boolean;
   termPattern: TERM_PATTERN;
   isSEAS: IS_SEAS;
-  sameAs: string | null;
+  sameAs?: string;
   instances: {
     facultyHUIDs: string[];
     meetings: MeetingData[];

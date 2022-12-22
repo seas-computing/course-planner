@@ -72,9 +72,11 @@ export class CourseService {
       .addSelect('c."termPattern"', 'termPattern')
       .addSelect('c."isUndergraduate"', 'isUndergraduate')
       .addSelect('c."isSEAS"', 'isSEAS')
-      .addSelect('c."sameAs"', 'sameAs')
+      .addSelect('c."sameAsId"', 'sameAsId')
+      .addSelect("CONCAT_WS(' ', p.prefix, p.number)", 'sameAs')
       .addSelect('c.private', 'private')
       .leftJoinAndSelect(Area, 'a', 'c."areaId" = a.id')
+      .leftJoinAndSelect(Course, 'p', 'c."sameAsId" = p.id')
       .orderBy('a.name', 'ASC')
       .addOrderBy('"catalogNumber"', 'ASC')
       .getRawMany();

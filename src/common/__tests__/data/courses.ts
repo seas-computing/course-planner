@@ -19,6 +19,7 @@ export const computerScienceCourse = Object.assign(new Course(), {
     id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
     name: 'CS',
   },
+  sameAs: null,
   title: 'Introduction to Computer Science',
   prefix: 'CS',
   number: '050',
@@ -151,7 +152,7 @@ export const newAreaCourseResponse: ManageCourseResponseDTO = {
   number: '100',
   catalogNumber: 'NA 100',
   termPattern: TERM_PATTERN.SPRING,
-  sameAs: '',
+  sameAs: null,
   private: true,
 };
 

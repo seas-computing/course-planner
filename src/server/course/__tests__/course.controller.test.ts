@@ -79,105 +79,127 @@ describe('Course controller', function () {
   });
 
   describe('create', function () {
-    it('creates a course', async function () {
-      mockAreaRepository.findOne.resolves(createCourseDtoExample.area);
-      mockCourseService.save.resolves(computerScienceCourseResponse);
+    context('Without a sameAs course', function () {
+      it('creates a course', async function () {
+        mockAreaRepository.findOne.resolves(createCourseDtoExample.area);
+        mockCourseService.save.resolves(computerScienceCourseResponse);
 
-      await controller.create(createCourseDtoExample);
+        await controller.create(createCourseDtoExample);
 
-      strictEqual(mockCourseService.save.callCount, 1);
-      strictEqual(mockCourseService.save.args[0].length, 1);
-      deepStrictEqual(
-        mockCourseService.save.args[0][0],
-        createCourseDtoExample
-      );
-    });
-    it('returns the newly created course', async function () {
-      mockAreaRepository.findOne.resolves(createCourseDtoExample.area);
-      mockCourseService.save.resolves(computerScienceCourse);
+        strictEqual(mockCourseService.save.callCount, 1);
+        strictEqual(mockCourseService.save.args[0].length, 1);
+        deepStrictEqual(
+          mockCourseService.save.args[0][0],
+          {
+            ...createCourseDtoExample,
+            sameAs: undefined,
+          }
+        );
+      });
+      it('returns the newly created course', async function () {
+        mockAreaRepository.findOne.resolves(createCourseDtoExample.area);
+        mockCourseService.save.resolves(computerScienceCourse);
 
-      const createdCourse = await controller.create(
-        createCourseDtoExample
-      );
+        const createdCourse = await controller.create(
+          createCourseDtoExample
+        );
 
-      deepStrictEqual(createdCourse, computerScienceCourseResponse);
-    });
-    it('re-throws any exceptions other than EntityNotFoundError ', async function () {
-      mockCourseService.save.rejects(error);
+        deepStrictEqual(
+          createdCourse,
+          {
+            ...computerScienceCourseResponse,
+            sameAs: '',
+          }
+        );
+      });
+      it('re-throws any exceptions other than EntityNotFoundError ', async function () {
+        mockCourseService.save.rejects(error);
 
-      await rejects(
-        () => controller.create(createCourseDtoExample),
-        error
-      );
+        await rejects(
+          () => controller.create(createCourseDtoExample),
+          error
+        );
+      });
     });
   });
 
   describe('update', function () {
-    it('updates a course in the database', async function () {
-      mockAreaRepository.findOne.resolves(computerScienceCourse.area);
-      mockCourseRepository.findOneOrFail.resolves();
-      mockCourseRepository.save.resolves(computerScienceCourse);
+    context('Without a sameAs course', function () {
+      it('updates a course in the database', async function () {
+        mockAreaRepository.findOne.resolves(computerScienceCourse.area);
+        mockCourseRepository.findOneOrFail.resolves();
+        mockCourseRepository.save.resolves(computerScienceCourse);
 
-      await controller.update(
-        computerScienceCourse.id,
-        updateCourseExample
-      );
-
-      strictEqual(mockCourseRepository.save.callCount, 1);
-      deepStrictEqual(
-        mockCourseRepository.save.args[0][0],
-        { ...computerScienceCourse }
-      );
-    });
-    it('updates the course specified', async function () {
-      mockAreaRepository.findOne.resolves(computerScienceCourse.area);
-      mockCourseRepository.findOneOrFail.resolves();
-      mockCourseRepository.save.resolves(computerScienceCourse);
-
-      await controller.update(
-        computerScienceCourse.id,
-        updateCourseExample
-      );
-
-      const updatedCourse = mockCourseRepository.save.args[0][0] as Course;
-
-      deepStrictEqual(
-        updatedCourse.id,
-        computerScienceCourse.id
-      );
-    });
-    it('throws a NotFoundException if the course being udpated doesn\'t exist', async function () {
-      mockCourseRepository.findOneOrFail.rejects(new EntityNotFoundError(Course, ''));
-
-      await rejects(
-        () => controller.update(
+        await controller.update(
           computerScienceCourse.id,
           updateCourseExample
-        ),
-        NotFoundException
-      );
-    });
-    it('re-throws any exceptions other than EntityNotFoundError', async function () {
-      mockCourseRepository.findOneOrFail.rejects(error);
+        );
 
-      await rejects(
-        () => controller.update(
+        strictEqual(mockCourseRepository.save.callCount, 1);
+        deepStrictEqual(
+          mockCourseRepository.save.args[0][0],
+          {
+            ...computerScienceCourse,
+            sameAs: undefined,
+          }
+        );
+      });
+      it('updates the course specified', async function () {
+        mockAreaRepository.findOne.resolves(computerScienceCourse.area);
+        mockCourseRepository.findOneOrFail.resolves();
+        mockCourseRepository.save.resolves(computerScienceCourse);
+
+        await controller.update(
           computerScienceCourse.id,
           updateCourseExample
-        ),
-        Error
-      );
-    });
-    it('returns the updated course', async function () {
-      mockCourseRepository.findOneOrFail.resolves();
-      mockCourseRepository.save.resolves(computerScienceCourse);
+        );
 
-      const course = await controller.update(
-        computerScienceCourse.id,
-        updateCourseExample
-      );
+        const updatedCourse = mockCourseRepository.save.args[0][0] as Course;
 
-      deepStrictEqual(course, computerScienceCourseResponse);
+        deepStrictEqual(
+          updatedCourse.id,
+          computerScienceCourse.id
+        );
+      });
+      it('throws a NotFoundException if the course being udpated doesn\'t exist', async function () {
+        mockCourseRepository.findOneOrFail.rejects(new EntityNotFoundError(Course, ''));
+
+        await rejects(
+          () => controller.update(
+            computerScienceCourse.id,
+            updateCourseExample
+          ),
+          NotFoundException
+        );
+      });
+      it('re-throws any exceptions other than EntityNotFoundError', async function () {
+        mockCourseRepository.findOneOrFail.rejects(error);
+
+        await rejects(
+          () => controller.update(
+            computerScienceCourse.id,
+            updateCourseExample
+          ),
+          Error
+        );
+      });
+      it('returns the updated course', async function () {
+        mockCourseRepository.findOneOrFail.resolves();
+        mockCourseRepository.save.resolves(computerScienceCourse);
+
+        const course = await controller.update(
+          computerScienceCourse.id,
+          updateCourseExample
+        );
+
+        deepStrictEqual(
+          course,
+          {
+            ...computerScienceCourseResponse,
+            sameAs: '',
+          }
+        );
+      });
     });
   });
 });
