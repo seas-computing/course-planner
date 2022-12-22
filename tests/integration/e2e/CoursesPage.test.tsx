@@ -346,6 +346,53 @@ describe('End-to-end Course Instance updating', function () {
           });
         });
       });
+      context('Adding multiple meetings', function () {
+        context('with no rooms and overlapping times', function () {
+          const testDay = DAY.MON;
+          const testTime = '12:00 PM-1:00 PM';
+          beforeEach(async function () {
+            // click "Add new Time" to add the first meeting
+            const addButton = await renderResult.findByText('Add New Time');
+            fireEvent.click(addButton);
+            // Set day for the first meeting
+            let daySelector = await renderResult.findByLabelText('Meeting Day', { exact: false });
+            fireEvent.change(daySelector, { target: { value: testDay } });
+            // Set time for the first meeting
+            let timeDropdown = await renderResult.findByLabelText('Timeslot Button');
+            fireEvent.click(timeDropdown);
+            const firstTime = await renderResult.findByText(testTime);
+            fireEvent.click(firstTime);
+            // Adding a second meeting
+            fireEvent.click(addButton);
+            // Set day for the second meeting
+            daySelector = await renderResult.findByLabelText('Meeting Day', { exact: false });
+            fireEvent.change(daySelector, { target: { value: testDay } });
+            // Set time for the first meeting that overlaps the first time
+            timeDropdown = await renderResult.findByLabelText('Timeslot Button');
+            fireEvent.click(timeDropdown);
+            const secondTime = await renderResult.findByText(testTime);
+            fireEvent.click(secondTime);
+          });
+          context('when the modal save button is clicked', function () {
+            it('Should not close the modal', function () {
+              const saveButton = renderResult.getByText('Save');
+              fireEvent.click(saveButton);
+              const modal = renderResult.queryByRole('dialog');
+              notStrictEqual(modal, null);
+            });
+            it('Should show an error message', async function () {
+              const saveButton = renderResult.getByText('Save');
+              fireEvent.click(saveButton);
+              const modal = renderResult.getByRole('dialog');
+              const modalError = await within(modal).findByRole('alert');
+              strictEqual(
+                modalError.textContent,
+                `The meetings on ${dayEnumToString(testDay)} at ${testTime} and ${testTime} should not overlap. `
+              );
+            });
+          });
+        });
+      });
       context('Removing a meeting', function () {
         let testDeleteMeetingInfo: Meeting;
         beforeEach(async function () {
