@@ -87,6 +87,8 @@ jobs:
     needs: pre-publish
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch_depth: 0
       - uses: actions/setup-node@v2
         with:
           node-version: 14
@@ -103,6 +105,7 @@ jobs:
           APP_NAME: ${{ secrets.QA_APP_NAME }}
         run: |
           rm -rf build
+          git checkout ${{ env.VERSION_TAG }}
           npm run build:client
           export QA_BUNDLE_NAME="${{ env.PACKAGE_NAME }}_${{ env.VERSION_TAG }}_QA.tar.gz"
           tar -czvf $QA_BUNDLE_NAME -C build client
@@ -114,6 +117,7 @@ jobs:
           APP_NAME: ${{ secrets.PROD_APP_NAME }}
         run: |
           rm -rf build
+          git checkout ${{ env.VERSION_TAG }}
           npm run build:client
           export PROD_BUNDLE_NAME="${{ env.PACKAGE_NAME }}_${{ env.VERSION_TAG }}_PROD.tar.gz"
           tar -czvf $PROD_BUNDLE_NAME -C build client
