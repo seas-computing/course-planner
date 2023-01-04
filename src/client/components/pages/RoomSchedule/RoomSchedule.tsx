@@ -222,15 +222,6 @@ const RoomSchedule: FunctionComponent = () => {
         <MenuFlex>
           {selectedSemester && (
             <>
-              <Dropdown
-                id="room-schedule-semester-selector"
-                name="room-schedule-semester-selector"
-                label="Select Semester"
-                labelPosition={POSITION.LEFT}
-                value={`${selectedSemester.term} ${selectedSemester.calendarYear}`}
-                options={semesterOptions}
-                onChange={updateTerm}
-              />
               <RoomSelectorWrapper>
                 <Combobox
                   options={fullRoomList
@@ -254,6 +245,15 @@ const RoomSchedule: FunctionComponent = () => {
                   }}
                 />
               </RoomSelectorWrapper>
+              <Dropdown
+                id="room-schedule-semester-selector"
+                name="room-schedule-semester-selector"
+                label="Select Semester"
+                labelPosition={POSITION.LEFT}
+                value={`${selectedSemester.term} ${selectedSemester.calendarYear}`}
+                options={semesterOptions}
+                onChange={updateTerm}
+              />
             </>
           )}
         </MenuFlex>
