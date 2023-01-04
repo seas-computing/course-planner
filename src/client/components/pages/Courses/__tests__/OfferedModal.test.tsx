@@ -21,6 +21,7 @@ import { TERM } from 'common/constants';
 import { TermKey } from 'common/constants/term';
 import { cs50CourseInstance, cs50FallInstanceUpdate } from 'testData';
 import axios from 'axios';
+import { toTitleCase } from 'common/utils/util';
 import OfferedModal from '../OfferedModal';
 
 describe('Offered Modal', function () {
@@ -32,7 +33,7 @@ describe('Offered Modal', function () {
   let onCloseStub: SinonStub;
   let onSaveStub: SinonStub;
   let putStub: SinonStub;
-  const meetingTerm = TERM.FALL;
+  const meetingTerm = TERM.SPRING;
   const semKey = meetingTerm.toLowerCase() as TermKey;
   const testCourseInstance = cs50CourseInstance;
   describe('rendering', function () {
@@ -44,7 +45,7 @@ describe('Offered Modal', function () {
           isVisible
           currentCourseInstance={testCourseInstance}
           currentSemester={{
-            calendarYear: testCourseInstance[semKey].calendarYear,
+            academicYear: testCourseInstance[semKey].calendarYear,
             term: meetingTerm,
           }}
           onClose={onCloseStub}
@@ -61,7 +62,7 @@ describe('Offered Modal', function () {
     describe('On Open Behavior', function () {
       it('populates the heading with the correct course instance information', function () {
         return waitForElement(
-          () => getByText(`Edit Offered Value for ${cs50CourseInstance.catalogNumber}, ${meetingTerm} ${cs50CourseInstance[semKey].calendarYear}`)
+          () => getByText(`Edit Offered Value for ${cs50CourseInstance.catalogNumber}, ${toTitleCase(meetingTerm)} ${cs50CourseInstance[semKey].calendarYear}`)
         );
       });
       it('populates the offered dropdown with the expected current instance offered value', function () {

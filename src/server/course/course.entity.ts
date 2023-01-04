@@ -132,14 +132,16 @@ export class Course extends BaseEntity {
   public private = true;
 
   /**
-   * A free text field for admin staff to record any other courses that this
-   * course is the same as
+   * The parent [[Course]] that this [[Course]] is the "same as".
    */
-  @Column({
-    type: 'text',
-    default: '',
-  })
-  public sameAs = '';
+  @ManyToOne(() => Course, (course) => course.children)
+  public sameAs?: Course;
+
+  /**
+   * All the courses that are the "sameAs" this course.
+   */
+  @OneToMany(() => Course, (course) => course.sameAs)
+  public children?: Course[];
 
   /**
    * The term this course is being delivered in. See [[TERM_PATTERN]] for

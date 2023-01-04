@@ -49,6 +49,10 @@ describe('AppHeader', function () {
         const link = queryByText('Schedule');
         assert(link);
       });
+      it('should display the "Room Schedule" link', function () {
+        const link = queryByText('Room Schedule');
+        assert(link);
+      });
       it('should display the "4 Year Plan" link', function () {
         const link = queryByText('4 Year Plan');
         assert(link);
@@ -74,6 +78,10 @@ describe('AppHeader', function () {
         const link = queryByText('Faculty Admin');
         assert(link);
       });
+      it('should display the "Room Admin" link', function () {
+        const link = queryByText('Room Admin');
+        assert(link);
+      });
       it('Should display a log out link', function () {
         const link = queryByText('Log Out');
         assert(link);
@@ -91,6 +99,10 @@ describe('AppHeader', function () {
       });
       it('should display the "Schedule" link', function () {
         const link = queryByText('Schedule');
+        assert(link);
+      });
+      it('should display the "Room Schedule" link', function () {
+        const link = queryByText('Room Schedule');
         assert(link);
       });
       it('should display the "4 Year Plan" link', function () {
@@ -116,6 +128,10 @@ describe('AppHeader', function () {
       });
       it('should NOT display the "Faculty Admin" link', function () {
         const link = queryByText('Faculty Admin');
+        assert.strictEqual(link, null);
+      });
+      it('should NOT display the "Room Admin" link', function () {
+        const link = queryByText('Room Admin');
         assert.strictEqual(link, null);
       });
       it('Should display a log out link', function () {
@@ -147,6 +163,10 @@ describe('AppHeader', function () {
       const link = queryByText('Schedule');
       assert(link);
     });
+    it('should display the "Room Schedule" link', function () {
+      const link = queryByText('Room Schedule');
+      assert(link);
+    });
     it('should display the "4 Year Plan" link', function () {
       const link = queryByText('4 Year Plan');
       assert(link);
@@ -169,6 +189,10 @@ describe('AppHeader', function () {
     });
     it('should NOT display the "Faculty Admin" link', function () {
       const link = queryByText('Faculty Admin');
+      assert.strictEqual(link, null);
+    });
+    it('should NOT display the "Room Admin" link', function () {
+      const link = queryByText('Room Admin');
       assert.strictEqual(link, null);
     });
     it('Should not display a log out link', function () {

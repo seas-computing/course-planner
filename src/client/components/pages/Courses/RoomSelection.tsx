@@ -3,8 +3,8 @@ import React, {
 } from 'react';
 import styled from 'styled-components';
 import { getRoomAvailability } from 'client/api/rooms';
-import RoomResponse from 'common/dto/room/RoomResponse.dto';
 import { fromTheme, LoadSpinner } from 'mark-one';
+import RoomMeetingResponse from 'common/dto/room/RoomMeetingResponse.dto';
 import RoomSelectionTable from './RoomSelectionTable';
 import RoomRequest from '../../../../common/dto/room/RoomRequest.dto';
 import { MessageContext } from '../../../context';
@@ -49,7 +49,7 @@ const roomSelectionPromptMessage = 'Add meeting time and click "Show Rooms" to v
 const RoomSelection = ({
   roomRequestData, roomHandler, currentRoomId,
 }: RoomSelectionProps): ReactElement<RoomSelectionProps> => {
-  const [roomList, setRoomList] = useState<RoomResponse[]>([]);
+  const [roomList, setRoomList] = useState<RoomMeetingResponse[]>([]);
   const [isFetching, setFetching] = useState<boolean>(false);
 
   const dispatchMessage = useContext(MessageContext);

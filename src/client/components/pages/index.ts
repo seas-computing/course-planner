@@ -7,3 +7,5 @@ export { default as MultiYearPlan } from './MultiYearPlan';
 export { default as Schedule } from './Schedule/SchedulePage';
 export { default as NoMatch } from './NoMatch';
 export { default as listFilter } from './Filter';
+export { default as RoomSchedule } from './RoomSchedule/RoomSchedule';
+export { default as RoomAdmin } from './RoomAdmin/RoomAdmin';

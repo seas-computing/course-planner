@@ -9,7 +9,7 @@ import { CourseInstanceService } from 'server/courseInstance/courseInstance.serv
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
 import { Course } from 'server/course/course.entity';
 import { CourseInstance } from 'server/courseInstance/courseinstance.entity';
-import { OFFERED, AUTH_MODE } from 'common/constants';
+import { OFFERED, AUTH_MODE, TERM } from 'common/constants';
 import { Meeting } from 'server/meeting/meeting.entity';
 import { ConfigService } from 'server/config/config.service';
 import { ConfigModule } from 'server/config/config.module';
@@ -228,6 +228,109 @@ describe('Course Instance Service', function () {
             }
           }
         }
+      });
+    });
+    describe('sameAs field', function () {
+      context('When sameAs is set on a course', function () {
+        it('Should substitute parent instances', async function () {
+          const [
+            {
+              id: childId,
+              sameAsId: parentId,
+            },
+          ] = await courseRepository.query(
+            `SELECT id, "sameAsId" FROM course
+           WHERE "sameAsId" IS NOT NULL
+           LIMIT 1;`
+          );
+          const childCourse = await courseRepository.findOne(childId);
+          notStrictEqual(childCourse, undefined, 'Could not find a child course in database');
+          const parentCourse = await courseRepository.findOne(parentId);
+          notStrictEqual(parentCourse, undefined, 'Could not find parent course in database');
+          const fullCourseList = await ciService.getAllByYear(testYear);
+          const parentInList = fullCourseList.find(
+            ({ id }) => id === parentCourse.id
+          );
+          const childInList = fullCourseList.find(
+            ({ id }) => id === childCourse.id
+          );
+          deepStrictEqual(parentInList.spring, childInList.spring, 'Child and parent spring instances do not match');
+          deepStrictEqual(parentInList.fall, childInList.fall, 'Child and parent spring instances do not match');
+        });
+        it('Should list related courses for both parent and child', async function () {
+          const [
+            {
+              id: childId,
+              sameAsId: parentId,
+            },
+          ] = await courseRepository.query(
+            `SELECT id, "sameAsId" FROM course
+           WHERE "sameAsId" IS NOT NULL
+           LIMIT 1;`
+          );
+          const childCourse = await courseRepository.findOne(childId);
+          notStrictEqual(childCourse, undefined, 'Could not find a child course in database');
+          const parentCourse = await courseRepository.findOne(parentId);
+          notStrictEqual(parentCourse, undefined, 'Could not find parent course in database');
+          const fullCourseList = await ciService.getAllByYear(testYear);
+          const parentInList = fullCourseList.find(
+            ({ id }) => id === parentCourse.id
+          );
+          const childInList = fullCourseList.find(
+            ({ id }) => id === childCourse.id
+          );
+          strictEqual(parentInList.sameAs.includes(childInList.catalogNumber), true, 'Child not listed in parent sameAs field');
+          strictEqual(childInList.sameAs.includes(parentInList.catalogNumber), true, 'Parent not listed in child sameAs field');
+        });
+      });
+      context('When sameAs is not set on a course', function () {
+        it('Should display its own instances', async function () {
+          const [
+            {
+              id: singleId,
+            },
+          ] = await courseRepository.query(
+            `SELECT id, "sameAsId" FROM course
+           WHERE "sameAsId" IS NULL
+           LIMIT 1;`
+          );
+          const singleCourse = await courseRepository.findOne(singleId, { relations: ['instances', 'instances.semester'] });
+          notStrictEqual(singleCourse, undefined, 'Could not find a parent-less course in database');
+          const fullCourseList = await ciService.getAllByYear(testYear);
+          const courseInList = fullCourseList.find(
+            ({ id }) => id === singleCourse.id
+          );
+          const { id: springId } = singleCourse.instances
+            .find(({ semester }) => (
+              semester.term === TERM.SPRING
+              && semester.academicYear === testYear.toString()
+            ));
+          const { id: fallId } = singleCourse.instances
+            .find(({ semester }) => (
+              semester.term === TERM.FALL
+              && semester.academicYear === (testYear - 1).toString()
+            ));
+          deepStrictEqual(courseInList.spring.id, springId, 'spring instance in list does not match entry in database');
+          deepStrictEqual(courseInList.fall.id, fallId, 'fall instance in list does not match entry in database');
+        });
+        it('Should not list any related courses', async function () {
+          const [
+            {
+              id: singleId,
+            },
+          ] = await courseRepository.query(
+            `SELECT id, "sameAsId" FROM course
+           WHERE "sameAsId" IS NULL
+           LIMIT 1;`
+          );
+          const singleCourse = await courseRepository.findOne(singleId);
+          notStrictEqual(singleCourse, undefined, 'Could not find a parent-less course in database');
+          const fullCourseList = await ciService.getAllByYear(testYear);
+          const courseInList = fullCourseList.find(
+            ({ id }) => id === singleCourse.id
+          );
+          strictEqual(courseInList.sameAs, '', 'sameAs field in list is not empty');
+        });
       });
     });
   });

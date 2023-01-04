@@ -28,6 +28,7 @@ import {
 } from 'client/classes';
 import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
 import { useStoredState } from 'client/hooks/useStoredState';
+import { ABSENCE_TYPE } from 'common/constants';
 import FacultyAbsenceModal from './FacultyAbsenceModal';
 import FacultyScheduleTable from './FacultyScheduleTable';
 import { AcademicYearUtils } from '../utils/academicYearOptions';
@@ -189,12 +190,71 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
     if (!showRetired) {
       faculty = faculty.filter(
         ({ spring, fall }): boolean => (
-          fall.absence.type === 'PRESENT'
-          || spring.absence.type === 'PRESENT')
+          fall.absence.type !== ABSENCE_TYPE.NO_LONGER_ACTIVE
+         || spring.absence.type !== ABSENCE_TYPE.NO_LONGER_ACTIVE)
       );
     }
     return faculty;
   }, [showRetired, currentFacultySchedules]);
+
+  /**
+   * Update a staff absence in local state.
+   *
+   * Loops through each member of faculty in local state, checks to see if the
+   * ID of the absence that was just updated matches any absence record IDs for
+   * their spring and fall absences, and makes the necessary updates.
+   */
+  const updateLocalAbsenceState = useCallback(
+    ({ id, type: newAbsenceType }: AbsenceResponseDTO): void => {
+      setFacultySchedules((prevState) => {
+        const facultyData = [...prevState];
+        const index = facultyData.findIndex(
+          ({ spring, fall }) => spring.absence.id === id
+        || fall.absence.id === id
+        );
+        if (index !== -1) {
+          const { spring, fall } = facultyData[index];
+          const [term] = ([
+            ['spring', spring.absence],
+            ['fall', fall.absence],
+          ] as [
+            keyof Pick<FacultyResponseDTO, 'spring' | 'fall'>,
+            AbsenceResponseDTO
+          ][]).find(([, { id: absenceId }]) => absenceId === id);
+          const existingAbsenceType = facultyData[index][term].absence.type;
+
+          facultyData[index][term].absence.type = newAbsenceType;
+          if (
+            existingAbsenceType !== ABSENCE_TYPE.NO_LONGER_ACTIVE
+              && newAbsenceType === ABSENCE_TYPE.NO_LONGER_ACTIVE
+          ) {
+            facultyData[index].spring.absence
+              .type = ABSENCE_TYPE.NO_LONGER_ACTIVE;
+            if (term === 'fall') {
+              facultyData[index].fall.absence
+                .type = ABSENCE_TYPE.NO_LONGER_ACTIVE;
+            }
+          }
+          if (
+            existingAbsenceType === ABSENCE_TYPE.NO_LONGER_ACTIVE
+              && newAbsenceType !== ABSENCE_TYPE.NO_LONGER_ACTIVE
+          ) {
+            if (term === 'fall') {
+              facultyData[index].fall.absence
+                .type = newAbsenceType;
+              facultyData[index].spring.absence
+                .type = ABSENCE_TYPE.PRESENT;
+            } else if (term === 'spring') {
+              facultyData[index].spring.absence
+                .type = newAbsenceType;
+            }
+          }
+        }
+        return facultyData;
+      });
+      closeAbsenceModal();
+    }, [setFacultySchedules, closeAbsenceModal]
+  );
 
   return (
     <div className="faculty-schedule-table">
@@ -253,9 +313,7 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
                   isVisible={absenceModalVisible}
                   currentFaculty={currentFaculty}
                   currentAbsence={currentAbsence}
-                  onSuccess={(): void => {
-                    setIsStaleData(true);
-                  }}
+                  onSuccess={updateLocalAbsenceState}
                   onCancel={closeAbsenceModal}
                 />
               )

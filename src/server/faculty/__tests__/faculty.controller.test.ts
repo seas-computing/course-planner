@@ -16,6 +16,7 @@ import { Semester } from 'server/semester/semester.entity';
 import { SemesterService } from 'server/semester/semester.service';
 import { NotFoundException } from '@nestjs/common';
 import { Absence } from 'server/absence/absence.entity';
+import { ConfigModule } from 'server/config/config.module';
 import { FacultyController } from '../faculty.controller';
 import { Faculty } from '../faculty.entity';
 import { Area } from '../../area/area.entity';
@@ -69,6 +70,7 @@ describe('Faculty controller', function () {
     };
 
     const module: TestingModule = await Test.createTestingModule({
+      imports: [ConfigModule],
       providers: [
         {
           provide: FacultyService,

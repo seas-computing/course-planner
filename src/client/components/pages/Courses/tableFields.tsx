@@ -17,7 +17,6 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faStickyNote as withNotes,
-  faFolderOpen,
   faEdit,
   IconDefinition,
   faShoppingCart,
@@ -712,19 +711,5 @@ export const tableFields: CourseInstanceListColumn[] = [
         </BorderlessButton>
       );
     },
-  },
-  {
-    name: 'Details',
-    key: 'details',
-    columnGroup: COURSE_TABLE_COLUMN_GROUP.META,
-    viewColumn: COURSE_TABLE_COLUMN.DETAILS,
-    FieldContent: (): ReactElement => (
-      <BorderlessButton
-        variant={VARIANT.INFO}
-        onClick={(): void => { }}
-      >
-        <FontAwesomeIcon icon={faFolderOpen} />
-      </BorderlessButton>
-    ),
   },
 ];

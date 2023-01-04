@@ -15,7 +15,8 @@ import * as CourseAPI from 'client/api/courses';
 import { strictEqual, deepStrictEqual } from 'assert';
 import * as dummy from 'testData';
 import { MetadataContextValue } from 'client/context/MetadataContext';
-import { TERM } from 'common/constants';
+import { DEGREE_PROGRAM, TERM } from 'common/constants';
+import { testCourseScheduleData } from 'testData';
 import SchedulePage from '../SchedulePage';
 
 describe('Schedule Page', function () {
@@ -45,7 +46,7 @@ describe('Schedule Page', function () {
   describe('Semester Dropdown', function () {
     let renderResult: RenderResult;
     beforeEach(function () {
-      apiStub.resolves([]);
+      apiStub.resolves(testCourseScheduleData);
       const fakeDate = new Date(testAcademicYear, 5, 30);
       clock = FakeTimers.install({
         toFake: ['Date'],
@@ -86,6 +87,169 @@ describe('Schedule Page', function () {
       const [calendarYear, term] = apiStub.args[1];
       strictEqual(calendarYear, testAcademicYear);
       strictEqual(term, TERM.FALL);
+    });
+  });
+  describe('Course Prefix Filter Buttons', function () {
+    let renderResult: RenderResult;
+    let courses: {
+      coursePrefix: string,
+      courseNumber: string
+    }[];
+    beforeEach(async function () {
+      apiStub.resolves(testCourseScheduleData);
+      const fakeDate = new Date(testAcademicYear, 5, 30);
+      clock = FakeTimers.install({
+        toFake: ['Date'],
+      });
+      clock.tick(fakeDate.valueOf());
+      renderResult = render(
+        <SchedulePage />,
+        { metadataContext: metadata }
+      );
+      courses = [];
+      testCourseScheduleData.forEach((block) => {
+        block.courses.forEach((course) => {
+          courses.push({
+            coursePrefix: block.coursePrefix,
+            courseNumber: course.courseNumber,
+          });
+        });
+      });
+      await waitForElementToBeRemoved(() => renderResult.getByText('Fetching Course Schedule'));
+    });
+    afterEach(function () {
+      clock.uninstall();
+    });
+    it('renders list of course filter buttons', function () {
+      const { getAllByLabelText } = renderResult;
+      const courseFilterButtons = getAllByLabelText('Course Filter Button')
+        .map((button) => button.textContent);
+      deepStrictEqual(
+        courseFilterButtons, dummy.metadata.catalogPrefixes
+      );
+    });
+    context('a button is selected from course filter buttons', function () {
+      it('disables the popover for course listing button of selected course prefix', function () {
+        const { getAllByLabelText, getAllByText } = renderResult;
+        const courseFilterButtons = getAllByLabelText('Course Filter Button');
+        // When all of the courseprefix filter buttons are clicked.
+        courseFilterButtons.forEach((button) => {
+          fireEvent.click(button);
+          const sessionBlockPrefix = button.textContent;
+          const sessionBlocks = getAllByText(sessionBlockPrefix).filter((el) => el.tagName === 'H4').map((el) => el.parentElement);
+          sessionBlocks.forEach((sessionBlock) => {
+            within(sessionBlock).getAllByRole('button').forEach((courseButton) => {
+              fireEvent.click(courseButton);
+              const courseDetail = `${sessionBlockPrefix} ${courseButton.textContent}`;
+              const popoverDetails = renderResult.queryAllByText(courseDetail);
+              strictEqual(popoverDetails.length, 0);
+            });
+          });
+        });
+      });
+    });
+  });
+
+  describe('Degree Program Selected', function () {
+    let renderResult: RenderResult;
+    let courses: {
+      courseId: string,
+      isUndergraduate: boolean,
+      coursePrefix: string,
+      courseNumber: string
+    }[];
+    beforeEach(async function () {
+      apiStub.resolves(testCourseScheduleData);
+      const fakeDate = new Date(testAcademicYear, 5, 30);
+      clock = FakeTimers.install({
+        toFake: ['Date'],
+      });
+      clock.tick(fakeDate.valueOf());
+      renderResult = render(
+        <SchedulePage />,
+        { metadataContext: metadata }
+      );
+      courses = [];
+      testCourseScheduleData.forEach((block) => {
+        block.courses.forEach((course) => {
+          courses.push({
+            courseId: course.id,
+            coursePrefix: block.coursePrefix,
+            courseNumber: course.courseNumber,
+            isUndergraduate: course.isUndergraduate,
+          });
+        });
+      });
+      await waitForElementToBeRemoved(() => renderResult.getByText('Fetching Course Schedule'));
+    });
+    afterEach(function () {
+      clock.uninstall();
+    });
+    it('renders the list of degree program options', function () {
+      const { getByLabelText } = renderResult;
+      const dropdown = getByLabelText(/Degree Program/i);
+      const options = within(dropdown).getAllByRole('option')
+        .map(({ value }: HTMLOptionElement) => value);
+      const degreeProgramOptions = [
+        DEGREE_PROGRAM.BOTH,
+        DEGREE_PROGRAM.UNDERGRADUATE,
+        DEGREE_PROGRAM.GRADUATE,
+      ];
+      deepStrictEqual(options, degreeProgramOptions);
+    });
+    context('Both is selected from dropdown menu', function () {
+      it('should not fade any course-listing buttons', function () {
+        const { getByLabelText, getAllByText } = renderResult;
+        const degreeProgramDropDown = getByLabelText(/Degree Program/i) as HTMLSelectElement;
+        fireEvent.change(degreeProgramDropDown,
+          { target: { value: DEGREE_PROGRAM.BOTH } });
+        courses.forEach((course) => {
+          const prefixBlocks = getAllByText(course.coursePrefix);
+          const targetBlock = prefixBlocks.find((block) => (
+            within(block.parentElement).queryByText(course.courseNumber)
+          ));
+          const targetCourseListing = within(
+            targetBlock.parentElement
+          ).getByText(course.courseNumber);
+          strictEqual(targetCourseListing.hasAttribute('disabled'), false, `${course.coursePrefix} ${course.courseNumber}-was disabled when it shouldn't be`);
+        });
+      });
+    });
+    context('undergraduate is selected from dropdown menu', function () {
+      it('should not fade undergraduate course program', function () {
+        const { getByLabelText, getAllByText } = renderResult;
+        const degreeProgramDropDown = getByLabelText(/Degree Program/i) as HTMLSelectElement;
+        fireEvent.change(degreeProgramDropDown,
+          { target: { value: DEGREE_PROGRAM.UNDERGRADUATE } });
+        courses.forEach((course) => {
+          const prefixBlocks = getAllByText(course.coursePrefix);
+          const targetBlock = prefixBlocks.find((block) => (
+            within(block.parentElement).queryByText(course.courseNumber)
+          ));
+          const targetCourseListing = within(
+            targetBlock.parentElement
+          ).getByText(course.courseNumber);
+          strictEqual(targetCourseListing.hasAttribute('disabled'), !course.isUndergraduate, `${course.coursePrefix} ${course.courseNumber}-was disabled when it shouldn't be`);
+        });
+      });
+    });
+    context('graduate course is selected from dropdown menu', function () {
+      it('should not fade graduate course program', function () {
+        const { getByLabelText, getAllByText } = renderResult;
+        const degreeProgramDropDown = getByLabelText(/Degree Program/i) as HTMLSelectElement;
+        fireEvent.change(degreeProgramDropDown,
+          { target: { value: DEGREE_PROGRAM.GRADUATE } });
+        courses.forEach((course) => {
+          const prefixBlocks = getAllByText(course.coursePrefix);
+          const targetBlock = prefixBlocks.find((block) => (
+            within(block.parentElement).queryByText(course.courseNumber)
+          ));
+          const targetCourseListing = within(
+            targetBlock.parentElement
+          ).getByText(course.courseNumber);
+          strictEqual(targetCourseListing.hasAttribute('disabled'), course.isUndergraduate, `${course.coursePrefix} ${course.courseNumber}-was disabled when it shouldn't be`);
+        });
+      });
     });
   });
   describe('Requesting Semester Data', function () {

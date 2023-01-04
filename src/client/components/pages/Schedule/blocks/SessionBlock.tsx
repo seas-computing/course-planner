@@ -28,8 +28,14 @@ interface SessionBlockProps {
   children: CourseListing | CourseListing[];
 
   /**
+   * A concatenation of the course prefix and number, which will be displayed
+   * as the heading in the Room Schedule blocks.
+   */
+  catalogNumber?: string;
+
+  /**
    * The catalog prefix shared by the courses in the session, which will be
-   * used as the heading
+   * used as the heading in the Schedule blocks.
    */
   prefix: string;
 
@@ -46,17 +52,23 @@ interface SessionBlockProps {
    * computation
    */
   duration: number;
-  /**
-   * Whether the block should be faded out, as when a course in another block
-   * has been clicked
-   */
-  isFaded: boolean;
+
   /**
    * The collection of Popover elements corresponding to the buttons in the
    * list. These need to be rendered at the top level of the session block in order
    * to break out of the overflow defined within the body wrapper
    */
   popovers: JSX.Element[];
+
+  /**
+   * Whether a popover is currently visible
+   */
+  isPopoverVisible: boolean;
+
+  /**
+   * Whether the sessionblock is faded
+   */
+  isFaded: boolean;
 }
 
 /**
@@ -65,7 +77,7 @@ interface SessionBlockProps {
  */
 interface SessionBlockWrapperProps extends Pick<
 SessionBlockProps,
-'prefix' | 'duration' | 'startRow' | 'isFaded'
+'prefix' | 'catalogNumber' | 'duration' | 'startRow' | 'isFaded'
 > {
   /**
    * Check if there are elements overflowing the bottom of the list
@@ -89,6 +101,12 @@ type SessionBlockHeadingProps = {
 type SessionBlockBodyProps = Pick<SessionBlockProps, 'children'>;
 
 /**
+ * Takes the isPopoverVisible prop from the SessionBlock
+ */
+ type SessionBlockBodyWrapperProps = Pick<
+ SessionBlockProps, 'isPopoverVisible'>;
+
+/**
  * The top level of the SessionBlock, which handles setting the placement
  * within the DayBlock grid and the background color
  */
@@ -98,9 +116,10 @@ const SessionBlockWrapper = styled.div<SessionBlockWrapperProps>`
   border-left: 1px solid #fff;
   border-right: 1px solid #fff;
   border-bottom: 1px solid #fff;
-  opacity: ${({ isFaded }) => (isFaded ? '0.6' : '1')};
   min-width: 2.5em;
   position: relative;
+  opacity: ${({ isFaded }) => (isFaded ? '0.6' : '1')};
+
   ${({ hasBottomOverflow, theme }) => (
     // Show down indicator when there are courses overflowing the bottom
     hasBottomOverflow
@@ -145,8 +164,12 @@ const SessionBlockHeading = styled.h4<SessionBlockHeadingProps>`
 /**
  * A wrapper around the table to handle scrolling within the list only.
  */
-const SessionBlockBodyWrapper = styled.div`
-  overflow-y: scroll;
+const SessionBlockBodyWrapper = styled.div<SessionBlockBodyWrapperProps>`
+  overflow-y: ${({ isPopoverVisible }): string => (
+    isPopoverVisible
+      ? 'hidden'
+      : 'scroll'
+  )};
   position: absolute;
   width: 100%;
   top: 2em;
@@ -172,10 +195,12 @@ const SessionBlockBody = styled.ul<SessionBlockBodyProps>`
  */
 const SessionBlock: FunctionComponent<SessionBlockProps> = ({
   prefix,
+  catalogNumber,
+  isFaded,
   startRow,
   duration,
   children,
-  isFaded,
+  isPopoverVisible,
   popovers,
 }) => {
   /**
@@ -226,18 +251,20 @@ const SessionBlock: FunctionComponent<SessionBlockProps> = ({
 
   return (
     <SessionBlockWrapper
+      isFaded={isFaded}
       prefix={prefix}
+      catalogNumber={catalogNumber}
       startRow={startRow}
       duration={duration}
-      isFaded={isFaded}
       onScroll={checkOverflow}
       hasTopOverflow={hasOverflow.top}
       hasBottomOverflow={hasOverflow.bottom}
     >
       <SessionBlockHeading>
-        {prefix.substr(0, 3)}
+        {catalogNumber || prefix.substr(0, 3)}
       </SessionBlockHeading>
       <SessionBlockBodyWrapper
+        isPopoverVisible={isPopoverVisible}
         ref={bodyWrapperRef}
       >
         <SessionBlockBody>
@@ -250,5 +277,9 @@ const SessionBlock: FunctionComponent<SessionBlockProps> = ({
 };
 
 declare type SessionBlock = ReactElement<SessionBlockProps>;
+
+SessionBlock.defaultProps = {
+  catalogNumber: '',
+};
 
 export default SessionBlock;

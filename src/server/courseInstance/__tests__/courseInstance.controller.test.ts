@@ -13,13 +13,17 @@ import {
   testMultiYearPlanStartYear,
   testFourYearPlanAcademicYears,
   testCourseScheduleData,
+  testRoomScheduleData,
 } from 'testData';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Area } from 'server/area/area.entity';
 import { SemesterView } from 'server/semester/SemesterView.entity';
 import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
 import { Absence } from 'server/absence/absence.entity';
 import { LogModule } from 'server/log/log.module';
+import { RoomScheduleResponseDTO } from 'common/dto/schedule/roomSchedule.dto';
+import { Room } from 'server/location/room.entity';
+import { EntityNotFoundError } from 'typeorm';
 import { CourseInstanceService } from '../courseInstance.service';
 import { CourseInstanceController } from '../courseInstance.controller';
 import { MultiYearPlanView } from '../MultiYearPlanView.entity';
@@ -35,6 +39,7 @@ import { AuthModule } from '../../auth/auth.module';
 import { TestingStrategy } from '../../../../tests/mocks/authentication/testing.strategy';
 import { ConfigModule } from '../../config/config.module';
 import { CourseInstanceListingView } from '../CourseInstanceListingView.entity';
+import { RoomScheduleBlockView } from '../RoomScheduleBlockView.entity';
 
 describe('Course Instance Controller', function () {
   let ciController: CourseInstanceController;
@@ -42,6 +47,7 @@ describe('Course Instance Controller', function () {
   let semesterService: SemesterService;
   let configService: ConfigService;
   const mockRepository: Record<string, SinonStub> = {};
+  let mockRoomRepository: Record<string, SinonStub>;
   const fakeYearList = [
     '2018',
     '2019',
@@ -49,6 +55,9 @@ describe('Course Instance Controller', function () {
     '2021',
   ];
   beforeEach(async function () {
+    mockRoomRepository = {
+      findOneOrFail: stub(),
+    };
     const testModule = await Test.createTestingModule({
       controllers: [CourseInstanceController],
       imports: [
@@ -119,6 +128,14 @@ describe('Course Instance Controller', function () {
         {
           provide: getRepositoryToken(SemesterView),
           useValue: mockRepository,
+        },
+        {
+          provide: getRepositoryToken(RoomScheduleBlockView),
+          useValue: mockRepository,
+        },
+        {
+          provide: getRepositoryToken(Room),
+          useValue: mockRoomRepository,
         },
         ConfigService,
         CourseInstanceService,
@@ -235,6 +252,67 @@ describe('Course Instance Controller', function () {
       it('Should return an empty array', async function () {
         const result = await ciController
           .getScheduleData(TERM.FALL, '1920');
+        deepStrictEqual(result, []);
+      });
+    });
+  });
+  describe('/room-schedule', function () {
+    let getStub: SinonStub;
+    const testRoomId = '32ac9171-83e9-4da9-90a3-0800c904e97c';
+    beforeEach(function () {
+      getStub = stub(ciService, 'getRoomSchedule').resolves(testRoomScheduleData);
+      stub(semesterService, 'getYearList').resolves(fakeYearList);
+    });
+    context('With valid semester data', function () {
+      let result: RoomScheduleResponseDTO[];
+      beforeEach(async function () {
+        result = await ciController.getRoomScheduleData(
+          testRoomId, TERM.FALL, fakeYearList[0]
+        );
+      });
+      it('Should call the service method', function () {
+        strictEqual(getStub.callCount, 1);
+      });
+      it('Should pass in the term and year', function () {
+        const [[, term, year]] = getStub.args;
+        strictEqual(term, TERM.FALL);
+        strictEqual(year, fakeYearList[0]);
+      });
+      it('Should return the value from the service', function () {
+        strictEqual(result, testRoomScheduleData);
+      });
+    });
+    context('With an invalid room id', function () {
+      it('should throws a Not Found Error', async function () {
+        const errorMessage = 'The requested room does not exist';
+        mockRoomRepository.findOneOrFail.rejects(new EntityNotFoundError(Room, {
+          where: { id: testRoomId },
+        }));
+        try {
+          await ciController.getRoomScheduleData(
+            testRoomId, TERM.FALL, fakeYearList[0]
+          );
+        } catch (e) {
+          strictEqual(e instanceof NotFoundException, true);
+          const error = e as NotFoundException;
+          strictEqual(error.message, errorMessage);
+        }
+      });
+    });
+    context('With an invalid term value', function () {
+      it('should throw an error', function () {
+        return rejects(
+          ciController.getRoomScheduleData(
+            testRoomId, 'foo' as TERM, fakeYearList[0]
+          ),
+          BadRequestException
+        );
+      });
+    });
+    context('With an invalid year value', function () {
+      it('should return an empty array', async function () {
+        const result = await ciController
+          .getRoomScheduleData(testRoomId, TERM.FALL, '1920');
         deepStrictEqual(result, []);
       });
     });

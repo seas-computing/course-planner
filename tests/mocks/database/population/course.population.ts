@@ -67,7 +67,7 @@ export class CoursePopulationService
         },
       }
     );
-    return this.repository.save(
+    const savedCourses = await this.repository.save(
       courses.map((courseData): Course => {
         const course = new Course();
         course.title = courseData.title;
@@ -76,7 +76,6 @@ export class CoursePopulationService
         course.isUndergraduate = courseData.isUndergraduate;
         course.notes = courseData.notes;
         course.private = courseData.private;
-        course.sameAs = courseData.sameAs;
         course.isSEAS = courseData.isSEAS;
         course.termPattern = courseData.termPattern;
         course.area = allAreas.find(
@@ -126,6 +125,21 @@ export class CoursePopulationService
         return course;
       })
     );
+    // Populate the sameAs relationships after we've created all the courses
+    return this.repository.save(courses
+      .filter(({ sameAs }) => sameAs.length > 0)
+      .map((courseData) => {
+        const thisCourse = savedCourses.find(({ prefix, number }) => (
+          prefix === courseData.prefix && number === courseData.number
+        ));
+        const parentCourse = savedCourses.find(({ prefix, number }) => (
+          `${prefix} ${number}` === courseData.sameAs
+        ));
+        return {
+          ...thisCourse,
+          sameAs: parentCourse,
+        };
+      }));
   }
 
   public async drop(): Promise<void> {

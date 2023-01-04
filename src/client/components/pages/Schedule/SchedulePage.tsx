@@ -1,15 +1,20 @@
 import React, {
-  FunctionComponent, useState, useEffect, useContext,
+  FunctionComponent, useState, useEffect, useContext, ChangeEvent, useCallback,
 } from 'react';
 import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
 import { getCourseScheduleForSemester } from 'client/api/courses';
-import { TERM } from 'common/constants';
-import { Dropdown, POSITION, LoadSpinner } from 'mark-one';
+import { DEGREE_PROGRAM, TERM, getCatPrefixColor } from 'common/constants';
+import {
+  Dropdown, POSITION, LoadSpinner, Button, VARIANT, fromTheme,
+} from 'mark-one';
 import { AppMessage, MESSAGE_TYPE, MESSAGE_ACTION } from 'client/classes';
 import { MessageContext, MetadataContext } from 'client/context';
-import { VerticalSpace } from 'client/components/layout';
 import { termEnumToTitleCase } from 'common/utils/termHelperFunctions';
 import { toTitleCase } from 'common/utils/util';
+import { ButtonProps } from 'mark-one/lib/Buttons/Button';
+import styled from 'styled-components';
+import MenuFlex from 'client/components/general/flex/MenuFlex';
+import VerticalSpace from 'client/components/layout/VerticalSpace';
 import ScheduleView from './ScheduleView';
 import { useStoredState } from '../../../hooks/useStoredState';
 
@@ -22,12 +27,31 @@ import { useStoredState } from '../../../hooks/useStoredState';
 
 const FIRST_HOUR = 8;
 const LAST_HOUR = 22;
-
+declare type DegreeProgramEvent=ChangeEvent<HTMLSelectElement> & {
+  target: {value: DEGREE_PROGRAM}
+};
 /** Describes the currently selected semester */
-interface SemesterSelection {
+export interface SemesterSelection {
   term: TERM;
   calendarYear: number;
 }
+/**
+ * Represents a state field for tracking whether a course prefix is
+ * active or inactive in the schedule.
+ */
+export interface PrefixState{
+  prefix: string;
+  active: boolean;
+}
+/**
+ * A button to filter course prefixes and fade sessionblock based
+ * on selected value
+ */
+const PrefixButton = styled(Button) <ButtonProps & { prefix: string, isPrefixActive: boolean; }>`
+ margin: ${fromTheme('ws', 'small')};
+ opacity : ${({ isPrefixActive }) => (isPrefixActive ? '' : 0.5)};
+ background-color: ${({ prefix }) => getCatPrefixColor(prefix)};
+`;
 
 /**
  * This is the top-level page component for the Schedule. It's responsible for
@@ -50,7 +74,11 @@ const SchedulePage: FunctionComponent = () => {
    * Provides the current Academic Year from the server
    * Later, we may add the current Term to metadata
    */
-  const { currentAcademicYear, semesters } = useContext(MetadataContext);
+  const {
+    currentAcademicYear,
+    semesters,
+    catalogPrefixes,
+  } = useContext(MetadataContext);
 
   /**
    * Keeps track of the currently selectedterm
@@ -59,6 +87,41 @@ const SchedulePage: FunctionComponent = () => {
     selectedSemester,
     setSelectedSemester,
   ] = useStoredState<SemesterSelection>('SCHEDULE_SEMESTER_SELECTION');
+
+  /**
+ * Filter the courses for which data will be shown in the table
+ */
+  const [prefixes, setPrefixes] = useState <PrefixState[]>([]);
+  useEffect(() => {
+    const newPrefixes = catalogPrefixes.map((prefix) => ({
+      prefix,
+      active: true,
+    }));
+    setPrefixes(newPrefixes);
+  }, [catalogPrefixes]);
+
+  const togglePrefix = (prefix: string) => {
+    setPrefixes((prevState) => {
+      // duplicate the array, though object references will stay the same
+      const newState = [...prevState];
+      // find the desired prefix object and replace it in our newState
+      const prefixIndex = newState.findIndex((p) => p.prefix === prefix);
+      newState.splice(
+        prefixIndex, 1, { prefix, active: !prevState[prefixIndex].active }
+      );
+      return newState;
+    });
+  };
+  const isPrefixActive = useCallback((prefix:string) => {
+    const prefixObj = prefixes.find((p) => p.prefix === prefix);
+    return prefixObj.active;
+  }, [prefixes]);
+  /* Track the degree program for which data will be shown in the table
+  */
+  const [
+    selectedDegreeProgram,
+    setSelectedDegreeProgram,
+  ] = useState<DEGREE_PROGRAM>(DEGREE_PROGRAM.BOTH);
 
   /**
    * Whether an API request is in progress
@@ -155,18 +218,53 @@ const SchedulePage: FunctionComponent = () => {
 
   return (
     <>
+      <div aria-label="course-filter-buttons">
+        <span id="course-filter-buttons">Show/Hide Catalog Prefixes</span>
+        {prefixes.map((prefixObj) => (
+          <PrefixButton
+            isPrefixActive={prefixObj.active}
+            aria-labelledby="course-filter-button"
+            alt="Course Filter Button"
+            prefix={prefixObj.prefix}
+            variant={VARIANT.BASE}
+            key={prefixObj.prefix}
+            onClick={() => togglePrefix(prefixObj.prefix)}
+          >
+            {prefixObj.prefix}
+          </PrefixButton>
+        ))}
+      </div>
       <VerticalSpace>
-        {selectedSemester && (
+        <MenuFlex>
           <Dropdown
-            id="schedule-semester-selector"
-            name="schedule-semester-selector"
-            label="Select Semester"
+            id="degree-program-selector"
+            name="degree-program-selector"
+            label="Degree Program"
+            isLabelVisible
             labelPosition={POSITION.LEFT}
-            value={`${selectedSemester.term} ${selectedSemester.calendarYear}`}
-            options={semesterOptions}
-            onChange={updateTerm}
+            options={Object.values(DEGREE_PROGRAM)
+              .map((value) => ({ value, label: value }))}
+            value={selectedDegreeProgram}
+            onChange={
+              ({
+                target: { value },
+              }: DegreeProgramEvent) => {
+                setSelectedDegreeProgram(value);
+              }
+            }
           />
-        )}
+          {selectedSemester && (
+            <Dropdown
+              id="schedule-semester-selector"
+              name="schedule-semester-selector"
+              label="Select Semester"
+              labelPosition={POSITION.LEFT}
+              value={`${selectedSemester.term} ${selectedSemester.calendarYear}`}
+              options={semesterOptions}
+              onChange={updateTerm}
+            />
+          )}
+        </MenuFlex>
       </VerticalSpace>
       {isFetching
         ? (
@@ -179,10 +277,11 @@ const SchedulePage: FunctionComponent = () => {
             schedule={schedule}
             firstHour={FIRST_HOUR}
             lastHour={LAST_HOUR}
+            degreeProgram={selectedDegreeProgram}
+            isPrefixActive={isPrefixActive}
           />
         )}
     </>
   );
 };
-
 export default SchedulePage;

@@ -163,6 +163,12 @@ const endpointTests: Endpoint[] = [
     expectAllowedGroup: GROUP.ADMIN,
   },
   {
+    path: '/api/rooms/availability',
+    method: 'get',
+    expectAnonymousAccess: false,
+    expectAllowedGroup: GROUP.ADMIN,
+  },
+  {
     path: `/api/meetings/${dummy.uuid}`,
     method: 'put',
     expectAnonymousAccess: false,

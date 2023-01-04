@@ -14,7 +14,6 @@ export enum COURSE_TABLE_COLUMN {
   MEETINGS = 'meetings',
   ENROLLMENT = 'enrollment',
   NOTES = 'notes',
-  DETAILS = 'details',
 }
 
 /**
@@ -34,5 +33,4 @@ export enum COURSE_TABLE_COLUMN_GROUP {
 export const MANDATORY_COLUMNS = [
   COURSE_TABLE_COLUMN.AREA,
   COURSE_TABLE_COLUMN.CATALOG_NUMBER,
-  COURSE_TABLE_COLUMN.DETAILS,
 ];

@@ -183,7 +183,10 @@ describe('Course API', function () {
           strictEqual(mockCourseRepository.save.callCount, 1);
           deepStrictEqual(
             response.body,
-            computerScienceCourseResponse
+            {
+              ...computerScienceCourseResponse,
+              sameAs: '',
+            }
           );
         });
         it('returns the newly created course', async function () {
@@ -198,7 +201,10 @@ describe('Course API', function () {
 
           deepStrictEqual(
             response.body as ManageCourseResponseDTO,
-            computerScienceCourseResponse
+            {
+              ...computerScienceCourseResponse,
+              sameAs: '',
+            }
           );
         });
         it('reports a validation error when area is missing', async function () {

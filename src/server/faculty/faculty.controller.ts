@@ -9,6 +9,7 @@ import {
   NotFoundException,
   Inject,
   Query,
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -33,6 +34,8 @@ import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { Absence } from 'server/absence/absence.entity';
 import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
 import { AbsenceRequestDTO } from 'common/dto/faculty/AbsenceRequest.dto';
+import { ConfigService } from 'server/config/config.service';
+import { resolveAcademicYear } from 'common/utils/termHelperFunctions';
 import { Faculty } from './faculty.entity';
 import { FacultyService } from './faculty.service';
 import { FacultyScheduleService } from './facultySchedule.service';
@@ -60,6 +63,9 @@ export class FacultyController {
 
   @Inject(SemesterService)
   private readonly semesterService: SemesterService;
+
+  @Inject(ConfigService)
+  private readonly configService: ConfigService;
 
   @UseGuards(new RequireGroup(GROUP.ADMIN))
   @Get('/')
@@ -139,27 +145,26 @@ export class FacultyController {
   @ApiNotFoundResponse({
     description: 'Not Found: The requested entity with the ID supplied could not be found',
   })
-  public async updateFacultyAbsence(@Body() absenceInfo: AbsenceRequestDTO):
+  public async updateFacultyAbsence(@Body() { id, type }: AbsenceRequestDTO):
   Promise<AbsenceResponseDTO> {
-    let existingAbsence: Absence;
-    try {
-      existingAbsence = await this.absenceRepository
-        .findOneOrFail({
-          where: {
-            id: absenceInfo.id,
-          },
-        });
-    } catch (e) {
-      if (e instanceof EntityNotFoundError) {
-        throw new NotFoundException('The entered Absence does not exist');
-      }
-      throw e;
+    const absence = await this.absenceRepository.findOne({
+      relations: ['semester'],
+      where: { id },
+    });
+    if (!absence) {
+      throw new NotFoundException('The entered Absence does not exist');
     }
-    const validAbsence = {
-      ...absenceInfo,
-      id: existingAbsence.id,
-    };
-    return this.absenceRepository.save(validAbsence);
+    if (
+      absence?.semester?.academicYear && (
+        resolveAcademicYear(absence.semester) < this.configService.academicYear
+      )
+    ) {
+      throw new BadRequestException('Cannot update absence for previous academic year');
+    }
+    return this.facultyService.updateFacultyAbsences({
+      id: absence.id,
+      type,
+    });
   }
 
   @UseGuards(new RequireGroup(GROUP.ADMIN))
