@@ -116,7 +116,7 @@ describe('Course Page', function () {
         <CoursesPage />,
         { metadataContext }
       );
-      const academicYearDropdown = getByLabelText('Academic Year');
+      const academicYearDropdown = getByLabelText('Select Academic Year');
       const dropdownOptions = within(academicYearDropdown)
         .getAllByRole('option') as HTMLOptionElement[];
       const dropdownLabels = dropdownOptions
@@ -143,7 +143,7 @@ describe('Course Page', function () {
       );
       strictEqual(getStub.args[0][0], currentAcademicYear);
       fireEvent.change(
-        getByLabelText('Academic Year'),
+        getByLabelText('Select Academic Year'),
         {
           target: {
             value: `${nextAcademicYear}`,

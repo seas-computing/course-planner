@@ -660,7 +660,8 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
           <Dropdown
             id="academic-year-selector"
             name="academic-year-selector"
-            label="Academic Year"
+            label="Select Academic Year"
+            labelPosition={POSITION.LEFT}
             isLabelVisible
             options={academicYearOptions}
             value={selectedAcademicYear.toString()}
