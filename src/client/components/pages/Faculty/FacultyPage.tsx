@@ -263,7 +263,7 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
           <Dropdown
             id="academic-year-selector"
             name="academic-year-selector"
-            label="Academic Year"
+            label="Select Academic Year"
             isLabelVisible
             options={academicYearOptions}
             value={selectedAcademicYear.toString()}

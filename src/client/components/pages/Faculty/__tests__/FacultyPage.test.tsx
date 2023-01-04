@@ -102,7 +102,7 @@ describe('Faculty Page', function () {
       strictEqual(getStub.args[0][0], currentAcademicYear);
     });
     it('populates the academic year dropdown', function () {
-      const academicYearDropdown = getByLabelText('Academic Year');
+      const academicYearDropdown = getByLabelText('Select Academic Year');
       const dropdownOptions = within(academicYearDropdown)
         .getAllByRole('option') as HTMLOptionElement[];
       const dropdownLabels = dropdownOptions
@@ -125,7 +125,7 @@ describe('Faculty Page', function () {
       const nextAcademicYear = currentAcademicYear + 1;
       strictEqual(getStub.args[0][0], currentAcademicYear);
       fireEvent.change(
-        getByLabelText('Academic Year'),
+        getByLabelText('Select Academic Year'),
         {
           target: {
             value: `${nextAcademicYear}`,
