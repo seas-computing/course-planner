@@ -264,6 +264,7 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
             id="academic-year-selector"
             name="academic-year-selector"
             label="Select Academic Year"
+            labelPosition={POSITION.LEFT}
             isLabelVisible
             options={academicYearOptions}
             value={selectedAcademicYear.toString()}
