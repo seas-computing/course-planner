@@ -11,7 +11,6 @@ import React, {
   ChangeEvent,
 } from 'react';
 import { VerticalSpace } from 'client/components/layout';
-import { MenuFlex } from 'client/components/general';
 import {
   LoadSpinner,
   Checkbox,
@@ -29,6 +28,7 @@ import {
 import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
 import { useStoredState } from 'client/hooks/useStoredState';
 import { ABSENCE_TYPE } from 'common/constants';
+import { RightMenu } from 'client/components/general';
 import FacultyAbsenceModal from './FacultyAbsenceModal';
 import FacultyScheduleTable from './FacultyScheduleTable';
 import { AcademicYearUtils } from '../utils/academicYearOptions';
@@ -259,11 +259,12 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
   return (
     <div className="faculty-schedule-table">
       <VerticalSpace>
-        <MenuFlex>
+        <RightMenu>
           <Dropdown
             id="academic-year-selector"
             name="academic-year-selector"
-            label="Academic Year"
+            label="Select Academic Year"
+            labelPosition={POSITION.LEFT}
             isLabelVisible
             options={academicYearOptions}
             value={selectedAcademicYear.toString()}
@@ -287,7 +288,7 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
             labelPosition={POSITION.RIGHT}
             hideError
           />
-        </MenuFlex>
+        </RightMenu>
       </VerticalSpace>
       {fetching
         ? (
