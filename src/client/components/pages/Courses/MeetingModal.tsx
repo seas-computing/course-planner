@@ -529,37 +529,43 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
         {`Meetings for ${instanceIdentifier}`}
       </ModalHeader>
       <ModalBody>
-        <MeetingModalBodyGrid>
-          <MeetingScheduler>
-            <MeetingSchedulerHeader>{`Meeting times for ${instanceIdentifier}`}</MeetingSchedulerHeader>
-            <MeetingSchedulerBody>
-              <MeetingTimesList
-                allMeetings={allMeetings}
-                currentEditMeeting={currentEditMeeting}
-                meetingTimeError={meetingTimeError}
-                updateCurrentEditMeeting={updateCurrentEditMeeting}
-                toggleCurrentEditMeeting={toggleCurrentEditMeeting}
-                showRoomsHandler={searchForRooms}
-                newMeetingIdNumber={newMeetingIdNumber.toString()}
-                updateNewMeetingIdNumber={updateNewMeetingIdNumber}
-                removeMeeting={removeMeeting}
-              />
-            </MeetingSchedulerBody>
-          </MeetingScheduler>
-          <NotesSection>
-            {getNotes()}
-          </NotesSection>
-          <RoomAvailability>
-            <RoomAvailabilityHeader>Room Availability</RoomAvailabilityHeader>
-            <RoomAvailabilityBody>
-              <RoomSelection
-                roomRequestData={showRoomsData}
-                roomHandler={(room) => { updateCurrentEditMeeting({ room }); }}
-                currentRoomId={currentEditMeeting?.room?.id}
-              />
-            </RoomAvailabilityBody>
-          </RoomAvailability>
-        </MeetingModalBodyGrid>
+        {(saving) ? (
+          <LoadSpinner>Saving Meetings</LoadSpinner>
+        ) : (
+          <MeetingModalBodyGrid>
+            <MeetingScheduler>
+              <MeetingSchedulerHeader>{`Meeting times for ${instanceIdentifier}`}</MeetingSchedulerHeader>
+              <MeetingSchedulerBody>
+                <MeetingTimesList
+                  allMeetings={allMeetings}
+                  currentEditMeeting={currentEditMeeting}
+                  meetingTimeError={meetingTimeError}
+                  updateCurrentEditMeeting={updateCurrentEditMeeting}
+                  toggleCurrentEditMeeting={toggleCurrentEditMeeting}
+                  showRoomsHandler={searchForRooms}
+                  newMeetingIdNumber={newMeetingIdNumber.toString()}
+                  updateNewMeetingIdNumber={updateNewMeetingIdNumber}
+                  removeMeeting={removeMeeting}
+                />
+              </MeetingSchedulerBody>
+            </MeetingScheduler>
+            <NotesSection>
+              {getNotes()}
+            </NotesSection>
+            <RoomAvailability>
+              <RoomAvailabilityHeader>Room Availability</RoomAvailabilityHeader>
+              <RoomAvailabilityBody>
+                <RoomSelection
+                  roomRequestData={showRoomsData}
+                  roomHandler={(room) => {
+                    updateCurrentEditMeeting({ room });
+                  }}
+                  currentRoomId={currentEditMeeting?.room?.id}
+                />
+              </RoomAvailabilityBody>
+            </RoomAvailability>
+          </MeetingModalBodyGrid>
+        )}
       </ModalBody>
       <ModalFooter>
         <Button
@@ -569,7 +575,6 @@ const MeetingModal: FunctionComponent<MeetingModalProps> = function ({
         >
           Save
         </Button>
-        {saving && <LoadSpinner>Saving Meetings</LoadSpinner>}
         {!!saveError && (
           <ModalMessage
             variant={VARIANT.NEGATIVE}

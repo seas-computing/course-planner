@@ -36,6 +36,7 @@ import { dayEnumToString } from 'common/constants/day';
 import { offeredEnumToString } from 'common/constants/offered';
 import { TermKey } from 'common/constants/term';
 import styled from 'styled-components';
+import { camelCaseToTitleCase } from 'common/utils/util';
 import { PGTime } from '../../../../common/utils/PGTime';
 import { instructorDisplayNameToFirstLast } from '../utils/instructorDisplayNameToFirstLast';
 import { FilterOptions, FilterState } from './filters.d';
@@ -552,7 +553,9 @@ function generateTextField<
         id={subField ? `${field}${subField.toString()}` : `${field}`}
         name={field}
         value={filterValue as string}
-        placeholder={`Filter by ${field}`}
+        placeholder={subField
+          ? `Filter by ${camelCaseToTitleCase(field)} ${camelCaseToTitleCase(subField.toString())}`
+          : `Filter by ${camelCaseToTitleCase(field)}`}
         label={subField
           ? `The table will be filtered as characters are typed in this ${field} ${subField.toString()} filter field`
           : `The table will be filtered as characters are typed in this ${field} filter field`}
