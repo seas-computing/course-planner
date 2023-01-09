@@ -19,7 +19,6 @@ import { useGroupGuard } from '../../hooks/useGroupGuard';
 import ForbiddenPage from '../pages/ForbiddenPage';
 import UnauthorizedPage from '../pages/UnauthorizedPage';
 import RoomAdmin from '../pages/RoomAdmin/RoomAdmin';
-import { ForbiddenException } from '@nestjs/common';
 
 /**
  * Selects which body component to render based on the current URL path. The
