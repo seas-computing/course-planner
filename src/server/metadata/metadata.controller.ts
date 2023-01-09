@@ -1,16 +1,13 @@
 import {
   Controller,
   Get,
-  UseGuards,
   Inject,
 } from '@nestjs/common';
 import {
   ApiOperation,
   ApiOkResponse,
   ApiTags,
-  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { Authentication } from 'server/auth/authentication.guard';
 import { SemesterService } from 'server/semester/semester.service';
 import { MetadataResponse } from 'common/dto/metadata/MetadataResponse.dto';
 import { AreaService } from 'server/area/area.service';
@@ -19,9 +16,7 @@ import { CourseService } from 'server/course/course.service';
 import { LocationService } from 'server/location/location.service';
 
 @ApiTags('Metadata')
-@UseGuards(Authentication)
 @Controller('api/metadata')
-@ApiUnauthorizedResponse({ description: 'Thrown if the user is not authenticated' })
 export class MetadataController {
   @Inject(ConfigService)
   private readonly configService: ConfigService;
