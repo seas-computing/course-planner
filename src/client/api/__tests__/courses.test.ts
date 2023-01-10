@@ -116,8 +116,8 @@ describe('Course Admin API', function () {
     context('when successfully editing a course', function () {
       const newCourseTitle = 'Intro to Engineering';
       const editedCourse = {
-        ...dummy.computerScienceCourse,
-        area: dummy.computerScienceCourse.area.name,
+        ...dummy.cs50Course,
+        area: dummy.cs50Course.area.name,
         title: newCourseTitle,
       };
       const editedCourseResponse = {

@@ -18,7 +18,7 @@ import {
 } from 'sinon';
 import { render } from 'test-utils';
 import {
-  computerScienceCourse,
+  cs50Course,
   computerScienceCourseResponse,
   metadata,
   physicsCourse,
@@ -485,14 +485,14 @@ describe('Course Modal', function () {
           const existingAreaRadioButton = getByLabelText('Select an existing area', { exact: false }) as HTMLInputElement;
           const existingAreaSelect = document.getElementById('existingArea') as HTMLSelectElement;
           fireEvent.click(existingAreaRadioButton);
-          fireEvent.change(existingAreaSelect, { target: { value: `${computerScienceCourse.area.name}` } });
+          fireEvent.change(existingAreaSelect, { target: { value: `${cs50Course.area.name}` } });
           const submitButton = getByText('Submit');
           fireEvent.click(submitButton);
           await wait(() => !queryByText(/required field/));
           const existingAreas = Array.from(existingAreaSelect.options);
           let selectedAreaCount = 0;
           existingAreas.forEach((area) => {
-            if (area.value === computerScienceCourse.area.name) {
+            if (area.value === cs50Course.area.name) {
               selectedAreaCount += 1;
             }
           });

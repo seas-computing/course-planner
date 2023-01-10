@@ -11,7 +11,7 @@ import { AUTH_MODE } from 'common/constants';
 import { deepStrictEqual, strictEqual } from 'assert';
 import { CourseModule } from 'server/course/course.module';
 import {
-  computerScienceCourse,
+  cs50Course,
   physicsCourse,
 } from 'testData';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
@@ -81,7 +81,7 @@ describe('Course service', function () {
         name: physicsCourse.area.name,
       },
       {
-        name: computerScienceCourse.area.name,
+        name: cs50Course.area.name,
       },
     ]);
 
@@ -90,7 +90,7 @@ describe('Course service', function () {
     // courses get sorted by area in ascending alphabetical order
     await courseRepository.save([
       {
-        ...computerScienceCourse,
+        ...cs50Course,
         area: computerScienceCourseArea,
       },
       {

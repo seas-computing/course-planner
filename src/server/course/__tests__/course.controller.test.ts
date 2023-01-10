@@ -4,7 +4,7 @@ import { stub, SinonStub } from 'sinon';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import {
   emptyCourse,
-  computerScienceCourse,
+  cs50Course,
   createCourseDtoExample,
   computerScienceCourseResponse,
   updateCourseExample,
@@ -98,7 +98,7 @@ describe('Course controller', function () {
       });
       it('returns the newly created course', async function () {
         mockAreaRepository.findOne.resolves(createCourseDtoExample.area);
-        mockCourseService.save.resolves(computerScienceCourse);
+        mockCourseService.save.resolves(cs50Course);
 
         const createdCourse = await controller.create(
           createCourseDtoExample
@@ -126,12 +126,12 @@ describe('Course controller', function () {
   describe('update', function () {
     context('Without a sameAs course', function () {
       it('updates a course in the database', async function () {
-        mockAreaRepository.findOne.resolves(computerScienceCourse.area);
+        mockAreaRepository.findOne.resolves(cs50Course.area);
         mockCourseRepository.findOneOrFail.resolves();
-        mockCourseRepository.save.resolves(computerScienceCourse);
+        mockCourseRepository.save.resolves(cs50Course);
 
         await controller.update(
-          computerScienceCourse.id,
+          cs50Course.id,
           updateCourseExample
         );
 
@@ -139,18 +139,18 @@ describe('Course controller', function () {
         deepStrictEqual(
           mockCourseRepository.save.args[0][0],
           {
-            ...computerScienceCourse,
+            ...cs50Course,
             sameAs: undefined,
           }
         );
       });
       it('updates the course specified', async function () {
-        mockAreaRepository.findOne.resolves(computerScienceCourse.area);
+        mockAreaRepository.findOne.resolves(cs50Course.area);
         mockCourseRepository.findOneOrFail.resolves();
-        mockCourseRepository.save.resolves(computerScienceCourse);
+        mockCourseRepository.save.resolves(cs50Course);
 
         await controller.update(
-          computerScienceCourse.id,
+          cs50Course.id,
           updateCourseExample
         );
 
@@ -158,7 +158,7 @@ describe('Course controller', function () {
 
         deepStrictEqual(
           updatedCourse.id,
-          computerScienceCourse.id
+          cs50Course.id
         );
       });
       it('throws a NotFoundException if the course being udpated doesn\'t exist', async function () {
@@ -166,7 +166,7 @@ describe('Course controller', function () {
 
         await rejects(
           () => controller.update(
-            computerScienceCourse.id,
+            cs50Course.id,
             updateCourseExample
           ),
           NotFoundException
@@ -177,7 +177,7 @@ describe('Course controller', function () {
 
         await rejects(
           () => controller.update(
-            computerScienceCourse.id,
+            cs50Course.id,
             updateCourseExample
           ),
           Error
@@ -185,10 +185,10 @@ describe('Course controller', function () {
       });
       it('returns the updated course', async function () {
         mockCourseRepository.findOneOrFail.resolves();
-        mockCourseRepository.save.resolves(computerScienceCourse);
+        mockCourseRepository.save.resolves(cs50Course);
 
         const course = await controller.update(
-          computerScienceCourse.id,
+          cs50Course.id,
           updateCourseExample
         );
 
