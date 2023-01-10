@@ -48,7 +48,6 @@ const AppRouter: FunctionComponent = (): ReactElement => {
         <Redirect exact from="/" to="/four-year-plan" />
         <Route exact path="/four-year-plan" component={MultiYearPlan} />
         <Route exact path="/schedule" component={Schedule} />
-        <Route exact path="/room-schedule" component={RoomSchedule} />
         <Route
           exact
           path={[
@@ -58,6 +57,7 @@ const AppRouter: FunctionComponent = (): ReactElement => {
             '/course-admin',
             '/faculty-admin',
             '/room-admin',
+            '/room-schedule',
           ]}
           component={UnauthorizedPage}
         />
@@ -91,7 +91,7 @@ const AppRouter: FunctionComponent = (): ReactElement => {
         />
         <Route exact path="/four-year-plan" component={MultiYearPlan} />
         <Route exact path="/schedule" component={Schedule} />
-        <Route exact path="/room-schedule" component={RoomSchedule} />
+        <Route exact path="/room-schedule" component={isReadOnly ? RoomSchedule : ForbiddenPage} />
         <Route
           exact
           path="/course-admin"
