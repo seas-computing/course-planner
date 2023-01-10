@@ -194,6 +194,7 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
                           disabled={
                             !isSelectedDegreeProgram
                             || (popoverInBlock && !isSelected)
+                            || !isPrefixActive(coursePrefix)
                           }
                           aria-disabled
                           aria-labelledby={`${meetingId}-description`}
