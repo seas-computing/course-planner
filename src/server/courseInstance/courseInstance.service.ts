@@ -172,12 +172,14 @@ export class CourseInstanceService {
         'instructors',
         'instructors."courseInstanceId" = ci.id'
       )
+      .leftJoin(Course, 'course', 'course.id=c.id')
       // Note that although the academic year in the semester entity is actually
       // the calendar year, academicYear is truly the academic year and has
       // been calculated by the SemesterView
       .where('s."academicYear" IN (:...academicYears)', { academicYears })
       .orderBy('"catalogPrefix"', 'ASC')
-      .addOrderBy('"catalogNumber"', 'ASC')
+      .addOrderBy('course."numberInteger"', 'ASC')
+      .addOrderBy('course."numberAlphabetical"', 'ASC')
       .addOrderBy('s."academicYear"', 'ASC')
       .addOrderBy('s."termOrder"', 'ASC')
       .addOrderBy('instructors."instructorOrder"', 'ASC')
