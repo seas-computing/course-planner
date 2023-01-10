@@ -252,7 +252,7 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
               .map((faculty, facultyIndex): ReactElement<TableRowProps> => (
                 <TableRow isStriped={facultyIndex % 2 === 1} key={faculty.id}>
                   <TableCell
-                    alignment={ALIGN.CENTER}
+                    alignment={ALIGN.LEFT}
                     backgroundColor={getAreaColor(faculty.area.name)}
                   >
                     {faculty.area && faculty.area.name}
