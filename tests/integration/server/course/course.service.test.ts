@@ -11,6 +11,7 @@ import { AUTH_MODE } from 'common/constants';
 import { deepStrictEqual, strictEqual } from 'assert';
 import { CourseModule } from 'server/course/course.module';
 import {
+  cs200Course,
   cs50Course,
   physicsCourse,
 } from 'testData';
@@ -108,29 +109,23 @@ describe('Course service', function () {
       ]
     );
   });
-  it('sorts the courses by catalogNumber in ascending order', async function () {
+  it('sorts the courses by the integer followed by the alphabetical portion of the course in ascending order', async function () {
     await courseRepository.query(`TRUNCATE ${Course.name} CASCADE`);
-    const [physicsCourseArea] = await areaRepository.save([
-      {
-        name: physicsCourse.area.name,
-      },
-    ]);
-    // Save two courses in the database with their catalog numbers
-    // deliberately not in ascending alphabetical order and
-    // assign the physics course area to both as a control
+    // CS 050 should appear before CS 200
     const [
-      compSciCourse,
-      physCourse,
+      cs50,
+      cs200,
     ] = await courseRepository.save([
+      // Save the courses in the opposite expected order so that we can check
+      // that the courses will be ordered correctly by the integer portion
+      // followed by the alphabetical portion of the course.
       {
-        ...computerScienceCourse,
-        catalogNumber: 'CS 050',
-        area: physicsCourseArea,
+        ...cs200Course,
+        catalogNumber: 'CS 200',
       },
       {
-        ...physicsCourse,
-        catalogNumber: 'AP 295a',
-        area: physicsCourseArea,
+        ...cs50Course,
+        catalogNumber: 'CS 050',
       },
     ]);
 
@@ -140,8 +135,8 @@ describe('Course service', function () {
     ];
 
     deepStrictEqual(actualCatalogNumbers, [
-      physCourse.catalogNumber,
-      compSciCourse.catalogNumber,
+      cs50.catalogNumber,
+      cs200.catalogNumber,
     ]);
   });
 });
