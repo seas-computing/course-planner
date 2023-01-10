@@ -91,7 +91,7 @@ const AppRouter: FunctionComponent = (): ReactElement => {
         />
         <Route exact path="/four-year-plan" component={MultiYearPlan} />
         <Route exact path="/schedule" component={Schedule} />
-        <Route exact path="/room-schedule" component={RoomSchedule} />
+        <Route exact path="/room-schedule" component={isReadOnly ? RoomSchedule : ForbiddenPage} />
         <Route
           exact
           path="/course-admin"
