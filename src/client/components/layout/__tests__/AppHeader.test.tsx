@@ -163,9 +163,9 @@ describe('AppHeader', function () {
       const link = queryByText('Schedule');
       assert(link);
     });
-    it('should display the "Room Schedule" link', function () {
+    it('should not display the "Room Schedule" link', function () {
       const link = queryByText('Room Schedule');
-      assert(link);
+      strictEqual(link, null);
     });
     it('should display the "4 Year Plan" link', function () {
       const link = queryByText('4 Year Plan');
