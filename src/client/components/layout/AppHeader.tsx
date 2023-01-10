@@ -40,7 +40,7 @@ const AppHeader:FunctionComponent = () => {
     { link: '/faculty', text: 'Faculty', isVisible: isReadOnly },
     { link: '/four-year-plan', text: '4 Year Plan', isVisible: true },
     { link: '/schedule', text: 'Schedule', isVisible: true },
-    { link: '/room-schedule', text: 'Room Schedule', isVisible: true },
+    { link: '/room-schedule', text: 'Room Schedule', isVisible: isReadOnly },
     { link: '/course-admin', text: 'Course Admin', isVisible: isAdmin },
     { link: '/faculty-admin', text: 'Faculty Admin', isVisible: isAdmin },
     { link: '/room-admin', text: 'Room Admin', isVisible: isAdmin },

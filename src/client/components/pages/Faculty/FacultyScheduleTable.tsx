@@ -356,7 +356,7 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
         : ReactElement<TableRowProps> => (
           <TableRow isStriped={facultyIndex % 2 === 1} key={faculty.id}>
             <TableCell
-              alignment={ALIGN.CENTER}
+              alignment={ALIGN.LEFT}
               backgroundColor={getAreaColor(faculty.area)}
             >
               {faculty.area}

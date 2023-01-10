@@ -500,13 +500,13 @@ describe('Application Routing and Authorization', function () {
         });
       });
       context('/room-schedule', function () {
-        it('renders the Room Schedule component', function () {
+        it('renders the UnauthorizedPage component', function () {
           const { findByText } = render(
             <MemoryRouter initialEntries={['/room-schedule']}>
               <App />
             </MemoryRouter>
           );
-          return findByText('Select a room', { exact: false });
+          return findByText(/401/);
         });
       });
       context('Undefined routes', function () {
