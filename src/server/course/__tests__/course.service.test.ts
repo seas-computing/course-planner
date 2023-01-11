@@ -14,7 +14,7 @@ import { Semester } from 'server/semester/semester.entity';
 import {
   spring,
   fall,
-  computerScienceCourse,
+  cs50Course,
   computerScienceCourseQueryResult,
   physicsCourseQueryResult,
   computerScienceCourseResponse,
@@ -89,11 +89,11 @@ describe('Course service', function () {
   describe('save', function () {
     beforeEach(function () {
       mockSemesterRepository.find.resolves([]);
-      mockAreaRepository.findOne.resolves(computerScienceCourse.area.name);
+      mockAreaRepository.findOne.resolves(cs50Course.area.name);
     });
 
     it('creates a new course in the database', async function () {
-      await courseService.save(computerScienceCourse);
+      await courseService.save(cs50Course);
 
       strictEqual(mockCourseRepository.save.callCount, 1);
     });
@@ -103,7 +103,7 @@ describe('Course service', function () {
 
       mockSemesterRepository.find.resolves(semesters);
 
-      await courseService.save(computerScienceCourse);
+      await courseService.save(cs50Course);
 
       const updatedCourse = mockCourseRepository.save.args[0][0] as Course;
 
@@ -114,11 +114,11 @@ describe('Course service', function () {
     });
 
     it('returns the newly created course', async function () {
-      mockCourseRepository.save.resolves(computerScienceCourse);
+      mockCourseRepository.save.resolves(cs50Course);
 
-      const createdCourse = await courseService.save(computerScienceCourse);
+      const createdCourse = await courseService.save(cs50Course);
 
-      deepStrictEqual(createdCourse, computerScienceCourse);
+      deepStrictEqual(createdCourse, cs50Course);
     });
   });
   describe('getCatalogPrefixList', function () {

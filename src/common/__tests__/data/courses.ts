@@ -13,7 +13,7 @@ export const emptyCourse = new Course();
 /**
  * An example [[Course]] representing CS 50.
  */
-export const computerScienceCourse = Object.assign(new Course(), {
+export const cs50Course = Object.assign(new Course(), {
   id: 'b8bc8456-51fd-48ef-b111-5a5990671cd1',
   area: {
     id: 'a49edd11-0f2d-4d8f-9096-a4062955a11a',
@@ -25,6 +25,24 @@ export const computerScienceCourse = Object.assign(new Course(), {
   number: '050',
   isSEAS: IS_SEAS.Y,
   termPattern: TERM_PATTERN.FALL,
+  isUndergraduate: true,
+});
+
+/**
+ * An example [[Course]] representing CS 200.
+ */
+export const cs200Course = Object.assign(new Course(), {
+  id: '295976e9-3c36-4785-843e-84906668a924',
+  area: {
+    id: '735fb5ae-8716-4c53-8e07-b0dc5a2db24b',
+    name: 'CS',
+  },
+  sameAs: null,
+  title: 'Introduction to Computer Science',
+  prefix: 'CS',
+  number: '200',
+  isSEAS: IS_SEAS.Y,
+  termPattern: TERM_PATTERN.SPRING,
   isUndergraduate: true,
 });
 
@@ -49,15 +67,15 @@ export const physicsCourse = Object.assign(new Course(), {
  * An example of [[CreateCourse]] representing CS 50
  */
 export const createCourseDtoExample: CreateCourse = {
-  area: computerScienceCourse.area.name,
-  title: computerScienceCourse.title,
-  isSEAS: computerScienceCourse.isSEAS,
-  isUndergraduate: computerScienceCourse.isUndergraduate,
-  prefix: computerScienceCourse.prefix,
-  number: computerScienceCourse.number,
-  termPattern: computerScienceCourse.termPattern,
-  sameAs: computerScienceCourse.sameAs,
-  private: computerScienceCourse.private,
+  area: cs50Course.area.name,
+  title: cs50Course.title,
+  isSEAS: cs50Course.isSEAS,
+  isUndergraduate: cs50Course.isUndergraduate,
+  prefix: cs50Course.prefix,
+  number: cs50Course.number,
+  termPattern: cs50Course.termPattern,
+  sameAs: cs50Course.sameAs,
+  private: cs50Course.private,
 };
 
 /**
@@ -160,16 +178,16 @@ export const newAreaCourseResponse: ManageCourseResponseDTO = {
  * An example [[UpdateCourseDTO]] response representing CS 50
  */
 export const updateCourseExample: UpdateCourseDTO = {
-  id: computerScienceCourse.id,
-  area: computerScienceCourse.area.name,
-  title: computerScienceCourse.title,
-  prefix: computerScienceCourse.prefix,
-  number: computerScienceCourse.number,
-  termPattern: computerScienceCourse.termPattern,
-  sameAs: computerScienceCourse.sameAs,
-  isUndergraduate: computerScienceCourse.isUndergraduate,
-  isSEAS: computerScienceCourse.isSEAS,
-  private: computerScienceCourse.private,
+  id: cs50Course.id,
+  area: cs50Course.area.name,
+  title: cs50Course.title,
+  prefix: cs50Course.prefix,
+  number: cs50Course.number,
+  termPattern: cs50Course.termPattern,
+  sameAs: cs50Course.sameAs,
+  isUndergraduate: cs50Course.isUndergraduate,
+  isSEAS: cs50Course.isSEAS,
+  private: cs50Course.private,
 };
 
 /**

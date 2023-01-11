@@ -56,7 +56,8 @@ export class CourseService {
   /**
    * Retrieve all courses in the database and sort by:
    * - area ASC
-   * - catalogNumber ASC
+   * - numberInteger ASC
+   * - numberAlphabetical ASC
    */
   public async findCourses(): Promise<ManageCourseResponseDTO[]> {
     // Any changes to this query should be reflected in FindCoursesQueryResult.
@@ -75,10 +76,14 @@ export class CourseService {
       .addSelect('c."sameAsId"', 'sameAsId')
       .addSelect("CONCAT_WS(' ', p.prefix, p.number)", 'sameAs')
       .addSelect('c.private', 'private')
+      .addSelect('c."numberInteger"', 'numberInteger')
+      .addSelect('c."numberAlphabetical"', 'numberAlphabetical')
       .leftJoinAndSelect(Area, 'a', 'c."areaId" = a.id')
       .leftJoinAndSelect(Course, 'p', 'c."sameAsId" = p.id')
       .orderBy('a.name', 'ASC')
-      .addOrderBy('"catalogNumber"', 'ASC')
+      .addOrderBy('prefix', 'ASC')
+      .addOrderBy('"numberInteger"', 'ASC')
+      .addOrderBy('"numberAlphabetical"', 'ASC')
       .getRawMany();
     return results.map((result) => ({
       id: result.id,
