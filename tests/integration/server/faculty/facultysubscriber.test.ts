@@ -62,7 +62,9 @@ describe('Faculty subscriber', function () {
     await facultyRepository
       .query(`TRUNCATE ${facultyRepository.metadata.name} CASCADE`);
   });
-  describe('Creating faculty', function () {
+  afterEach(async function () {
+    await module.close();
+  });
     it('creates a new absence record for each semester', async function () {
       // Create a new faculty member
       await facultyRepository.save({
@@ -76,6 +78,23 @@ describe('Faculty subscriber', function () {
       const absences = await absenceRepository.find();
 
       strictEqual(semesters.length, absences.length);
+    });
+    it('creates new absence records for the given faculty member', async function () {
+      const {
+        id: facultyId,
+      } = await facultyRepository.save({
+        firstName: appliedMathFacultyMember.firstName,
+        lastName: appliedMathFacultyMember.lastName,
+        HUID: appliedMathFacultyMember.HUID,
+        category: appliedMathFacultyMember.category,
+        area,
+      });
+
+      const absencesMatchfaculty = (await absenceRepository.find({
+        relations: ['faculty'],
+      })).every(({ faculty }) => faculty.id === facultyId);
+
+      strictEqual(absencesMatchfaculty, true);
     });
   });
 });
