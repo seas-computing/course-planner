@@ -25,7 +25,7 @@ import {
   regularUser,
   string,
   adminUser,
-  computerScienceCourse,
+  cs50Course,
   createCourseDtoExample,
   computerScienceCourseResponse,
   updateCourseExample,
@@ -174,7 +174,7 @@ describe('Course API', function () {
           mockSemesterRepository.find.resolves([]);
           mockAreaRepository.findOne
             .resolves(computerScienceCourseResponse.area);
-          mockCourseRepository.save.resolves(computerScienceCourse);
+          mockCourseRepository.save.resolves(cs50Course);
 
           const response = await request(api)
             .post('/api/courses')
@@ -192,8 +192,8 @@ describe('Course API', function () {
         it('returns the newly created course', async function () {
           authStub.resolves(adminUser);
           mockSemesterRepository.find.resolves([]);
-          mockAreaRepository.findOne.resolves(computerScienceCourse.area.name);
-          mockCourseRepository.save.resolves(computerScienceCourse);
+          mockAreaRepository.findOne.resolves(cs50Course.area.name);
+          mockCourseRepository.save.resolves(cs50Course);
 
           const response = await request(api)
             .post('/api/courses')
@@ -212,7 +212,7 @@ describe('Course API', function () {
 
           const response = await request(api)
             .post('/api/courses')
-            .send({ title: computerScienceCourse.title });
+            .send({ title: cs50Course.title });
 
           const body = response.body as BadRequestInfo;
 
@@ -229,7 +229,7 @@ describe('Course API', function () {
 
           const response = await request(api)
             .post('/api/courses')
-            .send({ termPattern: computerScienceCourse.termPattern });
+            .send({ termPattern: cs50Course.termPattern });
 
           const body = response.body as BadRequestInfo;
 
@@ -246,7 +246,7 @@ describe('Course API', function () {
 
           const response = await request(api)
             .post('/api/courses')
-            .send({ title: computerScienceCourse.title });
+            .send({ title: cs50Course.title });
 
           const body = response.body as BadRequestInfo;
 
@@ -297,7 +297,7 @@ describe('Course API', function () {
           mockCourseRepository.findOneOrFail.rejects(new EntityNotFoundError(Course, ''));
 
           const response = await request(api)
-            .put(`/api/courses/${computerScienceCourse.id}`)
+            .put(`/api/courses/${cs50Course.id}`)
             .send(updateCourseExample);
 
           strictEqual(response.ok, false);
@@ -306,14 +306,14 @@ describe('Course API', function () {
         });
         it('updates the specified course', async function () {
           const newCourseInfo = {
-            id: computerScienceCourse.id,
-            area: computerScienceCourse.area.name,
-            title: computerScienceCourse.title,
-            prefix: computerScienceCourse.prefix,
-            number: computerScienceCourse.number,
-            termPattern: computerScienceCourse.termPattern,
-            isUndergraduate: computerScienceCourse.isUndergraduate,
-            isSEAS: computerScienceCourse.isSEAS,
+            id: cs50Course.id,
+            area: cs50Course.area.name,
+            title: cs50Course.title,
+            prefix: cs50Course.prefix,
+            number: cs50Course.number,
+            termPattern: cs50Course.termPattern,
+            isUndergraduate: cs50Course.isUndergraduate,
+            isSEAS: cs50Course.isSEAS,
           };
           mockCourseRepository.findOneOrFail.resolves(newCourseInfo);
           mockAreaRepository.findOne.resolves(newCourseInfo.area);
@@ -330,8 +330,8 @@ describe('Course API', function () {
           authStub.resolves(adminUser);
 
           const response = await request(api)
-            .put(`/api/courses/${computerScienceCourse.id}`)
-            .send({ title: computerScienceCourse.title });
+            .put(`/api/courses/${cs50Course.id}`)
+            .send({ title: cs50Course.title });
 
           const body = response.body as BadRequestInfo;
 
@@ -347,8 +347,8 @@ describe('Course API', function () {
           authStub.resolves(adminUser);
 
           const response = await request(api)
-            .put(`/api/courses/${computerScienceCourse.id}`)
-            .send({ termPattern: computerScienceCourse.termPattern });
+            .put(`/api/courses/${cs50Course.id}`)
+            .send({ termPattern: cs50Course.termPattern });
 
           const body = response.body as BadRequestInfo;
 
@@ -364,8 +364,8 @@ describe('Course API', function () {
           authStub.resolves(adminUser);
 
           const response = await request(api)
-            .put(`/api/courses/${computerScienceCourse.id}`)
-            .send({ title: computerScienceCourse.title });
+            .put(`/api/courses/${cs50Course.id}`)
+            .send({ title: cs50Course.title });
 
           const body = response.body as BadRequestInfo;
 
@@ -383,7 +383,7 @@ describe('Course API', function () {
           authStub.rejects(new UnauthorizedException());
 
           const response = await request(api)
-            .put(`/api/courses/${computerScienceCourse.id}`);
+            .put(`/api/courses/${cs50Course.id}`);
 
           strictEqual(response.ok, false);
           strictEqual(response.status, HttpStatus.UNAUTHORIZED);

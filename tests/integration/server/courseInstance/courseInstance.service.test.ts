@@ -381,18 +381,41 @@ describe('Course Instance Service', function () {
           deepStrictEqual(faculty, sorted);
         });
     });
-    it('should return the courses ordered by catalog prefix and catalog number', function () {
+    it('should return the courses ordered by catalog prefix and course integer followed by the alphabetical portion of the course', function () {
+      const parseCourseNumber = (course: MultiYearPlanResponseDTO) => {
+        const courseInfo = {
+          numberInteger: null,
+          numberAlphabetical: null,
+        };
+        const numberMatch = /(?<int>\d+)?(?<alpha>[a-zA-Z\s]+)?/.exec(course.catalogNumber);
+        if (numberMatch && 'groups' in numberMatch) {
+          const { alpha, int } = numberMatch.groups;
+          courseInfo.numberInteger = int
+            ? parseInt(int, 10)
+            : null;
+          courseInfo.numberAlphabetical = alpha || null;
+        }
+        return courseInfo;
+      };
       const sorted = result.slice().sort((course1, course2): number => {
+        const course1Info = parseCourseNumber(course1);
+        const course2Info = parseCourseNumber(course2);
         if (course1.catalogPrefix < course2.catalogPrefix) {
           return -1;
         }
         if (course1.catalogPrefix > course2.catalogPrefix) {
           return 1;
         }
-        if (course1.catalogNumber < course2.catalogNumber) {
+        if (course1Info.numberInteger < course2Info.numberInteger) {
           return -1;
         }
-        if (course1.catalogNumber > course2.catalogNumber) {
+        if (course1Info.numberInteger > course2Info.numberInteger) {
+          return 1;
+        }
+        if (course1Info.numberAlphabetical < course2Info.numberAlphabetical) {
+          return -1;
+        }
+        if (course1Info.numberAlphabetical > course2Info.numberAlphabetical) {
           return 1;
         }
         return 0;
