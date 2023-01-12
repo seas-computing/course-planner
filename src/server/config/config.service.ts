@@ -33,7 +33,6 @@ import { NonClassEventView } from 'server/nonClassEvent/NonClassEvent.view.entit
 import { NonClassParentView } from 'server/nonClassEvent/NonClassParentView.entity';
 import { ClientOpts } from 'redis';
 import { RoomScheduleBlockView } from 'server/courseInstance/RoomScheduleBlockView.entity';
-import { FacultySubscriber } from 'server/faculty/faculty.subscriber';
 import LOG_LEVEL from '../../common/constants/logLevels';
 import { ScheduleBlockView } from '../courseInstance/ScheduleBlockView.entity';
 import { ScheduleEntryView } from '../courseInstance/ScheduleEntryView.entity';
@@ -204,9 +203,6 @@ class ConfigService {
         SemesterView,
         View,
         RoomScheduleBlockView,
-      ],
-      subscribers: [
-        FacultySubscriber,
       ],
     };
   }

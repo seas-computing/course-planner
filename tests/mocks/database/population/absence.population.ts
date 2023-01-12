@@ -53,13 +53,7 @@ export class AbsencePopulationService extends BasePopulationService<Absence> {
       });
     });
 
-    return this.repository.save(allAbsences, {
-      // Turn listeners off for this operation(but ONLY for this operation - we
-      // want them to run normally) since we're creating the
-      // absence records ourselves for testing so we don't need the subscriber
-      // to do it for us!
-      listeners: false,
-    });
+    return this.repository.save(allAbsences);
   }
 
   public async drop(): Promise<void> {
