@@ -36,6 +36,7 @@ import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
 import { AbsenceRequestDTO } from 'common/dto/faculty/AbsenceRequest.dto';
 import { ConfigService } from 'server/config/config.service';
 import { resolveAcademicYear } from 'common/utils/termHelperFunctions';
+import { Semester } from 'server/semester/semester.entity';
 import { Faculty } from './faculty.entity';
 import { FacultyService } from './faculty.service';
 import { FacultyScheduleService } from './facultySchedule.service';
@@ -54,6 +55,9 @@ export class FacultyController {
 
   @InjectRepository(Absence)
   private absenceRepository: Repository<Absence>;
+
+  @InjectRepository(Semester)
+  private semesterRepository: Repository<Semester>;
 
   @Inject(FacultyService)
   private facultyService: FacultyService;
@@ -196,7 +200,7 @@ export class FacultyController {
         throw new NotFoundException('The entered Area does not exist');
       }
     }
-    const facultyToCreate: Faculty = Object.assign(new Faculty(), {
+    const faculty = await this.facultyRepository.save({
       HUID: facultyDto.HUID,
       firstName: facultyDto.firstName,
       lastName: facultyDto.lastName,
@@ -205,7 +209,11 @@ export class FacultyController {
       jointWith: facultyDto.jointWith,
       notes: facultyDto.notes,
     });
-    const faculty = await this.facultyRepository.save(facultyToCreate);
+
+    const allSemesters = await this.semesterRepository.find();
+    const facultyAbsences = allSemesters
+      .map((semester) => this.absenceRepository.create({ faculty, semester }));
+    await this.absenceRepository.save(facultyAbsences);
     return {
       id: faculty.id,
       HUID: faculty.HUID,

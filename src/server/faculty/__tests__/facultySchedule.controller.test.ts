@@ -1,6 +1,8 @@
 import {
   SinonStub,
   stub,
+  createStubInstance,
+  SinonStubbedInstance,
 } from 'sinon';
 import { Test } from '@nestjs/testing';
 import { Authentication } from 'server/auth/authentication.guard';
@@ -18,6 +20,8 @@ import { ABSENCE_TYPE } from 'common/constants';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
 import { ConfigModule } from 'server/config/config.module';
+import { Repository } from 'typeorm';
+import { Semester } from 'server/semester/semester.entity';
 import { FacultyController } from '../faculty.controller';
 import { FacultyScheduleService } from '../facultySchedule.service';
 import { Faculty } from '../faculty.entity';
@@ -31,6 +35,7 @@ describe('Faculty Schedule Controller', function () {
   let updateFacultyAbsencesStub: SinonStub;
   const mockRepository: Record<string, SinonStub> = {};
   let mockAbsenceRepository: Record<string, SinonStub>;
+  let mockSemesterRepository: SinonStubbedInstance<Repository<Semester>>;
   const fakeYearList = [
     2018,
     2019,
@@ -45,6 +50,9 @@ describe('Faculty Schedule Controller', function () {
       findOne: stub(),
       save: stub(),
     };
+    mockSemesterRepository = createStubInstance<Repository<Semester>>(
+      Repository
+    );
     const testModule = await Test.createTestingModule({
       imports: [ConfigModule],
       controllers: [FacultyController],
@@ -79,6 +87,10 @@ describe('Faculty Schedule Controller', function () {
         {
           provide: getRepositoryToken(Absence),
           useValue: mockAbsenceRepository,
+        },
+        {
+          provide: getRepositoryToken(Semester),
+          useValue: mockSemesterRepository,
         },
       ],
     })
