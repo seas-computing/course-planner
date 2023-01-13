@@ -56,7 +56,8 @@ enum ABSENCE_TYPE {
    * The staff member is present. They aren't on sabbatical, teaching relief,
    * parental leave etc. etc. This is the default value of [[Absence.type]]
    */
-  PRESENT = 'PRESENT'
+  PRESENT = 'PRESENT',
+
 }
 
 export default ABSENCE_TYPE;
