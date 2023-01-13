@@ -49,10 +49,12 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
    * The currently selected faculty
    */
   const [currentFaculty, setFaculty] = useState<FacultyResponseDTO>(null);
+
   /**
    * The currently selected absence
    */
   const [currentAbsence, setAbsence] = useState(null as AbsenceResponseDTO);
+
   /**
    * Keeps track of whether the absence modal is currently visible.
    * By default, the modal is not visible.
@@ -158,14 +160,6 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
     }
     FacultyAPI.getFacultySchedulesForYear(selectedAcademicYear)
       .then((facultySchedules): void => {
-        facultySchedules.forEach((schedule) =>{
-          if (!schedule.fall.absence) {
-            schedule.fall.absence = { id: '', year:0, type: newAbsenceType}
-          }
-          if (!schedule.spring.absence) {
-            schedule.spring.absence = {id: '', year:0, type: newAbsenceType}
-          }
-        });
         setFacultySchedules(facultySchedules);
       })
       .catch((err: Error): void => {
