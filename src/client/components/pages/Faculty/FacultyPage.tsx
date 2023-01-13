@@ -248,20 +248,6 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
                 .type = newAbsenceType;
             }
           }
-          if (
-            existingAbsenceType !== ABSENCE_TYPE.NO_LONGER_ACTIVE
-              && newAbsenceType !== ABSENCE_TYPE.NO_LONGER_ACTIVE
-          ) {
-            if (term === 'fall') {
-              facultyData[index].fall.absence
-                .type = newAbsenceType;
-              facultyData[index].spring.absence
-                .type = ABSENCE_TYPE.PRESENT;
-            } else if (term === 'spring') {
-              facultyData[index].spring.absence
-                .type = newAbsenceType;
-            }
-          }
         }
         return facultyData;
       });
