@@ -1,6 +1,8 @@
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
-import { stub, SinonStub } from 'sinon';
+import {
+  stub, SinonStub, createStubInstance, SinonStubbedInstance,
+} from 'sinon';
 import { strictEqual, deepStrictEqual, rejects } from 'assert';
 import { FACULTY_TYPE } from 'common/constants';
 import { Authentication } from 'server/auth/authentication.guard';
@@ -11,12 +13,15 @@ import {
   appliedMathFacultyMember,
   appliedMathFacultyMemberResponse,
   newAreaFacultyMemberRequest,
+  fall,
+  spring,
 } from 'testData';
 import { Semester } from 'server/semester/semester.entity';
 import { SemesterService } from 'server/semester/semester.service';
 import { NotFoundException } from '@nestjs/common';
 import { Absence } from 'server/absence/absence.entity';
 import { ConfigModule } from 'server/config/config.module';
+import { Repository } from 'typeorm';
 import { FacultyController } from '../faculty.controller';
 import { Faculty } from '../faculty.entity';
 import { Area } from '../../area/area.entity';
@@ -29,8 +34,8 @@ describe('Faculty controller', function () {
   let mockSemesterService : Record<string, SinonStub>;
   let mockFacultyRepository : Record<string, SinonStub>;
   let mockAreaRepository : Record<string, SinonStub>;
-  let mockSemesterRepository : Record<string, SinonStub>;
-  let mockAbsenceRepository: Record<string, SinonStub>;
+  let mockSemesterRepository: SinonStubbedInstance<Repository<Semester>>;
+  let mockAbsenceRepository: SinonStubbedInstance<Repository<Absence>>;
   let controller: FacultyController;
 
   beforeEach(async function () {
@@ -62,12 +67,13 @@ describe('Faculty controller', function () {
       findOneOrFail: stub(),
     };
 
-    mockSemesterRepository = {};
+    mockSemesterRepository = createStubInstance<Repository<Semester>>(
+      Repository
+    );
 
-    mockAbsenceRepository = {
-      findOneOrFail: stub(),
-      save: stub(),
-    };
+    mockAbsenceRepository = createStubInstance<Repository<Absence>>(
+      Repository
+    );
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule],
@@ -100,6 +106,10 @@ describe('Faculty controller', function () {
           provide: getRepositoryToken(Absence),
           useValue: mockAbsenceRepository,
         },
+        {
+          provide: getRepositoryToken(Semester),
+          useValue: mockSemesterRepository,
+        },
       ],
       controllers: [FacultyController],
     }).overrideGuard(Authentication).useValue(true).compile();
@@ -126,6 +136,9 @@ describe('Faculty controller', function () {
           .findOne
           .resolves(appliedMathFacultyMember.area);
         mockAreaRepository.save.resolves(appliedMathFacultyMember.area);
+        mockSemesterRepository
+          .find
+          .resolves([fall, spring]);
       });
       it('creates a single faculty member', async function () {
         mockFacultyRepository.save.resolves(appliedMathFacultyMember);

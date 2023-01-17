@@ -7,6 +7,9 @@ import { TEXT_VARIANT } from 'mark-one';
  * the given absence
  */
 export const absenceToVariant = (absence: FacultyAbsence): TEXT_VARIANT => {
+  if (!absence) {
+    return TEXT_VARIANT.BASE;
+  }
   switch (absence.type) {
     case ABSENCE_TYPE.PARENTAL_LEAVE:
     case ABSENCE_TYPE.RESEARCH_LEAVE:
