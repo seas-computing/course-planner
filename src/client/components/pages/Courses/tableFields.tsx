@@ -179,7 +179,7 @@ const formatOffered = (
 export const MeetingGrid = styled.div`
   display: grid;
   grid-template-areas: "time campus room";
-  grid-template-columns: 2fr 2em 3fr 2em;
+  
   column-gap: ${fromTheme('ws', 'xsmall')};
   align-items: baseline;
 `;
@@ -260,8 +260,9 @@ export const formatMeetings = (
   const { calendarYear, meetings } = instance;
   return (
     <>
-      <TableCellList>
-        {(meetings[0] !== undefined && meetings[0]?.day !== null)
+      <div style={{ width: '85%' }}>
+        <TableCellList>
+          {(meetings[0] !== undefined && meetings[0]?.day !== null)
         && meetings.map(({
           id,
           room,
@@ -271,13 +272,13 @@ export const formatMeetings = (
         }): ReactElement => (
           <TableCellListItem key={id}>
             <MeetingGrid>
-              <MeetingGridSection area="time">
+              <MeetingGridSection area="time" style={{ marginRight: '10mm', width: '12rem' }}>
                 <div>{dayEnumToString(day)}</div>
                 <div>{`${PGTime.toDisplay(startTime)} - ${PGTime.toDisplay(endTime)}`}</div>
               </MeetingGridSection>
               {room && (
                 <>
-                  <MeetingGridSection area="room">
+                  <MeetingGridSection area="room" style={{ width: '13rem' }}>
                     {room.name}
                   </MeetingGridSection>
                   <MeetingGridSection area="campus">
@@ -288,7 +289,8 @@ export const formatMeetings = (
             </MeetingGrid>
           </TableCellListItem>
         ))}
-      </TableCellList>
+        </TableCellList>
+      </div>
       {isEditable && (
         <BorderlessButton
           id={`${parentId}-${term}-edit-meetings-button`}
