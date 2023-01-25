@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { NonClassParent } from 'server/nonClassEvent/nonclassparent.entity';
 import { Area } from 'server/area/area.entity';
@@ -20,8 +20,8 @@ import { NonClassEventView } from './NonClassEvent.view.entity';
       NonClassParentView,
       NonClassEventView,
     ]),
-    SemesterModule,
-    MeetingModule,
+    forwardRef(() => SemesterModule),
+    forwardRef(() => MeetingModule),
     LocationModule,
   ],
   providers: [
@@ -30,6 +30,6 @@ import { NonClassEventView } from './NonClassEvent.view.entity';
   controllers: [
     NonClassEventController,
   ],
-  exports: [],
+  exports: [TypeOrmModule],
 })
 export class NonClassEventModule { }

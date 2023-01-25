@@ -1,6 +1,5 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Module } from '@nestjs/common';
-import { Semester } from 'server/semester/semester.entity';
+import { Module, forwardRef } from '@nestjs/common';
 import { Absence } from 'server/absence/absence.entity';
 import { SemesterModule } from 'server/semester/semester.module';
 import { FacultyController } from './faculty.controller';
@@ -16,7 +15,6 @@ import { FacultyListingView } from './FacultyListingView.entity';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      Semester,
       Faculty,
       Area,
       Absence,
@@ -24,7 +22,7 @@ import { FacultyListingView } from './FacultyListingView.entity';
       FacultyScheduleSemesterView,
       FacultyScheduleView,
     ]),
-    SemesterModule,
+    forwardRef(() => SemesterModule),
   ],
   controllers: [
     FacultyController,
@@ -33,6 +31,9 @@ import { FacultyListingView } from './FacultyListingView.entity';
     FacultyListingView,
     FacultyService,
     FacultyScheduleService,
+  ],
+  exports: [
+    TypeOrmModule,
   ],
 })
 export class FacultyModule { }

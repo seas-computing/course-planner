@@ -1,5 +1,5 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { Area } from 'server/area/area.entity';
 import { CourseController } from './course.controller';
 import { Course } from './course.entity';
@@ -8,7 +8,7 @@ import { SemesterModule } from '../semester/semester.module';
 
 @Module({
   imports: [
-    SemesterModule,
+    forwardRef(() => SemesterModule),
     TypeOrmModule.forFeature([
       Course,
       Area,
@@ -18,5 +18,6 @@ import { SemesterModule } from '../semester/semester.module';
   providers: [
     CourseService,
   ],
+  exports: [TypeOrmModule],
 })
 export class CourseModule { }

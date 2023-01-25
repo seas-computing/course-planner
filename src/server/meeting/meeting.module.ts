@@ -1,9 +1,8 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Semester } from '../semester/semester.entity';
-import { Room } from '../location/room.entity';
-import { CourseInstance } from '../courseInstance/courseinstance.entity';
-import { NonClassEvent } from '../nonClassEvent/nonclassevent.entity';
+import { SemesterModule } from 'server/semester/semester.module';
+import { CourseInstanceModule } from 'server/courseInstance/courseInstance.module';
+import { NonClassEventModule } from '../nonClassEvent/nonclassevent.module';
 import { MeetingController } from './meeting.controller';
 import { Meeting } from './meeting.entity';
 import { MeetingService } from './meeting.service';
@@ -13,14 +12,13 @@ import { MeetingListingView } from './MeetingListingView.entity';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      CourseInstance,
       Meeting,
-      NonClassEvent,
-      Room,
-      Semester,
       MeetingListingView,
     ]),
     LocationModule,
+    forwardRef(() => SemesterModule),
+    CourseInstanceModule,
+    forwardRef(() => NonClassEventModule),
   ],
   controllers: [MeetingController],
   providers: [MeetingService],

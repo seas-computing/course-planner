@@ -1,23 +1,25 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Absence } from 'server/absence/absence.entity';
-import { CourseInstance } from 'server/courseInstance/courseinstance.entity';
+import { CourseInstanceModule } from 'server/courseInstance/courseInstance.module';
+import { NonClassEventModule } from 'server/nonClassEvent/nonclassevent.module';
 import { LogModule } from 'server/log/log.module';
-import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
 import { Semester } from 'server/semester/semester.entity';
 import { SemesterService } from './semester.service';
 import { ConfigModule } from '../config/config.module';
+import { SemesterView } from './SemesterView.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
+      SemesterView,
       Semester,
-      CourseInstance,
-      NonClassEvent,
       Absence,
     ]),
     LogModule,
     ConfigModule,
+    forwardRef(() => CourseInstanceModule),
+    NonClassEventModule,
   ],
   providers: [
     SemesterService,
