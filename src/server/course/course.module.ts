@@ -1,15 +1,15 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from '@nestjs/common';
 import { Area } from 'server/area/area.entity';
-import { Semester } from 'server/semester/semester.entity';
 import { CourseController } from './course.controller';
 import { Course } from './course.entity';
 import { CourseService } from './course.service';
+import { SemesterModule } from '../semester/semester.module';
 
 @Module({
   imports: [
+    SemesterModule,
     TypeOrmModule.forFeature([
-      Semester,
       Course,
       Area,
     ]),
