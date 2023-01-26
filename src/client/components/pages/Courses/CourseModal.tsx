@@ -55,6 +55,10 @@ interface CourseModalProps {
    * Handler to be invoked when the edit is successful
    */
   onSuccess: (course: ManageCourseResponseDTO) => Promise<void>;
+  /**
+   * Array of courses used to populate the sameAs selection dropdown
+   */
+  courses: ManageCourseResponseDTO[];
 }
 
 interface FormErrors {
@@ -62,6 +66,7 @@ interface FormErrors {
   title: string;
   isSEAS: string;
   termPattern: string;
+  sameAs: string;
 }
 
 const generalErrorMessage = 'Please fill in the required fields and try again. If the problem persists, contact SEAS Computing.';
@@ -105,6 +110,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
   currentCourse,
   onSuccess,
   onClose,
+  courses,
 }): ReactElement {
   /**
    * The current value for the metadata context
@@ -244,6 +250,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
         title: '',
         isSEAS: '',
         termPattern: '',
+        sameAs: '',
       });
       setCourseModalError('');
       setCourseModalFocus();
@@ -300,6 +307,18 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
       label: area,
     })));
 
+  const courseOptions = [{ value: '', label: '' }]
+    .concat(
+      courses.filter(({ id }) => id !== currentCourse.id)
+        .map(({ id, catalogNumber }): {
+          value: string;
+          label: string;
+        } => ({
+          value: id,
+          label: catalogNumber,
+        }))
+    );
+
   return (
     <Modal
       ariaLabelledBy="editCourse"
@@ -346,7 +365,6 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
               }}
               label={displayNames.existingArea}
               isLabelVisible={false}
-              // Insert an empty option so that no area is pre-selected in dropdown
               options={areaOptions}
             />
             <RadioButton
@@ -399,14 +417,14 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
             errorMessage={formErrors.title}
             isRequired
           />
-          <TextInput
+          <Dropdown
             id="sameAs"
+            value={form.sameAs}
             name="sameAs"
+            onChange={updateFormFields}
             label={displayNames.sameAs}
             labelPosition={POSITION.TOP}
-            placeholder="e.g. AC 221"
-            onChange={updateFormFields}
-            value={form.sameAs}
+            options={courseOptions}
           />
           <Checkbox
             id="isUndergraduate"

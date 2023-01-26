@@ -10,6 +10,7 @@ import {
   FindByText,
   QueryByText,
   waitForElement,
+  within,
 } from '@testing-library/react';
 import React, { useState } from 'react';
 import {
@@ -59,6 +60,7 @@ describe('Course Modal', function () {
             isVisible
             onClose={() => {}}
             onSuccess={() => null}
+            courses={[]}
           />
         ));
       });
@@ -94,7 +96,7 @@ describe('Course Modal', function () {
       });
       describe('Same As Input', function () {
         it('defaults to empty string', function () {
-          const sameAsInput = getByLabelText('Same as', { exact: false }) as HTMLInputElement;
+          const sameAsInput = getByLabelText('Same as', { exact: false }) as HTMLSelectElement;
           strictEqual(sameAsInput.value, '');
         });
       });
@@ -130,6 +132,7 @@ describe('Course Modal', function () {
             currentCourse={physicsCourseResponse}
             onClose={() => {}}
             onSuccess={() => null}
+            courses={[physicsCourseResponse, computerScienceCourseResponse]}
           />
         ));
       });
@@ -139,7 +142,7 @@ describe('Course Modal', function () {
         const catalogPrefixInput = getByLabelText('Catalog Prefix', { exact: false }) as HTMLInputElement;
         const courseNumberInput = getByLabelText('Course Number', { exact: false }) as HTMLInputElement;
         const courseTitleInput = getByLabelText('Course Title', { exact: false }) as HTMLInputElement;
-        const sameAsInput = getByLabelText('Same as', { exact: false }) as HTMLInputElement;
+        const sameAsInput = getByLabelText('Same as', { exact: false }) as HTMLSelectElement;
         const undergraduateCheckbox = getByLabelText('Undergraduate', { exact: false }) as HTMLInputElement;
         const isSEASSelect = getByLabelText('Is SEAS', { exact: false }) as HTMLSelectElement;
         const termPatternSelect = getByLabelText('Term Pattern', { exact: false }) as HTMLSelectElement;
@@ -179,6 +182,16 @@ describe('Course Modal', function () {
           termPatternSelect.value,
           physicsCourseResponse.termPattern
         );
+      });
+      describe('Same As Input', function () {
+        it('cannot contain the current course', function () {
+          const sameAsInput = getByLabelText('Same As', { exact: false }) as HTMLSelectElement;
+          const sameAsOptions = within(sameAsInput)
+            .getAllByRole('option') as HTMLOptionElement[];
+          const valid = sameAsOptions.map((option) => option.value)
+            .every((id) => id !== physicsCourseResponse.id);
+          strictEqual(valid, true);
+        });
       });
       describe('Error Message', function () {
         it('renders no error messages prior to initial form submission', function () {
@@ -242,6 +255,7 @@ describe('Course Modal', function () {
           isVisible
           onClose={() => {}}
           onSuccess={() => null}
+          courses={[]}
         />
       ));
     });
@@ -515,6 +529,7 @@ describe('Course Modal', function () {
               currentCourse={physicsCourseResponse}
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
+              courses={[]}
             />
           ));
         });
@@ -553,6 +568,7 @@ describe('Course Modal', function () {
               }}
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
+              courses={[]}
             />
           ));
         });
@@ -582,6 +598,7 @@ describe('Course Modal', function () {
               isVisible
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
+              courses={[]}
             />
           ));
           const existingAreaSelect = getByLabelText('Existing Area', { exact: true }) as HTMLSelectElement;
@@ -650,6 +667,7 @@ describe('Course Modal', function () {
               isVisible
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
+              courses={[]}
             />
           ));
         });
