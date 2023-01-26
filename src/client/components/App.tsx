@@ -120,7 +120,7 @@ const App: FunctionComponent = (): ReactElement => {
           setDataFetching(false);
         });
     }
-  }, [dispatchMessageRef, setDataFetching, appVersion]);
+  }, [dispatchMessageRef, setDataFetching]);
 
   return (
     <div className="app-content">
