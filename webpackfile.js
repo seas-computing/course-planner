@@ -9,6 +9,7 @@ const {
   APP_NAME,
   SERVER_URL,
   PUBLIC_CLIENT_URL,
+  APP_VERSION
 } = process.env;
 
 /**
@@ -102,6 +103,7 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env.SERVER_URL': JSON.stringify(SERVER_URL),
       'process.env.PUBLIC_CLIENT_URL': JSON.stringify(PUBLIC_CLIENT_URL),
+      'process.env.APP_VERSION': JSON.stringify(APP_VERSION),
     }),
     new HtmlWebpackRootPlugin(),
     new webpack.optimize.ModuleConcatenationPlugin(),
