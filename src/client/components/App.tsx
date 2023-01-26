@@ -18,7 +18,12 @@ import {
   MetadataContextValue,
   MessageReducerAction,
 } from 'client/context';
-import { MarkOneWrapper, PageBody, LoadSpinner } from 'mark-one';
+import {
+  MarkOneWrapper,
+  PageBody,
+  LoadSpinner,
+  Footer,
+} from 'mark-one';
 import { getCurrentUser } from 'client/api';
 import { getMetadata } from 'client/api/metadata';
 import { User } from 'common/classes';
@@ -71,6 +76,11 @@ const App: FunctionComponent = (): ReactElement => {
   const [isDataFetching, setDataFetching] = useState(true);
 
   /**
+   * Tracks the current version of the application to be displayed in the footer
+   */
+  const [appVersion, setAppVersion] = useState('');
+
+  /**
    * Get the currently authenticated user from the server on launch.
    * If it fails, display a message for the user
    */
@@ -79,6 +89,7 @@ const App: FunctionComponent = (): ReactElement => {
     if (dispatchMessageRef.current) {
       const { current: dispatchMessage } = dispatchMessageRef;
       setDataFetching(true);
+      setAppVersion(process.env.APP_VERSION);
       getCurrentUser()
         .then((user: User): void => {
           setUser(user);
@@ -109,7 +120,7 @@ const App: FunctionComponent = (): ReactElement => {
           setDataFetching(false);
         });
     }
-  }, [dispatchMessageRef, setDataFetching]);
+  }, [dispatchMessageRef, setDataFetching, appVersion]);
 
   return (
     <div className="app-content">
@@ -128,6 +139,11 @@ const App: FunctionComponent = (): ReactElement => {
                     <>
                       <AppHeader />
                       <AppRouter />
+                      <Footer
+                        justify="center"
+                      >
+                        {appVersion}
+                      </Footer>
                     </>
                   )}
                 <Message
