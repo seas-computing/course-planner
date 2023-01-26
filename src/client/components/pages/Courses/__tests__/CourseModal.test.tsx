@@ -24,6 +24,7 @@ import {
   metadata,
   physicsCourse,
   physicsCourseResponse,
+  newAreaCourseResponse,
 } from 'testData';
 import { IS_SEAS } from 'common/constants';
 import request from 'client/api/request';
@@ -39,9 +40,14 @@ describe('Course Modal', function () {
   let getByLabelText: BoundFunction<GetByText>;
   let findByText: BoundFunction<FindByText>;
   let queryByText: BoundFunction<QueryByText>;
+  const childCourse = {
+    ...newAreaCourseResponse,
+    sameAs: computerScienceCourseResponse.id,
+  };
   const testData = [
     physicsCourseResponse,
     computerScienceCourseResponse,
+    childCourse,
   ];
   let onSuccessStub: SinonStub;
   let onCloseStub: SinonStub;
@@ -132,7 +138,7 @@ describe('Course Modal', function () {
             currentCourse={physicsCourseResponse}
             onClose={() => {}}
             onSuccess={() => null}
-            courses={[physicsCourseResponse, computerScienceCourseResponse]}
+            courses={testData}
           />
         ));
       });
@@ -188,9 +194,18 @@ describe('Course Modal', function () {
           const sameAsInput = getByLabelText('Same As', { exact: false }) as HTMLSelectElement;
           const sameAsOptions = within(sameAsInput)
             .getAllByRole('option') as HTMLOptionElement[];
-          const valid = sameAsOptions.map((option) => option.value)
-            .every((id) => id !== physicsCourseResponse.id);
-          strictEqual(valid, true);
+          const courseIds = sameAsOptions.map((option) => option.value);
+
+          strictEqual(courseIds.includes(physicsCourseResponse.id), false);
+        });
+        it('cannot contain a child course', function () {
+          const sameAsInput = getByLabelText('Same As', { exact: false }) as HTMLSelectElement;
+          const sameAsOptions = within(sameAsInput)
+            .getAllByRole('option') as HTMLOptionElement[];
+
+          const courseIds = sameAsOptions.map((option) => option.value);
+
+          strictEqual(courseIds.includes(childCourse.id), false);
         });
       });
       describe('Error Message', function () {

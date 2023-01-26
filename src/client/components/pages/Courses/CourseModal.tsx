@@ -309,7 +309,8 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
 
   const courseOptions = [{ value: '', label: '' }]
     .concat(
-      courses.filter(({ id }) => id !== currentCourse.id)
+      courses.filter(({ id }) => id !== currentCourse?.id)
+        .filter(({ sameAs }) => sameAs === null)
         .map(({ id, catalogNumber }): {
           value: string;
           label: string;
