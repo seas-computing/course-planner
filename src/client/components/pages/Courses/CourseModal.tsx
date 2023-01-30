@@ -36,6 +36,7 @@ import {
 import { CourseAPI } from 'client/api';
 import { AxiosError } from 'client/api/request';
 import { camelCaseToTitleCase } from 'common/utils/util';
+import { BadRequestInfo, ServerErrorInfo } from 'client/classes';
 
 interface CourseModalProps {
   /**
@@ -65,24 +66,6 @@ interface FormErrors {
 }
 
 const generalErrorMessage = 'Please fill in the required fields and try again. If the problem persists, contact SEAS Computing.';
-
-export interface BadRequestMessageInfo {
-  children: unknown[];
-  constraints: Record<string, string>;
-  property: string;
-}
-
-export interface BadRequestInfo {
-  statusCode: string;
-  error: string;
-  message: BadRequestMessageInfo[];
-}
-
-export interface ServerErrorInfo {
-  statusCode: string;
-  error: string;
-  message: Record<string, string>;
-}
 
 const displayNames: Record<string, string> = {
   existingArea: 'Existing Area',

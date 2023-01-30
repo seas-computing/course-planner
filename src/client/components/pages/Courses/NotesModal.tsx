@@ -1,5 +1,6 @@
 import { AxiosError } from 'axios';
 import { CourseAPI, HTTP_STATUS } from 'client/api';
+import { BadRequestInfo } from 'client/classes';
 import {
   Button,
   Modal,
@@ -22,7 +23,6 @@ import React, {
   useState,
 } from 'react';
 import CourseInstanceResponseDTO from '../../../../common/dto/courses/CourseInstanceResponse';
-import { BadRequestInfo } from './CourseModal';
 
 interface NotesModalProps {
   /**

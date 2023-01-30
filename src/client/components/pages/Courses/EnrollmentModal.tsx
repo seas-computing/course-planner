@@ -26,8 +26,8 @@ import { TermKey } from 'common/constants/term';
 import { HTTP_STATUS, updateCourseInstance } from 'client/api';
 import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto';
 import { AxiosError } from 'axios';
+import { BadRequestInfo } from 'client/classes';
 import { EnrollmentField } from './tableFields';
-import { BadRequestInfo } from './CourseModal';
 import { getInstanceIdentifier } from '../utils/getInstanceIdentifier';
 
 interface EnrollmentModalProps {
