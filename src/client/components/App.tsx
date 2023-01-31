@@ -34,6 +34,8 @@ import {
   AppHeader,
 } from './layout';
 
+const appVersion = process.env.APP_VERSION;
+
 /**
  * The primary app component. Fetches the current user from the server when it
  * mounts, then saves it to the UserContext to pass down to other components
@@ -76,11 +78,6 @@ const App: FunctionComponent = (): ReactElement => {
   const [isDataFetching, setDataFetching] = useState(true);
 
   /**
-   * Tracks the current version of the application to be displayed in the footer
-   */
-  const [appVersion, setAppVersion] = useState('');
-
-  /**
    * Get the currently authenticated user from the server on launch.
    * If it fails, display a message for the user
    */
@@ -89,7 +86,6 @@ const App: FunctionComponent = (): ReactElement => {
     if (dispatchMessageRef.current) {
       const { current: dispatchMessage } = dispatchMessageRef;
       setDataFetching(true);
-      setAppVersion(process.env.APP_VERSION);
       getCurrentUser()
         .then((user: User): void => {
           setUser(user);
