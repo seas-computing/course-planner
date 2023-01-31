@@ -24,7 +24,6 @@ import {
   ValidationErrorMessage,
   POSITION,
   Form,
-  Combobox,
 } from 'mark-one';
 import { MetadataContext } from 'client/context/MetadataContext';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
@@ -419,25 +418,12 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
             errorMessage={formErrors.title}
             isRequired
           />
-          <Combobox
-            currentValue={
-              courseOptions.find(({ value }) => value === form.sameAs)
-            }
+          <Dropdown
+            id="sameAs"
+            value={form.sameAs}
+            name="sameAs"
+            onChange={updateFormFields}
             label={displayNames.sameAs}
-            placeholder="Type to search..."
-            onOptionSelected={(a) => {
-              updateFormFields({
-                target: {
-                  value: a.selectedItem.value,
-                  name: 'sameAs',
-                },
-              } as unknown as ChangeEvent);
-            }}
-            filterFunction={(option, inputValue) => {
-              const re = new RegExp(inputValue, 'i');
-              return re.test(option.label);
-            }}
-            errorMessage={formErrors.sameAs}
             labelPosition={POSITION.TOP}
             options={courseOptions}
           />
