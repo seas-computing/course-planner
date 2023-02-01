@@ -104,7 +104,7 @@ export class CourseController {
       ...newCourse,
       prefix,
       number,
-      sameAs: newCourse.sameAs ? `${newCourse.sameAs.prefix} ${newCourse.sameAs.number}` : '',
+      sameAs: newCourse.sameAs ? newCourse.sameAs.id : null,
       catalogNumber: `${prefix} ${number}`,
     };
   }
@@ -178,7 +178,7 @@ export class CourseController {
       prefix,
       number,
       catalogNumber: `${prefix} ${number}`,
-      sameAs: updatedCourse.sameAs ? `${updatedCourse.sameAs.prefix} ${updatedCourse.sameAs.number}` : '',
+      sameAs: updatedCourse.sameAs ? updatedCourse.sameAs.id : null,
     };
   }
 }

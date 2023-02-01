@@ -132,7 +132,7 @@ export const physicsCourseResponse: ManageCourseResponseDTO = {
   number: '295a',
   catalogNumber: 'AP 295a',
   termPattern: TERM_PATTERN.SPRING,
-  sameAs: '',
+  sameAs: null,
   private: true,
 };
 
