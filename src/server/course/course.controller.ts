@@ -1,5 +1,14 @@
 import {
-  Controller, Get, UseGuards, Body, Inject, Post, NotFoundException, Put, Param,
+  Controller,
+  Get,
+  UseGuards,
+  Body,
+  Inject,
+  Post,
+  NotFoundException,
+  Put,
+  Param,
+  BadRequestException,
 } from '@nestjs/common';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -139,6 +148,14 @@ export class CourseController {
     let sameAsCourse: Course;
     if (course.sameAs) {
       sameAsCourse = await this.courseRepository.findOneOrFail(course.sameAs);
+      const childCourses = await this.courseRepository.count({
+        where: {
+          sameAs: id,
+        },
+      });
+      if (childCourses > 0) {
+        throw new BadRequestException('Parent courses cannot be children');
+      }
     }
 
     const fullCourse = {

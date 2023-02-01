@@ -1,4 +1,8 @@
-import { strictEqual, deepStrictEqual, rejects } from 'assert';
+import {
+  strictEqual,
+  deepStrictEqual,
+  rejects,
+} from 'assert';
 import { TestingModule, Test } from '@nestjs/testing';
 import { stub, SinonStub } from 'sinon';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -9,11 +13,12 @@ import {
   computerScienceCourseResponse,
   updateCourseExample,
   error,
+  physicsCourse,
 } from 'testData';
 import { Authentication } from 'server/auth/authentication.guard';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { Area } from 'server/area/area.entity';
-import { NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { CourseController } from '../course.controller';
 import { Course } from '../course.entity';
 import { CourseService } from '../course.service';
@@ -33,6 +38,7 @@ describe('Course controller', function () {
       find: stub(),
       findOneOrFail: stub(),
       save: stub(),
+      count: stub(),
     };
 
     mockCourseService = {
@@ -198,6 +204,26 @@ describe('Course controller', function () {
             ...computerScienceCourseResponse,
             sameAs: '',
           }
+        );
+      });
+    });
+    context('With a sameAs course', function () {
+      it('cannot have a same as attribute if other courses are the same as this course', async function () {
+        mockAreaRepository.findOne.resolves(cs50Course.area);
+        mockCourseRepository.findOneOrFail
+          .onFirstCall().resolves(cs50Course)
+          .onSecondCall().resolves(physicsCourse);
+        mockCourseRepository.count.resolves(1);
+        mockCourseRepository.save.resolves(cs50Course);
+        await rejects(
+          () => controller.update(
+            cs50Course.id,
+            {
+              ...updateCourseExample,
+              sameAs: physicsCourse.id,
+            }
+          ),
+          BadRequestException
         );
       });
     });
