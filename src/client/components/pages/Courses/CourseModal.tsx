@@ -35,8 +35,7 @@ import {
 } from 'common/constants';
 import { CourseAPI } from 'client/api';
 import { AxiosError } from 'client/api/request';
-import { camelCaseToTitleCase } from 'common/utils/util';
-import { BadRequestInfo, ServerErrorInfo } from 'client/classes';
+import { ErrorParser, ServerErrorInfo } from 'client/classes';
 
 interface CourseModalProps {
   /**
@@ -460,39 +459,17 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
               if ((error as AxiosError).response) {
                 const serverError = error as AxiosError;
                 const { response } = serverError;
-                if (response.data
-                    && (response.data as BadRequestInfo).message
-                    && Array.isArray(
-                      (response.data as BadRequestInfo).message
-                    )) {
-                  const data = response.data as BadRequestInfo;
-                  const messages = data.message;
-                  const errors = {};
-                  messages.forEach((problem) => {
-                    const { property } = problem;
-                    // Since the error message returned from the server includes
-                    // the property name in camel case, this converts the property
-                    // name to be more understandable by the user (e.g. 'termPattern'
-                    // becomes 'Term Pattern'). The rest of the error message follows.
-                    let displayName = displayNames[property];
-                    // If we don't know the display name,
-                    // convert the property to title case for user readability.
-                    if (!displayName) {
-                      displayName = camelCaseToTitleCase(property);
-                    }
-                    // We ignore the object keys
-                    // since they don't contain additional info
-                    errors[property] = Object.values(problem.constraints)
-                      // Replace the beginning with the display name
-                      // if the first word of the error is the property name
-                      .map((constraint) => constraint.replace(
-                        new RegExp('^' + property + '\\b'),
-                        displayName
-                      ))
-                      // If we get multiple errors per property, separate them
-                      .join('; ');
-                  });
-                  setFormErrors(errors as FormErrors);
+                const errors = ErrorParser.parseBadRequestError(
+                  serverError, displayNames
+                );
+                if (Object.keys(errors).length > 0) {
+                  const parsedErrors: FormErrors = {
+                    area: errors.area,
+                    title: errors.title,
+                    isSEAS: errors.isSEAS,
+                    termPattern: errors.termPattern,
+                  };
+                  setFormErrors(parsedErrors);
                   setCourseModalError(generalErrorMessage);
                 } else if (response.data
                   && (response.data as ServerErrorInfo).message) {
