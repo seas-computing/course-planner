@@ -83,6 +83,12 @@ const enrollmentFields: EnrollmentField[] = [
 ];
 
 /**
+ * A mapping from each of the modal form fields to their display names
+ */
+const displayNames: Record<string, string> = enrollmentFields
+  .reduce((obj, item) => Object.assign(obj, { [item.key]: item.name }), {});
+
+/**
 * Displays 3 input fields to allow users to edit the enrollment data for a given
 * course
 */
