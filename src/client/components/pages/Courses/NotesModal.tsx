@@ -1,6 +1,6 @@
 import { AxiosError } from 'axios';
-import { CourseAPI, HTTP_STATUS } from 'client/api';
-import { BadRequestInfo, ErrorParser } from 'client/classes';
+import { CourseAPI } from 'client/api';
+import { ErrorParser } from 'client/classes';
 import {
   Button,
   Modal,
