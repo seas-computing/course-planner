@@ -11,6 +11,7 @@ import {
   QueryByText,
   waitForElement,
   within,
+  RenderResult,
 } from '@testing-library/react';
 import React, { useState } from 'react';
 import {
@@ -131,67 +132,79 @@ describe('Course Modal', function () {
       });
     });
     context('when currentCourse is not null', function () {
-      beforeEach(function () {
-        ({ getByLabelText, queryAllByRole } = render(
-          <CourseModal
-            isVisible
-            currentCourse={physicsCourseResponse}
-            onClose={() => {}}
-            onSuccess={() => null}
-            courses={testData}
-          />
-        ));
-      });
-      it('populates the modal fields according to the current course selected', function () {
-        const existingAreaSelect = getByLabelText('Existing Area', { exact: true }) as HTMLSelectElement;
-        const newAreaInput = getByLabelText('New Area', { exact: true }) as HTMLInputElement;
-        const catalogPrefixInput = getByLabelText('Catalog Prefix', { exact: false }) as HTMLInputElement;
-        const courseNumberInput = getByLabelText('Course Number', { exact: false }) as HTMLInputElement;
-        const courseTitleInput = getByLabelText('Course Title', { exact: false }) as HTMLInputElement;
-        const sameAsInput = getByLabelText('Same as', { exact: false }) as HTMLSelectElement;
-        const undergraduateCheckbox = getByLabelText('Undergraduate', { exact: false }) as HTMLInputElement;
-        const isSEASSelect = getByLabelText('Is SEAS', { exact: false }) as HTMLSelectElement;
-        const termPatternSelect = getByLabelText('Term Pattern', { exact: false }) as HTMLSelectElement;
-        strictEqual(
-          existingAreaSelect.value,
-          physicsCourseResponse.area.name
-        );
-        strictEqual(
-          newAreaInput.value,
-          ''
-        );
-        strictEqual(
-          catalogPrefixInput.value,
-          physicsCourseResponse.prefix
-        );
-        strictEqual(
-          courseNumberInput.value,
-          physicsCourseResponse.number
-        );
-        strictEqual(
-          courseTitleInput.value,
-          physicsCourseResponse.title
-        );
-        strictEqual(
-          sameAsInput.value,
-          physicsCourseResponse.sameAs
-        );
-        strictEqual(
-          undergraduateCheckbox.checked,
-          physicsCourseResponse.isUndergraduate
-        );
-        strictEqual(
-          isSEASSelect.value,
-          physicsCourseResponse.isSEAS
-        );
-        strictEqual(
-          termPatternSelect.value,
-          physicsCourseResponse.termPattern
-        );
+      describe('modal field population', function () {
+        let modal: RenderResult;
+        beforeEach(function () {
+          modal = render(
+            <CourseModal
+              isVisible
+              currentCourse={physicsCourseResponse}
+              onClose={() => {}}
+              onSuccess={() => null}
+              courses={testData}
+            />
+          );
+        });
+        it('populates the modal fields according to the current course selected', function () {
+          const existingAreaSelect = modal.getByLabelText('Existing Area', { exact: true }) as HTMLSelectElement;
+          const newAreaInput = modal.getByLabelText('New Area', { exact: true }) as HTMLInputElement;
+          const catalogPrefixInput = modal.getByLabelText('Catalog Prefix', { exact: false }) as HTMLInputElement;
+          const courseNumberInput = modal.getByLabelText('Course Number', { exact: false }) as HTMLInputElement;
+          const courseTitleInput = modal.getByLabelText('Course Title', { exact: false }) as HTMLInputElement;
+          const sameAsInput = modal.getByLabelText('Same as', { exact: false }) as HTMLSelectElement;
+          const undergraduateCheckbox = modal.getByLabelText('Undergraduate', { exact: false }) as HTMLInputElement;
+          const isSEASSelect = modal.getByLabelText('Is SEAS', { exact: false }) as HTMLSelectElement;
+          const termPatternSelect = modal.getByLabelText('Term Pattern', { exact: false }) as HTMLSelectElement;
+          strictEqual(
+            existingAreaSelect.value,
+            physicsCourseResponse.area.name
+          );
+          strictEqual(
+            newAreaInput.value,
+            ''
+          );
+          strictEqual(
+            catalogPrefixInput.value,
+            physicsCourseResponse.prefix
+          );
+          strictEqual(
+            courseNumberInput.value,
+            physicsCourseResponse.number
+          );
+          strictEqual(
+            courseTitleInput.value,
+            physicsCourseResponse.title
+          );
+          strictEqual(
+            sameAsInput.value,
+            physicsCourseResponse.sameAs
+          );
+          strictEqual(
+            undergraduateCheckbox.checked,
+            physicsCourseResponse.isUndergraduate
+          );
+          strictEqual(
+            isSEASSelect.value,
+            physicsCourseResponse.isSEAS
+          );
+          strictEqual(
+            termPatternSelect.value,
+            physicsCourseResponse.termPattern
+          );
+        });
       });
       describe('Same As Input', function () {
         it('cannot contain the current course', function () {
-          const sameAsInput = getByLabelText('Same As', { exact: false }) as HTMLSelectElement;
+          const modal = render(
+            <CourseModal
+              isVisible
+              currentCourse={physicsCourseResponse}
+              onClose={() => {}}
+              onSuccess={() => null}
+              courses={testData}
+            />
+          );
+          const sameAsInput = modal.getByLabelText('Same As', { exact: false }) as HTMLSelectElement;
           const sameAsOptions = within(sameAsInput)
             .getAllByRole('option') as HTMLOptionElement[];
           const courseIds = sameAsOptions.map((option) => option.value);
@@ -199,7 +212,17 @@ describe('Course Modal', function () {
           strictEqual(courseIds.includes(physicsCourseResponse.id), false);
         });
         it('cannot contain a child course', function () {
-          const sameAsInput = getByLabelText('Same As', { exact: false }) as HTMLSelectElement;
+          const modal = render(
+            <CourseModal
+              isVisible
+              currentCourse={physicsCourseResponse}
+              onClose={() => {}}
+              onSuccess={() => null}
+              courses={testData}
+            />
+          );
+          const sameAsInput = modal
+            .getByLabelText('Same As') as HTMLSelectElement;
           const sameAsOptions = within(sameAsInput)
             .getAllByRole('option') as HTMLOptionElement[];
 
