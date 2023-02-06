@@ -30,10 +30,7 @@ export default function DoesNotMatch<DTO>(
           const target = args.object as DTO;
           const [otherProp] = args.constraints as (string & keyof DTO)[];
           const otherProperty = target[otherProp];
-          if (typeof otherProperty === 'string') {
-            return value !== otherProperty;
-          }
-          return false;
+          return value !== otherProperty;
         },
         defaultMessage(args: ValidationArguments): string {
           return `${args.property} must not equal ${args.constraints[0] as string}`;
