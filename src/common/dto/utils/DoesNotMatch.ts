@@ -26,7 +26,7 @@ export default function DoesNotMatch<DTO>(
       constraints: [property],
       options: validationOptions,
       validator: {
-        validate(value: string, args: ValidationArguments): boolean {
+        validate(value: unknown, args: ValidationArguments): boolean {
           const target = args.object as DTO;
           const [otherProp] = args.constraints as (string & keyof DTO)[];
           const otherProperty = target[otherProp];
