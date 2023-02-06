@@ -262,7 +262,7 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
               type: MESSAGE_ACTION.PUSH,
             });
           }}
-          courses={filteredCourses()}
+          courses={currentCourses}
         />
       </div>
     </div>
