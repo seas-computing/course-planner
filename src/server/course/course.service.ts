@@ -78,7 +78,6 @@ export class CourseService {
       .addSelect('c."numberInteger"', 'numberInteger')
       .addSelect('c."numberAlphabetical"', 'numberAlphabetical')
       .leftJoinAndSelect(Area, 'a', 'c."areaId" = a.id')
-      .leftJoinAndSelect(Course, 'p', 'c."sameAsId" = p.id')
       .orderBy('a.name', 'ASC')
       .addOrderBy('prefix', 'ASC')
       .addOrderBy('"numberInteger"', 'ASC')
