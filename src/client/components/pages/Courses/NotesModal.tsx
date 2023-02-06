@@ -1,6 +1,6 @@
 import { AxiosError } from 'axios';
 import { CourseAPI, HTTP_STATUS } from 'client/api';
-import { BadRequestInfo } from 'client/classes';
+import { BadRequestInfo, ErrorParser } from 'client/classes';
 import {
   Button,
   Modal,
@@ -52,6 +52,13 @@ interface NotesModalProps {
    */
   isEditable: boolean;
 }
+
+/**
+ * A mapping of each form field property name to its display name
+ */
+const displayNames: Record<string, string> = {
+  notes: 'Notes',
+};
 
 const NotesModal: FunctionComponent<NotesModalProps> = function ({
   isVisible,
@@ -229,19 +236,11 @@ const NotesModal: FunctionComponent<NotesModalProps> = function ({
                   });
                 } catch (error) {
                   if ((error as AxiosError).response) {
-                    const { response } = error as AxiosError;
-                    if (response.status === HTTP_STATUS.BAD_REQUEST) {
-                      const errors = [
-                        ...(response.data as BadRequestInfo).message,
-                      ].map(
-                        ({ constraints }) => Object.entries(constraints)
-                          .map(([, message]) => message)
-                          /* We're not making any effort here to try and resolve
-                          * the field name to a human readable name because the
-                          * field name could be any field from the course object
-                          * rather than a known set of pre-determined fields */
-                      ).reduce((acc, val) => acc.concat(val), []);
-                      setModalErrors(errors);
+                    const errors = ErrorParser.parseBadRequestError(
+                      error, displayNames
+                    );
+                    if (Object.keys(errors).length > 0) {
+                      setModalErrors(Object.values(errors));
                     } else {
                       setModalErrors([
                         'Unable to save enrollment data. If the problem persists, please contact SEAS Computing',
