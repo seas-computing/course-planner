@@ -5,6 +5,7 @@ import React, {
   Ref,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -307,18 +308,25 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
       label: area,
     })));
 
-  const courseOptions = [{ value: '', label: '' }]
-    .concat(
-      courses.filter(({ id }) => id !== currentCourse?.id)
-        .filter(({ sameAs }) => sameAs === null)
-        .map(({ id, catalogNumber }): {
-          value: string;
-          label: string;
-        } => ({
-          value: id,
-          label: catalogNumber,
-        }))
-    );
+  /**
+   * Convert list of courses from state into array of options to be used within
+   * the `Dropdown` component
+   */
+  const courseOptions = useMemo(
+    () => [{ value: '', label: '' }]
+      .concat(
+        courses.filter(({ id }) => id !== currentCourse?.id)
+          .filter(({ sameAs }) => sameAs === null)
+          .map(({ id, catalogNumber }): {
+            value: string;
+            label: string;
+          } => ({
+            value: id,
+            label: catalogNumber,
+          }))
+      ),
+    [courses, currentCourse]
+  );
 
   return (
     <Modal
