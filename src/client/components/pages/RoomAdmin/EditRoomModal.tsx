@@ -24,7 +24,7 @@ import RoomAdminResponse from 'common/dto/room/RoomAdminResponse.dto';
 import ValidationException from 'common/errors/ValidationException';
 import { AxiosError } from 'axios';
 import { LocationAPI } from 'client/api';
-import { ServerErrorInfo } from '../Courses/CourseModal';
+import { ServerErrorInfo } from 'client/classes';
 
 interface EditRoomModalProps {
   /**

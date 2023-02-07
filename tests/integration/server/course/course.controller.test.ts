@@ -37,7 +37,7 @@ import { Area } from 'server/area/area.entity';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { SelectQueryBuilder } from 'typeorm';
-import { BadRequestInfo } from 'client/components/pages/Courses/CourseModal';
+import { BadRequestInfo } from 'client/classes';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
 describe('Course API', function () {

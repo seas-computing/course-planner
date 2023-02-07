@@ -23,11 +23,11 @@ import {
 import CourseInstanceResponseDTO, { Instance } from 'common/dto/courses/CourseInstanceResponse';
 import { TERM } from 'common/constants';
 import { TermKey } from 'common/constants/term';
-import { HTTP_STATUS, updateCourseInstance } from 'client/api';
+import { updateCourseInstance } from 'client/api';
 import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto';
 import { AxiosError } from 'axios';
+import { ErrorParser } from 'client/classes';
 import { EnrollmentField } from './tableFields';
-import { BadRequestInfo } from './CourseModal';
 import { getInstanceIdentifier } from '../utils/getInstanceIdentifier';
 
 interface EnrollmentModalProps {
@@ -81,6 +81,12 @@ const enrollmentFields: EnrollmentField[] = [
     icon: null,
   },
 ];
+
+/**
+ * A mapping from each of the modal form fields to their display names
+ */
+const displayNames: Record<string, string> = enrollmentFields
+  .reduce((obj, item) => Object.assign(obj, { [item.key]: item.name }), {});
 
 /**
 * Displays 3 input fields to allow users to edit the enrollment data for a given
@@ -195,18 +201,6 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
   ]);
 
   /**
-   * Look up a given field name in [[enrollmentFields]] and retrieve the
-   * humnan friendly name for display in an error message. This enables a more
-   * friendly message like "Final Enrollment may not contain alphabetical characters"
-   * instead of "actualEnrollment may not contain alphabetical characters"
-   */
-  const getDisplayName = useCallback(
-    (fieldName: string) => enrollmentFields
-      .find(({ key }) => key.toString() === fieldName).name,
-    []
-  );
-
-  /**
    * Validates form data to check that only positive integers are being entered
    */
   const validateData = useCallback(
@@ -272,20 +266,11 @@ const EnrollmentModal: FunctionComponent<EnrollmentModalProps> = ({
         onSave(results);
       } catch (error) {
         if ((error as AxiosError).response) {
-          const {
-            response,
-          } = error as AxiosError;
-          if (response.status === HTTP_STATUS.BAD_REQUEST) {
-            const errors = [
-              ...(response.data as BadRequestInfo).message,
-            ].map(
-              ({ constraints, property }) => Object.entries(constraints)
-                .map(
-                  ([, message]) => message
-                    .replace(property, getDisplayName(property))
-                )
-            ).reduce((acc, val) => acc.concat(val), []);
-            setModalErrors(errors);
+          const errors = ErrorParser.parseBadRequestError(
+            error, displayNames
+          );
+          if (Object.keys(errors).length > 0) {
+            setModalErrors(Object.values(errors));
           } else {
             setModalErrors([
               'Unable to save enrollment data. If the problem persists, please contact SEAS Computing',
