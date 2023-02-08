@@ -175,10 +175,7 @@ describe('Course Modal', function () {
             courseTitleInput.value,
             physicsCourseResponse.title
           );
-          strictEqual(
-            sameAsInput.value,
-            physicsCourseResponse.sameAs
-          );
+          strictEqual(sameAsInput.value, '');
           strictEqual(
             undergraduateCheckbox.checked,
             physicsCourseResponse.isUndergraduate
