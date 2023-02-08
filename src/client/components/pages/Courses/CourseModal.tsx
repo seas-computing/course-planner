@@ -172,6 +172,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
     title: '',
     isSEAS: '',
     termPattern: '',
+    sameAs: '',
   } as FormErrors);
 
   /**
@@ -432,6 +433,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
             name="sameAs"
             onChange={updateFormFields}
             label={displayNames.sameAs}
+            errorMessage={formErrors.sameAs}
             labelPosition={POSITION.TOP}
             options={courseOptions}
           />
