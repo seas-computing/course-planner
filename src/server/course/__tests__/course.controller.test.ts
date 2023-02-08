@@ -114,7 +114,7 @@ describe('Course controller', function () {
           createdCourse,
           {
             ...computerScienceCourseResponse,
-            sameAs: '',
+            sameAs: null,
           }
         );
       });
@@ -202,7 +202,7 @@ describe('Course controller', function () {
           course,
           {
             ...computerScienceCourseResponse,
-            sameAs: '',
+            sameAs: null,
           }
         );
       });
