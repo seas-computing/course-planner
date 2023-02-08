@@ -497,6 +497,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
                     title: errors.title,
                     isSEAS: errors.isSEAS,
                     termPattern: errors.termPattern,
+                    sameAs: errors.sameAs,
                   };
                   setFormErrors(parsedErrors);
                   setCourseModalError(generalErrorMessage);
