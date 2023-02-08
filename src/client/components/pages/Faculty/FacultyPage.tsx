@@ -26,6 +26,7 @@ import {
   AppMessage,
   MESSAGE_TYPE,
   MESSAGE_ACTION,
+  FacultyFilterState,
 } from 'client/classes';
 import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
 import { useStoredState } from 'client/hooks/useStoredState';
@@ -36,25 +37,6 @@ import FacultyAbsenceModal from './FacultyAbsenceModal';
 import FacultyScheduleTable from './FacultyScheduleTable';
 import { AcademicYearUtils } from '../utils/academicYearOptions';
 import { listFilter } from '../Filter';
-
-/**
- * Describes the nested level filter fields of the faculty table
- */
-interface SemesterFilterState {
-  absence: string;
-}
-
-/**
- * Describes the top level filter fields of the faculty table
- */
-interface FacultyFilterState {
-  area: string;
-  lastName: string;
-  firstName: string;
-  category: string;
-  fall: SemesterFilterState;
-  spring: SemesterFilterState;
-}
 
 /**
  * This component represents the Faculty page, which will be rendered at

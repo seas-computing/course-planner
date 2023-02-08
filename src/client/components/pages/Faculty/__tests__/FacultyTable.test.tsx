@@ -34,21 +34,9 @@ import {
   facultyTypeEnumToTitleCase,
 } from 'common/utils/facultyHelperFunctions';
 import { ABSENCE_TYPE, FACULTY_TYPE } from 'common/constants';
+import { FacultyFilterState } from 'client/classes';
 import FacultySchedule from '../FacultyPage';
 import FacultyScheduleTable from '../FacultyScheduleTable';
-
-interface SemesterFilterState {
-  absence: string;
-}
-
-interface FacultyFilterState {
-  area: string;
-  lastName: string;
-  firstName: string;
-  category: string;
-  fall: SemesterFilterState;
-  spring: SemesterFilterState;
-}
 
 /**
  * Helper function used to compare table row contents with faculty schedule data
