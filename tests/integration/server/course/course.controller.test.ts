@@ -374,7 +374,11 @@ describe('Course API', function () {
         it('returns a 400 if the course is the "same as" itself', async function () {
           const response = await request(api)
             .put(`/api/courses/${cs50Course.id}`)
-            .send({ sameAs: cs50Course.id });
+            .send({
+              ...cs50Course,
+              area: cs50Course.area.name,
+              sameAs: cs50Course.id,
+            });
 
           const body = response.body as BadRequestInfo;
 
