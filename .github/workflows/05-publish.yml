@@ -106,6 +106,7 @@ jobs:
         run: |
           rm -rf build
           git checkout ${{ env.VERSION_TAG }}
+          export APP_VERSION="${{ env.VERSION_TAG }}"
           npm run build:client
           export QA_BUNDLE_NAME="${{ env.PACKAGE_NAME }}_${{ env.VERSION_TAG }}_QA.tar.gz"
           tar -czvf $QA_BUNDLE_NAME -C build client
@@ -118,6 +119,7 @@ jobs:
         run: |
           rm -rf build
           git checkout ${{ env.VERSION_TAG }}
+          export APP_VERSION="${{ env.VERSION_TAG }}"
           npm run build:client
           export PROD_BUNDLE_NAME="${{ env.PACKAGE_NAME }}_${{ env.VERSION_TAG }}_PROD.tar.gz"
           tar -czvf $PROD_BUNDLE_NAME -C build client

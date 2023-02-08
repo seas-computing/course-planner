@@ -32,7 +32,7 @@ import ValidationException from 'common/errors/ValidationException';
 import { LocationAPI } from 'client/api';
 import { CampusResponse } from 'common/dto/room/CampusResponse.dto';
 import { AxiosError } from 'axios';
-import { ServerErrorInfo } from '../Courses/CourseModal';
+import { ServerErrorInfo } from 'client/classes';
 
 interface CreateRoomModalProps {
   /**
