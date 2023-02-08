@@ -24,6 +24,7 @@ import {
 } from '@testing-library/react';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import {
+  SinonSpy,
   SinonStub,
   stub,
 } from 'sinon';
@@ -35,6 +36,19 @@ import {
 import { ABSENCE_TYPE, FACULTY_TYPE } from 'common/constants';
 import FacultySchedule from '../FacultyPage';
 import FacultyScheduleTable from '../FacultyScheduleTable';
+
+interface SemesterFilterState {
+  absence: string;
+}
+
+interface FacultyFilterState {
+  area: string;
+  lastName: string;
+  firstName: string;
+  category: string;
+  fall: SemesterFilterState;
+  spring: SemesterFilterState;
+}
 
 /**
  * Helper function used to compare table row contents with faculty schedule data
@@ -74,11 +88,25 @@ const assertRowMatchesResponse = function (
 };
 
 describe('FacultyScheduleTable', function () {
+  let updateSpy: SinonSpy;
   const facultyScheduleList = [
     appliedMathFacultyScheduleResponse,
     electricalEngineeringFacultyScheduleResponse,
     newAreaFacultyScheduleResponse,
   ];
+  const testFilters: FacultyFilterState = {
+    area: 'All',
+    lastName: '',
+    firstName: '',
+    category: 'All',
+    fall: {
+      absence: 'All',
+    },
+    spring: {
+      absence: 'All',
+    },
+  };
+
   context('When faculty data fetch succeeds', function () {
     describe('Header Rows', function () {
       let getAllByRole: BoundFunction<AllByRole>;
@@ -88,6 +116,8 @@ describe('FacultyScheduleTable', function () {
           <FacultyScheduleTable
             academicYear={acadYear}
             facultySchedules={facultyScheduleList}
+            genericFilterUpdate={updateSpy}
+            filters={testFilters}
             onEdit={(): void => {}}
             editButtonRef={null}
           />
@@ -143,6 +173,8 @@ describe('FacultyScheduleTable', function () {
           <FacultyScheduleTable
             academicYear={acadYear}
             facultySchedules={facultyScheduleList}
+            genericFilterUpdate={updateSpy}
+            filters={testFilters}
             onEdit={(): void => {}}
             editButtonRef={null}
           />
@@ -243,6 +275,8 @@ describe('FacultyScheduleTable', function () {
         <FacultyScheduleTable
           academicYear={2021}
           facultySchedules={testFacultySchedules}
+          genericFilterUpdate={updateSpy}
+          filters={testFilters}
           onEdit={(): void => {}}
           editButtonRef={null}
         />
