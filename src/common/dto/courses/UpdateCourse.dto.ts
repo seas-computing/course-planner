@@ -9,7 +9,7 @@ import {
   IsNotEmpty,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { trimString } from '../utils';
+import { DoesNotMatch, trimString } from '../utils';
 
 /**
  * @module Server.DTOS.Courses
@@ -67,6 +67,7 @@ export abstract class UpdateCourseDTO {
   })
   @IsUUID()
   @IsOptional()
+  @DoesNotMatch('id')
   public sameAs?: string;
 
   @ApiProperty({

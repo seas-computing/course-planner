@@ -183,10 +183,7 @@ describe('Course API', function () {
           strictEqual(mockCourseRepository.save.callCount, 1);
           deepStrictEqual(
             response.body,
-            {
-              ...computerScienceCourseResponse,
-              sameAs: '',
-            }
+            computerScienceCourseResponse
           );
         });
         it('returns the newly created course', async function () {
@@ -201,10 +198,7 @@ describe('Course API', function () {
 
           deepStrictEqual(
             response.body as ManageCourseResponseDTO,
-            {
-              ...computerScienceCourseResponse,
-              sameAs: '',
-            }
+            computerScienceCourseResponse
           );
         });
         it('reports a validation error when area is missing', async function () {
@@ -376,6 +370,22 @@ describe('Course API', function () {
           deepStrictEqual(response.ok, false);
           deepStrictEqual(response.status, HttpStatus.BAD_REQUEST);
           strictEqual(errorFields.includes('isSEAS'), true);
+        });
+        it('returns a 400 if the course is the "same as" itself', async function () {
+          const response = await request(api)
+            .put(`/api/courses/${cs50Course.id}`)
+            .send({
+              ...cs50Course,
+              area: cs50Course.area.name,
+              sameAs: cs50Course.id,
+            });
+
+          const body = response.body as BadRequestInfo;
+
+          const errorFields = body.message.map(({ property }) => property);
+
+          deepStrictEqual(response.status, HttpStatus.BAD_REQUEST);
+          strictEqual(errorFields.includes('sameAs'), true);
         });
       });
       describe('User is not a member of the admin group', function () {
