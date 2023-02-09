@@ -88,10 +88,14 @@ describe('FacultyScheduleTable', function () {
     firstName: '',
     category: 'All',
     fall: {
-      absence: 'All',
+      absence: {
+        type: 'All',
+      },
     },
     spring: {
-      absence: 'All',
+      absence: {
+        type: 'All',
+      },
     },
   };
 

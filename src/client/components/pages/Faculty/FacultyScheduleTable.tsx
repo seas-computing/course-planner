@@ -56,7 +56,7 @@ interface FacultyScheduleTableProps {
    */
   facultySchedules: FacultyResponseDTO[];
   /**
-   * A handler to update the courses as the user changes the filters
+   * A handler to update the faculty as the user changes the filters
    */
   genericFilterUpdate: (field: string, value: string) => void;
   /**
@@ -229,14 +229,14 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
                       label: absenceTitle,
                     };
                   }))}
-              value={filters.fall.absence}
+              value={filters.fall.absence.type}
               name="fall-absence-filter"
               id="fall-absence-filter"
               label="Change to filter the faculty list by the fall absence value"
               isLabelVisible={false}
               hideError
               onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
-                genericFilterUpdate('fall.absence', event.currentTarget.value);
+                genericFilterUpdate('fall.absence.type', event.currentTarget.value);
               }}
             />
           </TableHeadingCell>
@@ -252,14 +252,14 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
                       label: absenceTitle,
                     };
                   }))}
-              value={filters.spring.absence}
+              value={filters.spring.absence.type}
               name="spring-absence-filter"
               id="spring-absence-filter"
               label="Change to filter the faculty list by the spring absence value"
               isLabelVisible={false}
               hideError
               onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
-                genericFilterUpdate('spring.absence', event.currentTarget.value);
+                genericFilterUpdate('spring.absence.type', event.currentTarget.value);
               }}
             />
           </TableHeadingCell>

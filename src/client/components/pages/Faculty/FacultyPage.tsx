@@ -75,10 +75,14 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
     firstName: '',
     category: 'All',
     fall: {
-      absence: 'All',
+      absence: {
+        type: 'All',
+      },
     },
     spring: {
-      absence: 'All',
+      absence: {
+        type: 'All',
+      },
     },
   };
 
@@ -184,7 +188,7 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
   const filteredFaculty = useMemo((): FacultyResponseDTO[] => {
     let filteredFacultyList = [...currentFacultySchedules];
     // Provides a list of the paths for the filters in the Course Instance table
-    const dropdownFilterPaths = ['area', 'category', 'fall.absence', 'spring.absence'];
+    const dropdownFilterPaths = ['area', 'category', 'fall.absence.type', 'spring.absence.type'];
     dropdownFilterPaths.forEach((filterPath) => {
       const filterValue = get(filters, filterPath) as string;
       if (filterValue !== 'All') {
