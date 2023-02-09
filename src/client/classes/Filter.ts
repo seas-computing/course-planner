@@ -1,5 +1,7 @@
 export interface SemesterFilterState {
-  absence: string;
+  absence: {
+    type: string;
+  };
 }
 
 export interface FacultyFilterState {
