@@ -89,7 +89,7 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
   /**
    * The initial, empty state for the filters
    */
-  const emptyFilters = {
+  const emptyFilters: FacultyFilterState = {
     area: 'All',
     lastName: '',
     firstName: '',
