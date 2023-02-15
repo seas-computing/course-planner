@@ -33,30 +33,9 @@ import { ABSENCE_TYPE } from 'common/constants';
 import { RightMenu } from 'client/components/general';
 import get from 'lodash.get';
 import FacultyAbsenceModal from './FacultyAbsenceModal';
-import FacultyScheduleTable from './FacultyScheduleTable';
+import FacultyScheduleTable, { FacultyFilterState } from './FacultyScheduleTable';
 import { AcademicYearUtils } from '../utils/academicYearOptions';
 import { listFilter } from '../Filter';
-
-/**
- * Describes the semester specific filter(s)
- */
-type SemesterFilterState = {
-  absence: {
-    type: string;
-  };
-};
-
-/**
- * Describes the top level of filters for the Faculty page
- */
-type FacultyFilterState = {
-  area: string;
-  lastName: string;
-  firstName: string;
-  category: string;
-  fall: SemesterFilterState;
-  spring: SemesterFilterState;
-};
 
 /**
  * This component represents the Faculty page, which will be rendered at

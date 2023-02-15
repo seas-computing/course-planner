@@ -43,8 +43,28 @@ import {
 } from 'common/utils/facultyHelperFunctions';
 import { CellLayout } from 'client/components/general';
 import { MetadataContext } from 'client/context/MetadataContext';
-import { FacultyFilterState } from 'client/classes';
 import { absenceToVariant } from '../utils/absenceToVariant';
+
+/**
+ * Describes the semester specific filter(s)
+ */
+type SemesterFilterState = {
+  absence: {
+    type: string;
+  };
+};
+
+/**
+ * Describes the top level of filters for the Faculty page
+ */
+export type FacultyFilterState = {
+  area: string;
+  lastName: string;
+  firstName: string;
+  category: string;
+  fall: SemesterFilterState;
+  spring: SemesterFilterState;
+};
 
 interface FacultyScheduleTableProps {
   /**

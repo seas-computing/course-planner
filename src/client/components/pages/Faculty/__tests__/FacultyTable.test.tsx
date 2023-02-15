@@ -30,9 +30,8 @@ import {
   facultyTypeEnumToTitleCase,
 } from 'common/utils/facultyHelperFunctions';
 import { ABSENCE_TYPE } from 'common/constants';
-import { FacultyFilterState } from 'client/classes';
 import FacultySchedule from '../FacultyPage';
-import FacultyScheduleTable from '../FacultyScheduleTable';
+import FacultyScheduleTable, { FacultyFilterState } from '../FacultyScheduleTable';
 
 /**
  * Helper function used to compare table row contents with faculty schedule data
