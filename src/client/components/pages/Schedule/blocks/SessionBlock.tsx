@@ -116,9 +116,12 @@ const SessionBlockWrapper = styled.div<SessionBlockWrapperProps>`
   border-left: 1px solid #fff;
   border-right: 1px solid #fff;
   border-bottom: 1px solid #fff;
-  min-width: 2.5em;
+  min-width: 3.5em;
   position: relative;
   opacity: ${({ isFaded }) => (isFaded ? '0.6' : '1')};
+ 
+  ::-webkit-scrollbar {
+    background: transparent;
 
   ${({ hasBottomOverflow, theme }) => (
     // Show down indicator when there are courses overflowing the bottom
