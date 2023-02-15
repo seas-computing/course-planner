@@ -185,7 +185,8 @@ describe('Faculty Page', function () {
         it('should show all of the areas and "All" as options', function () {
           const rows = getAllByRole('row');
           const utils = within(rows[2]);
-          const filter = utils.queryByLabelText('Change to filter the faculty list by area') as HTMLSelectElement;
+          const filter = utils
+            .queryByLabelText(areaFilterLabel) as HTMLSelectElement;
           const options = within(filter)
             .getAllByRole('option') as HTMLOptionElement[];
           const actualOptions = options
