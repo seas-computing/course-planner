@@ -16,6 +16,8 @@ import {
   Checkbox,
   POSITION,
   Dropdown,
+  Button,
+  VARIANT,
 } from 'mark-one';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { MessageContext, MetadataContext } from 'client/context';
@@ -28,7 +30,9 @@ import {
 import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
 import { useStoredState } from 'client/hooks/useStoredState';
 import { ABSENCE_TYPE } from 'common/constants';
-import { RightMenu } from 'client/components/general';
+import { MenuFlex } from 'client/components/general';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import FacultyAbsenceModal from './FacultyAbsenceModal';
 import FacultyScheduleTable from './FacultyScheduleTable';
 import { AcademicYearUtils } from '../utils/academicYearOptions';
@@ -114,6 +118,14 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
     currentAcademicYear,
     'sessionStorage'
   );
+
+  /**
+   * Control whether the "Download Report" modal is visible
+   */
+  const [
+    reportModalVisible,
+    setReportModalVisible,
+  ] = useState(false);
 
   /**
    * The current value of the edit fall absence button
@@ -255,10 +267,28 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
     }, [setFacultySchedules, closeAbsenceModal]
   );
 
+  /**
+   * Handle opening the download modal
+   */
+  const openDownloadModal = useCallback(() => {
+    setReportModalVisible(true);
+  }, [setReportModalVisible]);
+
   return (
     <div className="faculty-schedule-table">
       <VerticalSpace>
-        <RightMenu>
+        <MenuFlex>
+          <Button
+            variant={VARIANT.INFO}
+            alt="Download a spreadsheet with faculty data"
+            onClick={openDownloadModal}
+          >
+            <FontAwesomeIcon
+              icon={faDownload}
+            />
+            {' '}
+            Download Faculty Report
+          </Button>
           <Dropdown
             id="academic-year-selector"
             name="academic-year-selector"
@@ -287,7 +317,7 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
             labelPosition={POSITION.RIGHT}
             hideError
           />
-        </RightMenu>
+        </MenuFlex>
       </VerticalSpace>
       {fetching
         ? (
