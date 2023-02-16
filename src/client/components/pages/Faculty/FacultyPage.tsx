@@ -36,6 +36,7 @@ import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import FacultyAbsenceModal from './FacultyAbsenceModal';
 import FacultyScheduleTable from './FacultyScheduleTable';
 import { AcademicYearUtils } from '../utils/academicYearOptions';
+import ReportDownloadModal from '../Courses/ReportDownloadModal';
 
 /**
  * This component represents the Faculty page, which will be rendered at
@@ -274,6 +275,13 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
     setReportModalVisible(true);
   }, [setReportModalVisible]);
 
+  /**
+   * Handle closing the download modal
+   */
+  const closeDownloadModal = useCallback(() => {
+    setReportModalVisible(false);
+  }, []);
+
   return (
     <div className="faculty-schedule-table">
       <VerticalSpace>
@@ -348,6 +356,11 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
                 />
               )
               : null}
+            <ReportDownloadModal
+              isVisible={reportModalVisible}
+              closeModal={closeDownloadModal}
+              reportType="Faculty"
+            />
           </>
         )}
     </div>

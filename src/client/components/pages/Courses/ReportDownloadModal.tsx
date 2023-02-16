@@ -30,6 +30,11 @@ import {
 } from 'client/api';
 
 /**
+ * Indicates the type of report to be generated
+ */
+type Report = 'Course' | 'Faculty';
+
+/**
  * Props for controlling the opening and closing of the modal
  */
 interface ReportDownloadModalProps {
@@ -37,6 +42,8 @@ interface ReportDownloadModalProps {
   isVisible: boolean;
   /** Handler to call to close the modal */
   closeModal: () => void;
+  /** Indicates the type of report to be generated */
+  reportType: Report;
 }
 
 /**
@@ -46,9 +53,10 @@ interface ReportDownloadModalProps {
 const ReportDownloadModal: FunctionComponent<ReportDownloadModalProps> = ({
   isVisible,
   closeModal,
+  reportType,
 }) => {
   /**
-   * Get the range of our data from the metadatacontext
+   * Get the range of our data from the metadata context
    */
   const {
     semesters,
@@ -101,7 +109,7 @@ const ReportDownloadModal: FunctionComponent<ReportDownloadModalProps> = ({
   ), [semesters]);
 
   /**
-   * Call back for updating the currrently selected start/end year. To avoid
+   * Call back for updating the currently selected start/end year. To avoid
    * invalid combinations, we'll shift the other choice when the user selects a
    * year outside the valid range.
    *
@@ -135,12 +143,18 @@ const ReportDownloadModal: FunctionComponent<ReportDownloadModalProps> = ({
    * and close the modal. If the download fails, keep the modal open and
    * display an error.
    */
-  const downloadCoursesReport = useCallback(async () => {
+  const downloadReport = useCallback(async () => {
     setReportDownloading(true);
     setDownloadError('');
     try {
-      await getCourseReport(currentReportRange);
-      closeModal();
+      if (reportType === 'Course') {
+        await getCourseReport(currentReportRange);
+        closeModal();
+      } else if (reportType === 'Faculty') {
+        closeModal();
+      } else {
+        closeModal();
+      }
     } catch (err) {
       if (err instanceof Error) {
         setDownloadError(err.message);
@@ -154,6 +168,7 @@ const ReportDownloadModal: FunctionComponent<ReportDownloadModalProps> = ({
     currentReportRange,
     setReportDownloading,
     closeModal,
+    reportType,
   ]);
 
   /**
@@ -197,7 +212,9 @@ const ReportDownloadModal: FunctionComponent<ReportDownloadModalProps> = ({
         tabIndex={0}
       >
         <span id="report-download-header">
-          Download Course Report
+          { reportType === 'Course'
+            ? 'Download Course Report'
+            : 'Download Faculty Report'}
         </span>
       </ModalHeader>
       <ModalBody>
@@ -238,7 +255,7 @@ const ReportDownloadModal: FunctionComponent<ReportDownloadModalProps> = ({
         <Button
           disabled={reportDownloading}
           variant={VARIANT.PRIMARY}
-          onClick={downloadCoursesReport}
+          onClick={downloadReport}
         >
           Download
         </Button>

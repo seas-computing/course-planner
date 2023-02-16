@@ -798,6 +798,7 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
       <ReportDownloadModal
         isVisible={reportModalVisible}
         closeModal={closeDownloadModal}
+        reportType="Course"
       />
       <ViewModal
         isVisible={viewModalVisible}
