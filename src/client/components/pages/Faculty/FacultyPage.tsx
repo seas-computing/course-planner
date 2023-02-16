@@ -10,6 +10,8 @@ import React, {
   useMemo,
   ChangeEvent,
 } from 'react';
+import merge from 'lodash.merge';
+import set from 'lodash.set';
 import { VerticalSpace } from 'client/components/layout';
 import {
   LoadSpinner,
@@ -29,9 +31,11 @@ import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
 import { useStoredState } from 'client/hooks/useStoredState';
 import { ABSENCE_TYPE } from 'common/constants';
 import { RightMenu } from 'client/components/general';
+import get from 'lodash.get';
 import FacultyAbsenceModal from './FacultyAbsenceModal';
-import FacultyScheduleTable from './FacultyScheduleTable';
+import FacultyScheduleTable, { FacultyFilterState } from './FacultyScheduleTable';
 import { AcademicYearUtils } from '../utils/academicYearOptions';
+import { listFilter } from '../Filter';
 
 /**
  * This component represents the Faculty page, which will be rendered at
@@ -60,6 +64,33 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
    * By default, the modal is not visible.
    */
   const [absenceModalVisible, setAbsenceModalVisible] = useState(false);
+
+  /**
+   * The initial, empty state for the filters
+   */
+  const emptyFilters: FacultyFilterState = {
+    area: 'All',
+    lastName: '',
+    firstName: '',
+    category: 'All',
+    fall: {
+      absence: {
+        type: 'All',
+      },
+    },
+    spring: {
+      absence: {
+        type: 'All',
+      },
+    },
+  };
+
+  /**
+   * The current value of each of the course instance table filters. These
+   * filter values are only used to control what's shown in the actual filter
+   * inputs
+   */
+  const [filters, setFilters] = useState<FacultyFilterState>(emptyFilters);
 
   /**
    * The current value for the message context
@@ -137,6 +168,60 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
   }, []);
 
   /**
+   * Handles keeping track of the group of filters as the user interacts with
+   * the filter dropdowns
+   */
+  const genericFilterUpdate = useCallback((field: string, value: string) => {
+    setFilters((currentFilters) => {
+      // Make a copy of the existing filters
+      const newFilters = merge({}, currentFilters);
+      set(newFilters, field, value);
+      return newFilters;
+    });
+  }, [setFilters]);
+
+  /**
+   * Return filtered rooms based on area, first and last name, category,
+   * sabbatical leave, and retired status.
+   */
+  const filteredFaculty = useMemo((): FacultyResponseDTO[] => {
+    let filteredFacultyList = [...currentFacultySchedules];
+    // Provides a list of the paths for the filters in the Course Instance table
+    const dropdownFilterPaths = ['area', 'category', 'fall.absence.type', 'spring.absence.type'];
+    dropdownFilterPaths.forEach((filterPath) => {
+      const filterValue = get(filters, filterPath) as string;
+      if (filterValue !== 'All') {
+        filteredFacultyList = listFilter(
+          filteredFacultyList,
+          { field: `${filterPath}`, value: filterValue, exact: true }
+        );
+      }
+    });
+    const textFilterPaths = ['lastName', 'firstName'];
+    textFilterPaths.forEach((filterPath) => {
+      const filterValue = get(filters, filterPath) as string;
+      if (filterValue !== '') {
+        filteredFacultyList = listFilter(
+          filteredFacultyList,
+          { field: `${filterPath}`, value: filterValue, exact: false }
+        );
+      }
+    });
+    // Hides the retired faculty
+    if (!showRetired) {
+      filteredFacultyList = filteredFacultyList.filter(
+        ({ spring, fall }): boolean => (
+          fall.absence?.type !== ABSENCE_TYPE.NO_LONGER_ACTIVE
+         || spring.absence?.type !== ABSENCE_TYPE.NO_LONGER_ACTIVE)
+      );
+    }
+    return filteredFacultyList;
+  }, [currentFacultySchedules,
+    showRetired,
+    filters,
+  ]);
+
+  /**
    * Get faculty schedule data from the server
    * If it fails, display a message for the user
    */
@@ -181,21 +266,6 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
     closeAbsenceModal,
     selectedAcademicYear,
   ]);
-
-  /**
-   * Filter/unfilter  faculty based on the showRetired checkbox, memoizing the result
-   */
-  const filteredFaculty = useMemo(() => {
-    let faculty = [...currentFacultySchedules];
-    if (!showRetired) {
-      faculty = faculty.filter(
-        ({ spring, fall }): boolean => (
-          fall.absence?.type !== ABSENCE_TYPE.NO_LONGER_ACTIVE
-         || spring.absence?.type !== ABSENCE_TYPE.NO_LONGER_ACTIVE)
-      );
-    }
-    return faculty;
-  }, [showRetired, currentFacultySchedules]);
 
   /**
    * Update a staff absence in local state.
@@ -300,6 +370,8 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
             <FacultyScheduleTable
               academicYear={selectedAcademicYear}
               facultySchedules={filteredFaculty}
+              genericFilterUpdate={genericFilterUpdate}
+              filters={filters}
               onEdit={(faculty, absence) => {
                 setAbsenceModalVisible(true);
                 setFaculty(faculty);
