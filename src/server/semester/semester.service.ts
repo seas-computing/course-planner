@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityNotFoundError, Repository } from 'typeorm';
-import { OFFERED, TERM } from 'common/constants';
+import { ABSENCE_TYPE, OFFERED, TERM } from 'common/constants';
 import { CourseInstance } from 'server/courseInstance/courseinstance.entity';
 import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
 import { Absence } from 'server/absence/absence.entity';
@@ -216,9 +216,12 @@ export class SemesterService implements OnApplicationBootstrap {
       this.logService.verbose('Creating the fall absences.');
 
       fallSemester.absences = existingSpringAbsences
-        .map((absence) => ({
-          ...new Absence(),
+        .map((absence) => this.absenceRepository.create({
+          ...absence,
           faculty: absence.faculty,
+          type: (absence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE)
+            ? ABSENCE_TYPE.NO_LONGER_ACTIVE
+            : ABSENCE_TYPE.PRESENT,
         }));
 
       this.logService.verbose(`Created ${fallSemester.absences.length} fall absences.`);

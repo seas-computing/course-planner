@@ -19,6 +19,8 @@ import { Semester } from 'server/semester/semester.entity';
 import FakeTimers from '@sinonjs/fake-timers';
 import { MONTH } from 'common/constants/month';
 import { stub } from 'sinon';
+import { Faculty } from 'server/faculty/faculty.entity';
+import { Absence } from 'server/absence/absence.entity';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import { semesters } from '../../../mocks/database/population/data/semesters';
@@ -26,6 +28,8 @@ import { semesters } from '../../../mocks/database/population/data/semesters';
 describe('Semester Service', function () {
   let testModule: TestingModule;
   let semesterService: SemesterService;
+  let absenceRepository: Repository<Absence>;
+  let facultyRepository: Repository<Faculty>;
   let semesterRepository: Repository<Semester>;
   let fakeConfig: ConfigService;
 
@@ -61,6 +65,8 @@ describe('Semester Service', function () {
 
     semesterService = testModule.get(SemesterService);
     semesterRepository = testModule.get(getRepositoryToken(Semester));
+    absenceRepository = testModule.get(getRepositoryToken(Absence));
+    facultyRepository = testModule.get(getRepositoryToken(Faculty));
     await testModule.createNestApplication()
       .useGlobalPipes(new BadRequestExceptionPipe())
       .init();
@@ -375,6 +381,62 @@ describe('Semester Service', function () {
           strictEqual(err instanceof Error, true);
           strictEqual(error.toString().includes('Cannot create requested academic year until preceding academic year is created.'), true);
         }
+      });
+    });
+    describe('faculty', function () {
+      const [lastSpringSemester] = semesters.slice(-1);
+      const testAcademicYear = lastSpringSemester.academicYear + 1;
+      describe(`is ${ABSENCE_TYPE.NO_LONGER_ACTIVE}`, function () {
+        it('carries over from previous available academic year', async function () {
+          const { id } = await facultyRepository
+            .createQueryBuilder('f')
+            .leftJoinAndSelect('f.absences', 'absence')
+            .getOne();
+
+          await absenceRepository.createQueryBuilder()
+            .update(Absence)
+            .set({ type: ABSENCE_TYPE.NO_LONGER_ACTIVE })
+            .where('facultyId = :id', { id })
+            .execute();
+
+          await semesterService.addAcademicYear(testAcademicYear);
+
+          const { absences } = await facultyRepository
+            .createQueryBuilder('f')
+            .leftJoinAndSelect('f.absences', 'absence')
+            .leftJoinAndSelect('absence.semester', 'semester')
+            .where({ id })
+            .andWhere(
+              'semester.academicYear = :acyr',
+              { acyr: testAcademicYear }
+            )
+            .getOne();
+
+          const newAbsencesNla = absences
+            .every(({ type }) => type === ABSENCE_TYPE.NO_LONGER_ACTIVE);
+          strictEqual(newAbsencesNla, true);
+        });
+      });
+      describe(`is anything other than ${ABSENCE_TYPE.NO_LONGER_ACTIVE}`, function () {
+        it(`defaults to ${ABSENCE_TYPE.PRESENT}`, async function () {
+          const presentFacultyMember = await facultyRepository
+            .createQueryBuilder('f')
+            .leftJoinAndSelect('f.absences', 'absence')
+            .where('absence.type = :type', { type: ABSENCE_TYPE.PARENTAL_LEAVE })
+            .getOne();
+          await semesterService.addAcademicYear(testAcademicYear);
+
+          const { absences } = await facultyRepository
+            .createQueryBuilder('f')
+            .leftJoinAndSelect('f.absences', 'absence')
+            .leftJoinAndSelect('absence.semester', 'semester')
+            .where({ id: presentFacultyMember.id })
+            .andWhere('semester.academicYear = :acyr', { acyr: testAcademicYear })
+            .getOne();
+          const allPresent = absences
+            .every(({ type }) => type === ABSENCE_TYPE.PRESENT);
+          strictEqual(allPresent, true);
+        });
       });
     });
   });
