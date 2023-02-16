@@ -39,6 +39,7 @@ describe('Report Download Modal', function () {
         <ReportDownloadModal
           isVisible={showModal}
           closeModal={() => setShowModal(false)}
+          reportType="Course"
         />
         <button
           type="button"
