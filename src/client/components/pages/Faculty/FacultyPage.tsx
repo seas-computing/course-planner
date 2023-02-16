@@ -39,6 +39,13 @@ import { AcademicYearUtils } from '../utils/academicYearOptions';
 import ReportDownloadModal from '../Courses/ReportDownloadModal';
 
 /**
+ * The identifiers for each of the buttons on the page
+ */
+const enum KEY {
+  REPORT_DOWNLOAD_BUTTON = 'download-report-button',
+}
+
+/**
  * This component represents the Faculty page, which will be rendered at
  * the route '/faculty-schedule'
  */
@@ -127,6 +134,32 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
     reportModalVisible,
     setReportModalVisible,
   ] = useState(false);
+
+  /**
+   * The id of the edit button that was clicked to open the modal is used to
+   * determine whether the ref should be set to that button so that when the
+   * modal closes, the focus is returned to the edit button of the corresponding
+   * modal.
+   */
+  const [modalButtonId, setModalButtonId] = useState<string>('');
+
+  /**
+   * The current ref value of the focused button
+   */
+  const refTable = useRef<Record<string, HTMLButtonElement>>({});
+
+  /**
+   * When passed as the forwardRef prop to a component, it will generate a ref
+   * pointing to the underlying element and add it to our refTable, so that we
+   * can later retrieve the ref and focus the appropriate element
+   */
+  const setButtonRef = useCallback(
+    (nodeId: string) => (node: HTMLButtonElement): void => {
+      if (nodeId && node) {
+        refTable.current[nodeId] = node;
+      }
+    }, [refTable]
+  );
 
   /**
    * The current value of the edit fall absence button
@@ -273,14 +306,20 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
    */
   const openDownloadModal = useCallback(() => {
     setReportModalVisible(true);
-  }, [setReportModalVisible]);
+    setModalButtonId(KEY.REPORT_DOWNLOAD_BUTTON);
+  }, [setReportModalVisible, setModalButtonId]);
 
   /**
    * Handle closing the download modal
    */
   const closeDownloadModal = useCallback(() => {
     setReportModalVisible(false);
-  }, []);
+    setTimeout(() => {
+      if (modalButtonId && modalButtonId in refTable.current) {
+        refTable.current[modalButtonId].focus();
+      }
+    });
+  }, [modalButtonId]);
 
   return (
     <div className="faculty-schedule-table">
@@ -290,6 +329,7 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
             variant={VARIANT.INFO}
             alt="Download a spreadsheet with faculty data"
             onClick={openDownloadModal}
+            forwardRef={setButtonRef(KEY.REPORT_DOWNLOAD_BUTTON)}
           >
             <FontAwesomeIcon
               icon={faDownload}
