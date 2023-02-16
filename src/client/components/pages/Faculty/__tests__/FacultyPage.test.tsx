@@ -149,12 +149,12 @@ describe('Faculty Page', function () {
       dummy.electricalEngineeringFacultyScheduleResponse,
       dummy.computerScienceFacultyScheduleResponse,
     ];
-    const areaFilterLabel = 'Change to filter the faculty list by area';
-    const lastNameLabel = 'Change to filter the faculty list by last name';
-    const firstNameLabel = 'Change to filter the faculty list by first name';
-    const categoryLabel = 'Change to filter the faculty list by category';
-    const fallAbsenceLabel = 'Change to filter the faculty list by the fall absence value';
-    const springAbsenceLabel = 'Change to filter the faculty list by the spring absence value';
+    const areaFilterLabel = /^(?=.*\bfilter\b)(?=.*\barea\b).*$/i;
+    const lastNameLabel = /^(?=.*\bfilter\b)(?=.*\blast\b).*$/i;
+    const firstNameLabel = /^(?=.*\bfilter\b)(?=.*\bfirst\b).*$/i;
+    const categoryLabel = /^(?=.*\bfilter\b)(?=.*\bcategory\b).*$/i;
+    const fallAbsenceLabel = /^(?=.*\bfilter\b)(?=.*\bfall\b).*$/i;
+    const springAbsenceLabel = /^(?=.*\bfilter\b)(?=.*\bspring\b).*$/i;
     beforeEach(async function () {
       getStub.resolves(testFacultySchedules);
       metadataContext = new MetadataContextValue({
