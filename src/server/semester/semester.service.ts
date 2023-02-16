@@ -217,7 +217,6 @@ export class SemesterService implements OnApplicationBootstrap {
 
       fallSemester.absences = existingSpringAbsences
         .map((absence) => this.absenceRepository.create({
-          ...absence,
           faculty: absence.faculty,
           type: (absence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE)
             ? ABSENCE_TYPE.NO_LONGER_ACTIVE
