@@ -1,5 +1,14 @@
 import {
-  Controller, Get, UseGuards, Body, Inject, Post, NotFoundException, Put, Param,
+  Controller,
+  Get,
+  UseGuards,
+  Body,
+  Inject,
+  Post,
+  NotFoundException,
+  Put,
+  Param,
+  BadRequestException,
 } from '@nestjs/common';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -95,7 +104,7 @@ export class CourseController {
       ...newCourse,
       prefix,
       number,
-      sameAs: newCourse.sameAs ? `${newCourse.sameAs.prefix} ${newCourse.sameAs.number}` : '',
+      sameAs: newCourse.sameAs ? newCourse.sameAs.id : null,
       catalogNumber: `${prefix} ${number}`,
     };
   }
@@ -139,6 +148,14 @@ export class CourseController {
     let sameAsCourse: Course;
     if (course.sameAs) {
       sameAsCourse = await this.courseRepository.findOneOrFail(course.sameAs);
+      const childCourses = await this.courseRepository.count({
+        where: {
+          sameAs: id,
+        },
+      });
+      if (childCourses > 0) {
+        throw new BadRequestException('Parent courses cannot be children');
+      }
     }
 
     const fullCourse = {
@@ -161,7 +178,7 @@ export class CourseController {
       prefix,
       number,
       catalogNumber: `${prefix} ${number}`,
-      sameAs: updatedCourse.sameAs ? `${updatedCourse.sameAs.prefix} ${updatedCourse.sameAs.number}` : '',
+      sameAs: updatedCourse.sameAs ? updatedCourse.sameAs.id : null,
     };
   }
 }

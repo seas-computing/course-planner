@@ -262,6 +262,7 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
               type: MESSAGE_ACTION.PUSH,
             });
           }}
+          courses={currentCourses}
         />
       </div>
     </div>

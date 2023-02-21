@@ -5,6 +5,7 @@ import React, {
   Ref,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -35,7 +36,7 @@ import {
 } from 'common/constants';
 import { CourseAPI } from 'client/api';
 import { AxiosError } from 'client/api/request';
-import { camelCaseToTitleCase } from 'common/utils/util';
+import { ErrorParser, ServerErrorInfo } from 'client/classes';
 
 interface CourseModalProps {
   /**
@@ -55,6 +56,10 @@ interface CourseModalProps {
    * Handler to be invoked when the edit is successful
    */
   onSuccess: (course: ManageCourseResponseDTO) => Promise<void>;
+  /**
+   * Array of courses used to populate the sameAs selection dropdown
+   */
+  courses: ManageCourseResponseDTO[];
 }
 
 interface FormErrors {
@@ -62,27 +67,10 @@ interface FormErrors {
   title: string;
   isSEAS: string;
   termPattern: string;
+  sameAs: string;
 }
 
 const generalErrorMessage = 'Please fill in the required fields and try again. If the problem persists, contact SEAS Computing.';
-
-export interface BadRequestMessageInfo {
-  children: unknown[];
-  constraints: Record<string, string>;
-  property: string;
-}
-
-export interface BadRequestInfo {
-  statusCode: string;
-  error: string;
-  message: BadRequestMessageInfo[];
-}
-
-export interface ServerErrorInfo {
-  statusCode: string;
-  error: string;
-  message: Record<string, string>;
-}
 
 const displayNames: Record<string, string> = {
   existingArea: 'Existing Area',
@@ -105,6 +93,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
   currentCourse,
   onSuccess,
   onClose,
+  courses,
 }): ReactElement {
   /**
    * The current value for the metadata context
@@ -165,6 +154,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
     title: '',
     isSEAS: '',
     termPattern: '',
+    sameAs: '',
   } as FormErrors);
 
   /**
@@ -244,6 +234,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
         title: '',
         isSEAS: '',
         termPattern: '',
+        sameAs: '',
       });
       setCourseModalError('');
       setCourseModalFocus();
@@ -300,6 +291,26 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
       label: area,
     })));
 
+  /**
+   * Convert list of courses from state into array of options to be used within
+   * the `Dropdown` component
+   */
+  const courseOptions = useMemo(
+    () => [{ value: '', label: '' }]
+      .concat(
+        courses.filter(({ id }) => id !== currentCourse?.id)
+          .filter(({ sameAs }) => sameAs === null)
+          .map(({ id, catalogNumber }): {
+            value: string;
+            label: string;
+          } => ({
+            value: id,
+            label: catalogNumber,
+          }))
+      ),
+    [courses, currentCourse]
+  );
+
   return (
     <Modal
       ariaLabelledBy="editCourse"
@@ -346,7 +357,6 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
               }}
               label={displayNames.existingArea}
               isLabelVisible={false}
-              // Insert an empty option so that no area is pre-selected in dropdown
               options={areaOptions}
             />
             <RadioButton
@@ -399,14 +409,15 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
             errorMessage={formErrors.title}
             isRequired
           />
-          <TextInput
+          <Dropdown
             id="sameAs"
-            name="sameAs"
-            label={displayNames.sameAs}
-            labelPosition={POSITION.TOP}
-            placeholder="e.g. AC 221"
-            onChange={updateFormFields}
             value={form.sameAs}
+            name="sameAs"
+            onChange={updateFormFields}
+            label={displayNames.sameAs}
+            errorMessage={formErrors.sameAs}
+            labelPosition={POSITION.TOP}
+            options={courseOptions}
           />
           <Checkbox
             id="isUndergraduate"
@@ -477,39 +488,18 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
               if ((error as AxiosError).response) {
                 const serverError = error as AxiosError;
                 const { response } = serverError;
-                if (response.data
-                    && (response.data as BadRequestInfo).message
-                    && Array.isArray(
-                      (response.data as BadRequestInfo).message
-                    )) {
-                  const data = response.data as BadRequestInfo;
-                  const messages = data.message;
-                  const errors = {};
-                  messages.forEach((problem) => {
-                    const { property } = problem;
-                    // Since the error message returned from the server includes
-                    // the property name in camel case, this converts the property
-                    // name to be more understandable by the user (e.g. 'termPattern'
-                    // becomes 'Term Pattern'). The rest of the error message follows.
-                    let displayName = displayNames[property];
-                    // If we don't know the display name,
-                    // convert the property to title case for user readability.
-                    if (!displayName) {
-                      displayName = camelCaseToTitleCase(property);
-                    }
-                    // We ignore the object keys
-                    // since they don't contain additional info
-                    errors[property] = Object.values(problem.constraints)
-                      // Replace the beginning with the display name
-                      // if the first word of the error is the property name
-                      .map((constraint) => constraint.replace(
-                        new RegExp('^' + property + '\\b'),
-                        displayName
-                      ))
-                      // If we get multiple errors per property, separate them
-                      .join('; ');
-                  });
-                  setFormErrors(errors as FormErrors);
+                const errors = ErrorParser.parseBadRequestError(
+                  serverError, displayNames
+                );
+                if (Object.keys(errors).length > 0) {
+                  const parsedErrors: FormErrors = {
+                    area: errors.area,
+                    title: errors.title,
+                    isSEAS: errors.isSEAS,
+                    termPattern: errors.termPattern,
+                    sameAs: errors.sameAs,
+                  };
+                  setFormErrors(parsedErrors);
                   setCourseModalError(generalErrorMessage);
                 } else if (response.data
                   && (response.data as ServerErrorInfo).message) {

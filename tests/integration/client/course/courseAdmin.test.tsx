@@ -162,6 +162,7 @@ describe('Course Admin Modal Behavior', function () {
               isVisible
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
+              courses={[physicsCourseResponse]}
             />
           ));
         });
@@ -314,6 +315,7 @@ describe('Course Admin Modal Behavior', function () {
               currentCourse={physicsCourseResponse}
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
+              courses={[physicsCourseResponse]}
             />
           ));
         });
@@ -446,6 +448,7 @@ describe('Course Admin Modal Behavior', function () {
               isVisible
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
+              courses={[physicsCourseResponse]}
             />
           ));
         });
@@ -511,6 +514,7 @@ describe('Course Admin Modal Behavior', function () {
               currentCourse={physicsCourseResponse}
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
+              courses={[physicsCourseResponse]}
             />
           ));
         });

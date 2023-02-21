@@ -3,7 +3,6 @@ import React, {
   ReactElement,
   Ref,
   useContext,
-  useMemo,
   useState,
 } from 'react';
 import {
@@ -45,7 +44,27 @@ import {
 import { CellLayout } from 'client/components/general';
 import { MetadataContext } from 'client/context/MetadataContext';
 import { absenceToVariant } from '../utils/absenceToVariant';
-import { listFilter } from '../Filter';
+
+/**
+ * Describes the semester specific filter(s)
+ */
+type SemesterFilterState = {
+  absence: {
+    type: string;
+  };
+};
+
+/**
+ * Describes the top level of filters for the Faculty page
+ */
+export type FacultyFilterState = {
+  area: string;
+  lastName: string;
+  firstName: string;
+  category: string;
+  fall: SemesterFilterState;
+  spring: SemesterFilterState;
+};
 
 interface FacultyScheduleTableProps {
   /**
@@ -56,6 +75,14 @@ interface FacultyScheduleTableProps {
    * The faculty schedules to be displayed in the table
    */
   facultySchedules: FacultyResponseDTO[];
+  /**
+   * A handler to update the faculty as the user changes the filters
+   */
+  genericFilterUpdate: (field: string, value: string) => void;
+  /**
+   * The current values of the table column filters
+   */
+  filters: FacultyFilterState;
   /**
    * The faculty schedule and absence information needed to edit a
    * faculty absence entry
@@ -79,6 +106,8 @@ string => `editAbsence${faculty.id}${term}`;
 const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
   academicYear,
   facultySchedules,
+  genericFilterUpdate,
+  filters,
   onEdit,
   editButtonRef,
 }): ReactElement => {
@@ -96,101 +125,6 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
    */
   const metadata = useContext(MetadataContext);
 
-  /**
-   * The current area filter value
-   */
-  const [
-    areaFilter,
-    setAreaFilter,
-  ] = useState<string>('All');
-
-  /**
-   * The current last name filter value
-   */
-  const [
-    lastNameFilter,
-    setLastNameFilter,
-  ] = useState<string>('');
-
-  /**
-   * The current first name filter value
-   */
-  const [
-    firstNameFilter,
-    setFirstNameFilter,
-  ] = useState<string>('');
-
-  /**
-   * The current category filter value
-   */
-  const [
-    categoryFilter,
-    setCategoryFilter,
-  ] = useState<string>('All');
-
-  /**
-   * The current fall absence filter value
-   */
-  const [
-    fallAbsenceFilter,
-    setFallAbsenceFilter,
-  ] = useState<string>('All');
-
-  /**
-   * The current spring absence filter value
-   */
-  const [
-    springAbsenceFilter,
-    setSpringAbsenceFilter,
-  ] = useState<string>('All');
-
-  /**
-   * Return filtered rooms based on area, first and last name, category, and
-   * sabbatical leave.
-   */
-  const filteredFaculty = useMemo((): FacultyResponseDTO[] => {
-    let filteredFacultyList = [...facultySchedules];
-    if (areaFilter !== 'All') {
-      filteredFacultyList = listFilter(
-        filteredFacultyList,
-        { field: 'area', value: areaFilter, exact: true }
-      );
-    }
-    filteredFacultyList = listFilter(
-      filteredFacultyList,
-      { field: 'lastName', value: lastNameFilter, exact: false }
-    );
-    filteredFacultyList = listFilter(
-      filteredFacultyList,
-      { field: 'firstName', value: firstNameFilter, exact: false }
-    );
-    if (categoryFilter !== 'All') {
-      filteredFacultyList = listFilter(
-        filteredFacultyList,
-        { field: 'category', value: categoryFilter, exact: true }
-      );
-    }
-    if (fallAbsenceFilter !== 'All') {
-      filteredFacultyList = listFilter(
-        filteredFacultyList,
-        { field: 'fall.absence.type', value: fallAbsenceFilter, exact: true }
-      );
-    }
-    if (springAbsenceFilter !== 'All') {
-      filteredFacultyList = listFilter(
-        filteredFacultyList,
-        { field: 'spring.absence.type', value: springAbsenceFilter, exact: true }
-      );
-    }
-    return filteredFacultyList;
-  }, [facultySchedules,
-    areaFilter,
-    lastNameFilter,
-    firstNameFilter,
-    categoryFilter,
-    fallAbsenceFilter,
-    springAbsenceFilter,
-  ]);
   return (
     <Table>
       <colgroup>
@@ -241,14 +175,14 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
                     label: area,
                   })))
               }
-              value={areaFilter}
+              value={filters.area}
               name="area-filter"
               id="area-filter"
               label="Change to filter the faculty list by area"
               isLabelVisible={false}
               hideError
               onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
-                setAreaFilter(event.currentTarget.value);
+                genericFilterUpdate('area', event.currentTarget.value);
               }}
             />
           </TableHeadingCell>
@@ -261,9 +195,9 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
               label="Change to filter the faculty list by last name"
               isLabelVisible={false}
               onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
-                setLastNameFilter(event.currentTarget.value);
+                genericFilterUpdate('lastName', event.currentTarget.value);
               }}
-              value={lastNameFilter}
+              value={filters.lastName}
             />
           </TableHeadingCell>
           <TableHeadingCell>
@@ -275,9 +209,9 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
               label="Change to filter the faculty list by first name"
               isLabelVisible={false}
               onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
-                setFirstNameFilter(event.currentTarget.value);
+                genericFilterUpdate('firstName', event.currentTarget.value);
               }}
-              value={firstNameFilter}
+              value={filters.firstName}
             />
           </TableHeadingCell>
           <TableHeadingCell>
@@ -292,14 +226,14 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
                       label: categoryTitle,
                     };
                   }))}
-              value={categoryFilter}
+              value={filters.category}
               name="category-filter"
               id="category-filter"
               label="Change to filter the faculty list by category"
               isLabelVisible={false}
               hideError
               onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
-                setCategoryFilter(event.currentTarget.value);
+                genericFilterUpdate('category', event.currentTarget.value);
               }}
             />
           </TableHeadingCell>
@@ -315,14 +249,14 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
                       label: absenceTitle,
                     };
                   }))}
-              value={fallAbsenceFilter}
+              value={filters.fall.absence.type}
               name="fall-absence-filter"
               id="fall-absence-filter"
               label="Change to filter the faculty list by the fall absence value"
               isLabelVisible={false}
               hideError
               onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
-                setFallAbsenceFilter(event.currentTarget.value);
+                genericFilterUpdate('fall.absence.type', event.currentTarget.value);
               }}
             />
           </TableHeadingCell>
@@ -338,21 +272,21 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
                       label: absenceTitle,
                     };
                   }))}
-              value={springAbsenceFilter}
+              value={filters.spring.absence.type}
               name="spring-absence-filter"
               id="spring-absence-filter"
               label="Change to filter the faculty list by the spring absence value"
               isLabelVisible={false}
               hideError
               onChange={(event:React.ChangeEvent<HTMLInputElement>) => {
-                setSpringAbsenceFilter(event.currentTarget.value);
+                genericFilterUpdate('spring.absence.type', event.currentTarget.value);
               }}
             />
           </TableHeadingCell>
         </TableRow>
       </TableHead>
       <TableBody isScrollable>
-        {filteredFaculty.map((faculty, facultyIndex)
+        {facultySchedules.map((faculty, facultyIndex)
         : ReactElement<TableRowProps> => (
           <TableRow isStriped={facultyIndex % 2 === 1} key={faculty.id}>
             <TableCell

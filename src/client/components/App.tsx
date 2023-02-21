@@ -18,7 +18,12 @@ import {
   MetadataContextValue,
   MessageReducerAction,
 } from 'client/context';
-import { MarkOneWrapper, PageBody, LoadSpinner } from 'mark-one';
+import {
+  MarkOneWrapper,
+  PageBody,
+  LoadSpinner,
+  Footer,
+} from 'mark-one';
 import { getCurrentUser } from 'client/api';
 import { getMetadata } from 'client/api/metadata';
 import { User } from 'common/classes';
@@ -28,6 +33,8 @@ import {
   AppRouter,
   AppHeader,
 } from './layout';
+
+const appVersion = process.env.APP_VERSION;
 
 /**
  * The primary app component. Fetches the current user from the server when it
@@ -128,6 +135,11 @@ const App: FunctionComponent = (): ReactElement => {
                     <>
                       <AppHeader />
                       <AppRouter />
+                      <Footer
+                        justify="center"
+                      >
+                        {appVersion}
+                      </Footer>
                     </>
                   )}
                 <Message
