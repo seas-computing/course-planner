@@ -276,7 +276,7 @@ export class SemesterService implements OnApplicationBootstrap {
         this.logService.error(e);
       }
     }
-    if (this.config.isProduction && today.getMonth() === MONTH.JUN) {
+    if (this.config.isProduction && today.getMonth() >= MONTH.JUN) {
       const yearToAdd = today.getFullYear() + 4;
       try {
         return await this.addAcademicYear(yearToAdd);
