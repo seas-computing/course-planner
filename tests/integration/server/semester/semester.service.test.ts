@@ -388,7 +388,7 @@ describe('Semester Service', function () {
       const testAcademicYear = lastSpringSemester.academicYear + 1;
       describe(`is ${ABSENCE_TYPE.NO_LONGER_ACTIVE}`, function () {
         it('carries over from previous available academic year', async function () {
-          const { id } = await facultyRepository
+          const absentFaculty = await facultyRepository
             .createQueryBuilder('f')
             .leftJoinAndSelect('f.absences', 'absence')
             .getOne();
@@ -396,25 +396,38 @@ describe('Semester Service', function () {
           await absenceRepository.createQueryBuilder()
             .update(Absence)
             .set({ type: ABSENCE_TYPE.NO_LONGER_ACTIVE })
-            .where('facultyId = :id', { id })
+            .where('facultyId = :facultyId', { facultyId: absentFaculty.id })
             .execute();
 
           await semesterService.addAcademicYear(testAcademicYear);
 
-          const { absences } = await facultyRepository
-            .createQueryBuilder('f')
-            .leftJoinAndSelect('f.absences', 'absence')
-            .leftJoinAndSelect('absence.semester', 'semester')
-            .where({ id })
-            .andWhere(
-              'semester.academicYear = :acyr',
-              { acyr: testAcademicYear }
-            )
-            .getOne();
+          const newFallSemester = await semesterRepository.findOne({
+            where: {
+              term: TERM.FALL,
+              academicYear: testAcademicYear - 1,
+            },
+          });
+          const newFallAbsence = await absenceRepository.findOne({
+            where: {
+              faculty: absentFaculty.id,
+              semester: newFallSemester.id,
+            },
+          });
+          strictEqual(newFallAbsence.type, ABSENCE_TYPE.NO_LONGER_ACTIVE);
 
-          const newAbsencesNla = absences
-            .every(({ type }) => type === ABSENCE_TYPE.NO_LONGER_ACTIVE);
-          strictEqual(newAbsencesNla, true);
+          const newSpringSemester = await semesterRepository.findOne({
+            where: {
+              term: TERM.SPRING,
+              academicYear: testAcademicYear,
+            },
+          });
+          const newSpringAbsence = await absenceRepository.findOne({
+            where: {
+              faculty: absentFaculty.id,
+              semester: newSpringSemester.id,
+            },
+          });
+          strictEqual(newSpringAbsence.type, ABSENCE_TYPE.NO_LONGER_ACTIVE);
         });
       });
       describe(`is anything other than ${ABSENCE_TYPE.NO_LONGER_ACTIVE}`, function () {
@@ -426,16 +439,33 @@ describe('Semester Service', function () {
             .getOne();
           await semesterService.addAcademicYear(testAcademicYear);
 
-          const { absences } = await facultyRepository
-            .createQueryBuilder('f')
-            .leftJoinAndSelect('f.absences', 'absence')
-            .leftJoinAndSelect('absence.semester', 'semester')
-            .where({ id: presentFacultyMember.id })
-            .andWhere('semester.academicYear = :acyr', { acyr: testAcademicYear })
-            .getOne();
-          const allPresent = absences
-            .every(({ type }) => type === ABSENCE_TYPE.PRESENT);
-          strictEqual(allPresent, true);
+          const newFallSemester = await semesterRepository.findOne({
+            where: {
+              term: TERM.FALL,
+              academicYear: testAcademicYear - 1,
+            },
+          });
+          const newFallAbsence = await absenceRepository.findOne({
+            where: {
+              faculty: presentFacultyMember.id,
+              semester: newFallSemester.id,
+            },
+          });
+          strictEqual(newFallAbsence.type, ABSENCE_TYPE.PRESENT);
+
+          const newSpringSemester = await semesterRepository.findOne({
+            where: {
+              term: TERM.SPRING,
+              academicYear: testAcademicYear,
+            },
+          });
+          const newSpringAbsence = await absenceRepository.findOne({
+            where: {
+              faculty: presentFacultyMember.id,
+              semester: newSpringSemester.id,
+            },
+          });
+          strictEqual(newSpringAbsence.type, ABSENCE_TYPE.PRESENT);
         });
       });
     });
