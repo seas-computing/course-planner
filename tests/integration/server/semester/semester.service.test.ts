@@ -432,7 +432,7 @@ describe('Semester Service', function () {
       });
       describe(`is anything other than ${ABSENCE_TYPE.NO_LONGER_ACTIVE}`, function () {
         it(`defaults to ${ABSENCE_TYPE.PRESENT}`, async function () {
-          const presentFacultyMember = await facultyRepository
+          const activeFacultyMember = await facultyRepository
             .createQueryBuilder('f')
             .leftJoinAndSelect('f.absences', 'absence')
             .where('absence.type = :type', { type: ABSENCE_TYPE.PARENTAL_LEAVE })
@@ -447,7 +447,7 @@ describe('Semester Service', function () {
           });
           const newFallAbsence = await absenceRepository.findOne({
             where: {
-              faculty: presentFacultyMember.id,
+              faculty: activeFacultyMember.id,
               semester: newFallSemester.id,
             },
           });
@@ -461,7 +461,7 @@ describe('Semester Service', function () {
           });
           const newSpringAbsence = await absenceRepository.findOne({
             where: {
-              faculty: presentFacultyMember.id,
+              faculty: activeFacultyMember.id,
               semester: newSpringSemester.id,
             },
           });
