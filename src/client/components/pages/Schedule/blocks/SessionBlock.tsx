@@ -169,16 +169,19 @@ const SessionBlockHeading = styled.h4<SessionBlockHeadingProps>`
  * A wrapper around the table to handle scrolling within the list only.
  */
 const SessionBlockBodyWrapper = styled.div<SessionBlockBodyWrapperProps>`
-  overflow-y: ${({ isPopoverVisible }): string => (
-    isPopoverVisible
-      ? 'hidden'
-      : 'scroll'
-  )};
+  overflow-y: hidden;
   position: absolute;
   width: 100%;
   top: 2em;
   bottom: 0;
   border-top: 1px solid rgba(255,255,255,0.5);
+  &:hover {
+    overflow-y: ${({ isPopoverVisible }): string => (
+    isPopoverVisible
+      ? 'hidden'
+      : 'auto'
+  )};
+    +  }
 `;
 
 /**
