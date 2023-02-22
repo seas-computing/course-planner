@@ -20,7 +20,7 @@ module.exports = {
   target: 'node',
   externals: [
     nodeExternals({
-      whitelist: ['webpack/hot/poll?100'],
+      allowlist: ['webpack/hot/poll?100'],
     }),
   ],
   module: {
@@ -48,7 +48,7 @@ module.exports = {
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
-    new StartServerPlugin({ name: 'server.js' }),
+    // new StartServerPlugin({ name: 'server.js' }),
   ],
   output: {
     path: path.join(__dirname, 'build'),

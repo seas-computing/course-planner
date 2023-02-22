@@ -1,7 +1,6 @@
 const { resolve } = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const HtmlWebpackRootPlugin = require('html-webpack-root-plugin');
 const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 
@@ -75,9 +74,10 @@ module.exports = {
     minimizer: [new TerserPlugin({
       sourceMap: true,
     })],
-    noEmitOnErrors: true,
+    emitOnErrors: false,
     nodeEnv: 'production',
-    occurrenceOrder: true,
+    chunkIds: 'total-size',
+    moduleIds: 'size'
     providedExports: true,
     usedExports: true,
     sideEffects: true,
@@ -99,13 +99,13 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       title: APP_NAME,
+      template: "./index.html"
     }),
     new webpack.DefinePlugin({
       'process.env.SERVER_URL': JSON.stringify(SERVER_URL),
       'process.env.PUBLIC_CLIENT_URL': JSON.stringify(PUBLIC_CLIENT_URL),
       'process.env.APP_VERSION': JSON.stringify(APP_VERSION),
     }),
-    new HtmlWebpackRootPlugin(),
     new webpack.optimize.ModuleConcatenationPlugin(),
   ],
 };

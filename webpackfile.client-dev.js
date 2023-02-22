@@ -26,7 +26,7 @@ module.exports = {
   name: 'client',
   target: 'web',
   mode: 'development',
-  devtool: 'cheap-eval-source-map',
+  devtool: 'eval-cheap-source-map',
   entry: [
     'react-hot-loader/patch',
     './src/client/index.tsx',
@@ -43,11 +43,12 @@ module.exports = {
     // the container
     host: '0.0.0.0',
     hot: true,
-    hotOnly: true,
     port: CLIENT_PORT,
-    publicPath,
-    serveIndex: false,
-    disableHostCheck: true,
+    static: {
+      serveIndex: false,
+      publicPath,
+    },
+    allowedHosts: "all",
   },
   output: {
     path: resolve(__dirname, 'build/static'),
@@ -99,8 +100,8 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       title: APP_NAME,
+      template: "./index.html",
     }),
-    new HtmlWebpackRootPlugin(),
     new webpack.DefinePlugin({
       'process.env.SERVER_URL': JSON.stringify(SERVER_URL),
       'process.env.PUBLIC_CLIENT_URL': JSON.stringify(PUBLIC_CLIENT_URL),
