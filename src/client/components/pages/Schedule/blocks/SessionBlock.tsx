@@ -181,7 +181,7 @@ const SessionBlockBodyWrapper = styled.div<SessionBlockBodyWrapperProps>`
       ? 'hidden'
       : 'auto'
   )};
-    +  }
+    }
 `;
 
 /**
