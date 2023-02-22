@@ -1,7 +1,7 @@
 # Use a multi-stage build to handle the compiling, installing, etc.
 
 # STAGE 1: Install node_modules on a stretch container
-FROM node:14 as base
+FROM node:18 as base
 ARG APP_DIR=/node
 ARG OPEN_PORT=3000
 EXPOSE ${OPEN_PORT}
@@ -19,7 +19,7 @@ RUN npm run build:server && rm -rf node_modules && npm ci --omit optional --omit
 
 # STAGE 3: Copy the 'build' directory from previous stage and run in alpine
 # Since this does not extend the base image, we need to set workdir, user, etc. again.
-FROM node:14-alpine
+FROM node:18-alpine
 ARG APP_DIR=/node
 ARG OPEN_PORT=3000
 ARG BUILD_VERSION=""
