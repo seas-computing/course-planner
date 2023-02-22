@@ -49,14 +49,18 @@ const downloadAttachment = async (
 };
 
 /**
- * Downloads the report data based on the range of years provided
+ * Downloads the report data based on the range of years and report type
+ * provided.
  */
-export const getCourseReport = async (range: ReportRange): Promise<void> => {
+export const getReport = async (
+  range: ReportRange,
+  reportType: string
+): Promise<void> => {
   const server = new URL(process.env.SERVER_URL);
   if (!server.pathname.endsWith('/')) {
     server.pathname += '/';
   }
-  server.pathname += 'report/courses';
+  server.pathname += `report/${reportType}`;
   if (range) {
     server.search = new URLSearchParams(
       Object.entries(range)
