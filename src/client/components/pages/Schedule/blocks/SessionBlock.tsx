@@ -116,10 +116,14 @@ const SessionBlockWrapper = styled.div<SessionBlockWrapperProps>`
   border-left: 1px solid #fff;
   border-right: 1px solid #fff;
   border-bottom: 1px solid #fff;
-  min-width: 2.5em;
+  min-width: 3.5em;
   position: relative;
   opacity: ${({ isFaded }) => (isFaded ? '0.6' : '1')};
-
+ 
+  ::-webkit-scrollbar {
+    width: 0.2em;
+    height: 0.2em
+}
   ${({ hasBottomOverflow, theme }) => (
     // Show down indicator when there are courses overflowing the bottom
     hasBottomOverflow
@@ -165,16 +169,19 @@ const SessionBlockHeading = styled.h4<SessionBlockHeadingProps>`
  * A wrapper around the table to handle scrolling within the list only.
  */
 const SessionBlockBodyWrapper = styled.div<SessionBlockBodyWrapperProps>`
-  overflow-y: ${({ isPopoverVisible }): string => (
-    isPopoverVisible
-      ? 'hidden'
-      : 'scroll'
-  )};
+  overflow-y: hidden;
   position: absolute;
   width: 100%;
   top: 2em;
   bottom: 0;
   border-top: 1px solid rgba(255,255,255,0.5);
+  &:hover {
+    overflow-y: ${({ isPopoverVisible }): string => (
+    isPopoverVisible
+      ? 'hidden'
+      : 'auto'
+  )};
+    }
 `;
 
 /**
