@@ -32,6 +32,10 @@ describe('Report Download Modal', function () {
     currentAcademicYear,
     semesters,
   }, () => {});
+  let getReportStub: SinonStub;
+  beforeEach(function () {
+    getReportStub = stub();
+  });
   const TestPage = () => {
     const [showModal, setShowModal] = useState<boolean>(false);
     return (
@@ -39,7 +43,8 @@ describe('Report Download Modal', function () {
         <ReportDownloadModal
           isVisible={showModal}
           closeModal={() => setShowModal(false)}
-          reportType="Course"
+          headerText="Download Course Report"
+          getReport={getReportStub}
         />
         <button
           type="button"
