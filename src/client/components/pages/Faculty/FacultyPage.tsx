@@ -21,7 +21,7 @@ import {
 } from 'mark-one';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { MessageContext, MetadataContext } from 'client/context';
-import { FacultyAPI } from 'client/api';
+import { FacultyAPI, getFacultyReport } from 'client/api';
 import {
   AppMessage,
   MESSAGE_TYPE,
@@ -399,7 +399,8 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
             <ReportDownloadModal
               isVisible={reportModalVisible}
               closeModal={closeDownloadModal}
-              reportType="Faculty"
+              headerText="Download Faculty Report"
+              getReport={getFacultyReport}
             />
           </>
         )}

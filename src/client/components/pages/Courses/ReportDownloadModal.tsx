@@ -24,15 +24,9 @@ import { DropdownProps } from 'mark-one/lib/Forms/Dropdown';
 import { MetadataContext } from 'client/context';
 import { TERM } from 'common/constants';
 import {
-  getCourseReport,
   ReportRange,
   ReportRangeUpdate,
 } from 'client/api';
-
-/**
- * Indicates the type of report to be generated
- */
-type Report = 'Course' | 'Faculty';
 
 /**
  * Props for controlling the opening and closing of the modal
@@ -42,8 +36,10 @@ interface ReportDownloadModalProps {
   isVisible: boolean;
   /** Handler to call to close the modal */
   closeModal: () => void;
-  /** Indicates the type of report to be generated */
-  reportType: Report;
+  /** Header text for the modal */
+  headerText: string;
+  /** Handler to generate the appropriate report for a specific range */
+  getReport: (range: ReportRange) => Promise<void>;
 }
 
 /**
@@ -53,7 +49,8 @@ interface ReportDownloadModalProps {
 const ReportDownloadModal: FunctionComponent<ReportDownloadModalProps> = ({
   isVisible,
   closeModal,
-  reportType,
+  getReport,
+  headerText,
 }) => {
   /**
    * Get the range of our data from the metadata context
@@ -147,14 +144,8 @@ const ReportDownloadModal: FunctionComponent<ReportDownloadModalProps> = ({
     setReportDownloading(true);
     setDownloadError('');
     try {
-      if (reportType === 'Course') {
-        await getCourseReport(currentReportRange);
-        closeModal();
-      } else if (reportType === 'Faculty') {
-        closeModal();
-      } else {
-        closeModal();
-      }
+      await getReport(currentReportRange);
+      closeModal();
     } catch (err) {
       if (err instanceof Error) {
         setDownloadError(err.message);
@@ -168,7 +159,7 @@ const ReportDownloadModal: FunctionComponent<ReportDownloadModalProps> = ({
     currentReportRange,
     setReportDownloading,
     closeModal,
-    reportType,
+    getReport,
   ]);
 
   /**
@@ -212,9 +203,7 @@ const ReportDownloadModal: FunctionComponent<ReportDownloadModalProps> = ({
         tabIndex={0}
       >
         <span id="report-download-header">
-          { reportType === 'Course'
-            ? 'Download Course Report'
-            : 'Download Faculty Report'}
+          { headerText }
         </span>
       </ModalHeader>
       <ModalBody>

@@ -73,3 +73,13 @@ export const getReport = async (
   );
   return downloadAttachment(response);
 };
+
+/**
+ * Calls the getReport function for faculty for a specified range
+ */
+export const getFacultyReport = ((range: ReportRange): Promise<void> => getReport(range, 'faculty'));
+
+/**
+ * Calls the getReport function for courses for a specified range
+ */
+export const getCourseReport = ((range: ReportRange): Promise<void> => getReport(range, 'courses'));
