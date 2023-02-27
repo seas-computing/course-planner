@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityNotFoundError, Repository } from 'typeorm';
-import { OFFERED, TERM } from 'common/constants';
+import { ABSENCE_TYPE, OFFERED, TERM } from 'common/constants';
 import { CourseInstance } from 'server/courseInstance/courseinstance.entity';
 import { NonClassEvent } from 'server/nonClassEvent/nonclassevent.entity';
 import { Absence } from 'server/absence/absence.entity';
@@ -216,9 +216,11 @@ export class SemesterService implements OnApplicationBootstrap {
       this.logService.verbose('Creating the fall absences.');
 
       fallSemester.absences = existingSpringAbsences
-        .map((absence) => ({
-          ...new Absence(),
+        .map((absence) => this.absenceRepository.create({
           faculty: absence.faculty,
+          type: (absence.type === ABSENCE_TYPE.NO_LONGER_ACTIVE)
+            ? ABSENCE_TYPE.NO_LONGER_ACTIVE
+            : ABSENCE_TYPE.PRESENT,
         }));
 
       this.logService.verbose(`Created ${fallSemester.absences.length} fall absences.`);
@@ -264,7 +266,17 @@ export class SemesterService implements OnApplicationBootstrap {
 
   public async onApplicationBootstrap(): Promise<void> {
     const today = new Date();
-    if (this.config.isProduction && today.getMonth() === MONTH.JUN) {
+    // One-time fix to add the 2026 academic year to the system
+    // This can be deleted after running once, but could safely be left here as
+    // it won't run more than once
+    if (this.config.isProduction && today.getFullYear() === 2023) {
+      try {
+        return await this.addAcademicYear(2026);
+      } catch (e) {
+        this.logService.error(e);
+      }
+    }
+    if (this.config.isProduction && today.getMonth() >= MONTH.JUN) {
       const yearToAdd = today.getFullYear() + 4;
       try {
         return await this.addAcademicYear(yearToAdd);
