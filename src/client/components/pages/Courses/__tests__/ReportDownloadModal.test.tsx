@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  render, fireEvent, within, RenderResult, waitForElementToBeRemoved,
+  render, fireEvent, within, RenderResult,
 } from 'test-utils';
 import { strictEqual } from 'assert';
 import { TERM } from 'common/constants';
