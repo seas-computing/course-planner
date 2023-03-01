@@ -24,7 +24,6 @@ import { DropdownProps } from 'mark-one/lib/Forms/Dropdown';
 import { MetadataContext } from 'client/context';
 import { TERM } from 'common/constants';
 import {
-  getCourseReport,
   ReportRange,
   ReportRangeUpdate,
 } from 'client/api';
@@ -37,6 +36,10 @@ interface ReportDownloadModalProps {
   isVisible: boolean;
   /** Handler to call to close the modal */
   closeModal: () => void;
+  /** Header text for the modal */
+  headerText: string;
+  /** Handler to generate the appropriate report for a specific range */
+  getReport: (range: ReportRange) => Promise<void>;
 }
 
 /**
@@ -46,9 +49,11 @@ interface ReportDownloadModalProps {
 const ReportDownloadModal: FunctionComponent<ReportDownloadModalProps> = ({
   isVisible,
   closeModal,
+  getReport,
+  headerText,
 }) => {
   /**
-   * Get the range of our data from the metadatacontext
+   * Get the range of our data from the metadata context
    */
   const {
     semesters,
@@ -101,7 +106,7 @@ const ReportDownloadModal: FunctionComponent<ReportDownloadModalProps> = ({
   ), [semesters]);
 
   /**
-   * Call back for updating the currrently selected start/end year. To avoid
+   * Call back for updating the currently selected start/end year. To avoid
    * invalid combinations, we'll shift the other choice when the user selects a
    * year outside the valid range.
    *
@@ -135,11 +140,11 @@ const ReportDownloadModal: FunctionComponent<ReportDownloadModalProps> = ({
    * and close the modal. If the download fails, keep the modal open and
    * display an error.
    */
-  const downloadCoursesReport = useCallback(async () => {
+  const downloadReport = useCallback(async () => {
     setReportDownloading(true);
     setDownloadError('');
     try {
-      await getCourseReport(currentReportRange);
+      await getReport(currentReportRange);
       closeModal();
     } catch (err) {
       if (err instanceof Error) {
@@ -154,6 +159,7 @@ const ReportDownloadModal: FunctionComponent<ReportDownloadModalProps> = ({
     currentReportRange,
     setReportDownloading,
     closeModal,
+    getReport,
   ]);
 
   /**
@@ -197,7 +203,7 @@ const ReportDownloadModal: FunctionComponent<ReportDownloadModalProps> = ({
         tabIndex={0}
       >
         <span id="report-download-header">
-          Download Course Report
+          { headerText }
         </span>
       </ModalHeader>
       <ModalBody>
@@ -238,7 +244,7 @@ const ReportDownloadModal: FunctionComponent<ReportDownloadModalProps> = ({
         <Button
           disabled={reportDownloading}
           variant={VARIANT.PRIMARY}
-          onClick={downloadCoursesReport}
+          onClick={downloadReport}
         >
           Download
         </Button>

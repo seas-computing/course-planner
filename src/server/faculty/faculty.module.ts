@@ -34,5 +34,8 @@ import { FacultyListingView } from './FacultyListingView.entity';
     FacultyService,
     FacultyScheduleService,
   ],
+  exports: [
+    FacultyScheduleService,
+  ],
 })
 export class FacultyModule { }

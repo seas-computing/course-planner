@@ -18,10 +18,12 @@ import {
   Checkbox,
   POSITION,
   Dropdown,
+  Button,
+  VARIANT,
 } from 'mark-one';
 import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
 import { MessageContext, MetadataContext } from 'client/context';
-import { FacultyAPI } from 'client/api';
+import { FacultyAPI, getFacultyReport } from 'client/api';
 import {
   AppMessage,
   MESSAGE_TYPE,
@@ -30,12 +32,22 @@ import {
 import { AbsenceResponseDTO } from 'common/dto/faculty/AbsenceResponse.dto';
 import { useStoredState } from 'client/hooks/useStoredState';
 import { ABSENCE_TYPE } from 'common/constants';
-import { RightMenu } from 'client/components/general';
+import { MenuFlex } from 'client/components/general';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import get from 'lodash.get';
 import FacultyAbsenceModal from './FacultyAbsenceModal';
 import FacultyScheduleTable, { FacultyFilterState } from './FacultyScheduleTable';
 import { AcademicYearUtils } from '../utils/academicYearOptions';
+import ReportDownloadModal from '../Courses/ReportDownloadModal';
 import { listFilter } from '../Filter';
+
+/**
+ * The identifiers for each of the buttons on the page
+ */
+const enum KEY {
+  REPORT_DOWNLOAD_BUTTON = 'download-report-button',
+}
 
 /**
  * This component represents the Faculty page, which will be rendered at
@@ -144,6 +156,40 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
     'FACULTY_SELECTED_ACADEMIC_YEAR',
     currentAcademicYear,
     'sessionStorage'
+  );
+
+  /**
+   * Control whether the "Download Report" modal is visible
+   */
+  const [
+    reportModalVisible,
+    setReportModalVisible,
+  ] = useState(false);
+
+  /**
+   * The id of the edit button that was clicked to open the modal is used to
+   * determine whether the ref should be set to that button so that when the
+   * modal closes, the focus is returned to the edit button of the corresponding
+   * modal.
+   */
+  const [modalButtonId, setModalButtonId] = useState<string>('');
+
+  /**
+   * The current ref value of the focused button
+   */
+  const refTable = useRef<Record<string, HTMLButtonElement>>({});
+
+  /**
+   * When passed as the forwardRef prop to a component, it will generate a ref
+   * pointing to the underlying element and add it to our refTable, so that we
+   * can later retrieve the ref and focus the appropriate element
+   */
+  const setButtonRef = useCallback(
+    (nodeId: string) => (node: HTMLButtonElement): void => {
+      if (nodeId && node) {
+        refTable.current[nodeId] = node;
+      }
+    }, [refTable]
   );
 
   /**
@@ -325,10 +371,42 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
     }, [setFacultySchedules, closeAbsenceModal]
   );
 
+  /**
+   * Handle opening the download modal
+   */
+  const openDownloadModal = useCallback(() => {
+    setReportModalVisible(true);
+    setModalButtonId(KEY.REPORT_DOWNLOAD_BUTTON);
+  }, [setReportModalVisible, setModalButtonId]);
+
+  /**
+   * Handle closing the download modal
+   */
+  const closeDownloadModal = useCallback(() => {
+    setReportModalVisible(false);
+    setTimeout(() => {
+      if (modalButtonId && modalButtonId in refTable.current) {
+        refTable.current[modalButtonId].focus();
+      }
+    });
+  }, [modalButtonId]);
+
   return (
     <div className="faculty-schedule-table">
       <VerticalSpace>
-        <RightMenu>
+        <MenuFlex>
+          <Button
+            variant={VARIANT.INFO}
+            alt="Download a spreadsheet with faculty data"
+            onClick={openDownloadModal}
+            forwardRef={setButtonRef(KEY.REPORT_DOWNLOAD_BUTTON)}
+          >
+            <FontAwesomeIcon
+              icon={faDownload}
+            />
+            {' '}
+            Download Faculty Report
+          </Button>
           <Dropdown
             id="academic-year-selector"
             name="academic-year-selector"
@@ -357,7 +435,7 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
             labelPosition={POSITION.RIGHT}
             hideError
           />
-        </RightMenu>
+        </MenuFlex>
       </VerticalSpace>
       {fetching
         ? (
@@ -390,6 +468,12 @@ const FacultySchedule: FunctionComponent = (): ReactElement => {
                 />
               )
               : null}
+            <ReportDownloadModal
+              isVisible={reportModalVisible}
+              closeModal={closeDownloadModal}
+              headerText="Download Faculty Report"
+              getReport={getFacultyReport}
+            />
           </>
         )}
     </div>

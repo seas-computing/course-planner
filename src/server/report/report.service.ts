@@ -2,6 +2,12 @@ import { Injectable, Inject } from '@nestjs/common';
 import { Stream } from 'stream';
 import Excel from 'exceljs';
 import { isSEASEnumToString, offeredEnumToString } from 'common/constants';
+import { FacultyResponseDTO } from 'common/dto/faculty/FacultyResponse.dto';
+import { FacultyScheduleService } from 'server/faculty/facultySchedule.service';
+import {
+  absenceEnumToTitleCase,
+  facultyTypeEnumToTitleCase,
+} from 'common/utils/facultyHelperFunctions';
 import { CourseInstanceService } from '../courseInstance/courseInstance.service';
 import CourseInstanceResponseDTO from '../../common/dto/courses/CourseInstanceResponse';
 import { formatMeetingForReport, MULTILINE_SEPARATOR } from './utils';
@@ -10,6 +16,9 @@ import { formatMeetingForReport, MULTILINE_SEPARATOR } from './utils';
 export class ReportService {
   @Inject(CourseInstanceService)
   private readonly ciService: CourseInstanceService;
+
+  @Inject(FacultyScheduleService)
+  private readonly facultyService: FacultyScheduleService;
 
   /**
    * Write the course data in xlsx format to a WriteableStream object.
@@ -103,5 +112,127 @@ export class ReportService {
       courseSheet.addRow(newRow).commit();
     });
     await coursesReport.commit();
+  }
+
+  /**
+   * Write the faculty data in xlsx format to a WriteableStream object.
+   */
+  public async streamFacultyReport(
+    xlsxStream: Stream,
+    startYear: number,
+    endYear: number
+  ): Promise<void> {
+    const yearList = Array.from({
+      length: (endYear - startYear) + 1,
+    },
+    (_, index) => startYear + index);
+    // Create an object with year keys pointing to lists of faculty info
+    const yearToFaculty = await this.facultyService.getAllByYear(yearList);
+
+    const facultyToInfoMap: { [id: string]: {
+      [year: string]: FacultyResponseDTO } } = {};
+
+    // An intermediary step to organize faculty data such that it's easier to
+    // process it in the next step to get the data in the desired format for
+    // adding rows to the excel sheet.
+    Object.keys(yearToFaculty).forEach((year) => {
+      const yearFacultyInfo = yearToFaculty[year];
+      yearFacultyInfo.forEach((facultyInfo) => {
+        if (!(facultyInfo.id in facultyToInfoMap)) {
+          facultyToInfoMap[facultyInfo.id] = {};
+        }
+        facultyToInfoMap[facultyInfo.id][year] = facultyInfo;
+      });
+    });
+
+    // Create an array of faculty such that we have the top level faculty
+    // information along with a years object that contains a mapping of
+    // year-specific absence and course data. This format makes it much
+    // easier to map through to create the rows data for the excel sheet.
+    const facultyArray = Object.values(facultyToInfoMap).map((years) => {
+      const firstFacultyInfo = Object.values(years)[0];
+      return {
+        area: firstFacultyInfo.area,
+        lastName: firstFacultyInfo.lastName,
+        firstName: firstFacultyInfo.firstName,
+        category: facultyTypeEnumToTitleCase(firstFacultyInfo.category),
+        jointWith: firstFacultyInfo.jointWith,
+        years,
+      };
+    });
+
+    // Sort the faculty array by area, last name, and first name to match
+    // the sorting of the faculty table.
+    facultyArray.sort((a, b) => {
+      if (a.area < b.area) return -1;
+      if (a.area > b.area) return 1;
+      if (a.lastName < b.lastName) return -1;
+      if (a.lastName > b.lastName) return 1;
+      if (a.firstName < b.firstName) return -1;
+      if (a.firstName > b.firstName) return 1;
+      return 0;
+    });
+
+    // Create our workbook and sheet
+    const facultyReport = new Excel.stream.xlsx.WorkbookWriter({
+      stream: xlsxStream,
+    });
+    const facultySheet = facultyReport.addWorksheet('Faculty');
+
+    // Provide addressable column headings for semester/field element
+    let facultyColumns = [
+      { header: 'Area', key: 'area' },
+      { header: 'Last Name', key: 'lastName' },
+      { header: 'First Name', key: 'firstName' },
+      { header: 'Category', key: 'category' },
+      { header: 'Joint With', key: 'jointWith' },
+    ];
+    yearList.forEach((year) => {
+      const springYear = year.toString().substr(2);
+      const fallYear = (year - 1).toString().substr(2);
+      facultyColumns = facultyColumns.concat([
+        { header: `F'${fallYear} Absence`, key: `fall${year}Absence` },
+        { header: `F'${fallYear} Courses`, key: `fall${year}Courses` },
+        { header: `S'${springYear} Absence`, key: `spring${year}Absence` },
+        { header: `S'${springYear} Courses`, key: `spring${year}Courses` },
+      ]);
+    });
+    facultySheet.columns = facultyColumns;
+
+    // Write information for each faculty/semester into the sheet
+    facultyArray.forEach((faculty) => {
+      // Main faculty data
+      const newRow = {
+        area: faculty.area,
+        lastName: faculty.lastName,
+        firstName: faculty.firstName,
+        category: faculty.category,
+        jointWith: faculty.jointWith,
+      };
+      yearList.forEach((year) => {
+        const facultyInYear = faculty.years[year];
+        // Fall/Spring semester data
+        Object.assign(newRow, {
+          [`fall${year}Absence`]: facultyInYear
+            ? absenceEnumToTitleCase(facultyInYear.fall.absence.type)
+            : '',
+          [`fall${year}Courses`]: facultyInYear
+            ? facultyInYear.fall.courses
+              .map(({ catalogNumber }) => catalogNumber)
+              .join(MULTILINE_SEPARATOR)
+            : '',
+          [`spring${year}Absence`]: facultyInYear
+            ? absenceEnumToTitleCase(facultyInYear.spring.absence.type)
+            : '',
+          [`spring${year}Courses`]: facultyInYear
+            ? facultyInYear.spring.courses
+              .map(({ catalogNumber }) => catalogNumber)
+              .join(MULTILINE_SEPARATOR)
+            : '',
+        });
+      });
+      facultySheet.addRow(newRow).commit();
+    });
+    await facultyReport.commit();
   }
 }
