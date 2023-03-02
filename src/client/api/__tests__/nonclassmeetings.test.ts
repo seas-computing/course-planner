@@ -30,7 +30,6 @@ describe('Non-class meeting API', function () {
         getStub.resolves({
           status: 200,
           statusText: 'OK',
-          headers: '',
           config: {},
           data: {
             [dataScienceReadingGroup.spring.calendarYear]: [
