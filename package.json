@@ -113,7 +113,7 @@
     "eslint-plugin-react": "^7.20.3",
     "eslint-plugin-react-hooks": "^4.0.7",
     "eslint-plugin-testing-library": "^3.8.0",
-    "file-loader": "^4.0.0",
+    "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.5.0",
     "html-webpack-root-plugin": "^0.10.0",
     "ignore-styles": "^5.0.1",
