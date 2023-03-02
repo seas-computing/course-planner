@@ -2,7 +2,7 @@ import { Server } from 'http';
 import request from 'supertest';
 import { SuperAgentRequest } from 'superagent';
 import {
-  AxiosRequestConfig, AxiosResponse,
+  AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig,
 } from 'axios';
 
 /**
@@ -27,7 +27,7 @@ import {
  *
  */
 const mockAdapter = (app: Server) => async (
-  config: AxiosRequestConfig
+  config: InternalAxiosRequestConfig
 ): Promise<AxiosResponse> => {
   const {
     method,
@@ -38,7 +38,7 @@ const mockAdapter = (app: Server) => async (
   } = config;
   const mockApi = request(app);
   if (method in mockApi && typeof mockApi[method] === 'function') {
-    const methodRequest = mockApi[method] as (url:string) => SuperAgentRequest;
+    const methodRequest = mockApi[method] as (url: string) => SuperAgentRequest;
     let stRequest = methodRequest(url);
     if (headers) {
       Object.entries(headers).forEach(([key, value]: [string, string]) => {
