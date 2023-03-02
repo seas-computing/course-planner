@@ -148,7 +148,7 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
       </VerticalSpace>
       <div className="course-admin-table">
         <Table>
-          <TableHead>
+          <TableHead isSticky>
             <TableRow isStriped>
               <TableHeadingCell scope="col">Area</TableHeadingCell>
               <TableHeadingCell scope="col">Course</TableHeadingCell>
