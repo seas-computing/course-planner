@@ -35,7 +35,7 @@ import { Campus } from '../location/campus.entity';
     .addSelect('campus.name', 'campus')
     .addSelect('CONCAT(c.prefix, m.day, TO_CHAR(m."startTime"::TIME, \'HH24MI\'), TO_CHAR(m."endTime"::TIME, \'HH24MI\'), s.term, s."academicYear")', 'blockId')
     .from(CourseInstance, 'ci')
-    .leftJoin(Course, 'c', 'ci."courseId" = c.id')
+    .leftJoin(Course, 'c', 'c.id = COALESCE(c."sameAsId", ci."courseId")')
     .innerJoin(Semester, 's', 's.id = ci."semesterId"')
     .innerJoin(Meeting, 'm', 'm."courseInstanceId" = ci.id')
     .leftJoin(Room, 'r', 'r.id = m."roomId"')
