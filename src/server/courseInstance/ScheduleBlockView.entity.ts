@@ -32,7 +32,7 @@ import { ScheduleEntryView } from './ScheduleEntryView.entity';
     .addSelect('CONCAT(c.prefix, m.day, TO_CHAR(m."startTime"::TIME, \'HH24MI\'), TO_CHAR(m."endTime"::TIME, \'HH24MI\'), s.term, s."academicYear")', 'id')
     .distinct(true)
     .from(Course, 'c')
-    .leftJoin(CourseInstance, 'ci', 'ci."courseId" = c.id')
+    .leftJoin(CourseInstance, 'ci', 'ci."courseId" = COALESCE(c."sameAsId", c.id)')
     .innerJoin(Semester, 's', 's.id = ci."semesterId"')
     .innerJoin(Meeting, 'm', 'm."courseInstanceId" = ci.id')
     .groupBy('c.prefix')
