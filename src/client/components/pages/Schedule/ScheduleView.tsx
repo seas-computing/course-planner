@@ -222,7 +222,7 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
                               ));
                               setClickedCourseInfo({
                                 prefix: coursePrefix,
-                                number: event.currentTarget.innerText,
+                                number: courseNumber,
                               });
                             }
                           }}
