@@ -9,8 +9,6 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  */
 export class UpdateScheduleBlockView1678297871835
 implements MigrationInterface {
-  name = 'UpdateScheduleBlockView1678297871835';
-
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query('DELETE FROM "typeorm_metadata" WHERE "type" = $1 AND "schema" = $2 AND "name" = $3', ['VIEW', 'public', 'ScheduleBlockView']);
     await queryRunner.query('DROP VIEW "ScheduleBlockView"');

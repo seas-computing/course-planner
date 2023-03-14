@@ -1,9 +1,12 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
+/**
+ * This migration updates the ScheduleEntryView such that if a course has a
+ * parent (which is indicated by the presence of a sameAsId value), we will
+ * get the schedule information of the course parent instead.
+ */
 export class UpdateScheduleEntryView1678202422266
 implements MigrationInterface {
-  name = 'UpdateScheduleEntryView1678202422266';
-
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query('DELETE FROM "typeorm_metadata" WHERE "type" = $1 AND "schema" = $2 AND "name" = $3', ['VIEW', 'public', 'ScheduleEntryView']);
     await queryRunner.query('DROP VIEW "ScheduleEntryView"');

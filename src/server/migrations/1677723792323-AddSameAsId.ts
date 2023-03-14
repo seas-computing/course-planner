@@ -5,8 +5,6 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * use the field value to reference the parent, if it exists, of the course.
  */
 export class AddSameAsId1677723792323 implements MigrationInterface {
-  name = 'AddSameAsId1677723792323';
-
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query('DELETE FROM "typeorm_metadata" WHERE "type" = $1 AND "schema" = $2 AND "name" = $3', ['VIEW', 'public', 'MultiYearPlanView']);
     await queryRunner.query('DROP VIEW "MultiYearPlanView"');
