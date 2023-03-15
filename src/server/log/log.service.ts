@@ -56,22 +56,10 @@ export enum LABEL {
 }
 
 /**
- * Computes the longest log level to use in padding out the log messages
- * Defined outside the service since this should not change at runtime
- *
- */
-const widestLog = Math.max(
-  ...Object.values(LOG_LEVEL).map(
-    (lvl: string): number => lvl.length
-  )
-);
-
-/**
  * An injectable service that instantiates a Winston logger, and overwrites the
  * existing Nest logging methods with Winston's methods.
  *
 */
-
 @Injectable()
 class LogService extends NestLogger implements TypeORMLogger {
   /**
@@ -96,7 +84,9 @@ class LogService extends NestLogger implements TypeORMLogger {
     this.logger = winston.createLogger({
       level: config.logLevel,
       format: winston.format.combine(
-        winston.format.timestamp(),
+        winston.format.timestamp({
+          format: 'MMM DD HH:mm:ss',
+        }),
         winston.format.printf(logFormat)
       ),
       transports: [
@@ -110,8 +100,8 @@ class LogService extends NestLogger implements TypeORMLogger {
      * TIMESTAMP [LEVEL]    (LABEL) MESSAGE
    */
   public logFormat(info: WinstonInfo): string {
-    const fmtLevel = `[${info.level.toUpperCase()}]`.padEnd(widestLog + 2);
-    return `${info.timestamp} ${fmtLevel} (${info.label}) ${info.message}`;
+    const fmtLevel = info.level.toUpperCase();
+    return `${info.timestamp} ${fmtLevel} ${info.label} ${info.message}`;
   }
 
   /**

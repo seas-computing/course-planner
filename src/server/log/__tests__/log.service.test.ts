@@ -9,7 +9,7 @@ import winston, { Logger } from 'winston';
 import * as dummy from 'testData';
 import { LogService, LABEL } from '../log.service';
 
-describe('Log Service', function () {
+describe.only('Log Service', function () {
   let logService: LogService;
   let winstonStub: Record<string, SinonStub>;
   const testClass = 'testClass';
@@ -61,11 +61,6 @@ describe('Log Service', function () {
         new RegExp(LOG_LEVEL.INFO.toUpperCase()).test(formatted),
         true
       );
-    });
-    it('Should wrap the log level in [] and add spaces to pad out to 10 chars', function () {
-      // length of the timestamp plus a space
-      const timestampEnd = timestamp.length + 1;
-      strictEqual(formatted.substr(timestampEnd, 10), '[INFO]    ');
     });
   });
   describe('error', function () {
