@@ -135,7 +135,7 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
       <colgroup>
         <col />
       </colgroup>
-      <TableHead>
+      <TableHead isSticky>
         <TableRow noHighlight>
           <TableHeadingSpacer colSpan={5} />
           <TableHeadingCell

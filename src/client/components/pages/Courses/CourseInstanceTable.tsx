@@ -137,7 +137,7 @@ const CourseInstanceTable: FunctionComponent<CourseInstanceTableProps> = ({
       {(fallColumns.length > 0 && <colgroup span={fallColumns.length} />)}
       {(springColumns.length > 0 && <colgroup span={springColumns.length} />)}
       <colgroup span={metaColumns.length} />
-      <TableHead>
+      <TableHead isSticky>
         {/*
           * Our top level of headers should only show the two semesters in the
           * current academic year, with all other headers blanked. If no
