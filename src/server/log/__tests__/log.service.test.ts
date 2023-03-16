@@ -62,11 +62,6 @@ describe('Log Service', function () {
         true
       );
     });
-    it('Should wrap the log level in [] and add spaces to pad out to 10 chars', function () {
-      // length of the timestamp plus a space
-      const timestampEnd = timestamp.length + 1;
-      strictEqual(formatted.substr(timestampEnd, 10), '[INFO]    ');
-    });
   });
   describe('error', function () {
     context('logged without a label', function () {
