@@ -9,7 +9,7 @@ import winston, { Logger } from 'winston';
 import * as dummy from 'testData';
 import { LogService, LABEL } from '../log.service';
 
-describe.only('Log Service', function () {
+describe('Log Service', function () {
   let logService: LogService;
   let winstonStub: Record<string, SinonStub>;
   const testClass = 'testClass';
