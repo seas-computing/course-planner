@@ -178,16 +178,20 @@ describe('End-to-end Multi Year Plan tests', function () {
         // take only the instructor information.
         childRowContent = childRowContent.slice(3);
 
-        strictEqual(parentRowContent.length > 0, true, 'Parent course row is empty.');
-        strictEqual(childRowContent.length > 0, true, 'Child course row is empty.');
-
+        let numRowsCompared = 0;
         // Compare the faculty information and make sure they are equal
         let areRowsEqual = true;
         for (let i = 0; i < parentRowContent.length; i++) {
           if (parentRowContent[i] !== childRowContent[i]) {
             areRowsEqual = false;
+            numRowsCompared += 1;
           }
         }
+        strictEqual(
+          numRowsCompared > 0,
+          true,
+          'No rows were compared, possibly because the rows are empty.'
+        );
         strictEqual(areRowsEqual, true, 'Parent and child rows do not have the same content.');
       });
     });
