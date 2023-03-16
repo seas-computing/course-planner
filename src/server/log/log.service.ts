@@ -7,7 +7,7 @@ import { Logger as TypeORMLogger } from 'typeorm';
 import winston, { Logger as WinstonLogger } from 'winston';
 import { ConfigService } from 'server/config/config.service';
 import { StreamOptions } from 'morgan';
-import { TYPEORM_LOG_LEVEL, LOG_LEVEL } from 'common/constants';
+import { TYPEORM_LOG_LEVEL } from 'common/constants';
 import util from 'util';
 
 /**
