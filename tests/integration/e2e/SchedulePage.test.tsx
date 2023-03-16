@@ -7,7 +7,7 @@ import {
   render,
   RenderResult,
   fireEvent,
-  wait,
+  waitForElementToBeRemoved,
 } from '@testing-library/react';
 import { TypeOrmModule, TypeOrmModuleOptions, getRepositoryToken } from '@nestjs/typeorm';
 import * as dummy from 'testData';
@@ -177,7 +177,7 @@ describe('End-to-end Schedule Page tests', function () {
         );
         const submitButton = renderResult.getByText('Submit');
         fireEvent.click(submitButton);
-        await wait(() => !renderResult.queryByText('required fields', { exact: false }));
+        await waitForElementToBeRemoved(() => renderResult.getByRole('dialog'));
 
         // Navigate to the schedule page and wait for the table to render
         const scheduleTab = await renderResult.findByText('Schedule');

@@ -8,7 +8,7 @@ import {
   RenderResult,
   fireEvent,
   within,
-  wait,
+  waitForElementToBeRemoved,
 } from '@testing-library/react';
 import { TypeOrmModule, TypeOrmModuleOptions, getRepositoryToken } from '@nestjs/typeorm';
 import * as dummy from 'testData';
@@ -141,7 +141,7 @@ describe('End-to-end Multi Year Plan tests', function () {
         );
         const submitButton = renderResult.getByText('Submit');
         fireEvent.click(submitButton);
-        await wait(() => !renderResult.queryByText('required fields', { exact: false }));
+        await waitForElementToBeRemoved(() => renderResult.getByRole('dialog'));
 
         // Navigate to multi year plan tab
         const multiYearPlanTab = await renderResult.findByText('4 Year Plan', { exact: false });
