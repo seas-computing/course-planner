@@ -21,6 +21,7 @@ import {
   strictEqual,
 } from 'assert';
 import { SemesterModule } from 'server/semester/semester.module';
+import { FacultyCourseInstance } from 'server/courseInstance/facultycourseinstance.entity';
 import mockAdapter from '../../mocks/api/adapter';
 import { ConfigModule } from '../../../src/server/config/config.module';
 import { ConfigService } from '../../../src/server/config/config.service';
@@ -43,6 +44,7 @@ describe('End-to-end Multi Year Plan tests', function () {
   let testModule: TestingModule;
   let authStub: SinonStub;
   let courseRepository: Repository<Course>;
+  let fciRepository: Repository<FacultyCourseInstance>;
   const currentAcademicYear = 2019;
   let renderResult: RenderResult;
 
@@ -98,6 +100,9 @@ describe('End-to-end Multi Year Plan tests', function () {
     courseRepository = testModule.get(
       getRepositoryToken(Course)
     );
+    fciRepository = testModule.get(
+      getRepositoryToken(FacultyCourseInstance)
+    );
     const nestApp = await testModule
       .createNestApplication()
       .useGlobalPipes(new BadRequestExceptionPipe())
@@ -112,9 +117,13 @@ describe('End-to-end Multi Year Plan tests', function () {
   describe('Rendering Instructor Information', function () {
     let parentCourse: Course;
     let childCourse: Course;
+    let instructor: FacultyCourseInstance;
     beforeEach(async function () {
-      parentCourse = await courseRepository.findOne();
-      childCourse = await courseRepository.findOne({
+      instructor = await fciRepository.findOneOrFail({
+        relations: ['courseInstance', 'courseInstance.course'],
+      });
+      parentCourse = instructor.courseInstance.course;
+      childCourse = await courseRepository.findOneOrFail({
         where: {
           id: Not(parentCourse.id),
         },
