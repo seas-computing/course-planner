@@ -184,8 +184,8 @@ describe('End-to-end Multi Year Plan tests', function () {
         for (let i = 0; i < parentRowContent.length; i++) {
           if (parentRowContent[i] !== childRowContent[i]) {
             areRowsEqual = false;
-            numRowsCompared += 1;
           }
+          numRowsCompared += 1;
         }
         strictEqual(
           numRowsCompared > 0,
