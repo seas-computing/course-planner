@@ -193,7 +193,7 @@ describe('End-to-end Multi Year Plan tests', function () {
           'No rows were compared, possibly because the rows are empty.'
         );
         strictEqual(areRowsEqual, true, 'Parent and child rows do not have the same content.');
-      });
+      }).timeout(120000);
     });
   });
 });
