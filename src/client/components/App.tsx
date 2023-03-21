@@ -23,11 +23,13 @@ import {
   PageBody,
   LoadSpinner,
   Footer,
+  ExternalLink,
 } from 'mark-one';
 import { getCurrentUser } from 'client/api';
 import { getMetadata } from 'client/api/metadata';
 import { User } from 'common/classes';
 import { MetadataResponse } from 'common/dto/metadata/MetadataResponse.dto';
+import styled from 'styled-components';
 import {
   Message,
   AppRouter,
@@ -76,6 +78,18 @@ const App: FunctionComponent = (): ReactElement => {
    * Tracks whether we're still fetching the user and metadata
    */
   const [isDataFetching, setDataFetching] = useState(true);
+
+  /**
+   * Policy links and items that will be rendered on the page footer
+   */
+  const FooterListItem = styled.div`
+  border-right: 1px solid black;
+  padding: 0 0.5rem;
+  font-size: 0.9em;
+  font-weight: 400;
+  display: 'flex';
+  listStyle: 'none';
+`;
 
   /**
    * Get the currently authenticated user from the server on launch.
@@ -139,6 +153,13 @@ const App: FunctionComponent = (): ReactElement => {
                         justify="center"
                       >
                         {appVersion}
+                        <FooterListItem>
+                          © 2023 President and Fellows of Harvard College
+                        </FooterListItem>
+                        <FooterListItem><ExternalLink href="https://seas.harvard.edu/office-diversity-inclusion-and-belonging/about-us" rel="nofollow">Diversity Mission</ExternalLink></FooterListItem>
+                        <FooterListItem><ExternalLink href="https://trademark.harvard.edu/pages/trademark-notice" rel="nofollow">Trademark Notice</ExternalLink></FooterListItem>
+                        <FooterListItem><ExternalLink href="https://accessibility.huit.harvard.edu/digital-accessibility-policy" rel="nofollow">Accessibility Policy</ExternalLink></FooterListItem>
+                        <FooterListItem><ExternalLink href="https://seas.harvard.edu/privacy-policy" rel="nofollow">Privacy Policy</ExternalLink></FooterListItem>
                       </Footer>
                     </>
                   )}

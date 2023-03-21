@@ -16,7 +16,6 @@ import {
   POSITION,
   VARIANT,
   Dropdown,
-  Footer,
 } from 'mark-one';
 import { MessageContext, MetadataContext } from 'client/context';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
@@ -830,18 +829,6 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
         }}
         onClose={closeEnrollmentModal}
       />
-      <tfoot style={{ insetBlockEnd: 0 }}>
-        <ul style={{
-          display: 'flex', listStyle: 'none', justifyContent: 'center', padding: '1em',
-        }}
-        >
-          <li>© 2023 President and Fellows of Harvard College</li>
-          <li style={{ color: 'black' }}><a href="https://seas.harvard.edu/office-diversity-inclusion-and-belonging/about-us" rel="nofollow">Diversity Mission</a></li>
-          <li><a href="https://trademark.harvard.edu/pages/trademark-notice" rel="nofollow">Trademark Notice</a></li>
-          <li><a href="https://accessibility.huit.harvard.edu/digital-accessibility-policy" rel="nofollow">Accessibility Policy</a></li>
-          <li><a href="https://seas.harvard.edu/privacy-policy" rel="nofollow">Privacy Policy</a></li>
-        </ul>
-      </tfoot>
     </div>
   );
 };
