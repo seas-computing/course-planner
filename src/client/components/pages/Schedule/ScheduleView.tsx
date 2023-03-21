@@ -79,7 +79,7 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
       / minuteResolution;
 
   /**
-   * Track the prefix and catalog number of the course whose details should be shown.
+   * Track the course id of the course whose details should be shown.
    */
   const [currentPopover, setCurrentPopover] = useState('');
 
