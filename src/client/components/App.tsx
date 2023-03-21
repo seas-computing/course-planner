@@ -80,15 +80,20 @@ const App: FunctionComponent = (): ReactElement => {
   const [isDataFetching, setDataFetching] = useState(true);
 
   /**
-   * Policy links and items that will be rendered on the page footer
+   * A custom footer component to render Policy links and items
    */
-  const FooterListItem = styled.div`
-  border-right: 1px solid black;
-  padding: 0 0.5rem;
-  font-size: 0.9em;
-  font-weight: 400;
-  display: 'flex';
-  listStyle: 'none';
+  const CustomFooter = styled(Footer)`
+  ul {
+    list-style: none;
+    display: flex;
+    li {
+      padding: 0 0.5rem;
+      border-right: 1px solid black;
+      &:last-of-type {
+        border: 0px;
+      }
+  }
+}
 `;
 
   /**
@@ -149,18 +154,20 @@ const App: FunctionComponent = (): ReactElement => {
                     <>
                       <AppHeader />
                       <AppRouter />
-                      <Footer
+                      <CustomFooter
                         justify="center"
                       >
                         {appVersion}
-                        <FooterListItem>
-                          © 2023 President and Fellows of Harvard College
-                        </FooterListItem>
-                        <FooterListItem><ExternalLink href="https://seas.harvard.edu/office-diversity-inclusion-and-belonging/about-us" rel="nofollow">Diversity Mission</ExternalLink></FooterListItem>
-                        <FooterListItem><ExternalLink href="https://trademark.harvard.edu/pages/trademark-notice" rel="nofollow">Trademark Notice</ExternalLink></FooterListItem>
-                        <FooterListItem><ExternalLink href="https://accessibility.huit.harvard.edu/digital-accessibility-policy" rel="nofollow">Accessibility Policy</ExternalLink></FooterListItem>
-                        <FooterListItem><ExternalLink href="https://seas.harvard.edu/privacy-policy" rel="nofollow">Privacy Policy</ExternalLink></FooterListItem>
-                      </Footer>
+                        <ul>
+                          <li>
+                            © 2023 President and Fellows of Harvard College
+                          </li>
+                          <li><ExternalLink href="https://seas.harvard.edu/office-diversity-inclusion-and-belonging/about-us" rel="nofollow">Diversity Mission</ExternalLink></li>
+                          <li><ExternalLink href="https://trademark.harvard.edu/pages/trademark-notice" rel="nofollow">Trademark Notice</ExternalLink></li>
+                          <li><ExternalLink href="https://accessibility.huit.harvard.edu/digital-accessibility-policy" rel="nofollow">Accessibility Policy</ExternalLink></li>
+                          <li><ExternalLink href="https://seas.harvard.edu/privacy-policy" rel="nofollow">Privacy Policy</ExternalLink></li>
+                        </ul>
+                      </CustomFooter>
                     </>
                   )}
                 <Message
