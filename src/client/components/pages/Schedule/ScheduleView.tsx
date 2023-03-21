@@ -134,7 +134,8 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
               const resolvedDuration = Math.round(
                 duration / minuteResolution
               );
-              const popoverInBlock = courses.some(({
+              const popoverInBlock = (coursePrefix === clickedCourseInfo.prefix)
+              && courses.some(({
                 instanceId,
               }) => instanceId === currentPopover);
               return [...blocks, (
@@ -192,7 +193,8 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
                       `${endHour}:${endMinute.toString().padStart(2, '0')}`
                     );
                     const isSelectedCoursePrefix = isPrefixActive(coursePrefix);
-                    const isSelected = currentPopover === instanceId;
+                    const isSelected = currentPopover === instanceId
+                    && courseNumber === clickedCourseInfo.number;
                     const isSelectedDegreeProgram = (
                       degreeProgram === DEGREE_PROGRAM.BOTH
                         || (isUndergraduate
