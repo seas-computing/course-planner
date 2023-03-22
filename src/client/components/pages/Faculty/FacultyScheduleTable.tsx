@@ -29,6 +29,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import {
   FacultyAbsence,
+  FacultyCourse,
   FacultyResponseDTO,
 } from 'common/dto/faculty/FacultyResponse.dto';
 import {
@@ -99,6 +100,28 @@ interface FacultyScheduleTableProps {
  */
 const computeEditAbsenceButtonId = (faculty: FacultyResponseDTO, term: TERM):
 string => `editAbsence${faculty.id}${term}`;
+
+/**
+ * Computes a list of unique courses to prevent duplicate courses from showing
+ */
+const deduplicateCourses = (courses: FacultyCourse[]): string[] => {
+  const uniqueCourses: string[] = [];
+  courses.forEach((course) => {
+    if (uniqueCourses.indexOf(course.catalogNumber) === -1) {
+      uniqueCourses.push(course.catalogNumber);
+      // Only parse the sameAs value if there is one
+      if (course.sameAs !== '') {
+        const sameAsCourses = course.sameAs.split(', ');
+        sameAsCourses.forEach((sameAsCourse) => {
+          if (uniqueCourses.indexOf(sameAsCourse) === -1) {
+            uniqueCourses.push(sameAsCourse);
+          }
+        });
+      }
+    }
+  });
+  return uniqueCourses;
+};
 
 /**
  * Component representing the Faculty Schedules for a given academic year
@@ -340,11 +363,12 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
               </CellLayout>
             </TableCell>
             <TableCell variant={absenceToVariant(faculty.fall.absence)}>
-              {faculty.fall.courses.map((course): ReactElement => (
-                <div key={course.id}>
-                  {course.catalogNumber}
-                </div>
-              ))}
+              {deduplicateCourses(faculty.fall.courses)
+                .map((course): ReactElement => (
+                  <div key={course}>
+                    {course}
+                  </div>
+                ))}
             </TableCell>
             <TableCell
               variant={absenceToVariant(faculty.spring.absence)}
@@ -385,11 +409,12 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
               </CellLayout>
             </TableCell>
             <TableCell variant={absenceToVariant(faculty.spring.absence)}>
-              {faculty.spring.courses.map((course): ReactElement => (
-                <div key={course.id}>
-                  {course.catalogNumber}
-                </div>
-              ))}
+              {deduplicateCourses(faculty.spring.courses)
+                .map((course): ReactElement => (
+                  <div key={course}>
+                    {course}
+                  </div>
+                ))}
             </TableCell>
           </TableRow>
         ))}
