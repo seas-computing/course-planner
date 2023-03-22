@@ -79,9 +79,19 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
       / minuteResolution;
 
   /**
-   * Track the prefix and catalog number of the course whose details should be shown.
+   * Track the course id of the course whose details should be shown.
    */
   const [currentPopover, setCurrentPopover] = useState('');
+
+  /**
+   * Keeps track of the course number that was clicked on so that we can use
+   * this value to control the popover visibility
+   */
+  const [clickedCourseInfo, setClickedCourseInfo] = useState({
+    prefix: '',
+    number: '',
+  });
+
   return (
     <WeekBlock
       firstHour={firstHour}
@@ -124,7 +134,8 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
               const resolvedDuration = Math.round(
                 duration / minuteResolution
               );
-              const popoverInBlock = courses.some(({
+              const popoverInBlock = (coursePrefix === clickedCourseInfo.prefix)
+              && courses.some(({
                 instanceId,
               }) => instanceId === currentPopover);
               return [...blocks, (
@@ -155,7 +166,9 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
                           xOffset="0.5rem"
                           yOffset={`-${2 + listIndex}rem`}
                           title={`${coursePrefix} ${courseNumber}`}
-                          isVisible={currentPopover === instanceId}
+                          isVisible={(currentPopover === instanceId)
+                            && (clickedCourseInfo.number === courseNumber)
+                            && (clickedCourseInfo.prefix === coursePrefix)}
                         >
                           <p>{day}</p>
                           <p>{`${displayStartTime} - ${displayEndTime}`}</p>
@@ -180,7 +193,8 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
                       `${endHour}:${endMinute.toString().padStart(2, '0')}`
                     );
                     const isSelectedCoursePrefix = isPrefixActive(coursePrefix);
-                    const isSelected = currentPopover === instanceId;
+                    const isSelected = currentPopover === instanceId
+                    && courseNumber === clickedCourseInfo.number;
                     const isSelectedDegreeProgram = (
                       degreeProgram === DEGREE_PROGRAM.BOTH
                         || (isUndergraduate
@@ -190,7 +204,9 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
                     return (
                       <CourseListing key={meetingId}>
                         <CourseListingButton
-                          isHighlighted={popoverInBlock && isSelected}
+                          isHighlighted={(popoverInBlock && isSelected)
+                            && (clickedCourseInfo.number === courseNumber)
+                            && (clickedCourseInfo.prefix === coursePrefix)}
                           disabled={
                             !isSelectedDegreeProgram
                             || (popoverInBlock && !isSelected)
@@ -206,6 +222,10 @@ const ScheduleView: FunctionComponent<ScheduleViewProps> = ({
                               setCurrentPopover((current) => (
                                 current === instanceId ? null : instanceId
                               ));
+                              setClickedCourseInfo({
+                                prefix: coursePrefix,
+                                number: courseNumber,
+                              });
                             }
                           }}
                         >

@@ -18,6 +18,7 @@ import { IS_SEAS } from 'common/constants';
     .addSelect('c.prefix', 'catalogPrefix')
     .addSelect("CONCAT_WS(' ', c.prefix, c.number)", 'catalogNumber')
     .addSelect('c.title', 'title')
+    .addSelect('c."sameAsId"', 'sameAsId')
     .where(`c."isSEAS" <> '${IS_SEAS.N}'`)
     .from(Course, 'c'),
 })
@@ -50,6 +51,14 @@ export class MultiYearPlanView {
    */
   @ViewColumn()
   public title: string;
+
+  /**
+   * From [[Course]]
+   * A free text field for admin staff to record any other courses that this
+   * course is the same as
+   */
+  @ViewColumn()
+  public sameAsId: string;
 
   public semesters: SemesterView[];
 }
