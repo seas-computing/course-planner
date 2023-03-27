@@ -262,10 +262,14 @@ describe('Course Modal', function () {
               ]}
             />
           );
-          return modal.findByText([
-            childCourse.catalogNumber,
-            physicsCourseResponse.catalogNumber,
-          ].join(', '), { exact: true });
+          notDeepStrictEqual(
+            modal.queryByText(childCourse.catalogNumber),
+            null
+          );
+          notDeepStrictEqual(
+            modal.queryByText(physicsCourseResponse.catalogNumber),
+            null
+          );
         });
       });
       describe('Error Message', function () {
