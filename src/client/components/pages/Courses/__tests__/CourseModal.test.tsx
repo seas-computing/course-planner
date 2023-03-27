@@ -1,4 +1,5 @@
 import {
+  notDeepStrictEqual,
   strictEqual,
 } from 'assert';
 import {
