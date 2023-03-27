@@ -321,6 +321,24 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
     [courses, currentCourse]
   );
 
+  /**
+   * Array of courses that are the "sameAs" the current course.
+   */
+  const [
+    childCourses,
+    setChildCourses,
+  ] = useState<string[]>([]);
+
+  /**
+   * Populate childCourses state on render
+   */
+  useEffect(() => {
+    const sameAsCourses = courses
+      .filter(({ sameAs }) => sameAs === currentCourse?.id)
+      .map(({ catalogNumber }) => catalogNumber);
+    setChildCourses(sameAsCourses);
+  }, [courses, setChildCourses, currentCourse]);
+
   return (
     <Modal
       ariaLabelledBy="editCourse"
@@ -430,6 +448,19 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
             labelPosition={POSITION.TOP}
             options={courseOptions}
           />
+          <>
+            {
+              disableSameAs ? (
+                <ul title={`Child Courses of ${currentCourse?.catalogNumber}`}>
+                  {
+                    childCourses.map(
+                      (catalogNumber) => (<li>{catalogNumber}</li>)
+                    )
+                  }
+                </ul>
+              ) : null
+            }
+          </>
           <Checkbox
             id="isUndergraduate"
             name="isUndergraduate"

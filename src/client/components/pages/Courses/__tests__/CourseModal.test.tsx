@@ -245,6 +245,28 @@ describe('Course Modal', function () {
             .getByLabelText('Same As') as HTMLSelectElement;
           strictEqual(sameAsInput.disabled, true);
         });
+        it('has an ajacent list of child courses for parents', async function () {
+          const modal = render(
+            <CourseModal
+              isVisible
+              currentCourse={computerScienceCourseResponse}
+              onClose={() => {}}
+              onSuccess={() => null}
+              courses={[
+                computerScienceCourseResponse,
+                childCourse,
+                {
+                  ...physicsCourseResponse,
+                  sameAs: computerScienceCourseResponse.id,
+                },
+              ]}
+            />
+          );
+          return modal.findByText([
+            childCourse.catalogNumber,
+            physicsCourseResponse.catalogNumber,
+          ].join(', '), { exact: true });
+        });
       });
       describe('Error Message', function () {
         it('renders no error messages prior to initial form submission', function () {
