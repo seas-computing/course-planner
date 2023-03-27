@@ -246,7 +246,7 @@ describe('Course Modal', function () {
             .getByLabelText('Same As') as HTMLSelectElement;
           strictEqual(sameAsInput.disabled, true);
         });
-        it('has an ajacent list of child courses for parents', async function () {
+        it('has an ajacent list of child courses for parents', function () {
           const modal = render(
             <CourseModal
               isVisible
