@@ -227,6 +227,24 @@ describe('Course Modal', function () {
 
           strictEqual(courseIds.includes(childCourse.id), false);
         });
+        it('is disabled for parent courses', function () {
+          const modal = render(
+            <CourseModal
+              isVisible
+              /*
+              * We need to edit a "parent" course here so we can test that
+              * it can't also be a child
+              */
+              currentCourse={computerScienceCourseResponse}
+              onClose={() => {}}
+              onSuccess={() => null}
+              courses={testData}
+            />
+          );
+          const sameAsInput = modal
+            .getByLabelText('Same As') as HTMLSelectElement;
+          strictEqual(sameAsInput.disabled, true);
+        });
       });
       describe('Error Message', function () {
         it('renders no error messages prior to initial form submission', function () {

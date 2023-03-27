@@ -311,6 +311,16 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
     [courses, currentCourse]
   );
 
+  /**
+   * A course being the "sameAs" this course means that the course being set as
+   * a child course is also a parent - and that's not allowed. Therefore, the
+   * "sameAs" field should be disabled in this instance to prevent that.
+   */
+  const disableSameAs = useMemo(
+    () => courses.some(({ sameAs }) => sameAs === currentCourse?.id),
+    [courses, currentCourse]
+  );
+
   return (
     <Modal
       ariaLabelledBy="editCourse"
@@ -416,6 +426,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
             onChange={updateFormFields}
             label={displayNames.sameAs}
             errorMessage={formErrors.sameAs}
+            disabled={disableSameAs}
             labelPosition={POSITION.TOP}
             options={courseOptions}
           />
