@@ -454,7 +454,9 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
                 <ul title={`Child Courses of ${currentCourse?.catalogNumber}`}>
                   {
                     childCourses.map(
-                      (catalogNumber) => (<li>{catalogNumber}</li>)
+                      (catalogNumber) => (
+                        <li key={catalogNumber}>{catalogNumber}</li>
+                      )
                     )
                   }
                 </ul>
