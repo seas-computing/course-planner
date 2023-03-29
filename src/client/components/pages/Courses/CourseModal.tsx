@@ -312,17 +312,8 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
   );
 
   /**
-   * A course being the "sameAs" this course means that the course being set as
-   * a child course is also a parent - and that's not allowed. Therefore, the
-   * "sameAs" field should be disabled in this instance to prevent that.
-   */
-  const disableSameAs = useMemo(
-    () => courses.some(({ sameAs }) => sameAs === currentCourse?.id),
-    [courses, currentCourse]
-  );
-
-  /**
-   * Array of courses that are the "sameAs" the current course.
+   * Array of courses that are the "sameAs" the current course. This is also
+   * used to determine if the "sameAs" dropdown should be enabled or disabled.
    */
   const [
     childCourses,
@@ -444,13 +435,13 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
             onChange={updateFormFields}
             label={displayNames.sameAs}
             errorMessage={formErrors.sameAs}
-            disabled={disableSameAs}
+            disabled={childCourses.length > 0}
             labelPosition={POSITION.TOP}
             options={courseOptions}
           />
           <>
             {
-              disableSameAs ? (
+              childCourses.length > 0 ? (
                 <ul title={`Child Courses of ${currentCourse?.catalogNumber}`}>
                   {
                     childCourses.map(
