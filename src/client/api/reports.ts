@@ -71,7 +71,6 @@ export const getReport = async (
     reportURL,
     { credentials: 'include' }
   );
-  console.log(response)
   return downloadAttachment(response);
 };
 
