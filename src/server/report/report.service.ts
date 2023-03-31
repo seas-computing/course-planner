@@ -51,6 +51,7 @@ export class ReportService {
       { header: 'Is Seas?', key: 'isSEAS' },
       { header: 'Is Undergrad?', key: 'isUndergrad' },
       { header: 'Notes', key: 'notes' },
+      { header: 'SameAs', key: 'sameAs' },
     ];
     yearRange.forEach((year) => {
       const springYear = year.toString().substr(2);
@@ -82,6 +83,7 @@ export class ReportService {
         isSEAS: isSEASEnumToString(course.isSEAS),
         isUndergrad: course.isUndergraduate ? 'Undergraduate' : 'Graduate',
         notes: course.notes,
+        sameAs: course.sameAs,
       };
       yearRange.forEach((year, yearIndex) => {
         const courseInYear = allCourseData[yearIndex][courseIndex];
@@ -128,7 +130,6 @@ export class ReportService {
     (_, index) => startYear + index);
     // Create an object with year keys pointing to lists of faculty info
     const yearToFaculty = await this.facultyService.getAllByYear(yearList);
-
     const facultyToInfoMap: { [id: string]: {
       [year: string]: FacultyResponseDTO } } = {};
 
