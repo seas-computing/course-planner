@@ -36,11 +36,15 @@ export class ReportService {
     const allCourseData: CourseInstanceResponseDTO[][] = await Promise.all(
       yearRange.map((year) => this.ciService.getAllByYear(year))
     );
+
+    // Move sameAs information from notes field to sameAs field
     allCourseData[0].forEach((course) => {
       if (course.notes && course.notes.toLowerCase().startsWith('same')) {
         course.sameAs = course.notes;
+        course.notes = '';
       }
     });
+
     // Create our workbook and sheet
     const coursesReport = new Excel.stream.xlsx.WorkbookWriter({
       stream: xlsxStream,
