@@ -1,0 +1,2031 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>course-planner - v0.16.0</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">course-planner - v0.16.0</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1> course-planner - v0.16.0</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<a href="#course-planner" id="course-planner" style="color: inherit; text-decoration: none;">
+					<h1>Course Planner</h1>
+				</a>
+				<p><a href="https://travis-ci.com/seas-computing/course-planner"><img src="https://img.shields.io/travis/com/seas-computing/course-planner.svg" alt="Travis"></a>
+					<a href="https://codecov.io/gh/seas-computing/course-planner"><img src="https://img.shields.io/codecov/c/gh/seas-computing/course-planner.svg" alt="Codecov"></a>
+					<a href="https://seas-computing.github.io/course-planner/"><img src="https://img.shields.io/badge/docs-TypeDoc-Blue.svg" alt="Documentation"></a>
+				<img src="https://img.shields.io/github/languages/top/seas-computing/course-planner.svg" alt="GitHub top language"></p>
+				<a href="#quick-start" id="quick-start" style="color: inherit; text-decoration: none;">
+					<h2>Quick Start</h2>
+				</a>
+				<p>This setup uses <code>docker</code> and <code>docker-compose</code> for local development, as defined in <code>docker-compose.yml</code>. Installation instructions for various platforms can be found <a href="https://docs.docker.com/install/">here</a>.</p>
+				<ol>
+					<li><p>Copy <code>.env-example</code> to <code>.env</code> (<code>cp .env-example .env</code>) and fill in the appropriate values.</p>
+					</li>
+					<li><p>Clone <a href="https://github.com/seas-computing/mark-one">mark-one</a> to a folder beside this project - e.g:</p>
+						<pre><code>.
+├── course-planner
+├── course-planner-etl
+├── <span class="hljs-keyword">mark</span>-<span class="hljs-keyword">one</span></code></pre></li>
+					<li><p>If in development, check out the develop branch:</p>
+						<pre><code class="language-sh">git checkout develop</code></pre>
+					</li>
+					<li><p>Install the required packages:</p>
+						<pre><code class="language-sh">npm install</code></pre>
+					</li>
+					<li><p>Start the project, run:</p>
+						<pre><code class="language-sh">docker-compose up</code></pre>
+					</li>
+					<li><p>Run the database migrations:</p>
+						<pre><code class="language-sh">docker-compose <span class="hljs-built_in">exec</span> node npm run orm -- migration:run</code></pre>
+					</li>
+					<li><p>Run the database migrations generate if you have database schema changes:</p>
+						<pre><code class="language-sh">docker-compose <span class="hljs-built_in">exec</span> node npm run orm -- migration:generate -n [name-of-the-migration]
+docker-compose <span class="hljs-built_in">exec</span> node npm run orm -- migration:run</code></pre>
+					</li>
+					<li><p>switch to course-planner-etl and migrate the data: </p>
+						<pre><code class="language-sh"><span class="hljs-built_in">cd</span> ../course-planner-etl
+git pull
+npm install
+npm run start</code></pre>
+					</li>
+				</ol>
+				<p>Note:
+				You need to remove the old data from docker volume in order to migrate new the data and schema, otherwise the old data and schema might cause issues. </p>
+				<pre><code class="language-sh">docker volume ls
+docker volume rm course-planner_postgres_data</code></pre>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-enum">
+						<a href="enums/absence_type.html" class="tsd-kind-icon">ABSENCE_<wbr>TYPE</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/auth_mode.html" class="tsd-kind-icon">AUTH_<wbr>MODE</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/availability.html" class="tsd-kind-icon">AVAILABILITY</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/campus.html" class="tsd-kind-icon">CAMPUS</a>
+					</li>
+					<li class=" tsd-kind-enum tsd-is-not-exported">
+						<a href="enums/container_state.html" class="tsd-kind-icon">CONTAINER_<wbr>STATE</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/course_table_column.html" class="tsd-kind-icon">COURSE_<wbr>TABLE_<wbr>COLUMN</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/course_table_column_group.html" class="tsd-kind-icon">COURSE_<wbr>TABLE_<wbr>COLUMN_<wbr>GROUP</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/day.html" class="tsd-kind-icon">DAY</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/degree_program.html" class="tsd-kind-icon">DEGREE_<wbr>PROGRAM</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/faculty_type.html" class="tsd-kind-icon">FACULTY_<wbr>TYPE</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/group.html" class="tsd-kind-icon">GROUP</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/http_status.html" class="tsd-kind-icon">HTTP_<wbr>STATUS</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/is_seas.html" class="tsd-kind-icon">IS_<wbr>SEAS</a>
+					</li>
+					<li class=" tsd-kind-enum tsd-is-not-exported">
+						<a href="enums/key.html" class="tsd-kind-icon">KEY</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/label.html" class="tsd-kind-icon">LABEL</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/meridian.html" class="tsd-kind-icon">MERIDIAN</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/message_action.html" class="tsd-kind-icon">MESSAGE_<wbr>ACTION</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/message_type.html" class="tsd-kind-icon">MESSAGE_<wbr>TYPE</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/month.html" class="tsd-kind-icon">MONTH</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/offered.html" class="tsd-kind-icon">OFFERED</a>
+					</li>
+					<li class=" tsd-kind-enum tsd-is-not-exported">
+						<a href="enums/overflow.html" class="tsd-kind-icon">OVERFLOW</a>
+					</li>
+					<li class=" tsd-kind-enum tsd-is-not-exported">
+						<a href="enums/row_style.html" class="tsd-kind-icon">ROW_<wbr>STYLE</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/term.html" class="tsd-kind-icon">TERM</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/term_pattern.html" class="tsd-kind-icon">TERM_<wbr>PATTERN</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/typeorm_log_level.html" class="tsd-kind-icon">TYPEORM_<wbr>LOG_<wbr>LEVEL</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/winston_log_level.html" class="tsd-kind-icon">WINSTON_<wbr>LOG_<wbr>LEVEL</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/absence.html" class="tsd-kind-icon">Absence</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/absencepopulationservice.html" class="tsd-kind-icon">Absence<wbr>Population<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/absencerequestdto.html" class="tsd-kind-icon">Absence<wbr>RequestDTO</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/absenceresponsedto.html" class="tsd-kind-icon">Absence<wbr>ResponseDTO</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/appmessage.html" class="tsd-kind-icon">App<wbr>Message</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-not-exported">
+						<a href="classes/appmodule.html" class="tsd-kind-icon">App<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/area.html" class="tsd-kind-icon">Area</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/areapopulationservice.html" class="tsd-kind-icon">Area<wbr>Population<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/areaservice.html" class="tsd-kind-icon">Area<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/authcontroller.html" class="tsd-kind-icon">Auth<wbr>Controller</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-not-exported">
+						<a href="classes/authmodule.html" class="tsd-kind-icon">Auth<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-not-exported">
+						<a href="classes/authentication.html" class="tsd-kind-icon">Authentication</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-not-exported">
+						<a href="classes/axiossupertesterror.html" class="tsd-kind-icon">Axios<wbr>Supertest<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/badrequestexceptionpipe.html" class="tsd-kind-icon">Bad<wbr>Request<wbr>Exception<wbr>Pipe</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/baseentity.html" class="tsd-kind-icon">Base<wbr>Entity</a>
+					</li>
+					<li class=" tsd-kind-class tsd-has-type-parameter">
+						<a href="classes/basepopulationservice.html" class="tsd-kind-icon">Base<wbr>Population<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/building.html" class="tsd-kind-icon">Building</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-not-exported">
+						<a href="classes/buildinginfo.html" class="tsd-kind-icon">Building<wbr>Info</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/campus.html" class="tsd-kind-icon">Campus</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/campusinfo.html" class="tsd-kind-icon">Campus<wbr>Info</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/campusresponse.html" class="tsd-kind-icon">Campus<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-not-exported">
+						<a href="classes/configmodule.html" class="tsd-kind-icon">Config<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-not-exported">
+						<a href="classes/configservice.html" class="tsd-kind-icon">Config<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/course.html" class="tsd-kind-icon">Course</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/coursearea.html" class="tsd-kind-icon">Course<wbr>Area</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/coursecontroller.html" class="tsd-kind-icon">Course<wbr>Controller</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/courseinstance.html" class="tsd-kind-icon">Course<wbr>Instance</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/courseinstancecontroller.html" class="tsd-kind-icon">Course<wbr>Instance<wbr>Controller</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/courseinstancelistingview.html" class="tsd-kind-icon">Course<wbr>Instance<wbr>Listing<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/courseinstancemodule.html" class="tsd-kind-icon">Course<wbr>Instance<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/courseinstanceresponsedto.html" class="tsd-kind-icon">Course<wbr>Instance<wbr>ResponseDTO</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/courseinstanceservice.html" class="tsd-kind-icon">Course<wbr>Instance<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/courseinstanceupdatedto.html" class="tsd-kind-icon">Course<wbr>Instance<wbr>UpdateDTO</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/courselistingview.html" class="tsd-kind-icon">Course<wbr>Listing<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/coursemodule.html" class="tsd-kind-icon">Course<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/coursepopulationservice.html" class="tsd-kind-icon">Course<wbr>Population<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/courseservice.html" class="tsd-kind-icon">Course<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/createcourse.html" class="tsd-kind-icon">Create<wbr>Course</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/createfacultydto.html" class="tsd-kind-icon">Create<wbr>FacultyDTO</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/createnonclassparentdto.html" class="tsd-kind-icon">Create<wbr>Non<wbr>Class<wbr>ParentDTO</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/createroomrequest.html" class="tsd-kind-icon">Create<wbr>Room<wbr>Request</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/createviewdto.html" class="tsd-kind-icon">Create<wbr>ViewDTO</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-not-exported">
+						<a href="classes/devstrategy.html" class="tsd-kind-icon">Dev<wbr>Strategy</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/errorparser.html" class="tsd-kind-icon">Error<wbr>Parser</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/faculty.html" class="tsd-kind-icon">Faculty</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/facultyabsence.html" class="tsd-kind-icon">Faculty<wbr>Absence</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/facultyarea.html" class="tsd-kind-icon">Faculty<wbr>Area</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/facultycontroller.html" class="tsd-kind-icon">Faculty<wbr>Controller</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/facultycourse.html" class="tsd-kind-icon">Faculty<wbr>Course</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/facultycourseinstance.html" class="tsd-kind-icon">Faculty<wbr>Course<wbr>Instance</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/facultylistingview.html" class="tsd-kind-icon">Faculty<wbr>Listing<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/facultymodule.html" class="tsd-kind-icon">Faculty<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/facultypopulationservice.html" class="tsd-kind-icon">Faculty<wbr>Population<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/facultyresponsedto.html" class="tsd-kind-icon">Faculty<wbr>ResponseDTO</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/facultyschedulecourseview.html" class="tsd-kind-icon">Faculty<wbr>Schedule<wbr>Course<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/facultyschedulesemesterview.html" class="tsd-kind-icon">Faculty<wbr>Schedule<wbr>Semester<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/facultyscheduleservice.html" class="tsd-kind-icon">Faculty<wbr>Schedule<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/facultyscheduleview.html" class="tsd-kind-icon">Faculty<wbr>Schedule<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/facultysemester.html" class="tsd-kind-icon">Faculty<wbr>Semester</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/facultyservice.html" class="tsd-kind-icon">Faculty<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/findcoursesqueryresult.html" class="tsd-kind-icon">Find<wbr>Courses<wbr>Query<wbr>Result</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-not-exported">
+						<a href="classes/harvardkeystrategy.html" class="tsd-kind-icon">Harvard<wbr>Key<wbr>Strategy</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/healthcheckcontroller.html" class="tsd-kind-icon">Health<wbr>Check<wbr>Controller</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/instance.html" class="tsd-kind-icon">Instance</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/instructorrequestdto.html" class="tsd-kind-icon">Instructor<wbr>RequestDTO</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/instructorresponsedto.html" class="tsd-kind-icon">Instructor<wbr>ResponseDTO</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-not-exported">
+						<a href="classes/location.html" class="tsd-kind-icon">Location</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/locationcontroller.html" class="tsd-kind-icon">Location<wbr>Controller</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/locationmodule.html" class="tsd-kind-icon">Location<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/locationservice.html" class="tsd-kind-icon">Location<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-class tsd-has-type-parameter tsd-is-not-exported">
+						<a href="classes/loginterceptor.html" class="tsd-kind-icon">Log<wbr>Interceptor</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-not-exported">
+						<a href="classes/logmiddleware.html" class="tsd-kind-icon">Log<wbr>Middleware</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-not-exported">
+						<a href="classes/logmodule.html" class="tsd-kind-icon">Log<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-not-exported">
+						<a href="classes/logservice.html" class="tsd-kind-icon">Log<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/managecourseresponsedto.html" class="tsd-kind-icon">Manage<wbr>Course<wbr>ResponseDTO</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/managefacultyresponsedto.html" class="tsd-kind-icon">Manage<wbr>Faculty<wbr>ResponseDTO</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-not-exported">
+						<a href="classes/meeting.html" class="tsd-kind-icon">Meeting</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/meetingcontroller.html" class="tsd-kind-icon">Meeting<wbr>Controller</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/meetinglistingview.html" class="tsd-kind-icon">Meeting<wbr>Listing<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/meetingmodule.html" class="tsd-kind-icon">Meeting<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/meetingrequestdto.html" class="tsd-kind-icon">Meeting<wbr>RequestDTO</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/meetingresponsedto.html" class="tsd-kind-icon">Meeting<wbr>ResponseDTO</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/meetingroomresponse.html" class="tsd-kind-icon">Meeting<wbr>Room<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/meetingservice.html" class="tsd-kind-icon">Meeting<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/metadatacontextvalue.html" class="tsd-kind-icon">Metadata<wbr>Context<wbr>Value</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/metadatacontroller.html" class="tsd-kind-icon">Metadata<wbr>Controller</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/metadatamodule.html" class="tsd-kind-icon">Metadata<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/metadataresponse.html" class="tsd-kind-icon">Metadata<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/mockcontroller.html" class="tsd-kind-icon">Mock<wbr>Controller</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/mockdb.html" class="tsd-kind-icon">MockDB</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/multiyearplaninstance.html" class="tsd-kind-icon">Multi<wbr>Year<wbr>Plan<wbr>Instance</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/multiyearplaninstancefaculty.html" class="tsd-kind-icon">Multi<wbr>Year<wbr>Plan<wbr>Instance<wbr>Faculty</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/multiyearplaninstanceview.html" class="tsd-kind-icon">Multi<wbr>Year<wbr>Plan<wbr>Instance<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/multiyearplanresponsedto.html" class="tsd-kind-icon">Multi<wbr>Year<wbr>Plan<wbr>ResponseDTO</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/multiyearplansemester.html" class="tsd-kind-icon">Multi<wbr>Year<wbr>Plan<wbr>Semester</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/multiyearplanview.html" class="tsd-kind-icon">Multi<wbr>Year<wbr>Plan<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-not-exported">
+						<a href="classes/nonclassevent.html" class="tsd-kind-icon">Non<wbr>Class<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/nonclasseventcontroller.html" class="tsd-kind-icon">Non<wbr>Class<wbr>Event<wbr>Controller</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/nonclasseventmodule.html" class="tsd-kind-icon">Non<wbr>Class<wbr>Event<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/nonclasseventpopulationservice.html" class="tsd-kind-icon">Non<wbr>Class<wbr>Event<wbr>Population<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/nonclasseventservice.html" class="tsd-kind-icon">Non<wbr>Class<wbr>Event<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/nonclasseventview.html" class="tsd-kind-icon">Non<wbr>Class<wbr>Event<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/nonclassmeetingresponsedto.html" class="tsd-kind-icon">Non<wbr>Class<wbr>Meeting<wbr>ResponseDTO</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/nonclassparent.html" class="tsd-kind-icon">Non<wbr>Class<wbr>Parent</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/nonclassparentresponse.html" class="tsd-kind-icon">Non<wbr>Class<wbr>Parent<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/nonclassparentview.html" class="tsd-kind-icon">Non<wbr>Class<wbr>Parent<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/pgtime.html" class="tsd-kind-icon">PGTime</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/populationmodule.html" class="tsd-kind-icon">Population<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/populationservice.html" class="tsd-kind-icon">Population<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/reportcontroller.html" class="tsd-kind-icon">Report<wbr>Controller</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/reportmodule.html" class="tsd-kind-icon">Report<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/reportservice.html" class="tsd-kind-icon">Report<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-not-exported">
+						<a href="classes/requiregroup.html" class="tsd-kind-icon">Require<wbr>Group</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/room.html" class="tsd-kind-icon">Room</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/roomadminresponse.html" class="tsd-kind-icon">Room<wbr>Admin<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/roombookinginfoview.html" class="tsd-kind-icon">Room<wbr>Booking<wbr>Info<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/roomconflictexception.html" class="tsd-kind-icon">Room<wbr>Conflict<wbr>Exception</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-not-exported">
+						<a href="classes/roominfo.html" class="tsd-kind-icon">Room<wbr>Info</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/roomlistingview.html" class="tsd-kind-icon">Room<wbr>Listing<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/roommeetingresponse.html" class="tsd-kind-icon">Room<wbr>Meeting<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/roompopulationservice.html" class="tsd-kind-icon">Room<wbr>Population<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/roomrequest.html" class="tsd-kind-icon">Room<wbr>Request</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/roomresponse.html" class="tsd-kind-icon">Room<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/roomscheduleblockview.html" class="tsd-kind-icon">Room<wbr>Schedule<wbr>Block<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/roomscheduleinstructors.html" class="tsd-kind-icon">Room<wbr>Schedule<wbr>Instructors</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/roomscheduleresponsedto.html" class="tsd-kind-icon">Room<wbr>Schedule<wbr>ResponseDTO</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/scheduleblockview.html" class="tsd-kind-icon">Schedule<wbr>Block<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/scheduleentry.html" class="tsd-kind-icon">Schedule<wbr>Entry</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/scheduleentryview.html" class="tsd-kind-icon">Schedule<wbr>Entry<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/scheduleviewresponsedto.html" class="tsd-kind-icon">Schedule<wbr>View<wbr>ResponseDTO</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-not-exported">
+						<a href="classes/semester.html" class="tsd-kind-icon">Semester</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/semestermodule.html" class="tsd-kind-icon">Semester<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/semesterpopulationservice.html" class="tsd-kind-icon">Semester<wbr>Population<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/semesterservice.html" class="tsd-kind-icon">Semester<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/semesterview.html" class="tsd-kind-icon">Semester<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-not-exported">
+						<a href="classes/testingstrategy.html" class="tsd-kind-icon">Testing<wbr>Strategy</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/updatecoursedto.html" class="tsd-kind-icon">Update<wbr>CourseDTO</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/updatefacultydto.html" class="tsd-kind-icon">Update<wbr>FacultyDTO</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/updatenonclassparentdto.html" class="tsd-kind-icon">Update<wbr>Non<wbr>Class<wbr>ParentDTO</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/updateroom.html" class="tsd-kind-icon">Update<wbr>Room</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/updateviewdto.html" class="tsd-kind-icon">Update<wbr>View<wbr>Dto</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/user.html" class="tsd-kind-icon">User</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/usercontroller.html" class="tsd-kind-icon">User<wbr>Controller</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/userresponse.html" class="tsd-kind-icon">User<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/validationexception.html" class="tsd-kind-icon">Validation<wbr>Exception</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/view.html" class="tsd-kind-icon">View</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/viewresponse.html" class="tsd-kind-icon">View<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/absencedata.html" class="tsd-kind-icon">Absence<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/absencemodalprops.html" class="tsd-kind-icon">Absence<wbr>Modal<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/areadata.html" class="tsd-kind-icon">Area<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/authorizedpermissions.html" class="tsd-kind-icon">Authorized<wbr>Permissions</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/badrequestinfo.html" class="tsd-kind-icon">Bad<wbr>Request<wbr>Info</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/badrequestmessageinfo.html" class="tsd-kind-icon">Bad<wbr>Request<wbr>Message<wbr>Info</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/booking.html" class="tsd-kind-icon">Booking</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/buildingdata.html" class="tsd-kind-icon">Building<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/campusdata.html" class="tsd-kind-icon">Campus<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/campusiconprops.html" class="tsd-kind-icon">Campus<wbr>Icon<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/coursedata.html" class="tsd-kind-icon">Course<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/courseinstancelistcolumn.html" class="tsd-kind-icon">Course<wbr>Instance<wbr>List<wbr>Column</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/courseinstanceresponsemeeting.html" class="tsd-kind-icon">Course<wbr>Instance<wbr>Response<wbr>Meeting</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/courseinstancetablebodyprops.html" class="tsd-kind-icon">Course<wbr>Instance<wbr>Table<wbr>Body<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/courseinstancetableprops.html" class="tsd-kind-icon">Course<wbr>Instance<wbr>Table<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/courselistingbuttonprops.html" class="tsd-kind-icon">Course<wbr>Listing<wbr>Button<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/coursemodalprops.html" class="tsd-kind-icon">Course<wbr>Modal<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/createroommodalprops.html" class="tsd-kind-icon">Create<wbr>Room<wbr>Modal<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/customrenderoptions.html" class="tsd-kind-icon">Custom<wbr>Render<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/dayblockprops.html" class="tsd-kind-icon">Day<wbr>Block<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/editroommodaldata.html" class="tsd-kind-icon">Edit<wbr>Room<wbr>Modal<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/editroommodalprops.html" class="tsd-kind-icon">Edit<wbr>Room<wbr>Modal<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/endpoint.html" class="tsd-kind-icon">Endpoint</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/enrollmentmodalprops.html" class="tsd-kind-icon">Enrollment<wbr>Modal<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/errorinfo.html" class="tsd-kind-icon">Error<wbr>Info</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/facultydata.html" class="tsd-kind-icon">Faculty<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/facultymodalprops.html" class="tsd-kind-icon">Faculty<wbr>Modal<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/facultyscheduleresponse.html" class="tsd-kind-icon">Faculty<wbr>Schedule<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/facultyscheduletableprops.html" class="tsd-kind-icon">Faculty<wbr>Schedule<wbr>Table<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/fieldcontentprops.html" class="tsd-kind-icon">Field<wbr>Content<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/formerrors.html" class="tsd-kind-icon">Form<wbr>Errors</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/harvardkeyresponse.html" class="tsd-kind-icon">Harvard<wbr>Key<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/hourheadprops.html" class="tsd-kind-icon">Hour<wbr>Head<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/instructormodalprops.html" class="tsd-kind-icon">Instructor<wbr>Modal<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/meetingdata.html" class="tsd-kind-icon">Meeting<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/meetingmodalprops.html" class="tsd-kind-icon">Meeting<wbr>Modal<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/meetingtimeslistprops.html" class="tsd-kind-icon">Meeting<wbr>Times<wbr>List<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/messageprops.html" class="tsd-kind-icon">Message<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/messagereduceraction.html" class="tsd-kind-icon">Message<wbr>Reducer<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/messagereducerstate.html" class="tsd-kind-icon">Message<wbr>Reducer<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/messageableprops.html" class="tsd-kind-icon">Messageable<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/mockdboptions.html" class="tsd-kind-icon">MockDBOptions</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/modaldata.html" class="tsd-kind-icon">Modal<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/modalfieldscolumn.html" class="tsd-kind-icon">Modal<wbr>Fields<wbr>Column</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/nonclassmeetingdata.html" class="tsd-kind-icon">Non<wbr>Class<wbr>Meeting<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/nonclassmeetingstableprops.html" class="tsd-kind-icon">Non<wbr>Class<wbr>Meetings<wbr>Table<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/notesmodalprops.html" class="tsd-kind-icon">Notes<wbr>Modal<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/offeredmodalprops.html" class="tsd-kind-icon">Offered<wbr>Modal<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/prefixstate.html" class="tsd-kind-icon">Prefix<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/renderwithmessagingoptions.html" class="tsd-kind-icon">Render<wbr>With<wbr>Messaging<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/reportdownloadmodalprops.html" class="tsd-kind-icon">Report<wbr>Download<wbr>Modal<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/reportrange.html" class="tsd-kind-icon">Report<wbr>Range</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/roomdata.html" class="tsd-kind-icon">Room<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/roomqueryresult.html" class="tsd-kind-icon">Room<wbr>Query<wbr>Result</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/roomselectionprops.html" class="tsd-kind-icon">Room<wbr>Selection<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/roomselectiontableprops.html" class="tsd-kind-icon">Room<wbr>Selection<wbr>Table<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/scheduleviewprops.html" class="tsd-kind-icon">Schedule<wbr>View<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/semesterdata.html" class="tsd-kind-icon">Semester<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/semesterinfo.html" class="tsd-kind-icon">Semester<wbr>Info</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/semesterselection.html" class="tsd-kind-icon">Semester<wbr>Selection</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/semestertableprops.html" class="tsd-kind-icon">Semester<wbr>Table<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/servererrorinfo.html" class="tsd-kind-icon">Server<wbr>Error<wbr>Info</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/sessionblockprops.html" class="tsd-kind-icon">Session<wbr>Block<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/sessionblockwrapperprops.html" class="tsd-kind-icon">Session<wbr>Block<wbr>Wrapper<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/styledmeetingrowprops.html" class="tsd-kind-icon">Styled<wbr>Meeting<wbr>Row<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/timeruleprops.html" class="tsd-kind-icon">Time<wbr>Rule<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/viewmodalprops.html" class="tsd-kind-icon">View<wbr>Modal<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/weekblockprops.html" class="tsd-kind-icon">Week<wbr>Block<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/winstoninfo.html" class="tsd-kind-icon">Winston<wbr>Info</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#campusoptions" class="tsd-kind-icon">Campus<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#courseinstancemodaldata" class="tsd-kind-icon">Course<wbr>Instance<wbr>Modal<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#courselisting" class="tsd-kind-icon">Course<wbr>Listing</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#dayblock" class="tsd-kind-icon">Day<wbr>Block</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#dayblockbodyprops" class="tsd-kind-icon">Day<wbr>Block<wbr>Body<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#dayblockheadingprops" class="tsd-kind-icon">Day<wbr>Block<wbr>Heading<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#dayblockwrapperprops" class="tsd-kind-icon">Day<wbr>Block<wbr>Wrapper<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#degreeprogramevent" class="tsd-kind-icon">Degree<wbr>Program<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#dispatchmessage" class="tsd-kind-icon">Dispatch<wbr>Message</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#enrollmentfield" class="tsd-kind-icon">Enrollment<wbr>Field</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#facultyfilterstate" class="tsd-kind-icon">Faculty<wbr>Filter<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#getterfunction" class="tsd-kind-icon">Getter<wbr>Function</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#inspectable" class="tsd-kind-icon">Inspectable</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="globals.html#loggable" class="tsd-kind-icon">Loggable</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#metadataupdater" class="tsd-kind-icon">Metadata<wbr>Updater</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#nonclassmeetingsapiresponse" class="tsd-kind-icon">Non<wbr>Class<wbr>Meetings<wbr>Api<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#openmodalcallback" class="tsd-kind-icon">Open<wbr>Modal<wbr>Callback</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#reportrangeupdate" class="tsd-kind-icon">Report<wbr>Range<wbr>Update</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#semesterfilterstate" class="tsd-kind-icon">Semester<wbr>Filter<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#sessionblock" class="tsd-kind-icon">Session<wbr>Block</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#sessionblockbodyprops" class="tsd-kind-icon">Session<wbr>Block<wbr>Body<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#sessionblockbodywrapperprops" class="tsd-kind-icon">Session<wbr>Block<wbr>Body<wbr>Wrapper<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#sessionblockheadingprops" class="tsd-kind-icon">Session<wbr>Block<wbr>Heading<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#termkey" class="tsd-kind-icon">Term<wbr>Key</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#testdata" class="tsd-kind-icon">Test<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#weekblockwrapperprops" class="tsd-kind-icon">Week<wbr>Block<wbr>Wrapper<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#writable" class="tsd-kind-icon">Writable</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#formattablemeeting" class="tsd-kind-icon">formattable<wbr>Meeting</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#client_url" class="tsd-kind-icon">CLIENT_<wbr>URL</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#celllayout" class="tsd-kind-icon">Cell<wbr>Layout</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#courselisting" class="tsd-kind-icon">Course<wbr>Listing</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#courselistingbutton" class="tsd-kind-icon">Course<wbr>Listing<wbr>Button</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#dayblockbody" class="tsd-kind-icon">Day<wbr>Block<wbr>Body</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#dayblockheading" class="tsd-kind-icon">Day<wbr>Block<wbr>Heading</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#dayblockwrapper" class="tsd-kind-icon">Day<wbr>Block<wbr>Wrapper</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#first_hour" class="tsd-kind-icon">FIRST_<wbr>HOUR</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#globalmessagewrapper" class="tsd-kind-icon">Global<wbr>Message<wbr>Wrapper</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#https_on" class="tsd-kind-icon">HTTPS_<wbr>ON</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#https_private_key" class="tsd-kind-icon">HTTPS_<wbr>PRIVATE_<wbr>KEY</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#https_public_cert" class="tsd-kind-icon">HTTPS_<wbr>PUBLIC_<wbr>CERT</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#huid" class="tsd-kind-icon">HUID</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#hourhead" class="tsd-kind-icon">Hour<wbr>Head</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#instructionaltextbox" class="tsd-kind-icon">Instructional<wbr>Text<wbr>Box</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#instructorlistitem" class="tsd-kind-icon">Instructor<wbr>List<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#instructormodalbody" class="tsd-kind-icon">Instructor<wbr>Modal<wbr>Body</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#last_hour" class="tsd-kind-icon">LAST_<wbr>HOUR</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#mandatory_columns" class="tsd-kind-icon">MANDATORY_<wbr>COLUMNS</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#minute_resolution" class="tsd-kind-icon">MINUTE_<wbr>RESOLUTION</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#multiline_separator" class="tsd-kind-icon">MULTILINE_<wbr>SEPARATOR</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#meetinggrid" class="tsd-kind-icon">Meeting<wbr>Grid</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#meetinggridsection" class="tsd-kind-icon">Meeting<wbr>Grid<wbr>Section</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#meetingmodalbodygrid" class="tsd-kind-icon">Meeting<wbr>Modal<wbr>Body<wbr>Grid</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#meetingscheduler" class="tsd-kind-icon">Meeting<wbr>Scheduler</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#meetingschedulerbody" class="tsd-kind-icon">Meeting<wbr>Scheduler<wbr>Body</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#meetingschedulerheader" class="tsd-kind-icon">Meeting<wbr>Scheduler<wbr>Header</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#memoizedcourseinstancetablebody" class="tsd-kind-icon">Memoized<wbr>Course<wbr>Instance<wbr>Table<wbr>Body</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#messagecontext" class="tsd-kind-icon">Message<wbr>Context</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#metadatacontext" class="tsd-kind-icon">Metadata<wbr>Context</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#node_env" class="tsd-kind-icon">NODE_<wbr>ENV</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#num_semesters" class="tsd-kind-icon">NUM_<wbr>SEMESTERS</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#num_years" class="tsd-kind-icon">NUM_<wbr>YEARS</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#notessection" class="tsd-kind-icon">Notes<wbr>Section</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#public_client_url" class="tsd-kind-icon">PUBLIC_<wbr>CLIENT_<wbr>URL</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#prefixbutton" class="tsd-kind-icon">Prefix<wbr>Button</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#roomavailability" class="tsd-kind-icon">Room<wbr>Availability</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#roomavailabilitybody" class="tsd-kind-icon">Room<wbr>Availability<wbr>Body</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#roomavailabilityheader" class="tsd-kind-icon">Room<wbr>Availability<wbr>Header</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#roomselectionprompt" class="tsd-kind-icon">Room<wbr>Selection<wbr>Prompt</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#roomselectorwrapper" class="tsd-kind-icon">Room<wbr>Selector<wbr>Wrapper</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#server_port" class="tsd-kind-icon">SERVER_<wbr>PORT</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#server_url" class="tsd-kind-icon">SERVER_<wbr>URL</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#sessionblockbody" class="tsd-kind-icon">Session<wbr>Block<wbr>Body</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#sessionblockbodywrapper" class="tsd-kind-icon">Session<wbr>Block<wbr>Body<wbr>Wrapper</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#sessionblockheading" class="tsd-kind-icon">Session<wbr>Block<wbr>Heading</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#sessionblockwrapper" class="tsd-kind-icon">Session<wbr>Block<wbr>Wrapper</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#styledbuttonlayout" class="tsd-kind-icon">Styled<wbr>Button<wbr>Layout</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#styledcampusicon" class="tsd-kind-icon">Styled<wbr>Campus<wbr>Icon</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#styledday" class="tsd-kind-icon">Styled<wbr>Day</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#styleddeletebutton" class="tsd-kind-icon">Styled<wbr>Delete<wbr>Button</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#stylededitbutton" class="tsd-kind-icon">Styled<wbr>Edit<wbr>Button</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#styledend" class="tsd-kind-icon">Styled<wbr>End</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#stylederror" class="tsd-kind-icon">Styled<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#styledfacultynote" class="tsd-kind-icon">Styled<wbr>Faculty<wbr>Note</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#styledmeetinginfo" class="tsd-kind-icon">Styled<wbr>Meeting<wbr>Info</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#styledmeetingrow" class="tsd-kind-icon">Styled<wbr>Meeting<wbr>Row</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#styledroom" class="tsd-kind-icon">Styled<wbr>Room</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#styledshowclosebuttons" class="tsd-kind-icon">Styled<wbr>Show<wbr>Close<wbr>Buttons</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#styledstart" class="tsd-kind-icon">Styled<wbr>Start</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#styledtimeslot" class="tsd-kind-icon">Styled<wbr>Timeslot</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#styledverticalspace" class="tsd-kind-icon">Styled<wbr>Vertical<wbr>Space</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#timerule" class="tsd-kind-icon">Time<wbr>Rule</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#usercontext" class="tsd-kind-icon">User<wbr>Context</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#weekblockwrapper" class="tsd-kind-icon">Week<wbr>Block<wbr>Wrapper</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#absences" class="tsd-kind-icon">absences</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#acadyear" class="tsd-kind-icon">acad<wbr>Year</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#adminroomsresponse" class="tsd-kind-icon">admin<wbr>Rooms<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#adminuser" class="tsd-kind-icon">admin<wbr>User</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#appversion" class="tsd-kind-icon">app<wbr>Version</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#appliedmathfacultymember" class="tsd-kind-icon">applied<wbr>Math<wbr>Faculty<wbr>Member</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#areas" class="tsd-kind-icon">areas</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#array" class="tsd-kind-icon">array</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#bioengineeringfacultymember" class="tsd-kind-icon">bioengineering<wbr>Faculty<wbr>Member</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#buildings" class="tsd-kind-icon">buildings</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#campuses" class="tsd-kind-icon">campuses</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#catalogprefixes" class="tsd-kind-icon">catalog<wbr>Prefixes</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#courses" class="tsd-kind-icon">courses</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#cs200course" class="tsd-kind-icon">cs200<wbr>Course</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#cs50course" class="tsd-kind-icon">cs50<wbr>Course</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#currentacademicyear" class="tsd-kind-icon">current<wbr>Academic<wbr>Year</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#days" class="tsd-kind-icon">days</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#defaultview" class="tsd-kind-icon">default<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#email" class="tsd-kind-icon">email</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#emptycourse" class="tsd-kind-icon">empty<wbr>Course</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#endpointtests" class="tsd-kind-icon">endpoint<wbr>Tests</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#enrollmentfields" class="tsd-kind-icon">enrollment<wbr>Fields</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#error" class="tsd-kind-icon">error</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#exec" class="tsd-kind-icon">exec</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#faculty" class="tsd-kind-icon">faculty</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#generalerrormessage" class="tsd-kind-icon">general<wbr>Error<wbr>Message</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#getcoursereport" class="tsd-kind-icon">get<wbr>Course<wbr>Report</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#getfacultyreport" class="tsd-kind-icon">get<wbr>Faculty<wbr>Report</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#int" class="tsd-kind-icon">int</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#meetingtimeslots" class="tsd-kind-icon">meeting<wbr>Time<wbr>Slots</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#modalfields" class="tsd-kind-icon">modal<wbr>Fields</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#module" class="tsd-kind-icon">module</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#nonclasseventmanager" class="tsd-kind-icon">non<wbr>Class<wbr>Event<wbr>Manager</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#nonclassmeetings" class="tsd-kind-icon">non<wbr>Class<wbr>Meetings</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#nulluser" class="tsd-kind-icon">null<wbr>User</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#physicscourse" class="tsd-kind-icon">physics<wbr>Course</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#rawarealist" class="tsd-kind-icon">raw<wbr>Area<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#rawcatalogprefixlist" class="tsd-kind-icon">raw<wbr>Catalog<wbr>Prefix<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#rawsemesterlist" class="tsd-kind-icon">raw<wbr>Semester<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#rawyearlist" class="tsd-kind-icon">raw<wbr>Year<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#readonlyuser" class="tsd-kind-icon">read<wbr>Only<wbr>User</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#refdate" class="tsd-kind-icon">ref<wbr>Date</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#regularuser" class="tsd-kind-icon">regular<wbr>User</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#roomselectionpromptmessage" class="tsd-kind-icon">room<wbr>Selection<wbr>Prompt<wbr>Message</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#rooms" class="tsd-kind-icon">rooms</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#rowheight" class="tsd-kind-icon">row<wbr>Height</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#safestring" class="tsd-kind-icon">safe<wbr>String</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#semesters" class="tsd-kind-icon">semesters</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#string" class="tsd-kind-icon">string</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#tablefields" class="tsd-kind-icon">table<wbr>Fields</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#testcoursescheduledata" class="tsd-kind-icon">test<wbr>Course<wbr>Schedule<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#testfouryearplan" class="tsd-kind-icon">test<wbr>Four<wbr>Year<wbr>Plan</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#testfouryearplanacademicyears" class="tsd-kind-icon">test<wbr>Four<wbr>Year<wbr>Plan<wbr>Academic<wbr>Years</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#testmetadata" class="tsd-kind-icon">test<wbr>Metadata</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#testmultiyearplanstartyear" class="tsd-kind-icon">test<wbr>Multi<wbr>Year<wbr>Plan<wbr>Start<wbr>Year</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#testroomscheduledata" class="tsd-kind-icon">test<wbr>Room<wbr>Schedule<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#testthreeyearplan" class="tsd-kind-icon">test<wbr>Three<wbr>Year<wbr>Plan</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#testthreeyearplanacademicyears" class="tsd-kind-icon">test<wbr>Three<wbr>Year<wbr>Plan<wbr>Academic<wbr>Years</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#testusers" class="tsd-kind-icon">test<wbr>Users</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#uuid" class="tsd-kind-icon">uuid</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#year" class="tsd-kind-icon">year</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#app" class="tsd-kind-icon">App</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#appheader" class="tsd-kind-icon">App<wbr>Header</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#approuter" class="tsd-kind-icon">App<wbr>Router</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#campusicon" class="tsd-kind-icon">Campus<wbr>Icon</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#courseadmin" class="tsd-kind-icon">Course<wbr>Admin</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#courseinstancetable" class="tsd-kind-icon">Course<wbr>Instance<wbr>Table</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#courseinstancetablebody" class="tsd-kind-icon">Course<wbr>Instance<wbr>Table<wbr>Body</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#coursemodal" class="tsd-kind-icon">Course<wbr>Modal</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#coursespage" class="tsd-kind-icon">Courses<wbr>Page</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createroommodal" class="tsd-kind-icon">Create<wbr>Room<wbr>Modal</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#dayblock" class="tsd-kind-icon">Day<wbr>Block</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#doesnotmatch" class="tsd-kind-icon">Does<wbr>Not<wbr>Match</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#editroommodal" class="tsd-kind-icon">Edit<wbr>Room<wbr>Modal</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#enrollmentmodal" class="tsd-kind-icon">Enrollment<wbr>Modal</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#facultyabsencemodal" class="tsd-kind-icon">Faculty<wbr>Absence<wbr>Modal</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#facultyadmin" class="tsd-kind-icon">Faculty<wbr>Admin</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#facultymodal" class="tsd-kind-icon">Faculty<wbr>Modal</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#facultyschedule" class="tsd-kind-icon">Faculty<wbr>Schedule</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#facultyscheduletable" class="tsd-kind-icon">Faculty<wbr>Schedule<wbr>Table</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#forbiddenpage" class="tsd-kind-icon">Forbidden<wbr>Page</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#instructormodal" class="tsd-kind-icon">Instructor<wbr>Modal</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#ismutuallyexclusivewith" class="tsd-kind-icon">Is<wbr>Mutually<wbr>Exclusive<wbr>With</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#isoccurringafter" class="tsd-kind-icon">Is<wbr>Occurring<wbr>After</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#isoccurringbefore" class="tsd-kind-icon">Is<wbr>Occurring<wbr>Before</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#meetingmodal" class="tsd-kind-icon">Meeting<wbr>Modal</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#meetingtimeslist" class="tsd-kind-icon">Meeting<wbr>Times<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#messagable" class="tsd-kind-icon">Messagable</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#message" class="tsd-kind-icon">Message</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#multiyearplan" class="tsd-kind-icon">Multi<wbr>Year<wbr>Plan</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#nomatch" class="tsd-kind-icon">No<wbr>Match</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#nonclassmeetingspage" class="tsd-kind-icon">Non<wbr>Class<wbr>Meetings<wbr>Page</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#nonclassmeetingstable" class="tsd-kind-icon">Non<wbr>Class<wbr>Meetings<wbr>Table</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#notesmodal" class="tsd-kind-icon">Notes<wbr>Modal</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#offeredmodal" class="tsd-kind-icon">Offered<wbr>Modal</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#reportdownloadmodal" class="tsd-kind-icon">Report<wbr>Download<wbr>Modal</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#roomadmin" class="tsd-kind-icon">Room<wbr>Admin</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#roomschedule" class="tsd-kind-icon">Room<wbr>Schedule</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#roomselection" class="tsd-kind-icon">Room<wbr>Selection</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#roomselectiontable" class="tsd-kind-icon">Room<wbr>Selection<wbr>Table</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#schedulepage" class="tsd-kind-icon">Schedule<wbr>Page</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#scheduleview" class="tsd-kind-icon">Schedule<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#semestertable" class="tsd-kind-icon">Semester<wbr>Table</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#sessionblock" class="tsd-kind-icon">Session<wbr>Block</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#unauthorizedpage" class="tsd-kind-icon">Unauthorized<wbr>Page</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#viewmodal" class="tsd-kind-icon">View<wbr>Modal</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#weekblock" class="tsd-kind-icon">Week<wbr>Block</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#absenceenumtotitlecase" class="tsd-kind-icon">absence<wbr>Enum<wbr>ToTitle<wbr>Case</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#absencetitlecasetoenum" class="tsd-kind-icon">absence<wbr>Title<wbr>Case<wbr>ToEnum</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#absencetovariant" class="tsd-kind-icon">absence<wbr>ToVariant</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#alldatavalidyears" class="tsd-kind-icon">all<wbr>Data<wbr>Valid<wbr>Years</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#bootstrap" class="tsd-kind-icon">bootstrap</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#calculatesemesters" class="tsd-kind-icon">calculate<wbr>Semesters</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#camelcasetotitlecase" class="tsd-kind-icon">camel<wbr>Case<wbr>ToTitle<wbr>Case</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#checkusergroup" class="tsd-kind-icon">check<wbr>User<wbr>Group</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#computeeditabsencebuttonid" class="tsd-kind-icon">compute<wbr>Edit<wbr>Absence<wbr>Button<wbr>Id</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#computeeditcoursebuttonid" class="tsd-kind-icon">compute<wbr>Edit<wbr>Course<wbr>Button<wbr>Id</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#computeeditfacultybuttonid" class="tsd-kind-icon">compute<wbr>Edit<wbr>Faculty<wbr>Button<wbr>Id</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#createcourse" class="tsd-kind-icon">create<wbr>Course</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createfaculty" class="tsd-kind-icon">create<wbr>Faculty</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createroom" class="tsd-kind-icon">create<wbr>Room</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#customrender" class="tsd-kind-icon">custom<wbr>Render</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#dayenumtostring" class="tsd-kind-icon">day<wbr>Enum<wbr>ToString</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#displayavailability" class="tsd-kind-icon">display<wbr>Availability</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#downloadattachment" class="tsd-kind-icon">download<wbr>Attachment</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#editcourse" class="tsd-kind-icon">edit<wbr>Course</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#editfaculty" class="tsd-kind-icon">edit<wbr>Faculty</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#editroom" class="tsd-kind-icon">edit<wbr>Room</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#facultytypeenumtotitlecase" class="tsd-kind-icon">faculty<wbr>Type<wbr>Enum<wbr>ToTitle<wbr>Case</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#filtercoursesbyinstructors" class="tsd-kind-icon">filter<wbr>Courses<wbr>ByInstructors</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#filterplansbyinstructors" class="tsd-kind-icon">filter<wbr>Plans<wbr>ByInstructors</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#formatenrollment" class="tsd-kind-icon">format<wbr>Enrollment</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#formatfacultynotes" class="tsd-kind-icon">format<wbr>Faculty<wbr>Notes</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#formatinstructors" class="tsd-kind-icon">format<wbr>Instructors</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#formatmeetingforreport" class="tsd-kind-icon">format<wbr>Meeting<wbr>For<wbr>Report</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#formatmeetings" class="tsd-kind-icon">format<wbr>Meetings</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#formatoffered" class="tsd-kind-icon">format<wbr>Offered</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-not-exported">
+						<a href="globals.html#generatedropdown" class="tsd-kind-icon">generate<wbr>Dropdown</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#generategrid" class="tsd-kind-icon">generate<wbr>Grid</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-not-exported">
+						<a href="globals.html#generatetextfield" class="tsd-kind-icon">generate<wbr>Text<wbr>Field</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#getacademicyearoptions" class="tsd-kind-icon">get<wbr>Academic<wbr>Year<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getadminrooms" class="tsd-kind-icon">get<wbr>Admin<wbr>Rooms</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getallcourses" class="tsd-kind-icon">get<wbr>All<wbr>Courses</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getallfacultymembers" class="tsd-kind-icon">get<wbr>All<wbr>Faculty<wbr>Members</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getallinstructors" class="tsd-kind-icon">get<wbr>All<wbr>Instructors</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getareacolor" class="tsd-kind-icon">get<wbr>Area<wbr>Color</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getcatprefixcolor" class="tsd-kind-icon">get<wbr>Cat<wbr>Prefix<wbr>Color</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getcourseinstancesforyear" class="tsd-kind-icon">get<wbr>Course<wbr>Instances<wbr>For<wbr>Year</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getcoursescheduleforsemester" class="tsd-kind-icon">get<wbr>Course<wbr>Schedule<wbr>For<wbr>Semester</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getcurrentuser" class="tsd-kind-icon">get<wbr>Current<wbr>User</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getfacultyschedulesforyear" class="tsd-kind-icon">get<wbr>Faculty<wbr>Schedules<wbr>For<wbr>Year</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getfutureterms" class="tsd-kind-icon">get<wbr>Future<wbr>Terms</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#gethostname" class="tsd-kind-icon">get<wbr>Hostname</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getinstanceidentifier" class="tsd-kind-icon">get<wbr>Instance<wbr>Identifier</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getmetadata" class="tsd-kind-icon">get<wbr>Metadata</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getmultiyearplan" class="tsd-kind-icon">get<wbr>Multi<wbr>Year<wbr>Plan</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getnonclassmeetings" class="tsd-kind-icon">get<wbr>Non<wbr>Class<wbr>Meetings</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getreport" class="tsd-kind-icon">get<wbr>Report</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getroomavailability" class="tsd-kind-icon">get<wbr>Room<wbr>Availability</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getroomscheduleforsemester" class="tsd-kind-icon">get<wbr>Room<wbr>Schedule<wbr>For<wbr>Semester</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getrooms" class="tsd-kind-icon">get<wbr>Rooms</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getsemestersfromyear" class="tsd-kind-icon">get<wbr>Semesters<wbr>From<wbr>Year</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#instructordisplaynametofirstlast" class="tsd-kind-icon">instructor<wbr>Display<wbr>Name<wbr>ToFirst<wbr>Last</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#isseasenumtostring" class="tsd-kind-icon">isSEASEnum<wbr>ToString</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#listfilter" class="tsd-kind-icon">list<wbr>Filter</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#messagereducer" class="tsd-kind-icon">message<wbr>Reducer</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#messagetypetovariant" class="tsd-kind-icon">message<wbr>Type<wbr>ToVariant</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#mockadapter" class="tsd-kind-icon">mock<wbr>Adapter</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#offeredenumtostring" class="tsd-kind-icon">offered<wbr>Enum<wbr>ToString</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#renderwithmessaging" class="tsd-kind-icon">render<wbr>With<wbr>Messaging</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#requestmethod" class="tsd-kind-icon">request<wbr>Method</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#resolveacademicyear" class="tsd-kind-icon">resolve<wbr>Academic<wbr>Year</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#retrievevalue" class="tsd-kind-icon">retrieve<wbr>Value</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#sortresults" class="tsd-kind-icon">sort<wbr>Results</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#sqlafter" class="tsd-kind-icon">sql<wbr>After</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#sqlbefore" class="tsd-kind-icon">sql<wbr>Before</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#termenumtotitlecase" class="tsd-kind-icon">term<wbr>Enum<wbr>ToTitle<wbr>Case</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#termpatternenumtostring" class="tsd-kind-icon">term<wbr>Pattern<wbr>Enum<wbr>ToString</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#totitlecase" class="tsd-kind-icon">to<wbr>Title<wbr>Case</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#trimstring" class="tsd-kind-icon">trim<wbr>String</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#updatecourseinstance" class="tsd-kind-icon">update<wbr>Course<wbr>Instance</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#updatefacultyabsence" class="tsd-kind-icon">update<wbr>Faculty<wbr>Absence</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#updateinstructorlist" class="tsd-kind-icon">update<wbr>Instructor<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#updatemeetinglist" class="tsd-kind-icon">update<wbr>Meeting<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usegroupguard" class="tsd-kind-icon">use<wbr>Group<wbr>Guard</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usehasstorage" class="tsd-kind-icon">use<wbr>Has<wbr>Storage</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#usestoredstate" class="tsd-kind-icon">use<wbr>Stored<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#validhuid" class="tsd-kind-icon">validHUID</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#area_colors" class="tsd-kind-icon">AREA_<wbr>COLORS</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#academicyearutils" class="tsd-kind-icon">Academic<wbr>Year<wbr>Utils</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#catalog_prefix_colors" class="tsd-kind-icon">CATALOG_<wbr>PREFIX_<wbr>COLORS</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#courseapi" class="tsd-kind-icon">CourseAPI</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#facultyapi" class="tsd-kind-icon">FacultyAPI</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#locationapi" class="tsd-kind-icon">LocationAPI</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#meetingapi" class="tsd-kind-icon">MeetingAPI</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#metadataapi" class="tsd-kind-icon">MetadataAPI</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#multiyearplanapi" class="tsd-kind-icon">Multi<wbr>Year<wbr>PlanAPI</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#nonclassmeetingapi" class="tsd-kind-icon">Non<wbr>Class<wbr>Meeting<wbr>Api</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#userapi" class="tsd-kind-icon">UserAPI</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#windowutils" class="tsd-kind-icon">Window<wbr>Utils</a>
+					</li>
+					<li class=" tsd-kind-object-literal tsd-is-not-exported">
+						<a href="globals.html#absencetitlecasetoenummap" class="tsd-kind-icon">absence<wbr>Title<wbr>Case<wbr>ToEnum<wbr>Map</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#ac209acourseinstance" class="tsd-kind-icon">ac209a<wbr>Course<wbr>Instance</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#ac209acourseinstancewithoutrooms" class="tsd-kind-icon">ac209a<wbr>Course<wbr>Instance<wbr>Without<wbr>Rooms</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#am105courseinstance" class="tsd-kind-icon">am105<wbr>Course<wbr>Instance</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#anotherphysicsfacultymemberresponse" class="tsd-kind-icon">another<wbr>Physics<wbr>Faculty<wbr>Member<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#appliedmath" class="tsd-kind-icon">applied<wbr>Math</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#appliedmathfacultymemberrequest" class="tsd-kind-icon">applied<wbr>Math<wbr>Faculty<wbr>Member<wbr>Request</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#appliedmathfacultymemberresponse" class="tsd-kind-icon">applied<wbr>Math<wbr>Faculty<wbr>Member<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#appliedmathfacultyscheduleresponse" class="tsd-kind-icon">applied<wbr>Math<wbr>Faculty<wbr>Schedule<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#appliedmathematicsreadinggroup" class="tsd-kind-icon">applied<wbr>Mathematics<wbr>Reading<wbr>Group</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#bauerroomresponse" class="tsd-kind-icon">bauer<wbr>Room<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#bioengineeringfacultymemberresponse" class="tsd-kind-icon">bioengineering<wbr>Faculty<wbr>Member<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#bookedfasroom" class="tsd-kind-icon">bookedFASRoom</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#bookedroom" class="tsd-kind-icon">booked<wbr>Room</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#computationalmodelingoffluidsreadinggroup" class="tsd-kind-icon">computational<wbr>Modelingof<wbr>Fluids<wbr>Reading<wbr>Group</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#computersciencecoursequeryresult" class="tsd-kind-icon">computer<wbr>Science<wbr>Course<wbr>Query<wbr>Result</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#computersciencecourseresponse" class="tsd-kind-icon">computer<wbr>Science<wbr>Course<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#computersciencefacultyscheduleresponse" class="tsd-kind-icon">computer<wbr>Science<wbr>Faculty<wbr>Schedule<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#createcoursedtoexample" class="tsd-kind-icon">create<wbr>Course<wbr>Dto<wbr>Example</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#createnonclassparent" class="tsd-kind-icon">create<wbr>Non<wbr>Class<wbr>Parent</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#createsec555room" class="tsd-kind-icon">createSEC555<wbr>Room</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#cs50courseinstance" class="tsd-kind-icon">cs50<wbr>Course<wbr>Instance</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#cs50fallinstanceupdate" class="tsd-kind-icon">cs50<wbr>Fall<wbr>Instance<wbr>Update</a>
+					</li>
+					<li class=" tsd-kind-object-literal tsd-is-not-exported">
+						<a href="globals.html#currentmetadata" class="tsd-kind-icon">current<wbr>Metadata</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#datasciencereadinggroup" class="tsd-kind-icon">data<wbr>Science<wbr>Reading<wbr>Group</a>
+					</li>
+					<li class=" tsd-kind-object-literal tsd-is-not-exported">
+						<a href="globals.html#defaultoptions" class="tsd-kind-icon">default<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-object-literal tsd-is-not-exported">
+						<a href="globals.html#displaynames" class="tsd-kind-icon">display<wbr>Names</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#electricalengineeringfacultyscheduleresponse" class="tsd-kind-icon">electrical<wbr>Engineering<wbr>Faculty<wbr>Schedule<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-object-literal tsd-is-not-exported">
+						<a href="globals.html#emptyfilters" class="tsd-kind-icon">empty<wbr>Filters</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#es095courseinstance" class="tsd-kind-icon">es095<wbr>Course<wbr>Instance</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#es247retiredcourseinstance" class="tsd-kind-icon">es247<wbr>Retired<wbr>Course<wbr>Instance</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#facultyabsencerequest" class="tsd-kind-icon">faculty<wbr>Absence<wbr>Request</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#facultyabsenceresponse" class="tsd-kind-icon">faculty<wbr>Absence<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-object-literal tsd-is-not-exported">
+						<a href="globals.html#facultytypeenumtotitlecasemap" class="tsd-kind-icon">faculty<wbr>Type<wbr>Enum<wbr>ToTitle<wbr>Case<wbr>Map</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#fall" class="tsd-kind-icon">fall</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#freefasroom" class="tsd-kind-icon">freeFASRoom</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#freeroom" class="tsd-kind-icon">free<wbr>Room</a>
+					</li>
+					<li class=" tsd-kind-object-literal tsd-is-not-exported">
+						<a href="globals.html#initialmessagestate" class="tsd-kind-icon">initial<wbr>Message<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#metadata" class="tsd-kind-icon">metadata</a>
+					</li>
+					<li class=" tsd-kind-object-literal tsd-is-not-exported">
+						<a href="globals.html#mockarearepository" class="tsd-kind-icon">mock<wbr>Area<wbr>Repository</a>
+					</li>
+					<li class=" tsd-kind-object-literal tsd-is-not-exported">
+						<a href="globals.html#mocknonclasseventservice" class="tsd-kind-icon">mock<wbr>Non<wbr>Class<wbr>Event<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-object-literal tsd-is-not-exported">
+						<a href="globals.html#mockparentrepository" class="tsd-kind-icon">mock<wbr>Parent<wbr>Repository</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#mondaymeetingreponsewithroom" class="tsd-kind-icon">monday<wbr>Meeting<wbr>Reponse<wbr>With<wbr>Room</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#mondaymeetingwithroom" class="tsd-kind-icon">monday<wbr>Meeting<wbr>With<wbr>Room</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#mondaymeetingwithoutroom" class="tsd-kind-icon">monday<wbr>Meeting<wbr>Without<wbr>Room</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#multibookedroom" class="tsd-kind-icon">multi<wbr>Booked<wbr>Room</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#newappliedphysicsfacultymember" class="tsd-kind-icon">new<wbr>Applied<wbr>Physics<wbr>Faculty<wbr>Member</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#newareacourseresponse" class="tsd-kind-icon">new<wbr>Area<wbr>Course<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#newareafacultymemberrequest" class="tsd-kind-icon">new<wbr>Area<wbr>Faculty<wbr>Member<wbr>Request</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#newareafacultymemberresponse" class="tsd-kind-icon">new<wbr>Area<wbr>Faculty<wbr>Member<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#newareafacultyscheduleresponse" class="tsd-kind-icon">new<wbr>Area<wbr>Faculty<wbr>Schedule<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#nolongeractiveabsence" class="tsd-kind-icon">no<wbr>Longer<wbr>Active<wbr>Absence</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#nonclassparent" class="tsd-kind-icon">non<wbr>Class<wbr>Parent</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#notactiveacsfacultyscheduleresponse" class="tsd-kind-icon">not<wbr>ActiveACSFaculty<wbr>Schedule<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#oxfordroomresponse" class="tsd-kind-icon">oxford<wbr>Room<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#parentalleaveabsence" class="tsd-kind-icon">parental<wbr>Leave<wbr>Absence</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#partiallyactiveamfacultyscheduleresponse" class="tsd-kind-icon">partially<wbr>ActiveAMFaculty<wbr>Schedule<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#physicscoursequeryresult" class="tsd-kind-icon">physics<wbr>Course<wbr>Query<wbr>Result</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#physicscourseresponse" class="tsd-kind-icon">physics<wbr>Course<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#physicsfacultymemberresponse" class="tsd-kind-icon">physics<wbr>Faculty<wbr>Member<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#presentabsence" class="tsd-kind-icon">present<wbr>Absence</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#researchleaveabsence" class="tsd-kind-icon">research<wbr>Leave<wbr>Absence</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#roomrequest" class="tsd-kind-icon">room<wbr>Request</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#sabbaticalabsence" class="tsd-kind-icon">sabbatical<wbr>Absence</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#sabbaticaleligibleabsence" class="tsd-kind-icon">sabbatical<wbr>Eligible<wbr>Absence</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#sabbaticalineligibleabsence" class="tsd-kind-icon">sabbatical<wbr>Ineligible<wbr>Absence</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#sec555roomresponse" class="tsd-kind-icon">sec555<wbr>Room<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#secroomresponse" class="tsd-kind-icon">sec<wbr>Room<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#spring" class="tsd-kind-icon">spring</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#teachingreliefabsence" class="tsd-kind-icon">teaching<wbr>Relief<wbr>Absence</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#updatecourseexample" class="tsd-kind-icon">update<wbr>Course<wbr>Example</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#updatenonclassparent" class="tsd-kind-icon">update<wbr>Non<wbr>Class<wbr>Parent</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#updatesec555room" class="tsd-kind-icon">updateSEC555<wbr>Room</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#updatesecroomresponse" class="tsd-kind-icon">updateSECRoom<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#wednesdaymeetingreponsewithoutroom" class="tsd-kind-icon">wednesday<wbr>Meeting<wbr>Reponse<wbr>Without<wbr>Room</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#wednesdaymeetingwithroom" class="tsd-kind-icon">wednesday<wbr>Meeting<wbr>With<wbr>Room</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#wednesdaymeetingwithoutroom" class="tsd-kind-icon">wednesday<wbr>Meeting<wbr>Without<wbr>Room</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>
