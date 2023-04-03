@@ -164,7 +164,7 @@ export class CourseInstanceService {
         's.instance',
         MultiYearPlanInstanceView,
         'ci',
-        'c.id = ci."courseId" AND s.id = ci."semesterId"'
+        'ci."courseId" = COALESCE(c."sameAsId", c.id) AND s.id = ci."semesterId"'
       )
       .leftJoinAndMapMany(
         'ci.faculty',

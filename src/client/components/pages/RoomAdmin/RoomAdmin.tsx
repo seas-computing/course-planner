@@ -248,7 +248,7 @@ const RoomAdmin: FunctionComponent = (): ReactElement => {
           : (
             <div className="room-admin-table">
               <Table>
-                <TableHead>
+                <TableHead isSticky>
                   <TableRow isStriped>
                     <TableHeadingCell scope="col">Campus</TableHeadingCell>
                     <TableHeadingCell scope="col">Building</TableHeadingCell>

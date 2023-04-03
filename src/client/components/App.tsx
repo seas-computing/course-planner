@@ -23,11 +23,13 @@ import {
   PageBody,
   LoadSpinner,
   Footer,
+  ExternalLink,
 } from 'mark-one';
 import { getCurrentUser } from 'client/api';
 import { getMetadata } from 'client/api/metadata';
 import { User } from 'common/classes';
 import { MetadataResponse } from 'common/dto/metadata/MetadataResponse.dto';
+import styled from 'styled-components';
 import {
   Message,
   AppRouter,
@@ -76,6 +78,23 @@ const App: FunctionComponent = (): ReactElement => {
    * Tracks whether we're still fetching the user and metadata
    */
   const [isDataFetching, setDataFetching] = useState(true);
+
+  /**
+   * A custom footer component to render Policy links and items
+   */
+  const CustomFooter = styled(Footer)`
+  ul {
+    list-style: none;
+    display: flex;
+    li {
+      padding: 0 0.5rem;
+      border-right: 1px solid black;
+      &:last-of-type {
+        border: 0px;
+      }
+  }
+}
+`;
 
   /**
    * Get the currently authenticated user from the server on launch.
@@ -135,11 +154,20 @@ const App: FunctionComponent = (): ReactElement => {
                     <>
                       <AppHeader />
                       <AppRouter />
-                      <Footer
+                      <CustomFooter
                         justify="center"
                       >
                         {appVersion}
-                      </Footer>
+                        <ul>
+                          <li>
+                            © 2023 President and Fellows of Harvard College
+                          </li>
+                          <li><ExternalLink href="https://seas.harvard.edu/office-diversity-inclusion-and-belonging/about-us" rel="nofollow">Diversity Mission</ExternalLink></li>
+                          <li><ExternalLink href="https://trademark.harvard.edu/pages/trademark-notice" rel="nofollow">Trademark Notice</ExternalLink></li>
+                          <li><ExternalLink href="https://accessibility.huit.harvard.edu/digital-accessibility-policy" rel="nofollow">Accessibility Policy</ExternalLink></li>
+                          <li><ExternalLink href="https://seas.harvard.edu/privacy-policy" rel="nofollow">Privacy Policy</ExternalLink></li>
+                        </ul>
+                      </CustomFooter>
                     </>
                   )}
                 <Message

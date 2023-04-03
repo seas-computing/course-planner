@@ -173,7 +173,7 @@ const FacultyAdmin: FunctionComponent = (): ReactElement => {
       </VerticalSpace>
       <div className="faculty-admin-table">
         <Table>
-          <TableHead>
+          <TableHead isSticky>
             <TableRow isStriped>
               <TableHeadingCell scope="col">Area</TableHeadingCell>
               <TableHeadingCell scope="col">HUID</TableHeadingCell>

@@ -260,7 +260,7 @@ const MultiYearPlan: FunctionComponent = (): ReactElement => {
                 </InstructionalTextBox>
               )}
             <Table>
-              <TableHead>
+              <TableHead isSticky>
                 <TableRow isStriped>
                   <TableHeadingCell scope="col">Catalog Prefix</TableHeadingCell>
                   <TableHeadingCell scope="col">Catalog Number</TableHeadingCell>

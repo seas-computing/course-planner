@@ -19,7 +19,7 @@ import {
 } from 'mark-one';
 import { MessageContext, MetadataContext } from 'client/context';
 import CourseInstanceResponseDTO from 'common/dto/courses/CourseInstanceResponse';
-import { CourseAPI } from 'client/api';
+import { CourseAPI, getCourseReport } from 'client/api';
 import { MESSAGE_TYPE, MESSAGE_ACTION, AppMessage } from 'client/classes';
 import { OFFERED, COURSE_TABLE_COLUMN, MANDATORY_COLUMNS } from 'common/constants';
 import get from 'lodash.get';
@@ -798,6 +798,8 @@ const CoursesPage: FunctionComponent = (): ReactElement => {
       <ReportDownloadModal
         isVisible={reportModalVisible}
         closeModal={closeDownloadModal}
+        headerText="Download Course Report"
+        getReport={getCourseReport}
       />
       <ViewModal
         isVisible={viewModalVisible}

@@ -42,23 +42,23 @@ export const freeRoom: RoomMeetingResponse = {
 };
 
 /**
- * A room response for an FAS room with no meetings booked
+ * A room response for an Non-SEAS room with no meetings booked
  */
 export const freeFASRoom: RoomMeetingResponse = {
   id: '7a1918d1-173c-4628-baac-cd6cf10a9b95',
   name: 'Science Center Auditorium C',
-  campus: 'FAS',
+  campus: 'Non-SEAS',
   capacity: 240,
   meetingTitles: [],
 };
 
 /**
- * A room response for an FAS room with meetings booked
+ * A room response for an Non-SEAS room with meetings booked
  */
 export const bookedFASRoom: RoomMeetingResponse = {
   id: '6b923cb4-0215-4fa6-b7cf-db2b0b456b45',
   name: 'William James Hall B101',
-  campus: 'FAS',
+  campus: 'Non-SEAS',
   capacity: 140,
   meetingTitles: ['ABCD Meeting'],
 };

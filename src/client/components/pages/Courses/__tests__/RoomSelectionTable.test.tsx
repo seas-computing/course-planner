@@ -357,9 +357,9 @@ describe('Room Selection Table', function () {
             />
           );
         });
-        it('Should show check FAS availability', function () {
+        it('Should show "Check Availability"', function () {
           const { queryByText } = renderResult;
-          ok(queryByText('Check FAS Availability'));
+          ok(queryByText('Check Availability'));
         });
         it('Should not disable the add button', function () {
           const { getByRole } = renderResult;

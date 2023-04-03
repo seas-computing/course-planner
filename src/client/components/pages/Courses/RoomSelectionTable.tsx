@@ -65,8 +65,8 @@ const displayAvailability = (
   if (meetingTitles.length > 0) {
     return `No (${meetingTitles.join(', ')})`;
   }
-  if (campus === 'FAS') {
-    return 'Check FAS Availability';
+  if (campus === 'Non-SEAS') {
+    return 'Check Availability';
   }
   return 'Yes';
 };

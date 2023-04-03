@@ -33,6 +33,7 @@ import { UserController } from 'server/user/user.controller';
 import { Repository } from 'typeorm';
 import { Course } from 'server/course/course.entity';
 import { SemesterService } from 'server/semester/semester.service';
+import { Faculty } from 'server/faculty/faculty.entity';
 import { PopulationModule } from '../../../mocks/database/population/population.module';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 
@@ -41,6 +42,7 @@ describe('Report Controller', function () {
   let api: HttpServer;
   let semesterService: SemesterService;
   let courseRepository: Repository<Course>;
+  let facultyRepository: Repository<Faculty>;
   const currentAcademicYear = 2019;
   beforeEach(async function () {
     // Auth testing is handled separarately, so we'll just use our admin
@@ -94,6 +96,7 @@ describe('Report Controller', function () {
       .compile();
     const nestApp = await testModule.createNestApplication().init();
     courseRepository = nestApp.get(getRepositoryToken(Course));
+    facultyRepository = nestApp.get(getRepositoryToken(Faculty));
     semesterService = nestApp.get(SemesterService);
     api = nestApp.getHttpServer() as HttpServer;
   });
@@ -189,6 +192,99 @@ describe('Report Controller', function () {
             .get(`/report/courses?startYear=${startYear}&endYear=${endYear}`);
           strictEqual(courseReport.status, HttpStatus.BAD_REQUEST);
           strictEqual(courseReport.body.message, 'End year cannot be earlier than start year');
+        });
+      });
+    });
+  });
+  describe('/report/faculty', function () {
+    let testReport: Excel.Workbook;
+    context('Providing a start and end year', function () {
+      let startYear: number;
+      let endYear: number;
+      beforeEach(async function () {
+        startYear = currentAcademicYear - 1;
+        endYear = currentAcademicYear + 1;
+        const facultyReport = await request(api)
+          .get(`/report/faculty?startYear=${startYear}&endYear=${endYear}`);
+        const facultyData = facultyReport.body;
+        testReport = new Excel.Workbook();
+        return testReport.xlsx.load(facultyData);
+      });
+      it('Should only have a "Faculty" sheet', function () {
+        const worksheetNames = testReport.worksheets.map((sheet) => sheet.name);
+        deepStrictEqual(worksheetNames, ['Faculty']);
+      });
+      it('Should have a row for each faculty in the database', async function () {
+        const facultyCount = await facultyRepository.count();
+        const { number: rowCount } = testReport.getWorksheet('Faculty').lastRow;
+        // Add one for the header
+        strictEqual(rowCount, facultyCount + 1);
+      });
+      it('Should only include the years in the range', async function () {
+        const columnHeaders: string[] = [];
+        testReport
+          .getWorksheet('Faculty')
+          .getRow(1)
+          .eachCell((cell) => { columnHeaders.push(cell.text); });
+
+        const allYears = await semesterService.getYearList();
+        const startIndex = allYears
+          .findIndex((year) => year === startYear.toString());
+        const endIndex = allYears
+          .findIndex((year) => year === endYear.toString());
+        const yearRange = allYears.slice(startIndex, endIndex + 1);
+        const headerPairs = yearRange.reduce<string[]>(
+          (pairs: string[], currentYear: string): string[] => {
+            const fallYear = (parseInt(currentYear, 10) - 1);
+            const fallHeader = `F'${fallYear.toString().slice(2)}`;
+            const springHeader = `S'${currentYear.toString().slice(2)}`;
+            return [...pairs, fallHeader, springHeader];
+          }, []
+        );
+        headerPairs.forEach((header) => {
+          const firstSemesterHeader = columnHeaders
+            .findIndex((col) => col.includes(header));
+          notStrictEqual(firstSemesterHeader, -1, `Header with ${header} does not appear`);
+        });
+      });
+    });
+    context('With invalid data', function () {
+      context('With an invalid startYear', function () {
+        context('With a non-numeric value', function () {
+          it('It should return a Bad Request error', async function () {
+            const facultyReport = await request(api).get('/report/faculty?startYear=abcd');
+            strictEqual(facultyReport.status, HttpStatus.BAD_REQUEST);
+          });
+        });
+        context('With an out of range value', function () {
+          it('It should return a Bad Request error', async function () {
+            const facultyReport = await request(api).get('/report/faculty?startYear=1');
+            strictEqual(facultyReport.status, HttpStatus.BAD_REQUEST);
+          });
+        });
+      });
+      context('With an invalid endYear', function () {
+        context('With a non-numeric value', function () {
+          it('It should return a Bad Request error', async function () {
+            const facultyReport = await request(api).get('/report/faculty?endYear=abcd');
+            strictEqual(facultyReport.status, HttpStatus.BAD_REQUEST);
+          });
+        });
+        context('With an out of range value', function () {
+          it('It should return a Bad Request error', async function () {
+            const facultyReport = await request(api).get('/report/faculty?endYear=2');
+            strictEqual(facultyReport.status, HttpStatus.BAD_REQUEST);
+          });
+        });
+      });
+      context('With an endYear before the startYear', function () {
+        it('It should return a Bad Request error', async function () {
+          const startYear = currentAcademicYear + 1;
+          const endYear = currentAcademicYear - 1;
+          const facultyReport = await request(api)
+            .get(`/report/faculty?startYear=${startYear}&endYear=${endYear}`);
+          strictEqual(facultyReport.status, HttpStatus.BAD_REQUEST);
+          strictEqual(facultyReport.body.message, 'End year cannot be earlier than start year');
         });
       });
     });
