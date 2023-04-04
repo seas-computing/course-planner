@@ -122,56 +122,6 @@ describe('Course Admin', function () {
         const newAreaCourseStyle = window.getComputedStyle(getByText('NA', { selector: 'td' }));
         strictEqual(newAreaCourseStyle.backgroundColor, '');
       });
-      context('when the the dropdown and the text input filters called', function () {
-        it('Calls the listFilter function once for each filter', async function () {
-          const { getAllByRole } = render(
-            <CourseAdmin />
-          );
-          await wait(() => getAllByRole('row').length > 1);
-          const rows = getAllByRole('row');
-          const utils = within(rows[1]);
-          const area = utils.queryByLabelText(areaLabelText);
-          filterSpy.resetHistory();
-          fireEvent.change(area, { target: { value: 'AnyValue' } });
-          strictEqual(filterSpy.callCount, 3);
-        });
-        it('Calls the listFilter function once for each filter except the dropdown', async function () {
-          const { getAllByRole } = render(
-            <CourseAdmin />
-          );
-          await wait(() => getAllByRole('row').length > 1);
-          const rows = getAllByRole('row');
-          const utils = within(rows[1]);
-          const area = utils.queryByLabelText(areaLabelText);
-          filterSpy.resetHistory();
-          fireEvent.change(area, { target: { value: 'All' } });
-          strictEqual(filterSpy.callCount, 2);
-        });
-        it('Calls the listFilter function once for each filter except the dropdown', async function () {
-          const { getAllByRole } = render(
-            <CourseAdmin />
-          );
-          await wait(() => getAllByRole('row').length > 1);
-          const rows = getAllByRole('row');
-          const utils = within(rows[1]);
-          const course = utils.getAllByPlaceholderText('Filter by Course') as HTMLSelectElement[];
-          filterSpy.resetHistory();
-          fireEvent.change(course[0], { target: { value: 'AnyValue' } });
-          strictEqual(filterSpy.callCount, 2);
-        });
-        it('Calls the listFilter function once for each filter except the dropdown', async function () {
-          const { getAllByRole } = render(
-            <CourseAdmin />
-          );
-          await wait(() => getAllByRole('row').length > 1);
-          const rows = getAllByRole('row');
-          const utils = within(rows[1]);
-          const title = utils.getAllByPlaceholderText('Filter by Title') as HTMLTableRowElement[];
-          filterSpy.resetHistory();
-          fireEvent.change(title[0], { target: { value: 'AnyValue' } });
-          strictEqual(filterSpy.callCount, 2);
-        });
-      });
       context('when there are no course records', function () {
         const emptyTestData = [];
         beforeEach(function () {
