@@ -312,23 +312,13 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
   );
 
   /**
-   * Array of courses that are the "sameAs" the current course. This is also
-   * used to determine if the "sameAs" dropdown should be enabled or disabled.
+   * Array of catalog numbers that are child courses of the current course
    */
-  const [
-    childCourses,
-    setChildCourses,
-  ] = useState<string[]>([]);
-
-  /**
-   * Populate childCourses state on render
-   */
-  useEffect(() => {
-    const sameAsCourses = courses
-      .filter(({ sameAs }) => sameAs === currentCourse?.id)
-      .map(({ catalogNumber }) => catalogNumber);
-    setChildCourses(sameAsCourses);
-  }, [courses, setChildCourses, currentCourse]);
+  const childCourses = useMemo(
+    () => courses.filter(({ sameAs }) => sameAs === currentCourse?.id)
+      .map(({ catalogNumber }) => catalogNumber),
+    [courses, currentCourse]
+  );
 
   return (
     <Modal
