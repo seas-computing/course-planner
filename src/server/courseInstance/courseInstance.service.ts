@@ -142,8 +142,6 @@ export class CourseInstanceService {
       .addOrderBy('spring_meetings.day', 'ASC')
       .addOrderBy('spring_meetings.startTime', 'ASC')
       .addOrderBy('spring_meetings.endTime', 'ASC');
-
-      console.log("coursequery",courseQuery.printSql())
     return courseQuery.getMany() as Promise<CourseInstanceResponseDTO[]>;
   }
 
