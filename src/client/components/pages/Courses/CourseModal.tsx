@@ -429,21 +429,19 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
             labelPosition={POSITION.TOP}
             options={courseOptions}
           />
-          <>
-            {
-              childCourses.length > 0 ? (
-                <ul title={`Child Courses of ${currentCourse?.catalogNumber}`}>
-                  {
-                    childCourses.map(
-                      (catalogNumber) => (
-                        <li key={catalogNumber}>{catalogNumber}</li>
-                      )
+          {
+            childCourses.length > 0 ? (
+              <ul title={`Child Courses of ${currentCourse?.catalogNumber}`}>
+                {
+                  childCourses.map(
+                    (catalogNumber) => (
+                      <li key={catalogNumber}>{catalogNumber}</li>
                     )
-                  }
-                </ul>
-              ) : null
-            }
-          </>
+                  )
+                }
+              </ul>
+            ) : null
+          }
           <Checkbox
             id="isUndergraduate"
             name="isUndergraduate"
