@@ -34,6 +34,12 @@ import FacultySchedule from '../FacultyPage';
 import FacultyScheduleTable, { FacultyFilterState } from '../FacultyScheduleTable';
 
 /**
+ * Helper function to convert sameAs string to the expected format in the
+ * table cell.
+ */
+const formatSameAs = (sameAs: string): string => sameAs.replace(', ', '');
+
+/**
  * Helper function used to compare table row contents with faculty schedule data
  */
 const assertRowMatchesResponse = function (
@@ -60,13 +66,13 @@ const assertRowMatchesResponse = function (
     response.fall.absence.type
   ));
   strictEqual(fallCourses, response.fall.courses
-    .map((course) => course.catalogNumber)
+    .map((course) => course.catalogNumber.concat(formatSameAs(course.sameAs)))
     .join(''));
   strictEqual(springAbsence, absenceEnumToTitleCase(
     response.spring.absence.type
   ));
   strictEqual(springCourses, response.spring.courses
-    .map((course) => course.catalogNumber)
+    .map((course) => course.catalogNumber.concat(formatSameAs(course.sameAs)))
     .join(''));
 };
 
