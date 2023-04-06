@@ -51,7 +51,7 @@ export class ReportService {
       { header: 'Is Seas?', key: 'isSEAS' },
       { header: 'Is Undergrad?', key: 'isUndergrad' },
       { header: 'Notes', key: 'notes' },
-      { header: 'SameAs', key: 'sameAs' },
+      { header: 'Same As', key: 'sameAs' },
     ];
     yearRange.forEach((year) => {
       const springYear = year.toString().substr(2);
