@@ -146,7 +146,7 @@ describe('Course controller', function () {
           mockCourseRepository.save.args[0][0],
           {
             ...cs50Course,
-            sameAs: undefined,
+            sameAs: null,
           }
         );
       });
