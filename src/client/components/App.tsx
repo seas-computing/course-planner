@@ -39,6 +39,22 @@ import {
 const appVersion = process.env.APP_VERSION;
 
 /**
+ * A custom footer component to render Policy links and items
+ */
+
+const CustomFooter = styled(Footer)`
+  ul {
+    list-style: none;
+    display: flex;
+    li {
+      padding: 0 0.5rem;
+      border-right: 1px solid black;
+      &:last-of-type {
+        border: 0px;
+      }
+  }`;
+
+/**
  * The primary app component. Fetches the current user from the server when it
  * mounts, then saves it to the UserContext to pass down to other components
  */
@@ -78,23 +94,6 @@ const App: FunctionComponent = (): ReactElement => {
    * Tracks whether we're still fetching the user and metadata
    */
   const [isDataFetching, setDataFetching] = useState(true);
-
-  /**
-   * A custom footer component to render Policy links and items
-   */
-  const CustomFooter = styled(Footer)`
-  ul {
-    list-style: none;
-    display: flex;
-    li {
-      padding: 0 0.5rem;
-      border-right: 1px solid black;
-      &:last-of-type {
-        border: 0px;
-      }
-  }
-}
-`;
 
   /**
    * Get the currently authenticated user from the server on launch.
