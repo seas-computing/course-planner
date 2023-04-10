@@ -22,37 +22,20 @@ import {
   MarkOneWrapper,
   PageBody,
   LoadSpinner,
-  Footer,
   ExternalLink,
 } from 'mark-one';
 import { getCurrentUser } from 'client/api';
 import { getMetadata } from 'client/api/metadata';
 import { User } from 'common/classes';
 import { MetadataResponse } from 'common/dto/metadata/MetadataResponse.dto';
-import styled from 'styled-components';
 import {
   Message,
   AppRouter,
   AppHeader,
+  CustomFooter,
 } from './layout';
 
 const appVersion = process.env.APP_VERSION;
-
-/**
- * A custom footer component to render Policy links and items
- */
-
-const CustomFooter = styled(Footer)`
-  ul {
-    list-style: none;
-    display: flex;
-    li {
-      padding: 0 0.5rem;
-      border-right: 1px solid black;
-      &:last-of-type {
-        border: 0px;
-      }
-  }`;
 
 /**
  * The primary app component. Fetches the current user from the server when it
