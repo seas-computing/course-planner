@@ -28,11 +28,11 @@ import { getCurrentUser } from 'client/api';
 import { getMetadata } from 'client/api/metadata';
 import { User } from 'common/classes';
 import { MetadataResponse } from 'common/dto/metadata/MetadataResponse.dto';
+import { CustomFooter } from 'client/components/layout';
 import {
   Message,
   AppRouter,
   AppHeader,
-  CustomFooter,
 } from './layout';
 
 const appVersion = process.env.APP_VERSION;
