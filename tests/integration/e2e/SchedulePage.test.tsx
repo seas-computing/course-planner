@@ -193,7 +193,7 @@ describe('End-to-end Schedule Page tests', function () {
         const parentMeetingInfo = `${parentCourseDay}, ${parentStartTime} to ${parentEndTime} in ${parentLocation}`;
         const childCourseInfo = `${testChildCourse.prefix} ${testChildCourse.number} on ${parentMeetingInfo}`;
         await renderResult.findByText(childCourseInfo);
-      }).timeout(120000);
+      });
     });
   });
 });
