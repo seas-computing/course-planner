@@ -1,4 +1,5 @@
 import { restore } from 'sinon';
+import { cleanup } from 'test-utils'
 import MockDB from './tests/mocks/database/MockDB';
 
 before(function (done) {
@@ -50,4 +51,5 @@ You may need to manually remove the container by running:
   }
 });
 
+beforeEach(cleanup);
 afterEach(restore);
