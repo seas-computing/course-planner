@@ -43,6 +43,7 @@ import { Area } from 'server/area/area.entity';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import { CourseService } from '../../../../src/server/course/course.service';
 import { Course } from '../../../../src/server/course/course.entity';
+import { PopulationModule } from '../../../mocks/database/population/population.module';
 
 /**
  * This class takes a supertest response with an error
@@ -108,6 +109,7 @@ describe('Course Admin Modal Behavior', function () {
           defaultStrategy: AUTH_MODE.TEST,
         }),
         CourseModule,
+        PopulationModule,
       ],
       providers: [
         {
