@@ -195,4 +195,5 @@ export class CourseService {
       id: result.id,
       catalogNumber: result.catalogNumber,
     }));
+  }
 }
