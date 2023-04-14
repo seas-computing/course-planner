@@ -35,6 +35,7 @@ import { Campus } from 'server/location/campus.entity';
 import { Building } from 'server/location/building.entity';
 import CreateRoomModal from 'client/components/pages/RoomAdmin/CreateRoomModal';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
+import { PopulationModule } from '../../../mocks/database/population/population.module';
 
 /**
  * This class takes a supertest response with an error
@@ -98,6 +99,7 @@ describe('Room Admin Modal Behavior', function () {
           defaultStrategy: AUTH_MODE.TEST,
         }),
         LocationModule,
+        PopulationModule,
       ],
       providers: [
         {
