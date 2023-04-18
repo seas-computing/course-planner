@@ -33,6 +33,7 @@ import {
   adminUser,
   string,
   physicsCourse,
+  activeParentCoursesExample,
 } from 'testData';
 import { AUTH_MODE } from 'common/constants';
 import { render } from 'test-utils';
@@ -162,7 +163,7 @@ describe('Course Admin Modal Behavior', function () {
               isVisible
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
-              courses={[physicsCourseResponse]}
+              courses={activeParentCoursesExample}
             />
           ));
         });
@@ -315,7 +316,7 @@ describe('Course Admin Modal Behavior', function () {
               currentCourse={physicsCourseResponse}
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
-              courses={[physicsCourseResponse]}
+              courses={activeParentCoursesExample}
             />
           ));
         });
@@ -448,7 +449,7 @@ describe('Course Admin Modal Behavior', function () {
               isVisible
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
-              courses={[physicsCourseResponse]}
+              courses={activeParentCoursesExample}
             />
           ));
         });
@@ -514,7 +515,7 @@ describe('Course Admin Modal Behavior', function () {
               currentCourse={physicsCourseResponse}
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
-              courses={[physicsCourseResponse]}
+              courses={activeParentCoursesExample}
             />
           ));
         });
