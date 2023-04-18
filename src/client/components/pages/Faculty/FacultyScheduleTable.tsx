@@ -44,6 +44,7 @@ import {
 import { CellLayout } from 'client/components/general';
 import { MetadataContext } from 'client/context/MetadataContext';
 import { absenceToVariant } from '../utils/absenceToVariant';
+import { deduplicateCourses } from '../utils/deduplicateCourses';
 
 /**
  * Describes the semester specific filter(s)
@@ -340,11 +341,12 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
               </CellLayout>
             </TableCell>
             <TableCell variant={absenceToVariant(faculty.fall.absence)}>
-              {faculty.fall.courses.map((course): ReactElement => (
-                <div key={course.id}>
-                  {course.catalogNumber}
-                </div>
-              ))}
+              {deduplicateCourses(faculty.fall.courses)
+                .map((course): ReactElement => (
+                  <div key={course}>
+                    {course}
+                  </div>
+                ))}
             </TableCell>
             <TableCell
               variant={absenceToVariant(faculty.spring.absence)}
@@ -385,11 +387,12 @@ const FacultyScheduleTable: FunctionComponent<FacultyScheduleTableProps> = ({
               </CellLayout>
             </TableCell>
             <TableCell variant={absenceToVariant(faculty.spring.absence)}>
-              {faculty.spring.courses.map((course): ReactElement => (
-                <div key={course.id}>
-                  {course.catalogNumber}
-                </div>
-              ))}
+              {deduplicateCourses(faculty.spring.courses)
+                .map((course): ReactElement => (
+                  <div key={course}>
+                    {course}
+                  </div>
+                ))}
             </TableCell>
           </TableRow>
         ))}
