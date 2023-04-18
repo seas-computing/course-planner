@@ -37,6 +37,7 @@ import {
 import { CourseAPI } from 'client/api';
 import { AxiosError } from 'client/api/request';
 import { ErrorParser, ServerErrorInfo } from 'client/classes';
+import { ActiveParentCourses } from 'common/dto/courses/ActiveParentCourses.dto';
 
 interface CourseModalProps {
   /**
@@ -59,7 +60,7 @@ interface CourseModalProps {
   /**
    * Array of courses used to populate the sameAs selection dropdown
    */
-  courses: ManageCourseResponseDTO[];
+  courses: ActiveParentCourses[];
 }
 
 interface FormErrors {
@@ -299,7 +300,6 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
     () => [{ value: '', label: '' }]
       .concat(
         courses.filter(({ id }) => id !== currentCourse?.id)
-          .filter(({ sameAs }) => sameAs === null)
           .map(({ id, catalogNumber }): {
             value: string;
             label: string;
