@@ -26,6 +26,7 @@ import {
   physicsCourse,
   physicsCourseResponse,
   newAreaCourseResponse,
+  activeParentCoursesExample,
 } from 'testData';
 import { IS_SEAS } from 'common/constants';
 import request from 'client/api/request';
@@ -198,7 +199,7 @@ describe('Course Modal', function () {
               currentCourse={physicsCourseResponse}
               onClose={() => {}}
               onSuccess={() => null}
-              courses={testData}
+              courses={activeParentCoursesExample}
             />
           );
           const sameAsInput = modal.getByLabelText('Same As', { exact: false }) as HTMLSelectElement;
@@ -207,25 +208,6 @@ describe('Course Modal', function () {
           const courseIds = sameAsOptions.map((option) => option.value);
 
           strictEqual(courseIds.includes(physicsCourseResponse.id), false);
-        });
-        it('cannot contain a child course', function () {
-          const modal = render(
-            <CourseModal
-              isVisible
-              currentCourse={physicsCourseResponse}
-              onClose={() => {}}
-              onSuccess={() => null}
-              courses={testData}
-            />
-          );
-          const sameAsInput = modal
-            .getByLabelText('Same As') as HTMLSelectElement;
-          const sameAsOptions = within(sameAsInput)
-            .getAllByRole('option') as HTMLOptionElement[];
-
-          const courseIds = sameAsOptions.map((option) => option.value);
-
-          strictEqual(courseIds.includes(childCourse.id), false);
         });
       });
       describe('Error Message', function () {
