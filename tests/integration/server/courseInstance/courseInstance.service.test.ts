@@ -20,7 +20,7 @@ import {
   MultiYearPlanInstanceFaculty,
   MultiYearPlanInstance,
 } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { testFourYearPlanAcademicYears } from 'testData';
 import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto';
 import { stub } from 'sinon';
