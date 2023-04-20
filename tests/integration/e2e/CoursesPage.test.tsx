@@ -1308,19 +1308,24 @@ describe('End-to-end Course Instance updating', function () {
       let editSpringOfferedButton: HTMLElement;
       let editFallOfferedButton: HTMLElement;
       beforeEach(async function () {
-        const [prefix, number] = courseNumber.split(' ');
-        await courseRepository.findOneOrFail(
-          {
-            prefix,
-            number,
-          },
-          {
-            relations: [
-              'instances',
-              'instances.semester',
-            ],
-          }
-        );
+        // Finds a course instance whose offered value is not retired and
+        // whose semester information matches the test academic year and term
+        const nonRetiredCourseInstance = await courseInstanceRepository
+          .findOneOrFail({
+            where: {
+              offered: Not(OFFERED.RETIRED),
+              semester: {
+                academicYear: currentAcademicYear,
+                term: currentTerm,
+              },
+            },
+            relations: ['course', 'semester'],
+          });
+
+        const { prefix, number } = nonRetiredCourseInstance.course;
+
+        courseNumber = `${prefix} ${number}`;
+
         renderResult = render(
           <MemoryRouter initialEntries={['/courses']}>
             <App />
@@ -1544,61 +1549,68 @@ describe('End-to-end Course Instance updating', function () {
                 return within(editFallOfferedButton.parentElement)
                   .findByText(offeredEnumToString(OFFERED.RETIRED));
               });
-              it('should update the offered value of future course instances to be OFFERED.RETIRED', async function () {
-                // Check the retired value of the Spring semester of the same year
-                const courseRows = await renderResult.findAllByRole('row');
-                const courseRowToUpdate = courseRows.find((row) => {
-                  const rowHeader = within(row).queryByRole('rowheader');
-                  return rowHeader?.textContent === courseNumber;
+              context('when an offered field of a fall course instance is set to OFFERED.RETIRED', function () {
+                it('should update the spring offered value to be OFFERED.RETIRED', async function () {
+                  // Check the retired value of the Spring semester of the same year
+                  const courseRows = await renderResult.findAllByRole('row');
+                  const courseRowToUpdate = courseRows.find((row) => {
+                    const rowHeader = within(row).queryByRole('rowheader');
+                    return rowHeader?.textContent === courseNumber;
+                  });
+                  ([editSpringOfferedButton] = await within(courseRowToUpdate)
+                    .findAllByLabelText(
+                      `Edit offered value for ${courseNumber}, ${TERM.SPRING} ${futureAcademicYear}`,
+                      { exact: false }
+                    ));
+                  notStrictEqual(
+                    await within(editSpringOfferedButton.parentElement)
+                      .findByText(offeredEnumToString(OFFERED.RETIRED)),
+                    null,
+                    'Spring instance did not update to "Retired"'
+                  );
                 });
-                ([editSpringOfferedButton] = await within(courseRowToUpdate)
-                  .findAllByLabelText(
-                    `Edit offered value for ${courseNumber}, ${TERM.SPRING} ${futureAcademicYear}`,
-                    { exact: false }
-                  ));
-                notStrictEqual(
-                  await within(editSpringOfferedButton.parentElement)
-                    .findByText(offeredEnumToString(OFFERED.RETIRED)),
-                  null,
-                  'Spring instance did not update to "Retired"'
-                );
-                // Navigate to the next academic year to check offered values
-                const academicYearSelector = await renderResult.findByLabelText('Academic Year', { exact: false }) as HTMLSelectElement;
-                fireEvent.change(academicYearSelector, {
-                  target: {
-                    value: futureAcademicYear + 1,
-                  },
+                it('should update the future course instances to have offered values of OFFERED.RETIRED', async function () {
+                  // Navigate to the next academic year to check offered values
+                  const academicYearSelector = await renderResult.findByLabelText('Academic Year', { exact: false }) as HTMLSelectElement;
+                  fireEvent.change(academicYearSelector, {
+                    target: {
+                      value: futureAcademicYear + 1,
+                    },
+                  });
+                  await waitForElementToBeRemoved(() => renderResult.getByText('Fetching Course Data'));
+                  const futureCourseRows = await renderResult.findAllByRole('row');
+                  const futureCourseRowToUpdate = futureCourseRows
+                    .find((row) => {
+                      const rowHeader = within(row).queryByRole('rowheader');
+                      return rowHeader?.textContent === courseNumber;
+                    });
+                  ([editFallOfferedButton] = await within(
+                    futureCourseRowToUpdate
+                  )
+                    .findAllByLabelText(
+                      `Edit offered value for ${courseNumber}, ${TERM.FALL} ${futureAcademicYear}`,
+                      { exact: false }
+                    ));
+                  ([editSpringOfferedButton] = await within(
+                    futureCourseRowToUpdate
+                  )
+                    .findAllByLabelText(
+                      `Edit offered value for ${courseNumber}, ${TERM.SPRING} ${futureAcademicYear + 1}`,
+                      { exact: false }
+                    ));
+                  notStrictEqual(
+                    await within(editFallOfferedButton.parentElement)
+                      .findByText(offeredEnumToString(OFFERED.RETIRED)),
+                    null,
+                    'Fall instance of future academic year did not update to "Retired"'
+                  );
+                  notStrictEqual(
+                    await within(editSpringOfferedButton.parentElement)
+                      .findByText(offeredEnumToString(OFFERED.RETIRED)),
+                    null,
+                    'Spring instance of future academic year did not update to "Retired"'
+                  );
                 });
-                await waitForElementToBeRemoved(() => renderResult.getByText('Fetching Course Data'));
-                const futureCourseRows = await renderResult.findAllByRole('row');
-                const futureCourseRowToUpdate = futureCourseRows.find((row) => {
-                  const rowHeader = within(row).queryByRole('rowheader');
-                  return rowHeader?.textContent === courseNumber;
-                });
-                ([editFallOfferedButton] = await within(futureCourseRowToUpdate)
-                  .findAllByLabelText(
-                    `Edit offered value for ${courseNumber}, ${TERM.FALL} ${futureAcademicYear}`,
-                    { exact: false }
-                  ));
-                ([editSpringOfferedButton] = await within(
-                  futureCourseRowToUpdate
-                )
-                  .findAllByLabelText(
-                    `Edit offered value for ${courseNumber}, ${TERM.SPRING} ${futureAcademicYear + 1}`,
-                    { exact: false }
-                  ));
-                notStrictEqual(
-                  await within(editFallOfferedButton.parentElement)
-                    .findByText(offeredEnumToString(OFFERED.RETIRED)),
-                  null,
-                  'Fall instance of future academic year did not update to "Retired"'
-                );
-                notStrictEqual(
-                  await within(editSpringOfferedButton.parentElement)
-                    .findByText(offeredEnumToString(OFFERED.RETIRED)),
-                  null,
-                  'Spring instance of future academic year did not update to "Retired"'
-                );
               });
             });
           });
