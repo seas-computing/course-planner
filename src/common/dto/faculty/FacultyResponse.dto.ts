@@ -13,6 +13,12 @@ export abstract class FacultyCourse {
     example: 'CS 50',
   })
   public catalogNumber: string;
+
+  @ApiProperty({
+    type: 'string',
+    example: 'AC 209A, CS 109A',
+  })
+  public sameAs: string;
 }
 
 export abstract class FacultyAbsence {

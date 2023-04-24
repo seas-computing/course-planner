@@ -168,10 +168,12 @@ export const appliedMathFacultyScheduleResponse: FacultyResponseDTO = {
       {
         id: '37b66373-5000-43f2-9c14-8c2426273785',
         catalogNumber: 'AM 10',
+        sameAs: 'BE 100',
       },
       {
         id: '6cfaf5af-d2bc-4959-81cc-9f87bf38f9d3',
         catalogNumber: 'AM 20',
+        sameAs: '',
       },
     ],
     absence: {
@@ -186,6 +188,7 @@ export const appliedMathFacultyScheduleResponse: FacultyResponseDTO = {
       {
         id: '37b66373-5000-43f2-9c14-8c2426273785',
         catalogNumber: 'AM 10',
+        sameAs: 'BE 100',
       },
     ],
     absence: {
@@ -215,14 +218,17 @@ FacultyResponseDTO = {
       {
         id: '22225da5-5213-4787-b819-955f554eca4e',
         catalogNumber: 'EE 100',
+        sameAs: '',
       },
       {
         id: '05d04a88-8db2-46fe-8b87-aa70244ad655',
         catalogNumber: 'EE 20',
+        sameAs: '',
       },
       {
         id: 'bbc7492a-71b2-489b-a9ec-a0a052c4f5c8',
         catalogNumber: 'EE 210',
+        sameAs: '',
       },
     ],
     absence: {
@@ -237,18 +243,22 @@ FacultyResponseDTO = {
       {
         id: '441c517f-bc48-46e3-86c2-4949d1908c5d',
         catalogNumber: 'EE 204',
+        sameAs: '',
       },
       {
         id: '73d1ee13-8b05-46d9-86fc-9e86442f94bd',
         catalogNumber: 'EE 130',
+        sameAs: '',
       },
       {
         id: 'bbc7492a-71b2-489b-a9ec-a0a052c4f5c8',
         catalogNumber: 'EE 210',
+        sameAs: '',
       },
       {
         id: 'c6d3e613-fc0e-4ad4-91d3-7396dbb364f8',
         catalogNumber: 'EE 300',
+        sameAs: '',
       },
     ],
     absence: {
@@ -278,6 +288,7 @@ FacultyResponseDTO = {
       {
         id: '92abefb7-d0b3-4ec0-b4a4-9050867aa927',
         catalogNumber: 'CS 50',
+        sameAs: '',
       },
     ],
     absence: {
@@ -292,6 +303,7 @@ FacultyResponseDTO = {
       {
         id: 'bbb0d395-3176-4752-b08d-1af1e20d1c21',
         catalogNumber: 'CS 226',
+        sameAs: '',
       },
     ],
     absence: {
@@ -320,6 +332,7 @@ export const notActiveACSFacultyScheduleResponse: FacultyResponseDTO = {
       {
         id: 'bbc7492a-5fc2-40b3-9c8d-a0a052c4f5c8',
         catalogNumber: 'ACS 21',
+        sameAs: '',
       },
     ],
     absence: {
@@ -334,6 +347,7 @@ export const notActiveACSFacultyScheduleResponse: FacultyResponseDTO = {
       {
         id: 'caa6382b-54c5-484f-bf6c-a0a052c4f5c8',
         catalogNumber: 'ACS 33',
+        sameAs: '',
       },
     ],
     absence: {
@@ -362,6 +376,7 @@ export const partiallyActiveAMFacultyScheduleResponse: FacultyResponseDTO = {
       {
         id: 'bbc7492a-5fc2-40b3-9c8d-a0a052c4f5c8',
         catalogNumber: 'AM 45',
+        sameAs: 'CS 107, BE 102',
       },
     ],
     absence: {
@@ -376,6 +391,7 @@ export const partiallyActiveAMFacultyScheduleResponse: FacultyResponseDTO = {
       {
         id: 'caa6382b-54c5-484f-bf6c-a0a052c4f5c8',
         catalogNumber: 'AM 23',
+        sameAs: '',
       },
     ],
     absence: {
@@ -404,10 +420,12 @@ export const newAreaFacultyScheduleResponse: FacultyResponseDTO = {
       {
         id: '37b66373-5000-43f2-9c14-8c2426273785',
         catalogNumber: 'NA 100',
+        sameAs: '',
       },
       {
         id: '6cfaf5af-d2bc-4959-81cc-9f87bf38f9d3',
         catalogNumber: 'NA 210',
+        sameAs: '',
       },
     ],
     absence: {
@@ -422,6 +440,7 @@ export const newAreaFacultyScheduleResponse: FacultyResponseDTO = {
       {
         id: '37b66373-5000-43f2-9c14-8c2426273785',
         catalogNumber: 'NA 310',
+        sameAs: '',
       },
     ],
     absence: {
