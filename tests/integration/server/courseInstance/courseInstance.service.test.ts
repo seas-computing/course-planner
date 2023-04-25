@@ -20,7 +20,7 @@ import {
   MultiYearPlanInstanceFaculty,
   MultiYearPlanInstance,
 } from 'common/dto/multiYearPlan/MultiYearPlanResponseDTO';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { testFourYearPlanAcademicYears } from 'testData';
 import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto';
 import { stub } from 'sinon';
@@ -458,12 +458,13 @@ describe('Course Instance Service', function () {
     beforeEach(function () {
       stub(configService, 'academicYear').get(() => currentAcademicYear);
     });
-    describe('editing an offered value to a non-retired value', function () {
+    describe('editing a non-retired offered value to a non-retired value', function () {
       context('when we are editing a past academic year instance', function () {
         beforeEach(async function () {
           newOfferedValue = OFFERED.N;
           instance = await instanceRepository.findOneOrFail({
             where: {
+              offered: Not(OFFERED.RETIRED),
               semester: {
                 academicYear: parseInt(currentAcademicYear, 10) - 2,
               },
@@ -487,6 +488,7 @@ describe('Course Instance Service', function () {
           newOfferedValue = OFFERED.Y;
           instance = await instanceRepository.findOneOrFail({
             where: {
+              offered: Not(OFFERED.RETIRED),
               semester: {
                 academicYear: currentAcademicYear,
               },
@@ -510,6 +512,7 @@ describe('Course Instance Service', function () {
           newOfferedValue = OFFERED.N;
           instance = await instanceRepository.findOneOrFail({
             where: {
+              offered: Not(OFFERED.RETIRED),
               semester: {
                 academicYear: parseInt(currentAcademicYear, 10) + 1,
               },
@@ -529,12 +532,13 @@ describe('Course Instance Service', function () {
         });
       });
     });
-    describe('editing an offered value to OFFERED.RETIRED', function () {
+    describe('editing a non-retired offered value to an OFFERED.RETIRED value', function () {
       context('when we are editing a past academic year instance', function () {
         beforeEach(async function () {
           newOfferedValue = OFFERED.RETIRED;
           instance = await instanceRepository.findOneOrFail({
             where: {
+              offered: Not(OFFERED.RETIRED),
               semester: {
                 academicYear: parseInt(currentAcademicYear, 10) - 2,
               },
@@ -563,6 +567,7 @@ describe('Course Instance Service', function () {
           newOfferedValue = OFFERED.RETIRED;
           instance = await instanceRepository.findOneOrFail({
             where: {
+              offered: Not(OFFERED.RETIRED),
               semester: {
                 academicYear: currentAcademicYear,
               },
@@ -586,6 +591,86 @@ describe('Course Instance Service', function () {
           newOfferedValue = OFFERED.RETIRED;
           instance = await instanceRepository.findOneOrFail({
             where: {
+              offered: Not(OFFERED.RETIRED),
+              semester: {
+                academicYear: parseInt(currentAcademicYear, 10) + 1,
+              },
+            },
+            relations: ['course', 'semester'],
+          });
+          updateInfo = {
+            preEnrollment: instance.preEnrollment,
+            studyCardEnrollment: instance.studyCardEnrollment,
+            actualEnrollment: instance.actualEnrollment,
+            offered: newOfferedValue,
+          };
+          result = await ciService.editCourseInstance(instance.id, updateInfo);
+        });
+        it('should return the updated instance', function () {
+          deepStrictEqual(result, updateInfo);
+        });
+      });
+    });
+    describe('editing an OFFERED.RETIRED value to a non-retired value', function () {
+      context('when we are editing a past academic year instance', function () {
+        beforeEach(async function () {
+          newOfferedValue = OFFERED.Y;
+          instance = await instanceRepository.findOneOrFail({
+            where: {
+              offered: OFFERED.RETIRED,
+              semester: {
+                academicYear: parseInt(currentAcademicYear, 10) - 2,
+              },
+            },
+            relations: ['course', 'semester'],
+          });
+          updateInfo = {
+            preEnrollment: instance.preEnrollment,
+            studyCardEnrollment: instance.studyCardEnrollment,
+            actualEnrollment: instance.actualEnrollment,
+            offered: newOfferedValue,
+          };
+          try {
+            result = await ciService
+              .editCourseInstance(instance.id, updateInfo);
+          } catch (error) {
+            response = error;
+          }
+        });
+        it('should throw a Bad Request Exception', function () {
+          strictEqual(response.status, 400);
+        });
+      });
+      context('when we are editing a current academic year instance', function () {
+        beforeEach(async function () {
+          newOfferedValue = OFFERED.Y;
+          instance = await instanceRepository.findOneOrFail({
+            where: {
+              offered: OFFERED.RETIRED,
+              semester: {
+                academicYear: currentAcademicYear,
+              },
+            },
+            relations: ['course', 'semester'],
+          });
+          updateInfo = {
+            preEnrollment: instance.preEnrollment,
+            studyCardEnrollment: instance.studyCardEnrollment,
+            actualEnrollment: instance.actualEnrollment,
+            offered: newOfferedValue,
+          };
+          result = await ciService.editCourseInstance(instance.id, updateInfo);
+        });
+        it('should return the updated instance', function () {
+          deepStrictEqual(result, updateInfo);
+        });
+      });
+      context('when we are editing a future academic year instance', function () {
+        beforeEach(async function () {
+          newOfferedValue = OFFERED.Y;
+          instance = await instanceRepository.findOneOrFail({
+            where: {
+              offered: OFFERED.RETIRED,
               semester: {
                 academicYear: parseInt(currentAcademicYear, 10) + 1,
               },
