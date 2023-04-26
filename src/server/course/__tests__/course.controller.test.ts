@@ -146,7 +146,7 @@ describe('Course controller', function () {
           mockCourseRepository.save.args[0][0],
           {
             ...cs50Course,
-            sameAs: undefined,
+            sameAs: null,
           }
         );
       });
@@ -224,6 +224,29 @@ describe('Course controller', function () {
             }
           ),
           BadRequestException
+        );
+      });
+      it('allows users to remove the sameAs value', async function () {
+        mockAreaRepository.findOne.resolves(cs50Course.area);
+        mockCourseRepository.findOneOrFail
+          .onFirstCall().resolves({
+            ...cs50Course,
+            sameAs: physicsCourse.id,
+          })
+          .onSecondCall().resolves(physicsCourse);
+        mockCourseRepository.save.resolves(cs50Course);
+
+        const course = await controller.update(
+          cs50Course.id,
+          updateCourseExample
+        );
+
+        deepStrictEqual(
+          course,
+          {
+            ...computerScienceCourseResponse,
+            sameAs: null,
+          }
         );
       });
     });

@@ -156,6 +156,8 @@ export class CourseController {
       if (childCourses > 0) {
         throw new BadRequestException('Parent courses cannot be children');
       }
+    } else {
+      sameAsCourse = null;
     }
 
     const fullCourse = {
