@@ -22,14 +22,13 @@ import {
   MarkOneWrapper,
   PageBody,
   LoadSpinner,
-  Footer,
   ExternalLink,
 } from 'mark-one';
 import { getCurrentUser } from 'client/api';
 import { getMetadata } from 'client/api/metadata';
 import { User } from 'common/classes';
 import { MetadataResponse } from 'common/dto/metadata/MetadataResponse.dto';
-import styled from 'styled-components';
+import { CustomFooter } from 'client/components/layout';
 import {
   Message,
   AppRouter,
@@ -78,23 +77,6 @@ const App: FunctionComponent = (): ReactElement => {
    * Tracks whether we're still fetching the user and metadata
    */
   const [isDataFetching, setDataFetching] = useState(true);
-
-  /**
-   * A custom footer component to render Policy links and items
-   */
-  const CustomFooter = styled(Footer)`
-  ul {
-    list-style: none;
-    display: flex;
-    li {
-      padding: 0 0.5rem;
-      border-right: 1px solid black;
-      &:last-of-type {
-        border: 0px;
-      }
-  }
-}
-`;
 
   /**
    * Get the currently authenticated user from the server on launch.
