@@ -22,13 +22,14 @@ import {
 } from 'assert';
 import { SemesterModule } from 'server/semester/semester.module';
 import { FacultyCourseInstance } from 'server/courseInstance/facultycourseinstance.entity';
+import { CourseInstance } from 'server/courseInstance/courseinstance.entity';
 import mockAdapter from '../../mocks/api/adapter';
 import { ConfigModule } from '../../../src/server/config/config.module';
 import { ConfigService } from '../../../src/server/config/config.service';
 import { AuthModule } from '../../../src/server/auth/auth.module';
 import { TestingStrategy } from '../../mocks/authentication/testing.strategy';
 import {
-  AUTH_MODE,
+  AUTH_MODE, OFFERED,
 } from '../../../src/common/constants';
 import { PopulationModule } from '../../mocks/database/population/population.module';
 import { CourseModule } from '../../../src/server/course/course.module';
@@ -43,7 +44,7 @@ import { LogModule } from '../../../src/server/log/log.module';
 describe('End-to-end Multi Year Plan tests', function () {
   let testModule: TestingModule;
   let authStub: SinonStub;
-  let courseRepository: Repository<Course>;
+  let ciRepository: Repository<CourseInstance>;
   let fciRepository: Repository<FacultyCourseInstance>;
   const currentAcademicYear = 2019;
   let renderResult: RenderResult;
@@ -97,11 +98,11 @@ describe('End-to-end Multi Year Plan tests', function () {
       .overrideProvider(ConfigService)
       .useValue(fakeConfig)
       .compile();
-    courseRepository = testModule.get(
-      getRepositoryToken(Course)
-    );
     fciRepository = testModule.get(
       getRepositoryToken(FacultyCourseInstance)
+    );
+    ciRepository = testModule.get(
+      getRepositoryToken(CourseInstance)
     );
     const nestApp = await testModule
       .createNestApplication()
@@ -116,18 +117,34 @@ describe('End-to-end Multi Year Plan tests', function () {
   });
   describe('Rendering Instructor Information', function () {
     let parentCourse: Course;
+    let nonRetiredCi: CourseInstance;
     let childCourse: Course;
     let instructor: FacultyCourseInstance;
     beforeEach(async function () {
       instructor = await fciRepository.findOneOrFail({
         relations: ['courseInstance', 'courseInstance.course'],
-      });
-      parentCourse = instructor.courseInstance.course;
-      childCourse = await courseRepository.findOneOrFail({
         where: {
-          id: Not(parentCourse.id),
+          courseInstance: {
+            offered: Not(OFFERED.RETIRED),
+            course: {
+              // sameAs should be null to ensure the parent course is not a child course
+              sameAs: null,
+            },
+          },
         },
       });
+      console.log('instructor: ', instructor);
+      parentCourse = instructor.courseInstance.course;
+      console.log('parentCourse: ', parentCourse);
+      nonRetiredCi = await ciRepository.findOneOrFail({
+        relations: ['course'],
+        where: {
+          offered: Not(OFFERED.RETIRED),
+        },
+      });
+      console.log('nonRetiredCi: ', nonRetiredCi);
+      childCourse = nonRetiredCi.course;
+      console.log('childCourse: ', childCourse);
       renderResult = render(
         <MemoryRouter initialEntries={['/course-admin']}>
           <App />
@@ -135,31 +152,43 @@ describe('End-to-end Multi Year Plan tests', function () {
       );
     });
     context('when a course is a child of another', function () {
-      it('should display the faculty of its parent course', async function () {
-        await renderResult.findByText(childCourse.title, { exact: false });
+      it.only('should display the faculty of its parent course', async function () {
+        await renderResult.findByText(`${childCourse.prefix} ${childCourse.number}`, { exact: false });
+        // Filter courses in the table by catalog number in case the child course's title is not unique
+        let rows = renderResult.getAllByRole('row');
+        let utils = within(rows[1]);
+        const courseNumberField = utils.queryByLabelText('The table will be filtered as characters are typed in this course filter field');
+        fireEvent.change(courseNumberField, { target: { value: `${childCourse.prefix} ${childCourse.number}` } });
+        await renderResult.findByText(`${childCourse.title}`, { exact: false });
         // Edit the child course to set its parent via the sameAs field
         const editButton = await renderResult
           .findByLabelText(`Edit course information for ${childCourse.title}`,
             { exact: false });
+        console.log('editButton: ', editButton);
         fireEvent.click(editButton);
         await renderResult.findByRole('dialog');
         const sameAsSelect = renderResult.getByLabelText('Same As', { exact: false }) as HTMLSelectElement;
+        // The below is printing empty options: <option value=""></option>
+        console.log('sameAsSelect options: ', sameAsSelect.innerHTML);
         fireEvent.change(
           sameAsSelect,
           { target: { value: parentCourse.id } }
         );
+        // The below is printing a value of ""
+        console.log('sameAsSelect value: ', sameAsSelect.value);
         const submitButton = renderResult.getByText('Submit');
         fireEvent.click(submitButton);
+        console.log('after clicking the submit button');
         await waitForElementToBeRemoved(() => renderResult.getByRole('dialog'));
 
         // Navigate to multi year plan tab
         const multiYearPlanTab = await renderResult.findByText('4 Year Plan', { exact: false });
         fireEvent.click(multiYearPlanTab);
-        await renderResult.findByText(childCourse.title, { exact: false });
+        await renderResult.findByText(`${childCourse.prefix} ${childCourse.number}`, { exact: false });
 
         // Find the instructor information across the years for the parent course
-        const rows = renderResult.getAllByRole('row');
-        const utils = within(rows[1]);
+        rows = renderResult.getAllByRole('row');
+        utils = within(rows[1]);
         const catalogNumberField = utils.queryByLabelText('The table will be filtered as characters are typed in this catalog number filter field');
         fireEvent.change(catalogNumberField, { target: { value: `${parentCourse.prefix} ${parentCourse.number}` } });
         const parentRow = Array.from(renderResult.getAllByRole('row'))[2] as HTMLTableRowElement;
@@ -168,6 +197,7 @@ describe('End-to-end Multi Year Plan tests', function () {
         // Remove the course top level information and
         // take only the instructor information.
         parentRowContent = parentRowContent.slice(3);
+        console.log('parentROwContent: ', parentRowContent);
 
         // Find the instructor information across the years for the child course
         fireEvent.change(catalogNumberField, { target: { value: `${childCourse.prefix} ${childCourse.number}` } });
@@ -177,6 +207,7 @@ describe('End-to-end Multi Year Plan tests', function () {
         // Remove the top level course information and
         // take only the instructor information.
         childRowContent = childRowContent.slice(3);
+        console.log('childRowContent: ', childRowContent);
 
         let numRowsCompared = 0;
         // Compare the faculty information and make sure they are equal
