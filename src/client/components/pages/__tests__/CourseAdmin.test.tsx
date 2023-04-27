@@ -6,13 +6,10 @@ import {
   waitForElement,
   wait,
   within,
-  fireEvent,
 } from '@testing-library/react';
 import {
   stub,
   SinonStub,
-  SinonSpy,
-  spy,
 } from 'sinon';
 import { CourseAPI } from 'client/api/courses';
 import {
@@ -23,12 +20,10 @@ import {
 } from 'testData';
 import { render } from 'test-utils';
 import CourseAdmin from '../CourseAdmin';
-import * as filters from '../Filter';
 
 describe('Course Admin', function () {
   let getStub: SinonStub;
   let dispatchMessage: SinonStub;
-  let filterSpy: SinonSpy;
   const testData = [
     computerScienceCourseResponse,
     physicsCourseResponse,
@@ -38,7 +33,6 @@ describe('Course Admin', function () {
   beforeEach(function () {
     getStub = stub(CourseAPI, 'getAllCourses');
     getStub.resolves(testData);
-    filterSpy = spy(filters, 'listFilter');
     dispatchMessage = stub();
   });
   describe('rendering', function () {
