@@ -1,4 +1,5 @@
 import {
+  notDeepStrictEqual,
   strictEqual,
 } from 'assert';
 import {
@@ -226,6 +227,50 @@ describe('Course Modal', function () {
           const courseIds = sameAsOptions.map((option) => option.value);
 
           strictEqual(courseIds.includes(childCourse.id), false);
+        });
+        it('is disabled for parent courses', function () {
+          const modal = render(
+            <CourseModal
+              isVisible
+              /*
+              * We need to edit a "parent" course here so we can test that
+              * it can't also be a child
+              */
+              currentCourse={computerScienceCourseResponse}
+              onClose={() => {}}
+              onSuccess={() => null}
+              courses={testData}
+            />
+          );
+          const sameAsInput = modal
+            .getByLabelText('Same As') as HTMLSelectElement;
+          strictEqual(sameAsInput.disabled, true);
+        });
+        it('has an adjacent list of child courses for parents', function () {
+          const modal = render(
+            <CourseModal
+              isVisible
+              currentCourse={computerScienceCourseResponse}
+              onClose={() => {}}
+              onSuccess={() => null}
+              courses={[
+                computerScienceCourseResponse,
+                childCourse,
+                {
+                  ...physicsCourseResponse,
+                  sameAs: computerScienceCourseResponse.id,
+                },
+              ]}
+            />
+          );
+          notDeepStrictEqual(
+            modal.queryByText(childCourse.catalogNumber),
+            null
+          );
+          notDeepStrictEqual(
+            modal.queryByText(physicsCourseResponse.catalogNumber),
+            null
+          );
         });
       });
       describe('Error Message', function () {
