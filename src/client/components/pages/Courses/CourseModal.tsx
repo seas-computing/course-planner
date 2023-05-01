@@ -311,6 +311,15 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
     [courses, currentCourse]
   );
 
+  /**
+   * Array of catalog numbers that are child courses of the current course
+   */
+  const childCourses = useMemo(
+    () => courses.filter(({ sameAs }) => sameAs === currentCourse?.id)
+      .map(({ catalogNumber }) => catalogNumber),
+    [courses, currentCourse]
+  );
+
   return (
     <Modal
       ariaLabelledBy="editCourse"
@@ -416,9 +425,23 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
             onChange={updateFormFields}
             label={displayNames.sameAs}
             errorMessage={formErrors.sameAs}
+            disabled={childCourses.length > 0}
             labelPosition={POSITION.TOP}
             options={courseOptions}
           />
+          {
+            childCourses.length > 0 ? (
+              <ul title={`Child Courses of ${currentCourse?.catalogNumber}`}>
+                {
+                  childCourses.map(
+                    (catalogNumber) => (
+                      <li key={catalogNumber}>{catalogNumber}</li>
+                    )
+                  )
+                }
+              </ul>
+            ) : null
+          }
           <Checkbox
             id="isUndergraduate"
             name="isUndergraduate"
