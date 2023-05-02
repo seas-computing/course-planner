@@ -229,9 +229,5 @@ export const activeParentCoursesExample: ActiveParentCourses[] = [
   { id: '98a61a51-4280-4624-8bdc-c67a3b527c2d', catalogNumber: 'CS 288r' },
   { id: 'dad6a49e-02be-4d1a-8cb2-016cd902b585', catalogNumber: 'ES 212' },
   { id: 'b9a40bf7-56fa-4410-a377-5b0521910842', catalogNumber: 'GENED 1094' },
-  {
-    id: newAreaCourseResponse.id,
-    catalogNumber: newAreaCourseResponse.catalogNumber,
-  },
   { id: 'c5ceb64c-ddc2-49bf-9616-7a611d07ebf6', catalogNumber: 'SEMINAR AP Colloqium' },
 ];
