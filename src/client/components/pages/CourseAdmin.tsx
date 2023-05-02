@@ -103,7 +103,7 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
   ] = useState(false);
 
   /**
-   * The currently selected faculty
+   * The currently selected course
    */
   const [
     currentCourse,
@@ -273,7 +273,8 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
               type: MESSAGE_ACTION.PUSH,
             });
           }}
-          courses={currentActiveParentCourses}
+          allCourses={currentCourses}
+          parentCourses={currentActiveParentCourses}
         />
       </div>
     </div>
