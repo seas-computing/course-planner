@@ -13,7 +13,7 @@ import { TypeOrmModule, TypeOrmModuleOptions, getRepositoryToken } from '@nestjs
 import request from 'client/api/request';
 import { SessionModule } from 'nestjs-session';
 import * as dummy from 'testData';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { UserController } from 'server/user/user.controller';
 import { MemoryRouter } from 'react-router-dom';
 import App from 'client/components/App';
@@ -34,7 +34,7 @@ import { PopulationModule } from '../../mocks/database/population/population.mod
 describe('End-to-end Course Admin updating', function () {
   let testModule: TestingModule;
   let courseRepository: Repository<Course>;
-  const title = 'Introduction to Soft Matter';
+  let testCourse: Course;
 
   beforeEach(async function () {
     stub(TestingStrategy.prototype, 'login').resolves(dummy.adminUser);
@@ -93,7 +93,9 @@ describe('End-to-end Course Admin updating', function () {
   describe('Updating Courses', function () {
     let renderResult: RenderResult;
     beforeEach(async function () {
-      await courseRepository.findOneOrFail({ title });
+      testCourse = await courseRepository.findOneOrFail({
+        sameAs: IsNull(),
+      });
       renderResult = render(
         <MemoryRouter initialEntries={['/course-admin']}>
           <App />
@@ -102,7 +104,7 @@ describe('End-to-end Course Admin updating', function () {
     });
     context('Creating a course', function () {
       beforeEach(async function () {
-        await renderResult.findByText(title, { exact: false });
+        await renderResult.findByText(testCourse.title, { exact: false });
         const createCourseButton = await renderResult.findByText('Create New Course', { exact: false });
         fireEvent.click(createCourseButton);
         await renderResult.findByText(/Select an existing area/);
@@ -145,8 +147,8 @@ describe('End-to-end Course Admin updating', function () {
     });
     context('Updating existing course information', function () {
       beforeEach(async function () {
-        await renderResult.findByText(title);
-        const editButton = await renderResult.findByLabelText(`Edit course information for ${title}`,
+        await renderResult.findByText(testCourse.title);
+        const editButton = await renderResult.findByLabelText(`Edit course information for ${testCourse.title}`,
           { exact: false });
         fireEvent.click(editButton);
         return renderResult.findByRole('dialog');
@@ -154,6 +156,7 @@ describe('End-to-end Course Admin updating', function () {
       context('when the required fields are provided', function () {
         context('when the modal submit button is clicked', function () {
           it('should not show an unsaved changes warning', async function () {
+            await renderResult.findByText(testCourse.title, { exact: false });
             // Set new isSEAS category for course entry
             const isSEASSelector = await renderResult.findByLabelText('Is SEAS', { exact: false }) as HTMLSelectElement;
             fireEvent.change(isSEASSelector,

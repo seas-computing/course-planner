@@ -6,6 +6,7 @@ import { ScheduleViewResponseDTO } from 'common/dto/schedule/schedule.dto';
 import { TERM } from 'common/constants';
 import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto';
 import { RoomScheduleResponseDTO } from 'common/dto/schedule/roomSchedule.dto';
+import { ActiveParentCourses } from 'common/dto/courses/ActiveParentCourses.dto';
 import request from './request';
 import { InstructorResponseDTO } from '../../common/dto/courses/InstructorResponse.dto';
 import { InstructorRequestDTO } from '../../common/dto/courses/InstructorRequest.dto';
@@ -103,6 +104,15 @@ export const updateCourseInstance = async (
   return response.data as CourseInstanceUpdateDTO;
 };
 
+/**
+ * Retrieves all non-retired, non-child courses
+ */
+export const getActiveParentCourses = async ()
+: Promise<ActiveParentCourses[]> => {
+  const response = await request.get('/api/courses/active-parents');
+  return response.data as ActiveParentCourses[];
+};
+
 export const CourseAPI = {
   getAllCourses,
   createCourse,
@@ -112,4 +122,5 @@ export const CourseAPI = {
   updateInstructorList,
   updateCourseInstance,
   getRoomScheduleForSemester,
+  getActiveParentCourses,
 };

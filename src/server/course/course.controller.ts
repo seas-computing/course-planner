@@ -29,6 +29,7 @@ import { Authentication } from 'server/auth/authentication.guard';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { UpdateCourseDTO } from 'common/dto/courses/UpdateCourse.dto';
 import { Area } from 'server/area/area.entity';
+import { ActiveParentCourses } from 'common/dto/courses/ActiveParentCourses.dto';
 import { Course } from './course.entity';
 import { CourseService } from './course.service';
 
@@ -182,5 +183,16 @@ export class CourseController {
       catalogNumber: `${prefix} ${number}`,
       sameAs: updatedCourse.sameAs ? updatedCourse.sameAs.id : null,
     };
+  }
+
+  @Get('/active-parents')
+  @ApiOperation({ summary: 'Retrieve all non-retired, non-child courses from the database' })
+  @ApiOkResponse({
+    type: ActiveParentCourses,
+    description: 'An array of all the non-retired, non-child courses',
+    isArray: true,
+  })
+  public async getActiveParentCourses(): Promise<ActiveParentCourses[]> {
+    return this.courseService.getAvailableParentCourses();
   }
 }

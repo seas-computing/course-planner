@@ -27,6 +27,7 @@ import {
   physicsCourse,
   physicsCourseResponse,
   newAreaCourseResponse,
+  activeParentCoursesExample,
 } from 'testData';
 import { IS_SEAS } from 'common/constants';
 import request from 'client/api/request';
@@ -68,7 +69,8 @@ describe('Course Modal', function () {
             isVisible
             onClose={() => {}}
             onSuccess={() => null}
-            courses={[]}
+            allCourses={[]}
+            parentCourses={[]}
           />
         ));
       });
@@ -142,7 +144,8 @@ describe('Course Modal', function () {
               currentCourse={physicsCourseResponse}
               onClose={() => {}}
               onSuccess={() => null}
-              courses={testData}
+              allCourses={testData}
+              parentCourses={[]}
             />
           );
         });
@@ -199,7 +202,8 @@ describe('Course Modal', function () {
               currentCourse={physicsCourseResponse}
               onClose={() => {}}
               onSuccess={() => null}
-              courses={testData}
+              allCourses={testData}
+              parentCourses={activeParentCoursesExample}
             />
           );
           const sameAsInput = modal.getByLabelText('Same As', { exact: false }) as HTMLSelectElement;
@@ -216,7 +220,8 @@ describe('Course Modal', function () {
               currentCourse={physicsCourseResponse}
               onClose={() => {}}
               onSuccess={() => null}
-              courses={testData}
+              allCourses={testData}
+              parentCourses={activeParentCoursesExample}
             />
           );
           const sameAsInput = modal
@@ -239,7 +244,8 @@ describe('Course Modal', function () {
               currentCourse={computerScienceCourseResponse}
               onClose={() => {}}
               onSuccess={() => null}
-              courses={testData}
+              allCourses={testData}
+              parentCourses={activeParentCoursesExample}
             />
           );
           const sameAsInput = modal
@@ -253,7 +259,7 @@ describe('Course Modal', function () {
               currentCourse={computerScienceCourseResponse}
               onClose={() => {}}
               onSuccess={() => null}
-              courses={[
+              allCourses={[
                 computerScienceCourseResponse,
                 childCourse,
                 {
@@ -261,6 +267,7 @@ describe('Course Modal', function () {
                   sameAs: computerScienceCourseResponse.id,
                 },
               ]}
+              parentCourses={[]}
             />
           );
           notDeepStrictEqual(
@@ -335,7 +342,8 @@ describe('Course Modal', function () {
           isVisible
           onClose={() => {}}
           onSuccess={() => null}
-          courses={[]}
+          allCourses={[]}
+          parentCourses={[]}
         />
       ));
     });
@@ -609,7 +617,8 @@ describe('Course Modal', function () {
               currentCourse={physicsCourseResponse}
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
-              courses={[]}
+              allCourses={[]}
+              parentCourses={[]}
             />
           ));
         });
@@ -648,7 +657,8 @@ describe('Course Modal', function () {
               }}
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
-              courses={[]}
+              allCourses={[]}
+              parentCourses={[]}
             />
           ));
         });
@@ -678,7 +688,8 @@ describe('Course Modal', function () {
               isVisible
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
-              courses={[]}
+              allCourses={[]}
+              parentCourses={[]}
             />
           ));
           const existingAreaSelect = getByLabelText('Existing Area', { exact: true }) as HTMLSelectElement;
@@ -747,7 +758,8 @@ describe('Course Modal', function () {
               isVisible
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
-              courses={[]}
+              allCourses={[]}
+              parentCourses={[]}
             />
           ));
         });

@@ -37,6 +37,7 @@ import {
 import { CourseAPI } from 'client/api';
 import { AxiosError } from 'client/api/request';
 import { ErrorParser, ServerErrorInfo } from 'client/classes';
+import { ActiveParentCourses } from 'common/dto/courses/ActiveParentCourses.dto';
 
 interface CourseModalProps {
   /**
@@ -57,9 +58,13 @@ interface CourseModalProps {
    */
   onSuccess: (course: ManageCourseResponseDTO) => Promise<void>;
   /**
+   * An array of all courses
+   */
+  allCourses: ManageCourseResponseDTO[];
+  /**
    * Array of courses used to populate the sameAs selection dropdown
    */
-  courses: ManageCourseResponseDTO[];
+  parentCourses: ActiveParentCourses[];
 }
 
 interface FormErrors {
@@ -93,7 +98,8 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
   currentCourse,
   onSuccess,
   onClose,
-  courses,
+  allCourses,
+  parentCourses,
 }): ReactElement {
   /**
    * The current value for the metadata context
@@ -298,8 +304,7 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
   const courseOptions = useMemo(
     () => [{ value: '', label: '' }]
       .concat(
-        courses.filter(({ id }) => id !== currentCourse?.id)
-          .filter(({ sameAs }) => sameAs === null)
+        parentCourses.filter(({ id }) => id !== currentCourse?.id)
           .map(({ id, catalogNumber }): {
             value: string;
             label: string;
@@ -308,16 +313,16 @@ const CourseModal: FunctionComponent<CourseModalProps> = function ({
             label: catalogNumber,
           }))
       ),
-    [courses, currentCourse]
+    [parentCourses, currentCourse]
   );
 
   /**
    * Array of catalog numbers that are child courses of the current course
    */
   const childCourses = useMemo(
-    () => courses.filter(({ sameAs }) => sameAs === currentCourse?.id)
+    () => allCourses.filter(({ sameAs }) => sameAs === currentCourse?.id)
       .map(({ catalogNumber }) => catalogNumber),
-    [courses, currentCourse]
+    [allCourses, currentCourse]
   );
 
   return (

@@ -20,9 +20,11 @@ import {
   computerScienceCourseResponse,
   physicsCourseResponse,
   rawCatalogPrefixList,
+  activeParentCoursesExample,
 } from 'testData';
 import { Area } from 'server/area/area.entity';
 import { SelectQueryBuilder } from 'typeorm';
+import { ConfigService } from 'server/config/config.service';
 import { CourseService } from '../course.service';
 import { Course } from '../course.entity';
 
@@ -71,6 +73,7 @@ describe('Course service', function () {
           provide: getRepositoryToken(Semester),
           useValue: mockSemesterRepository,
         },
+        ConfigService,
       ],
       controllers: [],
     }).compile();
@@ -147,6 +150,41 @@ describe('Course service', function () {
       });
       it('returns an empty array', async function () {
         const result = await courseService.getCatalogPrefixList();
+        strictEqual(result.length, 0);
+        deepStrictEqual(result, []);
+      });
+    });
+  });
+  describe('getAvailableParentCourses', function () {
+    context('when there are records in the database', function () {
+      beforeEach(function () {
+        mockCourseQueryBuilder.select.returnsThis();
+        mockCourseQueryBuilder.addSelect.returnsThis();
+        mockCourseQueryBuilder.innerJoin.returnsThis();
+        mockCourseQueryBuilder.where.returnsThis();
+        mockCourseQueryBuilder.andWhere.returnsThis();
+        mockCourseQueryBuilder.orderBy.returnsThis();
+        mockCourseQueryBuilder.addOrderBy.returnsThis();
+        mockCourseQueryBuilder.getRawMany.resolves(activeParentCoursesExample);
+      });
+      it('returns a list of course id numbers and their corresponding catalog numbers', async function () {
+        const result = await courseService.getAvailableParentCourses();
+        deepStrictEqual(result, activeParentCoursesExample);
+      });
+    });
+    context('when there are no records in the database', function () {
+      beforeEach(function () {
+        mockCourseQueryBuilder.select.returnsThis();
+        mockCourseQueryBuilder.addSelect.returnsThis();
+        mockCourseQueryBuilder.innerJoin.returnsThis();
+        mockCourseQueryBuilder.where.returnsThis();
+        mockCourseQueryBuilder.andWhere.returnsThis();
+        mockCourseQueryBuilder.orderBy.returnsThis();
+        mockCourseQueryBuilder.addOrderBy.returnsThis();
+        mockCourseQueryBuilder.getRawMany.resolves([]);
+      });
+      it('returns an empty array', async function () {
+        const result = await courseService.getAvailableParentCourses();
         strictEqual(result.length, 0);
         deepStrictEqual(result, []);
       });

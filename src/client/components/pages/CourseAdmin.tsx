@@ -25,6 +25,7 @@ import { MessageContext, MetadataContext } from 'client/context';
 import { TableRowProps } from 'mark-one/lib/Tables/TableRow';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
+import { ActiveParentCourses } from 'common/dto/courses/ActiveParentCourses.dto';
 import { getAreaColor } from '../../../common/constants';
 import { CourseAPI } from '../../api/courses';
 import { VerticalSpace } from '../layout';
@@ -48,6 +49,14 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
    */
   const [currentCourses, setCourses] = useState(
     [] as ManageCourseResponseDTO[]
+  );
+
+  /**
+   * The current list of non-retired courses that are eligible to be parent
+   * courses
+   */
+  const [currentActiveParentCourses, setActiveParentCourses] = useState(
+    [] as ActiveParentCourses[]
   );
 
   /**
@@ -94,7 +103,7 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
   ] = useState(false);
 
   /**
-   * The currently selected faculty
+   * The currently selected course
    */
   const [
     currentCourse,
@@ -110,6 +119,8 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
     try {
       const loadedCourses = await CourseAPI.getAllCourses();
       setCourses(loadedCourses);
+      const parentCourses = await CourseAPI.getActiveParentCourses();
+      setActiveParentCourses(parentCourses);
     } catch (e) {
       dispatchMessage({
         message: new AppMessage(
@@ -262,7 +273,8 @@ const CourseAdmin: FunctionComponent = function (): ReactElement {
               type: MESSAGE_ACTION.PUSH,
             });
           }}
-          courses={currentCourses}
+          allCourses={currentCourses}
+          parentCourses={currentActiveParentCourses}
         />
       </div>
     </div>

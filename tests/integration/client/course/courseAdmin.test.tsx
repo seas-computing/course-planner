@@ -33,6 +33,9 @@ import {
   adminUser,
   string,
   physicsCourse,
+  activeParentCoursesExample,
+  computerScienceCourseResponse,
+  newAreaCourseResponse,
 } from 'testData';
 import { AUTH_MODE } from 'common/constants';
 import { render } from 'test-utils';
@@ -40,6 +43,7 @@ import { SessionModule } from 'nestjs-session';
 import CourseModal from 'client/components/pages/Courses/CourseModal';
 import { Repository } from 'typeorm';
 import { Area } from 'server/area/area.entity';
+import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
 import { TestingStrategy } from '../../../mocks/authentication/testing.strategy';
 import { CourseService } from '../../../../src/server/course/course.service';
 import { Course } from '../../../../src/server/course/course.entity';
@@ -72,6 +76,12 @@ describe('Course Admin Modal Behavior', function () {
   let authStub: SinonStub;
   let courseService: CourseService;
   let courseRepository: Repository<Course>;
+
+  const coursesTestData: ManageCourseResponseDTO[] = [
+    computerScienceCourseResponse,
+    physicsCourseResponse,
+    newAreaCourseResponse,
+  ];
 
   let testModule: TestingModule;
   let api: HttpServer;
@@ -162,7 +172,8 @@ describe('Course Admin Modal Behavior', function () {
               isVisible
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
-              courses={[physicsCourseResponse]}
+              allCourses={coursesTestData}
+              parentCourses={activeParentCoursesExample}
             />
           ));
         });
@@ -315,7 +326,8 @@ describe('Course Admin Modal Behavior', function () {
               currentCourse={physicsCourseResponse}
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
-              courses={[physicsCourseResponse]}
+              allCourses={coursesTestData}
+              parentCourses={activeParentCoursesExample}
             />
           ));
         });
@@ -448,7 +460,8 @@ describe('Course Admin Modal Behavior', function () {
               isVisible
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
-              courses={[physicsCourseResponse]}
+              allCourses={coursesTestData}
+              parentCourses={activeParentCoursesExample}
             />
           ));
         });
@@ -514,7 +527,8 @@ describe('Course Admin Modal Behavior', function () {
               currentCourse={physicsCourseResponse}
               onSuccess={onSuccessStub}
               onClose={onCloseStub}
-              courses={[physicsCourseResponse]}
+              allCourses={coursesTestData}
+              parentCourses={activeParentCoursesExample}
             />
           ));
         });

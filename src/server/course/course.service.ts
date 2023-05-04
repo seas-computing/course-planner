@@ -1,10 +1,17 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeepPartial } from 'typeorm';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Semester } from 'server/semester/semester.entity';
 import { Area } from 'server/area/area.entity';
+import {
+  IS_SEAS,
+  OFFERED,
+  TERM,
+  TERM_PATTERN,
+} from 'common/constants';
+import { ConfigService } from 'server/config/config.service';
 import { ManageCourseResponseDTO } from 'common/dto/courses/ManageCourseResponse.dto';
-import { IS_SEAS, TERM_PATTERN } from 'common/constants';
+import { ActiveParentCourses } from 'common/dto/courses/ActiveParentCourses.dto';
 import { Course } from './course.entity';
 import { CourseInstance } from '../courseInstance/courseinstance.entity';
 
@@ -42,6 +49,16 @@ export abstract class FindCoursesQueryResult {
   public private: boolean;
 }
 
+export abstract class ActiveParentCoursesResult {
+  public id: string;
+
+  public prefix: string;
+
+  public catalogNumber: string;
+
+  public sameAs: string;
+}
+
 @Injectable()
 export class CourseService {
   @InjectRepository(Area)
@@ -52,6 +69,9 @@ export class CourseService {
 
   @InjectRepository(Course)
   private courseRepository: Repository<Course>;
+
+  @Inject(ConfigService)
+  private readonly configService: ConfigService;
 
   /**
    * Retrieve all courses in the database and sort by:
@@ -134,5 +154,46 @@ export class CourseService {
           ({ prefix }: {prefix: string}): string => prefix
         )
       );
+  }
+
+  /**
+   * Retrieves all of the non-retired courses that are not a child of another
+   * course, since a child course cannot be a parent course.
+   */
+  public async getAvailableParentCourses(): Promise<ActiveParentCourses[]> {
+    const { academicYear } = this.configService;
+    let term: TERM;
+    // Determines the current term based off of the current month
+    const today = new Date();
+    if (today.getMonth() >= 6) {
+      term = TERM.FALL;
+    } else {
+      term = TERM.SPRING;
+    }
+
+    // Note that academicYear in the semester table is actually the calendar year
+    const semesterAcademicYear = term === TERM.FALL
+      ? academicYear + 1 : academicYear;
+
+    const results: ActiveParentCoursesResult[] = await this.courseRepository
+      .createQueryBuilder('c')
+      .select('c.id', 'id')
+      .addSelect('c.prefix', 'prefix')
+      .addSelect("CONCAT_WS(' ', c.prefix, c.number)", 'catalogNumber')
+      .addSelect('c."numberInteger"', 'numberInteger')
+      .addSelect('c."numberAlphabetical"', 'numberAlphabetical')
+      .addSelect('c."sameAsId"', 'sameAs')
+      .innerJoin(Semester, 's', 's."academicYear" = :academicYear AND s.term = :term', { academicYear: semesterAcademicYear, term })
+      .innerJoin(CourseInstance, 'ci', 'ci."courseId" = c.id AND ci."semesterId" = s.id')
+      .where('c."sameAsId" IS NULL')
+      .andWhere('ci.offered <> :offered', { offered: OFFERED.RETIRED })
+      .orderBy('prefix', 'ASC')
+      .addOrderBy('"numberInteger"', 'ASC')
+      .addOrderBy('"numberAlphabetical"', 'ASC')
+      .getRawMany();
+    return results.map((result) => ({
+      id: result.id,
+      catalogNumber: result.catalogNumber,
+    }));
   }
 }

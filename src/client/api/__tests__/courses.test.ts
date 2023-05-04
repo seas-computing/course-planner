@@ -14,6 +14,7 @@ import {
 import { TermKey } from 'common/constants/term';
 import { cs50CourseInstance } from 'testData';
 import CourseInstanceUpdateDTO from 'common/dto/courses/CourseInstanceUpdate.dto';
+import { ActiveParentCourses } from 'common/dto/courses/ActiveParentCourses.dto';
 import request, {
   AxiosResponse,
 } from '../request';
@@ -24,6 +25,7 @@ describe('Course Admin API', function () {
   let createCourseResult: ManageCourseResponseDTO;
   let editCourseResult: ManageCourseResponseDTO;
   let editCourseInstanceResult: CourseInstanceUpdateDTO;
+  let activeParentCoursesResult: ActiveParentCourses[];
   let getStub: SinonStub;
   let postStub: SinonStub;
   let putStub: SinonStub;
@@ -298,6 +300,38 @@ describe('Course Admin API', function () {
           ),
           dummy.error
         );
+      });
+    });
+  });
+  describe('getActiveParentCourses', function () {
+    beforeEach(function () {
+      getStub = stub(request, 'get');
+    });
+    context('when data fetch succeeds', function () {
+      beforeEach(async function () {
+        getStub.resolves({
+          data: dummy.activeParentCoursesExample,
+        } as AxiosResponse<ActiveParentCourses[]>);
+        activeParentCoursesResult = await CourseAPI.getActiveParentCourses();
+      });
+      it('should return the course information', function () {
+        deepStrictEqual(
+          activeParentCoursesResult,
+          dummy.activeParentCoursesExample
+        );
+      });
+    });
+    context('when data fetch fails', function () {
+      beforeEach(function () {
+        getStub.rejects(dummy.error);
+      });
+      it('should throw an error', async function () {
+        try {
+          await CourseAPI.getActiveParentCourses();
+          fail('Did not throw an error');
+        } catch (err) {
+          deepStrictEqual(err, dummy.error);
+        }
       });
     });
   });
